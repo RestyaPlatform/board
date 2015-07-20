@@ -1,0 +1,46 @@
+<%
+var content_list = '<div class="navbar-btn clearfix"><select name="selected_list_id" class="js-change-card-position form-control input-sm cur">';
+var content_position = '<div class="navbar-btn"><select name="card_position" class="js-position form-control col-xs-12 input-sm cur">';
+var filtered_lists = card.list.collection.board.lists.where({
+	is_archived: false
+});
+_.each(filtered_lists, function(list) {
+	if (card.attributes.list_id == list.id) {
+		content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + '(current)</option>';
+		var filtered_cards_count = card.list.collection.board.cards.where({
+			list_id: list.id,
+			is_archived: false
+		}).length;
+		var current_position = filtered_cards_count + 1;
+
+		for(var i = 1; i <= filtered_cards_count + 1; i++){
+			if (card.attributes.list_id == list.attributes.id && i == current_position) {
+				content_position += '<option value="' + i + '" selected="selected">' + i + '(current)</option>';
+			} else {
+				content_position += '<option value="' + i + '">' + i+ '</option>';
+			}
+		}
+		if (card.attributes.list_id != list.attributes.id) {
+			var next_position = filtered_cards_count + 1;
+			content_position += '<option value="' + next_position + '">' + next_position+ '</option>';
+		}
+		
+	} else {
+		content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+	}
+
+});
+content_list += '</select></div>';
+content_position += '</select></div>';
+var content = content_list + content_position;
+%>
+
+<div class="clearfix text-center col-xs-12">	
+		<a href="#" class="js-back-to-card-actions pull-left" ><i class="icon-caret-left  no-pad"></i></a> <span class="col-xs-10"><strong> Position </strong></span><a href="#" class="js-close-sub-popover pull-right"><i class="icon-remove "></i></a>	
+</div>
+<div class="col-xs-12 divider"></div>
+<div class="col-xs-12">
+	<%= content %>
+
+</div>
+

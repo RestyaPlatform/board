@@ -1,0 +1,13 @@
+<div id="js-navbar-default" class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+	<div class="navbar-left navbar-btn">
+	  <div class="clearfix navbar-btn">
+		<h2 class="pull-left navbar-btn"><span class="pull-left"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span></h2>
+		<ul class="list-inline pull-left h3 navbar-btn navbar-form">
+			 <li class="navbar-btn text-muted"><span class="h5">/</span></li>
+			<li><span class="text-muted h4"><% if(user.attributes.full_name != null && user.attributes.full_name != ''){ %><%- user.attributes.full_name %><% }else{ %><%- user.attributes.username %> <%}%></span></li>
+		</ul>
+	  </div>
+	</div>
+  </div>
+</div>

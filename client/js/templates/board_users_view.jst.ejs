@@ -1,0 +1,17 @@
+<a title="<%- user.attributes.username %>" href="#" class="dropdown-toggle js-show-board-user-action pull-left" data-toggle="dropdown"> <span data-placement="bottom" title="<%- user.attributes.username %>" data-toggle="tooltip" class="col-xs-12 btn-block navbar-btn">				
+	<% if(!_.isEmpty(user.attributes.profile_picture_path)) { 
+		var profile_picture_path = user.showImage('User', user.attributes.user_id, 'small_thumb' );
+	%>
+		<img src="<%=profile_picture_path %>" alt="[Image: <%-user.attributes.username %>]" title="<%-user.attributes.username %>" class="img-rounded img-responsive avatar">
+	<% } else {%>
+		<i class="avatar avatar-color-194 img-rounded"><%- user.attributes.initials %></i>									
+	<% } %>
+	<% if(is_admin && user.attributes.is_admin) { %>
+		<span class="name-block col-xs-1 label btn-xs col-xs-push-0">Owner</span>
+	<% } %>
+</span></a>
+		<ul class="dropdown-menu dropdown-menu-left arrow arrow-left">
+			<li class="js-show-board-user-action-response js-dropdown-popup dropdown-popup">
+				
+			</li>
+		</ul>

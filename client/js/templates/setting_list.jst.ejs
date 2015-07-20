@@ -1,0 +1,85 @@
+<!-- Main block start -->
+<section class="clearfix row">
+  <div class="col-xs-12">
+	<div class="clearfix">
+		<ul class="nav nav-tabs no-bor h3">
+		<% 
+			var i = 0;
+			if (list.models.length > 0 ) { 
+				_.each(list.models, function(settingCategory) {				
+					var settings = settingCategory.get('settings');
+		%>
+				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>"><%- settingCategory.get('name') %></a></li>
+		<% 
+					i++;
+				});
+			} 
+		%>
+		</ul>
+	</div>
+	<div class="row">
+		<div class="tab-content col-sm-10">
+		<% if (list.models.length > 0 ) { 
+				var j = 0;
+				_.each(list.models, function(settingCategory) {				
+					var settings = settingCategory.get('settings');
+		%>		
+				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%}%>" id="settingTab<%- settingCategory.get('id') %>">
+					<% if(!_.isEmpty(settings)){ %>
+					<form class="form-horizontal clearfix col-lg-6 col-md-8 col-sm-12 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
+					<%
+					 var prev_category_id = 0;
+					  _.each(settings, function(setting) {  %>
+						<% 
+							if(setting.setting_category_id != prev_category_id && setting.setting_category_parent_id != 0){ 
+						%>
+							<fieldset>
+								<legend>
+									<span class="show h4"><%=setting.category_name%></span>
+								</legend>
+						<%}%>
+						<% if(setting.type == 'checkbox') { %>
+							<div class="form-group">
+								<div class="col-sm-offset-4 col-sm-8">
+									<div class="checkbox">
+										<input class="js-checkbox" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" type="checkbox" <% if(setting.value === 'true') { %> checked="checked" <% } %> value="<%- setting.value %>">
+										<label for="inputSetting<%- setting.id %>"><%- setting.label %> </label>
+									</div>
+								</div>
+							</div>
+						<% } else {%>
+							<div class="form-group">
+							  <label for="inputSetting<%- setting.id %>" class="col-sm-4 control-label col-xs-12"><%- setting.label %></label>
+							  <div class="col-sm-8 col-xs-12">
+								<input type="text" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" class="form-control" value="<%- setting.value %>" />
+								<div><span class="help-block"><%= setting.description %></span></div>
+							  </div>
+							</div>
+						<% } %>
+						<% 
+							if(setting.setting_category_id != prev_category_id && setting.setting_category_parent_id != 0){ 
+							 prev_category_id =  setting.setting_category_id;
+						%>
+							</fieldset>
+						<%}%>
+						
+					<% }); %>
+					  <div class="form-group">
+						<label for="submit2" class="sr-only col-sm-4 control-label col-xs-12">submit</label>
+						<div class="col-sm-8">
+						<input type="submit" value="Submit" id="submit2" class="btn btn-primary">
+						</div>
+					  </div>
+					</form>
+					<% } %>
+				</div>
+		<% 
+					j++;
+				});
+			} 
+		%>				
+		</div>
+	</div>
+  </div>
+</section>
+<!-- Main block end -->

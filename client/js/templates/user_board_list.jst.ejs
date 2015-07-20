@@ -1,0 +1,20 @@
+<% 	
+	var style = '';		
+	if (user_board.attributes.background_picture_url) {
+		var background_picture_url = user_board.attributes.background_picture_url.replace("_XXXX.jpg", "_s.jpg");
+		style = 'background-image:url(' + background_picture_url + ');background-size:cover;';
+	} else if (user_board.attributes.background_pattern_url) {
+		background_pattern_url = user_board.attributes.background_pattern_url.replace("_XXXX.jpg", "_s.jpg");
+		style = 'background-image:url(' + background_pattern_url + ');background-size:cover;';
+	} else if (user_board.attributes.background_color){
+		style = 'background-color:' + user_board.attributes.background_color + ';color:#ffffff;';
+	} else {
+		style = '';
+	}
+%>
+<a href="#/board/<%- user_board.attributes.board_id%>">
+	<span style="<%= style %>" class="preview-thumbnail"></span>
+	<span class="details navbar-btn">
+		<span title="<%- user_board.attributes.name %>" class="board-list-item-name navbar-btn"><%- user_board.attributes.name %></span>
+	</span> 
+</a> 

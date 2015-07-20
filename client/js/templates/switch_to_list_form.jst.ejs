@@ -1,0 +1,30 @@
+<thead>
+	<tr>
+		<th>
+			<ul class="list-inline navbar-btn clearfix">	
+				<li class="col-md-1 col-xs-2"><a class="js-sort-by show" title="ID" href="#" data-sort-by="id"><span class="icon-caret-down"></span>ID</a></li>
+				<li class="col-md-4 col-xs-3"><a class="js-sort-by show" title="Card Name" href="#" data-sort-by="name"><span class="icon-caret-down hide"></span>Card Name</a></li>
+				<li class="col-md-4 col-xs-3"><a class="js-sort-by show" title="List Name" href="#" data-sort-by="list_name"><span class="icon-caret-down hide"></span>List Name</a></li>
+				<li class="col-md-3 col-xs-4"></li>
+				<li class="col-md-1 col-xs-2"> <div class="js-dropdown dropdown  docmodal-submenu row">
+					  <a data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle show" href="#"> <i class="icon-cog h3"></i></a>
+					  <ul role="menu" class="dropdown-menu arrow">
+						 <li class="text-center text-muted"><strong>Sort</strong></li>
+						 <li class="divider"></li>
+						 <li><a title="Voters" href="#" class="js-sort-by" data-sort-by="card_voter_count">Voters</a></li>
+						 <li><a title="Attachment" href="#" class="js-sort-by" data-sort-by="attachment_count">Attachment</a></li>
+						 <li><a title="Comment" href="#" class="js-sort-by" data-sort-by="Comment">Comment</a>
+						 </li>
+						 <li><a title="checklist pending" href="#" class="js-sort-by" data-sort-by="checklist_item_count">Checklist pending count</a>
+						 </li>
+						 <li><a title="checklist completed count" href="#" class="js-sort-by" data-sort-by="checklist_item_completed_count">Checklist completed count</a>
+						 </li>
+					  </ul>
+					</div>
+				</li>
+            </ul>
+		</th>
+	<tr>
+</thead>
+<tbody class="js-card-list-view-<%- board.id%>"></tbody>
+

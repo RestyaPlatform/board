@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+ <head>
+  <meta charset="utf-8">
+  <title>Restyaboard | Home</title>
+  <meta name="description" content="Trello like kanban board. Based on Restya platform.">
+  <meta name="keywords" content="Trello clone, Asana, Trac, Basecamp, Project management.">
+  <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.1/html5shiv.js"></script><![endif]-->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+  <!-- build:css css/default.cache.css -->
+  <link rel="stylesheet" type="text/css" href="css/fullcalendar.css">
+  <link rel="stylesheet" type="text/css" href="css/flag.css">
+  <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+  <link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.min.css">
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="css/jquery.dockmodal.css">
+  <link rel="stylesheet" type="text/css" href="css/select2-bootstrap.css">
+  <!-- endbuild -->
+  <link id="favicon" rel="shortcut icon" href="img/favicon.ico">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="img/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="img/apple-touch-icon-114x114.png">
+ </head>
+ <body style="cursor: auto">
+  <div id="main" class="content">
+   <div class="wrapper">
+    <header id="header" class="clearfix"></header>
+    <main id="content" class="container-fluid"></main>
+   </div>
+   <footer id="footer" class="navbar navbar-default navbar-fixed-bottom container-fluid"></footer>
+  </div>
+  <script>
+  var api_url = '/api/v1/';
+  var template_url = '/client/';
+  </script>
+  <!-- build:js js/default.cache.js -->
+  <script src="js/libs/jquery-1.8.3.js"></script>
+  <script src="js/libs/jquery-ui-1.8.23.js"></script>
+  <script src="js/libs/jquery.timeago.js"></script>
+  <script src="js/libs/jquery.drawDoughnutChart.js"></script>
+  <script src="js/libs/underscore.js"></script>
+  <script src="js/libs/backbone.js"></script>
+  <script src="js/libs/backbone.stickit.js"></script>
+  <script src="js/libs/backbone.dualstorage.js"></script>
+  <script src="js/libs/affix.js"></script>
+  <script src="js/libs/bootstrap-twipsy.js"></script>
+  <script src="js/libs/bootstrap-tooltip.js"></script>
+  <script src="js/libs/bootstrap-popover.js"></script>
+  <script src="js/libs/bootstrap-dropdown.js"></script>
+  <script src="js/libs/bootstrap-datetimepicker.min.js"></script>
+  <script src="js/libs/bootstrap-collapse.js"></script>
+  <script src="js/libs/bootstrap-alert.js"></script>
+  <script src="js/libs/bootstrap-transition.js"></script>
+  <script src="js/libs/bootstrap-tab.js"></script>
+  <script src="js/libs/bootstrap-modal.js"></script>
+  <script src="js/libs/md5.js"></script>
+  <script src="js/libs/select2.js"></script>
+  <script src="js/libs/ImageSelect.jquery.js"></script>
+  <script src="js/libs/date.format.js"></script>
+  <script src="js/libs/i18n.js"></script>
+  <script src="js/libs/jquery.gritter.min.js"></script>
+  <script src="js/libs/jquery.scrollTo-min.js"></script>
+  <script src="js/libs/jquery.dockmodal.js"></script>
+  <script src="js/libs/Markdown.Converter.js"></script>
+  <script src="js/libs/tag-it.js"></script>
+  <script src="js/libs/jquery.iframe-transport.js"></script>
+  <script src="js/libs/showdown.js"></script>
+  <script src="js/libs/fullcalendar.min.js"></script>
+  <script src="js/libs/load-image.min.js"></script>
+  <script src="js/libs/tmpl.min.js"></script>
+  <script src="js/libs/jquery.ui.widget.js"></script>
+  <script src="js/libs/jquery.fileupload.js"></script>
+  <script src="js/libs/jquery.fileupload-process.js"></script>
+  <script src="js/libs/jquery.fileupload-image.js"></script>
+  <script src="js/libs/jquery.fileupload-validate.js"></script>
+  <script src="js/libs/jquery.bootstrap-growl.js"></script>
+  <script src="js/libs/backbone.defered-view-loader.js"></script>
+  <script src="js/libs/backbone.upload-manager.js"></script>
+  <script src="js/libs/locale.js"></script>
+  <script src="js/libs/splitter.js"></script>
+  <script src="js/libs/musical.js"></script>
+  <script src="js/libs/favico-0.3.8.min.js"></script>
+  <script src="js/models/oauth.js"></script>
+  <script src="js/models/user.js"></script>
+  <script src="js/models/board.js"></script>
+  <script src="js/models/boards_subscriber.js"></script>
+  <script src="js/models/list.js"></script>
+  <script src="js/models/flickr.js"></script>
+  <script src="js/models/organization.js"></script>
+  <script src="js/models/list_subscriber.js"></script>
+  <script src="js/models/card.js"></script>
+  <script src="js/models/organizations_user.js"></script>
+  <script src="js/models/boards_user.js"></script>
+  <script src="js/models/activity.js"></script>
+  <script src="js/models/card_voter.js"></script>
+  <script src="js/models/card_subscriber.js"></script>
+  <script src="js/models/card_attachment.js"></script>
+  <script src="js/models/label.js"></script>
+  <script src="js/models/checklist.js"></script>
+  <script src="js/models/checklist_item.js"></script>
+  <script src="js/models/card_user.js"></script>
+  <script src="js/models/elasticsearch.js"></script>
+  <script src="js/models/workflow_template.js"></script>
+  <script src="js/models/acl.js"></script>
+  <script src="js/models/role.js"></script>
+  <script src="js/models/role_setting.js"></script>
+  <script src="js/models/setting_category.js"></script>
+  <script src="js/models/boards_star.js"></script>
+  <script src="js/models/instant_card_add.js"></script>
+  <script src="js/models/email_template.js"></script>
+  <script src="js/collections/user_collection.js"></script>
+  <script src="js/collections/attachment_collection.js"></script>
+  <script src="js/collections/list_collection.js"></script>
+  <script src="js/collections/flickr_collection.js"></script>
+  <script src="js/collections/organization_collection.js"></script>
+  <script src="js/collections/organizations_user_collection.js"></script>
+  <script src="js/collections/boards_user_collection.js"></script>
+  <script src="js/collections/activity_collection.js"></script>
+  <script src="js/collections/board_subscriber_collection.js"></script>
+  <script src="js/collections/card_collection.js"></script>
+  <script src="js/collections/board_collection.js"></script>
+  <script src="js/collections/card_attachment_collection.js"></script>
+  <script src="js/collections/card_label_collection.js"></script>
+  <script src="js/collections/card_position_collection.js"></script>
+  <script src="js/collections/card_checklist_collection.js"></script>
+  <script src="js/collections/checklist_item_collection.js"></script>
+  <script src="js/collections/card_voter_collection.js"></script>
+  <script src="js/collections/elasticsearch_collection.js"></script>
+  <script src="js/collections/workflow_template_collection.js"></script>
+  <script src="js/collections/list_subscriber_collection.js"></script>
+  <script src="js/collections/card_subscriber_collection.js"></script>
+  <script src="js/collections/card_user_collection.js"></script>
+  <script src="js/collections/acl_collection.js"></script>
+  <script src="js/collections/role_collection.js"></script>
+  <script src="js/collections/setting_category_collection.js"></script>
+  <script src="js/collections/board_star_collection.js"></script>
+  <script src="js/collections/email_template_collection.js"></script>
+  <script src="js/collections/role_settings_collection.js"></script>
+  <script src="js/templates/templates.js"></script>
+  <script src="js/views/application_view.js"></script>
+  <script src="js/views/admin_user_add_view.js"></script>
+  <script src="js/views/register_view.js"></script>
+  <script src="js/views/login_view.js"></script>
+  <script src="js/views/list_view.js"></script>
+  <script src="js/views/activity_view.js"></script>
+  <script src="js/views/board_view.js"></script>
+  <script src="js/views/header_view.js"></script>
+  <script src="js/views/footer_view.js"></script>
+  <script src="js/views/boards_index_view.js"></script>
+  <script src="js/views/users_forgot_password_view.js"></script>
+  <script src="js/views/users_activation_view.js"></script>
+  <script src="js/views/users_change_password_view.js"></script>
+  <script src="js/views/organization_view.js"></script>
+  <script src="js/views/organizations_user_view.js"></script>
+  <script src="js/views/boards_user_view.js"></script>
+  <script src="js/views/chat_view.js"></script>
+  <script src="js/views/card_view.js"></script>
+  <script src="js/views/modal_card_view.js"></script>
+  <script src="js/views/modal_list_view.js"></script>
+  <script src="js/views/modal_board_view.js"></script>
+  <script src="js/views/attachment_view.js"></script>
+  <script src="js/views/card_attachment_view.js"></script>
+  <script src="js/views/card_label_view.js"></script>
+  <script src="js/views/card_checklist_view.js"></script>
+  <script src="js/views/card_checklist_item_view.js"></script>
+  <script src="js/views/user_view.js"></script>
+  <script src="js/views/user_index_view.js"></script>
+  <script src="js/views/board_simple_view.js"></script>
+  <script src="js/views/instant_card_add_view.js"></script>
+  <script src="js/views/role_index_view.js"></script>
+  <script src="js/views/role_settings_view.js"></script>
+  <script src="js/views/user_cards_view.js"></script>
+  <script src="js/views/user_activity_menu_view.js"></script>
+  <script src="js/views/user_boards_listing_menu_view.js"></script>
+  <script src="js/views/user_search_result_view.js"></script>
+  <script src="js/views/organization_visibility_form_view.js"></script>
+  <script src="js/views/organization_member_permission_form_view.js"></script>
+  <script src="js/views/organization_member_remove_form_view.js"></script>
+  <script src="js/views/organization_member_confirm_remove_form_view.js"></script>
+  <script src="js/views/attachment_delete_confirm_form_view.js"></script>
+  <script src="js/views/attachment_delete_confirm_form_view.js"></script>
+  <script src="js/views/board_organization_form_view.js"></script>
+  <script src="js/views/board_custom_background_view.js"></script>
+  <script src="js/views/board_sidebar_view.js"></script>
+  <script src="js/views/archived_items_view.js"></script>
+  <script src="js/views/board_background_view.js"></script>
+  <script src="js/views/board_filter_view.js"></script>
+  <script src="js/views/board_user_activity_view.js"></script>
+  <script src="js/views/board_user_remove_confirm_view.js"></script>
+  <script src="js/views/card_copy_view.js"></script>
+  <script src="js/views/list_archive_confirm_view.js"></script>
+  <script src="js/views/list_cards_archive_confirm_view.js"></script>
+  <script src="js/views/move_cards_from_list_view.js"></script>
+  <script src="js/views/move_list_view.js"></script>
+  <script src="js/views/copy_list_view.js"></script>
+  <script src="js/views/list_delete_confirm_view.js"></script>
+  <script src="js/views/list_actions_view.js"></script>
+  <script src="js/views/card_labels_form_view.js"></script>
+  <script src="js/views/card_positions_form_view.js"></script>
+  <script src="js/views/card_member_form_view.js"></script>
+  <script src="js/views/card_actions_view.js"></script>
+  <script src="js/views/activity_user_add_search_result_view.js"></script>
+  <script src="js/views/card_voters_list_view.js"></script>
+  <script src="js/views/activity_delete_confirm_view.js"></script>
+  <script src="js/views/edit_activity_form_view.js"></script>
+  <script src="js/views/activity_reply_form_view.js"></script>
+  <script src="js/views/activity_add_form_view.js"></script>
+  <script src="js/views/card_duedate_from_view.js"></script>
+  <script src="js/views/card_label_form_view.js"></script>
+  <script src="js/views/card_search_result_view.js"></script>
+  <script src="js/views/copy_from_existing_card_view.js"></script>
+  <script src="js/views/move_card_view.js"></script>
+  <script src="js/views/copy_card_view.js"></script>
+  <script src="js/views/activity_card_search_view.js"></script>
+  <script src="js/views/checklist_add_form_view.js"></script>
+  <script src="js/views/modal_card_member_form_view.js"></script>
+  <script src="js/views/card_search_users_result_view.js"></script>
+  <script src="js/views/notification_menu_view.js"></script>
+  <script src="js/views/organization_add_view.js"></script>
+  <script src="js/views/board_add_view.js"></script>
+  <script src="js/views/organizations_board_form_view.js"></script>
+  <script src="js/views/user_cards_view.js"></script>
+  <script src="js/views/checklist_item_add_form_view.js"></script>
+  <script src="js/views/checklist_delete_confirm_form_view.js"></script>
+  <script src="js/views/checklist_actions_view.js"></script>
+  <script src="js/views/checklist_item_actions_view.js"></script>
+  <script src="js/views/checklist_item_delete_confirm_form_view.js"></script>
+  <script src="js/views/checklist_item_edit_form_view.js"></script>
+  <script src="js/views/checklist_item_add_link_view.js"></script>
+  <script src="js/views/checklist_edit_form_view.js"></script>
+  <script src="js/views/attachment_delete_confirm_view.js"></script>
+  <script src="js/views/setting_view.js"></script>
+  <script src="js/views/instant_card_add_labels_form_view.js"></script>
+  <script src="js/views/instant_card_add_members_form_view.js"></script>
+  <script src="js/views/switch_to_list_form_view.js"></script>
+  <script src="js/views/user_activity_menu_view.js"></script>
+  <script src="js/views/user_board_list_view.js"></script>
+  <script src="js/views/archived_lists_view.js"></script>
+  <script src="js/views/archived_list_view.js"></script>
+  <script src="js/views/archived_cards_view.js"></script>
+  <script src="js/views/archived_card_view.js"></script>
+  <script src="js/views/edit_board_member_permission_to_normal_view.js"></script>
+  <script src="js/views/copy_board_visibility_view.js"></script>
+  <script src="js/views/show_all_visibility_view.js"></script>
+  <script src="js/views/show_board_member_permission_form_view.js"></script>
+  <script src="js/views/show_board_visibility_view.js"></script>
+  <script src="js/views/show_search_message_view.js"></script>
+  <script src="js/views/search_result_view.js"></script>
+  <script src="js/views/show_search_boards_view.js"></script>
+  <script src="js/views/search_board_subscribe_view.js"></script>
+  <script src="js/views/show_boards_list_view.js"></script>
+  <script src="js/views/my_boards_listing_view.js"></script>
+  <script src="js/views/started_boards_listing_view.js"></script>
+  <script src="js/views/closed_boards_listing_view.js"></script>
+  <script src="js/views/board_additional_setting_view.js"></script>
+  <script src="js/views/select_board_visibility_view.js"></script>
+  <script src="js/views/board_visibility_view.js"></script>
+  <script src="js/views/board_add_organization_form_view.js"></script>
+  <script src="js/views/board_member_add_search_result_view.js"></script>
+  <script src="js/views/checklist_item_mention_member_view.js"></script>
+  <script src="js/views/checklist_item_mention_member_search_form_view.js"></script>
+  <script src="js/views/organization_board_view.js"></script>
+  <script src="js/views/user_boards_listing_menu_view.js"></script>
+  <script src="js/views/board_user_actions_view.js"></script>
+  <script src="js/views/modal_user_activities_list_view.js"></script>
+  <script src="js/views/organizations_lists_view.js"></script>
+  <script src="js/views/organizations_list_view.js"></script>
+  <script src="js/views/email_template_view.js"></script>
+  <script src="js/views/user_activity_view.js"></script>
+  <script src="js/views/user_index_container_view.js"></script>
+  <script src="js/views/selected_board_visibility_view.js"></script>
+  <script src="js/views/modal_activity_view.js"></script>
+  <script src="js/views/modal_flickr_photo_view.js"></script>
+  <script src="js/views/modal_music_view.js"></script>
+  <script src="js/views/flickr_view.js"></script>
+  <script src="js/views/board_404_view.js"></script>
+  <script src="js/views/organization_header_view.js"></script>
+  <script src="js/views/user_view_header_view.js"></script>
+  <script src="js/views/organizations_lists_header_view.js"></script>
+  <script src="js/views/board_header_view.js"></script>
+  <script src="js/views/starred_boards_index_view.js"></script>
+  <script src="js/views/organization_delete_form_view.js"></script>
+  <script src="js/views/error_404_view.js"></script>
+  <script src="js/views/board_index_header_view.js"></script>
+  <script src="js/views/about_us_view.js"></script>
+  <script src="js/views/closed_boards_index_view.js"></script>
+  <script src="js/views/activity_index_view.js"></script>
+  <script src="js/views/admin_activity_index_view.js"></script>
+  <script src="js/views/show_sync_google_calendar_view.js"></script>
+  <script src="js/views/show_copy_board_view.js"></script>
+  <script src="js/views/music_repeat_view.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/application.js"></script>
+  <!-- endbuild -->
+ </body>
+</html>

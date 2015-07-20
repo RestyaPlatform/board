@@ -1,0 +1,199 @@
+<ul class="nav nav-pills pull-left"> 
+  <li>
+  	<a href="#/about" title="<%- SITE_NAME %>"><img src="img/logo-icon.png" alt="[Images: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" id="js-footer-brand-img" /></a>
+	<!-- Todo: quick fix. load image before offline. call after when goes offline--->
+	<img src="img/logo-icon-offline.png" alt="[Images: <%- SITE_NAME %>]" style="display:none;" />
+  </li>
+  <% if(!_.isUndefined(authuser.user)){%>
+	<li>
+		<% if(board_id !== undefined && board_id !== null && board_id !== "" && !_.isEmpty(this.music_content) && this.music_content !== ''){ %>
+			<% if(authuser.user.is_productivity_beats === true || authuser.user.is_productivity_beats === 't') { %>
+				<a href="#" data-toggle="tooltip" data-placement="top" data-original-title="Productivity Beats - <%- this.music_name %>" title="Productivity Beats - <%- this.music_name %>" class="animation btn btn-default js-product-beat-action" data-type='on'>
+				<span><i class="icon-volume-up lead show tada-animation"></i></span>
+				</a>
+			<% } else { %>
+				<a href="#" data-toggle="tooltip" data-placement="top" data-original-title="Productivity Beats - <%- this.music_name %>" title="Productivity Beats - <%- this.music_name %>" class="animation btn btn-default js-product-beat-action" data-type='off'>
+				<span><i class="icon-volume-off lead show text-muted"></i></span>
+				</a>
+			<% } %>
+		<% } %>
+	</li> 
+	<% } else { %>
+	<li>
+		<% if(board_id !== undefined && board_id !== null && board_id !== "" && !_.isEmpty(this.music_content) && this.music_content !== ''){ %>
+			<% if(window.sessionStorage.getItem('music_play') === "1") { %>
+				<a href="#" data-toggle="tooltip" data-placement="top" data-original-title="Productivity Beats - <%- this.music_name %>" title="Productivity Beats - <%- this.music_name %>" class="animation btn btn-default js-product-beat-action" data-type='on'>
+				<span><i class="icon-volume-up lead show"></i></span>
+				</a>
+			<% } else { %>
+				<a href="#" data-toggle="tooltip" data-placement="top" data-original-title="Productivity Beats - <%- this.music_name %>" title="Productivity Beats - <%- this.music_name %>" class="animation btn btn-default js-product-beat-action" data-type='off'>
+				<span><i class="icon-volume-off lead show text-muted"></i></span>
+				</a>
+			<% } %>
+		<% } %>
+	</li> 
+	
+	<% }%>
+ <% if(!_.isUndefined(authuser.user)){%>	
+  <% if(!_.isEmpty(role_links.where({slug: "view_board_listing"}))){ %>
+  <li class="dropdown"> 
+	  <a title="Dashboard" href="#" data-toggle="dropdown" class="btn btn-default js-show-boards-list"><span class="hidden-xs">Boards </span><span><i class="icon-collapse"></i></span> </a>
+	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12 js-show-add-boards-list">
+	  	 <li class="js-show-boards-list-response"></li>
+		 <li class="clearfix js-qsearch-container js-boards-list-container">
+			<div class="clearfix h6 col-xs-12">
+				<input type="text" placeholder="Find boards by name..." class="js-search-boards form-control" id="inputBoardSearch">
+			</div>
+		 </li>
+		 
+		 <li class="divider"></li>
+		 <%
+			if (!_.isEmpty(role_links.where({
+				slug: "view_closed_boards"
+			}))) {
+		%>
+			<li class="clearfix js-closed-board-list dropdown dropdown-submenu dropdown js-boards-list-container-search">            
+				<a href="#" class="js-board-dropdown dropdown-toggle js-open-popover" data-toggle="dropdown" title="Closed Boards">Closed Boards</a>
+				<ul class="sidebar-boards-list js-closedboard-list  list-unstyled list-group dropdown-menu"></ul>
+				</li>
+		<%
+			}
+			if (!_.isEmpty(role_links.where({
+				slug: "view_stared_boards"
+			}))) {
+		%>
+			<li class="clearfix js-board-dropdown js-stared-board-lists dropdown-submenu dropdown js-boards-list-container-search">            
+					<a href="#" class="dropdown-toggle js-open-popover" data-toggle="dropdown" title="Starred Boards">Starred Boards</a>				
+					<ul class="sidebar-boards-list js-board-starred-list list-unstyled list-group dropdown-menu"></ul>			
+				</li>
+		<%
+			}
+
+			if (!_.isEmpty(role_links.where({
+				slug: "view_my_boards"
+			}))) {
+		%>
+				<li class="clearfix js-my-board-lists dropdown-submenu dropdown js-boards-list-container-search">			
+					<a href="#" class="js-board-dropdown dropdown-toggle js-open-popover" data-toggle="dropdown" title="My Boards">My Boards</a>
+					<ul class="sidebar-boards-list js-myboard-list list-unstyled list-group dropdown-menu"></ul>			
+				</li>
+		<%
+			} 		
+		%>
+			<li class="clearfix js-boards-list-container-search">            
+			<a href="#/" title="Boards">Boards</a>
+			</li>
+		<%
+
+			if (!_.isEmpty(role_links.where({
+				slug: "add_board"
+			})) || !_.isEmpty(role_links.where({
+				slug: "add_organization"
+			}))) {
+		%>		
+			<li class="divider js-boards-list-container-search"></li>
+			<li class="js-boards-list-container-search dropdown clearfix">
+				<a title="Add Board or Organization" class="dropdown-toggle js-show-organizations-board-from btn btn-link" data-toggle="dropdown" href="#"><span class="pull-left"><i class="icon-plus"></i></span> Add Board or Organization</a><ul role="menu" class="dropdown-menu dropdown-menu-right js-show-organizations-board-from-response js-dropdown-popup navbar-btn"></ul>
+				</li>
+		<%   
+			 }
+		%>
+	  </ul>
+	</li>
+  <% } %>
+  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user) && (!_.isEmpty(role_links.where({slug: "view_organization_listing"})))){ %>
+  <li><a title="Organizations" href="#/organizations" class="btn btn-default"><span class="hidden-xs">Organizations</span><span class="visible-xs"><i class="icon-group"></i></span></a></li>
+   <% } %>	
+   <% } %>	
+</ul>
+<% if(!_.isUndefined(authuser.user)){%>
+<div class="col-xs-push-0 col-sm-push-0 col-md-push-0 col-lg-push-1 col-lg-4 col-md-4 col-sm-2 col-xs-3 hidden-xs">
+	<form role="form" class="search-container clearfix">
+	  <div class="form-group">
+		<input id="search-box" type="search" class="search-box pull-right form-control js-search search-box">
+		<label for="search-box" class="pull-right"><i class="icon-search btn btn-primary search-icon"></i></label>
+		<ul class="dropdown-menu">
+			<li class="js-show-search-result js-dropdown-popup dropdown-popup">
+			</li>
+		</ul>
+	  </div>
+	  <button type="submit" class="search-submit sr-only">Submit</button>
+	</form>
+</div>
+ <% } %>
+<div class="pull-right clearfix">
+	<ul class="nav nav-pills navbar-right">
+	<% if(!_.isUndefined(authuser.user)){%>
+	<% if(!_.isUndefined(authuser.user) &&  !_.isEmpty(model.user) && model.user.role_id == 1 && (!_.isEmpty(role_links.where({slug: "view_user_listing"})) || !_.isEmpty(role_links.where({slug: "setting_list"})) || !_.isEmpty(role_links.where({slug: "roles"})) || !_.isEmpty(role_links.where({slug: "view_email_template_listing"})) || !_.isEmpty(role_links.where({slug: "activities_listing"}))) ){ %>
+	  	<li><a title="Admin CP" class="btn btn-primary pull-right" href="#/activities"><span class="icon-user lead"></span><span class="hidden-xs">Admin</span></a></li>
+	  <% } %>
+	  <li class="dropdown">
+	   <a href="#" data-toggle="dropdown" class="dropdown-toggle btn btn-default" title="<%-model.user.username%>">
+	   		<span>
+			<% if(!_.isEmpty(model.user.profile_picture_path)){ 
+				var profile_picture_path = model.showImage('User', model.user.id, 'micro_thumb' );
+			%>
+				<img class="img-rounded" width="16" height="16" src="<%= profile_picture_path%>" alt="[Images: <%- model.user.username%>]" title="<%- model.user.username%>" />
+			<% }else{ %>
+				<i class="avatar avatar-color-194 avatar-sm"><%- model.user.initials%></i>
+			<% } %> 
+			</span>&nbsp; <b class="caret"></b>
+	   </a>
+		<ul class="dropdown-menu text-left js-change-avatar-form-response">
+			<li> <a title="Logout" href="#/users/logout">Logout</a> </li>			
+			<li class="divider"></li>
+			<% if(model.is_show_enable_notification === true) { %>
+				<li><a title="Enable Desktop Notification" href="#" class="js-enable-desktop-notification">Enable Desktop Notification</a></li>
+			<% } %>	
+			<% if(!_.isEmpty(role_links.where({slug: "user_changepassword"}))){ %>
+				<li><a title="Change Password" href="#/users/<%-model.user.id%>/changepassword">Change Password</a></li>
+			<% } %>
+		    <% if(!_.isEmpty(role_links.where({slug: "view_user"}))){ %>
+				<li><a title="Profile" href="#/user/<%-model.user.id%>">Profile</a></li>
+			<% } %>
+		</ul>
+	  </li>
+	  <li><a data-toggle="tooltip" data-placement="top" title="Chat" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-chat<% }%>" data-original-title="Chat"><i class="icon-comment lead"></i></a></li> 
+	  <% if(!_.isEmpty(role_links.where({slug: "add_card"}))){ %>
+	  	<li><a data-toggle="tooltip" data-placement="top" title="Instant add card" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-instant-card-from<% }%>" data-original-title="Add New"><i class="icon-plus-sign lead"></i></a></li>
+	  <% } %>
+	  <li class="dropdown notifications pull-right"><a data-toggle="dropdown" href="#" class="btn btn-default js-show-notification" title="Notifications"><sup class="badge notification-count hide" id="js-notification-count"></sup><i class="icon-bell lead"></i></a>
+		<div class="tabbable tabs-below dropdown-menu pull-right js-dropdown-popup" role="menu">
+		  <div class="tab-content bg-info clearfix">
+			  <div class="tab-pane js-all-activity-list notification-list vertical-scrollbar col-xs-12" id="all_">
+				<ul id="js-all-activities" class="list-unstyled"></ul>
+			  </div>
+			  <% if(!_.isEmpty(board_id)){ %>
+				  <div class="tab-pane js-boards-activity-list active notification-list vertical-scrollbar col-xs-12" id="board_">
+					<ul id="js-board-activities"  class="list-unstyled"></ul>
+				  </div>
+			  <% } %>
+				<% if(!_.isEmpty(board_id) && board_id !== 0 && board_id !== '0') { %>
+					<div class="text-center js-load-link" id="js-load-link1">
+						<a href="#" title="View all activity" id="js-notification-load-more" class="js-board-load-more btn btn-link">Load more activities</a>
+					</div>
+					<div class="text-center js-load-link hide" id="js-load-link2">
+						<a href="#" title="View all activity" id="js-notification-load-more-all" class="js-board-load-more-all btn btn-link">Load more activities</a>
+					</div>
+				<%} else { %>
+				<div class="text-center js-load-link" id="js-load-link">
+					<a href="#" title="View all activity" id="js-notification-load-more-all" class="js-all-load-more-all btn btn-link">Load more activities</a>
+				</div>
+				<% } %>
+			 </div>
+			<ul class="nav nav-tabs <% if(_.isEmpty(board_id)){ %>hide<% } %>">
+				<li><a href="#all_" data-toggle="tab" class="js-all-activities">All</a></li>
+				
+				<% if(!_.isEmpty(board_id) && board_id !== 0 && board_id !== '0'){ %>
+					<li class="active"><a href="#board_" data-toggle="tab" class="js-board-activities">In this board</a></li>
+				<% } %>
+			</ul>
+		</div>
+	  </li>
+	  <% }else{ %>
+	 <li class="<% if(Backbone.history.fragment.indexOf('users/register') != -1){%>active<%}%>"><a href="#/users/register" title="Register"><strong>Register</strong></a></li>
+	 <li class="<% if(Backbone.history.fragment.indexOf('users/login') != -1){%>active<%}%>"><a href="#/users/login" title="Login"><strong>Login</strong></a></li>
+	  <% } %>
+	</ul>
+</div>
+<div class="hidden-blocks hide js-hidden-blocks"></div>	

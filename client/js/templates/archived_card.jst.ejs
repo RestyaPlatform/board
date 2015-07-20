@@ -1,0 +1,5 @@
+<% if(card != null){ %>
+<a href="#/card/<%- card.attributes.id%>" class="highlight-icon pull-left"><%-card.attributes.name%></a><div class="pull-right"><a title="Send to board" class="js-send-card-to-board <% if (!_.isEmpty(role_links.where({slug: 'add_organization'}))) {%>send_back_to_archived_card <%}%>" data-card_id="<%-card.attributes.id%>"><i class="icon-reply"></i></a> <a class="js-delete-archived-card" data-card_id="<%-card.attributes.id%>" title="Delete"><i class="icon-remove btn btn-link"></i></a></div>
+<% }else{ %>
+	No cards available.
+<%}%>

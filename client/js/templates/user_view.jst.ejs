@@ -1,0 +1,89 @@
+<!-- Main block start -->
+<section class="clearfix row">
+	<div class="col-xs-12">
+		<div class="clearfix">
+			<ul class="nav nav-tabs no-bor h3">
+				<li <% if (_.isUndefined(type) || type == 'profile') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/profile"  >Profile</a></li>
+				<% if(!_.isEmpty(role_links.where({slug: "view_user_cards"}))){ %>
+					<li  <% if (!_.isUndefined(type) && type == 'cards') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/cards" >Cards</a></li>
+				<% } %>
+				<% if(!_.isEmpty(role_links.where({slug: "edit_user_details"}))){ %>
+					<li <% if (!_.isUndefined(type) && type == 'settings') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/settings" >Settings</a></li>
+				<% } %>
+			</ul>
+		</div>
+		<div class="row">
+			<div class="tab-content">
+				<% if (!_.isEmpty(role_links.where({slug: "view_user_activities"}))) { %>
+					<div class="modal-body tab-pane <% if (_.isUndefined(type) || type == 'profile') { %>active<%}%>" id="profile">
+						<div id="js-user-activites"></div>
+						<span class="btn btn-primary hide" id="js-user-activites-load-more">Load more activities</span>
+					</div>
+				<% } %>
+				<% if(!_.isEmpty(role_links.where({slug: "view_user_cards"}))){ %>
+					<div class="modal-body tab-pane <% if (!_.isUndefined(type) && type == 'cards') { %>active<%}%>" id="cards"></div>
+				<% } %>
+				<% if(!_.isEmpty(role_links.where({slug: "edit_user_details"}))){ %>
+					<div class="modal-body tab-pane <% if (!_.isUndefined(type) && type == 'settings') { %>active<%}%>" id="settings">
+						<form class="form-horizontal clearfix pull-left js-user-profile-edit" role="form" enctype="multipart/form-data" id="js-user-profile-edit">
+							<div class="form-group">
+								<label for="inputFullName" class="col-sm-4 control-label">Full Name</label>
+								<div class="col-sm-8">
+									<input type="text" id="inputFullName" class="form-control" name="full_name" value="<%- user.attributes.full_name %>" maxlength="50">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="AboutMe" class="col-sm-4 control-label">About Me</label>
+								<div class="col-sm-8">
+									<textarea class="form-control" id="AboutMe" rows="6" name="about_me"><%- user.attributes.about_me %></textarea>
+								</div>
+							</div>
+							<% if(!_.isUndefined(authuser.user) && authuser.user.role_id == 1){%>
+								<div class="form-group">
+									<label for="inputemail" class="col-sm-4 control-label">Email</label>
+									<div class="col-sm-8">
+										<input type="email" id="inputemail" class="form-control" name="email" value="<%- user.attributes.email %>">
+									</div>
+								</div>
+							<% } %>
+							<div class="form-group required">
+								<label for="inputinitials" class="col-sm-4 control-label">Initials</label>
+								<div class="col-sm-8">
+									<input type="text" id="inputinitials" class="form-control initialism" name="initials" value="<%- user.attributes.initials.toUpperCase() %>" maxlength="2" required>
+								</div>
+							</div>
+							<% if(!_.isEmpty(role_links.where({slug: "add_user_profile_picture"}))){ %>
+								<div class="form-group" id="dropzone">
+									<label for="inputAttachment" class="col-sm-4 control-label sr-only">Upload Avatar</label>
+									<div class="col-xs-8">
+										<a data-placement="bottom" title="<%- user.attributes.username%>" data-toggle="tooltip" href="#" class="avatar-option js-use-uploaded-avatar drag-box navbar-left"> 
+											<% if(!_.isEmpty(user.attributes.profile_picture_path) && user.attributes.profile_picture_path != 'NULL') { 
+												var profile_picture_path = user.showImage('User', user.attributes.id, 'small_thumb' ) +'?'+ new Date().getTime();
+											%>
+												<span class="js-remove-image  profile-block show"><i class="icon icon-remove close-block cur h6"></i></span>
+												<img src="<%- profile_picture_path %>" width="50" height="50" clas="js-user-avatar">
+											<% } else {%>
+												<i class="avatar avatar-color-194 avatar-md img-rounded"><%- user.attributes.initials %></i>									
+											<% } %>
+										</a>
+										<span class="clearfix navbar-btn"><span id="dropzone-cssloader" ></span></span>
+								  <div class="clearfix" id="manager-area"></div>
+									</div>
+								</div>
+								</span>
+								</span>
+							<% } %>
+							<div class="col-xs-9 pull-right clearfix">
+								<div class="form-group">
+									<label for="submit2" class="col-sm-1 control-label sr-only">submit</label>
+									<input type="submit" value="Submit" id="submit2" class="btn btn-primary btn-lg">
+								</div>
+							</div>
+						</form>
+					</div>
+				<% } %>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- Main block end -->

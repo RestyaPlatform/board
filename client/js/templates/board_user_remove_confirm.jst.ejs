@@ -1,0 +1,19 @@
+<li>
+	<div class="col-xs-12">
+		<h4>Remove Member?
+			<span class="pull-right">
+				<a class="js-close-popover" href="#"><i class="icon-remove"></i></a>
+			</span>
+		</h4>
+		<hr>
+	</div>
+	<div class="col-xs-12">
+		<form class="normal" name="BoardUserForm" id="BoardUserForm">
+			<div class="h5">Are you sure?</div>
+			<div class="submit">
+				<a class="js-delete-board-member" data-board_user_id="<%- board_user.attributes.id %>" href="#">
+				 Remove <%- board_user.attributes.username %> from <%- board_user.attributes.board_name %> Boards? The member will be removed from all cards on this board. 
+			</div>
+		</form>
+	</div>
+</li>	

@@ -1,0 +1,5 @@
+<% if(card != null){ %>
+<a title="<%- card.attributes.name %>" href="#" class="js-add-comment-card" data-board-id="<%- card.attributes.board_id %>" data-card-id="<%- card.id %>" data-card-name="<%- card.attributes.name %>"><span><%- card.attributes.name %></span></a>
+<%}else{%>
+No cards available.
+<%}%>

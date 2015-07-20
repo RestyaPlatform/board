@@ -1,0 +1,25 @@
+<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 col-lg-offset-4 col-md-offset-4 col-sm-offset-3">
+<div class="panel panel-default">
+  <div class="panel-heading lead">Add User</div>
+  <div class="panel-body well-lg">
+	<form id="AdminUserAddForm" name="AdminUserAddForm" class="form-horizontal col-xs-12">
+	  <div class="form-group required">
+		<label class="sr-only control-label" for="inputEmail">Email</label>
+		<input type="email" required name="email" id="inputEmail" class="form-control" placeholder="Email">
+	  </div>
+	  <div class="form-group required">
+		<label class="sr-only control-label" for="inputUsername">Username</label>
+		<input type="name" name="username" id="inputUsername" class="form-control" placeholder="Username" required pattern=".{6,15}" title="minimum 6 characters">
+	  </div>
+	  <div class="form-group required">
+		<label class="sr-only control-label" for="inputPassword">Password</label>
+		<input type="password" required name="password" id="inputPassword"class="form-control" placeholder="Password" pattern="[A-Za-z0-9\S]{6,15}" title="minimum 6 characters and white space not allowed">
+	  </div>
+	  <div class="form-group">
+		<label class="sr-only ontrol-label" for="submitAddUser">Join Now</label>
+		<input type="submit" class="btn btn-primary col-xs-12" id="submitAddUser" value="Add">
+	  </div>
+	</form>
+  </div>
+</div>
+</div>

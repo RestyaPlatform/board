@@ -1,0 +1,111 @@
+<% if(organization != null){ %>
+<td class="col-lg-5 col-md-3 col-sm-6 col-xs-5">
+	<div class="media">
+		<%
+			var logo_path = "img/default-organization.png";
+			if (!_.isUndefined(organization.attributes.logo_url) && organization.attributes.logo_url != null) {
+				logo_path = organization.showImage('Organization', organization.attributes.id, 'small_thumb' );
+			}
+		%>
+		<a data-placement="bottom" title="<%- organization.attributes.name %>" data-toggle="tooltip" class="pull-left" href="#/organization/<%- organization.attributes.id %>"> <img title="<%- organization.attributes.name %>" alt="[Images: <%- organization.attributes.name %>]" src="<%= logo_path %>" height="32" width="32" class="img-rounded"></a>
+		  <div class="media-body">
+		  	<div class="clearfix">
+				<a class="pull-left" href="#/organization/<%- organization.attributes.id %>"><h4 class="htruncate navbar-btn"><%- organization.attributes.name %></h4></a>
+			</div>
+			<% if(organization.attributes.description != ''){ %>
+			<div>
+				<p class="htruncate-l3"><%- organization.attributes.description%></p>
+			</div>
+			<%}%>
+		  </div>
+	</div>
+</td>
+<td class="text-right">
+<ul class="list-inline clearfix">
+	<li class="pull-right ">
+		<ul class="list-inline navbar-btn clearfix">
+			<li class="dropdown navbar-btn">
+				<a title="Members" class="btn btn-default <% if(organization.attributes.organizations_user_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.organizations_user_count != 0){ %>data-toggle="dropdown"<%}%>><%- organization.attributes.organizations_user_count%> Members</a>
+				<% if(organization.attributes.organizations_user_count != 0){ %>
+					<ul class="dropdown-menu arrow arrow-left  text-left" role="boards">
+						<% _.each(organization.attributes.organizations_users, function(organizations_user){%>
+							<li><a href="#/user/<%-organizations_user.user_id%>"><%-organizations_user.username%></a></li>
+						<%})%>
+					</ul>
+				<%}%>
+			</li>
+			<li class="dropdown navbar-btn">
+				<div class="checkbox-inline">
+					<a title="Boards" class="btn btn-default <% if(organization.attributes.board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.board_count != 0){ %>data-toggle="dropdown"<%}%>><%- organization.attributes.board_count%> Boards</a>
+					<% if(organization.attributes.board_count != 0){ %>
+						<ul class="dropdown-menu arrow arrow-right  text-left" role="boards">
+							<% _.each(organization.attributes.boards_listing, function(board){%>
+							<% 	
+								var style = '';		
+								if (board.background_picture_url) {
+									var background_picture_url = board.background_picture_url.replace("_XXXX.jpg", "_n.jpg");
+									style = 'background:url(' + background_picture_url + ') 25% 25%; background-size: cover';
+								} else if (board.background_pattern_url) {
+									var background_pattern_url = board.background_pattern_url.replace("_XXXX.jpg", "_n.jpg");
+									style = 'background:url(' + background_pattern_url + ') repeat scroll 0% 0%;';
+								} else if (board.background_color){
+									style = 'background-color:' + board.background_color;
+								} else {
+									style = '';
+								}
+							%>
+								<li>
+									<a href="#/board/<%-board.id%>">
+										<span style="<%= style %>" class="preview-thumbnail"></span>
+										<span class="details navbar-btn">
+											<span title="<%- board.name %>" class="board-list-item-name navbar-btn"><%- board.name %></span>
+										</span> 
+									</a>
+								</li>
+							<%})%>
+						</ul>
+					<%}%>
+				</div>
+			</li>
+			<li class="dropdown navbar-btn pull-right">
+				<a class="btn btn-primary dropdown-toggle js-show-confirm-delete-organization" data-organization_id="<%- organization.attributes.id %>" data-toggle="dropdown" href="#"><span><i class="icon-remove"></i></span><span>Remove</span></a>
+				<ul class="dropdown-menu dropdown-menu-right arrow arrow-right col-xs-12">
+					<li class="js-show-confirm-delete-organization-response js-dropdown-popup dropdown-popup"></li>
+				</ul>
+			</li>
+			</ul>
+		</li>
+		<li class="pull-right text-center">
+			<ul class="list-inline navbar-btn clearfix">
+				<li>
+					<dl class="clearfix text-center list-group-item-heading">
+						<dt>
+							<div class="btn-group navbar-btn list-activity"> <a href="#" class="btn btn-default js-no-action htruncate"><abbr class="timeago" title="<%- organization.attributes.modified %>"><%- organization.attributes.modified %></abbr></a> </div>
+						</dt>
+						<dd><h6 class="text-center h4 navbar-btn">Recent activity</h6></dd>
+					</dl></li>
+				<li>
+					<dl class="clearfix text-center list-group-item-heading">
+						<dt>
+							<div class="btn-group navbar-btn list-activity"> <a href="#" class="btn btn-default js-no-action  htruncate"><abbr class="timeago" title="<%- organization.attributes.created %>"><%- organization.attributes.created %></a> </div>
+						</dt>
+						<dd><h6 class="text-center h4 navbar-btn">Created</h6></dd>
+					</dl>
+				</li>
+				<li>
+					<dl class="clearfix text-center list-group-item-heading">
+						<dt>
+							<div class="btn-group navbar-btn list-activity"> <% if(organization.attributes.username != null){ %><a href="#/user/<%- organization.attributes.user_id %>" class="btn btn-default htruncate" title="<%- organization.attributes.username %>"><%- organization.attributes.username %></a><%}else{%>-<%}%></div>
+						</dt>
+						<dd><h6 class="text-center h4 navbar-btn">Owner</h6></dd>
+					</dl>
+				</li>
+			 </ul>
+		</li>
+	</ul>
+</td>
+<%}else{%>
+	<div class="alert alert-info">
+	No organizations available.
+	</div>
+<%}%>

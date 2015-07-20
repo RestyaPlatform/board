@@ -1,0 +1,45 @@
+<% if(board != null){	
+var style = '';
+if (board.attributes.background_picture_url) {
+	var background_picture_url = board.attributes.background_picture_url.replace("_XXXX.jpg", "_s.jpg");
+	style = 'background-image:url(' + background_picture_url + '); background-size:cover;';
+} else if (board.attributes.background_pattern_url) {
+	var background_pattern_url = board.attributes.background_pattern_url.replace("_XXXX.jpg", "_s.jpg");
+	style = 'background-image:url(' + background_pattern_url + '); background-size:cover;';
+} else if (board.attributes.background_color){
+	style = 'background-color:' + board.attributes.background_color + ';color:#ffffff;';
+} else {
+	style = '';
+}
+%>
+<span style="<%= style %>" class="preview-thumbnail"></span>
+	<span class="details navbar-btn">
+		<span title="<%- board.attributes.name %>" class="board-list-item-name navbar-btn"><%- board.attributes.name %></span>
+		<span class="pull-right hide js-stared-conatiner js-stared-conatiner-<%- board.attributes.board_id %>"></span>  
+	</span> 
+<div class="pull-right js-reopen-dropdown dropdown">
+	<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="btn btn-primary btn-xs">Reopen</span></a>
+	<ul class="dropdown-menu reopen-dropdownmenu arrow arrow-right">
+		<li class="js-visibility-popup js-dropdown-popup dropdown-popup">
+			<div class="clearfix text-center col-xs-12">
+				<span class="col-xs-10"><strong>Reopen Board</strong></span>					
+				<a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>					
+			</div>
+			<div class="col-xs-12 divider"></div>
+			<div class="col-xs-12">
+				<form class="normal" name="BoardReopenForm" >
+					<input name="is_closed" type="hidden" value="false">
+					<div class="h6 btn-block">Are you sure to "Reopen"?</div>
+					<div class="submit">
+						<span class="btn btn-primary btn-xs js-board-reopen">Reopen</span>
+					</div>
+				</form>
+			</div>
+		</li>
+	</ul>
+</div>	
+<% }else{ %>
+ <div class="alert alert-info">
+	No boards available.
+</div>
+<%}%>

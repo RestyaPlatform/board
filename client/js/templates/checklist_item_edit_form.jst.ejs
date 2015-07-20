@@ -1,0 +1,44 @@
+<div class="form-group required">
+	<label for="inputitemName" class="hide">Name</label>
+	<textarea rows="4" name="name" class="form-control"><%-checklist_item.get('name') %></textarea>
+</div>
+<div class="form-group">
+	<div class="col-xs-12 h4 btn-block clearfix">
+		<ul class="clearfix list-unstyled">
+			<li class="pull-left">
+				<div class="submit">
+					<input type="submit" value="Save" class="btn btn-primary"/>
+				</div>
+			</li>
+			<li class="pull-left">
+				<a class="js-hide-item-edit-form"><i class="icon-remove btn btn-link show"></i></a>
+			</li>
+			<li class="pull-right">
+				<ul class="list-unstyled">
+					<% if (!_.isEmpty(role_links.where({slug: "delete_checklist_item"}))) { %>
+					<li class="pull-right dropdown">
+						<a title="Delete" class="dropdown-toggle js-show-confirm-item-delete btn btn-link btn-sm" data-toggle="dropdown" href="#"><strong>Delete</strong></a>
+						<ul class="dropdown-menu arrow arrow-right">
+							<li class="js-dropdown-popup dropdown-popup" id="js-item-actions-response-<%-checklist_item.id %>"></li>
+						</ul>
+					</li>
+					<%  } %>
+					<%
+					if (!_.isEmpty(role_links.where({
+						slug: "convert_item_to_card"
+					}))) { %>
+						<li class="pull-right">
+							<a class="btn btn-link btn-sm pull-right js-convert-to-card" href="#" title="Convert to Card"><strong>Convert to Card</strong></a>
+						</li>
+				  <%  } %>
+					<li class="dropdown pull-right">
+						<a title="Item Options" class="dropdown-toggle js-show-item-options btn btn-link btn-sm" data-toggle="dropdown" href="#"><i class="icon-chevron-sign-down"></i></a>
+						<ul class="dropdown-menu arrow arrow-right">
+							<li class="js-dropdown-popup dropdown-popup" id="js-item-option-response-<%-checklist_item.id %>"></li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+</div>

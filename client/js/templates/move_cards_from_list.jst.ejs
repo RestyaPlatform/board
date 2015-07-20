@@ -1,0 +1,17 @@
+<% 
+	var list_li = '';
+	_.each(filtered_lists, function(filtered_list) {
+		 if (filtered_list.id == list.attributes.id) {
+			 list_li += '<li class="disabled navbar-btn"><a href="#" class="js-no-action text-muted">' + _.escape(filtered_list.attributes.name) + ' (Current)</a></li>';
+		 } else {
+			 list_li += '<li class="navbar-btn"><a href="#" class="js-move-cards js-close-popup" data-move-list-id="' + filtered_list.id + '">' + _.escape(filtered_list.attributes.name) + '</a></li>';
+		 }
+	 });
+%>
+<li class="clearfix text-center col-xs-12">
+	<div class="clearfix">
+	<a href="#" class="js-back-to-list-actions pull-left" data-list-id="<%- list.id%>"><i class="icon-caret-left"></i></a><span class="col-xs-10"><strong>Move All Cards in List</strong></span><a class="js-close-popup pull-right" href="#"><i class="icon-remove"></i></a>
+	</div>	
+</li>
+<li class="col-xs-12 divider"></li>
+<%= list_li%>

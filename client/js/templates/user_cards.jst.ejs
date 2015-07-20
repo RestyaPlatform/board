@@ -1,0 +1,66 @@
+<h3><a href="#/board/<%- card_user[0].attributes.board_id%>"><%- key %></a></h3>
+<div class="board-viewlist col-xs-12 table-responsive">
+	<table class="table">
+		<thead>
+			<tr>
+				<th>
+					<ul class="list-inline navbar-btn clearfix">	
+						<li class="col-md-1 col-xs-2">ID</li>
+						<li class="col-md-4 col-xs-3">Card Name</li>
+						<li class="col-md-4 col-xs-3">List Name</li>
+						<li class="col-md-3 col-xs-4"></li>                            
+					</ul>
+				</th>
+			</tr>
+		</thead>
+		<tbody class="js-card-list-view-11">
+	<% _.each(card_user, function(user_card) { %>
+			<tr>
+			<td>
+				<div class="panel cur" id="js-card-1449">
+					<div class="panel-body"> 
+						<ul class="list-inline navbar-btn clearfix">
+							<li class="col-md-1 col-xs-2"><span class="card-id">#<%- user_card.id%></span></li>
+							<li class="col-md-4 col-xs-3"><a href="#/board/<%- user_card.attributes.board_id%>/card/<%- user_card.attributes.id%>"><%- user_card.attributes.name %></a></li>
+							<li class="col-md-4 col-xs-3"><%- user_card.attributes.list_name %></li>
+							<li class="col-md-3 col-xs-4">
+								<ul class="list-inline text-muted clearfix">
+									<% if(user_card.attributes.cards_subscriber_count > 0){ %>
+										<li><small><span class="icon-eye-open"></span></small></li>
+									<% } %> 
+									<% if(user_card.attributes.card_voter_count > 0){ %>
+									<li><small><span class="icon-thumbs-up"></span><span><%- user_card.attributes.card_voter_count %></span></small></li>
+									<% } %>
+									<% if(user_card.attributes.comment_count > 0){ %>
+										<li><small><span class="icon-comment"></span><span><%- user_card.attributes.comment_count %></span></small></li>
+									<% } %>
+									<% if(!_.isEmpty(user_card.attributes.description)){ %>
+										<li><small><span class="icon-align-left"></span><span></span></small></li>
+									<% } %>
+									<% if(user_card.attributes.checklist_item_count > 0){ %>
+										<li><small><% if(user_card.attributes.checklist_item_completed_count == user_card.attributes.checklist_item_count) { %><div class="label label-success"> <% } %><span class="icon-list-ul"></span><span><%- user_card.attributes.checklist_item_completed_count %>/<%- user_card.attributes.checklist_item_count %></span><% if(user_card.attributes.checklist_item_completed_count == user_card.attributes.checklist_item_count) { %></div><% } %></small></li>
+									<% } %> 
+									<% if(user_card.attributes.due_date > 0){ %>
+										<li><small><span class="icon-time"></span><span><%- user_card.attributes.due_date %></span></small></li>
+									<% } %> 
+									<% if(user_card.attributes.attachment_count > 0){ %>
+										<li>
+											<small>
+												<span class="icon-paper-clip"></span>
+												<span>
+												<%- user_card.attributes.attachment_count %>
+												</span>
+											</small>
+										</li>
+									<% } %> 
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</td>
+		</tr>
+	<% }); %>
+	 </tbody>
+	</table>
+</div>

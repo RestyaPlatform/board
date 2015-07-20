@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Restyaboard | API Explorer</title>
+  <link id="favicon" rel="shortcut icon" href="img/favicon.ico" />
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="img/apple-touch-icon-72x72.png" />
+  <link rel="apple-touch-icon" sizes="114x114" href="img/apple-touch-icon-114x114.png" />
+  <link rel="logo" type="image/svg" href="img/logo.svg"/>
+  <link href='//fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'/>
+  <link href='css/highlight.default.css' media='screen' rel='stylesheet' type='text/css'/>
+  <link href='css/screen.css' media='screen' rel='stylesheet' type='text/css'/>
+  <script type="text/javascript" src="lib/shred.bundle.js"></script>
+  <script src='lib/jquery-1.8.0.min.js' type='text/javascript'></script>
+  <script src='lib/jquery.slideto.min.js' type='text/javascript'></script>
+  <script src='lib/jquery.wiggle.min.js' type='text/javascript'></script>
+  <script src='lib/jquery.ba-bbq.min.js' type='text/javascript'></script>
+  <script src='lib/handlebars-1.0.0.js' type='text/javascript'></script>
+  <script src='lib/underscore-min.js' type='text/javascript'></script>
+  <script src='lib/backbone-min.js' type='text/javascript'></script>
+  <script src='lib/swagger.js' type='text/javascript'></script>
+  <script src='swagger-ui.js' type='text/javascript'></script>
+  <script src='lib/highlight.7.3.pack.js' type='text/javascript'></script>
+  <script type="text/javascript">
+    $(function () {
+		var keyStr = 'ABCDEFGHIJKLMNOP' + 'QRSTUVWXYZabcdef' + 'ghijklmnopqrstuv' + 'wxyz0123456789+/' + '=';
+		function encode(input) {
+            var output = "";
+            var chr1,
+            chr2,
+            chr3 = "";
+            var enc1,
+            enc2,
+            enc3,
+            enc4 = "";
+            var i = 0;
+            do {
+                chr1 = input.charCodeAt(i ++ );
+                chr2 = input.charCodeAt(i ++ );
+                chr3 = input.charCodeAt(i ++ );
+                enc1 = chr1 >> 2;
+                enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+                enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+                enc4 = chr3 & 63;
+                if (isNaN(chr2)) {
+                    enc3 = enc4 = 64;
+                } else if (isNaN(chr3)) {
+                    enc4 = 64;
+                }
+                output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2) + keyStr.charAt(enc3) + keyStr.charAt(enc4);
+                chr1 = chr2 = chr3 = "";
+                enc1 = enc2 = enc3 = enc4 = "";
+            }
+            while (i < input.length);
+            return output;
+        }	
+	
+      window.swaggerUi = new SwaggerUi({
+      url: "/api_explorer/api-docs/",
+      dom_id: "swagger-ui-container",
+      supportedSubmitMethods: ['get', 'post', 'put', 'delete'],
+      onComplete: function(swaggerApi, swaggerUi){
+        if(console) {
+          console.log("Loaded SwaggerUI")
+        }
+        $('pre code').each(function(i, e) {hljs.highlightBlock(e)});
+      },
+      onFailure: function(data) {
+        if(console) {
+          console.log("Unable to Load SwaggerUI");
+          console.log(data);
+        }
+      },
+      docExpansion: "none"
+    });
+
+    $('#input_apiKey').change(function() {
+      var key = $('#input_apiKey')[0].value;
+      console.log("key: " + key);
+      if(key && key.trim() != "") {
+        console.log("added key " + key);
+		key = "Basic " + encode(key);
+	    window.authorizations.add("key", new ApiKeyAuthorization("Authorization", key, "header"));
+      }
+    });	
+	key = "Basic " + encode("0:9310fe729befa818361410932946360f16237c32");
+	window.authorizations.add("key", new ApiKeyAuthorization("Authorization", key, "header"));
+    window.swaggerUi.load();
+  });
+
+  </script>
+</head>
+
+<body>
+<div id='header'>
+  <div class="swagger-ui-wrap">
+    <a id="logo" href="/">Restyaboard</a>
+  </div>
+</div>
+
+<div id="message-bar" class="swagger-ui-wrap">
+  &nbsp;
+</div>
+
+<div id="swagger-ui-container" class="swagger-ui-wrap">
+
+</div>
+
+</body>
+
+</html>

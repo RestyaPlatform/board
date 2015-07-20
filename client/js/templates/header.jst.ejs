@@ -1,0 +1,143 @@
+<% if(_.isEmpty(current_param) || ((typeof(user) == "undefined" || (typeof(user) != "undefined" && user.role_id != 1)) || (current_param !== 'activities' && current_param !== 'users' && current_param !== 'roles' && current_param !== 'settings' && current_param !== 'email_templates'))){ %>
+<div id="js-navbar-default" class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+  <div class="col-xs-12 btn-block">
+	<div class="navbar-header">
+	  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+	  <h1 class="clearfix"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></h1>
+	</div>
+	<nav class="navbar-collapse collapse row">
+	  
+	  <%  if(typeof(user) == "undefined") { %>
+	  	<ul class="nav navbar-nav navbar-right text-center">
+	  	<%
+			if(!_.isEmpty(role_links.where({slug: "users_register"}))) {
+				if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") {
+		%>
+		<li class="<% if(Backbone.history.fragment.indexOf('users/register') != -1){%>active<%}%>"><a href="#/users/register" title="Register"><strong>Register</strong></a></li>
+		 <% 	
+				}
+		   }
+			if(!_.isEmpty(role_links.where({slug: "users_login"}))){
+		 %>
+		<li class="<% if(Backbone.history.fragment.indexOf('users/login') != -1){%>active<%}%>"><a href="#/users/login" title="Login"><strong>Login</strong></a></li>
+		 <%
+		 	}
+		 %>
+		 </ul>
+	 <% }else{ %>
+	 	<ul class="nav nav-pills navbar-right">
+			<li class="<%  var fragment = Backbone.history.fragment; var fragments = fragment.split('/'); if(fragment.indexOf('boards')  != -1 && fragments.length == 1){%>active<%}%> navbar-btn"><a href="#/boards" title="My Boards" class="text-muted initialism"><i class="icon-user"></i></a></li>
+            <li class="<% if(Backbone.history.fragment.indexOf('boards/closed') != -1){%>active<%}%> navbar-btn"><a href="#/boards/closed" title="Closed Boards" class="text-muted initialism"><i class="icon-th-large"></i></a></li>
+            <li class="<% if(Backbone.history.fragment.indexOf('boards/starred') != -1){%>active<%}%> navbar-btn"><a href="#/boards/starred" title="Starred Boards" class="text-muted initialism"><i class="icon-star"></i></a></li>
+        </ul>
+	 <% }%>
+	  
+	</nav>
+   </div>
+  </div>
+</div>
+<% } else if(typeof(user) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'roles' || current_param === 'settings' || current_param === 'email_templates')){ %>
+<% 
+	if(!_.isEmpty(current_param) && (current_param === 'activities')) {
+		current_title = 'Activities';
+	} else if(!_.isEmpty(current_param) && (current_param === 'users')){ 
+		current_title = 'Users';
+	} else if(!_.isEmpty(current_param) && (current_param === 'roles')){ 
+		current_title = 'Roles';
+	} else if(!_.isEmpty(current_param) && (current_param === 'settings')){ 
+		current_title = 'Settings';
+	} else if(!_.isEmpty(current_param) && (current_param === 'email_templates')){ 
+		current_title = 'Email Templates';
+	} 
+%>
+
+<div class="container-fluid bg-primary">
+<div class="navbar-header">
+	<button data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle" type="button"> 
+		<span class="sr-only">Toggle navigation</span> 
+		<span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> 
+	</button>
+  <div class="clearfix navbar-btn navbar-left">
+	<h1 class="navbar-left navbar-btn mob-no-mar clearfix"><div class="navbar-left"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"></a></div></h1>
+	<ul class="list-inline navbar-left h2 navbar-btn navbar-form whitec text-center hidden-xs">
+            <li class="navbar-btn "><span class="h5">/</span></li>
+            <li><span class="icon-user h3"></span><span class="h4"> Admin CP</span></li>
+            <li class="navbar-btn "><span class="h5">/</span></li>
+            <li id="js-navbar-header"><span class="h4"><%- current_title %></span></li>
+     </ul>
+	 <% if(!_.isEmpty(current_param) && (current_param === 'users')){ %>
+	 <div class="pull-left well-sm"> <div class="js-dropdown dropdown  docmodal-submenu row">
+              <a data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle btn btn-link label show" href="#"> <i class="icon-cog h3"></i></a>
+              <ul role="menu" class="dropdown-menu arrow">
+                 <li class="text-center text-muted"><strong>Sort</strong></li>
+                 <li class="divider"></li>
+                 <li><a title="Username" href="#" class="js-sort-by" data-field="username">Username</a></li>
+				 <li class="dropdown-submenu inner-dropdown dropdown"> <a href="#" title="Roles" data-toggle="dropdown" class="dropdown-toggle js-open-popover">Roles</a>
+                  <ul class="dropdown-menu">
+				    <li class="inner-dropdown dropdown">
+						<a title="Admin (<%- this.admin_board_users %>)" href="#" class="js-sort-by" data-field="role_id">Admin (<%- this.admin_board_users %>)</a>
+					</li>
+                    <li class="inner-dropdown dropdown">
+						<a title="User (<%- this.normal_board_users %>)" href="#" class="js-sort-by" data-field="role_id">User (<%- this.normal_board_users %>)</a>
+					</li>
+                  </ul>
+                </li>
+                <li class="dropdown-submenu inner-dropdown dropdown"> <a href="#" title="Login" data-toggle="dropdown" class="dropdown-toggle js-open-popover">Login</a>
+                  <ul class="dropdown-menu">
+                    <li class="inner-dropdown dropdown">
+						<a title="Login Time" href="#" class="js-sort-by" data-field="last_login_date">Time</a>
+					</li>
+                    <li class="inner-dropdown dropdown">
+						<a title="Login IP" href="#" class="js-sort-by" data-field="last_login_ip">IP</a>
+					</li>
+                  </ul>
+                </li>
+                <li class="dropdown-submenu inner-dropdown dropdown"> <a href="#" title="Registered" data-toggle="dropdown" class="dropdown-toggle js-open-popover">Registered</a>
+                  <ul class="dropdown-menu">
+                    <li class="inner-dropdown dropdown">
+						<a title="Time" href="#" class="js-sort-by" data-field="created">Time</a>
+					</li>
+                    <li>
+						<a title="Registered IP" href="#" class="js-sort-by" data-field="registered_ip">IP</a>
+					</li>
+                  </ul>
+                </li>
+                <li><a title="Organizations Count" href="#" class="js-sort-by" data-field="joined_organization_count">Organizations Count</a>
+				</li>
+                <li><a title="Board Count" href="#" class="js-sort-by" data-field="joined_board_count">Board Count</a>
+				</li>
+              </ul>
+            </div></div>
+				<% 
+				if(!_.isEmpty(role_links.where({slug: "users"}))) {
+					if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") { %>
+					<div class="pull-left well-sm"><a class="btn btn-link show label" href="#/users/admin_user_add" title="Add User"><i class="icon-plus-sign h3"></i><span class="h4">Add User</span></a></div>
+				<% } 
+				} %>
+			<% } %>
+	</div>
+	</div>
+	<nav class="navbar-collapse collapse">
+	<div class="navbar-right clearfix">
+		<ul class="nav nav-pills navbar-left">
+			<% if(!_.isEmpty(role_links.where({slug: "activities_listing"}))){ %>
+				<li class="js-admin-activity-menu navbar-btn"><a title="Activities" href="#/activities">Activities</a></li>
+			<% } %>		
+			<% if(!_.isEmpty(role_links.where({slug: "view_user_listing"}))){ %>
+				<li class="js-admin-user-menu navbar-btn"><a title="Users" href="#/users">Users</a></li>
+			<% } %>		
+			<% if(!_.isEmpty(role_links.where({slug: "roles"}))){ %>
+				<li class="js-admin-role-menu navbar-btn"><a title="Roles" href="#/roles">Roles</a></li>
+			<% } %>
+			<% if(!_.isEmpty(role_links.where({slug: "setting_list"}))){ %>
+				<li class="js-admin-setting-menu navbar-btn"><a title="Settings" href="#/settings">Settings</a></li>
+			<% } %>
+			<% if(!_.isEmpty(role_links.where({slug: "view_email_template_listing"}))){ %>
+				<li class="js-admin-email-menu navbar-btn"><a title="Email Templates" href="#/email_templates">Email Templates</a></li>
+			<% } %>
+		</ul>
+	</div>
+	</nav>
+</div>
+<% } %>

@@ -1,0 +1,10 @@
+<% if(photo != null){ %> 
+	<%
+		var path =  'http://farm' + photo.farm + '.static.flickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '_s.jpg';
+	%>
+	<div class="clearfix">
+		<a class="pull-left navbar-btn js-flickr-changebackground" href="#" target="_blank" data-farm="<%= photo.farm%>" data-server="<%= photo.server%>" data-id="<%= photo.id%>" data-secret="<%= photo.secret%>" data-title="<%= photo.title%>">
+			<img class="img-rounded" title="<%= photo.title%>" alt="[Image: <%= photo.title%>]" src="<%= path%>" width="48" height="48">
+		</a>
+	</div>	
+<% } %> 

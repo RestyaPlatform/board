@@ -1,0 +1,47 @@
+<li>
+<div class="col-xs-12 clearfix text-center">
+	<span class="pull-left" data-placement="bottom" title="<%- user.attributes.username %>" data-toggle="tooltip">
+	<% if(!_.isEmpty(user.attributes.profile_picture_path)) { 
+		var profile_picture_path = user.showImage('User', user.attributes.user_id, 'micro_thumb' );
+	%>
+		<img src="<%=profile_picture_path %>" alt="[Image: <%-user.attributes.username %>]" title="<%-user.attributes.username %>" class="img-rounded">
+	<% } else {%>
+		<i class="avatar avatar-color-194 img-rounded avatar-sm"><%- user.attributes.initials %></i>									
+	<% } %></span>
+	<span class="col-xs-8"><strong><%- user.attributes.username %></strong></span>
+		<span class="">
+			<a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
+		</span>
+</div>
+<div class="col-xs-12 divider"></div>
+<div class="col-xs-12">
+	<ul class="list-unstyled">
+		<li class="dropdown"> 
+			<% if (is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) { %>
+			<a href="#" data-toggle="dropdown" class="dropdown-toggle <%if(user.attributes.user_id != user.collection.board.attributes.user_id){%>js-show-dropdown<%}%>"> Change permissions (<% if(user.attributes.is_admin == true || user.attributes.is_admin == 't'){ %> Owner <%}else{%> Member<%}%>)</a>
+			<ul class="dropdown-menu dropdown-menu-right arrow arrow-right js-list-actions-response">
+				<div class="clearfix text-center col-xs-12"> <a data-list-id="339" class="js-back-to-list-actions pull-left" href="#"><i class="icon-caret-left "></i></a><span class="col-xs-10"><strong>Change Permissions</strong></span><a href="#" class="js-close-popup pull-right"><i class="icon-remove "></i></a> </div>
+				<div class="col-xs-12 divider"></div>
+				<div class="col-xs-12">
+				  <ul class="list-unstyled">
+					<li> <a href="#" class="<% if(user.attributes.is_admin == false || user.attributes.is_admin == 'f'){ %>js-edit-board-member-permission-to-admin<%}else{%>js-no-action<%}%>"> <span class="show text-primary">Owner <% if(user.attributes.is_admin == true || user.attributes.is_admin == 't'){ %><i class="icon-ok"></i><%}%></span> <span class="text-muted">Can view and edit cards, remove members, and change settings for the board.</span> </a> </li>
+					<li class="divider"></li>
+					<li> <a href="#" class="<% if(user.attributes.is_admin == true || user.attributes.is_admin == 't'){ %>js-edit-board-member-permission-to-normal<%}else{%>js-no-action<%}%>"><span class="show text-primary">Member <% if(user.attributes.is_admin == false || user.attributes.is_admin == 'f'){ %><i class="icon-ok"></i><%}%></span> <span class="text-muted">Can view and edit cards. Can't change settings.</span></a> </li>
+				  </ul>
+				</div>
+			</ul>
+			<% } %>
+		</li>
+		<li>
+			<a href="#" title="View member's board activity" data-user-id="<%- user.attributes.user_id %>" class="panel js-view-user-activities">
+				<span>View member's board activity</span>
+			</a>
+		</li>
+		<% if (is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) { %>
+			<li><a href="#" title="<%if(parseInt(authuser.user.id) != user.attributes.user_id ){%>Remove<%}else{%>Leave<%}%> from board" class="<%if(user.attributes.user_id != user.collection.board.attributes.user_id){%>js-show-confirm-delete-board-member<%}%>"><%if(parseInt(authuser.user.id) != user.attributes.user_id ){%>Remove<%}else{%>Leave<%}%> from board</a></li>
+		<% } %>
+		
+	</ul>
+</div>
+
+<li>

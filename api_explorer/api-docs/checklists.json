@@ -1,0 +1,204 @@
+{
+    "apiVersion": "1.0.0",
+    "swaggerVersion": "1.2",
+    "basePath": "/api",
+    "resourcePath": "/checklists",
+    "produces": [
+        "application/json",
+        "application/xml",
+        "text/plain",
+        "text/html"
+    ],
+    "apis": [
+        {
+            "path": "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/checklists.json",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Add a checklist",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "addChecklist",
+                    "consumes": [
+                        "application/json",
+                        "application/xml"
+                    ],
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "Selected board ID",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "listId",
+                            "description": "Selected board ID",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "cardId",
+                            "description": "Selected board ID",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Created checklist object",
+                            "required": true,
+                            "type": "addChecklist",
+                            "paramType": "body"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 405,
+                            "message": "Invalid input"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/checklists/{checklistId}.json",
+            "operations": [
+                {
+                    "method": "PUT",
+                    "summary": "Edit Checklist",
+                    "notes": "Update the Checklist",
+                    "type": "Comment",
+                    "nickname": "editChecklist",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "Board ID to edit",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "listId",
+                            "description": "List ID to edit",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "cardId",
+                            "description": "Card ID to edit",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "checklistId",
+                            "description": "Checklist ID to edit",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Edit Checklist",
+                            "required": true,
+                            "type": "editChecklist",
+                            "paramType": "body"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 400,
+                            "message": "Invalid ID supplied"
+                        },
+                        {
+                            "code": 404,
+                            "message": "Page not found"
+                        }
+                    ]
+                },
+                {
+                    "method": "DELETE",
+                    "summary": "Delete comment",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "deleteCardVoter",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "Board ID to delete",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "listId",
+                            "description": "List ID to delete",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "cardId",
+                            "description": "Card ID to delete",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "checklistId",
+                            "description": "Checklist ID to delete",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "models": {
+        "addChecklist": {
+            "id": "addChecklist",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "editChecklist": {
+            "id": "editChecklist",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

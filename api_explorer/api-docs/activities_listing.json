@@ -1,0 +1,53 @@
+{
+    "apiVersion": "1.0.0",
+    "swaggerVersion": "1.2",
+    "basePath": "/api",
+    "resourcePath": "/checklist_items",
+    "produces": [
+        "application/json",
+        "application/xml",
+        "text/plain",
+        "text/html"
+    ],
+    "apis": [
+        {
+            "path": "/activities/undo/{activityId}.json",
+            "operations": [
+                {
+                    "method": "PUT",
+                    "summary": "Undo activities",
+                    "notes": "Update the activities",
+                    "type": "activities",
+                    "nickname": "editActivities",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "activityId",
+                            "description": "Activity ID to undo",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 400,
+                            "message": "Invalid ID supplied"
+                        },
+                        {
+                            "code": 404,
+                            "message": "Page not found"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

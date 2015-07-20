@@ -1,0 +1,39 @@
+<div class="list-group-item-heading clearfix js-checklist-head">
+	<h3 class="pull-left col-xs-9">
+		<span class="pull-left row"><i class="icon-list text-muted lead"></i></span>
+		<span class="<% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: 'edit_checklist'}))){ %>js-show-checklist-edit-form<% } %> col-sm-12">
+			<a href="#" title="<%- checklist.get('name') %>" class="<% if(_.isUndefined(authuser.user)){%> js-no-action<%}%>"><%- checklist.get('name') %></a>
+		</span>
+	</h3>
+	<% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "delete_checklist"}))){ %>
+	<div class="pull-right dropdown h4">
+		<a class="btn btn-link dropdown-toggle js-show-checklist-actions" role="button" data-toggle="dropdown" title="Checklist" href="#">
+			<span><i class="icon-chevron-sign-down text-primary"></i></span>
+		</a>
+		<ul class="dropdown-menu arrow arrow-right" id="js-checklist-confirm-response-<%- checklist.get('id') %>">
+			<li class="clearfix">
+				<div class="clearfix text-center col-xs-12">
+					<span class="col-xs-10"><strong>Checklist</strong></span>
+					<a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a>
+				</div>
+			</li>
+			<li class="clearfix"><div class="col-xs-12 divider"></div></li>
+			<li class="clearfix" id="js-checklist-actions-response-<%- checklist.get('id') %>"></li>
+		</ul>
+	</div>
+	<% } %>
+</div>
+<div class="list-group-item-text clearfix">
+<% 
+	var percentage = ((parseInt(checklist.get('checklist_item_completed_count')) / parseInt(checklist.get('checklist_item_count'))) * 100);
+ %>
+ <% 
+ 	if(isNaN(percentage)){ 
+		percentage_val = 0;
+	} else {
+		percentage_val = Math.round(percentage, 2);
+	}
+ %>
+ <div class="clearfix">
+ 	<span class="pull-left" id="js-checklist-progress-percent-<%- checklist.get('id') %>">
+		<%= percentage_val%>% &nbsp;</span><div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" id="js-checklist-progress-bar-<%- checklist.get('id') %>" style="width:<%= Math.round(percentage, 2) %>%"><span class="sr-only"><%= Math.round(percentage, 2) %>%</span></div></div></div> <div  id="js-checklist-items-<%- checklist.get('id') %>" class="js-checklist-items-sorting checklist-items-sorting" data-checklist_id="<%- checklist.get('id') %>"> </div></div>

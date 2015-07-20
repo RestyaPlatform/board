@@ -1,0 +1,10 @@
+<span class="pull-left">
+	<span class="pull-left">This board will be </span>
+	<span class="pull-left">Private</span>.
+</span>
+<a class="pull-left js-change-visibility" href="#">Change</a>
+<% if (name == 'org') { %>
+	<span class="pull-left"><span class="pull-left">This board will be </span><span class="pull-left">Organization</span>.</span><a class="pull-left js-change-visibility" href="#">Change</a>
+<% } else if (name == 'public') { %>
+	<span class="pull-left"><span class="pull-left">This board will be </span><span class="pull-left">Public</span>.</span><a class="pull-left js-change-visibility" href="#">Change</a>
+<% } %>

@@ -1,0 +1,5 @@
+<div class="board-close-view">
+  <strong>Board not found</strong>
+  <div class="well-sm">This board may be private. <% if(!_.isEmpty(role_links.where({slug: "users_login"})) && _.isUndefined(authuser.user)){ %>You may be able to view it by <a href="#/users/login" class="text-primary" title="Login">logging</a> in. <%	}  %>
+  </div>
+  </div>

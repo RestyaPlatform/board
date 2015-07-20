@@ -1,0 +1,97 @@
+<% if (boards.models.length == 0 || _.isEmpty(boards.models[0])) { %>
+	<% if (boards.models.length == 0) { %>
+ 			Please add board.
+	<% }else if ( _.isEmpty(boards.models[0])){ %>
+			Please add list.
+	<% }%>
+<% }else { %>
+<form class="form-horizontal js-instantCardAddForm js-outside-backbone" role="form" name="CardAddForm" >
+	<div class="clearfix" >
+		<div class="form-group">
+			<label for="title" class="sr-only">Card Title</label>
+			<div class="col-xs-12">
+				<input type="text" class="form-control" placeholder="Card Title" name="name" id="inputCardName" required />
+				<input type="hidden" value="" class="js-instant-card-user-ids" name="user_ids">
+			</div>
+		</div>
+		<% if (boards.models.length > 0) { %>
+			<div class="form-group">
+				<div class="col-xs-6">
+					<select name="board_id"  id="board_id" class="js-chosen-select col-xs-12 js-instant-card-board" placeholder="Select Board">
+					<option></option>
+					<%  var first_board = null;
+						_.each(boards.models, function(board) {
+							if (!_.isEmpty(board.attributes.lists) && board.attributes.lists.length > 0) {
+								if (first_board === null) {
+									first_board = board;
+								}%>
+								<option value="<%-board.id%>"><%- board.attributes.name%></option>
+						   <%}
+						});
+					%>
+					</select>
+				</div>
+				<div class="col-xs-6">
+					<select name="list_id" id="list_id" class="js-chosen-select col-xs-12 js-instant-card-add-list" placeholder="Select List">
+					<option></option>
+					<%
+						if (first_board !== null) {
+							_.each(first_board.attributes.lists, function(list) {
+				    %>
+								<option value="<%- list.id%>"><%- list.name %></option>
+					<%		}); %>
+					</select>
+					<%		var position = _.max(first_board.attributes.lists, function(list) {
+								return list.position;
+							});
+							if (isNaN(position.position)) {
+								position.position = first_board.attributes.board_lists.length;
+							}
+					%>
+					<% } %>
+				</div>
+			</div>
+		
+		<% } %>
+		 <div class="form-group">
+		 	<label class="sr-only">Description</label>
+			<div class="col-xs-12">
+				<textarea class="form-control" rows="3" placeholder="Description" name="description" id="inputCardDescription"></textarea>
+			</div>
+		</div>
+		<div class="clearfix form-group">
+			<div class="col-xs-12">
+				<ul class="list-inline pull-left">
+					<li class="dropdown dropup">
+						<a title="Users" class="btn btn-link dropdown-toggle js-add-member-dropdown" data-toggle="dropdown" href="#"><i class="icon-user js-instant-user text-muted"></i></a>
+						<ul class="dropdown-menu js-dropdown-popup arrow arrow-bottom">
+							<li class="js-add-member-dropdown-load js-dropdown-popup dropdown-popup js-instant-card-member-search-response">
+								<div class="col-xs-12 text-center clearfix"><span class="col-xs-10"><strong>Members</strong></span><a href="#" class="js-close-popover pull-right"><i class="icon-remove "></i></a></div>
+								 <div class="col-xs-12 divider"></div>
+								 <div class="col-xs-12">
+									 <div class="form-group">
+									   <label class="sr-only">Search Member</label>
+									   <div class="col-xs-12"><input type="text" autocomplete="off" id="inputInstantCardAddUserSearch" placeholder="Username OR Email" name="email" class="js-search-users form-control input-sm"></div>
+									 </div>
+								 </div>
+							</li>
+						</ul>
+					</li>
+					<li class="duedate">
+						<span title="Calendar" class="btn btn-link"><i class="icon-calendar cur js-instant-date text-muted"></i></span>
+						<input type="hidden" class="form-control input-sm js-instant-duedate" name="due_date" />
+					</li>
+					<li class="dropdown dropup">
+						<a class="btn btn-link js-show-card-label-form" data-toggle="dropdown" title="Labels" href="#"><i class="icon-tag js-instant-label"></i></a>
+						<ul class="dropdown-menu list-unstyled js-show-instant-card-label-form-response arrow arrow-bottom"></ul>
+					</li>
+				</ul>
+				
+				<div class="pull-right">
+					<input type="submit" class="btn btn-primary" value="Save">
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+<% }%>

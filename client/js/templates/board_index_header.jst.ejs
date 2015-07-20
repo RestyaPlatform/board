@@ -1,0 +1,21 @@
+<div class="container-fluid">
+	<div class="row">
+        <div class="navbar-left navbar-btn">
+            <div class="clearfix navbar-btn">
+                <h2 class="navbar-left navbar-btn"><span class="navbar-left"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span>
+					<ul class="list-inline navbar-left h3 navbar-btn navbar-form text-center">
+						 <li class="navbar-btn text-muted"><span class="h5">/</span></li>
+						<li><span class="text-muted h4"><%=page_title%></span></li>
+					</ul>
+				</h2>
+            </div>
+        </div>
+      <div class="navbar-right navbar-btn h4">
+        <ul class="nav nav-pills navbar-left">
+			<li class="<%  var fragment = Backbone.history.fragment; var fragments = fragment.split('/'); if(fragment.indexOf('boards')  != -1 && fragments.length == 1){%>active<%}%> navbar-btn"><a href="#/boards" title="My Boards" class="text-muted initialism"><i class="icon-user"></i></a></li>
+            <li class="<% if(Backbone.history.fragment.indexOf('boards/closed') != -1){%>active<%}%> navbar-btn"><a href="#/boards/closed" title="Closed Boards" class="text-muted initialism"><i class="icon-th-large"></i></a></li>
+            <li class="<% if(Backbone.history.fragment.indexOf('boards/starred') != -1){%>active<%}%> navbar-btn"><a href="#/boards/starred" title="Starred Boards" class="text-muted initialism"><i class="icon-star"></i></a></li>
+        </ul>
+        </div>
+    </div>
+</div>    

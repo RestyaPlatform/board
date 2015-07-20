@@ -1,0 +1,18 @@
+<%
+_.each(hits, function(hit) {
+	if (hit._index === 'boards') {
+%>	
+		<li><%- hit._source.doc.board_name %></li>
+<%		
+	} else if (hit._index === 'lists') {
+%>	
+		<li><%- hit._source.doc.list_name %></li>
+<%		
+	} else if (hit._index === 'cards') {
+%>	
+		<li class="js-show-modal-card-view"><%- hit._source.doc.card_name %></li>
+<%		
+	}
+
+});
+%>

@@ -1,0 +1,22 @@
+<% 
+
+	var organization_options = ''; 
+	var is_org_found = false;
+	var display_options = false;
+	_.each(organizations.models, function(organization) { 
+		display_options = true;
+		if(parseInt(organization.id) === board.attributes.organization_id){
+			is_org_found = true;
+		}
+		var selected = (parseInt(organization.id) === board.attributes.organization_id) ? 'selected="selected"' : '';
+		var current = (parseInt(organization.id) === board.attributes.organization_id) ? ' (current)' : ''; 
+		organization_options += '<option value="' + organization.id + '" ' + selected + '>' + _.escape(organization.attributes.name) + current + '</option>'; 
+	}); 
+	if(!is_org_found && board.attributes.organization_id != 0){
+		display_options = true;
+		organization_options += '<option value="' + board.attributes.organization_id + '" selected="selected" >' + _.escape(board.attributes.organization_name) + '(current)</option>'; 
+	}
+%> 
+<form class="normal js-save-board-visibility" name="BoardVisibilityForm">
+<div class="form-group select"><label for="inputListBoard">Organization</label><select name="organization_id" class="form-control cur" required><% if (display_options) {%><option value="">Please select organization</option><%=organization_options %><%}else{%><option value="">(none)</option><%}%></select></div><div class="submit"><input type="submit" class="btn btn-primary" value="Save" <% if (!display_options) {%> disabled<%}%>></div>
+</form>

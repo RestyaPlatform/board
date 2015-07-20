@@ -1,0 +1,40 @@
+<% if(attachment != null){ %> 
+	<a target="_blank" href="<%= attachment.downloadLink('download', attachment.get('id')) %>" class="pull-left navbar-btn img-thumbnail">
+		<% if(attachment.get("name").match(/\.(jpg|jpeg|png|gif)$/)){ 
+			var picture_path = attachment.showImage('CardAttachment', attachment.attributes.id, 'large_thumb' );
+		%>
+			<img src="<%= picture_path%>">
+		<% } else{ 
+			 var extension = attachment.attributes.name.split('.');
+		%>
+			<p class="thumb-img"><span class="h1 navbar-btn"><% if(!_.isUndefined(extension) && extension.length > 1) { %><%- extension[extension.length - 1].toUpperCase() %><% }%></span></p>
+		<% }%>
+	</a>
+	<div class="clearfix btn-block col-xs-12">
+		<a target="_blank" href="<%= attachment.downloadLink('download', attachment.get('id')) %>" title="<%- attachment.get('name') %>"><%- attachment.get('name') %>
+		<span class="show">Added <small class="text-muted"><abbr class="timeago" title="<%- attachment.get('created') %>"><%- attachment.get("created") %></abbr></small></span>
+		</a> 
+		<%if(!_.isUndefined(authuser.user)) {%>
+		<div class="btn-toolbar navbar-btn">
+			<div class="btn-group btn-group-xs navbar-btn">
+				<div class="btn btn-primary">
+				<% var download_link = attachment.downloadLink('download', attachment.get('id')); %>
+					<a target="_blank" href="<%= download_link %>" title="Download">
+						<i class="icon-arrow-down cur icon-light"></i>
+					</a>
+				</div>
+				<% if(!_.isEmpty(role_links.where({slug: "remove_card_attachment"}))){ %>
+					<div class="dropdown dropdown pull-left">
+						<a href="#" title="Delete" class="js-show-confirm-delete-attachment dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown"><i class="icon-remove cur"></i></a>
+						<ul class="dropdown-menu arrow list-unstyled">
+							<li class="js-dropdown-popup js-attachment-confirm-respons-<%- attachment.id %>"></li>
+						</ul>
+					</div>
+				<% } %>
+			</div>
+		</div>
+		<% } %>
+	</div>
+<% }else{ %> 
+	<span>No attachments available</span>
+<% } %> 

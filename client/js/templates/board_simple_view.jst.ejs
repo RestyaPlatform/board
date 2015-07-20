@@ -1,0 +1,82 @@
+<% if(board != null){ %>
+<div class="panel">
+  <% if(!_.isEmpty(board.subscribers)){ var subscriber = board.subscribers.findWhere({ user_id: parseInt(authuser.user.id) }); } %>
+  <div class="panel-body bg-warning">
+    <div class="clearfix">
+		<h4 class="col-md-9 col-sm-8 col-xs-9 navbar-btn">
+			<span class="show row navbar-btn">
+			  <% if(!_.isEmpty(role_links.where({slug: "view_board"}))){ %>
+			  <a href="#/board/<%- board.id %>" title="<%- board.attributes.name %>" class="htruncate btn-block">
+			  <% } %>
+			  <%- board.attributes.name%>
+			  <% if(!_.isEmpty(role_links.where({slug: "view_board"}))){ %>
+			  </a>
+			  <% } %>
+      		</span>
+	  	</h4> 
+		<% if(board.attributes.is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+		<span class="pull-right dropdown"><a href="#" class="js-board-visibility text-muted h5 show" data-toggle="dropdown">
+      <% if(board.attributes.board_visibility == 0) { %>
+      <span title="Private" class="text-primary icon-lock col-lg-2"></span>
+      <% } else if(board.attributes.board_visibility == 1) { %>
+      <span title="Organization" class="text-primary icon-group col-lg-2"></span>
+      <% } else if(board.attributes.board_visibility == 2) { %>
+      <span title="Public" class="text-primary icon-circle col-lg-2"></span>
+      <% } %>
+      </a>
+      <ul class="dropdown-menu arrow arrow-right">
+        <li class="js-visibility-popup js-dropdown-popup dropdown-popup">
+            <div class="clearfix text-center col-xs-12">
+			  <a class="js-back-to-board-visibility hide pull-left" href="#"><i class="icon-caret-left"></i></a>
+              <span class="col-xs-10"><strong>Change Visibility</strong></span><a class="js-close-span-popover pull-right" href="#"><i class="icon-remove"></i></a>
+            </div>
+		</li>
+		<li class="col-xs-12 divider js-visibility-list"></li>
+      </ul>
+      </span>
+	  <% } else {%>
+		<span class="pull-right dropdown h5">
+		<% if(board.attributes.board_visibility == 0) { %>
+		  <span title="Private" class="text-primary icon-lock col-lg-2"></span>
+		  <% } else if(board.attributes.board_visibility == 1) { %>
+		  <span title="Organization" class="text-primary icon-group col-lg-2"></span>
+		  <% } else if(board.attributes.board_visibility == 2) { %>
+		  <span title="Public" class="text-primary icon-circle col-lg-2"></span>
+		  <% } %>
+		</span>
+	  <% } %>
+      <% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
+      <% if(!_.isUndefined(starred_boards) && starred_boards.map( Number ).indexOf(board.attributes.id) != -1){ %>
+      <a title="Unstar" href="#" class="pull-right js-star-board h5" name="unstar"><i class="icon-star text-primary"></i></a>
+      <% } else {%>
+      <a title="Star" href="#" class="pull-right js-star-board h5" name="star"><i class="icon-star-empty"></i></a>
+      <% } %>
+      <% } %>
+    </div>
+    <div class="js-board-inner-view"></div>
+	<ul class="list-unstyled chart-block">
+	<% 
+	var style = '';			
+	if (board.attributes.background_picture_url) {
+		var background_picture_url = board.attributes.background_picture_url.replace("_XXXX.jpg", "_n.jpg");
+		style = 'background:url(' + background_picture_url + ') 25% 25%; background-size: cover';
+	} else if (board.attributes.background_pattern_url) {
+		var background_pattern_url = board.attributes.background_pattern_url.replace("_XXXX.jpg", "_s.jpg");
+		style = 'background: transparent url(' + background_pattern_url + ')  repeat scroll 0% 0%;';
+	} else if (board.attributes.background_color){
+		style = 'background:' + board.attributes.background_color;
+	}
+	%>
+		<li class="list-group-item clearfix" style="<%= style %>">
+			<a class="show" href="#/board/<%- board.id %>">
+			    <div id="doughnutChart" class="chart js-chart"></div>
+			</a>
+		</li>
+	</ul>
+  </div>
+</div>
+<% }else{ %>
+<div class="alert alert-info">
+	<%= message %>
+</div>
+<%}%>

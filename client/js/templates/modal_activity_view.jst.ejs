@@ -1,0 +1,18 @@
+<div class="modal fade" id="modalActivityView" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header clearfix">
+			  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			  <span class="col-xs-10"><strong><% if(type == 'board'){ %>Board<%}else{ %>User<%}%> Activity  </strong></span>			  
+			</div>			
+			<div class="modal-body scrollbar clearfix">												
+				<div class="clearfix notification-list">
+				<ul class="list-unstyled" id="js-activities-list"></ul>
+				</div>
+				<div class="clearfix text-center">
+				<a href="#" class="js-load-more hide">Load More Activity</a>
+				</div>
+			</div>
+		  </div><!-- /.modal-content -->
+    </div>
+</div>

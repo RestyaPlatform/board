@@ -1,0 +1,32 @@
+<div class="form-group">
+	<label for="inputListName">Title</label>
+	<input id="inputListName" type="text" placeholder="Title" autocomplete="off" class="form-control input-sm" name="name" value="Checklist" required>
+</div>
+<div class="form-group">
+	<label for="copy-items">Copy Items From</label>
+	<input type="hidden" name="board_id" value="<%- card.attributes.board_id %>" />
+	<input type="hidden" name="list_id" value="<%- card.attributes.list_id %>" />
+	<input type="hidden" name="card_id" value="<%- card.id %>" />
+	<select  name="checklist_id" id="inputchecklist" class="form-control input-sm cur">
+		<option value="0">Please Select</option>
+		<%
+        var prev_group_id = 0;
+		var content = '';
+        card.checklists.each(function(checklist_list) {
+            if (prev_group_id != checklist_list.attributes.id) {
+                prev_group_id = checklist_list.attributes.id;
+                content += '<optgroup label="' + _.escape(checklist_list.attributes.name) + '">';
+            }
+            content += '<option value="' + checklist_list.attributes.id + '">' + _.escape(checklist_list.attributes.name) + ' (' + checklist_list.checklist_items.length + ' items)</option>';
+            if (prev_group_id !== 0 && prev_group_id != checklist_list.attributes.id) {
+                content += '</optgroup>';
+            }
+        });
+		%>
+        <%= content%>
+	</select>
+</div>
+<div class="form-group">
+	<label for="submit" class="sr-only col-sm-4 control-label">submit</label>
+	<input type="submit" name="Save" class="btn btn-primary" value="Add">
+</div>

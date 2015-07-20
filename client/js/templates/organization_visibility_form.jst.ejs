@@ -1,0 +1,17 @@
+<li class="col-xs-12 text-center clearfix">
+	<div class="clearfix"><span class="col-xs-10"><strong>Select Visibility</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a></div>
+</li>
+<li class="col-xs-12 divider"></li>
+<li class="col-xs-12">
+	<a class="btn-default show row small well-xs js-edit-organization-visibility-to-private" href="#">
+		<span class="show text-primary col-xs-12 navbar-btn h5">Private<% if(organization.attributes.organization_visibility == 2){%><i class="icon-check well-sm"></i><%}%></span>
+		<span class="col-xs-12 navbar-btn">This organization is private. It\'s not indexed or visible to those outside the org.</span>
+	</a>
+</li>
+<li class="divider col-xs-12"></li>
+<li class="col-xs-12">
+	<a class="show row small well-xs js-edit-organization-visibility-to-public" href="#">
+		<span class="show text-primary col-xs-12 navbar-btn h5">Public<% if(organization.attributes.organization_visibility == 1){%><i class="icon-check well-sm"></i><%}%></span>
+		<span class="col-xs-12 navbar-btn">This organization is public. It's visible to anyone with the link and will show up in search engines like Google. Only those invited to the org can add and edit org boards.</span>
+	</a>
+</li>

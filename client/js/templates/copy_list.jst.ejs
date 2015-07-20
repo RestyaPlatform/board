@@ -1,0 +1,17 @@
+<div class="clearfix text-center col-xs-12">	
+	<a href="#" class="js-back-to-list-actions pull-left" data-list-id="<%- list.id %>"><i class="icon-caret-left"></i></a><span class="col-xs-10"><strong>Copy List</strong></span><a href="#" class="js-close-popup pull-right"><i class="icon-remove"></i></a>
+</div>
+<div class="col-xs-12 divider"></div>
+			<div class="col-xs-12">
+	<form class="js-add-list" name="ListCloneForm" id="ListCloneForm">
+		<div class="form-group required">
+			<label for="inputListName">Name</label>
+			<input maxlength="255" id="inputListName" type="text" name="name" autocomplete="off" placeHolder="Add a list" class="form-control input-sm" value="<%- list.attributes.name %>" required/>
+			<input type="hidden" value="<%- list.id %>" name="clone_list_id"/>
+			<input type="hidden" value="<%- list.attributes.position %>" name="position"/>
+		</div>
+		<div class="submit">
+			<input type="submit" id="submitListAdd" class="btn  btn-primary" value="Create List"/>
+		</div>
+	</form>
+</div>

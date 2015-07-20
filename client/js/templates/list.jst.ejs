@@ -1,0 +1,35 @@
+
+	<div class="list-header js-list-head <% if(!_.isUndefined(authuser.user)){%>cur-grab<%}%>">
+	  <div class="dropdown clearfix">
+		<a href="#" class="pull-left <% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "edit_list"}))){ %>js-show-edit-list-form<% }else{ %> js-no-action<%}%>"><strong><%- list.attributes.name %></strong><% var is_sub_class = 'hide'; if(!_.isEmpty(list.subscriber.attributes) && list.subscriber.attributes.is_subscribed == true){ is_sub_class = ''; }%> <i class="icon-eye-open js-list-subscribed-<%- list.attributes.id %> <%- is_sub_class %>"></i></a>
+		<% if(!_.isEmpty(role_links.where({slug: "edit_list"}))){ %>
+		<form role="form" class="form-horizontal js-edit-list hide">
+			<div class="form-group">
+			  <label class="col-sm-4 control-label hide" for="inputListName">Name</label>
+			  <div class="col-sm-12">
+					<input type="text" maxlength="255" autocomplete="off" id="inputListName" name="name" required value="<%- list.attributes.name %>" class="form-control"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="sr-only col-sm-4 control-label hide" for="submit2">submit</label>
+				<div class="col-sm-12">
+					<input type="submit" name="Save" class="btn btn-primary" value="Save" />
+					<i class="icon-remove js-hide-edit-list-form btn btn-link cur" title="Cancel"></i>
+				</div>
+			</div>
+		</form>
+		<% } %>
+		<%if(!_.isUndefined(authuser.user)) {%>
+		<a href="#" class="dropdown-toggle pull-right js-show-list-actions" id="js-show-list-actions-<%- list.attributes.id %>" data-toggle="dropdown" title="List Actions" data-list-id="<%- list.attributes.id %>"><i class="icon-cog text-danger"></i></a>
+		<% } %>
+	  </div>
+	</div>
+	<div class="list-content vertical-scrollbar vertical-scrollbar-box js-board-list-cards" id="js-card-listing-<%- list.attributes.id %>">
+	</div>
+	<% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "add_card"}))){ %>
+		<div class="list-footer clearfix">
+			<div class="pull-left"><a href="#" title="Add a Card" class="js-show-add-card-form js-bottom text-muted">Add a card</a></div>
+<div class="js-card-add-form-<%= list.attributes.id %>"></div>			
+		</div>
+	<% } %>	
+  

@@ -1,0 +1,16 @@
+<% if(board_user != null){ %>
+<a class="clearfix <% if(!_.isUndefined(class_name)){%><%-class_name%><%}else{%>js-add-item-member<%}%>" data-member-id="<%-board_user.id %>" href="#"> 
+	<span data-placement="bottom" data-toggle="tooltip" title="<%- board_user.attributes.username %>">
+	<% if(!_.isEmpty(board_user.attributes.profile_picture_path)) { 
+		var profile_picture_path = board_user.showImage('User', board_user.attributes.user_id, 'small_thumb' );
+	%>
+		<img src="<%=profile_picture_path %>" alt="[Image: <%-board_user.attributes.username %>]" title="<%-board_user.attributes.username %>" class="img-rounded img-responsive avatar avatar-sm">
+	<% } else {%>
+		<i class="avatar avatar-color-194 avatar-sm img-rounded"><%-board_user.attributes.initials %></i>
+	<% } %>
+	</span> <span><%- board_user.attributes.username %></span>
+
+</a>
+<% }else{%>
+ No users available.
+<%}%>

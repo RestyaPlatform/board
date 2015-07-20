@@ -1,0 +1,288 @@
+ <div class="container-fluid">
+	 <div class="row">
+			  <div class="navbar-left navbar-btn mob-no-mar col-sm-11 col-xs-10 nav <% if(board.attributes.organization_id == 0) { %> col-lg-6 col-md-5 <% } else { %> col-lg-5 col-md-4<% } %>">
+			  <div class="clearfix row-flex">
+			  <ul class="nav nav-pills pull-left col-flex col-flex1 <% if(board.attributes.organization_id == 0) { %> hide <% } %>">
+			  <% if(board.attributes.organization_id != 0) { %>
+               <li>
+				<a href="#/organization/<%= board.attributes.organization_id %>" class=" text-muted btn btn-link pull-left htruncate col-lg-10 col-sm-10 col-md-9 col-xs-9 nav" title="<%- board.attributes.organization_name %>">
+					<%
+						var logo_path = "img/default-organization.png"; 
+						if (!_.isUndefined(board.attributes.organization_logo_url) && board.attributes.organization_logo_url != null && board.attributes.organization_logo_url != '') {
+							logo_path = board.showImage('Organization', board.attributes.organization_id, 'small_thumb' );
+						}
+					%>
+					<span><img src="<%= logo_path %>" height="16" width="16" alt="[Image: <%= board.attributes.organization_name%>]" title="<%= board.attributes.organization_name%>"></span> 
+					<strong><%- board.attributes.organization_name %></strong>
+				</a>
+				<span class="well-sm navbar-btn mob-no-mar pull-left">/</span>
+			   </li>
+			   <% } %>
+			</ul>
+			<div class="well-sm pull-left navbar-btn mob-no-mar col-flex <% if(board.attributes.organization_id != 0) { %> col-flex2 <% } else { %> col-flex3  <% } %>">	
+					  <form name="BoardStarForm" id="BoardStarForm">
+						<input id="inputBoardStar" name="is_starred" type="hidden" value="<%if(!_.isUndefined(star)) {%><%- star.attributes.is_starred %><%}else{%>0<%}%>">
+					  </form>
+					<div class="col-xs-12 nav pull-left <% if(!_.isEmpty(role_links.where({slug: 'edit_board'}))){ %>dropdown<% } %>">
+					  <% if(!_.isUndefined(star) && (star.attributes.is_starred || star.attributes.is_starred == 't')) { %>
+					  <% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
+					  <a href="#" class="js-star-board pull-left" name="unstar" title="unstar"><i class="icon-star text-primary"></i></a>
+					  <% } %>
+					  <% } else {%>
+					  <% if(!_.isEmpty(role_links.where({slug: "unstarred_board"}))){ %>
+					  <a href="#" class="js-star-board pull-left" name="star" title="star"><i class="icon-star-empty"></i></a>
+					  <% } %>
+					  <% } %>
+					  <a href="#" class="js-star-load pull-left text-primary hide"><img src="img/star-load.gif" alt="[Images: Star]" title="Star"></a><a href="#" class="col-xs-8 nav htruncate <%if(!_.isUndefined(authuser.user)) {%>js-rename-board<%}else{%>js-no-action<%}%>" data-toggle="<% if(!_.isEmpty(role_links.where({slug: 'edit_board'}))){ %>dropdown<% } %>" title="<%- board.attributes.name %>"><strong><%- board.attributes.name %></strong></a>
+				  <% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "edit_board"}))){ %>
+				  <ul class="dropdown-menu dropdown-menu-left arrow arrow-left">
+					<li class="js-rename-popup js-dropdown-popup dropdown-popup">
+					  <div class="clearfix text-center col-xs-12">
+						<span class="col-xs-10"><strong>Rename Board</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
+					  </div>
+					  <div class="col-xs-12 divider"></div>
+					  <div class="col-xs-12 text-left">
+						<form class="normal" name="BoardRenameForm" id="BoardRenameForm">
+						  <div class="required form-group">
+							<label for="inputBoardName">Name</label>
+							<input type="text" id="inputBoardName" name="name" class="form-control input-sm" value="<%- board.attributes.name %>" required>
+						  </div>
+						  <div class="submit">
+							<input type="submit" value="Rename" id="submitBoardRename" class="btn btn-primary btn-sm">
+						  </div>
+						</form>
+					  </div>
+					</li>
+				  </ul>
+				  <% } %>
+				  </div>
+			</div>
+				</div>
+				</div>
+				 <div class="navbar-header"><button data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle" type="button"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button></div>
+			<nav class="navbar-collapse collapse mob-no-pad">
+			  <div class="navbar-right">
+			  <% if(!_.isUndefined(authuser.user)){ %>
+			  <ul class="nav nav-pills pull-left pillsuser-list">
+				  <li class="dropdown navbar-btn"> <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle show clearfix navbar-btn h4">
+				  <% 
+			  var i = 1;
+			  var admin_board_users_count = board.admin_board_users.length;
+			  var normal_board_users_count = board.normal_board_users.length;
+			  _.each(board.admin_board_users, function(admin_board_user){ 
+				if(i <= 3){
+			  %>
+            	<span class="pull-left btn-xs nav">
+					<span class="col-xs-12 btn-block navbar-btn" title="<%-admin_board_user.attributes.username %>">
+						<% if(!_.isEmpty(admin_board_user.attributes.profile_picture_path)) {
+								var profile_picture_path = board.showImage('User', admin_board_user.attributes.user_id, 'small_thumb' );%>
+						<img  width="30" height="30" class="img-responsive img-rounded avatar" title="<%-admin_board_user.attributes.username %>" alt="[Images: <%-admin_board_user.attributes.username %>]" src="<%=profile_picture_path %>">
+						<% } else {%>
+							<i class="avatar avatar-color-194 img-rounded"><%= (admin_board_user.attributes.initials) %></i>
+						<% } %>
+						<% if(admin_board_user.attributes.is_admin) { %>
+							<span class="name-block col-xs-12 label btn-xs col-xs-push-0">Owner</span>
+						<% } %>
+					</span>
+				</span>
+			  <% i++; }}); %>
+			  <% if(admin_board_users_count < 3){ 
+			   _.each(board.normal_board_users, function(normal_board_user){
+				if(i <= 3){
+				var mobHidden='';
+				if(i !== 1){
+				  mobHidden = 'hidden-xs';
+				}
+			  %>
+            	<span class="pull-left btn-xs nav <%- mobHidden %>">
+					<span class="col-xs-12 btn-block navbar-btn" title="<%-normal_board_user.attributes.username %>">
+						<% if(!_.isEmpty(normal_board_user.attributes.profile_picture_path)) {
+								var profile_picture_path = board.showImage('User', normal_board_user.attributes.user_id, 'small_thumb' );%>
+						<img  width="30" height="30" class="img-responsive img-rounded" title="<%-normal_board_user.attributes.username %>" alt="[Images: <%-normal_board_user.attributes.username %>]" src="<%=profile_picture_path %>">
+						<% } else {%>
+							<i class="avatar avatar-color-194 img-rounded"><%= (normal_board_user.attributes.initials) %></i>
+						<% } %>
+					</span>
+				</span>
+			  <% i++; }}); }%>
+				  <span class="col-xs-3 label small hidden-xs"> <span class="small navbar-btn"><span class="show text-left" title="Owner <%= admin_board_users_count %>">Owner <%- admin_board_users_count %></span> <span class="show navbar-btn text-left" title="Member <%= normal_board_users_count %>">Member <%- normal_board_users_count %></span></span> </span> </a>
+					<ul class="list-unstyled js-visibility-chooser dropdown-menu arrow arrow-right">
+					  <li class="text-center">
+						<strong>Members</strong>
+						<span href="#" class="js-close-popover pull-right col-xs-2"><i class="icon-remove cur"></i></span>
+					  </li>
+					  <li class="divider"></li>
+					  <li class="col-xs-12">
+						<ul class="list-unstyled clearfix js-get-board-member-lists-response">
+						</ul>
+						<% if(!is_offline_data){ %>
+						<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+						<ul class="list-unstyled clearfix js-hide-on-offline">
+						<li class="col-xs-12 navbar-btn text-left">
+								<div class="js-add-board-member-dropdown dropdown inner-dropdown col-xs-12"> 
+									<a href="#" class="text-muted" data-toggle="dropdown">Add Members...</a>
+									<ul class="dropdown-menu arrow">
+										<li class="js-dropdown-popup dropdown-popup">
+										  <div class="col-xs-12 text-center clearfix">
+											<span class="col-xs-10"><strong>Members</strong></span><a class="js-close-popover-board-member-dropdown pull-right" href="#"><i class="icon-remove"></i></a>										
+										  </div>
+										  <div class="col-xs-12 divider"></div>
+										  <div class="col-xs-12">
+											<form method="post" class="text-center" id="js-add-board-member-form">
+											  <div class="form-group">
+												<label class="sr-only">Search Member</label>
+												<input type="text" autocomplete="off" id="inputBoardUserSearch" placeholder="Username OR Email" name="email" required class="js-search-users form-control input-sm">
+											  </div>
+											</form>
+										  </div>
+										  <ul class="list-unstyled js-board-member-search-response col-xs-12 pre-scrollable vertical-scrollbar">
+											<li class="clearfix small">Search for a person in <%- SITE_NAME %> by name or email address.</li>
+										  </ul>
+										</li>
+									</ul>
+								</div>
+							</li>
+							</ul>
+							<% } %>
+						<% } %>
+					  </li>
+					</ul>
+				  </li>
+				</ul>
+				<% } %>
+				<ul class="nav nav-pills pull-left navbar-btn">
+					<% if (is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+					<li class="navbar-btn">
+						<div class="btn-group navbar-btn js-visibility-list-dropdown dropdown">
+							<% 	var board_visibility = '';
+								var board_visibility_icon = '';
+								if(board.attributes.board_visibility == 0) { 
+									board_visibility = 'Private';
+									board_visibility_icon = 'icon-lock';
+								} else if(board.attributes.board_visibility == 1 && board.attributes.organization_id > 0) {
+									board_visibility = 'Organization';
+									board_visibility_icon = 'icon-group';
+								} else if(board.attributes.board_visibility == 2) {
+									board_visibility = 'Public';
+									board_visibility_icon = 'icon-circle';
+								}
+							%>
+							<button class="btn btn-default btn-sm js-board-visibility" type="button"><i class="<%- board_visibility_icon%>"></i><span class="hidden-xs"><%= board_visibility %></span></button>
+							
+							<button data-toggle="dropdown" class="btn btn-default btn-sm dropdown-toggle active js-board-visibility" type="button"> <span><i class="icon-caret-down cur"></i></span> <span class="sr-only">Toggle Dropdown</span> </button>
+							
+							<ul class="dropdown-menu arrow arrow-right col-xs-push-0">
+								<li class="js-visibility-popup js-dropdown-popup dropdown-popup col-xs-12">          
+									<div class="clearfix text-center"><a class="js-back-to-board-visibility hide pull-left" href="#"><i class="icon-caret-left"></i></a><span class="col-xs-10"><strong>Change Visibility</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
+									</div>
+								</li>
+								<li class="col-xs-12 divider js-visibility-list"></li>
+							</ul>
+					</div>
+	              </li>
+				  <% } else { %>
+					<li class="navbar-btn">
+						<div class="btn-group navbar-btn js-visibility-list-dropdown dropdown">
+							<% 	var board_visibility = '';
+								var board_visibility_icon = '';
+								if(board.attributes.board_visibility == 0) { 
+									board_visibility = 'Private';
+									board_visibility_icon = 'icon-lock';
+								} else if(board.attributes.board_visibility == 1 && board.attributes.organization_id > 0) {
+									board_visibility = 'Organization';
+									board_visibility_icon = 'icon-group';
+								} else if(board.attributes.board_visibility == 2) {
+									board_visibility = 'Public';
+									board_visibility_icon = 'icon-circle';
+								}
+							%>
+							<button class="btn btn-default btn-sm" type="button"><i class="<%- board_visibility_icon%>"></i><span class="hidden-xs"><%= board_visibility %></span></button>
+						</div>
+					</li>
+				  <% } %>
+				  <li>
+					<form name="BoardSubscribeForm" id="BoardSubscribeForm">
+					  <input id="inputBoardSubscribe" name="is_subscribed" type="hidden" value=" <% if(!_.isUndefined(subscriber)) { %> <%- subscriber.attributes.is_subscribed %><%}else{%>0<%}%>">
+					</form> 
+					<% if(!_.isUndefined(subscriber) && subscriber.attributes.is_subscribed) { %>
+					<% if(!_.isEmpty(role_links.where({slug: "subscribe_board"}))){ %>
+					<a href="#" class="js-subscribe-board navbar-btn h4" name="unsubscribe" title="Unsubscribe" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-close"></i><span class="hidden-xs">Unsubscribe</span></a>
+					<% } %>
+					<% } else {%>
+					<% if(!_.isEmpty(role_links.where({slug: "unsubscribe_board"}))){ %>
+					<a href="#" class="js-subscribe-board navbar-btn h4" name="subscribe" title="Subscribe" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-open"></i><span class="hidden-xs">Subscribe</span></a>
+					<% } %>
+					<% } %>
+				  </li>
+				  <li class="js-switch-view"><a href="#" class=" navbar-btn h4 js-switch-grid-view text-muted initialism" title="Grid" data-placement="bottom" data-toggle="tooltip"><i class="icon-th"></i></a></li>
+				  <li class="js-switch-view"><a href="#" class=" navbar-btn h4 js-switch-list-view text-muted initialism" title="List" data-placement="bottom" data-toggle="tooltip"><i class="icon-list-ul"></i></a></li>
+				  <li class="js-switch-view"><a href="#" class=" navbar-btn h4 js-switch-calendar-view text-muted initialism" title="Calendar" data-placement="bottom" data-toggle="tooltip"><i class="icon-calendar"></i></a></li>
+				</ul>
+				<div class="pull-right dropdown navbar-btn"> 
+				  <a data-toggle="dropdown" class=" navbar-btn h4 btn btn-primary dropdown-toggle js-back-setting-response col-sm-offset-1 show" type="button"><i class="icon-cog h3 cur"></i></a>
+				  <ul class="dropdown-menu arrow arrow-right col-xs-12 js-setting-response">
+							<li class="js-list-form"><a class="nav-list-item js-show-filters" href="#"><span class="icon-sm icon-filter icon-type"></span> Filter Cards</a></li>
+							<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+								<% if(!_.isEmpty(role_links.where({slug: "view_archived_lists"})) || !_.isEmpty(role_links.where({slug: "view_archived_cards"}))){ %>
+								<li><a class="nav-list-item js-archived-items" href="#"><span class="icon-sm icon-archive icon-type"></span> Archived Items</a></li>
+								<% } %>
+							<% } %>
+							<% if(!_.isUndefined(authuser.user)){ %>
+							<% if(!_.isEmpty(role_links.where({slug: "view_sync_calendar"}))){ %>
+							<li class="js-sync-google-dropdown inner-dropdown"><a href="#" class="js-syn-google-calendar" data-toggle="dropdown"><span class="icon-calendar"></span>Sync with Google Calendar</a>
+							</li>
+							<% } %>
+							<li class="divider"></li>
+							<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+							<% 
+								var background_color = board.attributes.background_color; 
+								var background_picture_url = board.attributes.background_picture_url; 
+								var background_pattern_url = board.attributes.background_pattern_url; 
+								var preview = ''; 
+								if (!_.isEmpty(background_picture_url) && background_picture_url != 'NULL') { 
+									background_picture_url = background_picture_url.replace("_XXXX.jpg", "_b.jpg");
+									preview = '<span style="background-image:url(' + background_picture_url + ');" class="background-box show well-lg"></span>'; 
+								 } else if (!_.isEmpty(background_pattern_url) && background_pattern_url != 'NULL') { 
+									background_pattern_url = background_pattern_url.replace("_XXXX.jpg", "_b.jpg");
+									preview = '<span style="background-image:url(' + background_pattern_url + ');" class="background-box show well-lg"></span>'; 
+								 } else if (!_.isEmpty(background_color) && background_color != 'NULL') { 
+									preview = '<span style="background-color:' + background_color + '" class=" background-box show well-lg"></span>'; 
+								 }
+							%>
+							<li><a href="#" class="nav-list-item nav-list-sub-item js-change-background"> Change Background</a></li>
+					<% }%>
+					<% if(!is_offline_data) {%>
+							<li class="js-sync-google-dropdown inner-dropdown"><a data-toggle="dropdown" href="#" class="js-show-copy-board">Copy Board</a>
+							</li>
+							<% }%>
+							<% }%>
+							<li class="divider"></li>
+							<li><a href="#" class="js-show-board-modal" data-toggle="modal" data-target="#modalListView">Show Attachments</a></li>
+							<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+							<li><a href="#" class="js-additional-settings">Additional Settings</a></li>
+							<li class="dropdown js-open-dropdown inner-dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Close Board</a>
+							  <ul class="dropdown-menu arrow pull-right">
+								<li class="js-dropdown-popup dropdown-popup">
+								  <div class="clearfix text-center col-xs-12">
+									<span class="col-xs-10"><strong>Close Board</strong></span><a class="js-close-sub-popover pull-right" href="#"><i class="icon-remove"></i></a>						
+								  </div>
+								  <div class="col-xs-12 divider"></div>
+								  <div class="col-xs-12">
+									<form class="normal col-xs-12" name="BoardCloseForm" id="BoardCloseForm">
+									  <input id="inputBoardClose" name="is_closed" type="hidden" value="true">
+									  <p>You can reopen the board by clicking the "Boards" menu from the header, selecting "View Closed Boards", finding the board and clicking "Reopen".</p>
+									  <div class="submit">
+										<input type="submit" value="Close" id="submitBoardClose" class="btn btn-primary js-close-board">
+									  </div>
+									</form>
+								  </div>
+								</li>
+							  </ul>
+							</li>
+							<% } %>
+				  </ul>
+				</div>
+			  </div>
+			  </nav>
+		</div>
+	</div>

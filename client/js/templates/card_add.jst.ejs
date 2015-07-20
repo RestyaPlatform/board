@@ -1,0 +1,23 @@
+<form method="post" role="form" class="form-horizontal js-cardAddForm" name="cardAddForm">
+	<input type="hidden" name="board_id" value="<%- model.attributes.board_id %>">
+	<input type="hidden" name="list_id" class="js-card-add-list" value="<%- model.attributes.list_id %>">
+	<input type="hidden" name="user_ids" class="js-card-user-ids" value="">
+	<input type="hidden" name="card_labels" class="js-card-add-labels" value="">
+	<input type="hidden" name="position" class="js-card-add-position" value="">
+	<div class="form-group">
+		<textarea placeholder="Add a Card" rows="3" class="form-control" name="name" required><%- name %></textarea>
+	</div>
+	<div class="row">
+		<div class="pull-left">
+			<input type="submit" value="Add" class="btn btn-primary js-cardAddForm-btn">
+		</div>
+		<ul class="list-unstyled pull-right">
+			<li class="pull-left">
+				<a title="remove" href="#" class="btn btn-link js-cancel-card-add"><i class="icon-remove text-muted"></i></a>
+			</li>
+			<li class="pull-right dropdown inner-dropdown">
+				<a title="Options" data-toggle="dropdown" class="btn btn-link btn-block dropdown-toggle js-show-card-action-list" href="#"><i class="icon-cog text-muted"></i></a>
+			</li>
+		</ul>
+	</div>
+</form>

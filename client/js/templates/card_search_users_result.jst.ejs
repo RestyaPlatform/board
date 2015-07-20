@@ -1,0 +1,18 @@
+<%
+	if(user != null){	
+%>
+	<a title="<%- user.attributes.username %>" href="#" class="<%if(!_.isUndefined(user.attributes.is_existing_user) || is_added_user){ %>js-remove-card-member<%} else{ %>js-add-card-member<%}%>" <%if(!_.isUndefined(user.attributes.is_existing_user) || is_added_user){ %> data-card-user-id="<%-added_user.id %><%}%>" data-user-name="<%- user.attributes.username %>" data-user-initial="<%-user.attributes.initials %>" data-user-profile-picture-path="<%=user.attributes.profile_picture_path%>" data-user-id="<% if (!_.isUndefined(user.attributes.user_id)) { %><%- user.attributes.user_id %><%}else{%><%- user.attributes.id %><%}%>">
+		<span>
+			<% if(!_.isEmpty(user.attributes.profile_picture_path)) { 
+				var user_id = (!_.isUndefined(user.attributes.user_id))? user.attributes.user_id:user.attributes.id ;
+				var profile_picture_path = user.showImage('User', user_id, 'micro_thumb' );
+			%>
+				<img src="<%= profile_picture_path %>" alt="[Image: <%-user.attributes.username %>]" title="<%-user.attributes.username %>" class="img-rounded img-responsive avatar avatar-sm">
+			<% } else {%>
+				<i class="avatar avatar-color-194 avatar-sm img-rounded"><%-user.attributes.initials %></i>
+			<% } %>
+		</span> <span><%- user.attributes.username %></span>
+	<% if(!_.isUndefined(user.attributes.is_existing_user) || is_added_user){ %><i class="icon-ok"></i><%}%></a>
+<% } else{ %>
+	<div class="col-xs-12">No users available.</div>
+<% } %>

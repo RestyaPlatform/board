@@ -1,0 +1,42 @@
+<%
+	var is_subscribed = '<i class="icon-ok hide"></i>';
+    var subscribe_class = 'js-list-subscribe';
+	var subscribe = subscribers.findWhere({
+		 user_id: parseInt(authuser.id)
+	 });
+	 var subscribe_id = '';
+	 if (!_.isEmpty(subscribe) && subscribe.attributes.is_subscribed === true) {
+		 is_subscribed = '<i class="icon-ok"></i>';
+		 subscribe_class = 'js-list-unsubscribe';
+		 subscribe_id = subscribe.attributes.id;
+	 }
+%>
+<li class="text-center"><strong>List Actions</strong></li>
+<li class="divider"></li>
+<% if(!_.isEmpty(role_links.where({slug: "add_card"}))){ %>
+	<li><a href="#" title="Add Card" class="js-show-add-card-form">Add Card</a></li>
+<% } %>	
+<% if(!_.isEmpty(role_links.where({slug: "add_list"})) && !is_offline_data){ %>
+	<li class="js-hide-on-offline"><a href="#" title="Copy List" class="js-show-copy-list-form">Copy List</a></li>
+<% } %>	
+<% if(!_.isEmpty(role_links.where({slug: "edit_list"}))){ %>
+	<li><a href="#" title="Move List" class="js-show-move-list-form" data-list-id="<%- list.id %>">Move List</a></li>
+<% } %>		
+<% if(!_.isEmpty(role_links.where({slug: "subscribe_list"}))){ %>
+	<li><a href="#" title="Subscribe" class="highlight-icon <%= subscribe_class %>" data-list-id="<%- list.id %>" data-subscribe-id="<%- subscribe_id %>"><span class="js-subscribe-text">Subscribe<%if (!_.isEmpty(subscribe) && subscribe.attributes.is_subscribed === true) {%>d<%}%></span> <%= is_subscribed %></a></li>
+<% } %>	
+<li class="divider"></li>
+<% if(!_.isEmpty(role_links.where({slug: "move_list_cards"}))){ %>
+	<li><a href="#" title="Move All Cards in This List" class="js-show-move-card-list-form" data-list-id="<%- list.id %>">Move All Cards in This List</a></li>
+<% } %>
+<% if(!_.isEmpty(role_links.where({slug: "edit_list"}))){ %>
+	<li><a href="#" title="Archive All Cards in This List" class="js-show-confirm-archive-cards" data-list-id="<%- list.id %>">Archive All Cards in This List</a></li>
+<% } %>
+<li class="divider"></li>
+<li><a href="#" title="Show Attachments" class="js-show-list-modal">Show Attachments</a></li>
+<% if(!_.isEmpty(role_links.where({slug: "edit_list"}))){ %>
+	<li><a href="#" title="Archive This List" class="js-show-confirm-archive-list" data-list-id="<%- list.id %>">Archive This List</a></li>
+<% } %>
+<% if(!_.isEmpty(role_links.where({slug: "delete_list"}))){ %>
+<li><a href="#" title="Delete This List" class="js-show-confirm-list-delete" data-list-id="<%- list.id %>">Delete This List</a></li>
+<% } %>

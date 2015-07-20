@@ -1,0 +1,19 @@
+<li class="col-xs-12"><input class="js-input-board-visibility" name="board_visibility" type="hidden" value="<%- board.attributes.board_visibility %>">
+<input class="js-input-board-organization-id" name="organization_id" type="hidden" value="<%- board.attributes.organization_id %>">
+<a href="#" name="private" class="btn-default show row small well-xs js-select-visibility"><span class="show text-primary col-xs-12 navbar-btn h5">Private
+  <% if(board.attributes.board_visibility == 0){ %>
+  <i class="icon-check"></i>
+  <%}%>
+  </span><span class="col-xs-12 navbar-btn">This board is private. Only people added to the board can view and edit it.</span></a></li>
+  <li class="divider col-xs-12"></li>
+<li class="col-xs-12"><a href="#" name="org" class="show row small well-xs js-select-visibility disabled"><span class="show text-primary col-xs-12 navbar-btn h5">Organization
+  <% if(board.attributes.board_visibility == 1){ %>
+  <i class="icon-check"></i>
+  <%}%>
+  </span> <span class="col-xs-12 navbar-btn">This board is visible to members of the organization. Only people added to the board can edit. <span class="error">The board must be added to an org to enable this.</span></span></a></li>
+  <li class="divider col-xs-12"></li>
+<li class="col-xs-12"><a href="#" name="public" class="show row small well-xs js-select-visibility"><span class="show text-primary col-xs-12 navbar-btn h5">Public
+  <% if(board.attributes.board_visibility == 2){ %>
+  <i class="icon-check"></i>
+  <%}%>
+  </span> <span class="col-xs-12 navbar-btn">This board is public. It's visible to anyone with the link and will show up in search engines like Google. Only people added to the board can edit.</span></a></li>

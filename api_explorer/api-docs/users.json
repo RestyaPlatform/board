@@ -1,0 +1,418 @@
+{
+    "apiVersion": "1.0.0",
+    "swaggerVersion": "1.2",
+    "basePath": "/api",
+    "resourcePath": "/user",
+    "produces": [
+        "application/json"
+    ],
+    "apis": [
+        {
+            "path": "/v1/users.json",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "Users",
+                    "notes": "Returns Users listing",
+                    "type": "Users",
+                    "nickname": "usersListing",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 404,
+                            "message": "User not found"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/users/{userId}.json",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "UserView",
+                    "notes": "Returns Users view",
+                    "type": "Users",
+                    "nickname": "usersView",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "userId",
+                            "description": "Selected user ID",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 404,
+                            "message": "User not found"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/oauth.json",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "Get Oauth token",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "oauth",
+                    "authorizations": {},
+                    "parameters": []
+                }
+            ]
+        },
+        {
+            "path": "/v1/users/logout.json",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "Logs out current logged in user session",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "logoutUser",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/users/forgotpassword.json",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Enter your Email, and we will send resetting your password.",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "forgotPassword",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Created Forgot Password object",
+                            "required": true,
+                            "type": "forgotPassword",
+                            "paramType": "body"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/users/login.json",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Logs user into the system",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "loginUser",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Created user object",
+                            "required": true,
+                            "type": "Login",
+                            "paramType": "body"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/users/register.json",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Creates user",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "createUsers",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Created user object",
+                            "required": true,
+                            "type": "User",
+                            "paramType": "body"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/users/{userId}.json",
+            "operations": [
+                {
+                    "method": "PUT",
+                    "summary": "Edit User",
+                    "notes": "Update the users details",
+                    "type": "User",
+                    "nickname": "editUsers",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "userId",
+                            "description": "Current Login user ID",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Edit user object",
+                            "required": true,
+                            "type": "editUser",
+                            "paramType": "body"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 404,
+                            "message": "User not found"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/users/{userId}/changepassword.json",
+            "operations": [
+                {
+                    "method": "PUT",
+                    "summary": "Change Password",
+                    "notes": "This can only be done by the logged in user.",
+                    "type": "void",
+                    "nickname": "updateUser",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "userId",
+                            "description": "Current Login user ID",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Change Password user object",
+                            "required": true,
+                            "type": "changepassword",
+                            "paramType": "body"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 400,
+                            "message": "Invalid username supplied"
+                        },
+                        {
+                            "code": 404,
+                            "message": "User not found"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/users/{userId}/activities.json",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "Activities",
+                    "notes": "Returns User Activities",
+                    "type": "Activities",
+                    "nickname": "Activities listing",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "userId",
+                            "description": "Selected user ID",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/users/{userId}.json",
+            "operations": [
+                {
+                    "method": "DELETE",
+                    "summary": "Delete the user",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "deleteUser",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "userId",
+                            "description": "User ID to delete",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "models": {
+        "User": {
+            "id": "User",
+            "properties": {
+                "username": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "is_agree_terms_and_conditions": {
+                    "type": "string"
+                }
+            }
+        },
+        "forgotPassword": {
+            "id": "forgotPassword",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "Login": {
+            "id": "Login",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "changepassword": {
+            "id": "changepassword",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "oldpassword": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "confirmpassword": {
+                    "type": "string"
+                }
+            }
+        },
+        "editUser": {
+            "id": "editUser",
+            "properties": {
+                "username": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "dob": {
+                    "type": "string"
+                },
+                "gender_id": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

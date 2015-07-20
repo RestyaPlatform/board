@@ -1,0 +1,43 @@
+<% if(board != null){	
+	var style = '';	
+	board.board_subscribers.add(board.attributes.boards_subscribers);
+	var subscriber = board.board_subscribers.findWhere({
+	board_id: parseInt(board.id),
+	user_id: parseInt(authuser.user.id)
+	});
+	if (board.attributes.background_picture_url) {
+		var background_picture_url = board.attributes.background_picture_url.replace("_XXXX.jpg", "_s.jpg");
+		style = 'background-image:url(' + background_picture_url + '); background-size:cover;';
+	} else if (board.attributes.background_pattern_url) {
+		var background_pattern_url = board.attributes.background_pattern_url.replace("_XXXX.jpg", "_s.jpg");
+		style = 'background-image:url(' + background_pattern_url + '); background-size:cover;';
+	} else if (board.attributes.background_color){
+		style = 'background-color:' + board.attributes.background_color + ';color:#ffffff;';
+	}
+%>
+<a  href="#/board/<%- board.attributes.id %>" class="highlight-icon clearfix">
+	<span style="<%= style %>" class="preview-thumbnail"></span>
+	<span class="details navbar-btn">
+		<span title="<%- board.attributes.name %>" class="board-list-item-name htruncate btn-block navbar-btn "><%-  board.attributes.name %></span><span class="pull-right hide js-stared-conatiner js-stared-conatiner-<%- board.attributes.id %>">
+			<%
+				if (!_.isUndefined(subscriber) && !_.isEmpty(subscriber) && subscriber.attributes.is_subscribe === false) {
+			%>
+				<span title="Click to star this board. It will show up at top of your boards list." name="unsubscribe" class="icon-star js-star-board" data-subscriber_id="<%- subscriber.attributes.id %>" data-board_id="<%- board.attributes.id %>"></span>
+		  <%
+			} else {
+		  %>
+				<span title="Click to star this board. It will show up at top of your boards list." name="subscribe" class="icon-star-empty js-star-board" data-subscriber_id="<% if(_.isUndefined(subscriber) || _.isEmpty(subscriber)) { %>  <%} else { %> <%-subscriber.id%> <%} %>" data-board_id="<%- board.attributes.id %>"></span>
+		<%		
+			}
+		%>
+		
+		</span>
+	</span>
+</a>
+<% }else{ %>
+ <div class="alert alert-info">
+	No boards available.
+</div>
+<%}%>	
+		
+  

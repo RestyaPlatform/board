@@ -1,0 +1,32 @@
+<% if(card != null && !_.isEmpty(card)){ %>
+<td>
+ <ul class="unstyled  hide js-card-labels">
+</ul>
+<ul class="unstyled  js-card-users hide">
+</ul>
+<ul class="unstyled  js-card-due hide">
+ <li></li>
+</ul>
+<div id="js-card-<%- card.attributes.id %>" class="panel cur">
+	<div class="panel-body"> 
+		<ul class="list-inline navbar-btn clearfix">
+		  <li class="col-md-1 col-xs-2"><span class="card-id">#<%- card.attributes.id %></span></li>
+		  <li class="col-md-4 col-xs-3"><%- card.attributes.name %></li>
+		  <li class="col-md-4 col-xs-3"><%- card.list_name %></li>
+		  <li class="col-md-3 col-xs-4">
+			<ul class="list-inline text-muted clearfix">
+				  <% 
+					if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
+					var cards_subscribers = card.cards_subscribers.where({ is_subscribed: true, user_id: parseInt(authuser.user.id) }); 
+					}
+					if(!_.isUndefined(cards_subscribers) && cards_subscribers > 0){ %>
+					<li><small><span class="icon-eye-open"></span></small></li><% } %><% if(card.attributes.card_voter_count > 0){ %><li title="<%- card.attributes.card_voter_count %> Votes" data-placement="bottom" data-toggle="tooltip"><small><span class="icon-thumbs-up"></span><span><%- card.attributes.card_voter_count %>votes</span></small></li><% } %><% if(card.attributes.description !== "" && card.attributes.description !== null ){ %><li title="Description" data-placement="bottom" data-toggle="tooltip"><small><span class="icon-align-left"></span></small></li><% } %><% if(card.attributes.comment_count > 0){ %><li title="<%- card.attributes.comment_count %> comments" data-placement="bottom" data-toggle="tooltip"><small><span class="icon-comment"></span><span><%- card.attributes.comment_count %></span></small></li><% } %><% if(card.attributes.checklist_item_count > 0){ %><li title="<%- card.attributes.checklist_item_completed_count %> checklist completed out of <%- card.attributes.checklist_item_count %>" data-placement="bottom" data-toggle="tooltip"><small><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %><div class="label label-success"> <% } %><span class="icon-list-ul"></span><span><%- card.attributes.checklist_item_completed_count %>/<%- card.attributes.checklist_item_count %></span><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %></div><% } %></small></li><% } %><% if(card.attributes.due_date > 0){ %><li title="Due Date" data-placement="bottom" data-toggle="tooltip"><small><span class="icon-time"></span><span><%- card.attributes.due_date %></span></small></li><% } %><% if(!_.isEmpty(card.attachments) && card.attachments.length > 0){ %><li title="<%- card.attachments.length %> Attachments" data-placement="bottom" data-toggle="tooltip"><small><span class="icon-paper-clip"></span> <span><%- card.attachments.length %></span></small></li><% } %><% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){ %><li title="Due Date" data-placement="bottom" data-toggle="tooltip"><small><span class="label label-default">
+					<% var n = new Date(card.attributes.due_date).toString(); %>
+					<%= dateFormat(n, 'mediumDate')  %></span></small></li><% } %>
+			</ul>
+		  </li>
+		</ul>
+	</div>
+</div>
+</td>
+<% } else{ %><td colspan="4"  class="text-center">No cards available.</td><% } %>

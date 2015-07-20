@@ -1,0 +1,29 @@
+<%
+	var private_visibility = "";
+	var org_visibility = "";
+	var public_visibility = "";
+	
+	if (visibility == 0) {
+		private_visibility = '<i class="icon-check"></i>';
+	} else if (visibility == 1) {
+		org_visibility = '<i class="icon-check"></i>';
+	} else if (visibility == 2) {
+		public_visibility = '<i class="icon-check"></i>';
+	}
+%>
+	<li class="col-xs-12 btn-block">
+		<a href="#" name="private" class="<%  if (visibility == 0) { %> btn-default <% } %> js-select h6 navbar-btn"> 
+			<span class="show text-primary navbar-btn h5"> Private <%= private_visibility %> </span>
+			<span class="show"> This board is private. Only people added to the board can view and edit it. </span>
+		</a>
+	</li>
+	<li class="col-xs-12 divider navbar-btn"> </li>
+	<li class="col-xs-12 btn-block"> 
+		<a href="#" name="org" class="<%  if (visibility == 1) { %> btn-default <% } %> js-select js-show-add-organization-form h6 navbar-btn">
+			<span class="show text-primary navbar-btn h5"> Organization <%= org_visibility %> </span>
+			<span class="show"> This board is visible to members of the organization. Only people added to the board can edit. <span class="error"> The board must be added to an org to enable this. </span> </span> </a>
+	</li>
+	<li class="col-xs-12 divider navbar-btn"> </li>
+	<li class="col-xs-12 btn-block"> 
+		<a href="#" name="public" class="<%  if (visibility == 2) { %> btn-default <% } %> js-select h6 navbar-btn"><span class="show text-primary navbar-btn h5"> Public <%= public_visibility %> </span><span class="show"> This board is public. It's visible to anyone with the link and will show up in search engines like Google.  Only people added to the board can edit.  </span> </a> 
+	</li>

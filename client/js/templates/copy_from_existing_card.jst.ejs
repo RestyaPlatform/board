@@ -1,0 +1,66 @@
+<li><h4 class="text-center">Copy Card</h4></li>
+<li class="divider"></li>
+<li>
+	<form role="form" method="post" class="js-copy-existing-card-form col-xs-12">
+		<div class="col-xs-12">
+			<div class="form-group">
+				<label for="card-title">Title</label>
+				<textarea id="card-title" class="form-control" rows="3" name="name"><%-card.attributes.name%></textarea>
+			</div>
+		</div>
+		<div class="js-show-move-card-form-response col-xs-12">
+		<%
+			var content = '';
+			var content_board = '<div class="form-group"><select name="board_id" class="js-change-list form-control cur">';
+			var content_list = '<div class="form-group"><select name="list_id" class="js-change-position form-control cur">';
+			var content_position = '<div class="form-group"><select name="position" class="js-position form-control cur">';
+			var is_first = true;
+			boards.each(function(board) {
+				 if (card.attributes.board_id == board.id) {
+				 	 is_first = true;
+					 content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) + '(current)</option>';
+				 } else {
+					 content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + '</option>';
+				 }
+				 if(is_first){
+				 	 is_first = false;
+					 content_list = '<div class="form-group"><select name="list_id" class="js-change-position form-control cur">';
+					 board.lists.add(board.attributes.lists);
+					 var is_first_list = true;
+					 board.lists.each(function(list) {
+						is_first = false;
+						 if (card.attributes.list_id == list.id) {
+						 	 is_first_list = true;
+							 content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + '(current)</option>';
+							 board.cards.add(board.attributes.cards);
+						 } else {
+							 content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+						 }
+						  if(is_first_list){
+						  	content_position = '<div class="form-group"><select name="position" class="js-position form-control cur">';
+							is_first_list = false;
+							for(var i = 1; i <= list.attributes.card_count; i++){
+								content_position += '<option value="' + i + '">' + i+ '</option>';
+							}
+						}
+				
+					 });
+				 
+				 }
+			});
+			content_board += '</select></div>';
+			content_list += '</select></div>';
+			content_position += '</select></div>';
+			content = content_board + content_list + content_position;
+		%>
+		<%= content%>
+		</div>
+		<div class="form-group col-xs-12 clearfix">
+			<label class="sr-only">Create card</label>
+			<input name="copied_card_id" type="hidden" value="<%-card.attributes.id%>"/>
+			<input type="submit" class="btn btn-primary col-xs-12 js-copy-existing-card" value="Create card">
+		</div>
+	</form>
+</li>
+
+				

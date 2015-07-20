@@ -1,0 +1,57 @@
+<div class="clearfix">
+<div class="clearfix text-center col-xs-12">
+	<a href="#" class="js-back-to-sidebar pull-left btn btn-xs btn-link">
+		<i class="icon-caret-left"></i>
+	</a>
+	<span class="col-xs-10 navbar-btn"><strong>Copy Board</strong></span>
+</div>
+<div class="col-xs-12 divider"></div>
+<div class="col-xs-12">
+<form class="normal" name="BoardCopyForm" id="BoardCopyForm" method="POST">
+  <fieldset>
+  <div class="form-group required">
+	<label for="inputCopyBoardName">Name</label>
+	<input type="text" autocomplete="off" id="inputCopyBoardName" name="name" class="form-control input-sm" required>
+  </div>
+  <input name="board_visibility"  id="inputBoardCopyVisibility" type="hidden" value="<%-board.attributes.board_visibility %>">
+  <div id="js-board-add-organization"></div>
+	<div class="clearfix js-open-dropdown js-board-add-dropdown dropdown js-visibility-chooser-copy-board-dropdown"> 
+		<span class="js-visibility-container">
+			<span class="pull-left">
+				<span class="pull-left navbar-btn">This board will be </span>
+			</span>
+			<div class="btn-group pull-right"> 
+				<button type="button" class="btn btn-default btn-sm js-change-visibility" id="js-change-visible-content"><% if(board.attributes.board_visibility == 0) { %>
+					<i class="icon-lock"></i>Private
+				<% } else if(board.attributes.board_visibility == 1) { %>
+					<i class="icon-group"></i>Organization
+				<% } else if(board.attributes.board_visibility == 2) { %>
+					<i class="icon-circle"></i>Public
+				<% } %></button>
+				<button type="button" class="btn btn-default btn-sm dropdown-toggle js-change-visibility" data-toggle="dropdown" aria-expanded="false">
+					<span><i class="icon-caret-down"></i></span>
+					<span class="sr-only">Toggle Dropdown</span>
+				</button>
+			</div>
+		</span>
+		<ul class="dropdown-menu arrow arrow-right">
+			<li class="text-center">
+				<strong>Change Visibility</strong>
+				<span href="#" class="js-close-sidebar-popover pull-right col-xs-2"><i class="icon-remove cur"></i></span>
+			</li>
+			<li class="col-xs-12 divider js-visibility-chooser-copy-board"></li>
+		</ul>
+	</div>
+  <div class="form-group">
+	<div class="checkbox">
+		<input id="inputKeepCards" type="checkbox" checked="checked" value="1" name="keepCards" class="hide">
+		<label for="inputKeepCards">Keep Cards</label>
+	</div>
+  </div>
+  <div class="submit">
+	<input type="submit" value="Create" id="submitBoardCopy" class="btn btn-primary">
+  </div>
+  </fieldset>
+</form>
+</div>
+</div>

@@ -1,0 +1,10 @@
+<% if (name == 'private') {
+%>
+		<span title="Private" class="icon-lock text-primary"></span>Private	
+<%	} else if (name == 'public') {
+%>
+		<span title="Public" class="icon-circle text-primary"></span>Public
+<%	} else if (!_.isUndefined(data.organization_id)) {
+%>
+		<span title="Organization" class="icon-group text-primary"></span>Organization
+<%	} %>

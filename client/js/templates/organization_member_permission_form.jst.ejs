@@ -1,0 +1,49 @@
+<%
+	var change_normal = '';
+	var change_admin = '';
+	if (organization_user.collection.where({
+		is_admin: true
+	}).length > 1) {
+		change_normal = 'navbar-btn h6 js-edit-organization-member-permission-to-normal';
+	} else  {
+		change_admin = 'navbar-btn h6 js-edit-organization-member-permission-to-admin';
+	}
+%>
+<li class="col-xs-12 text-center clearfix">
+	<div class="clearfix">
+		<span class="col-xs-10"><strong>Change Permissions</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
+	</div>
+</li>
+<li class="divider col-xs-12 btn-block"></li>
+<li class="col-xs-12 btn-block">
+	<%				
+		if(!_.isEmpty(change_admin)){
+	%>
+	<a class="h6 navbar-btn js-edit-organization-member-permission-to-admin<%  if(organization_user.attributes.is_admin == true || organization_user.attributes.is_admin == 't'){ %> btn-default <% } %>" data-organizations_user_id="<%- organization_user.organizations_user_id %>" href="#">
+		<span class="show text-primary navbar-btn h5">Owner <%  if(organization_user.attributes.is_admin == true || organization_user.attributes.is_admin == 't'){ %><i class="icon-check well-sm"></i><%}%></span>
+		<span class="show">Can view, create and edit org boards, and change settings for the organization.</span>
+	</a>
+	<% } else { %>
+		<a class="h6 navbar-btn<%  if(organization_user.attributes.is_admin == true || organization_user.attributes.is_admin == 't'){ %> btn-default <% } %>">
+			<span class="show text-primary navbar-btn h5">Owner <%  if(organization_user.attributes.is_admin == true || organization_user.attributes.is_admin == 't'){ %><i class="icon-check well-sm"></i><%}%></span>
+			<span class="show">Can view, create and edit org boards, and change settings for the organization.</span>
+		</a>
+	<% } %>
+</li>
+<li class="divider col-xs-12 btn-block"></li>
+<li class="col-xs-12 btn-block">
+	<%				
+		if(!_.isEmpty(change_normal)){
+	%>
+	<a class="<%= change_normal %><%  if(organization_user.attributes.is_admin == false || organization_user.attributes.is_admin == 'f'){ %> btn-default <% } %>" data-organizations_user_id="<%- organization_user.organizations_user_id %>" href="#">
+		<span class="show text-primary navbar-btn h5">Member <%  if(organization_user.attributes.is_admin == false || organization_user.attributes.is_admin == 'f'){ %><i class="icon-check well-sm"></i><%}%></span>
+		<span class="show">Can view, create, and edit org boards, but not change settings.</span>
+	</a>
+	<% } else { %>
+	<a class="h6 navbar-btn <%  if(organization_user.attributes.is_admin == false || organization_user.attributes.is_admin == 'f'){ %> btn-default <% } %>">
+		<span class="show text-primary navbar-btn h5">Member<%  if(organization_user.attributes.is_admin == false || organization_user.attributes.is_admin == 'f'){ %><i class="icon-check well-sm"></i><%}%></span>
+		<span class="show">Can view, create, and edit org boards, but not change settings.</span>
+		</a>
+	<% } %>
+</li>
+

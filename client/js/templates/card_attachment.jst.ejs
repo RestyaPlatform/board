@@ -1,0 +1,31 @@
+<a target="_blank" href="<%= attachment.downloadLink('download', attachment.attributes.id) %>" class="pull-left navbar-btn img-thumbnail"><% if(attachment.attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ 
+var picture_path = attachment.showImage('CardAttachment', attachment.attributes.id, 'large_thumb' );
+%>
+<img src="<%= picture_path %>"><% } else{  var extension = attachment.attributes.name.split('.'); %><p class="thumb-img"><% if(!_.isUndefined(extension) && extension.length > 1) { %><%- extension[extension.length - 1].toUpperCase() %><% }%></p><% }%></a>
+
+<div class="clearfix btn-block col-xs-12">
+<a target="_blank" href="<%= attachment.downloadLink('download', attachment.attributes.id) %>" title="<%- attachment.attributes.name %>"><span class="show htruncate col-xs-11 nav"><%- attachment.attributes.name %></span><span class="show btn-block col-xs-12">Added <small class="text-muted"><abbr class="timeago" title="<%- attachment.attributes.created %>"><%- attachment.attributes.created %></abbr></small></span></a>
+<%if(!_.isUndefined(authuser.user)) {%>
+	<div class="btn-toolbar navbar-btn">
+		<div class="btn-group btn-group-xs navbar-btn">
+			<div class="btn btn-primary">
+			<% 
+				var download_link = attachment.downloadLink('download', attachment.attributes.id);
+			%>
+				<a target="_blank" href="<%= download_link %>" title="Download">
+				<i class="icon-arrow-down cur icon-light"></i></a>
+			</div>
+				<% if(!_.isEmpty(role_links.where({slug: "remove_card_attachment"}))){ %> 
+					<div class="dropdown pull-left">
+						<a href="#" title="Delete" class="btn btn-default btn-xs js-show-confirm-delete-attachment dropdown-toggle" data-toggle="dropdown">
+							<i class="icon-remove cur"></i>
+						</a>
+						<ul class="dropdown-menu arrow list-unstyled">
+							<li class="js-dropdown-popup js-attachment-confirm-respons-<%- attachment.id %>"></li>
+						</ul>
+					</div>
+				<% } %>
+		</div>
+	</div>
+<% } %>
+</div>

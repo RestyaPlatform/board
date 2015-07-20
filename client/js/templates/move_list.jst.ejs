@@ -1,0 +1,43 @@
+<%
+var content_board = '<div class="form-group clearfix col-xs-12"><select name="board_id" class="js-move-change-list col-xs-12 form-control input-sm cur">';
+var content_position = '<div class="form-group clearfix col-xs-12"><select name="list_id" id="list_position" class="js-move-change-position col-xs-12 form-control input-sm cur">';
+var board_lists = new App.ListCollection();
+board_lists.sortByColumn('position');
+var current_position = board_lists.indexOf(board_lists.findWhere({id: list.attributes.id})) + 1;
+if(current_position == 0){
+	current_position = 1;
+}
+boards.each(function(board) {
+	if (list.attributes.board_id == board.id) {
+		var list_count = board.lists.where({is_archived: false, is_deleted: false}).length;
+		content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) + ' (current)</option>';
+		for(var i = 1; i <= list_count; i++) {
+			if (i == list.attributes.position) {
+				content_position += '<option value="' + i + '" selected="selected">' + i + ' (current)</option>';
+			} else {
+				content_position += '<option value="' + i + '">' + i+ '</option>';
+			}
+		}
+		if (list.attributes.board_id != board.attributes.id) {
+			var next_position = parseInt(list_count) + 1;
+			content_position += '<option value="' + next_position + '">' + next_position+ '</option>';
+		}
+	} else {
+		if (board.attributes.is_closed == false || board.attributes.is_closed == 'f') {
+			content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + '</option>';
+		}
+	}
+
+});
+content_board += '</select></div>';
+content_position += '</select></div>';
+var content = content_board + content_position;
+%>
+<div class="clearfix text-center col-xs-12"><a data-list-id="268" class="js-back-to-list-actions pull-left" href="#"><i class="icon-caret-left"></i></a><span class="col-xs-10"><strong>Move List</strong></span><a class="js-close-popup pull-right" href="#"><i class="icon-remove"></i></a></div><div class="col-xs-12 divider"></div>
+<form role="form" class="js-move-list" name="MoveListForm" id="MoveListForm">
+<%= content %>
+  <div class="form-group clearfix panel-body">
+	<label class="sr-only">Move</label>
+	<input type="submit" id="submitListMove" class="btn btn-primary col-xs-12" value="Move" />
+  </div>
+</form>

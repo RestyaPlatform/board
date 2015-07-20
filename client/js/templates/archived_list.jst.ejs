@@ -1,0 +1,5 @@
+<% if(list != null){ %>
+<span class="highlight-icon pull-left"><%- list.attributes.name %></span><div class="pull-right"><a title="Send to board" class="js-send-list-to-board" data-list_id="<%- list.attributes.id %>"><i class="icon-reply"></i></a><a title="Delete" class="js-delete-archived-list" data-list_id="<%- list.attributes.id %>"><i class="icon-remove btn btn-link"></i></a></div>
+<% }else{ %>
+	No lists available.
+<%}%>

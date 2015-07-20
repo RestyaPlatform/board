@@ -1,0 +1,100 @@
+<% if(!_.isEmpty(activity) && activity != null){ %> 
+<% 
+	var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + _.escape(activity.attributes.card_name) + '</a>';
+	if(activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
+		activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
+		activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', _.escape(activity.attributes.label_name));
+		activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', _.escape(activity.attributes.card_name));
+		activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', _.escape(activity.attributes.card_description));
+		activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', _.escape(activity.attributes.list_name));
+		activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', _.escape(activity.attributes.board_name));
+		activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', _.escape(activity.attributes.username));
+		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', _.escape(activity.attributes.checklist_item_name));
+		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', _.escape(activity.attributes.checklist_item_parent_name));
+		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
+	} else {
+			var comment = activity.attributes.username + ' commented in card ' + cardLink;
+	}
+%>
+<div class="media">
+	<a data-placement="bottom" title="<%-activity.attributes.username %>" data-toggle="tooltip" class="js-tooltip pull-left" href="#/user/<%- activity.attributes.user_id %>">
+		<% if(!_.isEmpty(activity.attributes.profile_picture_path)) {
+			var profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'small_thumb' );
+		%>
+			<img src="<%=profile_picture_path %>" alt="[Image: <%-activity.attributes.username %>]" title="<%-activity.attributes.username %>" class="img-rounded img-responsive">
+		<% } else {%> 
+			<i class="avatar avatar-color-194 img-rounded"><%- activity.attributes.initials %></i>
+		<% } %>
+	</a>
+	<div class="media-body">
+    	<% if(activity.attributes.type != 'add_comment' && activity.attributes.type != 'add_card_duedate') { %>
+		<div class="media-heading">			
+            <span class="js-activity-<%- activity.attributes.id %>">
+				<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
+					<span><%= comment %></span>
+					<%= converter.makeHtml(makeLink(_.escape(activity.attributes.comment), activity.attributes.board_id)) %>
+				<% } else{%>
+					<%= converter.makeHtml(makeLink(activity.attributes.comment, activity.attributes.board_id)) %> 
+				<% } %>
+			</span>
+            <% if(activity.attributes.difference != null) { %>
+                <div class="thumbnail"><%= activity.attributes.difference %></div>
+            <% } %>
+		</div>   
+        <% } else {%>             
+		<div class="col-xs-12 row">
+			<div class="<% if(_.isUndefined(activity.from_footer)) { %>panel<%}%>">
+				<div class="panel-body">
+					<span class="js-activity-<%- activity.attributes.id %>">
+						<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
+							<span><%= comment %></span>
+							<%= converter.makeHtml(makeLink(_.escape(activity.attributes.comment), activity.attributes.board_id)) %>
+						<% } else{%>
+							<%= converter.makeHtml(makeLink(activity.attributes.comment, activity.attributes.board_id)) %> 
+						<% } %>
+					</span>
+					<% if(activity.attributes.difference != null && activity.attributes.type != 'change_background' && activity.attributes.type != 'add_background' && activity.attributes.type != 'change_visibility' && activity.attributes.type != 'edit_card_duedate'&& activity.attributes.type != 'add_card_desc' && activity.attributes.type != 'update_card_checklist_item' && activity.attributes.type != 'change_card_position') { %>
+						<div class="thumbnail"><%= activity.attributes.difference %></div>
+					<% } %>
+					
+				</div>
+			</div>		
+		</div>
+        <% } %>
+	</div>
+</div>
+<div class="clearfix col-xs-12">
+	<div class="clearfix col-xs-12">
+		<small class="col-xs-12 pull-left">
+			<abbr class="timeago pull-left text-muted" title="<%- activity.attributes.created %>"><%- activity.attributes.created %></abbr><a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;on&nbsp;<%- activity.attributes.board_name %></a>
+					<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all") { %>
+						<div class="js-acticity-action-<%- activity.attributes.id %>">
+							<ul class="list-inline col-xs-offset-0">
+							<% if(!_.isEmpty(role_links.where({slug: "edit_comment"}))){ %>
+								<li><a title="Edit" class="js-show-edit-activity js-edit-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-edit"></i>Edit</a></li>
+							<% } %> 
+								<li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-repeat"></i>Reply</a></li>
+							<% if(!_.isEmpty(role_links.where({slug: "delete_comment"}))){ %>								
+									<li class="dropdown">
+										<a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete" data-toggle="dropdown" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-remove"></i>Delete</a>
+										<ul class="dropdown-menu arrow arrow-right">
+											<li id="js-acticity-actions-response-<%- activity.attributes.id %>" class="js-dropdown-popup dropdown-popup"></li>
+										</ul>
+									</li>
+								
+							<% } %>
+							</ul>
+						</div>
+					<% } else if(activity.attributes.revisions != null && activity.attributes.revisions != "" && (parseInt(authuser.user.id) == 1 || current_user_can_undo_it == true )){ %>
+						<% if(!_.isEmpty(role_links.where({slug: "undo_activity"}))){ %>
+							<% if(_.isUndefined(activity.from_footer)) { %>
+								<div class="pull-left js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline col-xs-offset-0"><li><a title="Undo" class="js-undo2 pull-left" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i>Undo</a></li></ul></div>
+							<% }%>	
+						<% } %>
+					<% } %>
+					<span class="pull-left col-xs-12 js-activity-reply-form-response-<%- activity.attributes.id %>"></span>
+		</small>
+	</div>
+</div>
+<hr class="clearfix col-xs-12 btn-block"/>
+<% }else{ %><div class="media-body">No activities available.</div><% } %>

@@ -1,0 +1,76 @@
+<% if(board != null){ %>
+<div class="panel">
+	<div class="panel-body bg-warning">
+		<div class="clearfix">
+			<h4 class="col-md-9 col-sm-8 col-xs-9 navbar-btn">
+				<span class="show row navbar-btn">
+				<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
+					<a class="htruncate btn-block" href="#/board/<%- board.id %>" title="<%- board.attributes.name %>"><%- board.attributes.name%></a>
+				<% } else { %>
+					<%- board.attributes.name%>					
+				<% } %>
+				</span>
+			</h4>
+			<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
+				<span class="pull-right dropdown">
+					<a href="#" class="js-board-visibility text-muted h5 show" data-toggle="dropdown">
+						<% if(board.attributes.board_visibility == 0) { %>
+							<span title="Private" class="icon-lock col-lg-2 text-primary"></span>
+						<% } else if(board.attributes.board_visibility == 1) { %> 
+							<span title="Organization" class="icon-group col-lg-2 text-primary"></span>
+						<% } else if(board.attributes.board_visibility == 2) { %>
+							<span title="Public" class="icon-circle col-lg-2 text-primary"></span>
+						<% } %>
+					</a>
+					<ul class="dropdown-menu arrow arrow-right">
+						<li class="js-visibility-popup js-dropdown-popup dropdown-popup">
+							<div class="clearfix text-center col-xs-12">
+							  <a class="js-back-to-board-visibility hide pull-left" href="#"><i class="icon-caret-left"></i></a>
+							  <span class="col-xs-10"><strong>Change Visibility</strong></span><a class="js-close-span-popover pull-right" href="#"><i class="icon-remove"></i></a>
+							</div>
+						</li>
+						<li class="col-xs-12 divider js-visibility-list"></li>
+					</ul> 
+				</span>
+			<% } %>
+			<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
+				<% if(!_.isEmpty(stared)){ %>
+					<a title="Unstar" href="#" class="h5 pull-right js-star-board" name="unstar"><i class="icon-star  text-primary"></i></a>
+				<% } else {%>
+					<a title="Star" href="#" class="h5 pull-right js-star-board" name="star"><i class="icon-star-empty"></i></a>
+				<% } %>
+			<% } %>
+	  </div>
+	  <div class="js-board-inner-view"></div>
+		<ul class="list-unstyled chart-block">
+		<% 
+		var style = '';			
+		if (board.attributes.background_picture_url) {
+			var background_picture_url = board.attributes.background_picture_url.replace("_XXXX.jpg", "_n.jpg");
+			style = 'background:url(' + background_picture_url + ') 25% 25%; background-size: cover';
+		} else if (board.attributes.background_pattern_url) {
+			var background_pattern_url = board.attributes.background_pattern_url.replace("_XXXX.jpg", "_n.jpg");
+			style = 'background:url(' + background_pattern_url + ') repeat scroll 0% 0%;';
+		} else if (board.attributes.background_color){
+			style = 'background:' + board.attributes.background_color;
+		}
+		%>
+		<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
+			<li class="list-group-item clearfix" style="<%= style %>">
+				<a class="show" href="#/board/<%- board.id %>">
+					<div id="doughnutChart" class="chart js-chart"></div>
+				</a>
+			</li>
+		<% } else { %>
+			<li class="list-group-item clearfix" style="<%= style %>">
+					<div id="doughnutChart" class="chart js-chart"></div>
+			</li>
+		<% } %>
+		</ul>
+	</div>
+</div>
+<% }else{ %>
+	<div class="alert alert-info">
+	No boards available.
+</div>
+<%}%>

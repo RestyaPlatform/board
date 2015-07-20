@@ -1,0 +1,2 @@
+<label for="inputchecklist">Organization</label>
+<% var organization_options = ''; _.each(organizations.models, function(organization) { organization_options += '<option value="' + organization.id + '">' + _.escape(organization.attributes.name) + '</option>'; }); %><select class="form-control cur" name="organization_id" id="inputListOrganization" required><% if (!_.isEmpty(organizations.models)) {%><option value="">Please Select</option><%=organization_options %><%}else{%><option value="">(none)</option><%}%></select>

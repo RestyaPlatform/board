@@ -1,0 +1,15 @@
+<td>
+	<%- acl_link.attributes.name%>
+</td>
+<td class="text-right">
+	<% 
+	  for(var i = 1; i <= 3; i++){
+	  var is_enabled = acl_link.acl_links_roles.findWhere({
+            role_id: i
+        })
+	%>
+	<div class="checkbox">
+	<input type="checkbox" name="acl_link_id[<%- i %>[<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %>/>
+	</div> 
+	<%}%>
+</td>

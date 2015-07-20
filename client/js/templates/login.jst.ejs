@@ -1,0 +1,44 @@
+<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 col-lg-offset-4 col-md-offset-4 col-sm-offset-3">
+	<div class="panel panel-default">
+		 <div class="panel-heading lead">
+			Login
+		 </div>
+		 <div class="panel-body well-lg">
+			<form class="form-horizontal clearfix col-xs-12" role="form" name="UserLoginForm" id="UserLoginForm">
+				<div class="form-group">
+					<% if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED == "true") { 
+						loginPlaceholder = 'LDAP Login';
+					   } else {
+						loginPlaceholder = 'Email or Username';
+					   }
+					%>
+				  <label for="inputEmail" class="sr-only control-label">Email or Username</label>
+				  <input type="text" placeholder="<%= loginPlaceholder %>" class="form-control" id="inputEmail" name="email" required />
+				</div>
+				<div class="form-group">
+				  <label for="inputPassword" class="sr-only control-label">Password</label>
+				  <input type="password" placeholder="Password" class="form-control" id="inputPassword" name="password" required/>
+				</div>
+				<div class="form-group">
+				  <label for="submit2" class="sr-only ontrol-label">Login</label>
+				  <input type="submit" value="Submit" class="btn btn-primary col-xs-12" value="Login" id="submitLogin" />
+				</div>
+				<ul class="list-inline small text-center">
+				  <% if(!_.isEmpty(role_links.where({slug: "users_forgotpassword"}))){ %>
+					<li><a href="#/users/forgotpassword" title="Forgot your password?" class="text-primary">Forgot your password?</a></li>
+					<%
+					  }
+					if(!_.isEmpty(role_links.where({slug: "users_register"}))){
+						if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") {
+					%>
+					<li>|</li>
+					<li><a href="#/users/register" title="Register" class="text-primary">Register</a></li>
+					<%
+						}
+					}
+					%>
+				</ul>
+		  </form>
+		 </div>
+	</div>
+</div>

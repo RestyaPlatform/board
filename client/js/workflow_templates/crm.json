@@ -1,0 +1,11 @@
+{
+    "name": "CRM",
+    "lists": [
+	"Initial engagement",
+	"Potential sale",
+	"Qualification",
+	"Probable sale",
+	"Pending sale",
+	"Completed sale"
+    ]
+}

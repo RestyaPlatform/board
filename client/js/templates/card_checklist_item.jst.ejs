@@ -1,0 +1,10 @@
+<div class="form-group list-group-item-text" data-checklist-id="<%- checklist_item.get('id') %>">
+	<div class="checkbox list-group-item-text">
+		<input id="checklist<%- checklist_item.get('id') %>" type="checkbox" class="hide <% if(!_.isUndefined(authuser.user)){ if(checklist_item.get('is_completed') == 'true' || checklist_item.get('is_completed') == true || checklist_item.get('is_completed') == 't'){ %> js-markas-incomplete <% } else{%> js-markas-completed <% } } %>" <% if(checklist_item.get('is_completed') == 'true' || checklist_item.get('is_completed') == true || checklist_item.get('is_completed') == 't'){ %>checked<% } %> <% if(_.isUndefined(authuser.user)){%> disabled<%}%> >
+		<label for="checklist<%- checklist_item.get('id') %>" class="pull-left js-checklist-item-head">
+		</label>
+		<div class="col-xs-11 row">
+			<a href="#" class="row pull-left <% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: 'edit_checklist_item'}))){ %>js-show-item-edit-form<% }else{ %>js-no-action<%}%>  <% if(checklist_item.get('is_completed') == 'true' || checklist_item.get('is_completed') == true || checklist_item.get('is_completed') == 't'){ %> strike-through-text <% } %>" ><%- checklist_item.get('name') %></a>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,69 @@
+  <div class="container-fluid">
+	<div class="navbar-left navbar-btn col-sm-11 col-xs-10 nav  col-lg-5 col-md-4">
+		<div class="clearfix navbar-btn row-flex">
+			<h2 class="navbar-left navbar-btn col-flex col-flex1"><span class="navbar-left"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span></h2>
+			<ul class="list-inline navbar-left h3 navbar-btn navbar-form text-center col-flex col-flex2">
+				<li>
+					<span class=" pull-left h4 navbar-btn">/</span>
+					<span class="text-muted h4 navbar-btn htruncate col-xs-10 list-group-item-heading list-group-item-text text-left"><%- organization.attributes.name %></span></li>
+			</ul>
+		</div>
+	</div>
+	<% if(!_.isUndefined(authuser.user)){%>
+  <div class="navbar-right navbar-btn">
+	<ul class="nav nav-pills navbar-left">
+	<% if(!_.isEmpty(role_links.where({slug: "delete_organization"}))){ %>
+	  <li class="dropdown navbar-btn">
+			<a href="#" title="Delete" class="text-muted initialism dropdown-toggle" data-toggle="dropdown"><i class="icon-trash"></i></a>
+			<ul class="dropdown-menu arrow arrow-right list-unstyled">
+					<li class="col-xs-12 text-center clearfix">						
+							<div class="clearfix"><span class="col-xs-10"><strong>Delete Organization?</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a></div>
+					</li>
+					<li class="col-xs-12 divider"></li>
+					<li>
+						<a class="js-delete-organization show clearfix small well-xs" href="#">
+							<span class="show text-primary col-xs-12 navbar-btn h5">Remove from organization</span>
+							<span class="col-xs-12 navbar-btn">Deleting an organization is permanent. Are you sure you want to delete this organization? There is no undo. Boards with this organization won't be deleted. Your boards in this organization will appear in your personal boards list.</span>
+						</a>
+					</li>					
+			</ul>
+		</li>
+	<% } %>		  
+	  <% if(!_.isEmpty(role_links.where({slug: "edit_organization"}))){ %>
+		  <li class="dropdown navbar-btn">
+			<a href="#" title="Edit" class="text-muted dropdown-toggle" data-toggle="dropdown"><span class="icon-pencil"></span></a>
+			<ul class="dropdown-menu arrow arrow-right list-unstyled list-inline clearfix pull-right">
+				<li class="js-dropdown-popup dropdown-popup btn-block">
+					<div class="js-organization-edit-block col-xs-12">
+						<form name="OrganizationEditForm" id="OrganizationEditForm"> 
+							<div class="form-group required">
+								<label for="inputOrganizationName">Name</label>
+								<input type="text" id="inputOrganizationName" maxlength="255" name="name" class="form-control input-sm" value="<%- organization.attributes.name %>" required />
+							</div>
+							<div class="form-group">
+								<label for="inputOrganizationWebsite">Website</label>
+								<input type="text" id="inputOrganizationWebsite" name="website_url" class="form-control input-sm" value="<%= organization.attributes.website_url %>" />
+							</div>
+							<div class="form-group">
+								<label for="inputOrganizationDescription">Description</label>
+								<textarea type="textarea" id="inputOrganizationDescription" class="form-control" name="description"><%- organization.attributes.description %></textarea>
+							</div>
+							<div class="submit">
+								<input type="submit" value="Save" id="js-edit-organization" class="btn btn-primary" />
+								<input type="button" class="js-close-popover btn btn-default" value="Cancel" />
+							</div>
+						</form>
+					</div>
+				</li>
+			</ul>	
+		  </li>
+	  <% } %>
+	  <li class="dropdown navbar-btn">
+		<a href="" title="<% if(organization.attributes.organization_visibility == 1){ %>Public<% } else { %>Private<% } %>" class="js-org-visibility-name js-show-organization-visibility-form text-muted dropdown-toggle" data-toggle="dropdown"><span class="js-org-visibility-icon <% if(organization.attributes.organization_visibility == 1){ %>icon-circle <% } else { %>icon-lock<% } %> text-muted"></span><span class="h4 js-org-visibility-type"><% if(organization.attributes.organization_visibility == 1){ %>Public<% } else { %>Private<% } %></span></a>
+		<ul class="dropdown-menu arrow arrow-right list-unstyled clearfix pull-left js-organization-visibility">
+			
+		</ul>
+	  </li>
+	</ul>
+	</div>
+<% } %>

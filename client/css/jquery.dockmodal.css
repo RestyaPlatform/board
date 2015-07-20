@@ -1,0 +1,131 @@
+.dockmodal,
+.dockmodal *,
+.dockmodal *:before,
+.dockmodal *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.modal-placeholder {
+    display: none;
+    visibility: hidden;
+    height: 0;
+    width: 0;
+}
+.dockmodal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 150;
+    background: #000;
+    opacity: 0.7;
+    display: none;
+}
+.dockmodal {
+    position: fixed;
+    right: 20px;
+    bottom: 50px;
+    top: auto;
+    z-index: 100;
+    height: 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 0;
+    overflow: hidden;
+    border: 1px solid #dedede;
+}
+.dockmodal-header {
+    height: 36px;
+    padding: 5px 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #f47564;
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 1;
+}
+.dockmodal-body {
+    background: #FFF;
+    position: absolute;
+    top: 36px;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+    overflow: auto;
+    padding: 15px 15px 10px 15px;
+}
+.dockmodal-footer {
+    padding: 5px 10px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #CCC;
+    overflow: hidden;
+    text-align: right;
+}
+.dockmodal-footer-buttonset {
+    height: 30px;
+    line-height: 30px;
+}
+.dockmodal.no-footer .dockmodal-body {
+    bottom: 0;
+}
+.dockmodal-header .title-text {
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 26px;
+    vertical-align: top;
+    white-space: nowrap;
+    max-width: 100%;
+    margin:0 90px 0 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dockmodal-header .header-action {
+    padding: 5px;
+    float: right;
+    margin-right: 1px;
+    line-height: 16px;
+}
+
+.dockmodal-header .header-action i {
+    vertical-align: top;
+    display: inline-block;
+    *display: inline;
+    zoom: 1;
+}
+.dockmodal-header .header-action {
+    width: 20px;
+    height: 23px;
+}
+.dockmodal.popped-out .header-action .icon-resize-full:before {
+    content: "\f066";
+}
+.dockmodal.popped-out {
+    width: auto;
+    height: auto;
+    border: 0;
+    z-index: 151;
+}
+.dockmodal.minimized {
+    height: 36px;
+    top: auto;
+    left: auto;
+    right: 20px;
+    bottom: -20px;
+    z-index: 1050;
+}
+.dockmodal .dockmodal-footer-buttonset > a {
+    min-width: 60px;
+}
+
+.dockmodal .dockmodal-footer-buttonset > a + a {
+    margin-left: 5px;
+}

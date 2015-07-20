@@ -1,0 +1,96 @@
+<%        if (card.attachments.length > 0 || card.activities.length > 0 || card.labels.length > 0 || card.checklists.length > 0 || card.users.length > 0) { %>
+		<div class="form-group">
+			<h4>Keep...</h4>
+			<% if (card.attachments.length > 0) {%>
+				<div class="form-group">
+					<div class="checkbox">
+					<input id="Attachments" class="hide" type="checkbox" name="keep_attachments" value="1" checked="checked">
+						<label for="Attachments">
+							Attachments (<%- card.attachments.length %>)
+						</label>
+					</div>
+				</div>
+		   <% }
+		   var comment = card.list.collection.board.activities.where({card_id: card.attributes.id, type: "add_comment"});
+			if (comment.length > 0) { %>
+			   <div class="form-group">
+				   <div class="checkbox">
+					    <input id="Activities" class="hide" type="checkbox" name="keep_activities" value="1" checked="checked">
+						<label for="Activities">
+							Comments (<%- comment.length %>)
+						</label>
+					</div>
+				</div>
+		   <%  }
+			if (card.labels.length > 0) { %>
+			   <div class="form-group">
+				   <div class="checkbox">
+					    <input id="Labels" class="hide" type="checkbox" name="keep_labels" value="1" checked="checked">
+						<label for="Labels">
+							Labels (<%- card.labels.length %>)
+						</label>
+					</div>
+				</div>
+			<%}
+		     if (card.checklists.length > 0) { %>
+				<div class="form-group">
+					<div class="checkbox">
+						<input id="Checklists" class="hide" type="checkbox" name="keep_checklists" value="1" checked="checked">
+						<label for="Checklists">
+							Checklists (<%- card.checklists.length %>)
+						</label>
+					</div>
+				</div>
+		   <% }
+			if (card.users.length > 0) { %>
+				<div class="form-group">
+					<div class="checkbox">
+						<input id="users" class="hide" type="checkbox" name="keep_users" value="1" checked="checked">
+						<label for="users">
+							Members (<%- card.users.length %>)
+						</label>
+					</div>
+				</div>
+		   <% } %>
+		</div>
+<%	} 
+        var content_board = '<div class="form-group clearfix"><select name="board_id" class="js-change-list col-xs-12 form-control panel-body cur">';
+        var content_list = '<div class="form-group clearfix"><select name="list_id" class="js-change-position col-xs-12 form-control panel-body cur">';
+        var content_position = '<div class="form-group clearfix"><select name="position" class="js-position col-xs-12 form-control panel-body cur">';
+		var current_position = card.collection.indexOf(card) + 1;
+        boards.each(function(board) {
+	if (card.attributes.board_id == board.id) {
+		content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) + ' (current)</option>';
+		board.lists.add(board.attributes.lists);
+		var filtered_lists = board.lists.where({
+			is_archived: false
+		});
+		_.each(filtered_lists, function(list) {
+			if (card.attributes.list_id == list.id) {
+				content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' (current)</option>';
+				for(var i = 1; i <= list.attributes.card_count; i++){
+					if (card.attributes.list_id == list.attributes.id && i == current_position) {
+						content_position += '<option value="' + i + '" selected="selected">' + i + ' (current)</option>';
+					} else {
+						content_position += '<option value="' + i + '">' + i+ '</option>';
+					}
+				}
+				var next_position = parseInt(list.attributes.card_count ) + 1;
+				content_position += '<option value="' + next_position + '">' + next_position + '</option>';
+				
+			} else {
+				content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+			}
+
+		});
+	} else {
+		content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + '</option>';
+	}
+
+});
+        content_board += '</select></div>';
+        content_list += '</select></div>';
+        content_position += '</select></div>';
+		var content = content_board + content_list + content_position;
+%>		
+<%= content %>

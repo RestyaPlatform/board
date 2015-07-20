@@ -1,0 +1,25 @@
+<li>		
+	<div class="clearfix text-center col-xs-12">
+		<span class="col-xs-10"><strong>Voters</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a>
+	</div>
+</li>
+<li class="col-xs-12 divider"></li>
+<%
+	if (!_.isEmpty(card.card_voters.models)){
+	card.card_voters.each(function(voter) {            
+	%>
+		<li class="col-xs-12"><a class="js-no-action" data-placement="bottom" data-toggle="tooltip" title="<%- voter.attributes.username %>" href="#"> 
+		<span>
+			<% if(!_.isEmpty(voter.attributes.profile_picture_path)) { 
+				var profile_picture_path = card.showImage('User', voter.attributes.user_id, 'micro_thumb' );
+			%>
+				<img src="<%=profile_picture_path %>" alt="[Image: <%-voter.attributes.username %>]" title="<%-voter.attributes.username %>" class="img-rounded">
+			<% } else {%>
+					<i class="avatar avatar-color-194 avatar-sm img-rounded"><%- voter.attributes.initials %></i>			
+			<% } %>
+		</span>
+		<span><%- voter.attributes.username %></span></a></li>
+   <% });
+   }else{ %>
+	<li class="col-xs-12">No voters available.</i>
+   <% }  %>

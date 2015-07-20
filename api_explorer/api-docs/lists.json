@@ -1,0 +1,323 @@
+{
+    "apiVersion": "1.0.0",
+    "swaggerVersion": "1.2",
+    "basePath": "/api",
+    "resourcePath": "/List",
+    "produces": [
+        "application/json",
+        "application/xml",
+        "text/plain",
+        "text/html"
+    ],
+    "apis": [
+        {
+            "path": "/v1/boards/{boardId}/lists.json",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Add a new List",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "addList",
+                    "consumes": [
+                        "application/json",
+                        "application/xml"
+                    ],
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "ID of Board that needs to be fetched",
+                            "required": true,
+                            "type": "integer",
+                            "format": "int64",
+                            "paramType": "path",
+                            "minimum": "1.0",
+                            "maximum": "100000.0"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Created List",
+                            "required": true,
+                            "type": "addList",
+                            "paramType": "body"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 405,
+                            "message": "Invalid input"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/boards/{boardId}/lists/{listId}.json",
+            "operations": [
+                {
+                    "method": "PUT",
+                    "summary": "Edit List",
+                    "notes": "Update the List details",
+                    "type": "List",
+                    "nickname": "editList",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "ID of Board that needs to be fetched",
+                            "required": true,
+                            "type": "integer",
+                            "format": "int64",
+                            "paramType": "path",
+                            "minimum": "1.0",
+                            "maximum": "100000.0"
+                        },
+                        {
+                            "name": "listId",
+                            "description": "ID of Board that needs to be fetched",
+                            "required": true,
+                            "type": "integer",
+                            "format": "int64",
+                            "paramType": "path",
+                            "minimum": "1.0",
+                            "maximum": "100000.0"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Edit List",
+                            "required": true,
+                            "type": "editList",
+                            "paramType": "body"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 400,
+                            "message": "Invalid ID supplied"
+                        },
+                        {
+                            "code": 404,
+                            "message": "Pet not found"
+                        }
+                    ]
+                },
+                {
+                    "method": "DELETE",
+                    "summary": "Delete the list",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "deleteList",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "Board ID to delete",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "listId",
+                            "description": "List ID to delete",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/boards/{boardId}/lists/{listId}/list_subscribers.json",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Add List Subscribers",
+                    "notes": "Add the List Subscribers",
+                    "type": "List",
+                    "nickname": "addListSubscriber",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "ID of Board that needs to be fetched",
+                            "required": true,
+                            "type": "integer",
+                            "format": "int64",
+                            "paramType": "path",
+                            "minimum": "1.0",
+                            "maximum": "100000.0"
+                        },
+                        {
+                            "name": "listId",
+                            "description": "ID of Board that needs to be fetched",
+                            "required": true,
+                            "type": "integer",
+                            "format": "int64",
+                            "paramType": "path",
+                            "minimum": "1.0",
+                            "maximum": "100000.0"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Edit List",
+                            "required": true,
+                            "type": "addListSubscriber",
+                            "paramType": "body"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 400,
+                            "message": "Invalid ID supplied"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/boards/{boardId}/lists/{listId}/list_subscribers/{subscriberId}.json",
+            "operations": [
+                {
+                    "method": "PUT",
+                    "summary": "Unsubscribe the List",
+                    "notes": "Unsubscribe the List",
+                    "type": "List",
+                    "nickname": "unSubscribeList",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "ID of Board that needs to be fetched",
+                            "required": true,
+                            "type": "integer",
+                            "format": "int64",
+                            "paramType": "path",
+                            "minimum": "1.0",
+                            "maximum": "100000.0"
+                        },
+                        {
+                            "name": "listId",
+                            "description": "ID of Board that needs to be fetched",
+                            "required": true,
+                            "type": "integer",
+                            "format": "int64",
+                            "paramType": "path",
+                            "minimum": "1.0",
+                            "maximum": "100000.0"
+                        },
+                        {
+                            "name": "subscriberId",
+                            "description": "ID of User that needs to be Unsubscribe",
+                            "required": true,
+                            "type": "integer",
+                            "format": "int64",
+                            "paramType": "path",
+                            "minimum": "1.0",
+                            "maximum": "100000.0"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 400,
+                            "message": "Invalid ID supplied"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "models": {
+        "addList": {
+            "id": "addList",
+            "required": [
+                "board_id",
+                "name",
+                "uuid"
+            ],
+            "properties": {
+                "board_id": {
+                    "type": "integer"
+                },
+                "is_archived": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "uuid": {
+                    "type": "integer"
+                }
+            }
+        },
+        "editList": {
+            "id": "editList",
+            "required": [
+                "name",
+                "position",
+                "archive"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "string"
+                },
+                "archive": {
+                    "type": "string"
+                }
+            }
+        },
+        "addListSubscriber": {
+            "id": "addListSubscriber",
+            "required": [
+                "is_subscribed"
+            ],
+            "properties": {
+                "is_subscribed": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}

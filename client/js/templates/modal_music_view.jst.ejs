@@ -1,0 +1,37 @@
+<div class="modal fade" id="modalMusic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <button type="button" class="close js-close-popover" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			  <h4 id="myModalLabel" class="modal-title"><strong>Productivity Beats</strong></h4>
+			</div>			
+			<div class="modal-body clearfix">					
+				<div class="col-xs-12 h4 btn-block">
+					<form class="form-horizontal" name="musicUpdate" id="js-MusicForm">						
+					  <div class="form-group input text required">
+						<label for="title" class="sr-only">Name</label>
+						<div class="col-xs-12">
+						  <input type="text" class="form-control js-music_name" id="title" placeholder="Name" required>
+						</div>
+					  </div>
+					  <div class="form-group required">
+						<label class="sr-only">abc Notation</label>
+						<div class="col-xs-12">
+						  <textarea class="form-control js-music_content" rows="3" placeholder="abc Notation" required></textarea>
+						  <div>
+							<span class="help-block">
+								Enter abc music notation. May choose from <a href="http://reissendewoelfe.de/abc/" target="_blank">Reissende Woelfe Collections</a>, <a href="http://abcnotation.com/" target="_blank">abcnotation</a>, or <a href="http://www.lotro-abc.com/" target="_blank">Lotro ABC</a>
+							</span>
+						  </div>
+						</div>
+					  </div>
+						<div class="form-group">
+							<label for="submit2" class="col-sm-1 control-label sr-only">submit</label>
+							<input type="submit" value="Submit" id="js-music_add" class="btn btn-primary btn-lg">
+						</div>					  
+					</form>				
+				</div>										
+			</div>
+		  </div><!-- /.modal-content -->
+    </div>
+</div>

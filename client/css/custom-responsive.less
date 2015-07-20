@@ -1,0 +1,190 @@
+/*Media query styles*/
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+	body{
+		.dockmodal{
+			.splitter-wrap{
+				width:100% !important;
+				.ui-resizable-handle{
+					display:none !important;
+				}
+			}
+		}
+	}
+}
+@media (max-width:767px) {
+    body {
+        .content {
+			main{
+				padding-bottom: 35px;
+			}
+			.mob-no-mar {
+				margin:0;	
+			}
+			.mob-no-pad {
+				padding:0;
+			}
+			.table-responsive {
+				overflow-y:auto;
+			}
+			header {
+				.nav {
+					> li {
+						>a {
+							&.btn {
+								&.btn-link {
+									padding:8px 3px 9px;
+								}
+							}
+						}
+					}
+					&.pillsuser-list {
+						> li {
+							>a {
+								padding:0px 5px;
+							}
+						}	
+					}
+				}
+				.navbar-collapse{
+					&.in {
+						overflow-y: visible;
+			  		}
+				}
+				.dropdown-menu{
+					&.arrow.arrow-right.col-xs-push-0{
+						left:0;
+						&:before, &:after{
+							left:10px;
+							right:auto;
+						}
+						&:after{
+							left:11px;
+						}
+					}
+				}
+			}
+			.navbar-toggle {
+				padding:8px 6px;
+				margin-right:5px;
+				border-radius:2px;
+			}
+			.nav >li >a{
+				padding:10px 8px;
+			}
+			.board-viewlist{ 
+				.table{ 
+					width:700px; 
+					a{ 
+						white-space: normal; 
+						word-wrap: break-word; 
+					} 
+				} 
+			}
+		}
+		.dockmodal{
+			display:block !important;
+			width:96% !important;
+			right: 5px !important;
+			.splitter-wrap{
+				width:100% !important;
+				.ui-resizable-handle{
+					display:none !important;
+				}
+			}
+		}
+	}
+}
+@media (max-width:767px) and (orientation: portrait){
+	body{
+		.content{
+			footer{
+				.dropdown-submenu .dropdown-menu {
+					left: 0;
+			  		margin-bottom: 25px !important;
+				}
+			}
+		}
+		.dockmodal{
+			max-height:398px !important;
+			.dropdown-submenu >.dropdown-menu{
+				left: 0;
+				margin-top: 25px;
+				right: auto;
+			}
+		}
+	}
+}
+@media (max-width:767px) and (orientation: landscape){
+	body{
+		.dockmodal{
+			max-height:200px !important;
+		}
+	}
+}
+@media (max-width:568px) and (orientation: landscape){
+	body{
+		.dockmodal{
+			max-height:175px !important;
+		}
+	}
+}
+@media (max-width:480px) {
+    body {
+        .content {
+			 header {
+			 	.nav {
+					> li {
+						>a {
+							padding:10px 8px;
+						}
+					}
+				}
+		 	 }
+			footer {
+				.nav {
+					> li {
+						&:first-child > a {
+							padding: 5px 7px 5px 6px;
+						}
+						>a {
+							padding:5px 9px 5px 8px;
+							[class^="icon-"], [class*=" icon-"] {
+								padding:0;
+							}
+							.lead {
+								font-size:12px;
+							}
+						}
+					}
+				}	
+				&.navbar {
+					min-height:inherit;
+				}
+				.badge {
+					&.notification-count {
+						font-size:9px;
+						padding:3px 5px;
+						top:-2px;
+						left:-2px;
+					}
+				}
+			}
+		}
+	   .dockmodal{
+			bottom:32px !important;
+			.dropdown-submenu >.dropdown-menu{
+				left: 0;
+				margin-top: 25px;
+				right: auto;
+			}
+			.form-horizontal{
+				.col-xs-6{
+					.select2-container{
+						width:100% !important;
+					}
+					
+				}
+			}
+		}
+	}
+}

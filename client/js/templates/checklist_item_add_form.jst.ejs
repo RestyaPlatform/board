@@ -1,0 +1,16 @@
+<div class="form-group required clearfix">
+	<label for="inputItemName" class="sr-only">Name</label>
+	<div class="clearfix">
+		<textarea name="name" class="form-control" required></textarea>
+	</div>
+</div>
+<div class="submit">
+	<input type="submit" name="Save" class="btn btn-primary" value="Add">
+	<i class="icon-remove js-hide-checklist-item-add-form btn btn-link cur" title="Cancel"></i>
+	<div class=" pull-right dropdown">
+			<a title="Item Options" class="dropdown-toggle js-show-item-options btn btn-link" data-toggle="dropdown" href="#"><i class="icon-chevron-sign-down"></i></a>
+			<ul class="dropdown-menu arrow arrow-right">
+				<li class="js-dropdown-popup dropdown-popup" id="js-item-add-option-response-<%-checklist.id %>"></li>
+			</ul>
+		</div>
+</div>

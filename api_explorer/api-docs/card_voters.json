@@ -1,0 +1,210 @@
+{
+    "apiVersion": "1.0.0",
+    "swaggerVersion": "1.2",
+    "basePath": "/api",
+    "resourcePath": "/card_voters",
+    "produces": [
+        "application/json",
+        "application/xml",
+        "text/plain",
+        "text/html"
+    ],
+    "apis": [
+        {
+            "path": "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/card_voters.json",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Add a Vote",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "addVote",
+                    "consumes": [
+                        "application/json",
+                        "application/xml"
+                    ],
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "Selected board ID",
+                            "required": true,
+                            "type": "integer",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "listId",
+                            "description": "Selected list ID",
+                            "required": true,
+                            "type": "integer",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "cardId",
+                            "description": "Selected card ID",
+                            "required": true,
+                            "type": "integer",
+                            "paramType": "path"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 405,
+                            "message": "Invalid input"
+                        }
+                    ]
+                },
+                {
+                    "method": "DELETE",
+                    "summary": "Delete all Card voters",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "deleteCardVoter",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "Selected board ID",
+                            "required": true,
+                            "type": "integer",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "listId",
+                            "description": "Selected list ID",
+                            "required": true,
+                            "type": "integer",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "cardId",
+                            "description": "Card ID to delete",
+                            "required": true,
+                            "type": "integer",
+                            "paramType": "path"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/card_voters/{cardVoterId}.json",
+            "operations": [
+                {
+                    "method": "PUT",
+                    "summary": "Update a Vote",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "updateVote",
+                    "consumes": [
+                        "application/json",
+                        "application/xml"
+                    ],
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "Selected board ID",
+                            "required": true,
+                            "type": "integer",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "listId",
+                            "description": "Selected list ID",
+                            "required": true,
+                            "type": "integer",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "cardId",
+                            "description": "Card ID to delete",
+                            "required": true,
+                            "type": "integer",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "cardVoterId",
+                            "description": "Selected card voter ID",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 405,
+                            "message": "Invalid input"
+                        }
+                    ]
+                },
+                {
+                    "method": "DELETE",
+                    "summary": "Delete the Card voter",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "deleteCardVoter",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "Selected board ID",
+                            "required": true,
+                            "type": "integer",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "listId",
+                            "description": "Selected list ID",
+                            "required": true,
+                            "type": "integer",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "cardId",
+                            "description": "Card ID to delete",
+                            "required": true,
+                            "type": "integer",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "cardVoterId",
+                            "description": "Card voter ID to delete",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

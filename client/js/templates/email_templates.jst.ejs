@@ -1,0 +1,75 @@
+<!-- Main block start -->
+
+<section class="clearfix row">
+  <div class="col-xs-12">
+	<div class="clearfix">
+		<ul class="nav nav-tabs no-bor h3">
+		<% 
+			var i = 0;
+			if (list.models.length > 0 ) { 
+				_.each(list.models, function(email_tempalte) {				
+					var settings = email_tempalte.get('template');
+		%>
+				<li <% if (!_.isUndefined(id) && id == email_tempalte.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && email_tempalte.get('id') == 1) { %>class="active" <%}%> ><a href="#/email_templates/<%-email_tempalte.get('id')%>"><%- email_tempalte.get('display_name') %></a></li>
+		<% 
+					i++;
+				});
+			} 
+		%>
+		</ul>
+	</div>
+	
+	<div class="row">
+		<div class="tab-content col-sm-10">
+		<% if (list.models.length > 0 ) { 
+				var j = 0;
+				_.each(list.models, function(email_tempalte) {	
+					var template = email_tempalte.get('template');
+		%>		
+				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == email_tempalte.get('id')) { %> active <%} else if (_.isUndefined(id) && email_tempalte.get('id') == 1) { %> active <%}%>" id="settingTab<%- email_tempalte.get('id') %>">
+					<% if(!_.isEmpty(template)){ %>
+					<p class="alert alert-info "><%- template.description %></p>
+					<form class="form-horizontal clearfix col-lg-6 col-md-8 col-sm-12 col-xs-12 js-email-templates-form" role="form" id="js-email-templates-form">
+					  <div class="form-group">
+						 <label for="inputFromEmail" class="col-sm-4 control-label col-xs-12">From</label>
+						 <div class="col-sm-8 col-xs-12">
+							<input type="text" id="inputFromEmail" name="from_email" class="form-control" value="<%- template.from_email %>" />
+						 </div>
+					  </div>
+					  <div class="form-group">
+						 <label for="inputReplyToEmail" class="col-sm-4 control-label col-xs-12">Reply To</label>
+						 <div class="col-sm-8 col-xs-12">
+							<input type="text" id="inputReplyToEmail" name="reply_to_email" class="form-control" value="<%- template.reply_to_email %>" />
+						 </div>
+					  </div>
+					  <div class="form-group">
+						 <label for="inputSubject" class="col-sm-4 control-label col-xs-12">Subject</label>
+						 <div class="col-sm-8 col-xs-12">
+							<input type="text" id="inputSubject" name="subject" class="form-control" value="<%- template.subject %>" />
+						 </div>
+					  </div>
+					  <div class="form-group">
+						 <label class="col-sm-4 control-label col-xs-12" for="EmailTemplateEmailTextContent">Email Text Content</label>
+						<div class="col-sm-8 col-xs-12">
+							<textarea rows="6" id="EmailTemplateEmailTextContent" class="form-control" name="email_text_content"><%- template.email_text_content %></textarea>
+						</div>
+					  </div>
+					  <div class="form-group">
+						<label for="submit2" class="sr-only col-sm-4 control-label col-xs-12">submit</label>
+						<div class="col-sm-8 col-xs-12">
+						<input type="submit" value="Submit" id="submit2" class="btn btn-primary">
+						</div>
+					  </div>
+					</form>
+					<% } %>
+				</div>
+		<% 
+					j++;
+				});
+			} 
+		%>				
+		</div>
+	</div>
+  </div>
+</section>
+<!-- Main block end -->

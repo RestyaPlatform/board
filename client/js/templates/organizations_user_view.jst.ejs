@@ -1,0 +1,157 @@
+<div class="clearfix">
+<% if(!_.isEmpty(role_links.where({slug: "add_organization_user"}))){ %>
+<div>
+	<ul class="list-inline clearfix">
+		<li class="dropdown pull-right">
+			<% if(!_.isUndefined(authuser.user)){%>
+				<a class="btn btn-primary dropdown-toggle js-add-member-dropdown" data-toggle="dropdown" href="#"><span><i class="icon-plus"></i></span><span>Add Members</span></a>
+			<% } %>
+			<ul class="dropdown-menu arrow arrow-right">
+				<li class="js-add-member-dropdown-load js-dropdown-popup dropdown-popup js-organization-member-search-response">
+					<div>
+						<div class="clearfix text-center col-xs-12">							
+							<span class="col-xs-10"><strong>Members</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a></span></h4>							
+						</div>
+						<div class="col-xs-12 divider"></div>
+						<div class="col-xs-12">
+							<ul class="list-unstyled">
+								<li>
+								  <form method="post" class="text-center">
+									<div class="form-group">
+									  <label class="sr-only">Search Member</label>
+									  <input type="text" autocomplete="off" id="inputOrganizationUserSearch" placeholder="Username OR Email" name="email" required class="js-organization-users-search form-control input-sm">
+									</div>
+								  </form>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li class="small">
+					Search for a person in <%- SITE_NAME %> by name or email address.
+				</li>
+			</ul>
+		</li>
+	<ul>
+</div>
+<% } %>
+<% if(!_.isEmpty(role_links.where({slug: "view_organization_user_listing"}))){ %>
+<div>
+	<table class="table table-striped table-hover">
+		<tbody>
+			<%  if(!_.isEmpty(organizations_users)){ %>
+				<% _.each(organizations_users.models, function(organizations_user){ %>
+				<tr>
+					<td>
+						<div class="clearfix">
+						<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
+								<a data-toggle="tooltip" data-placement="bottom" data-original-title="<%- organizations_user.attributes.username %>" href="#/user/<%-organizations_user.attributes.user_id %>" >
+						<% } %><span class="pull-left">
+									<% if(!_.isEmpty(organizations_user.attributes.profile_picture_path)) {
+										 var profile_picture_path = organizations_users.showImage('User', organizations_user.attributes.user_id, 'small_thumb' );
+									%>
+										<img src="<%=profile_picture_path%>" alt="[Image: <%-organizations_user.attributes.username %>]" title="<%-organizations_user.attributes.username %>" class="img-rounded img-responsive">
+									<% } else {%>
+										<i class="avatar avatar-color-194 img-rounded"><%- organizations_user.attributes.initials %></i>									
+									<% } %></span>
+							<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
+								</a>							
+							<% } %>
+							<div class="pull-left col-xs-5">
+								<h4><%- organizations_user.attributes.full_name %></h4>
+								<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
+									<span class="show"><a href="#/user/<%-organizations_user.attributes.user_id %>"><%- organizations_user.attributes.username %></a></span>
+								<% } else { %>
+									<span class="show"><%- organizations_user.attributes.username %></span>
+								<% } %>
+							</div>
+							</td>
+							<td>
+								<div class="text-right">
+									<ul class="list-inline clearfix">
+										<li class="dropdown navbar-btn">
+											<a title="Boards" class="btn btn-default <% if(organizations_user.attributes.user_board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organizations_user.attributes.user_board_count != 0){ %>data-toggle="dropdown"<%}%>><%- organizations_user.attributes.user_board_count%> Boards</a>
+											<% if(organizations_user.attributes.boards_users != null && organizations_user.attributes.user_board_count != 0){ %>
+												<ul class="dropdown-menu arrow arrow-left  text-left" role="boards" id="js-user-activity-menu-response-<%- organizations_user.attributes.id%>">
+													<% _.each(organizations_user.attributes.boards_users, function(boards_user){%>
+														<li>
+														<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
+															<a href="#/board/<%-boards_user.board_id%>"><%-boards_user.name%></a>
+														<% } else { %>
+															<a href="#"><%-boards_user.name%></a>
+														<% } %>
+														</li>
+													<%})%>
+												</ul>
+											<%}%>
+										</li>										
+										<li class="navbar-btn">											
+										<a title="Activities" class="btn btn-default js-all-user-activities" href="#" data-user_id="<%- organizations_user.attributes.user_id %>">Activities</a>
+										</li>
+										<% if(!_.isEmpty(role_links.where({slug: "edit_organization_user"}))){ %>
+										<% if(!_.isUndefined(authuser.user)){%>
+										<li class="dropdown navbar-btn">
+											<div class="btn-group text-left navbar-btn">
+												<button type="button" class="btn btn-default dropdown-toggle js-show-organization-member-permission-form js-change-permission-content-<%- organizations_user.attributes.id %>" data-toggle="dropdown" aria-expanded="false" data-organizations_user_id="<%- organizations_user.attributes.id %>"><% if(organizations_user.attributes.is_admin) {%>Owner<% } else { %>Member<% }%></button>											 
+												<button type="button" class="btn btn-default dropdown-toggle js-show-organization-member-permission-form" data-toggle="dropdown" aria-expanded="false" data-organizations_user_id="<%- organizations_user.attributes.id %>">
+													<span class="caret"></span>
+													<span class="sr-only">Toggle Dropdown</span>
+												</button>	
+												<ul class="dropdown-menu arrow arrow-right js-show-organization-member-permission-form-response">
+												</ul>
+											</div>
+										</li>
+										<li class="dropdown navbar-btn text-left js-show-confirm-delete-organization-member-dropdown">
+											<% 
+											if(!_.isEmpty(role_links.where({slug: "remove_organization_user"}))){
+											if(!_.isUndefined(authuser.user) && organizations_user.attributes.user_id == authuser.user.id) {%>
+													<%  if((organizations_user.attributes.is_admin && organizations_users.where( {is_admin : true}).length == 1) || organizations_users.length == 1) {%>
+												<div class="btn btn-primary" disabled="disabled"><span><i class="icon-remove"></i></span><span>Leave</span></div>
+													<% } else if((organizations_user.attributes.is_admin && organizations_users.where( {is_admin : true}).length > 1) || (!organizations_user.attributes.is_admin && organizations_users.length > 1)){ %>
+													<a class="btn btn-primary dropdown-toggle js-show-confirm-delete-organization-member" data-organizations_user_id="<%- organizations_user.attributes.id %>" data-toggle="dropdown" href="#"><span><i class="icon-remove"></i></span><span>Leave</span></a>
+													<ul class="dropdown-menu js-dropdown-popup arrow arrow-right">
+														<li class="clearfix">
+															<div class="col-xs-12 text-center clearfix">	
+																<span class="col-xs-10"><strong>Remove Member</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
+															</div>
+														</li>
+														<li class="js-show-confirm-delete-organization-member-response divider"></li>
+													</ul>
+													<% } %>
+											<% } else if(!_.isUndefined(authuser.user) && organizations_user.attributes.user_id != authuser.user.id) {%>
+													<%  if((organizations_user.attributes.is_admin && organizations_users.where( {is_admin : true}).length == 1) || organizations_users.length == 1) {%>
+														<div class="btn btn-primary" disabled="disabled"><span><i class="icon-remove"></i></span><span>Remove</span></div>
+													<% } else if((organizations_user.attributes.is_admin && organizations_users.where( {is_admin : true}).length > 1) || organizations_users.length > 1) {%>
+														<a class="btn btn-primary dropdown-toggle js-show-confirm-delete-organization-member" data-organizations_user_id="<%- organizations_user.attributes.id %>" data-toggle="dropdown" href="#"><span><i class="icon-remove"></i></span><span>Remove</span></a>
+													<ul class="dropdown-menu js-dropdown-popup arrow arrow-right">
+														<li class="clearfix">
+															<div class="col-xs-12 text-center clearfix">	
+																<span class="col-xs-10"><strong>Remove Member</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
+															</div>
+														</li>
+														<li class="js-show-confirm-delete-organization-member-response divider"></li>
+													</ul>
+
+													<% } %>
+
+											<% }} %>
+										</li>
+										<% } else{ %>
+											<li class="navbar-btn">											
+											<a title="<% if(organizations_user.attributes.is_admin) {%>Owner<% } else { %>Member<% }%>" class="btn btn-default js-no-action" href="#"><% if(organizations_user.attributes.is_admin) {%>Owner<% } else { %>Member<% }%></a>
+											</li>
+										<%} }%>
+									</ul>
+								</div>
+						</div>
+					</td>
+				</tr>
+				<% }); %>
+			<% } else { %>
+				<tr><td>No members available</td></tr>
+			<% } %>
+		</tbody>
+	</table>
+</div>
+<% } %>
+</div>

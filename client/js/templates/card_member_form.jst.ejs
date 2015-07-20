@@ -1,0 +1,39 @@
+<li class="clearfix text-center col-xs-12">
+	<div class="clearfix">
+		<a class="js-back-to-card-actions pull-left" href="#"><i class="icon-caret-left"></i></a>
+		<span class="col-xs-10"><strong>Members</strong></span>
+		<a class="js-close-popup pull-right" href="#"><i class="icon-remove"></i></a>
+	</div>
+</li>
+<li class="col-xs-12 divider"></li>
+		<% if (!_.isEmpty(card.board_users.models)) { 
+			card.board_users.each(function(board_user) {
+				 var added_user = card.users.findWhere({ user_id: board_user.get('user_id') }); 
+				 if (_.isEmpty(added_user)) { %>
+				 	<li>
+						<a href="#" class="highlight-icon js-add-card-member" data-user-id="<%- board_user.get('user_id') %>" data-user-name="<%-  board_user.get('username') %>" data-user-initial="<%-board_user.get('initials') %>" data-user-profile-picture-path="<%=board_user.get('profile_picture_path')%>">				
+						<% if(!_.isEmpty(board_user.attributes.profile_picture_path)) { 
+							var profile_picture_path = board_user.showImage('User', board_user.attributes.id, 'micro_thumb' );
+						%>
+							<img src="<%=profile_picture_path %>" alt="[Image: <%-board_user.attributes.username %>]" title="<%-board_user.attributes.username %>" class="img-rounded img-responsive avatar  avatar-sm">
+						<% } else {%>
+							<i class="avatar avatar-color-194 avatar-sm img-rounded"><%- board_user.attributes.initials %></i>			
+						<% } %>
+						<%- board_user.get('username') %></a>
+					</li>
+				<% } else { %>
+					<li>
+						<a href="#" class="highlight-icon js-remove-card-member" data-id="<%-  added_user.id %>"><i class="avatar avatar-color-194 img-rounded" title="<%-  board_user.get('username') %>"><%-board_user.get('initials') %>
+						<% if(!_.isEmpty(board_user.attributes.profile_picture_path)) { 
+							var profile_picture_path = board_user.showImage('User', board_user.attributes.id, 'micro_thumb' );
+						%>
+							<img src="<%=profile_picture_path %>" alt="[Image: <%-board_user.attributes.username %>]" title="<%-board_user.attributes.username %>" class="img-rounded img-responsive avatar  avatar-sm">
+						<% } else {%>
+							<i class="avatar avatar-color-194 avatar-sm img-rounded"><%- board_user.attributes.initials %></i>			
+						<% } %>
+						<%-board_user.get('username') %></i></a> <i class="icon-ok"></i></li>
+					<% } 
+			}); 
+		}else{ %>
+			<li>No members available.</li>
+		<% } %>

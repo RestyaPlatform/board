@@ -1,0 +1,67 @@
+{
+    "apiVersion": "1.0.0",
+    "swaggerVersion": "1.2",
+    "basePath": "/api",
+    "resourcePath": "/card_attachments",
+    "produces": [
+        "application/json",
+        "application/xml",
+        "text/plain",
+        "text/html"
+    ],
+    "apis": [
+        {
+            "path": "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/attachments.json",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Add a Label",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "addLabel",
+                    "consumes": [
+                        "application/json",
+                        "application/xml"
+                    ],
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "Selected board ID",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "listId",
+                            "description": "Selected list ID",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "cardId",
+                            "description": "Selected card ID",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 405,
+                            "message": "Invalid input"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

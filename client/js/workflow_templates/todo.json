@@ -1,0 +1,8 @@
+{
+    "name": "Todo",
+    "lists": [
+	"Todo",
+	"Doing",
+	"Done"
+    ]
+}

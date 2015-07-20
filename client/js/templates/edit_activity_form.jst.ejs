@@ -1,0 +1,8 @@
+<div class="form-group required">
+	<textarea rows="4" class="js-inputComment form-control" name="comment" required><%- activity.attributes.comment %></textarea>
+	<input type="hidden" value="<%- activity.attributes.id%>" name="id"/>
+</div>
+<div class="submit panel-body">
+	<input type="submit" id="submitListAdd" class="btn  btn-primary" value="Save"/>
+	<i class="icon-remove js-hide-edit-comment-form btn btn-link cur" title="Cancel" data-activity-id="<%- activity.attributes.id%>"></i>
+</div>

@@ -1,0 +1,51 @@
+<%
+var content_board = '<div class="form-group clearfix"><select name="board_id" class="js-change-list col-xs-12 form-control input-sm cur">';
+var content_list = '<div class="form-group clearfix"><select name="list_id" class="js-change-position col-xs-12 form-control input-sm cur">';
+var content_position = '<div class="form-group clearfix"><select name="position" class="js-position col-xs-12 form-control input-sm cur">';
+card.list.cards.sortByColumn('position');
+var current_position = card.list.cards.indexOf(card.list.cards.get(card.attributes.id)) + 1;
+if(current_position == 0){
+	current_position = 1;
+}
+boards.each(function(board) {
+	if (card.attributes.board_id == board.id) {
+		content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) + ' (current)</option>';
+		//board.lists.add(board.attributes.lists);
+		var filtered_lists = board.lists.where({
+			is_archived: false,
+			board_id: card.attributes.board_id
+		});
+		_.each(filtered_lists, function(list) {
+		
+			if (card.attributes.list_id == list.id) {
+				content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' (current)</option>';
+				for(var i = 1; i <= list.attributes.card_count; i++){
+					if (card.attributes.list_id == list.attributes.id && i == current_position) {
+						content_position += '<option value="' + i + '" selected="selected">' + i + ' (current)</option>';
+					} else {
+						content_position += '<option value="' + i + '">' + i+ '</option>';
+					}
+				}
+				if (card.attributes.list_id != list.attributes.id) {
+				    var next_position = parseInt(list.attributes.card_count ) + 1;
+					content_position += '<option value="' + next_position + '">' + next_position+ '</option>';
+				}
+				
+			} else {
+				content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+			}
+
+		});
+	} else {
+		if(board.attributes.is_closed == false || board.attributes.is_closed == 'f'){
+			content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + '</option>';
+		}
+	}
+
+});
+content_board += '</select></div>';
+content_list += '</select></div>';
+content_position += '</select></div>';
+var content = content_board + content_list + content_position;
+%>
+<%= content %>

@@ -1,0 +1,12 @@
+{
+    "name": "Bug",
+    "lists": [
+	"New",
+	"Feedback",
+	"Acknowledged",
+	"Confirmed",
+	"Assigned",
+	"Resolved",
+	"Closed"
+    ]
+}

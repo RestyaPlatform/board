@@ -1,0 +1,41 @@
+<li>
+	<div class="col-xs-12 text-center clearfix">
+		<a href="#" class="js-show-organizations-board-from pull-left"><i class="icon-caret-left"></i></a>
+		<span class="col-xs-10"><strong>Create Board</strong></span>
+		<a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
+	</div>
+</li>
+<li class="col-xs-12 divider"></li>
+<li>
+	<form class="col-xs-12" name="BoardAddForm" id="BoardAddForm">
+		<div class="form-group">
+			<label for="inputBoardName">Name</label>
+			<input class="form-control input-sm" type="text" id="inputBoardName" name="name" required>
+		</div>
+		<% if (templates.models.length > 0 && !_.isEmpty(role_links.where({slug: "view_organization_visibility"}))) { %>
+			<div class="form-group">
+				<label for="inputchecklist">Template</label>
+				<select id="inputtemplatelist" class="js-chosen-select" name="template">
+					<option value="">Select Template</option>
+					<% _.each(templates.models, function(template) { %>
+					<option value="<%= template.get('value') %>"><%- template.get('name') %></option>
+					<% });%>
+				</select></div><% } %>
+				<div id="js-board-add-organization"></div>
+				<input id="inputBoardAddVisibility" name="board_visibility" type="hidden" value="0">
+				<div class="clearfix js-open-dropdown js-board-add-dropdown board-add-dropdown dropdown"> 
+					<span class="js-visibility-container">
+						<span class="pull-left">
+							<span class="pull-left navbar-btn">This board will be </span>
+						</span>
+						<div class="btn-group pull-right">
+							<button type="button" class="btn btn-default btn-sm js-change-visibility"><i class="icon-lock"></i>Private</button>
+							<button type="button" class="btn btn-default btn-sm dropdown-toggle js-change-visibility" data-toggle="dropdown" aria-expanded="false">
+								<span><i class="icon-caret-down"></i></span>
+								<span class="sr-only">Toggle Dropdown</span>
+							</button>
+						</div>
+					</span>
+					<div class="js-visibility-chooser dropdown-menu"></div>
+				</div>
+					<div class="submit"><input type="submit" value="Add" id="submitBoardAdd" class="btn btn-primary"></div></form></li>

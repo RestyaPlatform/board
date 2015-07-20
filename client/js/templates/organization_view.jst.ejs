@@ -1,0 +1,48 @@
+<!-- Main block start -->
+<section class="clearfix row">
+ <div class="col-xs-12 h4">
+	<ul class="nav nav-tabs">
+		<li <% if(_.isUndefined(type) || type == 'boards'){ %>class="active" <%}%>><a href="#/organization/<%-organization.attributes.id%>/boards" class="">Boards</a></li>
+		<% if(!_.isEmpty(role_links.where({slug: "view_organization_user_listing"})) || !_.isEmpty(role_links.where({slug: "add_organization_user"}))){ %>
+			<li <% if(!_.isUndefined(type) && type == 'users'){ %>class="active" <%}%>><a href="#/organization/<%-organization.attributes.id%>/users" class="">Members</a></li>
+		<% } %>
+	</ul>
+</div>
+  <div class="col-xs-12"> <div class="col-lg-10 col-md-9 col-sm-9 col-xs-12">
+	<!-- Tab panes -->
+		<div class="tab-content">
+			<div class="tab-pane <% if(_.isUndefined(type) || type == 'boards'){ %>active<%}%>" id="board">
+				<section class="clearfix">
+				  <div class="clearfix" id="js-organization-board-listing"> 
+				  </div>
+				</section>
+			</div>
+			<div class="tab-pane js-get-organization-member-lists-response  <% if(!_.isUndefined(type) && type == 'users'){ %>active<%}%>" id="member"></div>
+		</div>
+  </div>
+  <div id="js-org-drag" class="col-lg-2 col-md-3 col-sm-3 col-xs-12">
+	<div class="well well-sm clearfix text-center">
+	<%
+		var logo_path = "img/default-organization.png"; 
+		var is_logo_added = false;
+		if (!_.isUndefined(organization.attributes.logo_url) && organization.attributes.logo_url != null) {
+			is_logo_added = true;
+			logo_path = organization.showImage('Organization', organization.attributes.id, 'medium_thumb' ) +'?'+ new Date().getTime();
+		}
+	%>
+	  <div <% if(!_.isUndefined(authuser.user)){%> id="dropzone" <%}%>class="navbar-btn btn-xs"><% if(!_.isUndefined(authuser.user) && is_logo_added){ %><span class="js-remove-image profile-block show"><i class="icon icon-remove close-block cur"></i><span><%}%><img src="<%= logo_path %>" alt="[Image: <%= organization.attributes.name%>]" title="<%= organization.attributes.name%>" class="img-responsive img-thumbnail <% if(!_.isEmpty(role_links.where({slug: 'starred_board'}))){ %>drag-box<% } %>" id="js-organization-logo-<%-organization.attributes.id %>">
+		<div id="manager-area">
+			
+		</div>
+		</span>
+		</span>
+		<div class="drag-drop drag-drop-sm">Drop Files Here</div>
+	</div>
+	<span id="org-loader"></span>
+	
+  </div>
+  
+  </div>
+  </div>
+  </div>
+</section>  
