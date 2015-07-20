@@ -12,6 +12,10 @@ Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [R
 * [Configure](http://restya.com/board/install.html#configure)
 * [Importing from trello](http://restya.com/board/install.html#import-trello)
 
+### Forum
+
+* [Restya Google Group](https://groups.google.com/d/forum/restya)
+
 ### Known Issues
 
 [Known Issues](http://restya.com/board/issues.html)
