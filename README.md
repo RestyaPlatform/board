@@ -24,7 +24,7 @@ Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [R
 
 ### Current Status / Plans / Roadamap
 
-For speed, our codebase is in our local GitLab repo. We have pushed our `master` branch alone here and will sync periodically. So, to give you some idea about of our plans:
+To give you some idea about of our plans:
 
 #### Immediate (cooking)
 
