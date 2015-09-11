@@ -15,7 +15,7 @@ if (typeof App == 'undefined') {
  */
 App.FooterView = Backbone.View.extend({
     template: JST['templates/footer'],
-    className: 'row',
+    className: 'row navbar navbar-default list-group-item-text',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
@@ -121,6 +121,7 @@ App.FooterView = Backbone.View.extend({
         this.model.is_show_enable_notification = false;
         var current_param = Backbone.history.fragment;
         var current_param_split = current_param.split('/');
+        this.showTooltip();
         this.model.current_param = (current_param.indexOf('changepassword') === -1 && current_param.indexOf('login') === -1 && current_param.indexOf('forgotpassword') === -1 && current_param.indexOf('register') === -1 && current_param.indexOf('activation') === -1) ? current_param_split[0] : '';
         if (typeof Notification != 'undefined') {
             this.model.is_show_enable_notification = (Notification.permission == 'default') ? true : false;
@@ -162,7 +163,7 @@ App.FooterView = Backbone.View.extend({
             $('#js-load-link2').addClass('hide');
         }
 
-        this.showTooltip();
+
         return this;
     },
     /**
@@ -378,6 +379,10 @@ App.FooterView = Backbone.View.extend({
      */
     searchClose: function() {
         $('.search-container').removeClass('search-tab');
+        $("#js-loader-img").addClass('hide');
+        $("#res").addClass('hide');
+        $("#nres").addClass('hide');
+
         return false;
     },
     /**
@@ -746,6 +751,8 @@ App.FooterView = Backbone.View.extend({
                             var icon = window.location.pathname + 'img/logo-icon.png';
                             if (activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
                                 var cardLink = activity.attributes.card_name;
+                                activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', _.escape(activity.attributes.organization_name));
+                                activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', _.escape(activity.attributes.full_name));
                                 activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
                                 activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', activity.attributes.label_name);
                                 activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', activity.attributes.card_name);
@@ -753,7 +760,7 @@ App.FooterView = Backbone.View.extend({
                                 activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', activity.attributes.list_name);
                                 activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', activity.attributes.card_description);
                             } else if (activity.attributes.type === 'add_comment') {
-                                activity.attributes.comment = activity.attributes.username + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                activity.attributes.comment = _.escape(activity.attributes.full_name) + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
                             }
                             new Notification(activity.attributes.comment, {
                                 icon: icon
@@ -1230,8 +1237,12 @@ App.FooterView = Backbone.View.extend({
     qSearch: function(e) {
         e.preventDefault();
         $('.search-container').addClass('search-tab');
+        $("#js-loader-img").removeClass('hide');
+        $("#res").addClass('hide');
+        $("#nres").addClass('hide');
         $('.js-search').autocomplete({
-            minLength: 2,
+            minLength: 1,
+            appendTo: "footer",
             source: function(request, _response) {
                 var elastic_search = new App.ElasticSearchCollection();
                 elastic_search.url = api_url + 'search.json';
@@ -1250,6 +1261,15 @@ App.FooterView = Backbone.View.extend({
                             cards.add(response.result);
                             var card_names = cards.pluck('name');
                             var res_suggestion = response.suggestion;
+                            if (!_.isEmpty(response.result)) {
+                                $("#js-loader-img").addClass('hide');
+                                $("#res").addClass('hide');
+                                $("#nres").addClass('hide');
+                            } else {
+                                $("#js-loader-img").addClass('hide');
+                                $("#nres").removeClass('hide');
+                                $("#res").addClass('hide');
+                            }
                             if (!_.isEmpty(response.hits) && !_.isEmpty(response.hits.hits)) {
                                 content = new App.SearchResultView({
                                     model: response.hits.hits

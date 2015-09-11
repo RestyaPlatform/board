@@ -41,6 +41,13 @@ App.SettingView = Backbone.View.extend({
                 data.LDAP_LOGIN_ENABLED = 'false';
             }
         }
+        if (!_.isUndefined(data.STANDARD_LOGIN_ENABLED) && $('.js-checkbox').is(":checked")) {
+            data.STANDARD_LOGIN_ENABLED = 'true';
+        } else {
+            if (parseInt(this.id) === 2) {
+                data.STANDARD_LOGIN_ENABLED = 'false';
+            }
+        }
         var self = this;
         var settingModel = new App.SettingCategory();
         settingModel.url = api_url + 'settings.json';

@@ -9,11 +9,11 @@
 		<% if(board_id !== undefined && board_id !== null && board_id !== "" && !_.isEmpty(this.music_content) && this.music_content !== ''){ %>
 			<% if(authuser.user.is_productivity_beats === true || authuser.user.is_productivity_beats === 't') { %>
 				<a href="#" data-toggle="tooltip" data-placement="top" data-original-title="Productivity Beats - <%- this.music_name %>" title="Productivity Beats - <%- this.music_name %>" class="animation btn btn-default js-product-beat-action" data-type='on'>
-				<span><i class="icon-volume-up lead show tada-animation"></i></span>
+				<span><i class="icon-volume-up lead tada-animation"></i></span>
 				</a>
 			<% } else { %>
 				<a href="#" data-toggle="tooltip" data-placement="top" data-original-title="Productivity Beats - <%- this.music_name %>" title="Productivity Beats - <%- this.music_name %>" class="animation btn btn-default js-product-beat-action" data-type='off'>
-				<span><i class="icon-volume-off lead show text-muted"></i></span>
+				<span><i class="icon-volume-off lead text-muted"></i></span>
 				</a>
 			<% } %>
 		<% } %>
@@ -109,8 +109,11 @@
 <% if(!_.isUndefined(authuser.user)){%>
 <div class="col-xs-push-0 col-sm-push-0 col-md-push-0 col-lg-push-1 col-lg-4 col-md-4 col-sm-2 col-xs-3 hidden-xs">
 	<form role="form" class="search-container clearfix">
+	<div class="text-center clearfix hide search-loader" id="js-loader-img"><img src="img/ajax-loader.gif" alt="[Images:Loader]" title="Loading ..." /></div>
 	  <div class="form-group">
 		<input id="search-box" type="search" class="search-box pull-right form-control js-search search-box">
+		<i class="icon-circle-blank search-loader hide" id="res"></i>
+		<i class="icon-circle-blank search-loader text-danger hide" id="nres"></i>
 		<label for="search-box" class="pull-right"><i class="icon-search btn btn-primary search-icon"></i></label>
 		<ul class="dropdown-menu">
 			<li class="js-show-search-result js-dropdown-popup dropdown-popup">
@@ -131,7 +134,7 @@
 	   <a href="#" data-toggle="dropdown" class="dropdown-toggle btn btn-default" title="<%-model.user.username%>">
 	   		<span>
 			<% if(!_.isEmpty(model.user.profile_picture_path)){ 
-				var profile_picture_path = model.showImage('User', model.user.id, 'micro_thumb' );
+				var profile_picture_path = model.showImage('User', model.user.id, 'micro_thumb', true);
 			%>
 				<img class="img-rounded" width="16" height="16" src="<%= profile_picture_path%>" alt="[Images: <%- model.user.username%>]" title="<%- model.user.username%>" />
 			<% }else{ %>

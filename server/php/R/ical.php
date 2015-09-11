@@ -9,18 +9,19 @@
  * @subpackage Core
  * @author     Restya <info@restya.com>
  * @copyright  2014 Restya
- * @license    http://www.restya.com/ Restya Licence
- * @link       http://www.restya.com
+ * @license    http://restya.com/ Restya Licence
+ * @link       http://restya.com/
  */
-require_once ('config.inc.php');
+require_once 'config.inc.php';
 if (!empty($_GET['id']) && !empty($_GET['hash'])) {
-    $md5_hash = md5(SecuritySalt . $_GET['id']);
+    $md5_hash = md5(SECURITYSALT . $_GET['id']);
     if ($md5_hash == $_GET['hash']) {
         $r_debug = '';
         if ($db_lnk) {
-            $result = pg_query_params($db_lnk, 'SELECT board.name, card.id, card.name as card_name, card.description, card.due_date FROM boards board LEFT JOIN cards card ON card.board_id = board.id WHERE card.is_archived = FALSE AND card.due_date IS NOT NULL AND board.id = $1', array(
+            $val_array = array(
                 $_GET['id']
-            ));
+            );
+            $result = pg_query_params($db_lnk, 'SELECT board.name, card.id, card.name as card_name, card.description, card.due_date FROM boards board LEFT JOIN cards card ON card.board_id = board.id WHERE card.is_archived = FALSE AND card.due_date IS NOT NULL AND board.id = $1', $val_array);
             $count = pg_num_rows($result);
             $ical = 'BEGIN:VCALENDAR
 VERSION:2.0
@@ -57,5 +58,5 @@ END:VCALENDAR';
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
     }
 } else {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 400 Not Found', true, 400);
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
 }

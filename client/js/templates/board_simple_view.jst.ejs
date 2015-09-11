@@ -8,7 +8,12 @@
 			  <% if(!_.isEmpty(role_links.where({slug: "view_board"}))){ %>
 			  <a href="#/board/<%- board.id %>" title="<%- board.attributes.name %>" class="htruncate btn-block">
 			  <% } %>
-			  <%- board.attributes.name%>
+			  <% if(board.attributes.organization_id > 0 && board.attributes.organization_id != null){ 
+					logo_path = board.showImage('Organization', board.attributes.organization_id, 'small_thumb' );
+			  %>
+					<img src="<%- logo_path %>" alt="[Image: Organization]" class="pull-left navbar-btn" width="16" height="16" /> &nbsp;
+			  <% } %>
+			   <%- board.attributes.name%>
 			  <% if(!_.isEmpty(role_links.where({slug: "view_board"}))){ %>
 			  </a>
 			  <% } %>
@@ -68,6 +73,9 @@
 	}
 	%>
 		<li class="list-group-item clearfix" style="<%= style %>">
+			<% if(board.attributes.music_name != null){ %>
+			<div class="col-xs-push-0 pa well-sm board-music-bg"><i class="icon-music icon-light"></i></div>
+			<% } %>
 			<a class="show" href="#/board/<%- board.id %>">
 			    <div id="doughnutChart" class="chart js-chart"></div>
 			</a>

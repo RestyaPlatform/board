@@ -110,14 +110,28 @@ App.ActivityView = Backbone.View.extend({
                         activity.set(response.activity);
                         card.activities.unshift(activity);
                     });
-                    var activity = new App.Activity();
-                    activity.set(response.activity);
-                    var view = new App.ActivityView({
-                        model: activity,
-                        board: self.board
-                    });
-                    var view_activity = $('#js-card-activities-' + card.attributes.id);
-                    view_activity.prepend(view.render().el).find('.timeago').timeago();
+
+                    var view_activity = this.$('#js-card-activities-' + response.undo.card.id);
+                    view_activity.html('');
+                    if (!_.isEmpty(card.activities)) {
+                        card.activities.each(function(activity) {
+                            $('#js-loader-img').removeClass('hide');
+                            if (!_.isEmpty(self.model.collection)) {
+                                activity.cards.add(self.model.collection.models);
+                            }
+                            if (!_.isUndefined(response.undo.update_card_comment)) {
+                                if (activity.attributes.id == response.undo.update_card_comment) {
+                                    activity.attributes.comment = response.undo.card.comment;
+                                }
+                            }
+                            var view = new App.ActivityView({
+                                model: activity,
+                                board: self.board
+                            });
+                            view_activity.append(view.render().el).find('.timeago').timeago();
+                            $('#js-loader-img').addClass('hide');
+                        });
+                    }
                 } else if (!_.isUndefined(response.undo.list)) {
                     var list = self.board.lists.findWhere({
                         id: parseInt(response.undo.list.id)

@@ -62,16 +62,18 @@ App.OrganizationBoardView = Backbone.View.extend({
             var color_codes = ['#DB7093', '#F47564', '#EDA287', '#FAC1AD', '#FFE4E1', '#D3ABF0', '#DC9CDC', '#69BFBA', '#66CDAA', '#8FBC8F', '#CBFDCA', '#EEE8AA', '#BC8F8F', '#CD853F', '#D2B48C', '#F5DEB3', '#64BCF2', '#87CEFA', '#B0C4DE', '#D6E2F7'];
             var i = 0;
             _.each(this.model.attributes.lists, function(list) {
-                var _data = {};
-                _data.title = list.name;
-                _data.value = list.card_count;
-                _data.color = color_codes[i];
-                i++;
-                if (i > 20) {
-                    i = 0;
-                }
-                if (list.card_count > 0) {
-                    data.push(_data);
+                if (!list.is_archived) {
+                    var _data = {};
+                    _data.title = list.name;
+                    _data.value = list.card_count;
+                    _data.color = color_codes[i];
+                    i++;
+                    if (i > 20) {
+                        i = 0;
+                    }
+                    if (list.card_count > 0) {
+                        data.push(_data);
+                    }
                 }
             });
             var _this = this;

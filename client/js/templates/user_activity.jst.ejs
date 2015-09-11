@@ -1,28 +1,30 @@
 <% if(!_.isEmpty(activity) && activity != null){  %> 
 	<% 
 				var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + _.escape(activity.attributes.card_name) + '</a>';
+				var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + _.escape(activity.attributes.organization_name) + '</a>';
 			if(activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
+				activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
 				activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
 				activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', _.escape(activity.attributes.label_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', _.escape(activity.attributes.card_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', _.escape(activity.attributes.card_description));
 				activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', _.escape(activity.attributes.list_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', _.escape(activity.attributes.board_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', _.escape(activity.attributes.username));
+				activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', _.escape(activity.attributes.full_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', _.escape(activity.attributes.checklist_item_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', _.escape(activity.attributes.checklist_item_parent_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
 			} else {
-					var comment = activity.attributes.username + ' commented in card ' + cardLink;
+					var comment = activity.attributes.full_name + ' commented in card ' + cardLink;
 			}
 		%>   
 		<ul class="media-list">
 			<li class="media">
-				<a data-placement="bottom" title="<%- activity.attributes.username%>" data-toggle="tooltip" href="#/user/<%- activity.attributes.user_id %>" class="pull-left">								
+				<a data-placement="bottom" title="<%- activity.attributes.full_name%>" data-toggle="tooltip" href="#/user/<%- activity.attributes.user_id %>" class="pull-left">								
 					<% if(!_.isEmpty(activity.attributes.profile_picture_path)) { 
 						var profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'normal_thumb' );
 					%>
-						<img src="<%-profile_picture_path %>" alt="[Image: <%-activity.attributes.username %>]" title="<%-activity.attributes.username %>" class="img-rounded img-responsive">
+						<img src="<%-profile_picture_path %>" alt="[Image: <%-activity.attributes.full_name %>]" title="<%-activity.attributes.full_name %>" class="img-rounded img-responsive">
 					<% } else {%>
 						<i class="avatar avatar-color-194 avatar-md img-rounded"><%- activity.attributes.initials %></i>									
 					<% } %>

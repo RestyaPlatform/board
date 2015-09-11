@@ -9,87 +9,61 @@
  * @subpackage Core
  * @author     Restya <info@restya.com>
  * @copyright  2014 Restya
- * @license    http://www.restya.com/ Restya Licence
- * @link       http://www.restya.com
+ * @license    http://restya.com/ Restya Licence
+ * @link       http://restya.com/
  */
 require_once 'config.inc.php';
-function imageResize()
-{
-    global $thumbsizes, $settings, $db_lnk, $is_aspect;
-    $size = $_GET['size'];
-    $model = $_GET['model'];
-    $filename = $_GET['filename'];
-    $val = $thumbsizes[$model][$size];
-    list($width, $height) = explode('x', $val);
-    list($id, $hash, $ext) = explode('.', $filename);
-    if ($hash == md5(SecuritySalt . $model . $id . $ext . $size . SITE_NAME)) {
-        if ($model == 'User') {
-            $s_result = pg_query_params($db_lnk, 'SELECT profile_picture_path FROM users WHERE id = $1', array(
-                $id
-            ));
-            $row = pg_fetch_assoc($s_result);
-            $fullPath = $row['profile_picture_path'];
-        } else if ($model == 'Organization') {
-            $s_result = pg_query_params($db_lnk, 'SELECT logo_url FROM organizations WHERE id = $1', array(
-                $id
-            ));
-            $row = pg_fetch_assoc($s_result);
-            $fullPath = $row['logo_url'];
-        } else if ($model == 'Board') {
-            $s_result = pg_query_params($db_lnk, 'SELECT background_picture_path FROM boards WHERE id = $1', array(
-                $id
-            ));
-            $row = pg_fetch_assoc($s_result);
-            $fullPath = $row['background_picture_path'];
-        } else if ($model == 'CardAttachment') {
-            $s_result = pg_query_params($db_lnk, 'SELECT path FROM card_attachments WHERE id = $1', array(
-                $id
-            ));
-            $row = pg_fetch_assoc($s_result);
-            $fullPath = $row['path'];
-        }
-        $fullPath = dirname(dirname(dirname(dirname(__FILE__)))) . '/' . $fullPath;
-        $query_string = $_GET;
-        $query_string['id'] = $id;
-        $query_string['ext'] = $ext;
-        $query_string['hash'] = $hash;
-        $is_aspect = false;
-        if (!empty($aspect[$model][$size])) {
-            $is_aspect = true;
-        }
-        $mediadir = dirname(dirname(dirname(dirname(__FILE__)))) . '/client/img/' . $query_string['size'] . '/' . $query_string['model'] . '/';
-        if (!file_exists($mediadir)) {
-            mkdir($mediadir, 0777, true);
-        }
-        $filename = $query_string['id'] . '.' . $query_string['hash'] . '.' . $query_string['ext'];
-        $writeTo = $mediadir . $filename;
-        $img_string = resizeFile($fullPath, $width, $height, $writeTo, $is_aspect, false, $query_string);
-        header('Location:' . $_SERVER['REQUEST_URI'] . '?chrome-3xx-fix');
-    } else {
-        // Invalid request
-        return false;
+$size = $_GET['size'];
+$model = $_GET['model'];
+$filename = $_GET['filename'];
+$val = $thumbsizes[$model][$size];
+list($width, $height) = explode('x', $val);
+list($id, $hash, $ext) = explode('.', $filename);
+if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size . SITE_NAME)) {
+    $val_array = array(
+        $id
+    );
+    if ($model == 'User') {
+        $s_result = pg_query_params($db_lnk, 'SELECT profile_picture_path FROM users WHERE id = $1', $val_array);
+        $row = pg_fetch_assoc($s_result);
+        $fullPath = $row['profile_picture_path'];
+    } else if ($model == 'Organization') {
+        $s_result = pg_query_params($db_lnk, 'SELECT logo_url FROM organizations WHERE id = $1', $val_array);
+        $row = pg_fetch_assoc($s_result);
+        $fullPath = $row['logo_url'];
+    } else if ($model == 'Board') {
+        $s_result = pg_query_params($db_lnk, 'SELECT background_picture_path FROM boards WHERE id = $1', $val_array);
+        $row = pg_fetch_assoc($s_result);
+        $fullPath = $row['background_picture_path'];
+    } else if ($model == 'CardAttachment') {
+        $s_result = pg_query_params($db_lnk, 'SELECT path FROM card_attachments WHERE id = $1', $val_array);
+        $row = pg_fetch_assoc($s_result);
+        $fullPath = $row['path'];
     }
-}
-function _setMemoryLimitForImage($image_path)
-{
-    $imageInfo = getimagesize($image_path);
-    $imageInfo['channels'] = !empty($imageInfo['channels']) ? $imageInfo['channels'] : 1;
-    $imageInfo['bits'] = !empty($imageInfo['bits']) ? $imageInfo['bits'] : 1;
-    $memoryNeeded = round(($imageInfo[0] * $imageInfo[1] * $imageInfo['bits'] * $imageInfo['channels'] / 8 + Pow(2, 16)) * 1.65);
-    if (function_exists('memory_get_usage') && memory_get_usage() + $memoryNeeded > (integer)ini_get('memory_limit') * pow(1024, 2)) {
-        ini_set('memory_limit', (integer)ini_get('memory_limit') + ceil(((memory_get_usage() + $memoryNeeded) - (integer)ini_get('memory_limit') * pow(1024, 2)) / pow(1024, 2)) . 'M');
+    $fullPath = APP_PATH . '/' . $fullPath;
+    $query_string = $_GET;
+    $query_string['id'] = $id;
+    $query_string['ext'] = $ext;
+    $query_string['hash'] = $hash;
+    $is_aspect = false;
+    if (!empty($aspect[$model][$size])) {
+        $is_aspect = true;
     }
-}
-function resizeFile($fullPath, $width = 600, $height = 400, $writeTo, $aspect = true, $is_beyond_original = false, $query_string = array())
-{
+    $mediadir = APP_PATH . '/client/img/' . $query_string['size'] . '/' . $query_string['model'] . '/';
+    if (!file_exists($mediadir)) {
+        mkdir($mediadir, 0777, true);
+    }
+    $filename = $query_string['id'] . '.' . $query_string['hash'] . '.' . $query_string['ext'];
+    $writeTo = $mediadir . $filename;
     if (!$width || !$height) {
-        return false;
+        header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
+        exit;
     }
     if (!($size = getimagesize($fullPath))) {
-        return false;
+        header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
+        exit;
     }
     list($currentWidth, $currentHeight, $currentType) = $size;
-    $return = false;
     if (class_exists('imagick')) {
         $new_image_obj = new imagick($fullPath);
         $new_image = $new_image_obj->clone();
@@ -104,9 +78,7 @@ function resizeFile($fullPath, $width = 600, $height = 400, $writeTo, $aspect = 
         } else {
             $new_image->scaleImage($width, $height, false);
         }
-        if ($new_image->writeImage($writeTo)) {
-            $return = true;
-        }
+        $new_image->writeImage($writeTo);
     } else {
         $target['width'] = $currentWidth;
         $target['height'] = $currentHeight;
@@ -119,7 +91,13 @@ function resizeFile($fullPath, $width = 600, $height = 400, $writeTo, $aspect = 
             'psd',
             'wbmp'
         );
-        _setMemoryLimitForImage($fullPath);
+        $imageInfo = getimagesize($fullPath);
+        $imageInfo['channels'] = !empty($imageInfo['channels']) ? $imageInfo['channels'] : 1;
+        $imageInfo['bits'] = !empty($imageInfo['bits']) ? $imageInfo['bits'] : 1;
+        $memoryNeeded = round(($imageInfo[0] * $imageInfo[1] * $imageInfo['bits'] * $imageInfo['channels'] / 8 + Pow(2, 16)) * 1.65);
+        if (function_exists('memory_get_usage') && memory_get_usage() + $memoryNeeded > (integer)ini_get('memory_limit') * pow(1024, 2)) {
+            ini_set('memory_limit', (integer)ini_get('memory_limit') + ceil(((memory_get_usage() + $memoryNeeded) - (integer)ini_get('memory_limit') * pow(1024, 2)) / pow(1024, 2)) . 'M');
+        }
         $image = call_user_func('imagecreatefrom' . $types[$currentType], $fullPath);
         ini_restore('memory_limit');
         if ($aspect) {
@@ -168,10 +146,11 @@ function resizeFile($fullPath, $width = 600, $height = 400, $writeTo, $aspect = 
         }
         ob_start();
         call_user_func('image' . $types[$currentType], $temp);
-        $return = ob_get_clean();
+        ob_get_clean();
         imagedestroy($image);
         imagedestroy($temp);
     }
-    return $return;
+    header('Location:' . $_SERVER['REQUEST_URI'] . '?chrome-3xx-fix');
+} else {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
 }
-imageResize();

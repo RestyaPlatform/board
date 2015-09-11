@@ -28,7 +28,7 @@
 	<li class="pull-right col-lg-5 col-sm-12 col-xs-5">
 		<ul class="list-inline navbar-btn clearfix list-group-item-text">
 			<li>
-				<div class="btn-group text-left navbar-btn">
+				<div class="btn-group text-left navbar-btn dropdown">
 					<a title="Organizations" class="btn btn-default <% if(user.attributes.joined_organization_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(user.attributes.joined_organization_count != 0){ %>data-toggle="dropdown"<%}%>><%- user.attributes.joined_organization_count%> Organizations</a>
 					<% if(user.attributes.joined_organization_count != 0){ %>
 						<ul class="dropdown-menu arrow arrow-left  text-left" role="boards">
@@ -38,7 +38,7 @@
 						</ul>
 					<%}%>
 				</div>
-				<div class="btn-group text-left navbar-btn">
+				<div class="btn-group text-left navbar-btn dropdown">
 					<a title="Boards" class="btn btn-default <% if(user.attributes.joined_board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(user.attributes.joined_board_count != 0){ %>data-toggle="dropdown"<%}%>><%- user.attributes.joined_board_count%> Boards</a>
 					<% if(user.attributes.joined_board_count != 0){ %>
 						<ul class="dropdown-menu arrow arrow-left  text-left" role="boards" id="js-user-activity-menu-response-<%- user.attributes.id%>">
@@ -48,7 +48,7 @@
 				<a title="Activities" class="btn btn-default navbar-btn js-all-user-activities" href="#">Activities</a>
 		    </li>
 			<li class="navbar-btn">
-				<div class="btn-group text-left radio-inline navbar-btn">
+				<div class="btn-group text-left radio-inline navbar-btn dropdown">
 				  <button class="btn btn-default" type="button"><%if(user.attributes.role_id == 1){%> Admin <%}else if(user.attributes.role_id == 2){%> User <%}else{%> Guest<%}%></button>
 				  <button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button"> <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span> </button>
 				  <ul class="dropdown-menu arrow arrow-right" role="menu">

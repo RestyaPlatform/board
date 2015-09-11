@@ -121,6 +121,21 @@
 		}
 	}
 }
+@media (max-width:768px) and (orientation: portrait){
+	body{
+		.content{
+			footer{
+				.nav {
+					>li {
+						>a  {
+							padding: 10px 12px;
+						}	  
+					}
+				}
+			}
+		}
+	}
+}
 @media (max-width:568px) and (orientation: landscape){
 	body{
 		.dockmodal{
@@ -140,6 +155,19 @@
 					}
 				}
 		 	 }
+			 .about-block{
+				width:280px;
+				ul{
+					>li{
+						a{
+							word-break:break-all;
+							float: none;
+							display: block;
+							margin-bottom: 5px;
+						}
+					}
+				}
+			}
 			footer {
 				.nav {
 					> li {

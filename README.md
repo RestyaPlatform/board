@@ -16,7 +16,7 @@ Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [R
 
 To upgrade, overwrite application files and apply respective DB script:
 
-*  v0.1.1 to v0.1.2 - `/sql/TODO`
+*  v0.1.1 to v0.1.2 - `/sql/upgrade-0.1.1-0.1.2.sql`
 
 ### Forum
 
@@ -80,7 +80,7 @@ Required sofware: nginx, php-fpm (with mbstring), PostgreSQL, ElasticSearch, Gru
 * `restyaboard_with_empty_data.sql` - Database generation script 
 * `server/php/R/config.inc.php` - Database and other configurations
 * `media` - Need write permission for php; can be `chmod 655` or `755` or `777` depending upon server configuration
-* `grunt build` - Generates restyaboard.zip, deployable code
+* `grunt build:env` - Generates restyaboard.zip, deployable code (env - dev or live)
 
 ------------
 

@@ -76,6 +76,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-subscribe-board': 'subcribeBoard',
         'click .js-switch-grid-view': 'switchGridView',
         'click .js-switch-list-view': 'switchListView',
+        'click .js-switch-time-view': 'switchTimeView',
         'click .js-switch-calendar-view': 'switchCalendarView',
         'click .js-show-filters': 'showFilters',
         'click .js-archived-items': 'showArchivedItems',
@@ -359,12 +360,13 @@ App.BoardHeaderView = Backbone.View.extend({
             model: authuser,
             board_id: this.model.id
         }).renderClosedBoards();
+        var board_id = this.model.id;
         this.model.save({
             is_closed: true
         }, {
             patch: true,
             success: function(model, response) {
-                app.navigate('#/board/' + this.model.id, {
+                app.navigate('#/board/' + board_id, {
                     trigger: true,
                     replace: true
                 });
@@ -756,6 +758,50 @@ App.BoardHeaderView = Backbone.View.extend({
 
             }
         }
+        return false;
+    },
+    /**
+     * switchTimeView()
+     * swith to the list view
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    switchTimeView: function() {
+        $('body').removeClass('modal-open');
+        $('#boards-view').addClass('col-xs-12');
+        $('#switch-board-view').addClass('Timesheet-view calendar-view');
+        $('#switch-board-view').removeClass('board-viewlist col-xs-12');
+        $('li.js-switch-view').removeClass('active');
+        $('a.js-switch-time-view').parent().addClass('active');
+        $('.js-list-form').removeClass('hide');
+        var current_param = Backbone.history.fragment;
+        if (current_param.indexOf('/timeline') === -1) {
+            app.navigate('#/board/' + this.model.id + '/timeline', {
+                trigger: false,
+                trigger_function: false,
+            });
+        }
+
+        var timedata = this.model.cards.invoke('pick', ['title', 'due_date']);
+        var timesheetData = '';
+        $.each(timedata.reverse(), function(index, value) {
+            if (value.due_date !== null) {
+                timesheetData += '- ' + value.due_date + ' ' + value.title + " \n ";
+            }
+        });
+        var config = {
+            yearLength: 120, // 120px per year
+            hideAge: true, // Hide age from year axis
+            customStylesheetURL: null, // Custom stylesheet
+            //fetchURL: 'http://localhost/restyaboard/client/js/libs/life.md', // url from where values need to  be fetched
+            renderData: timesheetData // fetched data
+        };
+        life.start(config);
+        slider.init();
+        $('div.js-baord-view-' + this.model.id).html('');
+        $('div.js-baord-view-' + this.model.id).html(life.$el.innerHTML);
+		changeTitle('Board - ' + _.escape(this.model.attributes.name));
         return false;
     },
     /**
@@ -1475,7 +1521,7 @@ App.BoardHeaderView = Backbone.View.extend({
             $('ul.js-card-users').parents('div.js-board-list-card').show();
             $('ul.js-card-users').parents('tr.js-show-modal-card-view').show();
         }
-        $('li.selected > span.js-user', $('ul.js-board-users')).each(function() {
+        $('li.selected > div.media > span.navbar-btn > span.js-user', $('ul.js-board-users')).each(function() {
             not_contain += ':not(:contains(' + $(this).html() + '))';
             contain += 'ul.js-card-users:contains(' + $(this).html() + '), ';
             if ($(this).next('i').length === 0) {
@@ -1521,7 +1567,7 @@ App.BoardHeaderView = Backbone.View.extend({
             $('ul.js-card-due').parents('div.js-board-list-card').show();
             $('ul.js-card-due').parents('tr.js-show-modal-card-view').show();
         }
-        $('li.selected > span.js-due', $('ul.js-board-dues')).each(function() {
+        $('li.selected > div.media > span.js-due', $('ul.js-board-dues')).each(function() {
             not_contain += ':not(:contains(' + $(this).html() + '))';
             contain += 'ul.js-card-due:contains(' + $(this).html() + '), ';
             if ($(this).next('i').length === 0) {

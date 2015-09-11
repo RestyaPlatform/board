@@ -34,21 +34,37 @@ CREATE FUNCTION label_card_count_update() RETURNS trigger
     AS $$
 
 BEGIN
+
 	IF (TG_OP = 'DELETE') THEN
+
 		UPDATE "labels" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_labels" WHERE "label_id" = OLD."label_id") t WHERE "id" = OLD."label_id";
+
 	        UPDATE "cards" SET "label_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_labels" WHERE "label_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'UPDATE') THEN
+
 		UPDATE "labels" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_labels" WHERE "label_id" = OLD."label_id") t WHERE "id" = OLD."label_id";
+
 	        UPDATE "labels" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_labels" WHERE "label_id" = NEW."label_id") t WHERE "id" = NEW."label_id";
+
 		UPDATE "cards" SET "label_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_labels" WHERE "label_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 	        UPDATE "cards" SET "label_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_labels" WHERE "label_id" = NEW."label_id") t WHERE "id" = NEW."card_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'INSERT') THEN
+
 		UPDATE "labels" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_labels" WHERE "label_id" = NEW."label_id") t WHERE "id" = NEW."label_id";
+
 	        UPDATE "cards" SET "label_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_labels" WHERE "label_id" = NEW."label_id") t WHERE "id" = NEW."card_id";
+
 		RETURN NEW;
+
 	END IF;
+
 END;
 
 $$;
@@ -65,21 +81,37 @@ CREATE FUNCTION update_board_count() RETURNS trigger
     AS $$
 
 BEGIN
+
 	IF (TG_OP = 'DELETE') THEN
+
 		UPDATE "organizations" SET "board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+
 	        UPDATE "users" SET "created_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'UPDATE') THEN
+
 		UPDATE "organizations" SET "board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+
 		UPDATE "organizations" SET "board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
+
 	        UPDATE "users" SET "created_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 	        UPDATE "users" SET "created_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'INSERT') THEN
+
 		UPDATE "organizations" SET "board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
+
 	         UPDATE "users" SET "created_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN NEW;
+
 	END IF;
+
 END;
 
 $$;
@@ -93,21 +125,48 @@ ALTER FUNCTION public.update_board_count() OWNER TO postgres;
 
 CREATE FUNCTION update_board_star_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		UPDATE "boards" SET "boards_star_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_stars" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'UPDATE') THEN
-		UPDATE "boards" SET "boards_star_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_stars" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-		UPDATE "boards" SET "boards_star_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_stars" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'INSERT') THEN
-		UPDATE "boards" SET "boards_star_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_stars" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
-		RETURN NEW;
-	END IF;
-END;
+    AS $$
+
+
+BEGIN
+
+
+	IF (TG_OP = 'DELETE') THEN
+
+
+		UPDATE "boards" SET "boards_star_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_stars" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+
+		RETURN OLD;
+
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+
+		UPDATE "boards" SET "boards_star_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_stars" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+
+		UPDATE "boards" SET "boards_star_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_stars" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
+
+		RETURN OLD;
+
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+
+		UPDATE "boards" SET "boards_star_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_stars" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
+
+		RETURN NEW;
+
+
+	END IF;
+
+
+END;
+
+
 $$;
 
 
@@ -119,21 +178,48 @@ ALTER FUNCTION public.update_board_star_count() OWNER TO postgres;
 
 CREATE FUNCTION update_board_subscriber_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		UPDATE "boards" SET "boards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_subscribers" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'UPDATE') THEN
-		UPDATE "boards" SET "boards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_subscribers" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-		UPDATE "boards" SET "boards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_subscribers" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'INSERT') THEN
-		UPDATE "boards" SET "boards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_subscribers" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
-		RETURN NEW;
-	END IF;
-END;
+    AS $$
+
+
+BEGIN
+
+
+	IF (TG_OP = 'DELETE') THEN
+
+
+		UPDATE "boards" SET "boards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_subscribers" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+
+		RETURN OLD;
+
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+
+		UPDATE "boards" SET "boards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_subscribers" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+
+		UPDATE "boards" SET "boards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_subscribers" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
+
+		RETURN OLD;
+
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+
+		UPDATE "boards" SET "boards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "board_subscribers" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
+
+		RETURN NEW;
+
+
+	END IF;
+
+
+END;
+
+
 $$;
 
 
@@ -148,21 +234,37 @@ CREATE FUNCTION update_board_user_count() RETURNS trigger
     AS $$
 
 BEGIN
+
 	IF (TG_OP = 'DELETE') THEN
+
 		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
 		UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'UPDATE') THEN
+
 		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
 		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
 	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'INSERT') THEN
+
 		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
 	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN NEW;
+
 	END IF;
+
 END;
 
 $$;
@@ -179,21 +281,37 @@ CREATE FUNCTION update_card_activity_count() RETURNS trigger
     AS $$
 
 BEGIN
+
 	IF (TG_OP = 'DELETE') THEN
+
 		UPDATE "cards" SET "activity_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "activities" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 	        UPDATE "users" SET "activity_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "activities" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'UPDATE') THEN
+
 		UPDATE "cards" SET "activity_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "activities" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 		UPDATE "cards" SET "activity_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "activities" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 	        UPDATE "users" SET "activity_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "activities" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 	        UPDATE "users" SET "activity_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "activities" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'INSERT') THEN
+
 		UPDATE "cards" SET "activity_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "activities" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 	        UPDATE "users" SET "activity_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "activities" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN NEW;
+
 	END IF;
+
 END;
 
 $$;
@@ -210,17 +328,29 @@ CREATE FUNCTION update_card_attachment_count() RETURNS trigger
     AS $$
 
 BEGIN
+
 	IF (TG_OP = 'DELETE') THEN
+
 		UPDATE "cards" SET "attachment_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_attachments" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'UPDATE') THEN
+
 		UPDATE "cards" SET "attachment_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_attachments" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 		UPDATE "cards" SET "attachment_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_attachments" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'INSERT') THEN
+
 		UPDATE "cards" SET "attachment_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_attachments" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 		RETURN NEW;
+
 	END IF;
+
 END;
 
 $$;
@@ -237,21 +367,37 @@ CREATE FUNCTION update_card_checklist_count() RETURNS trigger
     AS $$
 
 BEGIN
+
 	IF (TG_OP = 'DELETE') THEN
+
 		UPDATE "cards" SET "checklist_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklists" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 	        UPDATE "users" SET "checklist_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklists" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'UPDATE') THEN
+
 		UPDATE "cards" SET "checklist_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklists" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 		UPDATE "cards" SET "checklist_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklists" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 	        UPDATE "users" SET "checklist_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklists" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		UPDATE "users" SET "checklist_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklists" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'INSERT') THEN
+
 		UPDATE "cards" SET "checklist_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklists" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 	        UPDATE "users" SET "checklist_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklists" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN NEW;
+
 	END IF;
+
 END;
 
 $$;
@@ -268,37 +414,69 @@ CREATE FUNCTION update_card_checklist_item_count() RETURNS trigger
     AS $$
 
 BEGIN
+
 	IF (TG_OP = 'DELETE') THEN
+
 		UPDATE "cards" SET "checklist_item_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 	        UPDATE "cards" SET "checklist_item_completed_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "card_id" = OLD."card_id" AND "is_completed" = TRUE) t WHERE "id" = OLD."card_id";
+
 		UPDATE "checklists" SET "checklist_item_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "checklist_id" = OLD."checklist_id") t WHERE "id" = OLD."checklist_id";
+
 	        UPDATE "checklists" SET "checklist_item_completed_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "checklist_id" = OLD."checklist_id" AND "is_completed" = TRUE) t WHERE "id" = OLD."checklist_id";
+
 	        UPDATE "users" SET "checklist_item_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 	        UPDATE "users" SET "checklist_item_completed_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "user_id" = OLD."user_id" AND "is_completed" = TRUE) t WHERE "id" = OLD."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'UPDATE') THEN
+
 		UPDATE "cards" SET "checklist_item_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 	        UPDATE "cards" SET "checklist_item_completed_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "card_id" = OLD."card_id" AND "is_completed" = TRUE) t WHERE "id" = OLD."card_id";
+
 		UPDATE "cards" SET "checklist_item_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 	        UPDATE "cards" SET "checklist_item_completed_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "card_id" = NEW."card_id" AND "is_completed" = TRUE) t WHERE "id" = NEW."card_id";
+
 	        UPDATE "checklists" SET "checklist_item_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "checklist_id" = OLD."checklist_id") t WHERE "id" = OLD."checklist_id";
+
 	        UPDATE "checklists" SET "checklist_item_completed_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "checklist_id" = OLD."checklist_id" AND "is_completed" = TRUE) t WHERE "id" = OLD."checklist_id";
+
 		UPDATE "checklists" SET "checklist_item_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "checklist_id" = NEW."checklist_id") t WHERE "id" = NEW."checklist_id";
+
 	        UPDATE "checklists" SET "checklist_item_completed_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "checklist_id" = NEW."checklist_id" AND "is_completed" = TRUE) t WHERE "id" = NEW."checklist_id";
+
 	         UPDATE "users" SET "checklist_item_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 	        UPDATE "users" SET "checklist_item_completed_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "user_id" = OLD."user_id" AND "is_completed" = TRUE) t WHERE "id" = OLD."user_id";
+
 	        UPDATE "users" SET "checklist_item_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 	        UPDATE "users" SET "checklist_item_completed_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "user_id" = NEW."user_id" AND "is_completed" = TRUE) t WHERE "id" = NEW."user_id";
+
 		RETURN NEW;
+
 	ELSIF (TG_OP = 'INSERT') THEN
+
 		UPDATE "cards" SET "checklist_item_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 	        UPDATE "cards" SET "checklist_item_completed_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "card_id" = NEW."card_id" AND "is_completed" = TRUE) t WHERE "id" = NEW."card_id";
+
 	        UPDATE "checklists" SET "checklist_item_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "checklist_id" = NEW."checklist_id") t WHERE "id" = NEW."checklist_id";
+
 	        UPDATE "checklists" SET "checklist_item_completed_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "checklist_id" = NEW."checklist_id" AND "is_completed" = TRUE) t WHERE "id" = NEW."checklist_id";
+
 	        UPDATE "users" SET "checklist_item_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 	        UPDATE "users" SET "checklist_item_completed_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "checklist_items" WHERE "user_id" = NEW."user_id" AND "is_completed" = TRUE) t WHERE "id" = NEW."user_id";
+
 		RETURN NEW;
+
 	END IF;
+
 END;
 
 $$;
@@ -312,30 +490,72 @@ ALTER FUNCTION public.update_card_checklist_item_count() OWNER TO postgres;
 
 CREATE FUNCTION update_card_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = OLD."list_id" AND "is_archived" = false) t WHERE "id" = OLD."list_id";
-	        UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'UPDATE') THEN
-		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = OLD."list_id" AND "is_archived" = false) t WHERE "id" = OLD."list_id";
-		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = NEW."list_id" AND "is_archived" = false) t WHERE "id" = NEW."list_id";
-        UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-		UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
-		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'INSERT') THEN
-		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = NEW."list_id" AND "is_archived" = false) t WHERE "id" = NEW."list_id";
-		UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."list_id";
-		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-		RETURN NEW;
-	END IF;
-END;
-
+    AS $$
+
+
+BEGIN
+
+
+	IF (TG_OP = 'DELETE') THEN
+
+
+		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = OLD."list_id" AND "is_archived" = false) t WHERE "id" = OLD."list_id";
+
+
+	        UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+
+		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+
+		RETURN OLD;
+
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+
+		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = OLD."list_id" AND "is_archived" = false) t WHERE "id" = OLD."list_id";
+
+
+		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = NEW."list_id" AND "is_archived" = false) t WHERE "id" = NEW."list_id";
+
+
+        UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+
+		UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
+
+		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+
+		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+
+		RETURN OLD;
+
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+
+		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = NEW."list_id" AND "is_archived" = false) t WHERE "id" = NEW."list_id";
+
+
+		UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."list_id";
+
+
+		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+
+		RETURN NEW;
+
+
+	END IF;
+
+
+END;
+
+
 $$;
 
 
@@ -347,21 +567,48 @@ ALTER FUNCTION public.update_card_count() OWNER TO postgres;
 
 CREATE FUNCTION update_card_subscriber_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		UPDATE "cards" SET "cards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_subscribers" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'UPDATE') THEN
-		UPDATE "cards" SET "cards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_subscribers" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
-		UPDATE "cards" SET "cards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_subscribers" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'INSERT') THEN
-		UPDATE "cards" SET "cards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_subscribers" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
-		RETURN NEW;
-	END IF;
-END;
+    AS $$
+
+
+BEGIN
+
+
+	IF (TG_OP = 'DELETE') THEN
+
+
+		UPDATE "cards" SET "cards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_subscribers" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
+
+		RETURN OLD;
+
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+
+		UPDATE "cards" SET "cards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_subscribers" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
+
+		UPDATE "cards" SET "cards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_subscribers" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
+
+		RETURN OLD;
+
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+
+		UPDATE "cards" SET "cards_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_subscribers" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
+
+		RETURN NEW;
+
+
+	END IF;
+
+
+END;
+
+
 $$;
 
 
@@ -376,21 +623,37 @@ CREATE FUNCTION update_card_user_count() RETURNS trigger
     AS $$
 
 BEGIN
+
 	IF (TG_OP = 'DELETE') THEN
+
 		UPDATE "cards" SET "cards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_users" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 	        UPDATE "users" SET "joined_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'UPDATE') THEN
+
 		UPDATE "cards" SET "cards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_users" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 		UPDATE "cards" SET "cards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_users" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 		UPDATE "users" SET "joined_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		UPDATE "users" SET "joined_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'INSERT') THEN
+
 		UPDATE "cards" SET "cards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_users" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 		UPDATE "users" SET "joined_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN NEW;
+
 	END IF;
+
 END;
 
 $$;
@@ -407,21 +670,37 @@ CREATE FUNCTION update_card_voters_count() RETURNS trigger
     AS $$
 
 BEGIN
+
 	IF (TG_OP = 'DELETE') THEN
+
 		UPDATE "cards" SET "card_voter_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_voters" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 		UPDATE "users" SET "card_voter_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_voters" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'UPDATE') THEN
+
 		UPDATE "cards" SET "card_voter_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_voters" WHERE "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 		UPDATE "cards" SET "card_voter_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_voters" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 		UPDATE "users" SET "card_voter_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_voters" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		UPDATE "users" SET "card_voter_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_voters" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'INSERT') THEN
+
 		UPDATE "cards" SET "card_voter_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_voters" WHERE "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 		UPDATE "users" SET "card_voter_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "card_voters" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN NEW;
+
 	END IF;
+
 END;
 
 $$;
@@ -438,17 +717,29 @@ CREATE FUNCTION update_comment_count() RETURNS trigger
     AS $$
 
 BEGIN
+
 	IF (TG_OP = 'DELETE') THEN
+
 		UPDATE "cards" SET "comment_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "activities" WHERE "type" = 'add_comment' AND "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'UPDATE') THEN
+
 		UPDATE "cards" SET "comment_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "activities" WHERE "type" = 'add_comment' AND "card_id" = OLD."card_id") t WHERE "id" = OLD."card_id";
+
 		UPDATE "cards" SET "comment_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "activities" WHERE "type" = 'add_comment' AND "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'INSERT') THEN
+
 		UPDATE "cards" SET "comment_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "activities" WHERE "type" = 'add_comment' AND "card_id" = NEW."card_id") t WHERE "id" = NEW."card_id";
+
 		RETURN NEW;
+
 	END IF;
+
 END;
 
 $$;
@@ -467,20 +758,35 @@ CREATE FUNCTION update_list_count() RETURNS trigger
 BEGIN
 
 	IF (TG_OP = 'DELETE') THEN
+
 		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
 		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'UPDATE') THEN
+
 		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE  "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
 		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE  "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
 		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'INSERT') THEN
+
 		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
 		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN NEW;
+
 	END IF;
+
 END;
 
 $$;
@@ -494,21 +800,48 @@ ALTER FUNCTION public.update_list_count() OWNER TO postgres;
 
 CREATE FUNCTION update_list_subscriber_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		UPDATE "lists" SET "lists_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "list_subscribers" WHERE "list_id" = OLD."list_id") t WHERE "id" = OLD."list_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'UPDATE') THEN
-		UPDATE "lists" SET "lists_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "list_subscribers" WHERE "list_id" = OLD."list_id") t WHERE "id" = OLD."list_id";
-		UPDATE "lists" SET "lists_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "list_subscribers" WHERE "list_id" = NEW."list_id") t WHERE "id" = NEW."list_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'INSERT') THEN
-		UPDATE "lists" SET "lists_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "list_subscribers" WHERE "list_id" = NEW."list_id") t WHERE "id" = NEW."list_id";
-		RETURN NEW;
-	END IF;
-END;
+    AS $$
+
+
+BEGIN
+
+
+	IF (TG_OP = 'DELETE') THEN
+
+
+		UPDATE "lists" SET "lists_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "list_subscribers" WHERE "list_id" = OLD."list_id") t WHERE "id" = OLD."list_id";
+
+
+		RETURN OLD;
+
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+
+		UPDATE "lists" SET "lists_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "list_subscribers" WHERE "list_id" = OLD."list_id") t WHERE "id" = OLD."list_id";
+
+
+		UPDATE "lists" SET "lists_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "list_subscribers" WHERE "list_id" = NEW."list_id") t WHERE "id" = NEW."list_id";
+
+
+		RETURN OLD;
+
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+
+		UPDATE "lists" SET "lists_subscriber_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "list_subscribers" WHERE "list_id" = NEW."list_id") t WHERE "id" = NEW."list_id";
+
+
+		RETURN NEW;
+
+
+	END IF;
+
+
+END;
+
+
 $$;
 
 
@@ -523,17 +856,29 @@ CREATE FUNCTION update_organization_count() RETURNS trigger
     AS $$
 
 BEGIN
+
 	IF (TG_OP = 'DELETE') THEN
+
 		UPDATE "users" SET "created_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'UPDATE') THEN
+
 		UPDATE "users" SET "created_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		UPDATE "users" SET "created_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'INSERT') THEN
+
 		UPDATE "users" SET "created_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN NEW;
+
 	END IF;
+
 END;
 
 $$;
@@ -550,21 +895,37 @@ CREATE FUNCTION update_organization_user_count() RETURNS trigger
     AS $$
 
 BEGIN
+
 	IF (TG_OP = 'DELETE') THEN
+
 		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+
 	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'UPDATE') THEN
+
 		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+
 		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
+
 	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
 	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN OLD;
+
 	ELSIF (TG_OP = 'INSERT') THEN
+
 		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
+
 	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
 		RETURN NEW;
+
 	END IF;
+
 END;
 
 $$;
@@ -578,16 +939,36 @@ ALTER FUNCTION public.update_organization_user_count() OWNER TO postgres;
 
 CREATE FUNCTION update_user_delete() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		DELETE FROM "organizations_users" WHERE "user_id" = OLD."id";
-		DELETE FROM "boards_users" WHERE "user_id" = OLD."id";
-		DELETE FROM "cards_users" WHERE "user_id" = OLD."id";
-		DELETE FROM "card_voters" WHERE "user_id" = OLD."id";
-		RETURN OLD;
-	END IF;
-END;
+    AS $$
+
+
+BEGIN
+
+
+	IF (TG_OP = 'DELETE') THEN
+
+
+		DELETE FROM "organizations_users" WHERE "user_id" = OLD."id";
+
+
+		DELETE FROM "boards_users" WHERE "user_id" = OLD."id";
+
+
+		DELETE FROM "cards_users" WHERE "user_id" = OLD."id";
+
+
+		DELETE FROM "card_voters" WHERE "user_id" = OLD."id";
+
+
+		RETURN OLD;
+
+
+	END IF;
+
+
+END;
+
+
 $$;
 
 
@@ -599,20 +980,48 @@ ALTER FUNCTION public.update_user_delete() OWNER TO postgres;
 
 CREATE FUNCTION update_users_user_login_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		UPDATE "users" SET "user_login_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "user_logins" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		RETURN OLD;
-    ELSIF (TG_OP = 'UPDATE') THEN
-		UPDATE "users" SET "user_login_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "user_logins" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		RETURN OLD;
-		RETURN NEW;
-	ELSIF (TG_OP = 'INSERT') THEN
-		UPDATE "users" SET "user_login_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "user_logins" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-		RETURN NEW;
-	END IF;
-END;
+    AS $$
+
+
+BEGIN
+
+
+	IF (TG_OP = 'DELETE') THEN
+
+
+		UPDATE "users" SET "user_login_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "user_logins" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+
+		RETURN OLD;
+
+
+    ELSIF (TG_OP = 'UPDATE') THEN
+
+
+		UPDATE "users" SET "user_login_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "user_logins" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+
+		RETURN OLD;
+
+
+		RETURN NEW;
+
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+
+		UPDATE "users" SET "user_login_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "user_logins" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+
+		RETURN NEW;
+
+
+	END IF;
+
+
+END;
+
+
 $$;
 
 
@@ -690,12 +1099,12 @@ ALTER TABLE acl_links_roles OWNER TO postgres;
 --
 
 CREATE VIEW acl_links_listing AS
- SELECT aclr.role_id,
-    acl.slug,
-    acl.url,
+ SELECT aclr.role_id, 
+    acl.slug, 
+    acl.url, 
     acl.method
    FROM (acl_links_roles aclr
-     JOIN acl_links acl ON ((acl.id = aclr.acl_link_id)));
+   JOIN acl_links acl ON ((acl.id = aclr.acl_link_id)));
 
 
 ALTER TABLE acl_links_listing OWNER TO postgres;
@@ -734,7 +1143,8 @@ CREATE TABLE activities (
     freshness_ts timestamp without time zone,
     depth integer DEFAULT 0,
     path text,
-    materialized_path character varying(255) DEFAULT NULL::character varying
+    materialized_path character varying(255) DEFAULT NULL::character varying,
+    organization_id bigint DEFAULT 0::bigint
 );
 
 
@@ -899,18 +1309,18 @@ ALTER TABLE labels OWNER TO postgres;
 --
 
 CREATE VIEW cards_labels_listing AS
- SELECT cl.id,
-    cl.created,
-    cl.modified,
-    cl.label_id,
-    cl.card_id,
-    c.name AS card_name,
-    c.list_id,
-    l.name,
+ SELECT cl.id, 
+    cl.created, 
+    cl.modified, 
+    cl.label_id, 
+    cl.card_id, 
+    c.name AS card_name, 
+    c.list_id, 
+    l.name, 
     cl.board_id
    FROM ((cards_labels cl
-     LEFT JOIN cards c ON ((c.id = cl.card_id)))
-     LEFT JOIN labels l ON ((l.id = cl.label_id)));
+   LEFT JOIN cards c ON ((c.id = cl.card_id)))
+   LEFT JOIN labels l ON ((l.id = cl.label_id)));
 
 
 ALTER TABLE cards_labels_listing OWNER TO postgres;
@@ -1017,6 +1427,41 @@ CREATE TABLE lists (
 ALTER TABLE lists OWNER TO postgres;
 
 --
+-- Name: organizations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE organizations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE organizations_id_seq OWNER TO postgres;
+
+--
+-- Name: organizations; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE organizations (
+    id bigint DEFAULT nextval('organizations_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    user_id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    website_url character varying(255),
+    description text,
+    logo_url character varying(255),
+    organization_visibility smallint DEFAULT 1,
+    organizations_user_count bigint DEFAULT 0,
+    board_count bigint DEFAULT 0
+);
+
+
+ALTER TABLE organizations OWNER TO postgres;
+
+--
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1068,7 +1513,8 @@ CREATE TABLE users (
     ip_id bigint,
     login_type_id smallint,
     is_productivity_beats boolean DEFAULT false NOT NULL,
-    user_login_count bigint DEFAULT (0)::bigint NOT NULL
+    user_login_count bigint DEFAULT (0)::bigint NOT NULL,
+    is_ldap boolean DEFAULT false NOT NULL
 );
 
 
@@ -1079,44 +1525,47 @@ ALTER TABLE users OWNER TO postgres;
 --
 
 CREATE VIEW activities_listing AS
- SELECT activity.id,
-    activity.created,
-    activity.modified,
-    activity.board_id,
-    activity.list_id,
-    activity.card_id,
-    activity.user_id,
-    activity.foreign_id,
-    activity.type,
-    activity.comment,
-    activity.revisions,
-    activity.root,
-    activity.freshness_ts,
-    activity.depth,
-    activity.path,
-    activity.materialized_path,
-    board.name AS board_name,
-    list.name AS list_name,
-    card.name AS card_name,
-    users.username,
-    users.full_name,
-    users.profile_picture_path,
-    users.initials,
-    cll.name AS label_name,
-    card.description AS card_description,
-    users.role_id AS user_role_id,
-    checklist_item.name AS checklist_item_name,
-    checklist.name AS checklist_item_parent_name,
-    checklist1.name AS checklist_name
-   FROM ((((((((activities activity
-     LEFT JOIN boards board ON ((board.id = activity.board_id)))
-     LEFT JOIN lists list ON ((list.id = activity.list_id)))
-     LEFT JOIN cards card ON ((card.id = activity.card_id)))
-     LEFT JOIN cards_labels_listing cll ON ((cll.id = activity.card_id)))
-     LEFT JOIN checklist_items checklist_item ON ((checklist_item.id = activity.foreign_id)))
-     LEFT JOIN checklists checklist ON ((checklist.id = checklist_item.checklist_id)))
-     LEFT JOIN checklists checklist1 ON ((checklist1.id = activity.foreign_id)))
-     LEFT JOIN users users ON ((users.id = activity.user_id)));
+ SELECT activity.id, 
+    activity.created, 
+    activity.modified, 
+    activity.board_id, 
+    activity.list_id, 
+    activity.card_id, 
+    activity.user_id, 
+    activity.foreign_id, 
+    activity.type, 
+    activity.comment, 
+    activity.revisions, 
+    activity.root, 
+    activity.freshness_ts, 
+    activity.depth, 
+    activity.path, 
+    activity.materialized_path, 
+    board.name AS board_name, 
+    list.name AS list_name, 
+    card.name AS card_name, 
+    users.username, 
+    users.full_name, 
+    users.profile_picture_path, 
+    users.initials, 
+    cll.name AS label_name, 
+    card.description AS card_description, 
+    users.role_id AS user_role_id, 
+    checklist_item.name AS checklist_item_name, 
+    checklist.name AS checklist_item_parent_name, 
+    checklist1.name AS checklist_name, 
+    organizations.id AS organization_id, 
+    organizations.name AS organization_name
+   FROM (((((((((activities activity
+   LEFT JOIN boards board ON ((board.id = activity.board_id)))
+   LEFT JOIN lists list ON ((list.id = activity.list_id)))
+   LEFT JOIN cards card ON ((card.id = activity.card_id)))
+   LEFT JOIN cards_labels_listing cll ON ((cll.id = activity.card_id)))
+   LEFT JOIN checklist_items checklist_item ON ((checklist_item.id = activity.foreign_id)))
+   LEFT JOIN checklists checklist ON ((checklist.id = checklist_item.checklist_id)))
+   LEFT JOIN checklists checklist1 ON ((checklist1.id = activity.foreign_id)))
+   LEFT JOIN users users ON ((users.id = activity.user_id)))
+   LEFT JOIN organizations organizations ON ((organizations.id = activity.organization_id)));
 
 
 ALTER TABLE activities_listing OWNER TO postgres;
@@ -1200,16 +1649,16 @@ ALTER TABLE board_subscribers OWNER TO postgres;
 --
 
 CREATE VIEW boards_labels_listing AS
- SELECT cards_labels.id,
-    cards_labels.created,
-    cards_labels.modified,
-    cards_labels.label_id,
-    cards_labels.card_id,
-    cards_labels.list_id,
-    cards_labels.board_id,
+ SELECT cards_labels.id, 
+    cards_labels.created, 
+    cards_labels.modified, 
+    cards_labels.label_id, 
+    cards_labels.card_id, 
+    cards_labels.list_id, 
+    cards_labels.board_id, 
     labels.name
    FROM (cards_labels cards_labels
-     LEFT JOIN labels labels ON ((labels.id = cards_labels.label_id)));
+   LEFT JOIN labels labels ON ((labels.id = cards_labels.label_id)));
 
 
 ALTER TABLE boards_labels_listing OWNER TO postgres;
@@ -1249,23 +1698,23 @@ ALTER TABLE boards_users OWNER TO postgres;
 --
 
 CREATE VIEW boards_users_listing AS
- SELECT bu.id,
-    bu.created,
-    bu.modified,
-    bu.board_id,
-    bu.user_id,
-    bu.is_admin,
-    u.username,
-    u.email,
-    u.full_name,
-    u.is_active,
-    u.is_email_confirmed,
-    b.name AS board_name,
-    u.profile_picture_path,
+ SELECT bu.id, 
+    bu.created, 
+    bu.modified, 
+    bu.board_id, 
+    bu.user_id, 
+    bu.is_admin, 
+    u.username, 
+    u.email, 
+    u.full_name, 
+    u.is_active, 
+    u.is_email_confirmed, 
+    b.name AS board_name, 
+    u.profile_picture_path, 
     u.initials
    FROM ((boards_users bu
-     JOIN users u ON ((u.id = bu.user_id)))
-     JOIN boards b ON ((b.id = bu.board_id)));
+   JOIN users u ON ((u.id = bu.user_id)))
+   JOIN boards b ON ((b.id = bu.board_id)));
 
 
 ALTER TABLE boards_users_listing OWNER TO postgres;
@@ -1367,17 +1816,17 @@ ALTER TABLE card_voters OWNER TO postgres;
 --
 
 CREATE VIEW card_voters_listing AS
- SELECT card_voters.id,
-    card_voters.created,
-    card_voters.modified,
-    card_voters.user_id,
-    card_voters.card_id,
-    users.username,
-    users.role_id,
-    users.profile_picture_path,
+ SELECT card_voters.id, 
+    card_voters.created, 
+    card_voters.modified, 
+    card_voters.user_id, 
+    card_voters.card_id, 
+    users.username, 
+    users.role_id, 
+    users.profile_picture_path, 
     users.initials
    FROM (card_voters card_voters
-     LEFT JOIN users users ON ((users.id = card_voters.user_id)));
+   LEFT JOIN users users ON ((users.id = card_voters.user_id)));
 
 
 ALTER TABLE card_voters_listing OWNER TO postgres;
@@ -1416,16 +1865,16 @@ ALTER TABLE cards_users OWNER TO postgres;
 --
 
 CREATE VIEW cards_users_listing AS
- SELECT u.username,
-    u.profile_picture_path,
-    cu.id,
-    cu.created,
-    cu.modified,
-    cu.card_id,
-    cu.user_id,
+ SELECT u.username, 
+    u.profile_picture_path, 
+    cu.id, 
+    cu.created, 
+    cu.modified, 
+    cu.card_id, 
+    cu.user_id, 
     u.initials
    FROM (cards_users cu
-     LEFT JOIN users u ON ((u.id = cu.user_id)));
+   LEFT JOIN users u ON ((u.id = cu.user_id)));
 
 
 ALTER TABLE cards_users_listing OWNER TO postgres;
@@ -1435,27 +1884,27 @@ ALTER TABLE cards_users_listing OWNER TO postgres;
 --
 
 CREATE VIEW checklists_listing AS
- SELECT checklists.id,
-    checklists.created,
-    checklists.modified,
-    checklists.user_id,
-    checklists.card_id,
-    checklists.name,
-    checklists.checklist_item_count,
-    checklists.checklist_item_completed_count,
+ SELECT checklists.id, 
+    checklists.created, 
+    checklists.modified, 
+    checklists.user_id, 
+    checklists.card_id, 
+    checklists.name, 
+    checklists.checklist_item_count, 
+    checklists.checklist_item_completed_count, 
     ( SELECT array_to_json(array_agg(row_to_json(ci.*))) AS array_to_json
-           FROM ( SELECT checklist_items.id,
-                    checklist_items.created,
-                    checklist_items.modified,
-                    checklist_items.user_id,
-                    checklist_items.card_id,
-                    checklist_items.checklist_id,
-                    checklist_items.name,
-                    checklist_items.is_completed,
+           FROM ( SELECT checklist_items.id, 
+                    checklist_items.created, 
+                    checklist_items.modified, 
+                    checklist_items.user_id, 
+                    checklist_items.card_id, 
+                    checklist_items.checklist_id, 
+                    checklist_items.name, 
+                    checklist_items.is_completed, 
                     checklist_items."position"
                    FROM checklist_items checklist_items
                   WHERE (checklist_items.checklist_id = checklists.id)
-                  ORDER BY checklist_items."position") ci) AS checklists_items,
+                  ORDER BY checklist_items."position") ci) AS checklists_items, 
     checklists."position"
    FROM checklists checklists;
 
@@ -1467,88 +1916,88 @@ ALTER TABLE checklists_listing OWNER TO postgres;
 --
 
 CREATE VIEW cards_listing AS
- SELECT cards.id,
-    cards.created,
-    cards.modified,
-    cards.board_id,
-    cards.list_id,
-    cards.name,
-    cards.description,
-    cards.due_date,
-    to_date(to_char(cards.due_date, 'YYYY/MM/DD'::text), 'YYYY/MM/DD'::text) AS to_date,
-    cards."position",
-    cards.is_archived,
-    cards.attachment_count,
-    cards.checklist_count,
-    cards.checklist_item_count,
-    cards.checklist_item_completed_count,
-    cards.label_count,
-    cards.cards_user_count,
-    cards.cards_subscriber_count,
-    cards.card_voter_count,
-    cards.activity_count,
-    cards.user_id,
-    cards.name AS title,
-    cards.due_date AS start,
-    cards.due_date AS "end",
+ SELECT cards.id, 
+    cards.created, 
+    cards.modified, 
+    cards.board_id, 
+    cards.list_id, 
+    cards.name, 
+    cards.description, 
+    cards.due_date, 
+    to_date(to_char(cards.due_date, 'YYYY/MM/DD'::text), 'YYYY/MM/DD'::text) AS to_date, 
+    cards."position", 
+    cards.is_archived, 
+    cards.attachment_count, 
+    cards.checklist_count, 
+    cards.checklist_item_count, 
+    cards.checklist_item_completed_count, 
+    cards.label_count, 
+    cards.cards_user_count, 
+    cards.cards_subscriber_count, 
+    cards.card_voter_count, 
+    cards.activity_count, 
+    cards.user_id, 
+    cards.name AS title, 
+    cards.due_date AS start, 
+    cards.due_date AS "end", 
     ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
-           FROM ( SELECT checklists_listing.id,
-                    checklists_listing.created,
-                    checklists_listing.modified,
-                    checklists_listing.user_id,
-                    checklists_listing.card_id,
-                    checklists_listing.name,
-                    checklists_listing.checklist_item_count,
-                    checklists_listing.checklist_item_completed_count,
-                    checklists_listing."position",
+           FROM ( SELECT checklists_listing.id, 
+                    checklists_listing.created, 
+                    checklists_listing.modified, 
+                    checklists_listing.user_id, 
+                    checklists_listing.card_id, 
+                    checklists_listing.name, 
+                    checklists_listing.checklist_item_count, 
+                    checklists_listing.checklist_item_completed_count, 
+                    checklists_listing."position", 
                     checklists_listing.checklists_items
                    FROM checklists_listing checklists_listing
                   WHERE (checklists_listing.card_id = cards.id)
-                  ORDER BY checklists_listing.id) cc) AS cards_checklists,
+                  ORDER BY checklists_listing.id) cc) AS cards_checklists, 
     ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
-           FROM ( SELECT cards_users_listing.username,
-                    cards_users_listing.profile_picture_path,
-                    cards_users_listing.id,
-                    cards_users_listing.created,
-                    cards_users_listing.modified,
-                    cards_users_listing.card_id,
-                    cards_users_listing.user_id,
+           FROM ( SELECT cards_users_listing.username, 
+                    cards_users_listing.profile_picture_path, 
+                    cards_users_listing.id, 
+                    cards_users_listing.created, 
+                    cards_users_listing.modified, 
+                    cards_users_listing.card_id, 
+                    cards_users_listing.user_id, 
                     cards_users_listing.initials
                    FROM cards_users_listing cards_users_listing
                   WHERE (cards_users_listing.card_id = cards.id)
-                  ORDER BY cards_users_listing.id) cc) AS cards_users,
+                  ORDER BY cards_users_listing.id) cc) AS cards_users, 
     ( SELECT array_to_json(array_agg(row_to_json(cv.*))) AS array_to_json
-           FROM ( SELECT card_voters_listing.id,
-                    card_voters_listing.created,
-                    card_voters_listing.modified,
-                    card_voters_listing.user_id,
-                    card_voters_listing.card_id,
-                    card_voters_listing.username,
-                    card_voters_listing.role_id,
-                    card_voters_listing.profile_picture_path,
+           FROM ( SELECT card_voters_listing.id, 
+                    card_voters_listing.created, 
+                    card_voters_listing.modified, 
+                    card_voters_listing.user_id, 
+                    card_voters_listing.card_id, 
+                    card_voters_listing.username, 
+                    card_voters_listing.role_id, 
+                    card_voters_listing.profile_picture_path, 
                     card_voters_listing.initials
                    FROM card_voters_listing card_voters_listing
                   WHERE (card_voters_listing.card_id = cards.id)
-                  ORDER BY card_voters_listing.id) cv) AS cards_voters,
+                  ORDER BY card_voters_listing.id) cv) AS cards_voters, 
     ( SELECT array_to_json(array_agg(row_to_json(cs.*))) AS array_to_json
-           FROM ( SELECT cards_subscribers.id,
-                    cards_subscribers.created,
-                    cards_subscribers.modified,
-                    cards_subscribers.card_id,
-                    cards_subscribers.user_id,
+           FROM ( SELECT cards_subscribers.id, 
+                    cards_subscribers.created, 
+                    cards_subscribers.modified, 
+                    cards_subscribers.card_id, 
+                    cards_subscribers.user_id, 
                     cards_subscribers.is_subscribed
                    FROM card_subscribers cards_subscribers
                   WHERE (cards_subscribers.card_id = cards.id)
-                  ORDER BY cards_subscribers.id) cs) AS cards_subscribers,
+                  ORDER BY cards_subscribers.id) cs) AS cards_subscribers, 
     ( SELECT array_to_json(array_agg(row_to_json(cl.*))) AS array_to_json
-           FROM ( SELECT cards_labels.label_id,
-                    cards_labels.card_id,
-                    cards_labels.list_id,
-                    cards_labels.board_id,
+           FROM ( SELECT cards_labels.label_id, 
+                    cards_labels.card_id, 
+                    cards_labels.list_id, 
+                    cards_labels.board_id, 
                     cards_labels.name
                    FROM cards_labels_listing cards_labels
                   WHERE (cards_labels.card_id = cards.id)
-                  ORDER BY cards_labels.id) cl) AS cards_labels,
+                  ORDER BY cards_labels.id) cl) AS cards_labels, 
     cards.comment_count
    FROM cards cards;
 
@@ -1590,55 +2039,55 @@ ALTER TABLE list_subscribers OWNER TO postgres;
 --
 
 CREATE VIEW lists_listing AS
- SELECT lists.id,
-    lists.created,
-    lists.modified,
-    lists.board_id,
-    lists.name,
-    lists."position",
-    lists.is_archived,
-    lists.card_count,
-    lists.lists_subscriber_count,
+ SELECT lists.id, 
+    lists.created, 
+    lists.modified, 
+    lists.board_id, 
+    lists.name, 
+    lists."position", 
+    lists.is_archived, 
+    lists.card_count, 
+    lists.lists_subscriber_count, 
     ( SELECT array_to_json(array_agg(row_to_json(lc.*))) AS array_to_json
-           FROM ( SELECT cards_listing.id,
-                    cards_listing.created,
-                    cards_listing.modified,
-                    cards_listing.board_id,
-                    cards_listing.list_id,
-                    cards_listing.name,
-                    cards_listing.description,
-                    cards_listing.due_date,
-                    cards_listing.to_date,
-                    cards_listing."position",
-                    cards_listing.is_archived,
-                    cards_listing.attachment_count,
-                    cards_listing.checklist_count,
-                    cards_listing.checklist_item_count,
-                    cards_listing.checklist_item_completed_count,
-                    cards_listing.label_count,
-                    cards_listing.cards_user_count,
-                    cards_listing.cards_subscriber_count,
-                    cards_listing.card_voter_count,
-                    cards_listing.activity_count,
-                    cards_listing.user_id,
-                    cards_listing.title,
-                    cards_listing.start,
-                    cards_listing."end",
-                    cards_listing.cards_checklists,
-                    cards_listing.cards_users,
-                    cards_listing.cards_voters,
-                    cards_listing.cards_subscribers,
-                    cards_listing.cards_labels,
+           FROM ( SELECT cards_listing.id, 
+                    cards_listing.created, 
+                    cards_listing.modified, 
+                    cards_listing.board_id, 
+                    cards_listing.list_id, 
+                    cards_listing.name, 
+                    cards_listing.description, 
+                    cards_listing.due_date, 
+                    cards_listing.to_date, 
+                    cards_listing."position", 
+                    cards_listing.is_archived, 
+                    cards_listing.attachment_count, 
+                    cards_listing.checklist_count, 
+                    cards_listing.checklist_item_count, 
+                    cards_listing.checklist_item_completed_count, 
+                    cards_listing.label_count, 
+                    cards_listing.cards_user_count, 
+                    cards_listing.cards_subscriber_count, 
+                    cards_listing.card_voter_count, 
+                    cards_listing.activity_count, 
+                    cards_listing.user_id, 
+                    cards_listing.title, 
+                    cards_listing.start, 
+                    cards_listing."end", 
+                    cards_listing.cards_checklists, 
+                    cards_listing.cards_users, 
+                    cards_listing.cards_voters, 
+                    cards_listing.cards_subscribers, 
+                    cards_listing.cards_labels, 
                     cards_listing.comment_count
                    FROM cards_listing cards_listing
                   WHERE (cards_listing.list_id = lists.id)
-                  ORDER BY cards_listing."position") lc) AS cards,
+                  ORDER BY cards_listing."position") lc) AS cards, 
     ( SELECT array_to_json(array_agg(row_to_json(ls.*))) AS array_to_json
-           FROM ( SELECT lists_subscribers.id,
-                    lists_subscribers.created,
-                    lists_subscribers.modified,
-                    lists_subscribers.list_id,
-                    lists_subscribers.user_id,
+           FROM ( SELECT lists_subscribers.id, 
+                    lists_subscribers.created, 
+                    lists_subscribers.modified, 
+                    lists_subscribers.list_id, 
+                    lists_subscribers.user_id, 
                     lists_subscribers.is_subscribed
                    FROM list_subscribers lists_subscribers
                   WHERE (lists_subscribers.list_id = lists.id)
@@ -1649,164 +2098,129 @@ CREATE VIEW lists_listing AS
 ALTER TABLE lists_listing OWNER TO postgres;
 
 --
--- Name: organizations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE organizations_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE organizations_id_seq OWNER TO postgres;
-
---
--- Name: organizations; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE organizations (
-    id bigint DEFAULT nextval('organizations_id_seq'::regclass) NOT NULL,
-    created timestamp without time zone NOT NULL,
-    modified timestamp without time zone NOT NULL,
-    user_id bigint NOT NULL,
-    name character varying(255) NOT NULL,
-    website_url character varying(255),
-    description text,
-    logo_url character varying(255),
-    organization_visibility smallint DEFAULT 1,
-    organizations_user_count bigint DEFAULT 0,
-    board_count bigint DEFAULT 0
-);
-
-
-ALTER TABLE organizations OWNER TO postgres;
-
---
 -- Name: boards_listing; Type: VIEW; Schema: public; Owner: postgres
 --
 
 CREATE VIEW boards_listing AS
- SELECT board.id,
-    board.name,
-    board.user_id,
-    board.organization_id,
-    board.board_visibility,
-    board.background_color,
-    board.background_picture_url,
-    board.commenting_permissions,
-    board.voting_permissions,
-    board.is_closed,
-    board.is_allow_organization_members_to_join,
-    board.boards_user_count,
-    board.list_count,
-    board.card_count,
-    board.boards_subscriber_count,
-    board.background_pattern_url,
-    board.is_show_image_front_of_card,
-    board.music_name,
-    board.music_content,
-    organizations.name AS organization_name,
-    organizations.website_url AS organization_website_url,
-    organizations.description AS organization_description,
-    organizations.logo_url AS organization_logo_url,
-    organizations.organization_visibility,
+ SELECT board.id, 
+    board.name, 
+    board.user_id, 
+    board.organization_id, 
+    board.board_visibility, 
+    board.background_color, 
+    board.background_picture_url, 
+    board.commenting_permissions, 
+    board.voting_permissions, 
+    board.is_closed, 
+    board.is_allow_organization_members_to_join, 
+    board.boards_user_count, 
+    board.list_count, 
+    board.card_count, 
+    board.boards_subscriber_count, 
+    board.background_pattern_url, 
+    board.is_show_image_front_of_card, 
+    board.music_name, 
+    board.music_content, 
+    organizations.name AS organization_name, 
+    organizations.website_url AS organization_website_url, 
+    organizations.description AS organization_description, 
+    organizations.logo_url AS organization_logo_url, 
+    organizations.organization_visibility, 
     ( SELECT array_to_json(array_agg(row_to_json(ba.*))) AS array_to_json
-           FROM ( SELECT activities.id,
-                    activities.created,
-                    activities.modified,
-                    activities.board_id,
-                    activities.list_id,
-                    activities.card_id,
-                    activities.user_id,
-                    activities.foreign_id AS attachment_id,
-                    activities.type,
-                    activities.comment,
-                    activities.revisions,
-                    activities.root,
-                    activities.freshness_ts,
-                    activities.depth,
-                    activities.path,
-                    activities.materialized_path,
-                    users.username,
-                    users.role_id,
-                    users.profile_picture_path,
+           FROM ( SELECT activities.id, 
+                    activities.created, 
+                    activities.modified, 
+                    activities.board_id, 
+                    activities.list_id, 
+                    activities.card_id, 
+                    activities.user_id, 
+                    activities.foreign_id AS attachment_id, 
+                    activities.type, 
+                    activities.comment, 
+                    activities.revisions, 
+                    activities.root, 
+                    activities.freshness_ts, 
+                    activities.depth, 
+                    activities.path, 
+                    activities.materialized_path, 
+                    users.username, 
+                    users.role_id, 
+                    users.profile_picture_path, 
                     users.initials
                    FROM (activities activities
-                     LEFT JOIN users users ON ((users.id = activities.user_id)))
-                  WHERE (activities.board_id = board.id)
-                  ORDER BY activities.freshness_ts DESC, activities.materialized_path
-                 OFFSET 0
-                 LIMIT 20) ba) AS activities,
+              LEFT JOIN users users ON ((users.id = activities.user_id)))
+             WHERE (activities.board_id = board.id)
+             ORDER BY activities.freshness_ts DESC, activities.materialized_path
+            OFFSET 0
+            LIMIT 20) ba) AS activities, 
     ( SELECT array_to_json(array_agg(row_to_json(bs.*))) AS array_to_json
-           FROM ( SELECT boards_subscribers.id,
-                    boards_subscribers.created,
-                    boards_subscribers.modified,
-                    boards_subscribers.board_id,
-                    boards_subscribers.user_id,
+           FROM ( SELECT boards_subscribers.id, 
+                    boards_subscribers.created, 
+                    boards_subscribers.modified, 
+                    boards_subscribers.board_id, 
+                    boards_subscribers.user_id, 
                     boards_subscribers.is_subscribed
                    FROM board_subscribers boards_subscribers
                   WHERE (boards_subscribers.board_id = board.id)
-                  ORDER BY boards_subscribers.id) bs) AS boards_subscribers,
+                  ORDER BY boards_subscribers.id) bs) AS boards_subscribers, 
     ( SELECT array_to_json(array_agg(row_to_json(bs.*))) AS array_to_json
-           FROM ( SELECT boards_stars.id,
-                    boards_stars.created,
-                    boards_stars.modified,
-                    boards_stars.board_id,
-                    boards_stars.user_id,
+           FROM ( SELECT boards_stars.id, 
+                    boards_stars.created, 
+                    boards_stars.modified, 
+                    boards_stars.board_id, 
+                    boards_stars.user_id, 
                     boards_stars.is_starred
                    FROM board_stars boards_stars
                   WHERE (boards_stars.board_id = board.id)
-                  ORDER BY boards_stars.id) bs) AS boards_stars,
+                  ORDER BY boards_stars.id) bs) AS boards_stars, 
     ( SELECT array_to_json(array_agg(row_to_json(batt.*))) AS array_to_json
-           FROM ( SELECT card_attachments.id,
-                    card_attachments.created,
-                    card_attachments.modified,
-                    card_attachments.card_id,
-                    card_attachments.name,
-                    card_attachments.path,
-                    card_attachments.mimetype,
-                    card_attachments.list_id,
+           FROM ( SELECT card_attachments.id, 
+                    card_attachments.created, 
+                    card_attachments.modified, 
+                    card_attachments.card_id, 
+                    card_attachments.name, 
+                    card_attachments.path, 
+                    card_attachments.mimetype, 
+                    card_attachments.list_id, 
                     card_attachments.board_id
                    FROM card_attachments card_attachments
                   WHERE (card_attachments.board_id = board.id)
-                  ORDER BY card_attachments.id DESC) batt) AS attachments,
+                  ORDER BY card_attachments.id DESC) batt) AS attachments, 
     ( SELECT array_to_json(array_agg(row_to_json(bl.*))) AS array_to_json
-           FROM ( SELECT lists_listing.id,
-                    lists_listing.created,
-                    lists_listing.modified,
-                    lists_listing.board_id,
-                    lists_listing.name,
-                    lists_listing."position",
-                    lists_listing.is_archived,
-                    lists_listing.card_count,
-                    lists_listing.lists_subscriber_count,
-                    lists_listing.cards,
+           FROM ( SELECT lists_listing.id, 
+                    lists_listing.created, 
+                    lists_listing.modified, 
+                    lists_listing.board_id, 
+                    lists_listing.name, 
+                    lists_listing."position", 
+                    lists_listing.is_archived, 
+                    lists_listing.card_count, 
+                    lists_listing.lists_subscriber_count, 
+                    lists_listing.cards, 
                     lists_listing.lists_subscribers
                    FROM lists_listing lists_listing
                   WHERE (lists_listing.board_id = board.id)
-                  ORDER BY lists_listing."position") bl) AS lists,
+                  ORDER BY lists_listing."position") bl) AS lists, 
     ( SELECT array_to_json(array_agg(row_to_json(bu.*))) AS array_to_json
-           FROM ( SELECT boards_users.id,
-                    boards_users.created,
-                    boards_users.modified,
-                    boards_users.board_id,
-                    boards_users.user_id,
-                    boards_users.is_admin,
-                    boards_users.username,
-                    boards_users.email,
-                    boards_users.full_name,
-                    boards_users.is_active,
-                    boards_users.is_email_confirmed,
-                    boards_users.board_name,
-                    boards_users.profile_picture_path,
+           FROM ( SELECT boards_users.id, 
+                    boards_users.created, 
+                    boards_users.modified, 
+                    boards_users.board_id, 
+                    boards_users.user_id, 
+                    boards_users.is_admin, 
+                    boards_users.username, 
+                    boards_users.email, 
+                    boards_users.full_name, 
+                    boards_users.is_active, 
+                    boards_users.is_email_confirmed, 
+                    boards_users.board_name, 
+                    boards_users.profile_picture_path, 
                     boards_users.initials
                    FROM boards_users_listing boards_users
                   WHERE (boards_users.board_id = board.id)
                   ORDER BY boards_users.id) bu) AS boards_users
    FROM (boards board
-     LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
+   LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
 
 
 ALTER TABLE boards_listing OWNER TO postgres;
@@ -1816,14 +2230,14 @@ ALTER TABLE boards_listing OWNER TO postgres;
 --
 
 CREATE VIEW checklist_add_listing AS
- SELECT c.id,
-    c.name,
-    c.board_id,
-    cl.checklist_item_count,
-    cl.name AS checklist_name,
+ SELECT c.id, 
+    c.name, 
+    c.board_id, 
+    cl.checklist_item_count, 
+    cl.name AS checklist_name, 
     cl.id AS checklist_id
    FROM (cards c
-     LEFT JOIN checklists cl ON ((cl.card_id = c.id)))
+   LEFT JOIN checklists cl ON ((cl.card_id = c.id)))
   WHERE (c.checklist_item_count > 0)
   ORDER BY c.id;
 
@@ -1993,22 +2407,22 @@ ALTER TABLE email_templates OWNER TO postgres;
 --
 
 CREATE VIEW gadget_users_listing AS
- SELECT checklists.id,
-    checklists.created,
-    checklists.modified,
-    checklists.user_id,
-    checklists.card_id,
-    checklists.name,
-    checklists.checklist_item_count,
-    checklists.checklist_item_completed_count,
+ SELECT checklists.id, 
+    checklists.created, 
+    checklists.modified, 
+    checklists.user_id, 
+    checklists.card_id, 
+    checklists.name, 
+    checklists.checklist_item_count, 
+    checklists.checklist_item_completed_count, 
     ( SELECT array_to_json(array_agg(row_to_json(ci.*))) AS array_to_json
-           FROM ( SELECT checklist_items.id,
-                    checklist_items.created,
-                    checklist_items.modified,
-                    checklist_items.user_id,
-                    checklist_items.card_id,
-                    checklist_items.checklist_id,
-                    checklist_items.name,
+           FROM ( SELECT checklist_items.id, 
+                    checklist_items.created, 
+                    checklist_items.modified, 
+                    checklist_items.user_id, 
+                    checklist_items.card_id, 
+                    checklist_items.checklist_id, 
+                    checklist_items.name, 
                     checklist_items.is_completed
                    FROM checklist_items checklist_items
                   WHERE (checklist_items.checklist_id = checklists.id)
@@ -2218,55 +2632,55 @@ ALTER TABLE organizations_users OWNER TO postgres;
 --
 
 CREATE VIEW organizations_users_listing AS
- SELECT organizations_users.id,
-    organizations_users.created,
-    organizations_users.modified,
-    organizations_users.user_id,
-    organizations_users.organization_id,
-    organizations_users.is_admin,
-    users.role_id,
-    users.username,
-    users.email,
-    users.full_name,
-    users.initials,
-    users.about_me,
-    users.created_organization_count,
-    users.created_board_count,
-    users.joined_organization_count,
-    users.list_count,
-    users.joined_card_count,
-    users.created_card_count,
-    users.joined_board_count,
-    users.checklist_count,
-    users.checklist_item_completed_count,
-    users.checklist_item_count,
-    users.activity_count,
-    users.card_voter_count,
-    organizations.name,
-    organizations.website_url,
-    organizations.description,
-    organizations.logo_url,
-    organizations.organization_visibility,
-    users.profile_picture_path,
+ SELECT organizations_users.id, 
+    organizations_users.created, 
+    organizations_users.modified, 
+    organizations_users.user_id, 
+    organizations_users.organization_id, 
+    organizations_users.is_admin, 
+    users.role_id, 
+    users.username, 
+    users.email, 
+    users.full_name, 
+    users.initials, 
+    users.about_me, 
+    users.created_organization_count, 
+    users.created_board_count, 
+    users.joined_organization_count, 
+    users.list_count, 
+    users.joined_card_count, 
+    users.created_card_count, 
+    users.joined_board_count, 
+    users.checklist_count, 
+    users.checklist_item_completed_count, 
+    users.checklist_item_count, 
+    users.activity_count, 
+    users.card_voter_count, 
+    organizations.name, 
+    organizations.website_url, 
+    organizations.description, 
+    organizations.logo_url, 
+    organizations.organization_visibility, 
+    users.profile_picture_path, 
     ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
-           FROM ( SELECT boards_users.id,
-                    boards_users.board_id,
-                    boards_users.user_id,
-                    boards_users.is_admin,
+           FROM ( SELECT boards_users.id, 
+                    boards_users.board_id, 
+                    boards_users.user_id, 
+                    boards_users.is_admin, 
                     boards.name
                    FROM (boards_users boards_users
-                     JOIN boards ON ((boards.id = boards_users.board_id)))
-                  WHERE ((boards_users.user_id = organizations_users.user_id) AND (boards_users.board_id IN ( SELECT boards_1.id
-                           FROM boards boards_1
-                          WHERE (boards_1.organization_id = organizations_users.organization_id))))
-                  ORDER BY boards_users.id) o) AS boards_users,
+              JOIN boards ON ((boards.id = boards_users.board_id)))
+             WHERE ((boards_users.user_id = organizations_users.user_id) AND (boards_users.board_id IN ( SELECT boards_1.id
+                      FROM boards boards_1
+                     WHERE (boards_1.organization_id = organizations_users.organization_id))))
+             ORDER BY boards_users.id) o) AS boards_users, 
     ( SELECT count(boards.id) AS count
            FROM (boards
-             JOIN boards_users bu ON ((bu.board_id = boards.id)))
-          WHERE ((boards.organization_id = organizations_users.organization_id) AND (bu.user_id = organizations_users.user_id))) AS user_board_count
+      JOIN boards_users bu ON ((bu.board_id = boards.id)))
+     WHERE ((boards.organization_id = organizations_users.organization_id) AND (bu.user_id = organizations_users.user_id))) AS user_board_count
    FROM ((organizations_users organizations_users
-     LEFT JOIN users users ON ((users.id = organizations_users.user_id)))
-     LEFT JOIN organizations organizations ON ((organizations.id = organizations_users.organization_id)));
+   LEFT JOIN users users ON ((users.id = organizations_users.user_id)))
+   LEFT JOIN organizations organizations ON ((organizations.id = organizations_users.organization_id)));
 
 
 ALTER TABLE organizations_users_listing OWNER TO postgres;
@@ -2276,91 +2690,91 @@ ALTER TABLE organizations_users_listing OWNER TO postgres;
 --
 
 CREATE VIEW organizations_listing AS
- SELECT organizations.id,
-    organizations.created,
-    organizations.modified,
-    organizations.user_id,
-    organizations.name,
-    organizations.website_url,
-    organizations.description,
-    organizations.logo_url,
-    organizations.organization_visibility,
-    organizations.organizations_user_count,
-    organizations.board_count,
+ SELECT organizations.id, 
+    organizations.created, 
+    organizations.modified, 
+    organizations.user_id, 
+    organizations.name, 
+    organizations.website_url, 
+    organizations.description, 
+    organizations.logo_url, 
+    organizations.organization_visibility, 
+    organizations.organizations_user_count, 
+    organizations.board_count, 
     ( SELECT array_to_json(array_agg(row_to_json(b.*))) AS array_to_json
-           FROM ( SELECT boards_listing.id,
-                    boards_listing.name,
-                    boards_listing.user_id,
-                    boards_listing.organization_id,
-                    boards_listing.board_visibility,
-                    boards_listing.background_color,
-                    boards_listing.background_picture_url,
-                    boards_listing.commenting_permissions,
-                    boards_listing.voting_permissions,
-                    boards_listing.is_closed,
-                    boards_listing.is_allow_organization_members_to_join,
-                    boards_listing.boards_user_count,
-                    boards_listing.list_count,
-                    boards_listing.card_count,
-                    boards_listing.boards_subscriber_count,
-                    boards_listing.background_pattern_url,
-                    boards_listing.is_show_image_front_of_card,
-                    boards_listing.organization_name,
-                    boards_listing.organization_website_url,
-                    boards_listing.organization_description,
-                    boards_listing.organization_logo_url,
-                    boards_listing.organization_visibility,
-                    boards_listing.activities,
-                    boards_listing.boards_subscribers,
-                    boards_listing.boards_stars,
-                    boards_listing.attachments,
-                    boards_listing.lists,
+           FROM ( SELECT boards_listing.id, 
+                    boards_listing.name, 
+                    boards_listing.user_id, 
+                    boards_listing.organization_id, 
+                    boards_listing.board_visibility, 
+                    boards_listing.background_color, 
+                    boards_listing.background_picture_url, 
+                    boards_listing.commenting_permissions, 
+                    boards_listing.voting_permissions, 
+                    boards_listing.is_closed, 
+                    boards_listing.is_allow_organization_members_to_join, 
+                    boards_listing.boards_user_count, 
+                    boards_listing.list_count, 
+                    boards_listing.card_count, 
+                    boards_listing.boards_subscriber_count, 
+                    boards_listing.background_pattern_url, 
+                    boards_listing.is_show_image_front_of_card, 
+                    boards_listing.organization_name, 
+                    boards_listing.organization_website_url, 
+                    boards_listing.organization_description, 
+                    boards_listing.organization_logo_url, 
+                    boards_listing.organization_visibility, 
+                    boards_listing.activities, 
+                    boards_listing.boards_subscribers, 
+                    boards_listing.boards_stars, 
+                    boards_listing.attachments, 
+                    boards_listing.lists, 
                     boards_listing.boards_users
                    FROM boards_listing boards_listing
                   WHERE (boards_listing.organization_id = organizations.id)
-                  ORDER BY boards_listing.id) b) AS boards_listing,
+                  ORDER BY boards_listing.id) b) AS boards_listing, 
     ( SELECT array_to_json(array_agg(row_to_json(c.*))) AS array_to_json
-           FROM ( SELECT organizations_users_listing.id,
-                    organizations_users_listing.created,
-                    organizations_users_listing.modified,
-                    organizations_users_listing.user_id,
-                    organizations_users_listing.organization_id,
-                    organizations_users_listing.is_admin,
-                    organizations_users_listing.role_id,
-                    organizations_users_listing.username,
-                    organizations_users_listing.email,
-                    organizations_users_listing.full_name,
-                    organizations_users_listing.initials,
-                    organizations_users_listing.about_me,
-                    organizations_users_listing.created_organization_count,
-                    organizations_users_listing.created_board_count,
-                    organizations_users_listing.joined_organization_count,
-                    organizations_users_listing.list_count,
-                    organizations_users_listing.joined_card_count,
-                    organizations_users_listing.created_card_count,
-                    organizations_users_listing.joined_board_count,
-                    organizations_users_listing.checklist_count,
-                    organizations_users_listing.checklist_item_completed_count,
-                    organizations_users_listing.checklist_item_count,
-                    organizations_users_listing.activity_count,
-                    organizations_users_listing.card_voter_count,
-                    organizations_users_listing.name,
-                    organizations_users_listing.website_url,
-                    organizations_users_listing.description,
-                    organizations_users_listing.logo_url,
-                    organizations_users_listing.organization_visibility,
-                    organizations_users_listing.profile_picture_path,
-                    organizations_users_listing.boards_users,
+           FROM ( SELECT organizations_users_listing.id, 
+                    organizations_users_listing.created, 
+                    organizations_users_listing.modified, 
+                    organizations_users_listing.user_id, 
+                    organizations_users_listing.organization_id, 
+                    organizations_users_listing.is_admin, 
+                    organizations_users_listing.role_id, 
+                    organizations_users_listing.username, 
+                    organizations_users_listing.email, 
+                    organizations_users_listing.full_name, 
+                    organizations_users_listing.initials, 
+                    organizations_users_listing.about_me, 
+                    organizations_users_listing.created_organization_count, 
+                    organizations_users_listing.created_board_count, 
+                    organizations_users_listing.joined_organization_count, 
+                    organizations_users_listing.list_count, 
+                    organizations_users_listing.joined_card_count, 
+                    organizations_users_listing.created_card_count, 
+                    organizations_users_listing.joined_board_count, 
+                    organizations_users_listing.checklist_count, 
+                    organizations_users_listing.checklist_item_completed_count, 
+                    organizations_users_listing.checklist_item_count, 
+                    organizations_users_listing.activity_count, 
+                    organizations_users_listing.card_voter_count, 
+                    organizations_users_listing.name, 
+                    organizations_users_listing.website_url, 
+                    organizations_users_listing.description, 
+                    organizations_users_listing.logo_url, 
+                    organizations_users_listing.organization_visibility, 
+                    organizations_users_listing.profile_picture_path, 
+                    organizations_users_listing.boards_users, 
                     organizations_users_listing.user_board_count
                    FROM organizations_users_listing organizations_users_listing
                   WHERE (organizations_users_listing.organization_id = organizations.id)
-                  ORDER BY organizations_users_listing.id) c) AS organizations_users,
-    u.username,
-    u.full_name,
-    u.initials,
+                  ORDER BY organizations_users_listing.id) c) AS organizations_users, 
+    u.username, 
+    u.full_name, 
+    u.initials, 
     u.profile_picture_path
    FROM (organizations organizations
-     LEFT JOIN users u ON ((u.id = organizations.user_id)));
+   LEFT JOIN users u ON ((u.id = organizations.user_id)));
 
 
 ALTER TABLE organizations_listing OWNER TO postgres;
@@ -2398,7 +2812,7 @@ ALTER TABLE roles OWNER TO postgres;
 --
 
 CREATE VIEW role_links_listing AS
- SELECT role.id,
+ SELECT role.id, 
     ( SELECT array_to_json(array_agg(link.*)) AS array_to_json
            FROM ( SELECT alls.slug
                    FROM acl_links_listing alls
@@ -2485,21 +2899,21 @@ ALTER TABLE settings OWNER TO postgres;
 --
 
 CREATE VIEW settings_listing AS
- SELECT setting_categories.id,
-    setting_categories.created,
-    setting_categories.modified,
-    setting_categories.parent_id,
-    setting_categories.name,
-    setting_categories.description,
+ SELECT setting_categories.id, 
+    setting_categories.created, 
+    setting_categories.modified, 
+    setting_categories.parent_id, 
+    setting_categories.name, 
+    setting_categories.description, 
     ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
-           FROM ( SELECT settings.id,
-                    settings.name,
-                    settings.setting_category_id,
-                    settings.setting_category_parent_id,
-                    settings.value,
-                    settings.type,
-                    settings.options,
-                    settings.label,
+           FROM ( SELECT settings.id, 
+                    settings.name, 
+                    settings.setting_category_id, 
+                    settings.setting_category_parent_id, 
+                    settings.value, 
+                    settings.type, 
+                    settings.options, 
+                    settings.label, 
                     settings."order"
                    FROM settings settings
                   WHERE (settings.setting_category_id = setting_categories.id)
@@ -2514,63 +2928,66 @@ ALTER TABLE settings_listing OWNER TO postgres;
 --
 
 CREATE VIEW simple_board_listing AS
- SELECT board.id,
-    board.name,
-    board.user_id,
-    board.organization_id,
-    board.board_visibility,
-    board.background_color,
-    board.background_picture_url,
-    board.commenting_permissions,
-    board.voting_permissions,
-    board.is_closed,
-    board.is_allow_organization_members_to_join,
-    board.boards_user_count,
-    board.list_count,
-    board.card_count,
-    board.boards_subscriber_count,
-    board.background_pattern_url,
+ SELECT board.id, 
+    board.name, 
+    board.user_id, 
+    board.organization_id, 
+    board.board_visibility, 
+    board.background_color, 
+    board.background_picture_url, 
+    board.commenting_permissions, 
+    board.voting_permissions, 
+    board.is_closed, 
+    board.is_allow_organization_members_to_join, 
+    board.boards_user_count, 
+    board.list_count, 
+    board.card_count, 
+    board.boards_subscriber_count, 
+    board.background_pattern_url, 
     ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
-           FROM ( SELECT lists.id,
-                    lists.created,
-                    lists.modified,
-                    lists.board_id,
-                    lists.user_id,
-                    lists.name,
-                    lists."position",
-                    lists.is_archived,
-                    lists.card_count,
-                    lists.lists_subscriber_count,
+           FROM ( SELECT lists.id, 
+                    lists.created, 
+                    lists.modified, 
+                    lists.board_id, 
+                    lists.user_id, 
+                    lists.name, 
+                    lists."position", 
+                    lists.is_archived, 
+                    lists.card_count, 
+                    lists.lists_subscriber_count, 
                     lists.is_deleted
                    FROM lists lists
                   WHERE (lists.board_id = board.id)
-                  ORDER BY lists."position") l) AS lists,
+                  ORDER BY lists."position") l) AS lists, 
     ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
-           FROM ( SELECT cll.label_id,
+           FROM ( SELECT cll.label_id, 
                     cll.name
                    FROM cards_labels_listing cll
                   WHERE (cll.board_id = board.id)
-                  ORDER BY cll.name) l) AS labels,
+                  ORDER BY cll.name) l) AS labels, 
     ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
-           FROM ( SELECT bs.id,
-                    bs.board_id,
-                    bs.user_id,
+           FROM ( SELECT bs.id, 
+                    bs.board_id, 
+                    bs.user_id, 
                     bs.is_starred
                    FROM board_stars bs
                   WHERE (bs.board_id = board.id)
-                  ORDER BY bs.id) l) AS stars,
-    org.name AS organization_name,
+                  ORDER BY bs.id) l) AS stars, 
+    org.name AS organization_name, 
     ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
-           FROM ( SELECT bu.id,
-                    bu.board_id,
-                    bu.user_id,
+           FROM ( SELECT bu.id, 
+                    bu.board_id, 
+                    bu.user_id, 
                     bu.is_admin
                    FROM boards_users bu
                   WHERE (bu.board_id = board.id)
-                  ORDER BY bu.id) l) AS users
+                  ORDER BY bu.id) l) AS users, 
+    org.logo_url AS organization_logo_url, 
+    board.music_content, 
+    board.music_name
    FROM (boards board
-     LEFT JOIN organizations org ON ((org.id = board.organization_id)))
-  ORDER BY board.id;
+   LEFT JOIN organizations org ON ((org.id = board.organization_id)))
+  ORDER BY board.name;
 
 
 ALTER TABLE simple_board_listing OWNER TO postgres;
@@ -2668,35 +3085,35 @@ ALTER SEQUENCE user_logins_id_seq OWNED BY user_logins.id;
 --
 
 CREATE VIEW users_cards_listing AS
- SELECT b.name AS board_name,
-    l.name AS list_name,
-    c.id,
-    c.created,
-    c.modified,
-    c.board_id,
-    c.list_id,
-    c.name,
-    c.description,
-    c.due_date,
-    c."position",
-    c.is_archived,
-    c.attachment_count,
-    c.checklist_count,
-    c.checklist_item_count,
-    c.checklist_item_completed_count,
-    c.label_count,
-    c.cards_user_count,
-    c.cards_subscriber_count,
-    c.card_voter_count,
-    c.activity_count,
-    c.user_id AS created_user_id,
-    c.is_deleted,
-    cu.user_id,
+ SELECT b.name AS board_name, 
+    l.name AS list_name, 
+    c.id, 
+    c.created, 
+    c.modified, 
+    c.board_id, 
+    c.list_id, 
+    c.name, 
+    c.description, 
+    c.due_date, 
+    c."position", 
+    c.is_archived, 
+    c.attachment_count, 
+    c.checklist_count, 
+    c.checklist_item_count, 
+    c.checklist_item_completed_count, 
+    c.label_count, 
+    c.cards_user_count, 
+    c.cards_subscriber_count, 
+    c.card_voter_count, 
+    c.activity_count, 
+    c.user_id AS created_user_id, 
+    c.is_deleted, 
+    cu.user_id, 
     c.comment_count
    FROM (((cards_users cu
-     JOIN cards c ON ((c.id = cu.card_id)))
-     JOIN boards b ON ((b.id = c.board_id)))
-     JOIN lists l ON ((l.id = c.list_id)));
+   JOIN cards c ON ((c.id = cu.card_id)))
+   JOIN boards b ON ((b.id = c.board_id)))
+   JOIN lists l ON ((l.id = c.list_id)));
 
 
 ALTER TABLE users_cards_listing OWNER TO postgres;
@@ -2706,88 +3123,88 @@ ALTER TABLE users_cards_listing OWNER TO postgres;
 --
 
 CREATE VIEW users_listing AS
- SELECT users.id,
-    users.role_id,
-    users.username,
-    users.password,
-    users.email,
-    users.full_name,
-    users.initials,
-    users.about_me,
-    users.profile_picture_path,
-    users.notification_frequency,
-    users.is_allow_desktop_notification,
-    users.is_active,
-    users.is_email_confirmed,
-    users.created_organization_count,
-    users.created_board_count,
-    users.joined_organization_count,
-    users.list_count,
-    users.joined_card_count,
-    users.created_card_count,
-    users.joined_board_count,
-    users.checklist_count,
-    users.checklist_item_completed_count,
-    users.checklist_item_count,
-    users.activity_count,
-    users.card_voter_count,
-    users.is_productivity_beats,
+ SELECT users.id, 
+    users.role_id, 
+    users.username, 
+    users.password, 
+    users.email, 
+    users.full_name, 
+    users.initials, 
+    users.about_me, 
+    users.profile_picture_path, 
+    users.notification_frequency, 
+    users.is_allow_desktop_notification, 
+    users.is_active, 
+    users.is_email_confirmed, 
+    users.created_organization_count, 
+    users.created_board_count, 
+    users.joined_organization_count, 
+    users.list_count, 
+    users.joined_card_count, 
+    users.created_card_count, 
+    users.joined_board_count, 
+    users.checklist_count, 
+    users.checklist_item_completed_count, 
+    users.checklist_item_count, 
+    users.activity_count, 
+    users.card_voter_count, 
+    users.is_productivity_beats, 
     ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
-           FROM ( SELECT organizations_users_listing.organization_id AS id,
-                    organizations_users_listing.name,
-                    organizations_users_listing.description,
-                    organizations_users_listing.website_url,
-                    organizations_users_listing.logo_url,
+           FROM ( SELECT organizations_users_listing.organization_id AS id, 
+                    organizations_users_listing.name, 
+                    organizations_users_listing.description, 
+                    organizations_users_listing.website_url, 
+                    organizations_users_listing.logo_url, 
                     organizations_users_listing.organization_visibility
                    FROM organizations_users_listing organizations_users_listing
                   WHERE (organizations_users_listing.user_id = users.id)
-                  ORDER BY organizations_users_listing.id) o) AS organizations,
-    users.last_activity_id,
+                  ORDER BY organizations_users_listing.id) o) AS organizations, 
+    users.last_activity_id, 
     ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
-           FROM ( SELECT boards_stars.id,
-                    boards_stars.board_id,
-                    boards_stars.user_id,
+           FROM ( SELECT boards_stars.id, 
+                    boards_stars.board_id, 
+                    boards_stars.user_id, 
                     boards_stars.is_starred
                    FROM board_stars boards_stars
                   WHERE (boards_stars.user_id = users.id)
-                  ORDER BY boards_stars.id) o) AS boards_stars,
+                  ORDER BY boards_stars.id) o) AS boards_stars, 
     ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
-           FROM ( SELECT boards_users.id,
-                    boards_users.board_id,
-                    boards_users.user_id,
-                    boards_users.is_admin,
-                    boards.name,
-                    boards.background_picture_url,
-                    boards.background_pattern_url,
+           FROM ( SELECT boards_users.id, 
+                    boards_users.board_id, 
+                    boards_users.user_id, 
+                    boards_users.is_admin, 
+                    boards.name, 
+                    boards.background_picture_url, 
+                    boards.background_pattern_url, 
                     boards.background_color
                    FROM (boards_users boards_users
-                     JOIN boards ON ((boards.id = boards_users.board_id)))
-                  WHERE (boards_users.user_id = users.id)
-                  ORDER BY boards_users.id) o) AS boards_users,
-    users.last_login_date,
-    li.ip AS last_login_ip,
-    lci.name AS log_city_name,
-    lst.name AS log_state_name,
-    lco.name AS log_country_name,
-    lower((lco.iso_alpha2)::text) AS log_country_iso2,
-    i.ip AS registered_ip,
-    rci.name AS reg_city_name,
-    rst.name AS reg_state_name,
-    rco.name AS reg_country_name,
-    lower((rco.iso_alpha2)::text) AS reg_country_iso2,
-    lt.name AS login_type,
-    users.created,
+              JOIN boards ON ((boards.id = boards_users.board_id)))
+             WHERE (boards_users.user_id = users.id)
+             ORDER BY boards_users.id) o) AS boards_users, 
+    users.last_login_date, 
+    li.ip AS last_login_ip, 
+    lci.name AS log_city_name, 
+    lst.name AS log_state_name, 
+    lco.name AS log_country_name, 
+    lower((lco.iso_alpha2)::text) AS log_country_iso2, 
+    i.ip AS registered_ip, 
+    rci.name AS reg_city_name, 
+    rst.name AS reg_state_name, 
+    rco.name AS reg_country_name, 
+    lower((rco.iso_alpha2)::text) AS reg_country_iso2, 
+    lt.name AS login_type, 
+    users.created, 
     users.user_login_count
    FROM (((((((((users users
-     LEFT JOIN ips i ON ((i.id = users.ip_id)))
-     LEFT JOIN cities rci ON ((rci.id = i.city_id)))
-     LEFT JOIN states rst ON ((rst.id = i.state_id)))
-     LEFT JOIN countries rco ON ((rco.id = i.country_id)))
-     LEFT JOIN ips li ON ((li.id = users.last_login_ip_id)))
-     LEFT JOIN cities lci ON ((lci.id = li.city_id)))
-     LEFT JOIN states lst ON ((lst.id = li.state_id)))
-     LEFT JOIN countries lco ON ((lco.id = li.country_id)))
-     LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
+   LEFT JOIN ips i ON ((i.id = users.ip_id)))
+   LEFT JOIN cities rci ON ((rci.id = i.city_id)))
+   LEFT JOIN states rst ON ((rst.id = i.state_id)))
+   LEFT JOIN countries rco ON ((rco.id = i.country_id)))
+   LEFT JOIN ips li ON ((li.id = users.last_login_ip_id)))
+   LEFT JOIN cities lci ON ((lci.id = li.city_id)))
+   LEFT JOIN states lst ON ((lst.id = li.state_id)))
+   LEFT JOIN countries lco ON ((lco.id = li.country_id)))
+   LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
 
 
 ALTER TABLE users_listing OWNER TO postgres;
@@ -2909,7 +3326,6 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_all
 87	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Search card to add in comment	/boards/?/lists/?/cards/?/search	GET	view_card_search	4	0	1
 74	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Card activities	/boards/?/lists/?/cards/?/activities	GET	view_card_activities	4	0	0
 30	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Update board member permission	/boards_users/?	PUT	edit_board_user	2	0	1
-117	2015-05-09 13:14:18.2	2015-05-09 13:14:18.2	Create user	/users/admin_user_add	POST	users	1	1	0
 81	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View user	/users/?	GET	view_user	1	0	1
 89	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View card labels	/boards/?/lists/?/cards/?/labels	GET	view_card_labels	4	0	1
 91	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Archived card send back to board	/boards/?/lists/?/cards	POST	send_back_to_archived_card	4	0	1
@@ -2930,12 +3346,13 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_all
 78	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Organization visibility	/organizations/?/visibility	GET	view_organization_visibility	5	0	1
 116	2014-08-25 13:14:18.2	2014-08-25 13:14:18.2	Download attachment from card	/download/?	GET	activities_listing	4	1	1
 76	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View user search	/users/search	GET	view_user_search	1	0	1
-27	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	User activation	/users/activation/?	PUT	user_activation	1	0	0
 79	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Load workflow templates	/workflow_templates	GET	view_workflow_templates	2	0	1
 94	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Roles listing	/acl_links	GET	roles	6	1	0
 80	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Search	/search	GET	view_search	2	0	1
 82	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Board sync Google calendar URL	/boards/?/sync_calendar	GET	view_sync_calendar	2	0	1
 118	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Roles Update	/acl_links	POST	roles	6	1	0
+117	2015-05-09 13:14:18.2	2015-05-09 13:14:18.2	Create user	/users	POST	users	1	1	0
+27	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	User activation	/users/?/activation	PUT	user_activation	1	0	0
 \.
 
 
@@ -3300,7 +3717,7 @@ SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1210, true);
 -- Data for Name: activities; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY activities (id, created, modified, board_id, list_id, card_id, user_id, foreign_id, type, comment, revisions, root, freshness_ts, depth, path, materialized_path) FROM stdin;
+COPY activities (id, created, modified, board_id, list_id, card_id, user_id, foreign_id, type, comment, revisions, root, freshness_ts, depth, path, materialized_path, organization_id) FROM stdin;
 \.
 
 
@@ -4046,6 +4463,7 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 16	1	0	ELASTICSEARCH_URL		\N	text	\N	URL	3
 17	1	0	ELASTICSEARCH_INDEX		\N	text	\N	Index	4
 23	0	0	elasticsearch.last_processed_activtiy_id	0	\N	hidden	\N	Last Activity ID	3
+22	5	2	STANDARD_LOGIN_ENABLED	true	\N	checkbox	\N	Standard Login Enabled	10
 \.
 
 
@@ -4053,7 +4471,7 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 -- Name: settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('settings_id_seq', 21, true);
+SELECT pg_catalog.setval('settings_id_seq', 22, true);
 
 
 --
@@ -4100,9 +4518,9 @@ SELECT pg_catalog.setval('user_logins_id_seq', 2, true);
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count) FROM stdin;
-2	2014-07-05 11:46:40.804	2014-07-05 11:46:40.804	2	user	board+user@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	User	U	\N	\N	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	\N	\N	\N	\N	\N	f	0
-1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	media/User/1/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2
+COPY users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap) FROM stdin;
+2	2014-07-05 11:46:40.804	2014-07-05 11:46:40.804	2	user	board+user@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	User	U	\N	\N	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	\N	\N	\N	\N	\N	f	0	f
+1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	media/User/1/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f
 \.
 
 
@@ -5241,6 +5659,26 @@ GRANT ALL ON TABLE lists TO restya;
 
 
 --
+-- Name: organizations_id_seq; Type: ACL; Schema: public; Owner: postgres
+--
+
+REVOKE ALL ON SEQUENCE organizations_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE organizations_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE organizations_id_seq TO postgres;
+GRANT ALL ON SEQUENCE organizations_id_seq TO restya;
+
+
+--
+-- Name: organizations; Type: ACL; Schema: public; Owner: postgres
+--
+
+REVOKE ALL ON TABLE organizations FROM PUBLIC;
+REVOKE ALL ON TABLE organizations FROM postgres;
+GRANT ALL ON TABLE organizations TO postgres;
+GRANT ALL ON TABLE organizations TO restya;
+
+
+--
 -- Name: users_id_seq; Type: ACL; Schema: public; Owner: postgres
 --
 
@@ -5508,26 +5946,6 @@ REVOKE ALL ON TABLE lists_listing FROM PUBLIC;
 REVOKE ALL ON TABLE lists_listing FROM postgres;
 GRANT ALL ON TABLE lists_listing TO postgres;
 GRANT ALL ON TABLE lists_listing TO restya;
-
-
---
--- Name: organizations_id_seq; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON SEQUENCE organizations_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE organizations_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE organizations_id_seq TO postgres;
-GRANT ALL ON SEQUENCE organizations_id_seq TO restya;
-
-
---
--- Name: organizations; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE organizations FROM PUBLIC;
-REVOKE ALL ON TABLE organizations FROM postgres;
-GRANT ALL ON TABLE organizations TO postgres;
-GRANT ALL ON TABLE organizations TO restya;
 
 
 --

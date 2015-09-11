@@ -34,8 +34,8 @@
 					</ul>
 				<%}%>
 			</li>
-			<li class="dropdown navbar-btn">
-				<div class="checkbox-inline">
+			<li class="navbar-btn">
+				<div class="checkbox-inline dropdown">
 					<a title="Boards" class="btn btn-default <% if(organization.attributes.board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.board_count != 0){ %>data-toggle="dropdown"<%}%>><%- organization.attributes.board_count%> Boards</a>
 					<% if(organization.attributes.board_count != 0){ %>
 						<ul class="dropdown-menu arrow arrow-right  text-left" role="boards">

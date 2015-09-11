@@ -6,10 +6,13 @@
 		 <div class="panel-body well-lg">
 			<form class="form-horizontal clearfix col-xs-12" role="form" name="UserLoginForm" id="UserLoginForm">
 				<div class="form-group">
-					<% if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED == "true") { 
-						loginPlaceholder = 'LDAP Login';
+					<% 
+					   if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED == "true"){
+							loginPlaceholder = 'LDAP/STANDARD Login';
+					   }else if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED == "true") { 
+							loginPlaceholder = 'LDAP Login';
 					   } else {
-						loginPlaceholder = 'Email or Username';
+							loginPlaceholder = 'Email or Username';
 					   }
 					%>
 				  <label for="inputEmail" class="sr-only control-label">Email or Username</label>
@@ -29,7 +32,7 @@
 					<%
 					  }
 					if(!_.isEmpty(role_links.where({slug: "users_register"}))){
-						if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") {
+						if ( (!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false" ) || (!_.isEmpty(STANDARD_LOGIN_ENABLED) && (STANDARD_LOGIN_ENABLED === "true"))) {
 					%>
 					<li>|</li>
 					<li><a href="#/users/register" title="Register" class="text-primary">Register</a></li>

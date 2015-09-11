@@ -37,9 +37,9 @@
 	<li><small title="<%- card.card_voters.length %> Votes"><span class="icon-thumbs-up"></span><span><%- card.card_voters.length %></span></small></li>
 	<% } %>
 	<% 
-	var comment = card.list.collection.board.activities.where({card_id: card.attributes.id, type: "add_comment"});
-	if(!_.isEmpty(comment) && comment.length > 0){ %>
-	<li><small title="<%- comment.length %> Comments" ><span class="icon-comment"></span><span><%- comment.length %></span></small></li>
+	if(card.attributes.comment_count > 0){ 
+	%>
+	<li><small title="<%- card.attributes.comment_count %> Comments" ><span class="icon-comment"></span><span><%- card.attributes.comment_count %></span></small></li>
 	<% } %>
 	<% if(!_.isEmpty(card.attributes.description)){ %>
 	<li><small title="Description"><span class="icon-align-left"></span><span></span></small></li>

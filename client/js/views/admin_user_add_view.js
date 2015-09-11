@@ -45,7 +45,7 @@ App.AdminUserAddView = Backbone.View.extend({
         var data = target.serializeObject();
         var self = this;
         var user = new App.User();
-        user.url = api_url + 'users/admin_user_add.json';
+        user.url = api_url + 'users.json';
         user.save(data, {
             success: function(model, response) {
                 if (!_.isEmpty(response.error)) {

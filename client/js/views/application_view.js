@@ -79,8 +79,9 @@ App.ApplicationView = Backbone.View.extend({
                                 LABEL_ICON = settings_response.LABEL_ICON;
                                 SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
                                 LDAP_LOGIN_ENABLED = settings_response.LDAP_LOGIN_ENABLED;
+                                STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
                                 if (page.model === "admin_user_add" || page.model === "register") {
-                                    if (!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") {
+                                    if ((!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") || (!_.isEmpty(STANDARD_LOGIN_ENABLED) && (STANDARD_LOGIN_ENABLED === "true"))) {
                                         page.call_function();
                                     } else {
                                         changeTitle('404 not found');
@@ -118,8 +119,9 @@ App.ApplicationView = Backbone.View.extend({
                             LABEL_ICON = settings_response.LABEL_ICON;
                             SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
                             LDAP_LOGIN_ENABLED = settings_response.LDAP_LOGIN_ENABLED;
+                            STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
                             if (page.model === "admin_user_add" || page.model === "register") {
-                                if (!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") {
+                                if ((!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") || (!_.isEmpty(STANDARD_LOGIN_ENABLED) && (STANDARD_LOGIN_ENABLED === "true"))) {
                                     page.call_function();
                                 } else {
                                     changeTitle('404 not found');
@@ -138,7 +140,7 @@ App.ApplicationView = Backbone.View.extend({
                     });
                 } else {
                     if (page.model === "admin_user_add" || page.model === "register") {
-                        if (!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") {
+                        if ((!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") || (!_.isEmpty(STANDARD_LOGIN_ENABLED) && (STANDARD_LOGIN_ENABLED === "true"))) {
                             page.call_function();
                         } else {
                             changeTitle('404 not found');
@@ -269,6 +271,9 @@ App.ApplicationView = Backbone.View.extend({
                         } else if (view_type === 'calendar') {
                             $('.js-switch-calendar-view').trigger('click');
                             view_type = null;
+                        } else if (view_type === 'timeline') {
+                            $('.js-switch-time-view').trigger('click');
+                            view_type = null;
                         } else if (view_type === 'attachments') {
                             $('.js-show-board-modal').trigger('click');
                             view_type = null;
@@ -282,6 +287,7 @@ App.ApplicationView = Backbone.View.extend({
                             board: Board
                         }).render();
                         $('#footer').html(this.footerView.el);
+                        $('[data-toggle="tooltip"]').tooltip();
                         if (!_.isUndefined(authuser.user)) {
                             var count = authuser.user.notify_count;
                             if (count > 0) {
@@ -308,6 +314,9 @@ App.ApplicationView = Backbone.View.extend({
                 view_type = null;
             } else if (view_type === 'calendar') {
                 $('.js-switch-calendar-view').trigger('click');
+                view_type = null;
+            } else if (view_type === 'timeline') {
+                $('.js-switch-time-view').trigger('click');
                 view_type = null;
             } else if (view_type === 'attachments') {
                 $('.js-show-board-modal').trigger('click');

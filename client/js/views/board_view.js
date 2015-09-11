@@ -51,6 +51,7 @@ App.BoardView = Backbone.View.extend({
         this.model.lists.bind('add', this.renderListsCollection);
         this.model.lists.bind('change:position', this.renderListsCollection);
         this.model.lists.bind('change:is_archived', this.renderListsCollection, this);
+        this.model.lists.bind('change:comment_count', this.renderListsCollection, this);
         this.model.activities.bind('add', this.renderActivitiesCollection);
         this.model.checklists.bind('add', this.populateChecklistItems);
         this.model.board_users.bind('add', this.render);
@@ -167,8 +168,17 @@ App.BoardView = Backbone.View.extend({
         self.model.cards.each(function(card) {
             var labels = card.get('cards_labels') || [];
             if (!_.isEmpty(labels)) {
-                self.model.labels.add(labels, {
-                    silent: true
+                $.each(labels, function(key, value) {
+                    if (self.model.labels.where({
+                            board_id: value.board_id,
+                            card_id: value.card_id,
+                            label_id: value.label_id,
+                            list_id: value.list_id
+                        }).length <= 0) {
+                        var new_label = new App.Label();
+                        new_label.set(value);
+                        self.model.labels.push(new_label);
+                    }
                 });
             }
         });
@@ -593,6 +603,7 @@ App.BoardView = Backbone.View.extend({
     },
     musical: function() {
         self = this;
+        App.music.inst.silence();
         var temp = new App.MusicRepeatView();
         temp.continueMusic();
     },

@@ -406,12 +406,15 @@ App.CardView = Backbone.View.extend({
         var message = 'feature';
         if (years > 0) {
             message = 'year';
-        } else if (months == 1) {
+        } else if (week >= 0 && week <= 6) {
+            message = 'week';
+            if ((today.getMonth() + 1) === due_date.getMonth()) {
+                message = 'week month';
+            }
+        } else if ((today.getMonth() + 1) === due_date.getMonth()) {
             message = 'month';
         } else if (days === 0) {
             message = 'day';
-        } else if (week >= 0 && week <= 6) {
-            message = 'week';
         } else if (years < 0 || months < 0 || days < 0) {
             message = 'overdue';
         }

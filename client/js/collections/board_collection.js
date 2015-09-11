@@ -9,9 +9,6 @@ if (typeof App == 'undefined') {
  */
 App.BoardCollection = Backbone.Collection.extend({
     model: App.Board,
-    comparator: function(item) {
-        return item.get('name');
-    },
     search: function(letters) {
         if (letters === "") return this;
         var pattern = new RegExp(letters, "i");

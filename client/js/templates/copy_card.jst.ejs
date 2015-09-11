@@ -75,7 +75,10 @@
 						content_position += '<option value="' + i + '">' + i+ '</option>';
 					}
 				}
+				
 				var next_position = parseInt(list.attributes.card_count ) + 1;
+				if( isNaN(list.attributes.card_count))
+					next_position = 1;				
 				content_position += '<option value="' + next_position + '">' + next_position + '</option>';
 				
 			} else {

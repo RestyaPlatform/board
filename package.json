@@ -22,6 +22,7 @@
     "grunt-filerev": "~2.1.2",
     "grunt-usemin": "~3.0.0",
     "grunt-contrib-htmlmin": "~0.3.0",
+    "grunt-exec": "~0.4.6",
     "grunt-regex-replace": "~0.2.6",
     "grunt-manifest": "~0.4.0",
     "grunt-zip": "~0.16.2",

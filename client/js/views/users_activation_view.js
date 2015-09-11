@@ -39,7 +39,7 @@ App.UseractivationView = Backbone.View.extend({
     render: function() {
         var self = this;
         var user = new App.User();
-        user.url = api_url + 'users/activation/' + self.model.user_id + '.json';
+        user.url = api_url + 'users/' + self.model.user_id + '/activation.json';
         user.set('id', self.model.user_id);
         user.save({
             id: self.model.user_id,

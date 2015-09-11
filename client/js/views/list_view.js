@@ -801,6 +801,7 @@ App.ListView = Backbone.View.extend({
      */
     showAddCardForm: function(e) {
         e.preventDefault();
+        $('.js-cancel-card-add').trigger('click');
         var target = $(e.target);
         var el = this.$el;
         var view_card = this.$('.js-card-add-form-' + this.model.id);

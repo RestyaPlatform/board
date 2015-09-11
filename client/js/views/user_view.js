@@ -130,6 +130,13 @@ App.UserView = Backbone.View.extend({
                     if (!_.isUndefined(data.result.profile_picture_path)) {
                         $('#dropzone-cssloader').removeClass('cssloader');
                         _this.model.set('profile_picture_path', data.result.profile_picture_path);
+                        var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                        Auth.user.profile_picture_path = data.result.profile_picture_path + "?uid=" + Math.floor((Math.random() * 9999) + 1);
+                        window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                        this.footerView = new App.FooterView({
+                            model: Auth,
+                        }).render();
+                        $('#footer').html(this.footerView.el);
                         _this.render();
                     }
                 });
@@ -183,6 +190,10 @@ App.UserView = Backbone.View.extend({
                 }
                 if (!_.isUndefined(response.profile_picture_path)) {
                     self.model.set('profile_picture_path', self.showImage('User', user.attributes.id, 'small_thumb'));
+                    this.footerView = new App.FooterView({
+                        model: authuser,
+                    }).render();
+                    $('#footer').html(this.footerView.el);
                 }
             }
         });
@@ -305,6 +316,13 @@ App.UserView = Backbone.View.extend({
             success: function(model, response) {
                 $('#dropzone-cssloader').removeClass('cssloader');
                 self.model.set('profile_picture_path', response.profile_picture_path);
+                var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                Auth.user.profile_picture_path = response.profile_picture_path + "?uid=" + Math.floor((Math.random() * 9999) + 1);
+                window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                this.footerView = new App.FooterView({
+                    model: Auth,
+                }).render();
+                $('#footer').html(this.footerView.el);
                 self.render();
             }
         });

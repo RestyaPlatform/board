@@ -9,22 +9,25 @@
  * @subpackage Core
  * @author     Restya <info@restya.com>
  * @copyright  2014 Restya
- * @license    http://www.restya.com/ Restya Licence
- * @link       http://www.restya.com
+ * @license    http://restya.com/ Restya Licence
+ * @link       http://restya.com/
  */
-require_once ('config.inc.php');
+require_once 'config.inc.php';
 if (!empty($_GET['id']) && !empty($_GET['hash'])) {
-    $md5_hash = md5(SecuritySalt . 'download' . $_GET['id']);
+    $md5_hash = md5(SECURITYSALT . 'download' . $_GET['id']);
     if ($md5_hash == $_GET['hash']) {
         if ($db_lnk) {
-            $result = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE id = $1', array(
+            $val_array = array(
                 $_GET['id']
-            ));
+            );
+            $result = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE id = $1', $val_array);
             $attachment = pg_fetch_assoc($result);
             $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $attachment['card_id'];
             $file = $mediadir . DIRECTORY_SEPARATOR . $attachment['name'];
             if (file_exists($file)) {
-                $quoted = sprintf('"%s"', addcslashes(basename($file) , '"\\'));
+                $basename = basename($file);
+                $add_slash = addcslashes($basename, '"\\');
+                $quoted = sprintf('"%s"', $add_slash);
                 $size = filesize($file);
                 header('Content-Description: File Transfer');
                 header('Content-Type: application/octet-stream');
@@ -43,5 +46,5 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
     }
 } else {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 400 Not Found', true, 400);
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
 }

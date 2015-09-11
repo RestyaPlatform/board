@@ -8,7 +8,7 @@ module.exports = function(grunt) {
             all: source_js_files
         },
         phplint: {
-            all: ['server/php/R/*.php']
+            all: ['server/php/R/*.php', 'server/php/R/shell/*.php', 'server/php/R/libs/*.php']
         },
         less: {
             development: {
@@ -40,6 +40,12 @@ module.exports = function(grunt) {
             }
         },
         jsbeautifier: {
+            'pre-merge': {
+                src: source_js_files,
+                options: {
+                    mode: 'VERIFY_ONLY'
+                }
+            },
             default: {
                 src: source_js_files
             }
@@ -54,6 +60,9 @@ module.exports = function(grunt) {
             }
         },
         cssmin: {
+            options: {
+                keepSpecialComments: 0
+            },
             css: {
                 src: 'client/css/default.cache.css',
                 dest: 'client/css/default.cache.css'
@@ -96,12 +105,17 @@ module.exports = function(grunt) {
                 }, {
                     name: 'DB User',
                     search: '\'restya\'',
-                    replace: '\'REPLACE_ME\'',
+                    replace: '\'<%= config.db_user %>\'',
                     flags: 'g'
                 }, {
                     name: 'DB Password',
                     search: 'hjVl2!rGd',
-                    replace: 'REPLACE_ME',
+                    replace: '<%= config.db_password %>',
+                    flags: 'g'
+                }, {
+                    name: 'DB Name',
+                    search: '\'restyaboard\'',
+                    replace: '\'<%= config.db_name %>\'',
                     flags: 'g'
                 }, {
                     name: 'Manifest Replace',
@@ -127,6 +141,11 @@ module.exports = function(grunt) {
                 ],
                 dest: 'client/default.appcache'
             }
+        },
+        exec: {
+            cmd: [
+                'php build/beautifier.php server/php/R'
+            ].join('&&')
         },
         zip: {
             'using-cwd': {
@@ -208,6 +227,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-filerev');
     grunt.loadNpmTasks('grunt-usemin');
     grunt.loadNpmTasks('grunt-contrib-htmlmin');
+    grunt.loadNpmTasks('grunt-exec');
     grunt.loadNpmTasks('grunt-regex-replace');
     grunt.loadNpmTasks('grunt-manifest');
     grunt.loadNpmTasks('grunt-zip');
@@ -216,6 +236,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-complexity');
     grunt.loadNpmTasks('grunt-docco');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.registerTask('default', ['jshint', 'phplint', 'less', 'jst', 'jsbeautifier', 'prettify']);
-    grunt.registerTask('build', ['jshint', 'phplint', 'less', 'jst', 'concat', 'cssmin', 'uglify', 'filerev', 'usemin', 'htmlmin', 'regex-replace:build', 'manifest', 'zip']);
+    grunt.registerTask('format', ['jsbeautifier:default', 'prettify', 'exec']);
+    grunt.registerTask('pre-commit', ['jshint', 'phplint', 'jsbeautifier:pre-merge']);
+    grunt.registerTask('build', 'Build task', function(env) {
+        grunt.config.set('config', grunt.file.readJSON('build/' + env + '.json'));
+        grunt.task.run(['jshint', 'phplint', 'less', 'jst', 'concat', 'cssmin', 'uglify', 'filerev', 'usemin', 'htmlmin', 'regex-replace', 'manifest', 'zip']);
+    });
 };
