@@ -47,23 +47,27 @@ App.OrganizationAddView = Backbone.View.extend({
         var organization = new App.Organization();
         organization.url = api_url + 'organizations.json';
         organization.set(data);
-        organization.save(data, {
-            success: function(model, response) {
-                organization.set('id', parseInt(response.id));
-                authuser.user.organizations.add(organization);
-                data.id = parseInt(response.id);
-                var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
-                if (Auth.user.organizations === null) {
-                    Auth.user.organizations = [];
-                }
-                Auth.user.organizations.push(data);
-                window.sessionStorage.setItem('auth', JSON.stringify(Auth));
-                app.navigate('#/organization/' + response.id, {
-                    trigger: true,
-                    replace: true
-                });
-            }
-        });
+		if (!_.isUndefined(data.name) && data.name !== null && $.trim(data.name) !== "") {
+			organization.save(data, {
+				success: function(model, response) {
+					organization.set('id', parseInt(response.id));
+					authuser.user.organizations.add(organization);
+					data.id = parseInt(response.id);
+					var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+					if (Auth.user.organizations === null) {
+						Auth.user.organizations = [];
+					}
+					Auth.user.organizations.push(data);
+					window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+					app.navigate('#/organization/' + response.id, {
+						trigger: true,
+						replace: true
+					});
+				}
+			});
+		} else {
+			this.flash('Enter organization name', 'Organization name is empty');
+		}
         return false;
     }
 });
