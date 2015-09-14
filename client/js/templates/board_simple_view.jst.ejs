@@ -9,9 +9,12 @@
 			  <a href="#/board/<%- board.id %>" title="<%- board.attributes.name %>" class="htruncate btn-block">
 			  <% } %>
 			  <% if(board.attributes.organization_id > 0 && board.attributes.organization_id != null){ 
-					logo_path = board.showImage('Organization', board.attributes.organization_id, 'small_thumb' );
+					var logo_path = "img/default-organization.png"; 
+					if (!_.isUndefined(board.attributes.organization_logo_url) && board.attributes.organization_logo_url != null && board.attributes.organization_logo_url != '') {
+						logo_path = board.showImage('Organization', board.attributes.organization_id, 'small_thumb' );
+					}
 			  %>
-					<img src="<%- logo_path %>" alt="[Image: Organization]" class="pull-left navbar-btn" width="16" height="16" /> &nbsp;
+					<img src="<%- logo_path %>" title="<%-board.attributes.organization_name%>" alt="[Image: Organization]" class="pull-left navbar-btn" width="16" height="16" /> &nbsp;
 			  <% } %>
 			   <%- board.attributes.name%>
 			  <% if(!_.isEmpty(role_links.where({slug: "view_board"}))){ %>
