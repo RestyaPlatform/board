@@ -240,7 +240,7 @@ var AppRouter = Backbone.Router.extend({
         'users/login': 'login',
         'users/logout': 'logout',
         'users/forgotpassword': 'forgotpassword',
-        'users/activation/:id/:hash': 'user_activation',
+        'users/:id/activation/:hash': 'user_activation',
         'users/:id/changepassword': 'changepassword',
         'users': 'users_index',
         'user/:id': 'user_view',

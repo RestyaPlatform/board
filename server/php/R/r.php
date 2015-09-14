@@ -3448,7 +3448,7 @@ $exception_url = array(
     '/users/forgotpassword',
     '/users/register',
     '/users/login',
-    '/users/activation/?',
+    '/users/?/activation',
     '/settings',
     '/boards/?'
 );
