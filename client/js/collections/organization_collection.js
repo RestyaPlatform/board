@@ -10,8 +10,8 @@ if (typeof App == 'undefined') {
 App.OrganizationCollection = Backbone.Collection.extend({
     model: App.Organization,
     initialize: function() {
-        this.sortField = "id";
-        this.sortDirection = "DESC";
+        this.sortField = "name";
+        this.sortDirection = "ASC";
     },
     saved: function() {
         return this.reject(function(organization) {
