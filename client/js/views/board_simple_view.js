@@ -140,7 +140,6 @@ App.BoardSimpleView = Backbone.View.extend({
         self.boardStar.set('is_starred', is_starred);
         if (!is_starred) {
             this.starred_boards.splice($.inArray(parseInt(self.model.id), this.starred_boards), 1);
-            self.model.set('is_starred', false);
             $('#js-starred-board-' + self.model.id).remove();
             if (this.starred_boards.length === 0 || $('.js-header-starred-boards > .js-board-view').length === 0) {
                 $('.js-header-starred-boards').append(new App.BoardSimpleView({
@@ -155,7 +154,6 @@ App.BoardSimpleView = Backbone.View.extend({
             if (!_.isUndefined(this.starred_boards)) {
                 this.starred_boards.push(self.model.id);
             }
-            self.model.set('is_starred', true);
             if (this.starred_boards.length !== 0) {
                 $('#js-starred-board-empty').remove();
             }
