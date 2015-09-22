@@ -1295,7 +1295,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $qry_val_arr = array(
                 $r_post['root']
             );
-            $prev_message = executeQuery('SELECT ac.*, u,username, u.profile_picture_path, u.initials FROM activities ac LEFT JOIN users u ON ac.user_id = u.id WHERE ac.id = $1', $qry_val_arr);
+            $prev_message = executeQuery('SELECT ac.*, u,username, u.profile_picture_path, u.initials FROM activities ac LEFT JOIN users u ON ac.user_id = u.id WHERE ac.id = $1 order by created DESC', $qry_val_arr);
         }
         $r_post['freshness_ts'] = date('Y-m-d h:i:s');
         $r_post['type'] = 'add_comment';
@@ -1789,7 +1789,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $qry_val_arr = array(
                     $foreign_ids['list_id']
                 );
-                $attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE list_id = $1', $qry_val_arr);
+                $attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE list_id = $1 order by created DESC', $qry_val_arr);
                 while ($attachment = pg_fetch_assoc($attachments)) {
                     $response['list']['attachments'][] = $attachment;
                 }
@@ -2974,28 +2974,27 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             } else if ($activity['type'] == 'update_card_comment') {
                 $table_name = 'activities';
                 $id = $activity['foreign_id'];
-                if(!is_array($revisions['old_value'])) {
-					$r_put['comment'] = $revisions['old_value'];
-				} else {
-					$r_put = $revisions['old_value'];
-				}
+                if (!is_array($revisions['old_value'])) {
+                    $r_put['comment'] = $revisions['old_value'];
+                } else {
+                    $r_put = $revisions['old_value'];
+                }
                 $foreign_ids['board_id'] = $activity['board_id'];
                 $foreign_ids['list_id'] = $activity['list_id'];
                 $foreign_ids['card_id'] = $activity['card_id'];
                 $comment = '##USER_NAME## undo this card ##CARD_LINK## comment';
                 $activity_type = 'update_card_comment';
                 $response['undo']['update_card_comment'] = $id;
-                
                 $response['undo']['card'] = $r_put;
                 $response['undo']['card']['id'] = $activity['card_id'];
-            }  else if ($activity['type'] == 'delete_card_comment') {
+            } else if ($activity['type'] == 'delete_card_comment') {
                 $table_name = 'activities';
                 $id = $activity['foreign_id'];
-				if(!is_array($revisions['old_value'])) {
-					$r_put['comment'] = $revisions['old_value'];
-				} else {
-					$r_put = $revisions['old_value'];
-				}
+                if (!is_array($revisions['old_value'])) {
+                    $r_put['comment'] = $revisions['old_value'];
+                } else {
+                    $r_put = $revisions['old_value'];
+                }
                 $foreign_ids['board_id'] = $activity['board_id'];
                 $foreign_ids['list_id'] = $activity['list_id'];
                 $foreign_ids['card_id'] = $activity['card_id'];
@@ -3127,13 +3126,13 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $qry_va_arr = array(
                     $id
                 );
-				$revisions['old_value'] = executeQuery('SELECT ' . $sfields . ' FROM ' . $table_name . ' WHERE id =  $1', $qry_va_arr);
-				if(!empty($r_put['position'])) {
-					unset($r_put['position']);
-				}
-				if(!empty($r_put['id'])) {
-					unset($r_put['id']);
-				}
+                $revisions['old_value'] = executeQuery('SELECT ' . $sfields . ' FROM ' . $table_name . ' WHERE id =  $1', $qry_va_arr);
+                if (!empty($r_put['position'])) {
+                    unset($r_put['position']);
+                }
+                if (!empty($r_put['id'])) {
+                    unset($r_put['id']);
+                }
                 $revisions['new_value'] = $r_put;
                 $revision = serialize($revisions);
             }
@@ -3147,7 +3146,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
             if (!empty($revisions) && $response['activity']['type'] != 'moved_card_checklist_item') {
                 if (!empty($revisions['new_value'])) {
-					$bool = true;
+                    $bool = true;
                     foreach ($revisions['new_value'] as $key => $value) {
                         if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'add_card_desc' && $activity_type != 'add_card_duedate' && $activity_type != 'delete_card_duedate' && $activity_type != 'add_background' && $activity_type != 'change_background' && $activity_type != 'change_visibility') {
                             $old_val = (isset($revisions['old_value'][$key])) ? $revisions['old_value'][$key] : '';
@@ -3155,15 +3154,15 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                             $dif[] = nl2br(getRevisiondifference($old_val, $new_val));
                         }
                         if ($activity_type == 'add_card_desc' || $activity_type == 'edit_card_duedate' || $activity_type == 'add_background' || $activity_type == 'change_background' || $activity_type == 'change_visibility') {
-							$dif[] = $revisions['new_value'][$key];
+                            $dif[] = $revisions['new_value'][$key];
                         }
-						$bool = false;
+                        $bool = false;
                     }
-					if($bool && $activity_type == 'delete_card_comment' ) {
-						$old_val = (isset($revisions['old_value'])) ? $revisions['old_value'] : '';
-						$new_val = (isset($revisions['new_value'])) ? $revisions['new_value'] : '';
-						$dif[] = nl2br(getRevisiondifference($old_val, $new_val));
-					}
+                    if ($bool && $activity_type == 'delete_card_comment') {
+                        $old_val = (isset($revisions['old_value'])) ? $revisions['old_value'] : '';
+                        $new_val = (isset($revisions['new_value'])) ? $revisions['new_value'] : '';
+                        $dif[] = nl2br(getRevisiondifference($old_val, $new_val));
+                    }
                 } else if (!empty($revisions['old_value']) && isset($obj['type']) && $obj['type'] == 'delete_card_comment') {
                     $dif[] = nl2br(getRevisiondifference($revisions['old_value'], ''));
                 }
@@ -3364,28 +3363,28 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $foreign_ids['list_id'] = $r_resource_vars['lists'];
         $foreign_ids['card_id'] = $r_resource_vars['cards'];
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_card_comment', $foreign_ids, $revisions_del, $r_resource_vars['comments']);
-		if (!empty($response['activity']['revisions']) && trim($response['activity']['revisions']) != '') {
-			$revisions = unserialize($response['activity']['revisions']);
-		}
-		if (!empty($revisions) && $response['activity']['type'] != 'moved_card_checklist_item') {
-			if (!empty($revisions['new_value'])) {
-				foreach ($revisions['new_value'] as $key => $value) {
-					if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'add_card_desc' && $activity_type != 'add_card_duedate' && $activity_type != 'delete_card_duedate' && $activity_type != 'add_background' && $activity_type != 'change_background' && $activity_type != 'change_visibility') {
-						$old_val = (isset($revisions['old_value'][$key])) ? $revisions['old_value'][$key] : '';
-						$new_val = (isset($revisions['new_value'][$key])) ? $revisions['new_value'][$key] : '';
-						$dif[] = nl2br(getRevisiondifference($old_val, $new_val));
-					}
-					if ($activity_type == 'add_card_desc' || $activity_type == 'edit_card_duedate' || $activity_type == 'add_background' || $activity_type == 'change_background' || $activity_type == 'change_visibility') {
-						$dif[] = $revisions['new_value'][$key];
-					}
-				}
-			} else if (!empty($revisions['old_value']) && isset($response['activity']['type']) && $response['activity']['type'] == 'delete_card_comment') {
-				$dif[] = nl2br(getRevisiondifference($revisions['old_value'], ''));
-			}
-		}
-		if (isset($dif)) {
-			$response['activity']['difference'] = $dif;
-		}
+        if (!empty($response['activity']['revisions']) && trim($response['activity']['revisions']) != '') {
+            $revisions = unserialize($response['activity']['revisions']);
+        }
+        if (!empty($revisions) && $response['activity']['type'] != 'moved_card_checklist_item') {
+            if (!empty($revisions['new_value'])) {
+                foreach ($revisions['new_value'] as $key => $value) {
+                    if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'add_card_desc' && $activity_type != 'add_card_duedate' && $activity_type != 'delete_card_duedate' && $activity_type != 'add_background' && $activity_type != 'change_background' && $activity_type != 'change_visibility') {
+                        $old_val = (isset($revisions['old_value'][$key])) ? $revisions['old_value'][$key] : '';
+                        $new_val = (isset($revisions['new_value'][$key])) ? $revisions['new_value'][$key] : '';
+                        $dif[] = nl2br(getRevisiondifference($old_val, $new_val));
+                    }
+                    if ($activity_type == 'add_card_desc' || $activity_type == 'edit_card_duedate' || $activity_type == 'add_background' || $activity_type == 'change_background' || $activity_type == 'change_visibility') {
+                        $dif[] = $revisions['new_value'][$key];
+                    }
+                }
+            } else if (!empty($revisions['old_value']) && isset($response['activity']['type']) && $response['activity']['type'] == 'delete_card_comment') {
+                $dif[] = nl2br(getRevisiondifference($revisions['old_value'], ''));
+            }
+        }
+        if (isset($dif)) {
+            $response['activity']['difference'] = $dif;
+        }
         break;
 
     case '/boards/?/lists/?/cards/?/attachments/?': //delete card attachment
