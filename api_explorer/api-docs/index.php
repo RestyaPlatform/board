@@ -51,41 +51,7 @@ echo '{
             "path": "organizations.json",
             "description": "Operations about Organizations"
         }
-    ],
-    "authorizations": {
-        "oauth2": {
-            "type": "oauth2",
-            "scopes": [
-                {
-                    "scope": "email",
-                    "description": "Access to your email address"
-                },
-                {
-                    "scope": "pets",
-                    "description": "Access to your pets"
-                }
-            ],
-            "grantTypes": {
-                "implicit": {
-                    "loginEndpoint": {
-                        "url": "http://petstore.swagger.wordnik.com/oauth/dialog"
-                    },
-                    "tokenName": "access_token"
-                },
-                "authorization_code": {
-                    "tokenRequestEndpoint": {
-                        "url": "http://petstore.swagger.wordnik.com/oauth/requestToken",
-                        "clientIdName": "client_id",
-                        "clientSecretName": "client_secret"
-                    },
-                    "tokenEndpoint": {
-                        "url": "http://petstore.swagger.wordnik.com/oauth/token",
-                        "tokenName": "access_code"
-                    }
-                }
-            }
-        }
-    },
+    ],    
     "info": {
         "title": "Restyaboard API",
 		"description": ""
