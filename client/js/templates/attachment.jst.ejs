@@ -11,7 +11,7 @@
 		<% }%>
 	</a>
 	<div class="clearfix btn-block col-xs-12">
-		<a target="_blank" href="<%= attachment.downloadLink('download', attachment.get('id')) %>" title="<%- attachment.get('name') %>"><%- attachment.get('name') %>
+		<a target="_blank" class="htruncate col-xs-12 btn-block" href="<%= attachment.downloadLink('download', attachment.get('id')) %>" title="<%- attachment.get('name') %>"><%- attachment.get('name') %>
 		<span class="show">Added <small class="text-muted"><abbr class="timeago" title="<%- attachment.get('created') %>"><%- attachment.get("created") %></abbr></small></span>
 		</a> 
 		<%if(!_.isUndefined(authuser.user)) {%>

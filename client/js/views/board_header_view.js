@@ -365,12 +365,7 @@ App.BoardHeaderView = Backbone.View.extend({
             is_closed: true
         }, {
             patch: true,
-            success: function(model, response) {
-                app.navigate('#/board/' + board_id, {
-                    trigger: true,
-                    replace: true
-                });
-            }
+            success: function(model, response) {}
         });
         return false;
     },
@@ -801,7 +796,7 @@ App.BoardHeaderView = Backbone.View.extend({
         slider.init();
         $('div.js-baord-view-' + this.model.id).html('');
         $('div.js-baord-view-' + this.model.id).html(life.$el.innerHTML);
-		changeTitle('Board - ' + _.escape(this.model.attributes.name));
+        changeTitle('Board - ' + _.escape(this.model.attributes.name));
         return false;
     },
     /**
