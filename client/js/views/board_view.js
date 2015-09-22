@@ -1054,6 +1054,7 @@ App.BoardView = Backbone.View.extend({
                     uuid: data.uuid
                 });
                 App.boards.get(list.attributes.board_id).lists.add(list);
+                list.board_users = self.model.board_users;
                 var view = new App.ListView({
                     model: list,
                     attributes: {
