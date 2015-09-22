@@ -19,8 +19,6 @@ var SITE_TIMEZONE = '';
 var LDAP_LOGIN_ENABLED = '';
 var STANDARD_LOGIN_ENABLED = '';
 var last_activity = '';
-var OAUTH_CLIENTID = '7742632501382313';
-var OAUTH_CLIENT_SECRET = '4g7C4l1Y2b0S6a7L8c1E7B3K0e';
 var SecuritySalt = 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf';
 var last_user_activity_id = 0,
     load_more_last_board_activity_id = 0,
@@ -158,36 +156,6 @@ callbackTranslator = {
         };
     }
 };
-Base64Encode = function(input) {
-    var keyStr = 'ABCDEFGHIJKLMNOP' + 'QRSTUVWXYZabcdef' + 'ghijklmnopqrstuv' + 'wxyz0123456789+/' + '=';
-    var output = "";
-    var chr1, chr2, chr3 = "";
-    var enc1, enc2, enc3, enc4 = "";
-    var i = 0;
-    do {
-        chr1 = input.charCodeAt(i++);
-        chr2 = input.charCodeAt(i++);
-        chr3 = input.charCodeAt(i++);
-        enc1 = chr1 >> 2;
-        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-        enc4 = chr3 & 63;
-        if (isNaN(chr2)) {
-            enc3 = enc4 = 64;
-        } else if (isNaN(chr3)) {
-            enc4 = 64;
-        }
-        output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2) + keyStr.charAt(enc3) + keyStr.charAt(enc4);
-        chr1 = chr2 = chr3 = "";
-        enc1 = enc2 = enc3 = enc4 = "";
-    } while (i < input.length);
-    return output;
-};
-Backbone.$.ajaxSetup({
-    headers: {
-        'Authorization': 'Basic ' + Base64Encode(OAUTH_CLIENTID + ':' + OAUTH_CLIENT_SECRET)
-    }
-});
 Backbone.sync = function(method, model, options) {
     if (!_.isUndefined(model.storeName) && model.storeName === 'activity') {
         $('#js-footer-brand-img').attr('src', 'img/logo-icon-sync.gif');
