@@ -3306,6 +3306,22 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         array_push($pg_params, $r_resource_vars['lists']);
         break;
 
+    case '/organizations/?': // delete organization
+        $qry_val_arr = array(
+            $r_resource_vars['organizations']
+        );
+        $foreign_id['organization_id'] = $r_resource_vars['organizations'];
+        $comment = '##USER_NAME## deleted organization';
+        $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_organization', $foreign_id);
+        pg_query_params($db_lnk, 'UPDATE boards SET organization_id = $1, board_visibility = $2 WHERE organization_id = $3', array(
+            0,
+            2,
+            $foreign_id['organization_id']
+        ));
+        $sql = 'DELETE FROM organizations WHERE id= $1';
+        array_push($pg_params, $r_resource_vars['organizations']);
+        break;
+
     case '/boards/?/lists/?/cards/?': // delete card
         $qry_val_arr = array(
             $r_resource_vars['cards']
