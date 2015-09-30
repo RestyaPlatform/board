@@ -491,6 +491,55 @@
                 }
             ]
         },
+	{
+            "path": "/v1/boards/{boardId}/custom_backgrounds.json",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Upload custom background to board",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "uploadCustomBackground",
+                    "consumes": [
+                        "application/json",
+                        "application/xml"
+                    ],
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "ID of Board that needs to be fetched",
+                            "required": true,
+                            "type": "integer",
+                            "format": "int64",
+                            "paramType": "path",
+                            "minimum": "1.0",
+                            "maximum": "100000.0"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Upload custom background to board",
+                            "required": true,
+                            "type": "uploadCustomBackground",
+                            "paramType": "body"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 405,
+                            "message": "Invalid input"
+                        }
+                    ]
+                }
+            ]
+        },
         {
             "path": "/v1/boards/{boardId}/copy.json",
             "operations": [
@@ -540,6 +589,55 @@
                 }
             ]
         },
+	{
+            "path": "/v1/boards/{boardId}/boards_stars.json",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Star board",
+                    "notes": "Star board",
+                    "type": "void",
+                    "nickname": "star_board",
+                    "consumes": [
+                        "application/json",
+                        "application/xml"
+                    ],
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "boardId",
+                            "description": "ID of Board that needs to be fetched",
+                            "required": true,
+                            "type": "integer",
+                            "format": "int64",
+                            "paramType": "path",
+                            "minimum": "1.0",
+                            "maximum": "100000.0"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Copy Board",
+                            "required": true,
+                            "type": "star_board",
+                            "paramType": "body"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 405,
+                            "message": "Invalid input"
+                        }
+                    ]
+                }
+            ]
+        },
         {
             "path": "/v1/boards_users/{userId}.json",
             "operations": [
@@ -571,6 +669,80 @@
                             "paramType": "path",
                             "minimum": "1.0",
                             "maximum": "100000.0"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 405,
+                            "message": "Invalid input"
+                        }
+                    ]
+                }
+            ]
+        },
+	{
+            "path": "/v1/boards/{boardId}/visibility.json",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "View board visibility",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "viewBoardVisibility",
+                    "consumes": [
+                        "application/json",
+                        "application/xml"
+                    ],
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+			{
+                            "name": "boardId",
+                            "description": "ID of Board that needs to be fetched",
+                            "required": true,
+                            "type": "integer",
+                            "format": "int64",
+                            "paramType": "path",
+                            "minimum": "1.0",
+                            "maximum": "100000.0"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 405,
+                            "message": "Invalid input"
+                        }
+                    ]
+                }
+            ]
+        },
+	{
+            "path": "/v1/workflow_templates.json",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "Load workflow templates",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "loadWorkflowTemplates",
+                    "consumes": [
+                        "application/json",
+                        "application/xml"
+                    ],
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
                         }
                     ],
                     "responseMessages": [
@@ -660,6 +832,43 @@
                     "type": "integer"
                 },
                 "keepCards": {
+                    "type": "boolean"
+                }
+            }
+        },
+	"star_board": {
+            "id": "star_board",
+            "required": [
+                "board_id",
+                "is_starred",
+                "user_id"
+            ],
+            "properties": {
+                "board_id": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "is_starred": {
+                    "type": "boolean"
+                }
+            }
+        },
+	"send_back_to_archived_list": {
+            "id": "send_back_to_archived_list",
+            "required": [
+                "board_id",
+                "list_id"
+            ],
+            "properties": {
+                "board_id": {
+                    "type": "integer"
+                },
+                "list_id": {
+                    "type": "integer"
+                },
+		"is_archived": {
                     "type": "boolean"
                 }
             }

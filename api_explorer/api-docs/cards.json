@@ -647,6 +647,15 @@
                 },
                 "is_subscribe": {
                     "type": "boolean"
+                },
+		"card_id": {
+                    "type": "integer"
+                },
+		"user_id": {
+                    "type": "integer"
+                },
+		"is_offline": {
+                    "type": "boolean"
                 }
             }
         },

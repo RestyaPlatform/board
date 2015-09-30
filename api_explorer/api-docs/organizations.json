@@ -287,6 +287,52 @@
                     ]
                 }
             ]
+        },
+	{
+            "path": "/v1/organizations/{organizationId}/upload_logo.json",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Upload organization logo",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "uploadOrganizationLogo",
+                    "consumes": [
+                        "application/json",
+                        "application/xml"
+                    ],
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "organizationId",
+                            "description": "Organization ID",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Upload organization logo",
+                            "required": true,
+                            "type": "uploadOrganizationLogo",
+                            "paramType": "body"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 405,
+                            "message": "Invalid input"
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "models": {
