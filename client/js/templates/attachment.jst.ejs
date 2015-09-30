@@ -1,9 +1,9 @@
 <% if(attachment != null){ %> 
-	<a target="_blank" href="<%= attachment.downloadLink('download', attachment.get('id')) %>" class="pull-left navbar-btn img-thumbnail">
+	<a target="_blank" href="<%= attachment.downloadLink('download', attachment.get('id')) %>" class="pull-left navbar-btn img-thumbnail thumb-img">
 		<% if(attachment.get("name").match(/\.(jpg|jpeg|png|gif)$/)){ 
 			var picture_path = attachment.showImage('CardAttachment', attachment.attributes.id, 'large_thumb' );
 		%>
-			<img src="<%= picture_path%>">
+			<img src="<%= picture_path%>" class="img-responsive center-block">
 		<% } else{ 
 			 var extension = attachment.attributes.name.split('.');
 		%>
