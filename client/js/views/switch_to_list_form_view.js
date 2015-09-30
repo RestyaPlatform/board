@@ -91,7 +91,7 @@ App.SwitchToListView = Backbone.View.extend({
             }
             cards.comparator = function(item) {
                 var str = '' + item.get(sort_by);
-                if (sort_by !== 'id' && sort_by !== 'card_voter_count' && sort_by !== 'attachment_count' && sort_by !== 'checklist_item_count' && sort_by !== 'checklist_item_completed_count' && sort_by !== 'cards_subscriber_count') {
+                if (sort_by !== 'id') {
                     str = str.toLowerCase();
                     str = str.split('');
                     str = _.map(str, function(letter) {

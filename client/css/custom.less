@@ -220,7 +220,7 @@ hr{
 	z-index: 2147483647;
 	top: 0;
 	left: -6px;
-	.size(1%, 2px);
+	.size(1%, 1px);
 	background: #f47564;
 	border-radius :1px;
 	-moz-transition: width .6s ease,opacity 400ms linear;
@@ -232,7 +232,7 @@ hr{
 #progress dd, #progress dt {
 	position: absolute;
 	top: 0;
-	height: 2px;
+	height: 1px;
 	.box-shadow(#f47564 1px 0 6px 1px);
 	border-radius : 100%;
 }
@@ -1103,7 +1103,10 @@ footer {
     text-align: center;
     vertical-align: middle;
 	.size(202px, 151px);
-	color: lighten(@gray-light, 20%);
+	color: lighten(@gray-light, 20%);	
+	.img-responsive{
+		max-height:100%;
+	}
 }
 .boardlist-scrollbar { 
 	&::-webkit-scrollbar-track {

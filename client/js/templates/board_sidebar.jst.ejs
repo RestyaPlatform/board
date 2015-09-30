@@ -51,6 +51,7 @@
 <li><a href="#" class="js-show-board-modal" data-toggle="modal" data-target="#modalListView">Show Attachments</a></li>
 <% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
 <li><a href="#" class="js-additional-settings">Additional Settings</a></li>
+<li class="divider"></li>
 <li class="dropdown js-open-dropdown inner-dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Close Board</a>
   <ul class="dropdown-menu arrow pull-right">
 	<li class="js-dropdown-popup dropdown-popup">
