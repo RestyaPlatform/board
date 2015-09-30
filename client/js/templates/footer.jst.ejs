@@ -132,7 +132,7 @@
 	  <% } %>
 	  <li class="dropdown">
 	   <a href="#" data-toggle="dropdown" class="dropdown-toggle btn btn-default" title="<%-model.user.username%>">
-	   		<span>
+	   		<span class="js-user-img">
 			<% if(!_.isEmpty(model.user.profile_picture_path)){ 
 				var profile_picture_path = model.showImage('User', model.user.id, 'micro_thumb', true);
 			%>

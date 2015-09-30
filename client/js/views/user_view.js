@@ -194,6 +194,10 @@ App.UserView = Backbone.View.extend({
                         model: authuser,
                     }).render();
                     $('#footer').html(this.footerView.el);
+                } else {
+                    self.model.set('profile_picture_path', null);
+                    self.model.set('initials', $('#inputinitials').val());
+                    $('.js-user-img').html('<i class="avatar avatar-color-194 avatar-sm">' + $('#inputinitials').val() + '</i>');
                 }
             }
         });
@@ -270,6 +274,8 @@ App.UserView = Backbone.View.extend({
         this.model.set('profile_picture_path', null);
         this.render();
         this.model.url = api_url + 'users/' + this.model.id + '.json';
+        this.model.set('initials', $('#inputinitials').val());
+        $('.js-user-img').html('<i class="avatar avatar-color-194 avatar-sm">' + $('#inputinitials').val() + '</i>');
         this.model.save({
             profile_picture_path: 'NULL'
         }, {
