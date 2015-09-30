@@ -91,9 +91,9 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-show-board-modal': 'showListModal',
         'click .js-additional-settings': 'showAdditionalSettings',
         'click .js-close-board': 'closeBoard',
-        'click .js-toggle-label-filter': 'toggleLabelFilter',
-        'click .js-toggle-member-filter': 'toggleMemberFilter',
-        'click .js-due-filter': 'toggleDueFilter',
+        'click .js-toggle-label-filter': 'toggleCardFilter',
+        'click .js-toggle-member-filter': 'toggleCardFilter',
+        'click .js-due-filter': 'toggleCardFilter',
         'click .js-back-to-sidebar': 'backToSidebar',
         'click .js-board-user-avatar-click': 'boardUserAvatarDropdown',
         'click .js-close-board-user-avatar': 'closeBoardUserAvatarDropdown',
@@ -283,8 +283,6 @@ App.BoardHeaderView = Backbone.View.extend({
      */
     starredBoard: function(e) {
         e.preventDefault();
-        $('.js-star-board').addClass('hide');
-        $('.js-star-load').removeClass('hide');
         var name = $(e.currentTarget).attr('name');
         var value = 'unstar';
         var is_starred = true;
@@ -296,52 +294,22 @@ App.BoardHeaderView = Backbone.View.extend({
             content = '<i class="icon-star-empty"></i>';
         }
         $(e.currentTarget).attr('name', value);
-        $('.js-star-load').addClass('hide');
-        $('.js-star-board').removeClass('hide');
         $(e.currentTarget).html(content);
-        var boardStar = new App.BoardStar();
-        if (!_.isEmpty(this.model.board_star) && this.model.board_star.attributes.id) {
-            value = '';
-            if ($('#inputBoardStar').val() == 'false') {
-                value = 'true';
-                is_starred = true;
-                $('#inputBoardStar').val(value);
-            } else {
-                value = 'false';
-                is_starred = false;
-                $('#inputBoardStar').val(value);
+        self.boardStar = new App.BoardStar();
+        var subscribe_data = {};
+        self.boardStar.url = api_url + 'boards/' + this.model.id + '/boards_stars.json';
+        self.boardStar.set('board_id', this.model.attributes.id);
+        self.boardStar.set('user_id', parseInt(authuser.user.id));
+        self.boardStar.set('is_starred', is_starred);
+        self.boardStar.save(subscribe_data, {
+            success: function(model, response) {
+                App.boards.get(self.model.attributes.id).boards_stars.reset(self.boardStar);
+                self.model.boards_stars.add(self.boardStar);
+                self.footerView = new App.FooterView({
+                    model: authuser
+                }).renderStarredBoards();
             }
-            var data = $('form#BoardStarForm').serializeObject();
-            boardStar.url = api_url + 'boards/' + this.model.id + '/boards_stars/' + this.model.board_star.attributes.id + '.json';
-            boardStar.set('id', this.model.board_star.attributes.id);
-            boardStar.save(data, {
-                success: function(model, response) {
-                    App.boards.get(self.model.attributes.id).boards_stars.get(parseInt(response.id)).set('is_starred', is_starred);
-                    new App.FooterView({
-                        model: authuser,
-                        board_id: self.model.attributes.id,
-                        board: self.model
-                    }).renderStarredBoards();
-                }
-            });
-        } else {
-            var subscribe_data = {};
-            boardStar.url = api_url + 'boards/' + this.model.id + '/boards_stars.json';
-            boardStar.set('board_id', this.model.attributes.id);
-            boardStar.set('user_id', parseInt(authuser.user.id));
-            boardStar.set('is_starred', is_starred);
-            boardStar.save(subscribe_data, {
-                success: function(model, response) {
-                    boardStar.set('id', parseInt(response.id));
-                    App.boards.get(self.model.attributes.id).boards_stars.add(boardStar);
-                    self.model.boards_stars.add(response);
-                    self.footerView = new App.FooterView({
-                        model: authuser,
-                        board_id: self.model.attributes.id
-                    }).renderStarredBoards();
-                }
-            });
-        }
+        });
         return false;
     },
     /**
@@ -1438,33 +1406,30 @@ App.BoardHeaderView = Backbone.View.extend({
         return false;
     },
     /**
-     * toggleLabelFilter()
+     * toggleCardFilter()
      * toggle thr label filter list
      * @param e
      * @type Object(DOM event)
      *
      */
-    toggleLabelFilter: function(e) {
+    toggleCardFilter: function(e) {
         var target = $(e.currentTarget);
         target.toggleClass('selected', !target.hasClass('selected'));
-        this.labelFilter();
+        this.cardFilter();
         return false;
     },
     /**
-     * labelFilter()
+     * cardFilter()
      * toggle thr label filter list
      * @param e
      * @type Object(DOM event)
      *
      */
-    labelFilter: function(e) {
+    cardFilter: function(e) {
         var contain = '';
         var not_contain = '';
         var selected_label = '';
         $('i.js-filter-icon').remove();
-        $('.js-due-filte').removeClass('selected');
-        $('.js-toggle-member-filter').removeClass('selected');
-        //$('i', $('li:not(.selected)', $('ul.js-board-labels'))).remove();
         if ($('li.selected', $('ul.js-board-labels')).length === 0) {
             $('ul.js-card-labels').parents('div.js-board-list-card').show();
             $('ul.js-card-labels').parents('tr.js-show-modal-card-view').show();
@@ -1476,42 +1441,6 @@ App.BoardHeaderView = Backbone.View.extend({
                 $(this).after('<i class="icon-ok js-filter-icon cur"></i>');
             }
         });
-        contain = contain.substring(0, contain.lastIndexOf(', '));
-        if (!_.isEmpty(not_contain)) {
-            $(contain).parents('div.js-board-list-card').show();
-            $(contain).parents('tr.js-show-modal-card-view').show();
-            $('ul.js-card-labels' + not_contain).parents('div.js-board-list-card').hide();
-            $('ul.js-card-labels' + not_contain).parents('tr.js-show-modal-card-view').hide();
-        }
-    },
-    /**
-     * toggleMemberFilter()
-     * toggle thr member filter list
-     * @param e
-     * @type Object(DOM event)
-     *
-     */
-    toggleMemberFilter: function(e) {
-        var target = $(e.currentTarget);
-        target.toggleClass('selected', !target.hasClass('selected'));
-        this.memberFilter();
-        return false;
-    },
-    /**
-     * memberFilter()
-     * toggle thr member filter list
-     * @param e
-     * @type Object(DOM event)
-     *
-     */
-    memberFilter: function(e) {
-        var contain = '';
-        var not_contain = '';
-        var selected_label = '';
-        $('i.js-filter-icon').remove();
-        $('.js-due-filte').removeClass('selected');
-        $('.js-toggle-label-filter').removeClass('selected');
-        //$('i', $('li:not(.selected)', $('ul.js-board-users'))).remove();
         if ($('li.selected', $('ul.js-board-users')).length === 0) {
             $('ul.js-card-users').parents('div.js-board-list-card').show();
             $('ul.js-card-users').parents('tr.js-show-modal-card-view').show();
@@ -1523,41 +1452,6 @@ App.BoardHeaderView = Backbone.View.extend({
                 $(this).after('<i class="icon-ok js-filter-icon cur"></i>');
             }
         });
-        contain = contain.substring(0, contain.lastIndexOf(', '));
-        if (!_.isEmpty(not_contain)) {
-            $(contain).parents('div.js-board-list-card').show();
-            $(contain).parents('tr.js-show-modal-card-view').show();
-            $('ul.js-card-users' + not_contain).parents('div.js-board-list-card').hide();
-            $('ul.js-card-users' + not_contain).parents('tr.js-show-modal-card-view').hide();
-        }
-    },
-    /**
-     * toggleDueFilter()
-     * filter board cards by due date
-     * @param e
-     * @type Object(DOM event)
-     *
-     */
-    toggleDueFilter: function(e) {
-        var target = $(e.currentTarget);
-        target.toggleClass('selected', !target.hasClass('selected'));
-        this.dueFilter();
-        return false;
-    },
-    /**
-     * dueFilter()
-     * filter board cards by due date
-     * @param e
-     * @type Object(DOM event)
-     *
-     */
-    dueFilter: function(e) {
-        var contain = '';
-        var not_contain = '';
-        var selected_label = '';
-        $('i.js-filter-icon').remove();
-        $('.js-toggle-member-filter').removeClass('selected');
-        $('.js-toggle-label-filter').removeClass('selected');
         if ($('li.selected', $('ul.js-board-dues')).length === 0) {
             $('ul.js-card-due').parents('div.js-board-list-card').show();
             $('ul.js-card-due').parents('tr.js-show-modal-card-view').show();
@@ -1571,10 +1465,14 @@ App.BoardHeaderView = Backbone.View.extend({
         });
         contain = contain.substring(0, contain.lastIndexOf(', '));
         if (!_.isEmpty(not_contain)) {
-            $(contain).parents('div.js-board-list-card').show();
-            $(contain).parents('tr.js-show-modal-card-view').show();
+            $('ul.js-card-labels' + not_contain).parents('div.js-board-list-card').hide();
+            $('ul.js-card-labels' + not_contain).parents('tr.js-show-modal-card-view').hide();
+            $('ul.js-card-users' + not_contain).parents('div.js-board-list-card').hide();
+            $('ul.js-card-users' + not_contain).parents('tr.js-show-modal-card-view').hide();
             $('ul.js-card-due' + not_contain).parents('div.js-board-list-card').hide();
             $('ul.js-card-due' + not_contain).parents('tr.js-show-modal-card-view').hide();
+            $(contain).parents('div.js-board-list-card').show();
+            $(contain).parents('tr.js-show-modal-card-view').show();
         }
     },
     /**
