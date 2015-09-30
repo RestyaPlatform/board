@@ -52,6 +52,8 @@ App.ModalMusicView = Backbone.View.extend({
             success: function(model, response) {
                 var view = new Backbone.View();
                 view.flash('success', 'Updated successfully.');
+                $('#music-modal').modal('hide');
+                $('div.modal-backdrop').remove();
                 if (!_.isEmpty(music_content) && music_content != 'NULL') {
                     App.music.music_content = music_content;
                     var temp = new App.MusicRepeatView();
