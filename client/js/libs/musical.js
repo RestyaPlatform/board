@@ -137,6 +137,9 @@ var Instrument = (function() {
   // yet finished, and sequences that are awaiting scheduled callbacks.
   // Does not notify notes that have not yet started.
   Instrument.prototype.silence = function() {
+	if (!!navigator.userAgent.match(/Trident/)) {
+		return;
+	}
     var j, finished, callbacks, initvolume = 1;
 
     // Clear future notes.
