@@ -525,6 +525,14 @@ App.ApplicationView = Backbone.View.extend({
                                 App.boards = boards;
                                 self.populateLists();
                                 self.populateBoardStarred();
+                                var board_activities = new App.FooterView({
+                                    model: authuser,
+                                    boards: boards
+                                });
+                                clearInterval(set_interval_id);
+                                set_interval_id = setInterval(function() {
+                                    board_activities.userActivities(true, 1);
+                                }, 10000);
                                 if (page.model == 'starred_boards_index') {
                                     board_index.append(new App.StarredBoardsIndexView().el);
                                     if (!_.isEmpty(role_links.where({
@@ -632,6 +640,11 @@ App.ApplicationView = Backbone.View.extend({
                                                     className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + my_board.attributes.id,
                                                     starred_boards: response.starred_boards
                                                 }).el);
+                                            });
+                                            new App.FooterView({
+                                                model: authuser,
+                                                board_id: self.id,
+                                                boards: my_boards
                                             });
                                         } else {
                                             $('.js-my-boards').append(new App.BoardSimpleView({
@@ -768,7 +781,7 @@ App.ApplicationView = Backbone.View.extend({
                 }
             }
         } else {
-            if (Backbone.history.fragment.indexOf('board/') != -1 || Backbone.history.fragment.indexOf('organization/') != -1) {
+            if (Backbone.history.fragment.indexOf('board/') != -1 || Backbone.history.fragment.indexOf('organization/') != -1 || Backbone.history.fragment.indexOf('boards') != -1) {
                 this.footerView = new App.FooterView({
                     model: authuser,
                 }).render();
