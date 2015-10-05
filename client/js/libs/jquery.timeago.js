@@ -194,7 +194,7 @@
       if ($t.settings.localeTitle) {
         element.attr("title", element.data('timeago').datetime.toLocaleString());
       } else if (text.length > 0 && !($t.isTime(element) && element.attr("title"))) {
-        element.attr("title", text);
+		element.attr("title", element.data('timeago').datetime.toLocaleString());
       }
     }
     return element.data("timeago");

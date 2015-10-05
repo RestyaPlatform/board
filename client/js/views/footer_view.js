@@ -1127,7 +1127,8 @@ App.FooterView = Backbone.View.extend({
                                         }));
                                     }
                                 }
-                            } else if (!_.isUndefined(self.boards)) {
+                            }
+                            if (!_.isUndefined(self.boards)) {
                                 var board = '';
                                 var board_list = '';
                                 var organization_boards = '';

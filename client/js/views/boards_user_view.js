@@ -57,6 +57,7 @@ App.BoardUsersView = Backbone.View.extend({
             model: this.model,
             is_admin: this.is_admin
         }).el);
+        $('.js-add-board-member-dropdown').removeClass('open');
     },
     showConfirmDeleteBoardUser: function(e) {
         e.preventDefault();

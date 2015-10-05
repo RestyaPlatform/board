@@ -848,6 +848,7 @@ App.BoardHeaderView = Backbone.View.extend({
     addBoardMemberDropdown: function(e) {
         e.preventDefault();
         $('.js-add-board-member-dropdown').addClass('open');
+        $('.js-board-user-avatar-click').removeClass('open');
         return false;
     },
     /**
