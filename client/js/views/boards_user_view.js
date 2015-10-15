@@ -81,6 +81,12 @@ App.BoardUsersView = Backbone.View.extend({
         this.$el.remove();
         this.model.url = api_url + 'boards_users/' + this.model.attributes.id + '.json';
         this.model.destroy();
+        if (parseInt(this.model.attributes.user_id) === parseInt(authuser.user.id)) {
+            app.navigate('#/boards', {
+                trigger: true,
+                replace: true
+            });
+        }
         return false;
     }
 });
