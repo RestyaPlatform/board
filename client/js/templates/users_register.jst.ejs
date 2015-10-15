@@ -5,15 +5,15 @@
 	<form id="UserRegisterForm" name="UserRegisterForm" class="form-horizontal col-xs-12">
 	  <div class="form-group required">
 		<label class="sr-only control-label" for="inputEmail">Email</label>
-		<input type="email" required name="email" id="inputEmail" class="form-control" placeholder="Email">
+		<input type="email" required name="email" id="inputEmail" class="form-control" placeholder="Email" title="Email">
 	  </div>
 	  <div class="form-group required">
 		<label class="sr-only control-label" for="inputUsername">Username</label>
-		<input type="name" name="username" id="inputUsername" class="form-control" placeholder="Username" required pattern=".{6,15}" title="minimum 6 characters">
+		<input type="name" name="username" id="inputUsername" class="form-control" placeholder="Username" required pattern=".{6,15}" title="Username. Minimum 6 characters">
 	  </div>
 	  <div class="form-group required">
 		<label class="sr-only control-label" for="inputPassword">Password</label>
-		<input type="password" required name="password" id="inputPassword"class="form-control" placeholder="Password" pattern="[A-Za-z0-9\S]{6,15}" title="minimum 6 characters and white space not allowed">
+		<input type="password" required name="password" id="inputPassword"class="form-control" placeholder="Password" pattern="[A-Za-z0-9\S]{6,15}" title="Password. Minimum 6 characters and white space not allowed">
 	  </div>
 	  <div class="form-group">
 		<label class="sr-only ontrol-label" for="submitRegister">Join Now</label>
