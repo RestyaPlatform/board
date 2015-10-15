@@ -93,6 +93,17 @@ del {
 		margin-right: -10px;
 	}
 }
+.dropdown-menu.dropdown-list{
+    border: 1px solid transparent;
+    margin-top: 0;
+    padding-top: 0;
+    position: relative;
+    margin-left: -16px;
+    margin-right: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    box-shadow: none;
+}
 /* dropdown arrow style */
 .dropdown-menu.arrow {
   &:before {
@@ -216,37 +227,39 @@ hr{
 	margin-bottom:9px;
 }
 #progress {
-	position: fixed;
-	z-index: 2147483647;
-	top: 0;
-	left: -6px;
-	.size(1%, 1px);
-	background: #f47564;
-	border-radius :1px;
-	-moz-transition: width .6s ease,opacity 400ms linear;
-	-ms-transition: width .6s ease,opacity 400ms linear;
-	-o-transition: width .6s ease,opacity 400ms linear;
-	-webkit-transition: width .6s ease,opacity 400ms linear;
-	transition: width .6s ease,opacity 400ms linear;
-}
-#progress dd, #progress dt {
-	position: absolute;
-	top: 0;
-	height: 1px;
-	.box-shadow(#f47564 1px 0 6px 1px);
-	border-radius : 100%;
-}
-#progress dt {
-	.opacity(60);
-	width: 180px;
-	right: -80px;
-	clip: rect(-6px,90px,14px,-6px);
-}
-#progress dd {
-	.opacity(60);
-	width: 20px;
-	right: 0;
-	clip: rect(-6px,22px,14px,10px);
+    position: fixed;
+    z-index: 2147483647;
+    top: 0;
+    left: -6px;
+    height: 2px;
+    background: #FFDBCA;
+    -moz-transition: width .6s ease,opacity 400ms linear;
+    -ms-transition: width .6s ease,opacity 400ms linear;
+    -o-transition: width .6s ease,opacity 400ms linear;
+    -webkit-transition: width .6s ease,opacity 400ms linear;
+    transition: width .6s ease,opacity 400ms linear;
+	dd, dt {
+		position: absolute;
+		top: 0;
+		height: 2px;
+		-webkit-box-shadow: #FFDBCA 1px 0 6px 1px;
+		box-shadow: #FFDBCA 1px 0 6px 1px;
+		
+	}
+	dt {
+		opacity: 60;
+		filter: alpha(opacity=6000);
+		width: 180px;
+		right: -80px;
+		clip: rect(-6px,90px,14px,-6px);
+	}
+	dd {
+		opacity: 60;
+		filter: alpha(opacity=6000);
+		width: 20px;
+		right: 0;
+		clip: rect(-6px,22px,14px,10px);
+	}
 }
 /* css scrollbar start */
 .vertical-scrollbar, .dockmodal-body{

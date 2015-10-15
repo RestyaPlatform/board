@@ -15,12 +15,11 @@
 </div>
 <div class="col-xs-12 divider"></div>
 <div class="col-xs-12">
-	<ul class="list-unstyled">
-		<li class="dropdown"> 
-			<% if (is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) { %>
-			<a href="#" data-toggle="dropdown" class="dropdown-toggle <%if(user.attributes.user_id != user.collection.board.attributes.user_id){%>js-show-dropdown<%}%>"> Change permissions (<% if(user.attributes.is_admin == true || user.attributes.is_admin == 't'){ %> Owner <%}else{%> Member<%}%>)</a>
+	<ul class="list-unstyled dropdown-menu dropdown-list show">
+		<li class="dropdown <%if(!((!_.isUndefined(authuser.user) && authuser.user.role_id == 1) || ((user.attributes.is_admin == false || user.attributes.is_admin == 'f') && user.attributes.user_id != authuser.user.id) || (user.collection.board.admin_board_users.length > 1))){%>disabled<%}%>"> 
+			<a href="#" data-toggle="dropdown" class="dropdown-toggle <%if((!_.isUndefined(authuser.user) && authuser.user.role_id == 1) || ((user.attributes.is_admin == false || user.attributes.is_admin == 'f') && user.attributes.user_id != authuser.user.id) || (user.collection.board.admin_board_users.length > 1)){%>js-show-dropdown<%}%>"> Change permissions (<% if(user.attributes.is_admin == true || user.attributes.is_admin == 't'){ %> Owner <%}else{%> Member<%}%>)</a>
 			<ul class="dropdown-menu dropdown-menu-right arrow arrow-right js-list-actions-response">
-				<div class="clearfix text-center col-xs-12"> <a data-list-id="339" class="js-back-to-list-actions pull-left" href="#"><i class="icon-caret-left "></i></a><span class="col-xs-10"><strong>Change Permissions</strong></span><a href="#" class="js-close-popup pull-right"><i class="icon-remove "></i></a> </div>
+				<div class="clearfix text-center col-xs-12"> <span class="col-xs-10"><strong>Change Permissions</strong></span><a href="#" class="js-close-popup pull-right"><i class="icon-remove "></i></a> </div>
 				<div class="col-xs-12 divider"></div>
 				<div class="col-xs-12">
 				  <ul class="list-unstyled">
@@ -30,15 +29,14 @@
 				  </ul>
 				</div>
 			</ul>
-			<% } %>
 		</li>
 		<li>
-			<a href="#" title="View member's board activity" data-user-id="<%- user.attributes.user_id %>" class="panel js-view-user-activities">
+			<a href="#" title="View member's board activity" data-user-id="<%- user.attributes.user_id %>" class="js-view-user-activities">
 				<span>View member's board activity</span>
 			</a>
 		</li>
-		<% if (is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) { %>
-			<li><a href="#" title="<%if(parseInt(authuser.user.id) != user.attributes.user_id ){%>Remove<%}else{%>Leave<%}%> from board" class="<%if(user.attributes.user_id != user.collection.board.attributes.user_id){%>js-show-confirm-delete-board-member<%}%>"><%if(parseInt(authuser.user.id) != user.attributes.user_id ){%>Remove<%}else{%>Leave<%}%> from board</a></li>
+		<% if ((!_.isUndefined(authuser.user) && authuser.user.role_id == 1) || (user.attributes.is_admin == false || user.attributes.is_admin == 'f') || (user.collection.board.admin_board_users.length > 1)) { %>
+			<li><a href="#" title="<%if(parseInt(authuser.user.id) != user.attributes.user_id ){%>Remove<%}else{%>Leave<%}%> from board" class="js-show-confirm-delete-board-member"><%if(parseInt(authuser.user.id) != user.attributes.user_id ){%>Remove<%}else{%>Leave<%}%> from board</a></li>
 		<% } %>
 		
 	</ul>
