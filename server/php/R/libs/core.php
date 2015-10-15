@@ -945,7 +945,8 @@ function importTrelloBoard($board = array())
                 if (!empty($card['attachments'])) {
                     foreach ($card['attachments'] as $attachment) {
                         $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
-                        $save_path = $_server_domain_url . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
+                        $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
+						$save_path = str_replace('\\', '/', $save_path);
                         $filename = curlExecute($attachment['url'], 'get', $mediadir, 'image');
                         $path = $save_path . DIRECTORY_SEPARATOR . $filename;
                         $name = $filename;
@@ -961,6 +962,24 @@ function importTrelloBoard($board = array())
                             $attachment['mimeType']
                         );
                         pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, board_id, list_id, card_id, name, path, mimetype) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                    }
+                }
+                if (!empty($card['idMembersVoted'])) {
+                    foreach ($card['idMembersVoted'] as $votedMemberId) {
+                        $qry_val_arr = array(
+                            $_card['id'],
+                            $users[$votedMemberId]
+                        );
+                        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO card_voters (created, modified, card_id, user_id) VALUES (now(), now(), $1, $2) RETURNING id', $qry_val_arr));
+                    }
+                }
+                if (!empty($card['idMembers'])) {
+                    foreach ($card['idMembers'] as $cardMemberId) {
+                        $qry_val_arr = array(
+                            $_card['id'],
+                            $users[$cardMemberId]
+                        );
+                        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards_users (created, modified, card_id, user_id) VALUES (now(), now(), $1, $2) RETURNING id', $qry_val_arr));
                     }
                 }
             }
@@ -995,21 +1014,108 @@ function importTrelloBoard($board = array())
         if (!empty($board['actions'])) {
             foreach ($board['actions'] as $action) {
                 if ($action['type'] == 'commentCard') {
-                    $created = $modified = str_replace('T', ' ', $action['date']);
-                    $qry_val_arr = array(
-                        $created,
-                        $modified,
-                        $new_board['id'],
-                        $lists[$action['data']['list']['id']],
-                        $cards[$action['data']['card']['id']],
-                        $user_id,
-                        'add_comment',
-                        $action['data']['text']
-                    );
-                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                    $type = 'add_comment';
+                    $comment = $action['data']['text'];
+                } else if ($action['type'] == 'addMemberToCard') {
+                    $type = 'add_card_user';
+                    $comment = '##USER_NAME## added "' . $action['member']['fullName'] . '" as member to this card ##CARD_LINK##';
+                } else if ($action['type'] == 'createCard') {
+                    $type = 'add_card';
+                    $comment = '##USER_NAME## added card ##CARD_LINK## to list "' . $action['data']['list']['name'] . '".';
+                } else if ($action['type'] == 'createList') {
+                    $type = 'add_list';
+                    $comment = '##USER_NAME## added list "' . $action['data']['list']['name'] . '".';
+                } else if ($action['type'] == 'createBoard') {
+                    $type = 'add_board';
+                    $comment = '##USER_NAME## created board';
+                } else if ($action['type'] == 'updateBoard') {
+                    if (!empty($action['data']['board']['closed']) && $action['data']['board']['closed']) {
+                        $type = 'reopen_board';
+                        $comment = '##USER_NAME## closed ##BOARD_NAME## board.';
+                    } else if (!empty($action['data']['board']['closed'])) {
+                        $type = 'reopen_board';
+                        $comment = '##USER_NAME## reopened ##BOARD_NAME## board.';
+                    } else if (!empty($action['data']['board']['prefs']['permissionLevel'])) {
+                        $type = 'change_visibility';
+                        $comment = '##USER_NAME## changed visibility to ' . $action['data']['board']['prefs']['permissionLevel'];
+                    } else if (!empty($action['data']['board']['prefs']['background'])) {
+                        $type = 'change_background';
+                        $comment = '##USER_NAME## changed backgound to board "' . $action['data']['board']['prefs']['background'] . '"';
+                    } else if (!empty($action['data']['board']['name'])) {
+                        $type = 'edit_board';
+                        $comment = '##USER_NAME## renamed ##BOARD_NAME## board.';
+                    }
+                } else if ($action['type'] == 'updateList') {
+                    if ($action['data']['list']['closed']) {
+                        $type = 'archive_list';
+                        $comment = '##USER_NAME## archived ##LIST_NAME##';
+                    } else if (!empty($action['data']['list']['pos'])) {
+                        $type = 'change_list_position';
+                        $comment = '##USER_NAME## changed list ' . $action['data']['list']['name'] . ' position.';
+                    } else if (!empty($action['data']['list']['name'])) {
+                        $type = 'edit_list';
+                        $comment = '##USER_NAME## renamed this list.';
+                    }
+                } else if ($action['type'] == 'updateCard') {
+                    if (!empty($action['data']['card']['pos'])) {
+                        $type = 'change_card_position';
+                        $comment = '##USER_NAME## moved this card to different position.';
+                    } else if (!empty($action['data']['card']['idList'])) {
+                        $type = 'moved_list_card';
+                        $comment = '##USER_NAME## moved cards FROM ' . $action['data']['listBefore']['name'] . ' to ' . $action['data']['listAfter']['name'];
+                    } else if (!empty($action['data']['card']['due'])) {
+                        $type = 'add_card_duedate';
+                        $comment = '##USER_NAME## SET due date to this card ##CARD_LINK##';
+                    } else if (!empty($action['data']['card']['desc'])) {
+                        $type = 'add_card_desc';
+                        $comment = '##USER_NAME## added card description in ##CARD_LINK## - ##DESCRIPTION##';
+                    } else if (!empty($action['data']['card']['name'])) {
+                        $type = 'edit_card';
+                        $comment = '##USER_NAME## edited ' . $action['data']['list']['name'] . ' card in this board.';
+                    }
+                } else if ($action['type'] == 'addChecklistToCard') {
+                    $type = 'add_card_checklist';
+                    $comment = '##USER_NAME## added checklist ##CHECKLIST_NAME## to this card ##CARD_LINK##';
+                } else if ($action['type'] == 'deleteAttachmentFromCard') {
+                    $type = 'delete_card_attachment';
+                    $comment = '##USER_NAME## deleted attachment from card ##CARD_LINK##';
+                } else if ($action['type'] == 'addAttachmentToCard') {
+                    $type = 'add_card_attachment';
+                    $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
+                } else if ($action['type'] == 'addMemberToBoard') {
+                    $type = 'add_board_user';
+                    $comment = '##USER_NAME## added member to board';
+                } else if ($action['type'] == 'removeChecklistFromCard') {
+                    $type = 'delete_checklist';
+                    $comment = '##USER_NAME## deleted checklist from card ##CARD_LINK##';
                 }
+                $created = $modified = str_replace('T', ' ', $action['date']);
+                $qry_val_arr = array(
+                    $created,
+                    $modified,
+                    $new_board['id'],
+                    $lists[$action['data']['list']['id']],
+                    $cards[$action['data']['card']['id']],
+                    $users[$action['idMemberCreator']],
+                    $type,
+                    $comment
+                );
+                pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
             }
         }
         return $new_board;
     }
+}
+function email2name($email)
+{
+    $email = substr($email, 0, strrpos($email, '@'));
+    // replace non-text
+    $name = trim(ucwords(preg_replace('/[\W\d_]+/', ' ', strtolower($email))));
+    // split by final space
+    if (preg_match('/(.*)?\s(.*)$/', $name, $matches)) {
+        $full_name = $matches[1] . ' ' . $matches[2];
+    } else {
+        $full_name = $name;
+    }
+    return $full_name;
 }
