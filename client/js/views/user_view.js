@@ -258,7 +258,7 @@ App.UserView = Backbone.View.extend({
                     });
                     last_activity_id = last_activity.id;
                 } else {
-                    self.$('#js-user-activites-load-more').removeClass();
+                    self.$('#js-user-activites-load-more').remove();
                 }
             }
         });
