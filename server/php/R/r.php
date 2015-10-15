@@ -89,7 +89,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $condition1 = ' AND al.id > $4';
                 }
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition1 . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
-                array_push($pg_params, $r_resource_vars['users'], $r_resource_filters['organization_id'], $r_resource_filters['organization_id']);
+                array_push($pg_params, $r_resource_vars['users'], $r_resource_filters['organization_id'], '{' . $r_resource_filters['organization_id'] . '}');
             } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] = 'all') {
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition1 . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
@@ -763,7 +763,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $val_arr);
             $emailFindReplace = array(
                 'mail' => 'forgetpassword',
-                '##USERNAME##' => $user['username'],
+                '##NAME##' => $user['full_name'],
                 '##PASSWORD##' => $password,
                 'to' => $user['email']
             );
@@ -822,12 +822,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['role_id'] = 2; // user
             $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
+            $r_post['full_name'] = email2name($r_post['email']);
         } else {
             $msg = '';
             if ($user['email'] == $r_post['email']) {
-                $msg = 'Email address is already exist. Your registration process is not completed. Please, try again.';
+                $msg = 'Email address already exist. Your registration process is not completed. Please, try again.';
             } else if ($user['username'] == $r_post['username']) {
-                $msg = 'Username address is already exist. Your registration process is not completed. Please, try again.';
+                $msg = 'Username address already exist. Your registration process is not completed. Please, try again.';
             }
             $response = array(
                 'error' => $msg
@@ -992,7 +993,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 $authUser['profile_picture_path'] = $profile_picture_path;
                 $response['profile_picture_path'] = $profile_picture_path;
-                $comment = '##USER_NAME## update profile image';
+                $comment = '##USER_NAME## updated the profile image';
                 $foreign_ids['user_id'] = $authUser['id'];
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'update_profile_attachment', $foreign_ids);
             }
@@ -1009,7 +1010,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $user = executeQuery('SELECT * FROM users WHERE email = $1', $usr_val_arr);
                 if ($user['id'] != $r_resource_vars['users'] && $user['email'] == $_POST['email']) {
                     $no_error = false;
-                    $msg = 'Email address is already exist. User Profile could not be updated. Please, try again.';
+                    $msg = 'Email address already exist. User Profile could not be updated. Please, try again.';
                 }
             }
             if ($no_error) {
@@ -1020,7 +1021,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $_POST['initials'],
                     $r_resource_vars['users']
                 );
-                $comment = '##USER_NAME## update profile.';
+                $comment = '##USER_NAME## updated the profile.';
                 $foreign_ids['user_id'] = $authUser['id'];
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'update_profile', $foreign_ids);
                 pg_query_params($db_lnk, 'UPDATE users SET  full_name = $1, about_me = $2, initials = $3 WHERE id = $4', $qry_val_arr);
@@ -1708,7 +1709,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $response['uuid'] = $uuid;
             }
             if ($r_resource_cmd == '/users/register') {
-                $emailFindReplace['##USERNAME##'] = $r_post['username'];
+                $emailFindReplace['##NAME##'] = $r_post['full_name'];
                 $emailFindReplace['##ACTIVATION_URL##'] = 'http://' . $_SERVER['HTTP_HOST'] . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
                 $emailFindReplace['to'] = $r_post['email'];
                 $emailFindReplace['mail'] = 'activation';
@@ -2486,8 +2487,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if ($user) {
                     $emailFindReplace = array(
                         'mail' => 'newprojectuser',
-                        '##USERNAME##' => $user['username'],
-                        '##CURRENT_USER##' => $authUser['username'],
+                        '##NAME##' => $user['full_name'],
+                        '##CURRENT_USER##' => $authUser['full_name'],
                         '##BOARD_NAME##' => $sel_details['board_name'],
                         '##BOARD_URL##' => 'http://' . $_SERVER['HTTP_HOST'] . '/#/board/' . $foreign_ids['board_id'] . '/card/' . $foreign_ids['card_id'],
                         'to' => $user['email']
@@ -2538,8 +2539,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if ($user) {
                     $emailFindReplace = array(
                         'mail' => 'newprojectuser',
-                        '##USERNAME##' => $user['username'],
-                        '##CURRENT_USER##' => $authUser['username'],
+                        '##NAME##' => $user['full_name'],
+                        '##CURRENT_USER##' => $authUser['full_name'],
                         '##BOARD_NAME##' => $previous_value['name'],
                         '##BOARD_URL##' => 'http://' . $_SERVER['HTTP_HOST'] . '/#/board/' . $r_post['board_id'],
                         'to' => $user['email']
@@ -2629,7 +2630,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             if ($sql) {
                 $emailFindReplace = array(
                     'mail' => 'welcome',
-                    '##USERNAME##' => $user['username'],
+                    '##NAME##' => $user['full_name'],
                     'to' => $user['email']
                 );
                 sendMail($emailFindReplace);
@@ -2645,7 +2646,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
     case '/users/?': //users
         $table_name = 'users';
         $id = $r_resource_vars['users'];
-        $comment = '##USER_NAME## update profile.';
+        $comment = '##USER_NAME## updated the profile.';
         $activity_type = 'update_profile';
         if (isset($r_put['profile_picture_path'])) {
             $comment = '##USER_NAME## delete profile image';
@@ -2825,9 +2826,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $foreign_ids['list_id'] = $r_put['list_id'];
                 $qry_val_arr = array(
                     $r_put['list_id'],
-                    $r_resource_vars['lists']
+                    $r_put['board_id'],
+                    $foreign_ids['card_id']
                 );
-                pg_query_params($db_lnk, 'UPDATE card_attachments SET list_id = $1 WHERE list_id = $2', $qry_val_arr);
+                pg_query_params($db_lnk, 'UPDATE card_attachments SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
             }
             $comment = '##USER_NAME## moved this card to different position.';
             $activity_type = 'change_card_position';
