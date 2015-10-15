@@ -6,7 +6,7 @@
 	<form class="js-add-list" name="ListCloneForm" id="ListCloneForm">
 		<div class="form-group required">
 			<label for="inputListName">Name</label>
-			<input maxlength="255" id="inputListName" type="text" name="name" autocomplete="off" placeHolder="Add a list" class="form-control input-sm" value="<%- list.attributes.name %>" required/>
+			<input maxlength="255" id="inputListName" type="text" name="name" autocomplete="off" placeHolder="Add a list" class="form-control input-sm" value="<%- list.attributes.name %>" required title="Add a list"/>
 			<input type="hidden" value="<%- list.id %>" name="clone_list_id"/>
 			<input type="hidden" value="<%- list.attributes.position %>" name="position"/>
 		</div>

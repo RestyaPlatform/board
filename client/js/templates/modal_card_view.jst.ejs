@@ -68,7 +68,7 @@
 							  <form method="post" class="text-center" name="addMember">
 								<div class="form-group">
 								  <label class="sr-only">Search Member</label>
-								  <input type="text" autocomplete="off" id="inputOrganizationUserSearch" placeholder="Search members" name="email" required class="js-search-users form-control input-sm">
+								  <input type="text" autocomplete="off" id="inputOrganizationUserSearch" placeholder="Search members" name="email" required class="js-search-users form-control input-sm" title="Search members">
 								</div>
 							  </form>
 							</li>
@@ -110,9 +110,10 @@
 					<h4 class="text-muted list-group-item-heading">Due Date</h4>
 					<ul class="list-inline clearfix">
 					<% 
-						var nDate = new Date(card.attributes.due_date).toString(); 
+						var date_time = card.attributes.due_date.split('T');
+						date_time = date_time[0].split(' ');
 					%>
-					  <li class="dropdown"> <a class="btn btn-default dropdown-toggle <% if(!_.isUndefined(authuser.user)){ %>js-edit-card-due-date-form<%}else{%>js-no-action <%}%>" role="button" data-toggle="dropdown" title="Due date" href="#"><%= dateFormat(nDate, 'mmm dd yyyy h:MM TT')  %></a>
+					  <li class="dropdown"> <a class="btn btn-default dropdown-toggle <% if(!_.isUndefined(authuser.user)){ %>js-edit-card-due-date-form<%}else{%>js-no-action <%}%>" role="button" data-toggle="dropdown" title="Due date" href="#"><%= dateFormat(date_time[0], 'mediumDate')  %></a>
 					  <% if(!_.isUndefined(authuser.user)){ %>
 						<ul class="dropdown-menu arrow col-xs-12 panel-body">
 						  <li>
@@ -124,11 +125,11 @@
 							  <div class="form-group">
 								<div class="col-xs-6">
 								  <label>Date</label>
-								  <input type="text" class="form-control input-sm js-card-duedate-edit-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" required />
+								  <input type="text" class="form-control input-sm js-card-duedate-edit-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" required/>
 								</div>
 								<div class="col-xs-6">
 								  <label>Time</label>
-								  <input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm:ss" required />
+								  <input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm:ss" required/>
 								</div>
 							  </div>
 							  <div class="form-group">
@@ -146,9 +147,9 @@
 							</form>
 						  </li>
 						</ul>
+						<% } %>
 					  </li>
 					</ul>
-					 <% } %>
 				  </li>
 				  <% } %>
 				</ul>
@@ -194,7 +195,7 @@
 						  <span class="col-xs-10 sr-only">Attach a Link</span>
 						  <form class="js-card-attachment-link-form col-xs-12" method="post" role="form">
 							<div class="form-group row">
-							  <input type="url" class="form-control input-sm"  name="image_link" placeHolder="Paste any link here">
+							  <input type="url" class="form-control input-sm"  name="image_link" placeHolder="Paste any link here" title="Paste any link here">
 							</div>
 							<div class="form-group row">
 							  <input type="submit" value="Submit" id="submit2" class="btn btn-primary btn-sm">
@@ -240,7 +241,7 @@
 						<div class="form-group list-group-item-text">
 							<div class="col-xs-12 list-group-item-text navbar-right">
 								<label class="sr-only">Comment</label>
-								<textarea class="form-control input-sm js-comment" rows="4" name="comment" placeHolder="Write a comment" required ></textarea>	
+								<textarea class="form-control input-sm js-comment" rows="4" name="comment" placeHolder="Write a comment" required title="Write a comment"></textarea>	
 							</div>
 						</div>
 					  </div>
@@ -260,7 +261,7 @@
 							  <li class="col-xs-12 js_activity_card_search_response">
 								  <div class="clearfix">
 									<label class="sr-only">Search Card</label>                            
-									  <input type="text" placeholder="Search Card" name="card" class="js-search-card form-control input-sm  js-no-action">
+									  <input type="text" placeholder="Search Card" name="card" class="js-search-card form-control input-sm  js-no-action" title="Search Card">
 								  </div>
 							  </li>
 							</ul>
@@ -274,7 +275,7 @@
 							  <li class="col-xs-12 js-comment-member-search-response">
 								  <div class="clearfix">
 									<label class="sr-only">Search Member</label>
-									<input type="text" autocomplete="off" placeholder="Search members" name="member" class="js-search-member form-control input-sm js-no-action">
+									<input type="text" autocomplete="off" placeholder="Search members" name="member" class="js-search-member form-control input-sm js-no-action" title="Search members">
 								  </div>
 							  </li>
 							</ul>
@@ -335,7 +336,7 @@
 					  <form method="post" class="text-center" name="addMember">
 						<div class="form-group">
 						  <label class="sr-only">Search Member</label>
-						  <input type="text" autocomplete="off" id="inputOrganizationUserSearch" placeholder="Search members" name="email" required class="js-search-users form-control input-sm">
+						  <input type="text" autocomplete="off" id="inputOrganizationUserSearch" placeholder="Search members" name="email" required class="js-search-users form-control input-sm" title="Search members">
 						</div>
 					  </form>
 					</li>
@@ -367,7 +368,7 @@
 				  <form class="js-card-edit-form" method="POST">
 					<div class="form-group">
 					  <label for="cardTitle<%- card.id%>">Title</label>
-					  <input type="text" class="form-control" id="cardTitle<%- card.id%>" name="name" data-format="hh:mm:ss" value="<%- card.attributes.name %>" />
+					  <input type="text" class="form-control" id="cardTitle<%- card.id%>" name="name" data-format="hh:mm:ss" value="<%- card.attributes.name %>"/>
 					</div>
 					<div class="form-group">
 					  <label for="cardDescription<%- card.id%>">Description</label>
@@ -396,7 +397,7 @@
 				  <span class="col-xs-10 sr-only">Attach a Link</span>
 				  <form class="js-card-attachment-link-form col-xs-12" method="post" role="form">
 					<div class="form-group row">
-					  <input type="url" class="form-control input-sm"  name="image_link" placeHolder="Paste any link here">
+					  <input type="url" class="form-control input-sm"  name="image_link" placeHolder="Paste any link here" title="Paste any link here">
 					</div>
 					<div class="form-group row">
 					  <input type="submit" value="Submit" id="submit2" class="btn btn-primary btn-sm">
