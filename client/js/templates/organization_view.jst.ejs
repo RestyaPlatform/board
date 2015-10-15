@@ -30,7 +30,7 @@
 			logo_path = organization.showImage('Organization', organization.attributes.id, 'medium_thumb' ) +'?'+ new Date().getTime();
 		}
 	%>
-	  <div <% if(!_.isUndefined(authuser.user)){%> id="dropzone" <%}%>class="navbar-btn btn-xs"><% if(!_.isUndefined(authuser.user) && is_logo_added){ %><span class="js-remove-image profile-block show"><i class="icon icon-remove close-block cur"></i><span><%}%><img src="<%= logo_path %>" alt="[Image: <%= organization.attributes.name%>]" title="<%= organization.attributes.name%>" class="img-responsive img-thumbnail <% if(!_.isEmpty(role_links.where({slug: 'starred_board'}))){ %>drag-box<% } %>" id="js-organization-logo-<%-organization.attributes.id %>">
+	  <div <% if(!_.isUndefined(authuser.user)){%> id="dropzone" <%}%>class="navbar-btn btn-xs"><% if(!_.isUndefined(authuser.user) && is_logo_added){ %><span class="profile-block show"><i class="js-remove-image icon icon-remove close-block cur"></i><span><%}%><img src="<%= logo_path %>" alt="[Image: <%= organization.attributes.name%>]" title="<%= organization.attributes.name%>" class="img-responsive img-thumbnail <% if(!_.isEmpty(role_links.where({slug: 'starred_board'}))){ %>drag-box<% } %>" id="js-organization-logo-<%-organization.attributes.id %>">
 		<div id="manager-area">
 			
 		</div>
