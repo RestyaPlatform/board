@@ -365,7 +365,7 @@ the specific language governing permissions and limitations under the Apache Lic
         markup.push("<span class='select2-match'>");
         markup.push(escapeMarkup(text.substring(match, match + tl)));
         markup.push("</span>");
-        markup.push(escapeMarkup(text.substring(match + tl, text.length)));
+        markup.push(text.substring(match + tl, text.length));
     }
 
     function defaultEscapeMarkup(markup) {
@@ -3403,7 +3403,7 @@ the specific language governing permissions and limitations under the Apache Lic
             return markup.join("");
         },
         formatSelection: function (data, container, escapeMarkup) {
-            return data ? escapeMarkup(data.text) : undefined;
+            return data ? data.text : undefined;
         },
         sortResults: function (results, container, query) {
             return results;
