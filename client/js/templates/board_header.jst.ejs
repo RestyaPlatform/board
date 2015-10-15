@@ -45,7 +45,7 @@
 						<form class="normal" name="BoardRenameForm" id="BoardRenameForm">
 						  <div class="required form-group">
 							<label for="inputBoardName">Name</label>
-							<input type="text" id="inputBoardName" name="name" class="form-control input-sm" value="<%- board.attributes.name %>" required>
+							<input type="text" id="inputBoardName" name="name" class="form-control input-sm" value="<%- board.attributes.name %>" title="Board Name" required>
 						  </div>
 						  <div class="submit">
 							<input type="submit" value="Rename" id="submitBoardRename" class="btn btn-primary btn-sm">
@@ -73,10 +73,10 @@
 				if(i <= 3){
 			  %>
             	<span class="pull-left btn-xs nav">
-					<span class="col-xs-12 btn-block navbar-btn" title="<%-admin_board_user.attributes.username %>">
+					<span class="col-xs-12 btn-block navbar-btn" title="<%-admin_board_user.attributes.full_name %>">
 						<% if(!_.isEmpty(admin_board_user.attributes.profile_picture_path)) {
 								var profile_picture_path = board.showImage('User', admin_board_user.attributes.user_id, 'small_thumb' );%>
-						<img  width="30" height="30" class="img-responsive img-rounded avatar" title="<%-admin_board_user.attributes.username %>" alt="[Images: <%-admin_board_user.attributes.username %>]" src="<%=profile_picture_path %>">
+						<img  width="30" height="30" class="img-responsive img-rounded avatar" title="<%-admin_board_user.attributes.full_name %>" alt="[Images: <%-admin_board_user.attributes.full_name %>]" src="<%=profile_picture_path %>">
 						<% } else {%>
 							<i class="avatar avatar-color-194 img-rounded"><%= (admin_board_user.attributes.initials) %></i>
 						<% } %>
@@ -95,10 +95,10 @@
 				}
 			  %>
             	<span class="pull-left btn-xs nav <%- mobHidden %>">
-					<span class="col-xs-12 btn-block navbar-btn" title="<%-normal_board_user.attributes.username %>">
+					<span class="col-xs-12 btn-block navbar-btn" title="<%-normal_board_user.attributes.full_name %>">
 						<% if(!_.isEmpty(normal_board_user.attributes.profile_picture_path)) {
 								var profile_picture_path = board.showImage('User', normal_board_user.attributes.user_id, 'small_thumb' );%>
-						<img  width="30" height="30" class="img-responsive img-rounded" title="<%-normal_board_user.attributes.username %>" alt="[Images: <%-normal_board_user.attributes.username %>]" src="<%=profile_picture_path %>">
+						<img  width="30" height="30" class="img-responsive img-rounded" title="<%-normal_board_user.attributes.full_name %>" alt="[Images: <%-normal_board_user.attributes.full_name %>]" src="<%=profile_picture_path %>">
 						<% } else {%>
 							<i class="avatar avatar-color-194 img-rounded"><%= (normal_board_user.attributes.initials) %></i>
 						<% } %>
@@ -131,7 +131,7 @@
 											<form method="post" class="text-center" id="js-add-board-member-form">
 											  <div class="form-group">
 												<label class="sr-only">Search Member</label>
-												<input type="text" autocomplete="off" id="inputBoardUserSearch" placeholder="Username OR Email" name="email" required class="js-search-users form-control input-sm">
+												<input type="text" autocomplete="off" id="inputBoardUserSearch" placeholder="Username OR Email" name="email" title="Username OR Email" required class="js-search-users form-control input-sm">
 											  </div>
 											</form>
 										  </div>
@@ -260,6 +260,7 @@
 							<li><a href="#" class="js-show-board-modal" data-toggle="modal" data-target="#modalListView">Show Attachments</a></li>
 							<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
 							<li><a href="#" class="js-additional-settings">Additional Settings</a></li>
+							<li class="divider"></li>
 							<li class="dropdown js-open-dropdown inner-dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Close Board</a>
 							  <ul class="dropdown-menu arrow pull-right">
 								<li class="js-dropdown-popup dropdown-popup">
