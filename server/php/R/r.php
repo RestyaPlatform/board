@@ -904,15 +904,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $user['role_id']
             );
             $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $role_val_arr);
-            $post_url = $_server_domain_url . str_replace('r.php', 'token.php', $_SERVER['PHP_SELF']);
-            $post_arr = array(
+            require_once 'token.php';
+            $post_val = array(
                 'grant_type' => 'password',
                 'username' => $user['username'],
                 'password' => $r_post['password'],
                 'client_id' => OAUTH_CLIENTID,
                 'client_secret' => OAUTH_CLIENT_SECRET
             );
-            $response = doPost($post_url, $post_arr);
+            $response = getToken($post_val);
             $response = array_merge($role_links, $response);
             $board_ids = array();
             if (!empty($user['boards_users'])) {
@@ -3489,12 +3489,13 @@ if (!empty($_GET['_url']) && $db_lnk) {
     if ($r_resource_cmd != '/users/login') {
         if (!empty($_GET['token'])) {
             // Generate full URL using PHP_SELF server variable
-            $post_url = $_server_domain_url . str_replace('r.php', 'resource.php', $_SERVER['PHP_SELF']);
-            $access_token = array(
+            $conditions = array(
+                'client_id' => OAUTH_CLIENTID,
                 'access_token' => $_GET['token']
             );
-            $response = doPost($post_url, $access_token);
-            if (!empty($response['error'])) {
+            $response = executeQuery("SELECT user_id as username, expires FROM oauth_access_tokens WHERE client_id = $1 AND access_token = $2", $conditions);
+            $expires = strtotime($response['expires']);
+            if (!empty($response['error']) || ($expires > 0 && $expires < time())) {
                 $response['error']['type'] = 'OAuth';
                 echo json_encode($response);
                 exit;
@@ -3517,25 +3518,25 @@ if (!empty($_GET['_url']) && $db_lnk) {
             $authUser = array_merge($notify_count, $role_links, $user);
         } else if (!empty($_GET['refresh_token'])) {
             // Generate full URL using PHP_SELF server variable
-            $post_url = $_server_domain_url . str_replace('r.php', 'token.php', $_SERVER['PHP_SELF']);
+            require_once 'token.php';
             $post_val = array(
                 'grant_type' => 'refresh_token',
                 'refresh_token' => $_GET['refresh_token'],
                 'client_id' => OAUTH_CLIENTID,
                 'client_secret' => OAUTH_CLIENT_SECRET
             );
-            $response = doPost($post_url, $post_val);
+            $response = getToken($post_val);
             echo json_encode($response);
             exit;
         } else if ($r_resource_cmd != '/settings') {
             // Generate full URL using PHP_SELF server variable
-            $post_url = $_server_domain_url . str_replace('r.php', 'token.php', $_SERVER['PHP_SELF']);
+            require_once 'token.php';
             $post_val = array(
                 'grant_type' => 'client_credentials',
                 'client_id' => OAUTH_CLIENTID,
                 'client_secret' => OAUTH_CLIENT_SECRET
             );
-            $response = doPost($post_url, $post_val);
+            $response = getToken($post_val);
             $qry_val_arr = array(
                 3
             );

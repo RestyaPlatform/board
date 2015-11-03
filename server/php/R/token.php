@@ -12,5 +12,16 @@
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
-require_once 'server.php';
-$server->handleTokenRequest(OAuth2\Request::createFromGlobals())->send();
+function getToken($post)
+{
+    $old_server_method = $_SERVER['REQUEST_METHOD'];
+    $old_content_type = $_SERVER['CONTENT_TYPE'];
+    $_SERVER['REQUEST_METHOD'] = 'POST';
+    $_SERVER['CONTENT_TYPE'] = 'application/x-www-form-urlencoded';
+    $_POST = $post;
+    require_once 'server.php';
+    $response = $server->handleTokenRequest(OAuth2\Request::createFromGlobals())->send('return');
+    $_SERVER['REQUEST_METHOD'] = $old_server_method;
+    $_SERVER['CONTENT_TYPE'] = $old_content_type;
+    return json_decode($response, true);
+}
