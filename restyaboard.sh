@@ -116,14 +116,14 @@
 		cp /opt/restyaboard/restyaboard.conf /etc/nginx/conf.d
 		rm /tmp/restyaboard.zip
 
-		echo -n "To configure nginx, enter your domain name:"
+		echo -n "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
 		read webdir
 		echo "$webdir"
 		echo -n "Changing server_name in nginx configuration..."
 		sed -i "s/server_name.*$/server_name "$webdir";/" /etc/nginx/conf.d/restyaboard.conf
 		sed -i 's|listen 80.*$|listen 80;|' /etc/nginx/conf.d/restyaboard.conf
 
-		echo -n "To copy downloaded script, enter your document root path:"
+		echo -n "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):"
 		read dir
 		echo "$dir"
 		mkdir -p $dir
