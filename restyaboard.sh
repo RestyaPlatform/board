@@ -17,7 +17,7 @@
 	echo "Setup script will install version ${RESTYABOARD_VERSION} and create database ${POSTGRES_DBNAME} with user ${POSTGRES_DBUSER} and password ${POSTGRES_DBPASS}. To continue enter \"y\" or to quit the process and edit the version and database details enter \"n\" (y/n)?" 
 	read answer
 	case "${answer}" in
-		[Yy]|[Yy][eE][sS])
+		[Yy])
 
 		echo "Checking PHP..."
 		if ! hash php 2>&-; then
@@ -25,7 +25,7 @@
 			echo "Do you want to install PHP (y/n)?" 
 			read answer
 			case "${answer}" in
-				[Yy]|[Yy][eE][sS])
+				[Yy])
 				echo "Installing PHP..."
 				yum install -y epel-release
 				yum install -y php-fpm php-cli
@@ -57,7 +57,7 @@
 			echo "Do you want to install nginx (y/n)?"
 			read answer
 			case "${answer}" in
-				[Yy]|[Yy][eE][sS])
+				[Yy])
 				echo "Installing nginx..."
 				yum install -y epel-release
 				yum install -y zip curl cron nginx
@@ -73,7 +73,7 @@
 			echo "Do you want to install PostgreSQL (y/n)?"
 			read answer
 			case "${answer}" in
-				[Yy]|[Yy][eE][sS])
+				[Yy])
 				echo "Installing PostgreSQL..."
 				if [ $(getconf LONG_BIT) = "32" ]; then
 					yum install http://yum.postgresql.org/9.4/redhat/rhel-6.6-i386/pgdg-centos94-9.4-1.noarch.rpm
@@ -99,7 +99,7 @@
 			echo "Do you want to install ElasticSearch (y/n)?"
 			read answer
 			case "${answer}" in
-				[Yy]|[Yy][eE][sS])
+				[Yy])
 				echo "Installing ElasticSearch..."
 				sudo yum install java-1.7.0-openjdk -y
 				wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.10.noarch.rpm
@@ -161,6 +161,8 @@
 			$dir/server/php/R/config.inc.php
 		sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" \
 		  $dir/server/php/R/config.inc.php
+		
+		echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."  
 		echo '*/5 * * * * php $dir/server/php/R/shell/cron.php' >> /var/spool/cron/root
 
 		echo "Starting services..."
@@ -168,5 +170,3 @@
 		/etc/init.d/nginx restart
 	esac
 } | tee -a restyaboard_install.log
-
-echo "Installation completed. Please enter to exit shell script"
