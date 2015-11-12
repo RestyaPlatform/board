@@ -287,14 +287,39 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/organizations':
+        $organization_ids = array();
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organizations_listing';
         if (!empty($authUser) && $authUser['role_id'] != 1) {
-            $sql.= ' WHERE user_id = $1';
-            array_push($pg_params, $authUser['id']);
+            $s_sql = 'SELECT b.organization_id FROM boards_users AS bu LEFT JOIN boards AS b ON b.id = bu.board_id WHERE bu.user_id = $1';
+            $s_result = pg_query_params($db_lnk, $s_sql, array(
+                $authUser['id']
+            ));
+            while ($row = pg_fetch_assoc($s_result)) {
+                if ($row['organization_id'] != 0) {
+                    array_push($organization_ids, $row['organization_id']);
+                }
+            }
+            $s_sql = 'SELECT id FROM organizations WHERE user_id = $1';
+            $s_result = pg_query_params($db_lnk, $s_sql, array(
+                $authUser['id']
+            ));
+            while ($row = pg_fetch_assoc($s_result)) {
+                array_push($organization_ids, $row['id']);
+            }
+            $s_sql = 'SELECT organization_id FROM organizations_users WHERE user_id = $1';
+            $s_result = pg_query_params($db_lnk, $s_sql, array(
+                $authUser['id']
+            ));
+            while ($row = pg_fetch_assoc($s_result)) {
+                array_push($organization_ids, $row['organization_id']);
+            }
+            if (!empty($organization_ids)) {
+                $sql.= ' WHERE id IN (' . implode(",", array_unique($organization_ids)) . ')';
+            } else {
+                $sql.= ' WHERE user_id = ' . $authUser['id'];
+            }
         }
         $sql.= ' ORDER BY id ASC) as d ';
-        break;
-
     case '/organizations/?':
         $s_sql = 'SELECT o.organization_visibility, ou.user_id FROM organizations AS o LEFT JOIN organizations_users AS ou ON ou.organization_id = o.id WHERE o.id =  $1';
         $arr[] = $r_resource_vars['organizations'];
