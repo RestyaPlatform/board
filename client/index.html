@@ -2,9 +2,9 @@
 <html class="no-js" lang="en">
  <head>
   <meta charset="utf-8">
-  <title>Restyaboard | Home</title>
-  <meta name="description" content="Trello like kanban board. Based on Restya platform.">
-  <meta name="keywords" content="Trello clone, Asana, Trac, Basecamp, Project management.">
+  <title>Restyaboard powered kanban board</title>
+  <meta name="description" content="Restyaboard powered kanban board. Download open source from http://restya.com/board/">
+  <meta name="keywords" content="Restyaboard, http://restya.com/board/">
   <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.1/html5shiv.js"></script><![endif]-->
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
@@ -25,21 +25,25 @@
  <body style="cursor: auto">
   <div id="main" class="content">
    <div class="wrapper">
-    <header id="header" class="clearfix"><span id="title"></span>
+    <header id="header" class="clearfix">
+     <span id="title"></span>
     </header>
     <main id="content" class="container-fluid">
      <div id="life"></div>
     </main>
+    <a class="company hide" href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator">Powered by Restyaboard</a>
    </div>
-   <footer id="footer" class="navbar-fixed-bottom container-fluid"></footer>
+   <footer id="footer" class="navbar-fixed-bottom container-fluid footer"></footer>
   </div>
   <script>
   var api_url = '/api/v1/';
   var template_url = '/client/';
   </script>
+  <script>window.addEventListener('load', function(e){window.applicationCache.addEventListener('updateready', function(e){if (window.applicationCache.status == window.applicationCache.UPDATEREADY){window.applicationCache.swapCache();if (confirm('A new version of this site is available. Load it?')){window.location.reload();}}}, false);}, false);</script>
   <!-- build:js js/default.cache.js -->
   <script src="js/libs/jquery-1.8.3.js"></script>
   <script src="js/libs/jquery.placeholder.js"></script>
+  <script src="js/libs/emojify.min.js"></script>
   <script src="js/libs/jquery-ui-1.8.23.js"></script>
   <script src="js/libs/jquery.timeago.js"></script>
   <script src="js/libs/jquery.drawDoughnutChart.js"></script>
@@ -58,6 +62,7 @@
   <script src="js/libs/bootstrap-transition.js"></script>
   <script src="js/libs/bootstrap-tab.js"></script>
   <script src="js/libs/bootstrap-modal.js"></script>
+  <script src="js/libs/modernizr.custom.js"></script>
   <script src="js/libs/md5.js"></script>
   <script src="js/libs/select2.js"></script>
   <script src="js/libs/ImageSelect.jquery.js"></script>
@@ -81,6 +86,9 @@
   <script src="js/libs/jquery.bootstrap-growl.js"></script>
   <script src="js/libs/backbone.defered-view-loader.js"></script>
   <script src="js/libs/backbone.upload-manager.js"></script>
+  <script src="js/libs/backbone-batch-operations.js"></script>
+  <script src="js/libs/jquery-bootstrap-pagination.js"></script>
+  <script src="js/libs/jquery.fn.gantt.js"></script>
   <script src="js/libs/locale.js"></script>
   <script src="js/libs/splitter.js"></script>
   <script src="js/libs/musical.js"></script>
@@ -294,6 +302,11 @@
   <script src="js/views/show_sync_google_calendar_view.js"></script>
   <script src="js/views/show_copy_board_view.js"></script>
   <script src="js/views/music_repeat_view.js"></script>
+  <script src="js/views/admin_board_view.js"></script>
+  <script src="js/views/admin_boards_index_view.js"></script>
+  <script src="js/views/emoji_list_view.js"></script>
+  <script src="js/views/admin_user_index_view.js"></script>
+  <script src="js/views/admin_boards_list_view.js"></script>
   <script src="js/common.js"></script>
   <script src="js/application.js"></script>
   <!-- endbuild -->

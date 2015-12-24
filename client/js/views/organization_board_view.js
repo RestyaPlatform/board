@@ -189,7 +189,7 @@ App.OrganizationBoardView = Backbone.View.extend({
         var insert = $('.js-visibility-list', parent);
         insert.nextAll().remove();
         $(new App.BoardOrganizationFormView({
-            model: authuser.user.organizations,
+            model: auth_user_organizations,
             board: this.model
         }).el).insertAfter(insert);
     },

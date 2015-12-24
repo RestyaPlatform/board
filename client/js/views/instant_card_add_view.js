@@ -61,7 +61,7 @@ App.InstantCardAddView = Backbone.View.extend({
                 collection: function() {
                     var board_arr = [];
                     _.each(this.boards.models, function(board) {
-                        if (!_.isEmpty(board.attributes.lists) && board.attributes.lists.length > 0 && board.attributes.is_closed === false) {
+                        if (!_.isEmpty(board.attributes.lists) && board.attributes.lists.length > 0 && board.attributes.is_closed === 0) {
                             var temp = {};
                             temp.id = board.id;
                             temp.name = _.escape(board.attributes.name);
@@ -186,6 +186,7 @@ App.InstantCardAddView = Backbone.View.extend({
             self.$('.js-instant-duedate').val(formattedTime);
         });
         this.stickit(this.model, this.bindings);
+        this.showCardLabelForm();
         this.showTooltip();
         return this;
     },

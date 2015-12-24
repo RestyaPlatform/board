@@ -310,6 +310,7 @@
             })
         },
         restore: function () {
+			$('ul.dropdown-menu').parent().removeClass('open');
             return this.each(function () {
 
                 var $this = $(this).data('dockmodal');
@@ -350,6 +351,7 @@
             })
         },
         popout: function () {
+			$('ul.dropdown-menu').parent().removeClass('open');
             return this.each(function () {
 
                 var $this = $(this).data('dockmodal');

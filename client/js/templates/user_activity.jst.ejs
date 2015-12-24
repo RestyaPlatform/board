@@ -20,11 +20,11 @@
 		%>   
 		<ul class="media-list">
 			<li class="media">
-				<a data-placement="bottom" title="<%- activity.attributes.full_name%>" data-toggle="tooltip" href="#/user/<%- activity.attributes.user_id %>" class="pull-left">								
+				<a data-placement="bottom" title="<%- activity.attributes.full_name%> (<%- activity.attributes.username%>)" data-toggle="tooltip" href="#/user/<%- activity.attributes.user_id %>" class="pull-left">								
 					<% if(!_.isEmpty(activity.attributes.profile_picture_path)) { 
 						var profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'normal_thumb' );
 					%>
-						<img src="<%-profile_picture_path %>" alt="[Image: <%-activity.attributes.full_name %>]" title="<%-activity.attributes.full_name %>" class="img-rounded img-responsive">
+						<img src="<%-profile_picture_path %>" alt="[Image: <%-activity.attributes.full_name %>]" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" class="img-rounded img-responsive">
 					<% } else {%>
 						<i class="avatar avatar-color-194 avatar-md img-rounded"><%- activity.attributes.initials %></i>									
 					<% } %>
@@ -37,7 +37,14 @@
 						<% } else{%>
 							<%= converter.makeHtml(makeLink(activity.attributes.comment, activity.attributes.board_id)) %> 
 						<% } %>
-						<small class="col-xs-12 pull-left"><abbr class="timeago pull-left text-muted" title="<%- activity.attributes.created %>"><%- activity.attributes.created %></abbr><a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;on&nbsp;<%- activity.attributes.board_name %></a></small>
+						<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card'], activity.attributes.type)) { %>
+							<div class="thumbnail media-body">
+								<% _.each(activity.attributes.difference, function(difference) { %>
+									<%= converter.makeHtml(difference) %>
+								<% }); %>
+							</div>
+						<% } %>
+						<small class="col-xs-12 pull-left"><abbr class="timeago pull-left text-muted" title="<%- activity.attributes.created %>"><%- activity.attributes.created %></abbr><% if(!_.isEmpty(activity.attributes.board_name)){ %><a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;on&nbsp;<%- activity.attributes.board_name %></a><% } %></small>
 						<div class="clearfix col-xs-12">
 							<div class="clearfix col-xs-12">
 								<small class="col-xs-12 pull-left">

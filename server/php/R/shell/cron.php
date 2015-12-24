@@ -12,12 +12,8 @@
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
-if (!empty($argv[0])) {
-    $app_path = str_replace('shell/cron.php', '', $argv[0]);
-    include_once $app_path . 'config.inc.php';
-} else {
-    include_once '../config.inc.php';
-}
+$app_path = dirname(dirname(__FILE__));
+require_once $app_path . '/config.inc.php';
 if ($db_lnk) {
     $qry_val_arr = array(
         'elasticsearch.last_processed_activtiy_id'
@@ -26,125 +22,31 @@ if ($db_lnk) {
     $row = pg_fetch_assoc($result);
     if (!empty($row)) {
         $qry_val_arr = array(
-            $row['value']
+            $row['value'],
+            0
         );
-        $result = pg_query_params($db_lnk, "SELECT * FROM activities WHERE (type = 'add_card' OR type = 'add_list' OR  type = 'add_board' OR  type = 'edit_card' OR type = 'edit_list' OR  type = 'edit_board') AND id > $1", $qry_val_arr);
+        $result = pg_query_params($db_lnk, "SELECT id, card_id FROM activities WHERE id > $1 AND card_id != $2 AND card_id IS NOT NULL ORDER BY id ASC", $qry_val_arr);
         $count = pg_num_rows($result);
-        if ($count > 0) {
-            $params = array();
+        if ($count) {
             $ch = curl_init();
             while ($row = pg_fetch_assoc($result)) {
-                $revisions = unserialize($row['revisions']);
-                $id = '';
-                $type = '';
-                $doc_fileds = array();
-                if (!empty($row['card_id'])) {
-                    $id = $row['card_id'];
-                    $qry_val_arr = array(
-                        $row['user_id']
-                    );
-                    $user_result = pg_query_params($db_lnk, 'SELECT username FROM users WHERE id = $1', $qry_val_arr);
-                    $user_row = pg_fetch_assoc($user_result);
-                    $doc_fileds['user_name'] = $user_row['username'];
-                    $qry_val_arr = array(
-                        $row['list_id']
-                    );
-                    $list_result = pg_query_params($db_lnk, 'SELECT name FROM lists WHERE id = $1', $qry_val_arr);
-                    $list_row = pg_fetch_assoc($list_result);
-                    $doc_fileds['list_name'] = $list_row['name'];
-                    $doc_fileds['list_id'] = $row['list_id'];
-                    $qry_val_arr = array(
-                        $row['board_id']
-                    );
-                    $board_result = pg_query_params($db_lnk, 'SELECT name FROM boards WHERE id = $1', $qry_val_arr);
-                    $board_row = pg_fetch_assoc($board_result);
-                    $doc_fileds['board_name'] = $board_row['name'];
-                    $doc_fileds['board_id'] = $row['board_id'];
-                    $qry_val_arr = array(
-                        $row['card_id']
-                    );
-                    $card_result = pg_query_params($db_lnk, 'SELECT name, description, due_date FROM cards WHERE id = $1', $qry_val_arr);
-                    $card_row = pg_fetch_assoc($card_result);
-                    $doc_fileds['card_name'] = $card_row['name'];
-                    $doc_fileds['card_description'] = $card_row['description'];
-                    $doc_fileds['due_date'] = $card_row['due_date'];
-                    if (!empty($revisions)) {
-                        foreach ($revisions['new_value'] as $key => $value) {
-                            if ($key == 'name') {
-                                $doc_fileds['card_name'] = $value;
-                            } else {
-                                $doc_fileds[$key] = $value;
-                            }
-                        }
-                    }
-                    $type = 'cards';
-                } else if (!empty($row['list_id'])) {
-                    $id = $row['list_id'];
-                    $qry_val_arr = array(
-                        $row['user_id']
-                    );
-                    $user_result = pg_query_params($db_lnk, 'SELECT username FROM users WHERE id = $1', $qry_val_arr);
-                    $user_row = pg_fetch_assoc($user_result);
-                    $doc_fileds['user_name'] = $user_row['username'];
-                    $qry_val_arr = array(
-                        $row['board_id']
-                    );
-                    $board_result = pg_query_params($db_lnk, 'SELECT name FROM boards WHERE id = $1', $qry_val_arr);
-                    $board_row = pg_fetch_assoc($board_result);
-                    $doc_fileds['board_name'] = $board_row['name'];
-                    $doc_fileds['board_id'] = $row['board_id'];
-                    $qry_val_arr = array(
-                        $row['list_id']
-                    );
-                    $list_result = pg_query_params($db_lnk, 'SELECT name FROM lists WHERE id = $1', $qry_val_arr);
-                    $list_row = pg_fetch_assoc($list_result);
-                    $doc_fileds['list_name'] = $list_row['name'];
-                    if (!empty($revisions)) {
-                        foreach ($revisions['new_value'] as $key => $value) {
-                            if ($key == 'name') {
-                                $doc_fileds['list_name'] = $value;
-                            } else {
-                                $doc_fileds[$key] = $value;
-                            }
-                        }
-                    }
-                    $type = 'lists';
-                } else if (!empty($row['board_id'])) {
-                    $id = $row['board_id'];
-                    $qry_val_arr = array(
-                        $row['user_id']
-                    );
-                    $user_result = pg_query_params($db_lnk, 'SELECT username FROM users WHERE id = $1', $qry_val_arr);
-                    $user_row = pg_fetch_assoc($user_result);
-                    $doc_fileds['user_name'] = $user_row['username'];
-                    if (!empty($revisions)) {
-                        foreach ($revisions['new_value'] as $key => $value) {
-                            if ($key == 'name') {
-                                $doc_fileds['board_name'] = $value;
-                            } else {
-                                $doc_fileds[$key] = $value;
-                            }
-                        }
-                    }
-                    $type = 'boards';
-                }
-                $url = ELASTICSEARCH_URL . ELASTICSEARCH_INDEX . '/' . $type . '/' . $id;
-                curl_setopt($ch, CURLOPT_URL, $url);
-                curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                $qry_val_arr = array(
+                    $row['card_id']
+                );
+                $card_result = pg_query_params($db_lnk, 'SELECT id, json FROM cards_elasticsearch_listing WHERE id = $1', $qry_val_arr);
+                $card_row = pg_fetch_assoc($card_result);
+                curl_setopt($ch, CURLOPT_URL, ELASTICSEARCH_URL . ELASTICSEARCH_INDEX . '/cards/' . $card_row['id']);
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 300 seconds (5min)
-                unset($doc_fileds['activity']);
-                $post_string = json_encode($doc_fileds);
                 $curl_opt = array(
                     'Content-Type: application/json',
-                    'Content-Length: ' . strlen($post_string)
+                    'Content-Length: ' . strlen($card_row['json'])
                 );
                 curl_setopt($ch, CURLOPT_HTTPHEADER, $curl_opt);
                 curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $post_string);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $card_row['json']);
                 curl_exec($ch);
                 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 if (curl_errno($ch)) {
@@ -163,12 +65,13 @@ if ($db_lnk) {
                 default:
                     echo 'Not Found.' . PHP_EOL;
                 }
-                $qry_val_arr = array(
-                    $row['id'],
-                    'elasticsearch.last_processed_activtiy_id'
-                );
-                pg_query_params($db_lnk, 'UPDATE settings SET value = $1 WHERE name = $2', $qry_val_arr);
+                $last_processed_activtiy_id = $row['id'];
             }
+            $qry_val_arr = array(
+                $last_processed_activtiy_id,
+                'elasticsearch.last_processed_activtiy_id'
+            );
+            pg_query_params($db_lnk, 'UPDATE settings SET value = $1 WHERE name = $2', $qry_val_arr);
             curl_close($ch);
         }
     }

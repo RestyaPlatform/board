@@ -52,7 +52,7 @@ App.BoardUserActionsView = Backbone.View.extend({
         if (this.model !== null && this.model.collection !== null && this.model.collection.models !== null) {
             for (i = 0; i < this.model.collection.models.length; i++) {
                 if (this.model.collection.models[i].attributes.user_id == authuser.user.id) {
-                    is_admin = (this.model.collection.models[i].attributes.is_admin === true || this.model.collection.models[i].attributes.is_admin === 't') ? true : false;
+                    is_admin = (this.model.collection.models[i].attributes.is_admin === true || this.model.collection.models[i].attributes.is_admin === 1) ? true : false;
                 }
             }
         }

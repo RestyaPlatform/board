@@ -77,18 +77,25 @@ App.OrganizationHeaderView = Backbone.View.extend({
      * @return false
      */
     editOrganization: function(e) {
-        e.preventDefault();
-        var self = this.model;
-        var data = $('form#OrganizationEditForm').serializeObject();
-        this.closePopup(e);
-        this.model.set(data);
-        this.model.url = api_url + 'organizations/' + this.model.organization_id + '.json';
-        this.model.save(data, {
-            patch: true,
-            success: function(model, response) {
+        if (!$.trim($('#inputOrganizationName').val()).length) {
+            $('.error-msg').remove();
+            $('<div class="error-msg text-primary h6">Whitespace alone not allowed</div>').insertAfter('#inputOrganizationName');
+            return false;
+        } else {
+            $('.error-msg').remove();
+            e.preventDefault();
+            var self = this.model;
+            var data = $('form#OrganizationEditForm').serializeObject();
+            this.closePopup(e);
+            this.model.set(data);
+            this.model.url = api_url + 'organizations/' + this.model.organization_id + '.json';
+            this.model.save(data, {
+                patch: true,
+                success: function(model, response) {
 
-            }
-        });
+                }
+            });
+        }
         return false;
     },
     /**

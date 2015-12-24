@@ -84,7 +84,7 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
     getPhotos: function() {
         var self = this;
         if (this.page <= this.total_page) {
-            $('.js-flickr-loader-and-more').html('<li><span class="cssloader"></span></li>');
+            $('.js-flickr-loader-and-more').html('<span class="cssloader"></span>');
             var Flickr = new App.Flickr();
             Flickr.url = 'https://api.flickr.com/services/rest/?api_key=' + FLICKR_API_KEY + '&format=json&method=' + this.search_type + '&nojsoncallback=1&page=' + this.page + '&per_page=' + this.per_page + '&media=photos&content_type=7&sort=relevance';
             if (this.search_text !== 'Recent Photos') {

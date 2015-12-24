@@ -735,7 +735,7 @@ App.BoardView = Backbone.View.extend({
             if (!_.isUndefined(list.get('is_new')) && list.get('is_new') === true) {
                 list.set('board_id', self.model.id);
             } else {
-                if (list.get('is_archived') === false || list.get('is_archived') === 'f') {
+                if (list.get('is_archived') === false || list.get('is_archived') === 0) {
                     var subscribers = new App.ListSubscriberCollection();
                     subscribers.add(list.get('lists_subscribers'), {
                         silent: true
@@ -980,24 +980,6 @@ App.BoardView = Backbone.View.extend({
         list.save(data, {
             success: function(model, response, options) {
                 if (!_.isUndefined(data.clone_list_id)) {
-                    if (!_.isUndefined(response.list.attachments) && response.list.attachments.length > 0) {
-                        self.model.attachments.add(response.list.attachments, {
-                            silent: true
-                        });
-                        list.attachments.add(response.list.attachments, {
-                            silent: true
-                        });
-                    }
-                    if (!_.isUndefined(response.list.checklists) && response.list.checklists.length > 0) {
-                        self.model.checklists.add(response.list.checklists, {
-                            silent: true
-                        });
-                    }
-                    if (!_.isUndefined(response.list.checklists_items) && response.list.checklists_items.length > 0) {
-                        self.model.checklist_items.add(response.list.checklists_items, {
-                            silent: true
-                        });
-                    }
                     if (!_.isUndefined(response.list.labels) && response.list.labels.length > 0) {
                         self.model.labels.add(response.list.labels, {
                             silent: true
@@ -1032,7 +1014,48 @@ App.BoardView = Backbone.View.extend({
                         new_attachment.set('list_id', parseInt(attachment.list_id));
                         new_attachment.set('card_id', parseInt(attachment.card_id));
                         self.model.cards.get(parseInt(attachment.card_id)).attachments.add(new_attachment, options);
+                        self.model.attachments.add(new_attachment, {
+                            silent: true
+                        });
+                        list.attachments.add(new_attachment, {
+                            silent: true
+                        });
                         i++;
+                    });
+                    var j = 1;
+                    _.each(response.list.checklists, function(checklist) {
+                        var options = {
+                            silent: true
+                        };
+                        if (j === response.list.checklists.length) {
+                            options.silent = false;
+                        }
+                        var new_checklist = new App.CheckList();
+                        new_checklist.set(checklist);
+                        new_checklist.set('card_id', parseInt(checklist.card_id));
+                        new_checklist.set('checklist_item_completed_count', parseInt(checklist.checklist_item_completed_count));
+                        new_checklist.set('checklist_item_count', parseInt(checklist.checklist_item_count));
+                        var k = 1;
+                        _.each(response.list.checklists_items, function(checklist_item) {
+                            var options = {
+                                silent: true
+                            };
+                            if (k === response.list.checklists_items.length) {
+                                options.silent = false;
+                            }
+                            var new_checklist_item = new App.CheckListItem();
+                            new_checklist_item.set(checklist_item);
+                            new_checklist_item.set('card_id', parseInt(checklist_item.card_id));
+                            new_checklist_item.set('checklist_id', parseInt(checklist_item.checklist_id));
+                            new_checklist_item.set('id', parseInt(checklist_item.id));
+                            new_checklist_item.set('position', checklist_item.position);
+                            new_checklist_item.set('user_id', parseInt(checklist_item.user_id));
+                            new_checklist.checklist_items.set(new_checklist_item);
+                            self.model.checklist_items.add(new_checklist_item, options);
+                            k++;
+                        });
+                        self.model.checklists.add(new_checklist, options);
+                        j++;
                     });
                 } else {
                     list.set('lists_cards', []);
@@ -1044,7 +1067,7 @@ App.BoardView = Backbone.View.extend({
                     list.set('id', data.uuid);
                 }
                 list.set('board_id', self.model.id);
-                if (list.attributes.is_archived === 'f') {
+                if (list.attributes.is_archived === 0) {
                     list.attributes.is_archived = false;
                 }
                 self.model.lists.add(list, {

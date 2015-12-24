@@ -196,7 +196,7 @@ class Response implements ResponseInterface
 		if ($format == 'return') {
 			return $this->getResponseBody('json');
 		}
-		// headers have already been sent by the developer
+        // headers have already been sent by the developer
         if (headers_sent()) {
             return;
         }

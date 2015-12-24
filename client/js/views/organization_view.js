@@ -49,6 +49,8 @@ App.OrganizationsView = Backbone.View.extend({
         'click .js-user-board-list': 'userBoardList',
         'click .js-remove-image': 'removeImage',
         'click .js-all-user-activities': 'showUserActivities',
+        'click .js-org-image-uploaded': 'computerOpenOrg',
+        'change #js-org-attachment': 'addOrganizationImage',
     },
     /**
      * editOrganizationLogo()
@@ -138,8 +140,8 @@ App.OrganizationsView = Backbone.View.extend({
         var organizationsUser = new App.OrganizationsUser();
         organizationsUser.url = api_url + 'organizations_users/' + organizations_user_id + '.json';
         organizationsUser.set('id', organizations_user_id);
-        organizationsUser.set('is_admin', false);
-        this.model.organizations_users.get(parseInt(organizations_user_id)).set('is_admin', false);
+        organizationsUser.set('is_admin', 0);
+        this.model.organizations_users.get(parseInt(organizations_user_id)).set('is_admin', 0);
         self.getOrganizationMemberLists();
         organizationsUser.save({
             is_admin: false
@@ -162,8 +164,8 @@ App.OrganizationsView = Backbone.View.extend({
         var organizationsUser = new App.OrganizationsUser();
         organizationsUser.url = api_url + 'organizations_users/' + organizations_user_id + '.json';
         organizationsUser.set('id', organizations_user_id);
-        organizationsUser.set('is_admin', true);
-        this.model.organizations_users.get(parseInt(organizations_user_id)).set('is_admin', true);
+        organizationsUser.set('is_admin', 1);
+        this.model.organizations_users.get(parseInt(organizations_user_id)).set('is_admin', 1);
         self.getOrganizationMemberLists();
         organizationsUser.save({
             is_admin: true
@@ -196,7 +198,6 @@ App.OrganizationsView = Backbone.View.extend({
             type: this.type
         }));
         this.renderOrganizationCollection();
-
         var _this = this;
         _(function() {
             Backbone.TemplateManager.baseUrl = '{name}';
@@ -208,10 +209,15 @@ App.OrganizationsView = Backbone.View.extend({
                 formData: $('form.js-user-profile-edit').serialize(),
                 fileUploadHTML: '<input id="fileupload1" type="file" name="attachment"  >',
                 maxNumberOfFiles: 1,
-                acceptFileTypes: /(\.|\/)(jpe?g|png)$/i,
+                acceptFileTypes: /(\.|\/)(jpe?g|png|bmp|gif)$/i,
             });
             uploadManager.on('fileadd', function(file) {
                 $('#org-loader').addClass('cssloader');
+                var allowedExt = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png)$/i;
+                if (!allowedExt.exec(file.attributes.data.name)) {
+                    _this.flash('danger', 'File extension not supported. It supports only jpg, png, bmp and gif.');
+                    $('#org-loader').removeClass('cssloader');
+                }
             });
             uploadManager.on('fileuploaddragover', function(e) {
                 $('#js-org-drag').addClass('drophover');
@@ -245,6 +251,63 @@ App.OrganizationsView = Backbone.View.extend({
         }).defer();
         this.showTooltip();
         return this;
+    },
+    /**
+     * computerOpenOrg()
+     * trigger file upload
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     */
+    computerOpenOrg: function(e) {
+        e.preventDefault();
+        var fileLi = $(e.target);
+        $('#js-user-profile-attachment').remove();
+        var form = $('#js-org-drag');
+        $(form).append('<input class="hide" type="file" name="attachment" id="js-org-attachment">');
+        $('#js-org-attachment', form).trigger('click');
+        return false;
+    },
+    /**
+     * computerOpenUserProfile()
+     * trigger file upload
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     */
+    addOrganizationImage: function(e) {
+        e.preventDefault();
+        $('#org-loader').addClass('cssloader');
+        var self = this;
+        var form = $(e.target);
+        //var fileData = new FormData(form[0]);
+        var formData = new FormData();
+        formData.append('file', $('input[type=file]')[0].files[0]);
+        //var data = $(e.target).serializeObject();
+        //this.model.set(data);
+        this.render();
+        this.model.url = api_url + 'organizations/' + this.model.organization_id + '/upload_logo.json';
+        this.model.save(formData, {
+            patch: true,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            cache: false,
+            contentType: false,
+            error: function(e, s) {
+                self.flash('danger', 'Unable to update. Please try again.');
+            },
+            success: function(model, response) {
+                $('#org-loader').removeClass('cssloader');
+                if (!_.isUndefined(response.logo_url)) {
+                    self.model.set('logo_url', response.logo_url);
+                    self.render();
+                    if (self.type === 'users') {
+                        self.getOrganizationMemberLists();
+                    }
+                }
+            }
+        });
     },
     /**
      * renderOrganizationCollection()

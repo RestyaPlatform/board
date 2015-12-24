@@ -2,6 +2,7 @@ var api_token = '';
 var role_links = new App.ACLCollection();
 var settings = new App.SettingCategoryCollection();
 var authuser = new App.User();
+var auth_user_organizations = new App.OrganizationCollection();
 var nativeSync = Backbone.sync;
 var card_ids, card_ids_ref = '';
 var view_type, view_type_ref = '';
@@ -51,8 +52,8 @@ Backbone.View.prototype.board_view_height = function(type, message) {
     $('.board-list-view').css('height', boardH);
 };
 Backbone.View.prototype.showImage = function(model, id, size, is_random) {
-    var hash = calcMD5(SecuritySalt + model + id + 'jpg' + size + SITE_NAME);
-    var image_url = window.location.pathname + 'img/' + size + '/' + model + '/' + id + '.' + hash + '.jpg';
+    var hash = calcMD5(SecuritySalt + model + id + 'png' + size + SITE_NAME);
+    var image_url = window.location.pathname + 'img/' + size + '/' + model + '/' + id + '.' + hash + '.png';
     if (is_random)
         image_url = image_url + "?uid=" + Math.floor((Math.random() * 9999) + 1);
     return image_url;
@@ -211,6 +212,7 @@ var AppRouter = Backbone.Router.extend({
         'users/activation/:id/:hash': 'user_activation',
         'users/:id/changepassword': 'changepassword',
         'users': 'users_index',
+        'boards/list': 'admin_boards_index',
         'user/:id': 'user_view',
         'user/:id/:type': 'user_view_type',
         'boards': 'boards_index',
@@ -275,15 +277,34 @@ var AppRouter = Backbone.Router.extend({
     changepassword: function(id) {
         changeTitle('Change Password');
         var Auth_check = JSON.parse(window.sessionStorage.getItem('auth'));
-        if (Auth_check.user.id == id || Auth_check.user.role_id == '1') {
-            new App.ApplicationView({
-                model: 'changepassword',
-                'id': id
-            });
+        if (window.sessionStorage.getItem('auth') !== null) {
+            if (Auth_check.user.id == id || Auth_check.user.role_id == '1') {
+                new App.ApplicationView({
+                    model: 'changepassword',
+                    'id': id
+                });
+            } else {
+                $('.dockmodal, .dockmodal-overlay').remove();
+                var User = new App.User();
+                User.url = api_url + 'users/logout.json';
+                User.fetch({
+                    cache: false,
+                    success: function() {
+                        window.sessionStorage.removeItem('auth');
+                        api_token = '';
+                        authuser = new App.User();
+                        app.navigate('#/users/login', {
+                            trigger: true,
+                            replace: true
+                        });
+                        clearInterval(set_interval_id);
+                    }
+                });
+            }
         } else {
+            changeTitle('Login');
             new App.ApplicationView({
-                model: 'user_view',
-                'id': Auth_check.user.id
+                model: 'login'
             });
         }
     },
@@ -397,6 +418,12 @@ var AppRouter = Backbone.Router.extend({
         changeTitle('Users');
         new App.ApplicationView({
             model: 'users_index'
+        });
+    },
+    admin_boards_index: function() {
+        changeTitle('Boards');
+        new App.ApplicationView({
+            model: 'admin_boards_index'
         });
     },
     user_view: function(id) {

@@ -7,10 +7,10 @@
 				logo_path = organization.showImage('Organization', organization.attributes.id, 'small_thumb' );
 			}
 		%>
-		<a data-placement="bottom" title="<%- organization.attributes.name %>" data-toggle="tooltip" class="pull-left" href="#/organization/<%- organization.attributes.id %>"> <img title="<%- organization.attributes.name %>" alt="[Images: <%- organization.attributes.name %>]" src="<%= logo_path %>" height="32" width="32" class="img-rounded"></a>
+		<a data-placement="bottom" title="<%- organization.attributes.name %>" data-toggle="tooltip" class="pull-left" href="#/organization/<%- organization.attributes.id %>"> <img alt="[Images: <%- organization.attributes.name %>]" src="<%= logo_path %>" height="32" width="32" class="img-rounded"></a>
 		  <div class="media-body">
 		  	<div class="clearfix">
-				<a class="pull-left" href="#/organization/<%- organization.attributes.id %>"><h4 class="htruncate navbar-btn"><%- organization.attributes.name %></h4></a>
+				<a class="pull-left" href="#/organization/<%- organization.attributes.id %>"><h4 class="navbar-btn"><%- organization.attributes.name %></h4></a>
 			</div>
 			<% if(organization.attributes.description != ''){ %>
 			<div>

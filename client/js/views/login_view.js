@@ -51,7 +51,21 @@ App.LoginView = Backbone.View.extend({
             success: function(model, response) {
                 authuser = response;
                 if (!_.isUndefined(response.access_token)) {
-                    window.sessionStorage.setItem('auth', JSON.stringify(response));
+                    var auth_response = {};
+                    auth_response.user = {};
+                    auth_response.access_token = response.access_token;
+                    auth_response.refresh_token = response.refresh_token;
+                    auth_response.user.id = response.user.id;
+                    auth_response.user.is_productivity_beats = response.user.is_productivity_beats;
+                    auth_response.user.initials = response.user.initials;
+                    auth_response.user.profile_picture_path = response.user.profile_picture_path;
+                    auth_response.user.role_id = response.user.role_id;
+                    auth_response.user.username = response.user.username;
+                    auth_response.user.full_name = response.user.full_name;
+                    auth_response.board_id = response.board_id;
+                    auth_response.user.notify_count = response.user.notify_count;
+                    auth_response.user.last_activity_id = response.user.last_activity_id;
+                    window.sessionStorage.setItem('auth', JSON.stringify(auth_response));
                     api_token = response.access_token;
                     var links = JSON.parse(response.links);
                     window.sessionStorage.setItem('links', response.links);
@@ -59,13 +73,13 @@ App.LoginView = Backbone.View.extend({
                     if (!_.isEmpty(links)) {
                         role_links.add(links);
                     }
-                    var organizations = authuser.user.organizations;
-                    authuser.user.organizations = new App.OrganizationCollection();
-                    authuser.user.organizations.add(organizations);
+                    auth_user_organizations.add(authuser.user.organizations);
                     self.changeFavicon(response.user.notify_count);
                     this.headerView = new App.HeaderView({
                         model: model
                     });
+                    $('#content').html('');
+                    $('.company').addClass('hide');
                     $('#header').html(this.headerView.el);
                     app.navigate('#/boards', {
                         trigger: true,

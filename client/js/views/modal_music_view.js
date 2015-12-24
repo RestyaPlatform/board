@@ -54,6 +54,9 @@ App.ModalMusicView = Backbone.View.extend({
                 view.flash('success', 'Updated successfully.');
                 $('#music-modal').modal('hide');
                 $('div.modal-backdrop').remove();
+                if (!_.isEmpty(music_name) && music_name != 'NULL') {
+                    App.music.music_name = music_name;
+                }
                 if (!_.isEmpty(music_content) && music_content != 'NULL') {
                     App.music.music_content = music_content;
                     var temp = new App.MusicRepeatView();
@@ -66,6 +69,7 @@ App.ModalMusicView = Backbone.View.extend({
                     board_id: self.model.id
                 }).render();
                 $('#footer').html(self.footerView.el);
+                self.showTooltip();
             }
         });
 

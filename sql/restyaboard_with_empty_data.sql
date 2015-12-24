@@ -231,42 +231,28 @@ ALTER FUNCTION public.update_board_subscriber_count() OWNER TO postgres;
 
 CREATE FUNCTION update_board_user_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-BEGIN
-
-	IF (TG_OP = 'DELETE') THEN
-
-		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-
-		UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-
-		RETURN OLD;
-
-	ELSIF (TG_OP = 'UPDATE') THEN
-
-		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-
-		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
-
-	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-
-	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-
-		RETURN OLD;
-
-	ELSIF (TG_OP = 'INSERT') THEN
-
-		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
-
-	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-
-		RETURN NEW;
-
-	END IF;
-
-END;
-
+    AS $$
+BEGIN
+	IF (TG_OP = 'DELETE') THEN
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+		UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = true) t WHERE "id" = OLD."user_id";
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = false) t WHERE "id" = OLD."user_id";
+		RETURN OLD;
+	ELSIF (TG_OP = 'UPDATE') THEN
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = true) t WHERE "id" = OLD."user_id";
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = false) t WHERE "id" = OLD."user_id";
+		RETURN OLD;
+	ELSIF (TG_OP = 'INSERT') THEN
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+	        UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "is_admin" = true) t WHERE "id" = NEW."user_id";
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "is_admin" = false) t WHERE "id" = NEW."user_id";
+		RETURN NEW;
+	END IF;
+END;
 $$;
 
 
@@ -490,72 +476,26 @@ ALTER FUNCTION public.update_card_checklist_item_count() OWNER TO postgres;
 
 CREATE FUNCTION update_card_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-
-BEGIN
-
-
-	IF (TG_OP = 'DELETE') THEN
-
-
-		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = OLD."list_id" AND "is_archived" = false) t WHERE "id" = OLD."list_id";
-
-
-	        UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-
-
-		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-
-
-		RETURN OLD;
-
-
-	ELSIF (TG_OP = 'UPDATE') THEN
-
-
-		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = OLD."list_id" AND "is_archived" = false) t WHERE "id" = OLD."list_id";
-
-
-		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = NEW."list_id" AND "is_archived" = false) t WHERE "id" = NEW."list_id";
-
-
-        UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-
-
-		UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
-
-
-		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-
-
-		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-
-
-		RETURN OLD;
-
-
-	ELSIF (TG_OP = 'INSERT') THEN
-
-
-		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = NEW."list_id" AND "is_archived" = false) t WHERE "id" = NEW."list_id";
-
-
-		UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."list_id";
-
-
-		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-
-
-		RETURN NEW;
-
-
-	END IF;
-
-
-END;
-
-
+    AS $$
+BEGIN
+	IF (TG_OP = 'DELETE') THEN
+		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = OLD."list_id" AND "is_archived" = false) t WHERE "id" = OLD."list_id";
+	        UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+		RETURN OLD;
+	ELSIF (TG_OP = 'UPDATE') THEN
+		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = OLD."list_id" AND "is_archived" = false) t WHERE "id" = OLD."list_id";
+		UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+		UPDATE "boards" SET "archived_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id" AND "is_archived" = true) t WHERE "id" = OLD."board_id";
+		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+		RETURN OLD;
+	ELSIF (TG_OP = 'INSERT') THEN
+		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = NEW."list_id" AND "is_archived" = false) t WHERE "id" = NEW."list_id";
+		UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."list_id";
+		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+		RETURN NEW;
+	END IF;
+END;
 $$;
 
 
@@ -753,42 +693,23 @@ ALTER FUNCTION public.update_comment_count() OWNER TO postgres;
 
 CREATE FUNCTION update_list_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-BEGIN
-
-	IF (TG_OP = 'DELETE') THEN
-
-		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-
-		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-
-		RETURN OLD;
-
-	ELSIF (TG_OP = 'UPDATE') THEN
-
-		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE  "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-
-		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE  "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
-
-		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-
-		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-
-		RETURN OLD;
-
-	ELSIF (TG_OP = 'INSERT') THEN
-
-		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
-
-		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-
-		RETURN NEW;
-
-	END IF;
-
-END;
-
+    AS $$
+BEGIN
+	IF (TG_OP = 'DELETE') THEN
+		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+		RETURN OLD;
+	ELSIF (TG_OP = 'UPDATE') THEN
+		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE  "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+		UPDATE "boards" SET "archived_list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE  "board_id" = NEW."board_id" AND "is_archived" = true) t WHERE "id" = NEW."board_id";
+		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+		RETURN OLD;
+	ELSIF (TG_OP = 'INSERT') THEN
+		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+		RETURN NEW;
+	END IF;
+END;
 $$;
 
 
@@ -892,42 +813,28 @@ ALTER FUNCTION public.update_organization_count() OWNER TO postgres;
 
 CREATE FUNCTION update_organization_user_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-BEGIN
-
-	IF (TG_OP = 'DELETE') THEN
-
-		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
-
-	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-
-		RETURN OLD;
-
-	ELSIF (TG_OP = 'UPDATE') THEN
-
-		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
-
-		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
-
-	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-
-	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-
-		RETURN OLD;
-
-	ELSIF (TG_OP = 'INSERT') THEN
-
-		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
-
-	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-
-		RETURN NEW;
-
-	END IF;
-
-END;
-
+    AS $$
+BEGIN
+	IF (TG_OP = 'DELETE') THEN
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = true) t WHERE "id" = OLD."user_id";
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = false) t WHERE "id" = OLD."user_id";
+		RETURN OLD;
+	ELSIF (TG_OP = 'UPDATE') THEN
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = true) t WHERE "id" = OLD."user_id";
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = false) t WHERE "id" = OLD."user_id";
+		RETURN OLD;
+	ELSIF (TG_OP = 'INSERT') THEN
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+	        UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "is_admin" = true) t WHERE "id" = NEW."user_id";
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "is_admin" = false) t WHERE "id" = NEW."user_id";
+		RETURN NEW;
+	END IF;
+END;
 $$;
 
 
@@ -1192,7 +1099,10 @@ CREATE TABLE boards (
     is_show_image_front_of_card boolean DEFAULT true,
     background_picture_path character varying(255),
     music_name character varying(255),
-    music_content text
+    music_content text,
+    archived_list_count bigint DEFAULT 0::bigint,
+    archived_card_count bigint DEFAULT 0::bigint,
+    CONSTRAINT name CHECK ((char_length(name) > 0))
 );
 
 
@@ -1238,7 +1148,8 @@ CREATE TABLE cards (
     activity_count bigint DEFAULT 0,
     user_id bigint NOT NULL,
     is_deleted boolean DEFAULT false NOT NULL,
-    comment_count bigint DEFAULT (0)::bigint
+    comment_count bigint DEFAULT (0)::bigint,
+    CONSTRAINT name CHECK ((char_length(name) > 0))
 );
 
 
@@ -1298,7 +1209,8 @@ CREATE TABLE labels (
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
-    card_count bigint DEFAULT 0 NOT NULL
+    card_count bigint DEFAULT 0 NOT NULL,
+    CONSTRAINT name CHECK ((char_length((name)::text) > 0))
 );
 
 
@@ -1352,7 +1264,8 @@ CREATE TABLE checklist_items (
     checklist_id bigint NOT NULL,
     name text NOT NULL,
     is_completed boolean DEFAULT false NOT NULL,
-    "position" double precision NOT NULL
+    "position" double precision NOT NULL,
+    CONSTRAINT name CHECK ((char_length(name) > 0))
 );
 
 
@@ -1385,7 +1298,8 @@ CREATE TABLE checklists (
     name character varying(255) NOT NULL,
     checklist_item_count bigint DEFAULT 0,
     checklist_item_completed_count bigint DEFAULT 0,
-    "position" double precision NOT NULL
+    "position" double precision NOT NULL,
+    CONSTRAINT name CHECK ((char_length((name)::text) > 0))
 );
 
 
@@ -1420,7 +1334,8 @@ CREATE TABLE lists (
     is_archived boolean DEFAULT false NOT NULL,
     card_count bigint DEFAULT 0,
     lists_subscriber_count bigint DEFAULT 0,
-    is_deleted boolean DEFAULT false NOT NULL
+    is_deleted boolean DEFAULT false NOT NULL,
+    CONSTRAINT name CHECK ((char_length((name)::text) > 0))
 );
 
 
@@ -1455,7 +1370,8 @@ CREATE TABLE organizations (
     logo_url character varying(255),
     organization_visibility smallint DEFAULT 1,
     organizations_user_count bigint DEFAULT 0,
-    board_count bigint DEFAULT 0
+    board_count bigint DEFAULT 0,
+    CONSTRAINT name CHECK ((char_length((name)::text) > 0))
 );
 
 
@@ -1507,14 +1423,23 @@ CREATE TABLE users (
     checklist_item_count bigint DEFAULT 0,
     activity_count bigint DEFAULT 0,
     card_voter_count bigint DEFAULT 0,
-    last_activity_id bigint DEFAULT 0::bigint NOT NULL,
+    last_activity_id bigint DEFAULT (0)::bigint NOT NULL,
     last_login_date timestamp without time zone,
     last_login_ip_id bigint,
     ip_id bigint,
     login_type_id smallint,
     is_productivity_beats boolean DEFAULT false NOT NULL,
     user_login_count bigint DEFAULT (0)::bigint NOT NULL,
-    is_ldap boolean DEFAULT false NOT NULL
+    is_ldap boolean DEFAULT false NOT NULL,
+    is_send_newsletter smallint DEFAULT 2::smallint,
+    last_email_notified_activity_id bigint DEFAULT 0::bigint,
+    owner_board_count bigint DEFAULT 0::bigint,
+    member_board_count bigint DEFAULT 0::bigint,
+    owner_organization_count bigint DEFAULT 0::bigint,
+    member_organization_count bigint DEFAULT 0::bigint,
+    CONSTRAINT email CHECK ((char_length((email)::text) > 0)),
+    CONSTRAINT password CHECK ((char_length((password)::text) > 0)),
+    CONSTRAINT username CHECK ((char_length((username)::text) > 0))
 );
 
 
@@ -1704,12 +1629,12 @@ CREATE VIEW boards_users_listing AS
     bu.modified,
     bu.board_id,
     bu.user_id,
-    bu.is_admin,
+    (bu.is_admin)::integer AS is_admin,
     u.username,
     u.email,
     u.full_name,
-    u.is_active,
-    u.is_email_confirmed,
+    (u.is_active)::integer AS is_active,
+    (u.is_email_confirmed)::integer AS is_email_confirmed,
     b.name AS board_name,
     u.profile_picture_path,
     u.initials
@@ -1747,7 +1672,8 @@ CREATE TABLE card_attachments (
     path character varying(255) NOT NULL,
     list_id bigint,
     board_id bigint DEFAULT 1,
-    mimetype character varying(255)
+    mimetype character varying(255),
+    link character varying(255)
 );
 
 
@@ -1825,7 +1751,8 @@ CREATE VIEW card_voters_listing AS
     users.username,
     users.role_id,
     users.profile_picture_path,
-    users.initials
+    users.initials,
+    users.full_name
    FROM (card_voters card_voters
      LEFT JOIN users users ON ((users.id = card_voters.user_id)));
 
@@ -1873,7 +1800,8 @@ CREATE VIEW cards_users_listing AS
     cu.modified,
     cu.card_id,
     cu.user_id,
-    u.initials
+    u.initials,
+    u.full_name
    FROM (cards_users cu
      LEFT JOIN users u ON ((u.id = cu.user_id)));
 
@@ -1927,7 +1855,7 @@ CREATE VIEW cards_listing AS
     cards.due_date,
     to_date(to_char(cards.due_date, 'YYYY/MM/DD'::text), 'YYYY/MM/DD'::text) AS to_date,
     cards."position",
-    cards.is_archived,
+    (cards.is_archived)::integer AS is_archived,
     cards.attachment_count,
     cards.checklist_count,
     cards.checklist_item_count,
@@ -1963,7 +1891,8 @@ CREATE VIEW cards_listing AS
                     cards_users_listing.modified,
                     cards_users_listing.card_id,
                     cards_users_listing.user_id,
-                    cards_users_listing.initials
+                    cards_users_listing.initials,
+                    cards_users_listing.full_name
                    FROM cards_users_listing cards_users_listing
                   WHERE (cards_users_listing.card_id = cards.id)
                   ORDER BY cards_users_listing.id) cc) AS cards_users,
@@ -1976,7 +1905,8 @@ CREATE VIEW cards_listing AS
                     card_voters_listing.username,
                     card_voters_listing.role_id,
                     card_voters_listing.profile_picture_path,
-                    card_voters_listing.initials
+                    card_voters_listing.initials,
+                    card_voters_listing.full_name
                    FROM card_voters_listing card_voters_listing
                   WHERE (card_voters_listing.card_id = cards.id)
                   ORDER BY card_voters_listing.id) cv) AS cards_voters,
@@ -1999,8 +1929,14 @@ CREATE VIEW cards_listing AS
                    FROM cards_labels_listing cards_labels
                   WHERE (cards_labels.card_id = cards.id)
                   ORDER BY cards_labels.id) cl) AS cards_labels,
-    cards.comment_count
-   FROM cards cards;
+    cards.comment_count,
+    u.username,
+    b.name AS board_name,
+    l.name AS list_name
+   FROM (((cards cards
+     LEFT JOIN users u ON ((u.id = cards.user_id)))
+     LEFT JOIN boards b ON ((b.id = cards.board_id)))
+     LEFT JOIN lists l ON ((l.id = cards.list_id)));
 
 
 ALTER TABLE cards_listing OWNER TO postgres;
@@ -2046,7 +1982,7 @@ CREATE VIEW lists_listing AS
     lists.board_id,
     lists.name,
     lists."position",
-    lists.is_archived,
+    (lists.is_archived)::integer AS is_archived,
     lists.card_count,
     lists.lists_subscriber_count,
     ( SELECT array_to_json(array_agg(row_to_json(lc.*))) AS array_to_json
@@ -2105,6 +2041,12 @@ ALTER TABLE lists_listing OWNER TO postgres;
 CREATE VIEW boards_listing AS
  SELECT board.id,
     board.name,
+    board.created,
+    board.modified,
+    users.username,
+    users.full_name,
+    users.profile_picture_path,
+    users.initials,
     board.user_id,
     board.organization_id,
     board.board_visibility,
@@ -2112,14 +2054,16 @@ CREATE VIEW boards_listing AS
     board.background_picture_url,
     board.commenting_permissions,
     board.voting_permissions,
-    board.is_closed,
-    board.is_allow_organization_members_to_join,
+    (board.is_closed)::integer AS is_closed,
+    (board.is_allow_organization_members_to_join)::integer AS is_allow_organization_members_to_join,
     board.boards_user_count,
     board.list_count,
     board.card_count,
+    board.archived_list_count,
+    board.archived_card_count,
     board.boards_subscriber_count,
     board.background_pattern_url,
-    board.is_show_image_front_of_card,
+    (board.is_show_image_front_of_card)::integer AS is_show_image_front_of_card,
     board.music_name,
     board.music_content,
     organizations.name AS organization_name,
@@ -2144,12 +2088,12 @@ CREATE VIEW boards_listing AS
                     activities.depth,
                     activities.path,
                     activities.materialized_path,
-                    users.username,
-                    users.role_id,
-                    users.profile_picture_path,
-                    users.initials
+                    users_1.username,
+                    users_1.role_id,
+                    users_1.profile_picture_path,
+                    users_1.initials
                    FROM (activities activities
-                     LEFT JOIN users users ON ((users.id = activities.user_id)))
+                     LEFT JOIN users users_1 ON ((users_1.id = activities.user_id)))
                   WHERE (activities.board_id = board.id)
                   ORDER BY activities.freshness_ts DESC, activities.materialized_path
                  OFFSET 0
@@ -2220,11 +2164,71 @@ CREATE VIEW boards_listing AS
                    FROM boards_users_listing boards_users
                   WHERE (boards_users.board_id = board.id)
                   ORDER BY boards_users.id) bu) AS boards_users
-   FROM (boards board
+   FROM ((boards board
+     LEFT JOIN users users ON ((users.id = board.user_id)))
      LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
 
 
 ALTER TABLE boards_listing OWNER TO postgres;
+
+--
+-- Name: cards_elasticsearch_listing; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW cards_elasticsearch_listing AS
+ SELECT card.id,
+    row_to_json(card.*) AS json
+   FROM ( SELECT cards.id,
+            cards.board_id,
+            boards.name AS board,
+            cards.list_id,
+            lists.name AS list,
+            cards.name,
+            cards.description,
+            cards.due_date,
+            cards.created,
+            cards.modified,
+            (cards.is_archived)::integer AS is_archived,
+            cards.attachment_count,
+            ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
+                   FROM ( SELECT boards_users.user_id
+                           FROM boards_users boards_users
+                          WHERE (boards_users.board_id = cards.board_id)
+                          ORDER BY boards_users.id) cc) AS board_users,
+            ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
+                   FROM ( SELECT board_stars.user_id
+                           FROM board_stars board_stars
+                          WHERE (board_stars.board_id = cards.board_id)
+                          ORDER BY board_stars.id) cc) AS board_stars,
+            ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
+                   FROM ( SELECT checklists.name,
+                            checklist_items.name AS checklist_item_name
+                           FROM (checklists checklists
+                             LEFT JOIN checklist_items checklist_items ON ((checklist_items.checklist_id = checklists.id)))
+                          WHERE (checklists.card_id = cards.id)
+                          ORDER BY checklists.id) cc) AS cards_checklists,
+            ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
+                   FROM ( SELECT cards_users_listing.username,
+                            cards_users_listing.user_id
+                           FROM cards_users_listing cards_users_listing
+                          WHERE (cards_users_listing.card_id = cards.id)
+                          ORDER BY cards_users_listing.id) cc) AS cards_users,
+            ( SELECT array_to_json(array_agg(row_to_json(cl.*))) AS array_to_json
+                   FROM ( SELECT cards_labels.name
+                           FROM cards_labels_listing cards_labels
+                          WHERE (cards_labels.card_id = cards.id)
+                          ORDER BY cards_labels.id) cl) AS cards_labels,
+            ( SELECT array_to_json(array_agg(row_to_json(cl.*))) AS array_to_json
+                   FROM ( SELECT activities.comment
+                           FROM activities activities
+                          WHERE (((activities.type)::text = 'add_comment'::text) AND (activities.card_id = cards.id))
+                          ORDER BY activities.id) cl) AS activities
+           FROM ((cards cards
+             LEFT JOIN boards boards ON ((boards.id = cards.board_id)))
+             LEFT JOIN lists lists ON ((lists.id = cards.list_id)))) card;
+
+
+ALTER TABLE cards_elasticsearch_listing OWNER TO postgres;
 
 --
 -- Name: checklist_add_listing; Type: VIEW; Schema: public; Owner: postgres
@@ -2638,7 +2642,7 @@ CREATE VIEW organizations_users_listing AS
     organizations_users.modified,
     organizations_users.user_id,
     organizations_users.organization_id,
-    organizations_users.is_admin,
+    (organizations_users.is_admin)::integer AS is_admin,
     users.role_id,
     users.username,
     users.email,
@@ -2938,8 +2942,8 @@ CREATE VIEW simple_board_listing AS
     board.background_picture_url,
     board.commenting_permissions,
     board.voting_permissions,
-    board.is_closed,
-    board.is_allow_organization_members_to_join,
+    (board.is_closed)::integer AS is_closed,
+    (board.is_allow_organization_members_to_join)::integer AS is_allow_organization_members_to_join,
     board.boards_user_count,
     board.list_count,
     board.card_count,
@@ -3097,7 +3101,7 @@ CREATE VIEW users_cards_listing AS
     c.description,
     c.due_date,
     c."position",
-    c.is_archived,
+    (c.is_archived)::integer AS is_archived,
     c.attachment_count,
     c.checklist_count,
     c.checklist_item_count,
@@ -3108,7 +3112,7 @@ CREATE VIEW users_cards_listing AS
     c.card_voter_count,
     c.activity_count,
     c.user_id AS created_user_id,
-    c.is_deleted,
+    (c.is_deleted)::integer AS is_deleted,
     cu.user_id,
     c.comment_count
    FROM (((cards_users cu
@@ -3134,9 +3138,9 @@ CREATE VIEW users_listing AS
     users.about_me,
     users.profile_picture_path,
     users.notification_frequency,
-    users.is_allow_desktop_notification,
-    users.is_active,
-    users.is_email_confirmed,
+    (users.is_allow_desktop_notification)::integer AS is_allow_desktop_notification,
+    (users.is_active)::integer AS is_active,
+    (users.is_email_confirmed)::integer AS is_email_confirmed,
     users.created_organization_count,
     users.created_board_count,
     users.joined_organization_count,
@@ -3149,7 +3153,7 @@ CREATE VIEW users_listing AS
     users.checklist_item_count,
     users.activity_count,
     users.card_voter_count,
-    users.is_productivity_beats,
+    (users.is_productivity_beats)::integer AS is_productivity_beats,
     ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
            FROM ( SELECT organizations_users_listing.organization_id AS id,
                     organizations_users_listing.name,
@@ -3184,18 +3188,24 @@ CREATE VIEW users_listing AS
                   ORDER BY boards_users.id) o) AS boards_users,
     users.last_login_date,
     li.ip AS last_login_ip,
-    lci.name AS log_city_name,
-    lst.name AS log_state_name,
-    lco.name AS log_country_name,
-    lower((lco.iso_alpha2)::text) AS log_country_iso2,
+    lci.name AS login_city_name,
+    lst.name AS login_state_name,
+    lco.name AS login_country_name,
+    lower((lco.iso_alpha2)::text) AS login_country_iso2,
     i.ip AS registered_ip,
-    rci.name AS reg_city_name,
-    rst.name AS reg_state_name,
-    rco.name AS reg_country_name,
-    lower((rco.iso_alpha2)::text) AS reg_country_iso2,
+    rci.name AS register_city_name,
+    rst.name AS register_state_name,
+    rco.name AS register_country_name,
+    lower((rco.iso_alpha2)::text) AS register_country_iso2,
     lt.name AS login_type,
     users.created,
-    users.user_login_count
+    users.user_login_count,
+    users.is_send_newsletter,
+    users.last_email_notified_activity_id,
+    users.owner_board_count,
+    users.member_board_count,
+    users.owner_organization_count,
+    users.member_organization_count
    FROM (((((((((users users
      LEFT JOIN ips i ON ((i.id = users.ip_id)))
      LEFT JOIN cities rci ON ((rci.id = i.city_id)))
@@ -3281,7 +3291,6 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_all
 34	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit card	/boards/?/lists/?/cards/?	PUT	edit_card	4	0	1
 35	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unsubscribe list	/boards/?/lists/?/list_subscribers/?	PUT	unsubscribe_list	3	0	1
 36	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unsubscribe card	/boards/?/lists/?/cards/?/card_subscribers/?	PUT	unsubscribe_card	4	0	1
-37	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unvote card	/boards/?/lists/?/cards/?/card_voters/?	PUT	unvote_card	4	0	1
 39	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit checklist	/boards/?/lists/?/cards/?/checklists/?	PUT	edit_checklist	4	0	1
 41	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Undo activity	/activities/undo/?	PUT	undo_activity	4	0	1
 42	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit user details	/users/?	PUT	edit_user_details	1	0	1
@@ -3354,6 +3363,10 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_all
 118	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Roles Update	/acl_links	POST	roles	6	1	0
 117	2015-05-09 13:14:18.2	2015-05-09 13:14:18.2	Create user	/users	POST	users	1	1	0
 27	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	User activation	/users/?/activation	PUT	user_activation	1	0	0
+37	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unvote card	/boards/?/lists/?/cards/?/card_voters/?	DELETE	unvote_card	4	0	1
+119	2015-12-23 10:06:20.344	2015-12-23 10:06:20.344	Users Bulk Action	/users/bulk_action	POST	users_bulk_action	6	1	0
+120	2015-12-23 10:06:20.355	2015-12-23 10:06:20.355	Boards management	/boards/list	GET	view_board_listing	1	1	0
+121	2015-12-23 10:06:20.359	2015-12-23 10:06:20.359	Boards Bulk Action	/boards/bulk_action	POST	boards_bulk_action	6	1	0
 \.
 
 
@@ -3361,7 +3374,7 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_all
 -- Name: acl_links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('acl_links_id_seq', 118, true);
+SELECT pg_catalog.setval('acl_links_id_seq', 121, true);
 
 
 --
@@ -3391,7 +3404,6 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 881	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	4	3
 882	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	5	1
 883	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	5	2
-884	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	5	3
 885	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	6	1
 888	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	7	1
 889	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	7	2
@@ -3704,6 +3716,13 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 1208	2015-05-09 06:46:53.094432	2015-05-09 06:46:53.094432	117	2
 1209	2015-05-09 06:46:53.094432	2015-05-09 06:46:53.094432	117	3
 1210	2013-02-07 10:11:00	2015-04-25 19:58:48.8	118	1
+1211	2015-12-23 10:06:20.347	2015-12-23 10:06:20.347	120	1
+1212	2015-12-23 10:06:20.35	2015-12-23 10:06:20.35	120	2
+1213	2015-12-23 10:06:20.353	2015-12-23 10:06:20.353	120	3
+1214	2015-12-23 10:06:20.357	2015-12-23 10:06:20.357	121	1
+1215	2015-12-23 10:06:20.362	2015-12-23 10:06:20.362	122	1
+1216	2015-12-23 10:06:20.364	2015-12-23 10:06:20.364	122	2
+1217	2015-12-23 10:06:20.365	2015-12-23 10:06:20.365	122	3
 \.
 
 
@@ -3711,7 +3730,7 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 -- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1210, true);
+SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1217, true);
 
 
 --
@@ -3756,7 +3775,7 @@ COPY board_subscribers (id, created, modified, board_id, user_id, is_subscribed)
 -- Data for Name: boards; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY boards (id, created, modified, user_id, organization_id, name, board_visibility, background_color, background_picture_url, commenting_permissions, voting_permissions, inivitation_permissions, is_closed, is_allow_organization_members_to_join, boards_user_count, list_count, card_count, boards_subscriber_count, background_pattern_url, boards_star_count, is_show_image_front_of_card, background_picture_path, music_name, music_content) FROM stdin;
+COPY boards (id, created, modified, user_id, organization_id, name, board_visibility, background_color, background_picture_url, commenting_permissions, voting_permissions, inivitation_permissions, is_closed, is_allow_organization_members_to_join, boards_user_count, list_count, card_count, boards_subscriber_count, background_pattern_url, boards_star_count, is_show_image_front_of_card, background_picture_path, music_name, music_content, archived_list_count, archived_card_count) FROM stdin;
 \.
 
 
@@ -3800,7 +3819,7 @@ SELECT pg_catalog.setval('boards_users_id_seq', 2, true);
 -- Data for Name: card_attachments; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY card_attachments (id, created, modified, card_id, name, path, list_id, board_id, mimetype) FROM stdin;
+COPY card_attachments (id, created, modified, card_id, name, path, list_id, board_id, mimetype, link) FROM stdin;
 \.
 
 
@@ -4216,11 +4235,12 @@ SELECT pg_catalog.setval('countries_id_seq1', 1, false);
 --
 
 COPY email_templates (id, created, modified, from_email, reply_to_email, name, description, subject, email_text_content, email_variables, display_name) FROM stdin;
-4	2014-05-08 12:13:50.69	2014-05-08 12:13:50.69	##FROM_EMAIL##	##REPLY_TO_EMAIL##	changepassword	We will send this mail to user, when admin change users password.	Password changed	Hi,\r\n\r\nAdmin reset your password for your  ##SITE_NAME## account.\r\n\r\nYour new password: ##PASSWORD##\r\n\r\nThanks,\r\n##SITE_NAME##\r\n##SITE_URL##	SITE_NAME, SITE_URL, PASSWORD	Change Password
-1	2014-05-08 12:13:37.268	2014-05-08 12:13:37.268	##SITE_NAME## Restyaboard ##FROM_EMAIL##	##REPLY_TO_EMAIL##	activation	We will send this mail, when user registering an account he/she will get an activation request.	Restyaboard / ##SITE_NAME## Account confirmation	Hi ##NAME##,\r\n\r\nYou are one step ahead. Please click the below URL to activate your account.\r\n##ACTIVATION_URL##\r\nIf you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_MAIL##.\r\n\r\nThanks,\r\nRestyaboard\r\n##SITE_URL##	SITE_URL, SITE_NAME, ACTIVATION_URL, NAME	Activation
-2	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard ##FROM_EMAIL##	##REPLY_TO_EMAIL##	welcome	We will send this mail, when user register in this site and get activate.	Welcome to Restyaboard / ##SITE_NAME##	Hi ##NAME##,\r\n\r\nWe wish to say a quick hello and thanks for registering at ##SITE_NAME##.\r\n\r\nIf you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_MAIL##.\r\n\r\nThanks,\r\nRestyaboard\r\n##SITE_URL##	SITE_NAME, SITE_URL, CONTACT_MAIL, NAME	Welcome
-3	2014-05-08 12:13:59.784	2014-05-08 12:13:59.784	##SITE_NAME## Restyaboard ##FROM_EMAIL##	##REPLY_TO_EMAIL##	forgetpassword	We will send this mail, when user submit the forgot password form	Restyaboard / [##SITE_NAME##] Password reset	Hi ##NAME##,\r\n\r\nWe have received a password reset request for your account at ##SITE_NAME##.\r\n\r\nNew password: ##PASSWORD##\r\n\r\nIf you didn't requested this action and feel this is an error, please contact us at ##CONTACT_MAIL##.\r\n\r\nThanks,\r\nRestyaboard\r\n##SITE_URL##	SITE_NAME, SITE_URL, CONTACT_MAIL, PASSWORD, NAME	Forgot Password
-5	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard ##FROM_EMAIL##	##REPLY_TO_EMAIL##	newprojectuser	We will send this mail, when user added for board.	Restyaboard / ##BOARD_NAME## assigned by ##CURRENT_USER##	Hi ##NAME##,\r\n\r\n##CURRENT_USER## has added you to the board ##BOARD_NAME## ##BOARD_URL##\r\n\r\nThanks,\r\nRestyaboard\r\n##SITE_URL##	SITE_NAME, SITE_URL, CONTACT_MAIL, NAME, CURRENT_USER	New Board User
+1	2014-05-08 12:13:37.268	2014-05-08 12:13:37.268	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	activation	We will send this mail, when user registering an account he/she will get an activation request.	Restyaboard / Account confirmation	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,\r\n</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">You are one step ahead. Please click the below URL to activate your account.<br>##ACTIVATION_URL##<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME, ACTIVATION_URL	Activation
+2	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	welcome	We will send this mail, when user register in this site and get activate.	Restyaboard / Welcome	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We wish to say a quick hello and thanks for registering at ##SITE_NAME##.<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME	Welcome
+3	2014-05-08 12:13:59.784	2014-05-08 12:13:59.784	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	forgetpassword	We will send this mail, when user submit the forgot password form	Restyaboard / Password reset	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We have received a password reset request for your account at ##SITE_NAME##.<br>New password: ##PASSWORD##<br>If you didn't requested this action and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_NAME, SITE_URL, CONTACT_EMAIL, NAME, PASSWORD	Forgot Password
+4	2014-05-08 12:13:50.69	2014-05-08 12:13:50.69	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	changepassword	We will send this mail to user, when admin change users password.	Restyaboard / Password changed	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">Admin reset your password for your ##SITE_NAME## account.<br>Your new password: ##PASSWORD##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_NAME, SITE_URL, PASSWORD	Change Password
+5	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	newprojectuser	We will send this mail, when user added for board.	Restyaboard / ##BOARD_NAME## assigned by ##CURRENT_USER##	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2>\r\n<p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CURRENT_USER## has added you to the board ##BOARD_NAME## ##BOARD_URL##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, NAME, BOARD_NAME, CURRENT_USER, BOARD_URL	New Board User
+6	2015-10-09 06:15:49.891	2015-10-09 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	email_notification	We will send this mail, when user activities in this site.	Restyaboard / ##NOTIFICATION_COUNT## new notifications since ##SINCE##	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Here's what you missed…</h2>\r\n<p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n<div style="text-align:center;margin:5px 15px;padding:10px 0px;">\r\n<a href="##SITE_URL##/#/user/##USER_ID##/settings">Change email preferences</a>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\r\n</h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, CONTENT, NAME, NOTIFICATION_COUNT, SINCE	Email Notification
 \.
 
 
@@ -4427,8 +4447,8 @@ COPY setting_categories (id, created, modified, parent_id, name, description, "o
 3	2014-11-21 02:52:08.822706	2014-11-21 02:52:08.822706	\N	System	\N	1
 6	2015-04-25 19:58:48.845	2015-04-25 19:58:48.845	\N	Third Party API	\N	3
 1	2014-04-23 16:30:20.121	2014-04-23 16:30:20.121	\N	ElasticSearch		4
-2	2014-11-08 02:52:08.822706	2014-04-28 17:01:11	\N	Login	\N	2
 9	\N	\N	2	Enabled Login Options	Enabled Login Options	1
+2	2014-11-08 02:52:08.822706	2014-04-28 17:01:11	\N	Login	\N	2
 \.
 
 
@@ -4445,27 +4465,27 @@ SELECT pg_catalog.setval('setting_categories_id_seq', 5, true);
 
 COPY settings (id, setting_category_id, setting_category_parent_id, name, value, description, type, options, label, "order") FROM stdin;
 11	3	0	SITE_NAME	Restyaboard	\N	text	\N	Site Name	1
-13	3	0	DEFAULT_FROM_EMAIL	board@restya.com	\N	text	\N	From Email	2
 19	3	0	LABEL_ICON	icon-circle	<a href="http://fortawesome.github.io/Font-Awesome/icons/" target="_blank">Font\r\nAwesome</a> class name. Recommended: icon-circle, icon-bullhorn,\r\nicon-tag, icon-bookmark, icon-pushpin, icon-star	text	\N	Label Icon	3
 12	3	0	PAGING_COUNT	20	\N	text	\N	Paging Count	4
 21	3	0	SITE_TIMEZONE	+0200	\N	text	\N	Site Timezone	5
 18	6	0	DROPBOX_APPKEY		\N	text	\N	Dropbox App Key	1
 20	6	0	FLICKR_API_KEY		\N	text	\N	Flickr API Key	2
-14	1	0	ELASTICSEARCH_HOST		\N	text	\N	Host	1
-15	1	0	SECRET_KEY		\N	text	\N	Secret Key	2
 16	1	0	ELASTICSEARCH_URL		\N	text	\N	URL	3
 17	1	0	ELASTICSEARCH_INDEX		\N	text	\N	Index	4
 23	0	0	elasticsearch.last_processed_activtiy_id	0	\N	hidden	\N	Last Activity ID	3
-2	4	2	LDAP_SERVER	\N	\N	text	\N	Server	3
-5	4	2	LDAP_PORT	\N	\N	text	\N	Port	4
-4	4	2	LDAP_PROTOCOL_VERSION	\N	\N	text	\N	Protocol Version	5
-7	4	2	LDAP_ORGANISATION	\N	\N	text	\N	Organization	7
+2	4	2	LDAP_SERVER	\N	\N	text	\N	Server	5
+5	4	2	LDAP_PORT	\N	\N	text	\N	Port	6
+4	4	2	LDAP_PROTOCOL_VERSION	\N	\N	text	\N	Protocol Version	7
+7	4	2	LDAP_ORGANISATION	\N	\N	text	\N	Organization	9
 3	9	2	LDAP_LOGIN_ENABLED	false	\N	checkbox	\N	LDAP	2
 22	9	2	STANDARD_LOGIN_ENABLED	true	\N	checkbox	\N	Standard	1
-8	5	2	LDAP_UID_FIELD	\N	\N	text	\N	Uid field	8
-9	5	2	LDAP_BIND_DN	\N	\N	text	\N	Bind dn	9
-10	5	2	LDAP_BIND_PASSWD	\N	\N	text	\N	Bind password	10
-6	4	2	LDAP_ROOT_DN	\N	\N	text	\N	Root dn	6
+8	5	2	LDAP_UID_FIELD	\N	\N	text	\N	Uid field	10
+9	5	2	LDAP_BIND_DN	\N	\N	text	\N	Bind dn	11
+10	5	2	LDAP_BIND_PASSWD	\N	\N	text	\N	Bind password	12
+6	4	2	LDAP_ROOT_DN	\N	\N	text	\N	Root dn	8
+29	3	0	DEFAULT_REPLY_TO_EMAIL_ADDRESS	board@restya.com	\N	text	\N	Reply To Email Address	3
+30	3	0	DEFAULT_CONTACT_EMAIL_ADDRESS	board@restya.com	\N	text	\N	Contact Email Address	4
+13	3	0	DEFAULT_FROM_EMAIL_ADDRESS	board@restya.com	\N	text	\N	From Email Address	2
 \.
 
 
@@ -4473,7 +4493,7 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 -- Name: settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('settings_id_seq', 22, true);
+SELECT pg_catalog.setval('settings_id_seq', 23, true);
 
 
 --
@@ -4520,9 +4540,9 @@ SELECT pg_catalog.setval('user_logins_id_seq', 2, true);
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap) FROM stdin;
-1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	media/User/1/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f
-2	2014-07-05 11:46:40.804	2014-07-05 11:46:40.804	2	user	board+user@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	User	U	\N	\N	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	0	\N	\N	\N	\N	f	0	f
+COPY users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count) FROM stdin;
+1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	media/User/1/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f	0	0	0	0	0	0
+2	2014-07-05 11:46:40.804	2014-07-05 11:46:40.804	2	user	board+user@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	User	U	\N	\N	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	0	\N	\N	\N	\N	f	0	f	0	0	0	0	0	0
 \.
 
 
@@ -5447,7 +5467,6 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 REVOKE ALL ON SEQUENCE acl_links_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE acl_links_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE acl_links_id_seq TO postgres;
-GRANT ALL ON SEQUENCE acl_links_id_seq TO restya;
 
 
 --
@@ -5457,7 +5476,6 @@ GRANT ALL ON SEQUENCE acl_links_id_seq TO restya;
 REVOKE ALL ON TABLE acl_links FROM PUBLIC;
 REVOKE ALL ON TABLE acl_links FROM postgres;
 GRANT ALL ON TABLE acl_links TO postgres;
-GRANT ALL ON TABLE acl_links TO restya;
 
 
 --
@@ -5467,7 +5485,6 @@ GRANT ALL ON TABLE acl_links TO restya;
 REVOKE ALL ON SEQUENCE acl_links_roles_roles_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE acl_links_roles_roles_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE acl_links_roles_roles_id_seq TO postgres;
-GRANT ALL ON SEQUENCE acl_links_roles_roles_id_seq TO restya;
 
 
 --
@@ -5477,7 +5494,6 @@ GRANT ALL ON SEQUENCE acl_links_roles_roles_id_seq TO restya;
 REVOKE ALL ON TABLE acl_links_roles FROM PUBLIC;
 REVOKE ALL ON TABLE acl_links_roles FROM postgres;
 GRANT ALL ON TABLE acl_links_roles TO postgres;
-GRANT ALL ON TABLE acl_links_roles TO restya;
 
 
 --
@@ -5487,7 +5503,6 @@ GRANT ALL ON TABLE acl_links_roles TO restya;
 REVOKE ALL ON TABLE acl_links_listing FROM PUBLIC;
 REVOKE ALL ON TABLE acl_links_listing FROM postgres;
 GRANT ALL ON TABLE acl_links_listing TO postgres;
-GRANT ALL ON TABLE acl_links_listing TO restya;
 
 
 --
@@ -5497,7 +5512,6 @@ GRANT ALL ON TABLE acl_links_listing TO restya;
 REVOKE ALL ON SEQUENCE activities_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE activities_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE activities_id_seq TO postgres;
-GRANT ALL ON SEQUENCE activities_id_seq TO restya;
 
 
 --
@@ -5507,7 +5521,6 @@ GRANT ALL ON SEQUENCE activities_id_seq TO restya;
 REVOKE ALL ON TABLE activities FROM PUBLIC;
 REVOKE ALL ON TABLE activities FROM postgres;
 GRANT ALL ON TABLE activities TO postgres;
-GRANT ALL ON TABLE activities TO restya;
 
 
 --
@@ -5517,7 +5530,6 @@ GRANT ALL ON TABLE activities TO restya;
 REVOKE ALL ON SEQUENCE boards_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE boards_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE boards_id_seq TO postgres;
-GRANT ALL ON SEQUENCE boards_id_seq TO restya;
 
 
 --
@@ -5527,7 +5539,6 @@ GRANT ALL ON SEQUENCE boards_id_seq TO restya;
 REVOKE ALL ON TABLE boards FROM PUBLIC;
 REVOKE ALL ON TABLE boards FROM postgres;
 GRANT ALL ON TABLE boards TO postgres;
-GRANT ALL ON TABLE boards TO restya;
 
 
 --
@@ -5537,7 +5548,6 @@ GRANT ALL ON TABLE boards TO restya;
 REVOKE ALL ON SEQUENCE cards_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE cards_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE cards_id_seq TO postgres;
-GRANT ALL ON SEQUENCE cards_id_seq TO restya;
 
 
 --
@@ -5547,7 +5557,6 @@ GRANT ALL ON SEQUENCE cards_id_seq TO restya;
 REVOKE ALL ON TABLE cards FROM PUBLIC;
 REVOKE ALL ON TABLE cards FROM postgres;
 GRANT ALL ON TABLE cards TO postgres;
-GRANT ALL ON TABLE cards TO restya;
 
 
 --
@@ -5557,7 +5566,6 @@ GRANT ALL ON TABLE cards TO restya;
 REVOKE ALL ON SEQUENCE cards_labels_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE cards_labels_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE cards_labels_id_seq TO postgres;
-GRANT ALL ON SEQUENCE cards_labels_id_seq TO restya;
 
 
 --
@@ -5567,7 +5575,6 @@ GRANT ALL ON SEQUENCE cards_labels_id_seq TO restya;
 REVOKE ALL ON TABLE cards_labels FROM PUBLIC;
 REVOKE ALL ON TABLE cards_labels FROM postgres;
 GRANT ALL ON TABLE cards_labels TO postgres;
-GRANT ALL ON TABLE cards_labels TO restya;
 
 
 --
@@ -5577,7 +5584,6 @@ GRANT ALL ON TABLE cards_labels TO restya;
 REVOKE ALL ON SEQUENCE labels_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE labels_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE labels_id_seq TO postgres;
-GRANT ALL ON SEQUENCE labels_id_seq TO restya;
 
 
 --
@@ -5587,7 +5593,6 @@ GRANT ALL ON SEQUENCE labels_id_seq TO restya;
 REVOKE ALL ON TABLE labels FROM PUBLIC;
 REVOKE ALL ON TABLE labels FROM postgres;
 GRANT ALL ON TABLE labels TO postgres;
-GRANT ALL ON TABLE labels TO restya;
 
 
 --
@@ -5597,7 +5602,6 @@ GRANT ALL ON TABLE labels TO restya;
 REVOKE ALL ON TABLE cards_labels_listing FROM PUBLIC;
 REVOKE ALL ON TABLE cards_labels_listing FROM postgres;
 GRANT ALL ON TABLE cards_labels_listing TO postgres;
-GRANT ALL ON TABLE cards_labels_listing TO restya;
 
 
 --
@@ -5607,7 +5611,6 @@ GRANT ALL ON TABLE cards_labels_listing TO restya;
 REVOKE ALL ON SEQUENCE checklist_items_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE checklist_items_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE checklist_items_id_seq TO postgres;
-GRANT ALL ON SEQUENCE checklist_items_id_seq TO restya;
 
 
 --
@@ -5617,7 +5620,6 @@ GRANT ALL ON SEQUENCE checklist_items_id_seq TO restya;
 REVOKE ALL ON TABLE checklist_items FROM PUBLIC;
 REVOKE ALL ON TABLE checklist_items FROM postgres;
 GRANT ALL ON TABLE checklist_items TO postgres;
-GRANT ALL ON TABLE checklist_items TO restya;
 
 
 --
@@ -5627,7 +5629,6 @@ GRANT ALL ON TABLE checklist_items TO restya;
 REVOKE ALL ON SEQUENCE checklists_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE checklists_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE checklists_id_seq TO postgres;
-GRANT ALL ON SEQUENCE checklists_id_seq TO restya;
 
 
 --
@@ -5637,7 +5638,6 @@ GRANT ALL ON SEQUENCE checklists_id_seq TO restya;
 REVOKE ALL ON TABLE checklists FROM PUBLIC;
 REVOKE ALL ON TABLE checklists FROM postgres;
 GRANT ALL ON TABLE checklists TO postgres;
-GRANT ALL ON TABLE checklists TO restya;
 
 
 --
@@ -5647,7 +5647,6 @@ GRANT ALL ON TABLE checklists TO restya;
 REVOKE ALL ON SEQUENCE lists_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE lists_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE lists_id_seq TO postgres;
-GRANT ALL ON SEQUENCE lists_id_seq TO restya;
 
 
 --
@@ -5657,7 +5656,6 @@ GRANT ALL ON SEQUENCE lists_id_seq TO restya;
 REVOKE ALL ON TABLE lists FROM PUBLIC;
 REVOKE ALL ON TABLE lists FROM postgres;
 GRANT ALL ON TABLE lists TO postgres;
-GRANT ALL ON TABLE lists TO restya;
 
 
 --
@@ -5667,7 +5665,6 @@ GRANT ALL ON TABLE lists TO restya;
 REVOKE ALL ON SEQUENCE organizations_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE organizations_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE organizations_id_seq TO postgres;
-GRANT ALL ON SEQUENCE organizations_id_seq TO restya;
 
 
 --
@@ -5677,7 +5674,6 @@ GRANT ALL ON SEQUENCE organizations_id_seq TO restya;
 REVOKE ALL ON TABLE organizations FROM PUBLIC;
 REVOKE ALL ON TABLE organizations FROM postgres;
 GRANT ALL ON TABLE organizations TO postgres;
-GRANT ALL ON TABLE organizations TO restya;
 
 
 --
@@ -5687,7 +5683,6 @@ GRANT ALL ON TABLE organizations TO restya;
 REVOKE ALL ON SEQUENCE users_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE users_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE users_id_seq TO postgres;
-GRANT ALL ON SEQUENCE users_id_seq TO restya;
 
 
 --
@@ -5697,7 +5692,6 @@ GRANT ALL ON SEQUENCE users_id_seq TO restya;
 REVOKE ALL ON TABLE users FROM PUBLIC;
 REVOKE ALL ON TABLE users FROM postgres;
 GRANT ALL ON TABLE users TO postgres;
-GRANT ALL ON TABLE users TO restya;
 
 
 --
@@ -5707,7 +5701,6 @@ GRANT ALL ON TABLE users TO restya;
 REVOKE ALL ON TABLE activities_listing FROM PUBLIC;
 REVOKE ALL ON TABLE activities_listing FROM postgres;
 GRANT ALL ON TABLE activities_listing TO postgres;
-GRANT ALL ON TABLE activities_listing TO restya;
 
 
 --
@@ -5717,7 +5710,6 @@ GRANT ALL ON TABLE activities_listing TO restya;
 REVOKE ALL ON SEQUENCE attachments_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE attachments_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE attachments_id_seq TO postgres;
-GRANT ALL ON SEQUENCE attachments_id_seq TO restya;
 
 
 --
@@ -5727,7 +5719,6 @@ GRANT ALL ON SEQUENCE attachments_id_seq TO restya;
 REVOKE ALL ON SEQUENCE boards_stars_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE boards_stars_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE boards_stars_id_seq TO postgres;
-GRANT ALL ON SEQUENCE boards_stars_id_seq TO restya;
 
 
 --
@@ -5737,7 +5728,6 @@ GRANT ALL ON SEQUENCE boards_stars_id_seq TO restya;
 REVOKE ALL ON TABLE board_stars FROM PUBLIC;
 REVOKE ALL ON TABLE board_stars FROM postgres;
 GRANT ALL ON TABLE board_stars TO postgres;
-GRANT ALL ON TABLE board_stars TO restya;
 
 
 --
@@ -5747,7 +5737,6 @@ GRANT ALL ON TABLE board_stars TO restya;
 REVOKE ALL ON SEQUENCE boards_subscribers_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE boards_subscribers_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE boards_subscribers_id_seq TO postgres;
-GRANT ALL ON SEQUENCE boards_subscribers_id_seq TO restya;
 
 
 --
@@ -5757,7 +5746,6 @@ GRANT ALL ON SEQUENCE boards_subscribers_id_seq TO restya;
 REVOKE ALL ON TABLE board_subscribers FROM PUBLIC;
 REVOKE ALL ON TABLE board_subscribers FROM postgres;
 GRANT ALL ON TABLE board_subscribers TO postgres;
-GRANT ALL ON TABLE board_subscribers TO restya;
 
 
 --
@@ -5767,7 +5755,6 @@ GRANT ALL ON TABLE board_subscribers TO restya;
 REVOKE ALL ON TABLE boards_labels_listing FROM PUBLIC;
 REVOKE ALL ON TABLE boards_labels_listing FROM postgres;
 GRANT ALL ON TABLE boards_labels_listing TO postgres;
-GRANT ALL ON TABLE boards_labels_listing TO restya;
 
 
 --
@@ -5777,7 +5764,6 @@ GRANT ALL ON TABLE boards_labels_listing TO restya;
 REVOKE ALL ON SEQUENCE boards_users_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE boards_users_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE boards_users_id_seq TO postgres;
-GRANT ALL ON SEQUENCE boards_users_id_seq TO restya;
 
 
 --
@@ -5787,17 +5773,6 @@ GRANT ALL ON SEQUENCE boards_users_id_seq TO restya;
 REVOKE ALL ON TABLE boards_users FROM PUBLIC;
 REVOKE ALL ON TABLE boards_users FROM postgres;
 GRANT ALL ON TABLE boards_users TO postgres;
-GRANT ALL ON TABLE boards_users TO restya;
-
-
---
--- Name: boards_users_listing; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE boards_users_listing FROM PUBLIC;
-REVOKE ALL ON TABLE boards_users_listing FROM postgres;
-GRANT ALL ON TABLE boards_users_listing TO postgres;
-GRANT ALL ON TABLE boards_users_listing TO restya;
 
 
 --
@@ -5807,7 +5782,6 @@ GRANT ALL ON TABLE boards_users_listing TO restya;
 REVOKE ALL ON SEQUENCE card_attachments_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE card_attachments_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE card_attachments_id_seq TO postgres;
-GRANT ALL ON SEQUENCE card_attachments_id_seq TO restya;
 
 
 --
@@ -5817,7 +5791,6 @@ GRANT ALL ON SEQUENCE card_attachments_id_seq TO restya;
 REVOKE ALL ON TABLE card_attachments FROM PUBLIC;
 REVOKE ALL ON TABLE card_attachments FROM postgres;
 GRANT ALL ON TABLE card_attachments TO postgres;
-GRANT ALL ON TABLE card_attachments TO restya;
 
 
 --
@@ -5827,7 +5800,6 @@ GRANT ALL ON TABLE card_attachments TO restya;
 REVOKE ALL ON SEQUENCE cards_subscribers_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE cards_subscribers_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE cards_subscribers_id_seq TO postgres;
-GRANT ALL ON SEQUENCE cards_subscribers_id_seq TO restya;
 
 
 --
@@ -5837,7 +5809,6 @@ GRANT ALL ON SEQUENCE cards_subscribers_id_seq TO restya;
 REVOKE ALL ON TABLE card_subscribers FROM PUBLIC;
 REVOKE ALL ON TABLE card_subscribers FROM postgres;
 GRANT ALL ON TABLE card_subscribers TO postgres;
-GRANT ALL ON TABLE card_subscribers TO restya;
 
 
 --
@@ -5847,7 +5818,6 @@ GRANT ALL ON TABLE card_subscribers TO restya;
 REVOKE ALL ON SEQUENCE card_voters_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE card_voters_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE card_voters_id_seq TO postgres;
-GRANT ALL ON SEQUENCE card_voters_id_seq TO restya;
 
 
 --
@@ -5857,7 +5827,6 @@ GRANT ALL ON SEQUENCE card_voters_id_seq TO restya;
 REVOKE ALL ON TABLE card_voters FROM PUBLIC;
 REVOKE ALL ON TABLE card_voters FROM postgres;
 GRANT ALL ON TABLE card_voters TO postgres;
-GRANT ALL ON TABLE card_voters TO restya;
 
 
 --
@@ -5867,7 +5836,6 @@ GRANT ALL ON TABLE card_voters TO restya;
 REVOKE ALL ON TABLE card_voters_listing FROM PUBLIC;
 REVOKE ALL ON TABLE card_voters_listing FROM postgres;
 GRANT ALL ON TABLE card_voters_listing TO postgres;
-GRANT ALL ON TABLE card_voters_listing TO restya;
 
 
 --
@@ -5877,7 +5845,6 @@ GRANT ALL ON TABLE card_voters_listing TO restya;
 REVOKE ALL ON SEQUENCE cards_users_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE cards_users_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE cards_users_id_seq TO postgres;
-GRANT ALL ON SEQUENCE cards_users_id_seq TO restya;
 
 
 --
@@ -5887,7 +5854,6 @@ GRANT ALL ON SEQUENCE cards_users_id_seq TO restya;
 REVOKE ALL ON TABLE cards_users FROM PUBLIC;
 REVOKE ALL ON TABLE cards_users FROM postgres;
 GRANT ALL ON TABLE cards_users TO postgres;
-GRANT ALL ON TABLE cards_users TO restya;
 
 
 --
@@ -5897,7 +5863,6 @@ GRANT ALL ON TABLE cards_users TO restya;
 REVOKE ALL ON TABLE cards_users_listing FROM PUBLIC;
 REVOKE ALL ON TABLE cards_users_listing FROM postgres;
 GRANT ALL ON TABLE cards_users_listing TO postgres;
-GRANT ALL ON TABLE cards_users_listing TO restya;
 
 
 --
@@ -5907,17 +5872,6 @@ GRANT ALL ON TABLE cards_users_listing TO restya;
 REVOKE ALL ON TABLE checklists_listing FROM PUBLIC;
 REVOKE ALL ON TABLE checklists_listing FROM postgres;
 GRANT ALL ON TABLE checklists_listing TO postgres;
-GRANT ALL ON TABLE checklists_listing TO restya;
-
-
---
--- Name: cards_listing; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE cards_listing FROM PUBLIC;
-REVOKE ALL ON TABLE cards_listing FROM postgres;
-GRANT ALL ON TABLE cards_listing TO postgres;
-GRANT ALL ON TABLE cards_listing TO restya;
 
 
 --
@@ -5927,7 +5881,6 @@ GRANT ALL ON TABLE cards_listing TO restya;
 REVOKE ALL ON SEQUENCE lists_subscribers_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE lists_subscribers_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE lists_subscribers_id_seq TO postgres;
-GRANT ALL ON SEQUENCE lists_subscribers_id_seq TO restya;
 
 
 --
@@ -5937,27 +5890,6 @@ GRANT ALL ON SEQUENCE lists_subscribers_id_seq TO restya;
 REVOKE ALL ON TABLE list_subscribers FROM PUBLIC;
 REVOKE ALL ON TABLE list_subscribers FROM postgres;
 GRANT ALL ON TABLE list_subscribers TO postgres;
-GRANT ALL ON TABLE list_subscribers TO restya;
-
-
---
--- Name: lists_listing; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE lists_listing FROM PUBLIC;
-REVOKE ALL ON TABLE lists_listing FROM postgres;
-GRANT ALL ON TABLE lists_listing TO postgres;
-GRANT ALL ON TABLE lists_listing TO restya;
-
-
---
--- Name: boards_listing; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE boards_listing FROM PUBLIC;
-REVOKE ALL ON TABLE boards_listing FROM postgres;
-GRANT ALL ON TABLE boards_listing TO postgres;
-GRANT ALL ON TABLE boards_listing TO restya;
 
 
 --
@@ -5967,7 +5899,6 @@ GRANT ALL ON TABLE boards_listing TO restya;
 REVOKE ALL ON TABLE checklist_add_listing FROM PUBLIC;
 REVOKE ALL ON TABLE checklist_add_listing FROM postgres;
 GRANT ALL ON TABLE checklist_add_listing TO postgres;
-GRANT ALL ON TABLE checklist_add_listing TO restya;
 
 
 --
@@ -5977,7 +5908,6 @@ GRANT ALL ON TABLE checklist_add_listing TO restya;
 REVOKE ALL ON TABLE cities FROM PUBLIC;
 REVOKE ALL ON TABLE cities FROM postgres;
 GRANT ALL ON TABLE cities TO postgres;
-GRANT ALL ON TABLE cities TO restya;
 
 
 --
@@ -5987,7 +5917,6 @@ GRANT ALL ON TABLE cities TO restya;
 REVOKE ALL ON SEQUENCE cities_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE cities_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE cities_id_seq TO postgres;
-GRANT ALL ON SEQUENCE cities_id_seq TO restya;
 
 
 --
@@ -5997,7 +5926,6 @@ GRANT ALL ON SEQUENCE cities_id_seq TO restya;
 REVOKE ALL ON SEQUENCE cities_id_seq1 FROM PUBLIC;
 REVOKE ALL ON SEQUENCE cities_id_seq1 FROM postgres;
 GRANT ALL ON SEQUENCE cities_id_seq1 TO postgres;
-GRANT ALL ON SEQUENCE cities_id_seq1 TO restya;
 
 
 --
@@ -6007,7 +5935,6 @@ GRANT ALL ON SEQUENCE cities_id_seq1 TO restya;
 REVOKE ALL ON TABLE countries FROM PUBLIC;
 REVOKE ALL ON TABLE countries FROM postgres;
 GRANT ALL ON TABLE countries TO postgres;
-GRANT ALL ON TABLE countries TO restya;
 
 
 --
@@ -6017,7 +5944,6 @@ GRANT ALL ON TABLE countries TO restya;
 REVOKE ALL ON SEQUENCE countries_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE countries_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE countries_id_seq TO postgres;
-GRANT ALL ON SEQUENCE countries_id_seq TO restya;
 
 
 --
@@ -6027,7 +5953,6 @@ GRANT ALL ON SEQUENCE countries_id_seq TO restya;
 REVOKE ALL ON SEQUENCE countries_id_seq1 FROM PUBLIC;
 REVOKE ALL ON SEQUENCE countries_id_seq1 FROM postgres;
 GRANT ALL ON SEQUENCE countries_id_seq1 TO postgres;
-GRANT ALL ON SEQUENCE countries_id_seq1 TO restya;
 
 
 --
@@ -6037,7 +5962,6 @@ GRANT ALL ON SEQUENCE countries_id_seq1 TO restya;
 REVOKE ALL ON SEQUENCE email_templates_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE email_templates_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE email_templates_id_seq TO postgres;
-GRANT ALL ON SEQUENCE email_templates_id_seq TO restya;
 
 
 --
@@ -6047,7 +5971,6 @@ GRANT ALL ON SEQUENCE email_templates_id_seq TO restya;
 REVOKE ALL ON TABLE email_templates FROM PUBLIC;
 REVOKE ALL ON TABLE email_templates FROM postgres;
 GRANT ALL ON TABLE email_templates TO postgres;
-GRANT ALL ON TABLE email_templates TO restya;
 
 
 --
@@ -6057,7 +5980,6 @@ GRANT ALL ON TABLE email_templates TO restya;
 REVOKE ALL ON TABLE gadget_users_listing FROM PUBLIC;
 REVOKE ALL ON TABLE gadget_users_listing FROM postgres;
 GRANT ALL ON TABLE gadget_users_listing TO postgres;
-GRANT ALL ON TABLE gadget_users_listing TO restya;
 
 
 --
@@ -6067,7 +5989,6 @@ GRANT ALL ON TABLE gadget_users_listing TO restya;
 REVOKE ALL ON SEQUENCE ips_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE ips_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE ips_id_seq TO postgres;
-GRANT ALL ON SEQUENCE ips_id_seq TO restya;
 
 
 --
@@ -6077,7 +5998,6 @@ GRANT ALL ON SEQUENCE ips_id_seq TO restya;
 REVOKE ALL ON TABLE ips FROM PUBLIC;
 REVOKE ALL ON TABLE ips FROM postgres;
 GRANT ALL ON TABLE ips TO postgres;
-GRANT ALL ON TABLE ips TO restya;
 
 
 --
@@ -6087,7 +6007,6 @@ GRANT ALL ON TABLE ips TO restya;
 REVOKE ALL ON SEQUENCE list_subscribers_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE list_subscribers_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE list_subscribers_id_seq TO postgres;
-GRANT ALL ON SEQUENCE list_subscribers_id_seq TO restya;
 
 
 --
@@ -6097,7 +6016,6 @@ GRANT ALL ON SEQUENCE list_subscribers_id_seq TO restya;
 REVOKE ALL ON SEQUENCE login_types_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE login_types_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE login_types_id_seq TO postgres;
-GRANT ALL ON SEQUENCE login_types_id_seq TO restya;
 
 
 --
@@ -6107,7 +6025,6 @@ GRANT ALL ON SEQUENCE login_types_id_seq TO restya;
 REVOKE ALL ON TABLE login_types FROM PUBLIC;
 REVOKE ALL ON TABLE login_types FROM postgres;
 GRANT ALL ON TABLE login_types TO postgres;
-GRANT ALL ON TABLE login_types TO restya;
 
 
 --
@@ -6117,7 +6034,6 @@ GRANT ALL ON TABLE login_types TO restya;
 REVOKE ALL ON TABLE oauth_access_tokens FROM PUBLIC;
 REVOKE ALL ON TABLE oauth_access_tokens FROM postgres;
 GRANT ALL ON TABLE oauth_access_tokens TO postgres;
-GRANT ALL ON TABLE oauth_access_tokens TO restya;
 
 
 --
@@ -6127,7 +6043,6 @@ GRANT ALL ON TABLE oauth_access_tokens TO restya;
 REVOKE ALL ON TABLE oauth_authorization_codes FROM PUBLIC;
 REVOKE ALL ON TABLE oauth_authorization_codes FROM postgres;
 GRANT ALL ON TABLE oauth_authorization_codes TO postgres;
-GRANT ALL ON TABLE oauth_authorization_codes TO restya;
 
 
 --
@@ -6137,7 +6052,6 @@ GRANT ALL ON TABLE oauth_authorization_codes TO restya;
 REVOKE ALL ON TABLE oauth_clients FROM PUBLIC;
 REVOKE ALL ON TABLE oauth_clients FROM postgres;
 GRANT ALL ON TABLE oauth_clients TO postgres;
-GRANT ALL ON TABLE oauth_clients TO restya;
 
 
 --
@@ -6147,7 +6061,6 @@ GRANT ALL ON TABLE oauth_clients TO restya;
 REVOKE ALL ON TABLE oauth_jwt FROM PUBLIC;
 REVOKE ALL ON TABLE oauth_jwt FROM postgres;
 GRANT ALL ON TABLE oauth_jwt TO postgres;
-GRANT ALL ON TABLE oauth_jwt TO restya;
 
 
 --
@@ -6157,7 +6070,6 @@ GRANT ALL ON TABLE oauth_jwt TO restya;
 REVOKE ALL ON TABLE oauth_refresh_tokens FROM PUBLIC;
 REVOKE ALL ON TABLE oauth_refresh_tokens FROM postgres;
 GRANT ALL ON TABLE oauth_refresh_tokens TO postgres;
-GRANT ALL ON TABLE oauth_refresh_tokens TO restya;
 
 
 --
@@ -6167,7 +6079,6 @@ GRANT ALL ON TABLE oauth_refresh_tokens TO restya;
 REVOKE ALL ON TABLE oauth_scopes FROM PUBLIC;
 REVOKE ALL ON TABLE oauth_scopes FROM postgres;
 GRANT ALL ON TABLE oauth_scopes TO postgres;
-GRANT ALL ON TABLE oauth_scopes TO restya;
 
 
 --
@@ -6177,7 +6088,6 @@ GRANT ALL ON TABLE oauth_scopes TO restya;
 REVOKE ALL ON SEQUENCE organizations_users_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE organizations_users_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE organizations_users_id_seq TO postgres;
-GRANT ALL ON SEQUENCE organizations_users_id_seq TO restya;
 
 
 --
@@ -6187,27 +6097,6 @@ GRANT ALL ON SEQUENCE organizations_users_id_seq TO restya;
 REVOKE ALL ON TABLE organizations_users FROM PUBLIC;
 REVOKE ALL ON TABLE organizations_users FROM postgres;
 GRANT ALL ON TABLE organizations_users TO postgres;
-GRANT ALL ON TABLE organizations_users TO restya;
-
-
---
--- Name: organizations_users_listing; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE organizations_users_listing FROM PUBLIC;
-REVOKE ALL ON TABLE organizations_users_listing FROM postgres;
-GRANT ALL ON TABLE organizations_users_listing TO postgres;
-GRANT ALL ON TABLE organizations_users_listing TO restya;
-
-
---
--- Name: organizations_listing; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE organizations_listing FROM PUBLIC;
-REVOKE ALL ON TABLE organizations_listing FROM postgres;
-GRANT ALL ON TABLE organizations_listing TO postgres;
-GRANT ALL ON TABLE organizations_listing TO restya;
 
 
 --
@@ -6217,7 +6106,6 @@ GRANT ALL ON TABLE organizations_listing TO restya;
 REVOKE ALL ON SEQUENCE roles_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE roles_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE roles_id_seq TO postgres;
-GRANT ALL ON SEQUENCE roles_id_seq TO restya;
 
 
 --
@@ -6227,7 +6115,6 @@ GRANT ALL ON SEQUENCE roles_id_seq TO restya;
 REVOKE ALL ON TABLE roles FROM PUBLIC;
 REVOKE ALL ON TABLE roles FROM postgres;
 GRANT ALL ON TABLE roles TO postgres;
-GRANT ALL ON TABLE roles TO restya;
 
 
 --
@@ -6237,7 +6124,6 @@ GRANT ALL ON TABLE roles TO restya;
 REVOKE ALL ON TABLE role_links_listing FROM PUBLIC;
 REVOKE ALL ON TABLE role_links_listing FROM postgres;
 GRANT ALL ON TABLE role_links_listing TO postgres;
-GRANT ALL ON TABLE role_links_listing TO restya;
 
 
 --
@@ -6247,7 +6133,6 @@ GRANT ALL ON TABLE role_links_listing TO restya;
 REVOKE ALL ON TABLE setting_categories FROM PUBLIC;
 REVOKE ALL ON TABLE setting_categories FROM postgres;
 GRANT ALL ON TABLE setting_categories TO postgres;
-GRANT ALL ON TABLE setting_categories TO restya;
 
 
 --
@@ -6257,7 +6142,6 @@ GRANT ALL ON TABLE setting_categories TO restya;
 REVOKE ALL ON SEQUENCE setting_categories_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE setting_categories_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE setting_categories_id_seq TO postgres;
-GRANT ALL ON SEQUENCE setting_categories_id_seq TO restya;
 
 
 --
@@ -6267,7 +6151,6 @@ GRANT ALL ON SEQUENCE setting_categories_id_seq TO restya;
 REVOKE ALL ON SEQUENCE settings_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE settings_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE settings_id_seq TO postgres;
-GRANT ALL ON SEQUENCE settings_id_seq TO restya;
 
 
 --
@@ -6277,7 +6160,6 @@ GRANT ALL ON SEQUENCE settings_id_seq TO restya;
 REVOKE ALL ON TABLE settings FROM PUBLIC;
 REVOKE ALL ON TABLE settings FROM postgres;
 GRANT ALL ON TABLE settings TO postgres;
-GRANT ALL ON TABLE settings TO restya;
 
 
 --
@@ -6287,17 +6169,6 @@ GRANT ALL ON TABLE settings TO restya;
 REVOKE ALL ON TABLE settings_listing FROM PUBLIC;
 REVOKE ALL ON TABLE settings_listing FROM postgres;
 GRANT ALL ON TABLE settings_listing TO postgres;
-GRANT ALL ON TABLE settings_listing TO restya;
-
-
---
--- Name: simple_board_listing; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE simple_board_listing FROM PUBLIC;
-REVOKE ALL ON TABLE simple_board_listing FROM postgres;
-GRANT ALL ON TABLE simple_board_listing TO postgres;
-GRANT ALL ON TABLE simple_board_listing TO restya;
 
 
 --
@@ -6307,7 +6178,6 @@ GRANT ALL ON TABLE simple_board_listing TO restya;
 REVOKE ALL ON TABLE states FROM PUBLIC;
 REVOKE ALL ON TABLE states FROM postgres;
 GRANT ALL ON TABLE states TO postgres;
-GRANT ALL ON TABLE states TO restya;
 
 
 --
@@ -6317,7 +6187,6 @@ GRANT ALL ON TABLE states TO restya;
 REVOKE ALL ON SEQUENCE states_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE states_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE states_id_seq TO postgres;
-GRANT ALL ON SEQUENCE states_id_seq TO restya;
 
 
 --
@@ -6327,7 +6196,6 @@ GRANT ALL ON SEQUENCE states_id_seq TO restya;
 REVOKE ALL ON SEQUENCE states_id_seq1 FROM PUBLIC;
 REVOKE ALL ON SEQUENCE states_id_seq1 FROM postgres;
 GRANT ALL ON SEQUENCE states_id_seq1 TO postgres;
-GRANT ALL ON SEQUENCE states_id_seq1 TO restya;
 
 
 --
@@ -6337,7 +6205,6 @@ GRANT ALL ON SEQUENCE states_id_seq1 TO restya;
 REVOKE ALL ON TABLE user_logins FROM PUBLIC;
 REVOKE ALL ON TABLE user_logins FROM postgres;
 GRANT ALL ON TABLE user_logins TO postgres;
-GRANT ALL ON TABLE user_logins TO restya;
 
 
 --
@@ -6347,27 +6214,6 @@ GRANT ALL ON TABLE user_logins TO restya;
 REVOKE ALL ON SEQUENCE user_logins_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE user_logins_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE user_logins_id_seq TO postgres;
-GRANT ALL ON SEQUENCE user_logins_id_seq TO restya;
-
-
---
--- Name: users_cards_listing; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE users_cards_listing FROM PUBLIC;
-REVOKE ALL ON TABLE users_cards_listing FROM postgres;
-GRANT ALL ON TABLE users_cards_listing TO postgres;
-GRANT ALL ON TABLE users_cards_listing TO restya;
-
-
---
--- Name: users_listing; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE users_listing FROM PUBLIC;
-REVOKE ALL ON TABLE users_listing FROM postgres;
-GRANT ALL ON TABLE users_listing TO postgres;
-GRANT ALL ON TABLE users_listing TO restya;
 
 
 --

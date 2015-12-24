@@ -1,10 +1,10 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
 <div class="media">
-	<a data-placement="bottom" title="<%-activity.attributes.full_name %>" data-toggle="tooltip" class="js-tooltip pull-left" href="#/user/<%- activity.attributes.user_id %>">
+	<a data-placement="bottom" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" data-toggle="tooltip" data-container="body" data-html="true" class="js-tooltip pull-left" href="#/user/<%- activity.attributes.user_id %>">
 		<% if(!_.isEmpty(activity.attributes.profile_picture_path)) {
 			var profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'small_thumb' );
 		%>
-			<img src="<%=profile_picture_path %>" alt="[Image: <%-activity.attributes.full_name %>]" title="<%-activity.attributes.full_name %>" class="img-rounded img-responsive">
+			<img src="<%=profile_picture_path %>" alt="[Image: <%-activity.attributes.full_name %>]" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" class="img-rounded img-responsive">
 		<% } else {%> 
 			<i class="avatar avatar-color-194 img-rounded"><%- activity.attributes.initials %></i>
 		<% } %>
@@ -56,8 +56,12 @@
 						<%= converter.makeHtml(makeLink(activity.attributes.comment, activity.attributes.board_id)) %>
 					<% }%>
 					</span>
-					<% if(activity.attributes.difference != null && activity.attributes.type != 'change_background' && activity.attributes.type != 'add_background' && activity.attributes.type != 'change_visibility' && activity.attributes.type != 'edit_card_duedate'&& activity.attributes.type != 'add_card_desc' && activity.attributes.type != 'update_card_checklist_item' && activity.attributes.type != 'change_card_position') { %>
-						<div class="thumbnail media-body"><%= converter.makeHtml(activity.attributes.difference[0]) %></div>
+					<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card'], activity.attributes.type)) { %>
+						<div class="thumbnail media-body">
+							<% _.each(activity.attributes.difference, function(difference) { %>
+								<%= converter.makeHtml(difference) %>
+							<% }); %>
+						</div>
 					<% } %>
 					
 				</div>
@@ -70,9 +74,9 @@
 	<div class="clearfix col-xs-12">
 		<small class="col-xs-12 pull-left">
 			<abbr class="timeago pull-left text-muted" title="<%- activity.attributes.created %>"><%- activity.attributes.created %></abbr>
-			<% if(activity.attributes.type == 'add_organization_attachment' || activity.attributes.type == 'change_visibility' || activity.attributes.type == 'add_organization_user' || activity.attributes.type == 'delete_organization_user') { %>
+			<% if((activity.attributes.type == 'add_organization_attachment' || activity.attributes.type == 'change_visibility' || activity.attributes.type == 'add_organization_user' || activity.attributes.type == 'delete_organization_user') && (!_.isEmpty(activity.attributes.organization_name))) { %>
 				<a class="pull-left" href="#/organization/<%= activity.attributes.organization_id %>">&nbsp;on&nbsp;<%- activity.attributes.organization_name %></a>
-			<% } else if(type == 'all' && activity.attributes.type != 'edit_organization' && activity.attributes.type != 'add_organization') { %>
+			<% } else if(type == 'all' && activity.attributes.type != 'edit_organization' && activity.attributes.type != 'add_organization' && (!_.isEmpty(activity.attributes.board_name))) { %>
 				<a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;on&nbsp;<%- activity.attributes.board_name %></a>
 			<% } %>
 				<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all" && (_.isUndefined(activity.from_footer))) { %>

@@ -34,8 +34,6 @@
 					if(!_.isEmpty(role_links.where({slug: "users_register"}))){
 						if ( (!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false" ) || (!_.isEmpty(STANDARD_LOGIN_ENABLED) && (STANDARD_LOGIN_ENABLED === "true"))) {
 					%>
-					<li>|</li>
-					<li><a href="#/users/register" title="Register" class="text-primary">Register</a></li>
 					<%
 						}
 					}

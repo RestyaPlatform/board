@@ -119,7 +119,9 @@ App.CardView = Backbone.View.extend({
         'click .js-show-card-label-form': 'showCardLabelForm',
         'click .js-show-card-position-form': 'showCardPositionForm',
         'change .js-change-card-position': 'selectCardPosition',
+        'click .js-change-card-position': 'selectCardPosition',
         'change .js-position': 'changeCardPosition',
+        'click .js-position': 'changeCardPosition',
         'click .js-add-card-member': 'addCardMember',
         'click .js-remove-card-member': 'removeCardMember',
         'cardSort': 'cardSort'
@@ -134,29 +136,46 @@ App.CardView = Backbone.View.extend({
      *
      */
     cardSort: function(ev, ui) {
+        var self = this;
         var target = $(ev.target);
         var data = {};
         var list_id = parseInt(target.parents('.js-board-list:first').data('list_id'));
         var previous_card_id = target.prev('.js-board-list-card').data('card_id');
         var next_card_id = target.next('.js-board-list-card').data('card_id');
-        this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.attributes.id + '.json';
-        if ((typeof previous_card_id == 'undefined' && typeof next_card_id == 'undefined') || list_id != this.model.attributes.list_id) {
+        self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.attributes.id + '.json';
+        if ((typeof previous_card_id == 'undefined' && typeof next_card_id == 'undefined') || list_id != self.model.attributes.list_id) {
             data.list_id = list_id;
         }
         if (typeof previous_card_id != 'undefined') {
-            this.model.moveAfter(previous_card_id);
+            self.model.moveAfter(previous_card_id);
         } else if (typeof next_card_id != 'undefined') {
-            this.model.moveBefore(next_card_id);
+            self.model.moveBefore(next_card_id);
         }
-        this.model.set({
+        self.model.set({
             list_id: list_id
         }, {
             silent: true
         });
-        data.position = this.model.attributes.position;
-        this.model.save(data, {
+        data.position = self.model.attributes.position;
+        self.model.save(data, {
             patch: true,
             silent: true
+        });
+        var attachments = self.model.list.collection.board.attachments.where({
+            card_id: self.model.attributes.id
+        });
+        var j = 1;
+        _.each(attachments, function(attachment) {
+            var options = {
+                silent: true
+            };
+            if (j === attachments.length) {
+                options.silent = false;
+            }
+            self.model.list.collection.board.attachments.get(attachment.id).set({
+                list_id: list_id
+            }, options);
+            j++;
         });
     },
     /**
@@ -190,7 +209,7 @@ App.CardView = Backbone.View.extend({
             content += '</ul>';
             this.$el.append(content);
             content = '<ul class="unstyled  js-card-due hide">';
-            content += '<li>' + this.getDue(this.model.get('to_date')) + '</li>';
+            content += this.getDue(this.model.get('due_date'));
             content += '</ul>';
             this.$el.append(content);
             this.$el.append(this.template({
@@ -226,7 +245,7 @@ App.CardView = Backbone.View.extend({
             content += '</ul>';
             this.$el.append(content);
             content = '<ul class="unstyled  js-card-due hide">';
-            content += '<li>' + this.getDue(this.model.get('to_date')) + '</li>';
+            content += this.getDue(this.model.get('due_date'));
             content += '</ul>';
             this.$el.append(content);
             this.$el.append(self.template({
@@ -306,23 +325,19 @@ App.CardView = Backbone.View.extend({
         self.$el.find('.js-card-add-list').val(list_id);
         var list = this.model.list.collection.board.lists.findWhere({
             id: parseInt(list_id)
-
         });
         var filtered_cards_count = this.model.list.collection.board.cards.where({
             list_id: list.attributes.id,
-            is_archived: false
+            is_archived: 0
         }).length;
-
         var current_position = filtered_cards_count + 1;
         for (var i = 1; i <= filtered_cards_count; i++) {
-
             content_position += '<option value="' + i + '">' + i + '</option>';
-
         }
         self.$el.find('.js-card-add-position').val(i);
-        content_position += '<option value="' + i + '" selected="selected">' + i + '(current)</option>';
+        content_position += '<option value="' + i + '" selected="selected">' + i + ' (current)</option>';
         self.$el.find('.js-position').html(content_position);
-
+        return false;
     },
     /**
      * changeCardPosition()
@@ -334,6 +349,7 @@ App.CardView = Backbone.View.extend({
         var target = $(e.currentTarget);
         var posoition = target.val();
         this.$el.find('.js-card-add-position').val(posoition);
+        return false;
 
     },
     /**
@@ -345,6 +361,7 @@ App.CardView = Backbone.View.extend({
      *
      */
     showCardModal: function() {
+        $('ul.dropdown-menu').parent().removeClass('open');
         if (this.model === null || _.isEmpty(this.model)) {
             return false;
         }
@@ -391,6 +408,10 @@ App.CardView = Backbone.View.extend({
         if (card_due_date === null) {
             return '';
         }
+        card_due_date = card_due_date.split(' ');
+        if (!_.isEmpty(card_due_date[1])) {
+            card_due_date = card_due_date[0] + 'T' + card_due_date[1];
+        }
         var today = new Date();
         var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
@@ -403,22 +424,30 @@ App.CardView = Backbone.View.extend({
 
         var years = Math.floor(months / 12);
         var week = days - (6 - (today.getDay()));
+        var due_content = '';
         var message = 'feature';
+        due_content = '';
         if (years > 0) {
             message = 'year';
-        } else if (week >= 0 && week <= 6) {
-            message = 'week';
-            if ((today.getMonth() + 1) === due_date.getMonth()) {
-                message = 'week month';
-            }
-        } else if ((today.getMonth() + 1) === due_date.getMonth()) {
-            message = 'month';
-        } else if (days === 0) {
-            message = 'day';
-        } else if (years < 0 || months < 0 || days < 0) {
-            message = 'overdue';
+            due_content += '<li>year</li>';
         }
-        return message;
+        if (days >= 0 && days <= 7) {
+            message = 'week';
+            due_content += '<li>week</li>';
+        }
+        if (days >= 0 && days <= 30) {
+            message = 'month';
+            due_content += '<li>month</li>';
+        }
+        if (days === 0) {
+            message = 'day';
+            due_content += '<li>day</li>';
+        }
+        if (years < 0 || months < 0 || days <= -1) {
+            message = 'overdue';
+            due_content += '<li>overdue</li>';
+        }
+        return due_content;
     },
     /**
      * showCardActionList()
@@ -447,6 +476,7 @@ App.CardView = Backbone.View.extend({
         $('.js-card-action-list-response').html(new App.CardMemberFormView({
             model: this.model
         }).el);
+        this.showTooltip();
         var selected_memebers = $('.js-card-user-ids').val();
         var selected_memebers_arr = selected_memebers.split(",");
         for (i = 0; i < selected_memebers_arr.length; i++) {
@@ -491,11 +521,11 @@ App.CardView = Backbone.View.extend({
      *
      */
     showCardPositionForm: function(e) {
+        e.preventDefault();
         $('.js-card-action-list-response').html(new App.CardPositionsFormView({
             model: this.model,
-            boards: App.boards,
+            boards: App.boards
         }).el);
-
         return false;
     },
     /**
@@ -558,6 +588,7 @@ App.CardView = Backbone.View.extend({
         $.unique(this.card_users);
         this.card_users.splice($.inArray(parseInt(user_id), this.card_users), 1);
         this.$el.find('.js-card-user-ids').val(this.card_users.join(','));
+        return false;
     },
     /**
      * renderListChange()

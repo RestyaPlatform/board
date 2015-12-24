@@ -8,7 +8,7 @@
 	if (!_.isEmpty(card.card_voters.models)){
 	card.card_voters.each(function(voter) {            
 	%>
-		<li class="col-xs-12"><a class="js-no-action" data-placement="bottom" data-toggle="tooltip" title="<%- voter.attributes.username %>" href="#"> 
+		<li class="col-xs-12"><a class="js-no-action" data-placement="bottom" data-toggle="tooltip" title="<%- voter.attributes.full_name %> (<%- voter.attributes.username %>)" href="#"> 
 		<span>
 			<% if(!_.isEmpty(voter.attributes.profile_picture_path)) { 
 				var profile_picture_path = card.showImage('User', voter.attributes.user_id, 'micro_thumb' );

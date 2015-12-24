@@ -1,11 +1,3 @@
-window.addEventListener('load', function(e) {
-    window.applicationCache.addEventListener('updateready', function(e) {
-        if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
-            if (confirm('A new version of this site is available. Load it?'))
-                window.location.reload();
-        }
-    }, false);
-}, false);
 $(window).resize(function() {
     var headerH = $("header").height();
     var footerH = $("footer").height();
@@ -27,12 +19,12 @@ $dc.ready(function() {
     if ($.cookie('_geo') === null) {
         $.ajax({
             type: 'GET',
-            url: '//www.telize.com/geoip',
-            dataType: 'json',
+            url: '//freegeoip.net/json/',
+            dataType: 'JSONP',
             cache: true,
             success: function(data) {
                 data.country_code = (data.country_code !== undefined && data.country_code !== null) ? data.country_code : "";
-                data.region = (data.region !== undefined && data.region !== null) ? data.region : "";
+                data.region = (data.region_name !== undefined && data.region_name !== null) ? data.region_name : "";
                 data.city = (data.city !== undefined && data.city !== null) ? data.city : "";
                 data.latitude = (data.latitude !== undefined && data.latitude !== null) ? data.latitude : "";
                 data.longitude = (data.longitude !== undefined && data.longitude !== null) ? data.longitude : "";
@@ -48,9 +40,56 @@ $dc.ready(function() {
         var target = $(e.target);
         target.parents('li.dropdown').removeClass('open');
         return false;
+    }).on('click', '.js-start', function(e) {
+        var actionSheet = $(".action-sheet");
+        /* Grazie a modernizr riprendo il nome dell'evento di fine animazione, che cambia a seconda del browser */
+        var endTransitionName = {
+            'WebkitTransition': 'webkitTransitionEnd',
+            'OTransition': 'oTransitionEnd',
+            'msTransition': 'MSTransitionEnd',
+            'transition': 'transitionend'
+        };
+        var transitionEventName = endTransitionName[Modernizr.prefixed('transition')];
+        var X = $(this).attr('id');
+        if (X == 1) {
+            setTimeout(function() {
+                actionSheet.removeClass("open"); //aggiungiamo la classe 'open' per avviare l'aniamzione
+            }, 10);
+            $(this).attr('id', '0');
+            $("#footer").removeClass("action-open");
+        } else {
+            setTimeout(function() {
+                actionSheet.addClass("open"); //aggiungiamo la classe 'open' per avviare l'aniamzione
+            }, 10);
+            $(this).attr('id', '1');
+            $("#footer").addClass("action-open");
+        }
+    }).on('click', '.cancel', function(e) {
+        var _endTransitionName = {
+            'WebkitTransition': 'webkitTransitionEnd',
+            'OTransition': 'oTransitionEnd',
+            'msTransition': 'MSTransitionEnd',
+            'transition': 'transitionend'
+        };
+        var _transitionEventName = _endTransitionName[Modernizr.prefixed('transition')];
+        var _actionSheet = $(".action-sheet");
+        _actionSheet.removeClass("open").one(_transitionEventName, function() {
+            _actionSheet.hide();
+        });
     }).on('click', '.js-edit-organization', function(e) {
         $('.js-organization-view-block').hide();
         $('.js-organization-edit-block').show();
+        return false;
+    }).on('click', '.js-select', function(e) {
+        $this = $(this);
+        if ($this.data('unchecked')) {
+            unchecked = $this.data('unchecked');
+            $('.' + unchecked).prop('checked', false);
+        }
+        if ($this.data('checked')) {
+            checked = $this.data('checked');
+            $('.' + checked).prop('checked', 'checked');
+        }
         return false;
     }).on('click', '.js-dropdown-popup', function(e) {
         e.stopPropagation();
@@ -95,7 +134,7 @@ $dc.ready(function() {
 (jQuery);
 
 function changeTitle(title) {
-    document.title = SITE_NAME + " | " + title;
+    document.title = SITE_NAME + "'s Restyaboard" + " | " + title;
 }
 
 function checkKeycode(keycode, c) {
@@ -116,7 +155,20 @@ function makeLink(text, board_id) {
         });
         return text;
     } else {
-        return text;
+        var split_text = text.split(" ");
+        var ret_text = '';
+        if (split_text[0].match(/^@/)) {
+            for (var i = 0; i < split_text.length; i++) {
+                if (i === 0) {
+                    ret_text += '<span class="atMention">' + split_text[0] + '</span>' + " ";
+                } else {
+                    ret_text += " " + split_text[i];
+                }
+            }
+        } else {
+            ret_text = text;
+        }
+        return ret_text;
     }
 }
 

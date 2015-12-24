@@ -76,7 +76,7 @@
 	}
 	%>
 		<li class="list-group-item clearfix" style="<%= style %>">
-			<% if(board.attributes.music_name != null){ %>
+			<% if(!_.isEmpty(board.attributes.music_name)){ %>
 			<div class="col-xs-push-0 pa well-sm board-music-bg"><i class="icon-music icon-light"></i></div>
 			<% } %>
 			<a class="show" href="#/board/<%- board.id %>">

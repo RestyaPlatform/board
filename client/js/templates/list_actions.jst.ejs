@@ -11,7 +11,7 @@
 		 subscribe_id = subscribe.attributes.id;
 	 }
 %>
-<li class="text-center"><strong>List Actions</strong></li>
+<li class="text-center"><strong>List Actions</strong><a class="pull-right"><i class=" icon-remove"></i></a></li>
 <li class="divider"></li>
 <% if(!_.isEmpty(role_links.where({slug: "add_card"}))){ %>
 	<li><a href="#" title="Add Card" class="js-show-add-card-form">Add Card</a></li>
@@ -38,5 +38,5 @@
 	<li><a href="#" title="Archive This List" class="js-show-confirm-archive-list" data-list-id="<%- list.id %>">Archive This List</a></li>
 <% } %>
 <% if(!_.isEmpty(role_links.where({slug: "delete_list"}))){ %>
-<li><a href="#" title="Delete This List" class="js-show-confirm-list-delete" data-list-id="<%- list.id %>">Delete This List</a></li>
+<li><a href="#" title="Delete This List" class="js-show-confirm-list-delete" data-list-id="<%- list.id %>"><i class="icon-sm icon-warning-sign icon-type text-primary"></i>Delete This List</a></li>
 <% } %>

@@ -95,7 +95,7 @@ App.SettingView = Backbone.View.extend({
             id: this.id
         }));
         $('.js-admin-setting-menu').addClass('active');
-        $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-email-menu, .js-admin-role-menu').removeClass('active');
+        $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-email-menu, .js-admin-role-menu, .js-admin-board-menu').removeClass('active');
         return this;
     }
 });

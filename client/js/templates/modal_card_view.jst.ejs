@@ -165,7 +165,7 @@
 				   <%if(!_.isUndefined(authuser.user)) {%>
 				  <form class="hide js-card-edit-form" name="cardDescriptionEditForm" id="cardDescriptionEditForm">
 					<div class="form-group required">
-					  <textarea rows="4" id="inputCarddescription" name="description" class="form-control"><%- card.attributes.description %></textarea>
+					  <textarea rows="4" id="inputCarddescription" name="description" class="form-control" required><%- card.attributes.description %></textarea>
 					</div>
 					<div class="submit panel-body">
 					  <input type="submit" value="Save" id="submitCardDescriptionEditForm" class="btn btn-primary">
@@ -194,8 +194,8 @@
 						<li class="col-xs-12">
 						  <span class="col-xs-10 sr-only">Attach a Link</span>
 						  <form class="js-card-attachment-link-form col-xs-12" method="post" role="form">
-							<div class="form-group row">
-							  <input type="url" class="form-control input-sm"  name="image_link" placeHolder="Paste any link here" title="Paste any link here">
+							<div class="form-group row">  
+							  <input type="url" id="AttachList" class="form-control input-sm" name="image_link" placeHolder="Paste any link here" title="Whitespace alone not allowed" required pattern=".*\S+.*">
 							</div>
 							<div class="form-group row">
 							  <input type="submit" value="Submit" id="submit2" class="btn btn-primary btn-sm">
@@ -227,13 +227,13 @@
 				  <form method="post" class="form-horizontal js-add-comment">
 				  <ul class="media-list">
 						<li class="media">
-						<a data-placement="bottom" title="<%- authuser.user.username %>" data-toggle="tooltip" class="pull-left" href="#/user/<%- authuser.id %>">
+						<a data-placement="bottom" data-container="body" title="<%-authuser.user.full_name %> (<%- authuser.user.username %>)" data-toggle="tooltip" class="pull-left" href="#/user/<%- authuser.id %>">
 				  <% if(!_.isEmpty(authuser.user.profile_picture_path)) { 
 					var profile_picture_path = card.showImage('User', authuser.user.id, 'small_thumb' );
 				  %>
-				  <img src="<%=profile_picture_path %>" alt="[Image: <%-authuser.user.username %>]" title="<%-authuser.user.username %>" class="img-rounded img-responsive avatar">
+				  <img src="<%=profile_picture_path %>" alt="[Image: <%-authuser.user.username %>]" class="img-rounded img-responsive avatar">
 				  <% } else {%>
-				  <i class="avatar avatar-color-194 img-rounded" title="<%-authuser.user.username %>"><%- authuser.user.initials %></i>
+				  <i class="avatar avatar-color-194 img-rounded"><%- authuser.user.initials %></i>
 				  <% } %>
 				  </a>
 					<div class="media-body">
@@ -241,7 +241,7 @@
 						<div class="form-group list-group-item-text">
 							<div class="col-xs-12 list-group-item-text navbar-right">
 								<label class="sr-only">Comment</label>
-								<textarea class="form-control input-sm js-comment" rows="4" name="comment" placeHolder="Write a comment" required title="Write a comment"></textarea>	
+								<textarea id="inputAddComment" class="form-control input-sm js-comment" rows="4" name="comment" placeHolder="Write a comment" required title="Write a comment"></textarea>	
 							</div>
 						</div>
 					  </div>
@@ -250,38 +250,42 @@
 					<li class="js-new-comment hide clearfix btn-block navbar-btn">
 					<div class="col-xs-11 radio pull-right btn-block">
 						<ul class="list-unstyled clearfix col-xs-12">
-						<li class="pull-left radio-inline">
-						  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="Add Card" href="#"> <span class="text-muted show" >Add Card</span> </a>
-							<ul class="dropdown-menu arrow col-xs-3 list-group">
-							  <li class="col-xs-12 clearfix text-center">
-								<div><span class="col-xs-10"><strong>Add Card</strong></span>
-								<a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div>
-							  </li>
-							  <li class="col-xs-12 divider"></li>
-							  <li class="col-xs-12 js_activity_card_search_response">
-								  <div class="clearfix">
-									<label class="sr-only">Search Card</label>                            
-									  <input type="text" placeholder="Search Card" name="card" class="js-search-card form-control input-sm  js-no-action" title="Search Card">
-								  </div>
-							  </li>
-							</ul>
-						  </div>
-						</li>
-						<li class="dropdown pull-left radio-inline radio">
-						  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="Mention a member" href="#"> <span class="text-muted show" >Mention a member</span> </a>
-							<ul class="dropdown-menu arrow col-xs-3">
-							  <li class="col-xs-12 clearfix text-center"><div><span class="col-xs-10"><strong>Mention a Members</strong></span> <a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
-							  <li class="col-xs-12 divider"></li>
-							  <li class="col-xs-12 js-comment-member-search-response">
-								  <div class="clearfix">
-									<label class="sr-only">Search Member</label>
-									<input type="text" autocomplete="off" placeholder="Search members" name="member" class="js-search-member form-control input-sm js-no-action" title="Search members">
-								  </div>
-							  </li>
-							</ul>
-						  </div>
-						</li>
-					  </ul>
+							<li class="pull-left radio-inline">
+								<div class="clearfix dropdown js-show-emoji-list-response"> <a class="js-show-emoji-list show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="Add Emoji" href="#"> <span class="text-muted show" >Add Emoji</span> </a>
+								</div>
+							</li>
+							<li class="pull-left radio radio-inline">
+							  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="Add Card" href="#"> <span class="text-muted show" >Add Card</span> </a>
+								<ul class="dropdown-menu arrow col-xs-3 list-group">
+								  <li class="col-xs-12 clearfix text-center">
+									<div><span class="col-xs-10"><strong>Add Card</strong></span>
+									<a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div>
+								  </li>
+								  <li class="col-xs-12 divider"></li>
+								  <li class="col-xs-12 js_activity_card_search_response">
+									  <div class="clearfix">
+										<label class="sr-only">Search Card</label>                            
+										  <input type="text" placeholder="Search Card" name="card" class="js-search-card form-control input-sm  js-no-action" title="Search Card">
+									  </div>
+								  </li>
+								</ul>
+							  </div>
+							</li>
+							<li class="dropdown pull-left radio-inline radio">
+							  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block js-show-members" role="button" data-toggle="dropdown" title="Mention a member" href="#"> <span class="text-muted show" >Mention a member</span> </a>
+								<ul class="dropdown-menu arrow col-xs-3">
+								  <li class="col-xs-12 clearfix text-center"><div><span class="col-xs-10"><strong>Mention a Members</strong></span> <a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
+								  <li class="col-xs-12 divider"></li>
+								  <li class="col-xs-12 js-comment-member-search-response">
+									  <div class="clearfix">
+										<label class="sr-only">Search Member</label>
+										<input type="text" autocomplete="off" placeholder="Search members" name="member" class="js-search-member form-control input-sm js-no-action" title="Search members">
+									  </div>
+								  </li>
+								</ul>
+							   </div>
+							</li>
+					    </ul>
 					<div class="pull-left col-xs-12">
 					  <label class="sr-only" for="submit2">submit</label>
 					  <div class="radio-inline">
@@ -397,7 +401,7 @@
 				  <span class="col-xs-10 sr-only">Attach a Link</span>
 				  <form class="js-card-attachment-link-form col-xs-12" method="post" role="form">
 					<div class="form-group row">
-					  <input type="url" class="form-control input-sm"  name="image_link" placeHolder="Paste any link here" title="Paste any link here">
+					  <input type="url" class="form-control input-sm"   id="" name="image_link" placeHolder="Paste any link here" title="Whitespace alone not allowed" required pattern=".*\S+.*">
 					</div>
 					<div class="form-group row">
 					  <input type="submit" value="Submit" id="submit2" class="btn btn-primary btn-sm">

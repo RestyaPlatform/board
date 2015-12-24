@@ -26,7 +26,7 @@ App.MusicRepeatView = Backbone.View.extend({
                 wave: 'piano'
             });
             if (!_.isUndefined(authuser.user)) {
-                if (!_.isUndefined(authuser.user.is_productivity_beats) && (authuser.user.is_productivity_beats === true || authuser.user.is_productivity_beats === 't')) {
+                if (!_.isUndefined(authuser.user.is_productivity_beats) && (authuser.user.is_productivity_beats === true || authuser.user.is_productivity_beats === 1)) {
                     App.music.inst.play(
                         music_content, temp.continueMusic
                     );

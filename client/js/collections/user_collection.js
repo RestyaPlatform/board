@@ -10,8 +10,8 @@ if (typeof App == 'undefined') {
 App.UserCollection = Backbone.Collection.extend({
     model: App.User,
     initialize: function() {
-        this.sortField = "id";
-        this.sortDirection = "DESC";
+        this.sortField = 'id';
+        this.sortDirection = 'desc';
     },
     forSelect: function() {
         return this.map(function(user) {
@@ -32,7 +32,7 @@ App.UserCollection = Backbone.Collection.extend({
         var str = '' + item.get(this.sortField);
         if (this.sortField !== 'id') {
             str = str.toLowerCase();
-            str = str.split("");
+            str = str.split('');
             str = _.map(str, function(letter) {
                 if (self.sortDirection.toLowerCase() === 'desc') {
                     return String.fromCharCode(-(letter.charCodeAt(0)));
@@ -48,5 +48,11 @@ App.UserCollection = Backbone.Collection.extend({
                 return item.get(this.sortField);
             }
         }
+    },
+    parse: function(response) {
+        if (!_.isUndefined(response._metadata)) {
+            return response.data;
+        }
+        return response;
     }
 });

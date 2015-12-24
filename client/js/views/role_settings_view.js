@@ -48,7 +48,7 @@ App.RoleSettingsView = Backbone.View.extend({
             roles: this.roles
         }));
         $('.js-admin-role-menu').addClass('active');
-        $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-email-menu, .js-admin-setting-menu').removeClass('active');
+        $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-email-menu, .js-admin-setting-menu, .js-admin-board-menu').removeClass('active');
         this.showTooltip();
         return this;
     },

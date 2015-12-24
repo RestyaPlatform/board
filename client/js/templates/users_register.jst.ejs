@@ -23,13 +23,12 @@
 	  		<%
 			  if(!_.isEmpty(role_links.where({slug: "users_login"}))){
 			%>
-				<li><a href="#/users/login" title="Login" class="text-primary">Login</a></li>
+				
 			<%
 			  }
 			%>
 		  <% if(!_.isEmpty(role_links.where({slug: "users_forgotpassword"}))){ %>
-		  	<li>|</li>
-			<li><a href="#/users/forgotpassword" title="Forgot your password?" class="text-primary">Forgot your password?</a></li>
+		  	<li><a href="#/users/forgotpassword" title="Forgot your password?" class="text-primary">Forgot your password?</a></li>
 			
 			<% }%>
 		</ul>
