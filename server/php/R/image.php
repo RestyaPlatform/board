@@ -20,40 +20,36 @@ $val = $thumbsizes[$model][$size];
 list($width, $height) = explode('x', $val);
 list($id, $hash, $ext) = explode('.', $filename);
 if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size . SITE_NAME)) {
-    $val_array = array(
+    $condition = array(
         $id
     );
     if ($model == 'User') {
-        $s_result = pg_query_params($db_lnk, 'SELECT profile_picture_path FROM users WHERE id = $1', $val_array);
+        $s_result = pg_query_params($db_lnk, 'SELECT profile_picture_path FROM users WHERE id = $1', $condition);
         $row = pg_fetch_assoc($s_result);
         $fullPath = $row['profile_picture_path'];
     } else if ($model == 'Organization') {
-        $s_result = pg_query_params($db_lnk, 'SELECT logo_url FROM organizations WHERE id = $1', $val_array);
+        $s_result = pg_query_params($db_lnk, 'SELECT logo_url FROM organizations WHERE id = $1', $condition);
         $row = pg_fetch_assoc($s_result);
         $fullPath = $row['logo_url'];
     } else if ($model == 'Board') {
-        $s_result = pg_query_params($db_lnk, 'SELECT background_picture_path FROM boards WHERE id = $1', $val_array);
+        $s_result = pg_query_params($db_lnk, 'SELECT background_picture_path FROM boards WHERE id = $1', $condition);
         $row = pg_fetch_assoc($s_result);
         $fullPath = $row['background_picture_path'];
     } else if ($model == 'CardAttachment') {
-        $s_result = pg_query_params($db_lnk, 'SELECT path FROM card_attachments WHERE id = $1', $val_array);
+        $s_result = pg_query_params($db_lnk, 'SELECT path FROM card_attachments WHERE id = $1', $condition);
         $row = pg_fetch_assoc($s_result);
         $fullPath = $row['path'];
     }
     $fullPath = APP_PATH . '/' . $fullPath;
-    $query_string = $_GET;
-    $query_string['id'] = $id;
-    $query_string['ext'] = $ext;
-    $query_string['hash'] = $hash;
     $is_aspect = false;
     if (!empty($aspect[$model][$size])) {
         $is_aspect = true;
     }
-    $mediadir = APP_PATH . '/client/img/' . $query_string['size'] . '/' . $query_string['model'] . '/';
+    $mediadir = APP_PATH . '/client/img/' . $size . '/' . $model . '/';
     if (!file_exists($mediadir)) {
         mkdir($mediadir, 0777, true);
     }
-    $filename = $query_string['id'] . '.' . $query_string['hash'] . '.' . $query_string['ext'];
+    $filename = $id . '.' . $hash . '.' . $ext;
     $writeTo = $mediadir . $filename;
     if (!$width || !$height) {
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
@@ -69,11 +65,7 @@ if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size . SITE_NAME)) {
         $new_image = $new_image_obj->clone();
         $new_image->setImageColorspace(Imagick::COLORSPACE_RGB);
         $new_image->flattenImages();
-        if ($is_beyond_original && ($width > $currentWidth || $height > $currentHeight)) {
-            $width = $currentWidth;
-            $height = $currentHeight;
-        }
-        if (!$aspect) {
+        if (!$is_aspect) {
             $new_image->cropThumbnailImage($width, $height);
         } else {
             $new_image->scaleImage($width, $height, false);
@@ -91,6 +83,7 @@ if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size . SITE_NAME)) {
             'psd',
             'wbmp'
         );
+        //http://www.php.net/imagecreatefromjpeg#60241 && http://in2.php.net/imagecreatefrompng#73546
         $imageInfo = getimagesize($fullPath);
         $imageInfo['channels'] = !empty($imageInfo['channels']) ? $imageInfo['channels'] : 1;
         $imageInfo['bits'] = !empty($imageInfo['bits']) ? $imageInfo['bits'] : 1;
@@ -100,13 +93,15 @@ if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size . SITE_NAME)) {
         }
         $image = call_user_func('imagecreatefrom' . $types[$currentType], $fullPath);
         ini_restore('memory_limit');
-        if ($aspect) {
+        // adjust to aspect.
+        if ($is_aspect) {
             if (($currentHeight / $height) > ($currentWidth / $width)) {
                 $width = ceil(($currentWidth / $currentHeight) * $height);
             } else {
                 $height = ceil($width / ($currentWidth / $currentHeight));
             }
         } else {
+            // Optimized crop adopted from http://in2.php.net/imagecopyresized#71182
             $proportion_X = $currentWidth / $width;
             $proportion_Y = $currentHeight / $height;
             if ($proportion_X > $proportion_Y) {
@@ -127,21 +122,17 @@ if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size . SITE_NAME)) {
                 $target['y'] = 0;
             }
         }
-        if ($is_beyond_original && ($width > $currentWidth || $height > $currentHeight)) {
-            $width = $currentWidth;
-            $height = $currentHeight;
-        }
         if (function_exists('imagecreatetruecolor') && ($temp = imagecreatetruecolor($width, $height))) {
             imagecopyresampled($temp, $image, 0, 0, $target['x'], $target['y'], $width, $height, $target['width'], $target['height']);
         } else {
             $temp = imagecreate($width, $height);
             imagecopyresized($temp, $image, 0, 0, 0, 0, $width, $height, $currentWidth, $currentHeight);
         }
-        if (strtolower($query_string['ext']) == 'png') {
+        if (strtolower($ext) == 'png') {
             imagepng($temp, $writeTo);
-        } else if (strtolower($query_string['ext']) == 'jpg' || strtolower($query_string['ext']) == 'jpeg') {
+        } else if (strtolower($ext) == 'jpg' || strtolower($ext) == 'jpeg') {
             imagejpeg($temp, $writeTo, 100);
-        } else if (strtolower($query_string['ext']) == 'gif') {
+        } else if (strtolower($ext) == 'gif') {
             imagegif($temp, $writeTo);
         }
         ob_start();

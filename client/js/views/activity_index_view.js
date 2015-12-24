@@ -78,7 +78,7 @@ App.ActivityIndexView = Backbone.View.extend({
 
         this.$('.timeago').timeago();
         $('.js-admin-activity-menu').addClass('active');
-        $('.js-admin-email-menu, .js-admin-user-menu, .js-admin-role-menu, .js-admin-setting-menu').removeClass('active');
+        $('.js-admin-email-menu, .js-admin-user-menu, .js-admin-role-menu, .js-admin-setting-menu, .js-admin-board-menu').removeClass('active');
         return this;
     },
     /**
@@ -110,7 +110,7 @@ App.ActivityIndexView = Backbone.View.extend({
      */
     renderActivitiesCollection: function(activities) {
         $('.js-admin-activity-menu').addClass('active');
-        $('.js-admin-email-menu, .js-admin-user-menu, .js-admin-role-menu, .js-admin-setting-menu').removeClass('active');
+        $('.js-admin-email-menu, .js-admin-user-menu, .js-admin-role-menu, .js-admin-setting-menu, .js-admin-board-menu').removeClass('active');
         var self = this;
         var view_activity = this.$('#js-admin-activity-list');
         if (!_.isEmpty(activities)) {

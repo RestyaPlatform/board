@@ -139,24 +139,34 @@ App.ModalActivityView = Backbone.View.extend({
     loadMore: function(e) {
         var self = this;
         var query_string = '&last_activity_id=' + this.last_activity_id;
-        if (!_.isUndefined(this.organization_id)) {
-            query_string += '&organization_id=' + this.organization_id;
-        }
-        if (this.type === 'board') {
-            this.activities.url = api_url + 'boards/' + authuser.board_id + '/activities.json?type=all' + query_string;
-        } else if (this.type === 'user_listing') {
-            this.activities.url = api_url + 'users/' + this.model.attributes.id + '/activities.json?type=profile' + query_string;
-        } else if (this.type === 'org_user_listing') {
-            this.activities.url = api_url + 'users/' + this.model + '/activities.json?type=profile' + query_string;
+        if (!_.isUndefined(this.last_activity_id)) {
+            if (!_.isUndefined(this.organization_id)) {
+                query_string += '&organization_id=' + this.organization_id;
+            }
+            if (this.type === 'board') {
+                this.activities.url = api_url + 'boards/' + authuser.board_id + '/activities.json?type=all' + query_string;
+            } else if (this.type === 'user_listing') {
+                this.activities.url = api_url + 'users/' + this.model.attributes.id + '/activities.json?type=profile' + query_string;
+            } else if (this.type === 'org_user_listing') {
+                this.activities.url = api_url + 'users/' + this.model + '/activities.json?type=profile' + query_string;
+            } else {
+                this.activities.url = api_url + 'users/' + authuser.user.id + '/activities.json?type=profile' + query_string;
+            }
         } else {
-            this.activities.url = api_url + 'users/' + authuser.user.id + '/activities.json?type=profile' + query_string;
+            $('.js-load-more').hide();
         }
 
         this.activities.fetch({
             success: function() {
                 self.renderActivitiesCollection(true);
+                if (self.activities.models.length > 0) {
+                    self.$el.find('.js-load-more').removeClass('hide');
+                } else {
+                    self.$el.find('.js-load-more').addClass('hide');
+                }
             }
         });
+
         return false;
     }
 });

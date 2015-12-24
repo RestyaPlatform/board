@@ -40,6 +40,7 @@ App.OrganizationsUserView = Backbone.View.extend({
         'click .js-show-organization-member-permission-form': 'showOrganizationMemberPermissionForm',
         'click .js-no-action': 'noAction',
         'keypress input[type=text]': 'onEnter',
+        'click .js-add-member-dropdown': 'clearMemberList'
     },
     /**
      * render()
@@ -50,11 +51,31 @@ App.OrganizationsUserView = Backbone.View.extend({
      */
     render: function() {
         this.model.organizations_users.showImage = this.showImage;
+        this.is_admin = false;
+        if (!_.isUndefined(authuser.user)) {
+            var admin = this.model.organizations_users.findWhere({
+                user_id: parseInt(authuser.user.id),
+                is_admin: 1
+            });
+            this.is_admin = (!_.isEmpty(admin) || (!_.isUndefined(authuser.user) && parseInt(authuser.user.role_id) === 1)) ? true : false;
+        }
         this.$el.html(this.template({
             organizations_users: this.model.organizations_users,
+            is_admin: this.is_admin
         }));
         this.showTooltip();
         return this;
+    },
+    /**
+     * clearMemberList()
+     * clear search user list
+     * @param e
+     * @type Object(DOM event)
+     */
+    clearMemberList: function(e) {
+        var self = this;
+        self.$('.js-organization-member-search-response').nextAll().remove();
+        self.$('.js-organization-member-search-response').after('<li class="small col-xs-12">Search for a person in Restyaboard by name or email address.</li>');
     },
     /**
      * organizationUsersSearch()

@@ -43,7 +43,6 @@ App.UserView = Backbone.View.extend({
         if (!_.isUndefined(options.type)) {
             this.type = options.type;
         }
-        this.model.bind('change', this.render, this);
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
@@ -105,6 +104,7 @@ App.UserView = Backbone.View.extend({
      *
      */
     renderType: function() {
+        var is_send_newsletter_val = this.model.attributes.is_send_newsletter;
         this.$el.html(this.template({
             user: this.model,
             type: this.type
@@ -114,6 +114,17 @@ App.UserView = Backbone.View.extend({
         } else {
             var _this = this;
             _(function() {
+                $('#is_send_newsletter').select2({
+                    formatResult: function(repo) {
+                        var split = repo.text.split(',');
+                        markup = '<div class="clearfix"><span class="show">' + split[0] + '</span><span class="show small">' + split[1] + '</span></div>';
+                        return markup;
+                    },
+                    formatSelection: function(repo) {
+                        var split = repo.text.split(',');
+                        return split[0];
+                    },
+                }).select2('val', is_send_newsletter_val);
                 Backbone.TemplateManager.baseUrl = '{name}';
                 var uploadManager = new Backbone.UploadManager({
                     uploadUrl: api_url + 'users/' + _this.model.id + '.json?token=' + api_token,
@@ -133,11 +144,14 @@ App.UserView = Backbone.View.extend({
                         var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
                         Auth.user.profile_picture_path = data.result.profile_picture_path + "?uid=" + Math.floor((Math.random() * 9999) + 1);
                         window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                        authuser = Auth;
+                        var hash = calcMD5(SecuritySalt + 'User' + _this.model.id + 'png' + 'small_thumb' + SITE_NAME);
+                        var profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + _this.model.id + '.' + hash + '.png';
+                        $('.js-use-uploaded-avatar').html('<img src="' + profile_picture_path + '" width="50" height="50" class="js-user-avatar">');
                         this.footerView = new App.FooterView({
                             model: Auth,
                         }).render();
                         $('#footer').html(this.footerView.el);
-                        _this.render();
                     }
                 });
                 uploadManager.renderTo($('#manager-area'));
@@ -188,15 +202,20 @@ App.UserView = Backbone.View.extend({
                 } else {
                     self.flash('danger', 'User Profile could not be updated. Please, try again.');
                 }
-                if (!_.isUndefined(response.profile_picture_path)) {
-                    self.model.set('profile_picture_path', self.showImage('User', user.attributes.id, 'small_thumb'));
+                if (!_.isUndefined(response.activity.profile_picture_path)) {
+                    self.model.set('profile_picture_path', response.activity.profile_picture_path);
+                    var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                    Auth.user.profile_picture_path = response.activity.profile_picture_path;
+                    window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                    authuser = Auth;
                     this.footerView = new App.FooterView({
-                        model: authuser,
+                        model: Auth,
                     }).render();
                     $('#footer').html(this.footerView.el);
                 } else {
                     self.model.set('profile_picture_path', null);
                     self.model.set('initials', $('#inputinitials').val());
+                    self.model.set('is_send_newsletter', data.is_send_newsletter);
                     $('.js-user-img').html('<i class="avatar avatar-color-194 avatar-sm">' + $('#inputinitials').val() + '</i>');
                 }
             }
@@ -272,15 +291,25 @@ App.UserView = Backbone.View.extend({
     removeImage: function(e) {
         e.preventDefault();
         this.model.set('profile_picture_path', null);
-        this.render();
         this.model.url = api_url + 'users/' + this.model.id + '.json';
         this.model.set('initials', $('#inputinitials').val());
+        this.model.set('is_send_newsletter', this.model.attributes.is_send_newsletter);
         $('.js-user-img').html('<i class="avatar avatar-color-194 avatar-sm">' + $('#inputinitials').val() + '</i>');
         this.model.save({
             profile_picture_path: 'NULL'
         }, {
             patch: true
         });
+        this.model.set('profile_picture_path', null);
+        $('.js-use-uploaded-avatar').html('<i class="avatar avatar-color-194 avatar-md img-rounded">' + $('#inputinitials').val() + '</i>');
+        var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+        Auth.user.profile_picture_path = null;
+        window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+        authuser = Auth;
+        this.footerView = new App.FooterView({
+            model: Auth,
+        }).render();
+        $('#footer').html(this.footerView.el);
         return false;
     },
     /**
@@ -309,28 +338,41 @@ App.UserView = Backbone.View.extend({
         e.preventDefault();
         var self = this;
         $('#dropzone-cssloader').addClass('cssloader');
-        var form = $('#js-user-profile-edit');
-        var target = $(e.target);
-        var fileData = new FormData(form[0]);
-        this.model.url = api_url + 'users/' + this.model.id + '.json';
-        this.model.save(fileData, {
-            type: 'POST',
-            data: fileData,
-            processData: false,
-            cache: false,
-            contentType: false,
-            success: function(model, response) {
-                $('#dropzone-cssloader').removeClass('cssloader');
-                self.model.set('profile_picture_path', response.profile_picture_path);
-                var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
-                Auth.user.profile_picture_path = response.profile_picture_path + "?uid=" + Math.floor((Math.random() * 9999) + 1);
-                window.sessionStorage.setItem('auth', JSON.stringify(Auth));
-                this.footerView = new App.FooterView({
-                    model: Auth,
-                }).render();
-                $('#footer').html(this.footerView.el);
-                self.render();
-            }
-        });
+        var ext = $('#js-user-profile-attachment').val().split('.').pop().toLowerCase();
+        if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == -1) {
+            self.flash('danger', 'File extension not supported. It supports only jpg, png, bmp and gif.');
+            $('#dropzone-cssloader').removeClass('cssloader');
+            return false;
+        } else {
+            var form = $('#js-user-profile-edit');
+            var target = $(e.target);
+            var fileData = new FormData(form[0]);
+            this.model.url = api_url + 'users/' + this.model.id + '.json';
+            this.model.save(fileData, {
+                type: 'POST',
+                data: fileData,
+                processData: false,
+                cache: false,
+                contentType: false,
+                success: function(model, response) {
+                    $('#dropzone-cssloader').removeClass('cssloader');
+                    if (!_.isEmpty(response.error)) {
+                        self.flash('danger', response.error);
+                    }
+                    self.model.set('profile_picture_path', response.profile_picture_path);
+                    var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                    Auth.user.profile_picture_path = response.profile_picture_path + "?uid=" + Math.floor((Math.random() * 9999) + 1);
+                    window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                    authuser = Auth;
+                    var hash = calcMD5(SecuritySalt + 'User' + self.model.id + 'png' + 'small_thumb' + SITE_NAME);
+                    var profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + self.model.id + '.' + hash + '.png?uid=' + Math.floor((Math.random() * 9999) + 1);
+                    $('.js-use-uploaded-avatar').html('<span class="js-remove-image  profile-block show"><i class="icon icon-remove close-block cur h6"></i></span><img src="' + profile_picture_path + '" width="50" height="50" class="js-user-avatar">');
+                    this.footerView = new App.FooterView({
+                        model: Auth,
+                    }).render();
+                    $('#footer').html(this.footerView.el);
+                }
+            });
+        }
     }
 });

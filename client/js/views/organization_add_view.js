@@ -51,14 +51,13 @@ App.OrganizationAddView = Backbone.View.extend({
             organization.save(data, {
                 success: function(model, response) {
                     organization.set('id', parseInt(response.id));
-                    authuser.user.organizations.add(organization);
+                    auth_user_organizations.add(organization);
                     data.id = parseInt(response.id);
                     var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
-                    if (Auth.user.organizations === null) {
-                        Auth.user.organizations = [];
+                    if (auth_user_organizations === null) {
+                        auth_user_organizations = [];
                     }
-                    Auth.user.organizations.push(data);
-                    window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                    auth_user_organizations.add(data);
                     app.navigate('#/organization/' + response.id, {
                         trigger: true,
                         replace: true

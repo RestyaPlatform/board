@@ -82,7 +82,7 @@ App.EmailTemplateView = Backbone.View.extend({
             id: this.id
         }));
         $('.js-admin-email-menu').addClass('active');
-        $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-role-menu, .js-admin-setting-menu').removeClass('active');
+        $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-role-menu, .js-admin-setting-menu, .js-admin-board-menu').removeClass('active');
         return this;
     }
 });

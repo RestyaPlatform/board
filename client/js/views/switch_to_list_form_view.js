@@ -61,12 +61,19 @@ App.SwitchToListView = Backbone.View.extend({
         var self = this;
         var sort_by = $(e.target).data('sort-by');
         var filtered_cards = self.model.cards.filter(function(card) {
-            return card.attributes.is_archived === false || card.attributes.is_archived === 'f';
+            return card.attributes.is_archived === false || card.attributes.is_archived === 0;
         });
         var is_card_empty = true;
         var view = '';
         $('.js-card-list-view-' + self.model.attributes.id).html('');
         if (!_.isEmpty(filtered_cards)) {
+            _.each(filtered_cards, function(card) {
+                var list = self.model.lists.findWhere({
+                    id: card.attributes.list_id,
+                    is_archived: 0
+                });
+                card.set('list_name', _.escape(list.attributes.name));
+            });
             var cards = new App.CardCollection();
             if (this.sort_by === sort_by) {
                 cards.sortDirection = 'asc';
@@ -91,7 +98,7 @@ App.SwitchToListView = Backbone.View.extend({
             }
             cards.comparator = function(item) {
                 var str = '' + item.get(sort_by);
-                if (sort_by !== 'id') {
+                if (sort_by === 'name' || sort_by === 'list_name') {
                     str = str.toLowerCase();
                     str = str.split('');
                     str = _.map(str, function(letter) {
@@ -100,7 +107,6 @@ App.SwitchToListView = Backbone.View.extend({
                         } else {
                             return String.fromCharCode((letter.charCodeAt(0)));
                         }
-
                     });
                     return str;
                 } else {
@@ -116,7 +122,7 @@ App.SwitchToListView = Backbone.View.extend({
                 var card = cards.models[i];
                 var list = self.model.lists.findWhere({
                     id: card.attributes.list_id,
-                    is_archived: false
+                    is_archived: 0
                 });
                 if (!_.isUndefined(list)) {
                     is_card_empty = false;

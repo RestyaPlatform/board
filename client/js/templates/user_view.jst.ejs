@@ -52,6 +52,16 @@
 									<input type="text" id="inputinitials" class="form-control initialism" name="initials" value="<%- user.attributes.initials.toUpperCase() %>" maxlength="2" required>
 								</div>
 							</div>
+							<div class="form-group">
+								<label for="is_send_newsletter" class="col-sm-4 control-label">Notifications</label>
+								<div class="col-sm-8">
+									<select  id="is_send_newsletter" class="js-chosen-select" name="is_send_newsletter">
+										<option value="0">Never,Don't send email notifications</option>
+										<option value="1">Periodically,Send email notification every 1 hour</option>
+										<option value="2">Instantly,Send email notification every 5 minutes</option>
+									</select>
+								</div>
+							</div>
 							<% if(!_.isEmpty(role_links.where({slug: "add_user_profile_picture"}))){ %>
 								<div class="form-group" id="dropzone">
 									<label for="inputAttachment" class="col-sm-4 control-label sr-only">Upload Avatar</label>
@@ -61,7 +71,7 @@
 												var profile_picture_path = user.showImage('User', user.attributes.id, 'small_thumb' ) +'?'+ new Date().getTime();
 											%>
 												<span class="js-remove-image  profile-block show"><i class="icon icon-remove close-block cur h6"></i></span>
-												<img src="<%- profile_picture_path %>" width="50" height="50" clas="js-user-avatar">
+												<img src="<%- profile_picture_path %>" width="50" height="50" class="js-user-avatar">
 											<% } else {%>
 												<i class="avatar avatar-color-194 avatar-md img-rounded"><%- user.attributes.initials %></i>									
 											<% } %>

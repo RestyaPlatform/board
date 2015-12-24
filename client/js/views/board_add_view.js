@@ -112,14 +112,13 @@ App.BoardAddView = Backbone.View.extend({
      */
     showBoardAddeOrganizationForm: function(e) {
         e.preventDefault();
-        var organizations = new App.OrganizationCollection();
-        organizations = authuser.user.organizations;
-        if (authuser.user.organizations !== null && _.isUndefined(authuser.user.organizations.models)) {
-            organizations.add(JSON.parse(authuser.user.organizations));
+        organizations = auth_user_organizations;
+        if (auth_user_organizations !== null && _.isUndefined(auth_user_organizations.models)) {
+            organizations.add(JSON.parse(auth_user_organizations));
         }
-        authuser.user.organizations = organizations;
+        auth_user_organizations = organizations;
         $('#js-board-add-organization').html(new App.BoardAddOrganizationFormView({
-            model: authuser.user.organizations
+            model: auth_user_organizations
         }).el);
     }
 });

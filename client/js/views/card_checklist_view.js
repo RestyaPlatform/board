@@ -122,7 +122,7 @@ App.CardCheckListView = Backbone.View.extend({
                     $(ev.target).find('.js-checklist-item').addClass('cur-grab');
                     $(ev.target).find('.js-checklist-item').removeClass('cur-grabbing');
                 }
-            }).disableSelection();
+            });
         }
         this.renderItemsCollection();
         this.renderProgress();
@@ -173,7 +173,21 @@ App.CardCheckListView = Backbone.View.extend({
                 silent: true
             });
         }
-        this.model.destroy();
+        this.model.destroy({
+            success: function(model, response, options) {
+                if (!_.isUndefined(response.activity)) {
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    var view_act = new App.ActivityView({
+                        model: activity
+                    });
+                    self.model.activities.unshift(activity);
+                    var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
+                    view_activity.prepend(view_act.render().el).find('.timeago').timeago();
+                }
+            }
+        });
+
         return false;
     },
     /**
@@ -228,22 +242,28 @@ App.CardCheckListView = Backbone.View.extend({
      * updateChecklist()
      * update checklist
      * @param e
-     * @type Object(DOM event)
+     * @type Object(DOM event)   
      * @return false
      *
      */
     updateChecklist: function(e) {
-        e.preventDefault();
-        var data = $(e.target).serializeObject();
-        this.model.url = api_url + 'boards/' + this.model.card.get('board_id') + '/lists/' + this.model.card.get('list_id') + '/cards/' + this.model.card.id + '/checklists/' + this.model.id + '.json';
-        this.model.set('card_id', this.model.card.id);
-        this.model.set('list_id', this.model.card.attributes.list_id);
-        this.model.set('board_id', this.model.card.attributes.board_id);
-        this.model.set(data);
-        this.render();
-        this.model.save(data, {
-            patch: true
-        });
+        if (!$.trim($('#checklistEditName').val()).length) {
+            $('.error-msg').remove();
+            $('<div class="error-msg text-primary h6">Whitespace alone not allowed</div>').insertAfter('#checklistEditName');
+        } else {
+            $('.error-msg').remove();
+            e.preventDefault();
+            var data = $(e.target).serializeObject();
+            this.model.url = api_url + 'boards/' + this.model.card.get('board_id') + '/lists/' + this.model.card.get('list_id') + '/cards/' + this.model.card.id + '/checklists/' + this.model.id + '.json';
+            this.model.set('card_id', this.model.card.id);
+            this.model.set('list_id', this.model.card.attributes.list_id);
+            this.model.set('board_id', this.model.card.attributes.board_id);
+            this.model.set(data);
+            this.render();
+            this.model.save(data, {
+                patch: true
+            });
+        }
         return false;
     },
     /**
@@ -347,98 +367,105 @@ App.CardCheckListView = Backbone.View.extend({
      *
      */
     addChecklistItem: function(e) {
-        e.preventDefault();
-        var self = this;
-        var target = $(e.target);
-        var data = target.serializeObject();
-        var checklist_item = new App.CheckListItem();
-        checklist_item.set('card_id', self.model.card.attributes.id);
-        checklist_item.set('list_id', self.model.card.attributes.list_id);
-        checklist_item.set('board_id', self.model.card.attributes.board_id);
-        checklist_item.set('checklist_id', self.model.attributes.id);
-        checklist_item.url = api_url + 'boards/' + self.model.card.attributes.board_id + '/lists/' + self.model.card.attributes.list_id + '/cards/' + self.model.card.attributes.id + '/checklists/' + self.model.id + '/items.json';
-        $(e.target).find('textarea').val('').focus();
-        checklist_item.save(data, {
-            success: function(model, response) {
-                if (!_.isUndefined(response.checklist_items)) {
-                    _.each(response.checklist_items, function(item) {
-                        checklist_item = new App.CheckListItem();
-                        checklist_item.set('id', parseInt(item.id));
-                        checklist_item.set('card_id', parseInt(item.card_id));
-                        checklist_item.set('user_id', parseInt(item.user_id));
-                        checklist_item.set('checklist_id', parseInt(item.checklist_id));
-                        checklist_item.set('position', parseFloat(item.position));
-                        checklist_item.set('name', item.name);
-                        checklist_item.set('is_completed', item.is_completed);
-                        checklist_item.card = self.model.card;
-                        checklist_item.checklist = new App.CheckList();
-                        checklist_item.checklist = self.model;
-                        self.model.card.list.collection.board.checklist_items.add(checklist_item, {
+        if (!$.trim($('#ChecklistItem').val()).length) {
+            $('.error-msg').remove();
+            $('<div class="error-msg text-primary h6">Whitespace alone not allowed</div>').insertAfter('#ChecklistItem');
+            return false;
+        } else {
+            $('.error-msg').remove();
+            e.preventDefault();
+            var self = this;
+            var target = $(e.target);
+            var data = target.serializeObject();
+            var checklist_item = new App.CheckListItem();
+            checklist_item.set('card_id', self.model.card.attributes.id);
+            checklist_item.set('list_id', self.model.card.attributes.list_id);
+            checklist_item.set('board_id', self.model.card.attributes.board_id);
+            checklist_item.set('checklist_id', self.model.attributes.id);
+            checklist_item.url = api_url + 'boards/' + self.model.card.attributes.board_id + '/lists/' + self.model.card.attributes.list_id + '/cards/' + self.model.card.attributes.id + '/checklists/' + self.model.id + '/items.json';
+            $(e.target).find('textarea').val('').focus();
+            checklist_item.save(data, {
+                success: function(model, response) {
+                    if (!_.isUndefined(response.checklist_items)) {
+                        _.each(response.checklist_items, function(item) {
+                            checklist_item = new App.CheckListItem();
+                            checklist_item.set('id', parseInt(item.id));
+                            checklist_item.set('card_id', parseInt(item.card_id));
+                            checklist_item.set('user_id', parseInt(item.user_id));
+                            checklist_item.set('checklist_id', parseInt(item.checklist_id));
+                            checklist_item.set('position', parseFloat(item.position));
+                            checklist_item.set('name', item.name);
+                            checklist_item.set('is_completed', item.is_completed);
+                            checklist_item.card = self.model.card;
+                            checklist_item.checklist = new App.CheckList();
+                            checklist_item.checklist = self.model;
+                            self.model.card.list.collection.board.checklist_items.add(checklist_item, {
+                                silent: true
+                            });
+                            self.model.checklist_items.add(checklist_item, {
+                                silent: true
+                            });
+                        });
+                        self.model.set({
+                            checklist_item_count: parseInt(self.model.attributes.checklist_item_count) + response.checklist_items.length
+                        }, {
                             silent: true
                         });
-                        self.model.checklist_items.add(checklist_item, {
+                        self.model.card.set('checklist_item_count', parseInt(self.model.card.attributes.checklist_item_count) + response.checklist_items.length);
+                    } else {
+                        var items = data.name.split('\n');
+                        var i = 1;
+                        _.each(items, function(item) {
+                            checklist_item = new App.CheckListItem();
+                            checklist_item.set('id', new Date().getTime());
+                            checklist_item.set('card_id', self.model.card.attributes.id);
+                            checklist_item.set('user_id', parseInt(authuser.user.id));
+                            checklist_item.set('checklist_id', self.model.id);
+                            checklist_item.set('position', i);
+                            checklist_item.set('name', _.escape(item.replace('\r', '')));
+                            checklist_item.set('is_completed', false);
+                            checklist_item.card = self.model.card;
+                            checklist_item.checklist = new App.CheckList();
+                            checklist_item.checklist = self.model;
+                            self.model.card.list.collection.board.checklist_items.add(checklist_item, {
+                                silent: true
+                            });
+                            self.model.checklist_items.add(checklist_item, {
+                                silent: true
+                            });
+                            i++;
+                        });
+                        self.model.set({
+                            checklist_item_count: parseInt(self.model.attributes.checklist_item_count) + i
+                        }, {
                             silent: true
                         });
-                    });
-                    self.model.set({
-                        checklist_item_count: parseInt(self.model.attributes.checklist_item_count) + response.checklist_items.length
+                        self.model.card.set({
+                            checklist_item_count: parseInt(self.model.card.attributes.checklist_item_count) + i
+                        });
+                    }
+                    self.model.card.list.collection.board.cards.get(self.model.card).set({
+                        checklist_item_count: self.model.card.attributes.checklist_item_count
                     }, {
                         silent: true
                     });
-                    self.model.card.set('checklist_item_count', parseInt(self.model.card.attributes.checklist_item_count) + response.checklist_items.length);
-                } else {
-                    var items = data.name.split('\n');
-                    var i = 1;
-                    _.each(items, function(item) {
-                        checklist_item = new App.CheckListItem();
-                        checklist_item.set('id', new Date().getTime());
-                        checklist_item.set('card_id', self.model.card.attributes.id);
-                        checklist_item.set('user_id', parseInt(authuser.user.id));
-                        checklist_item.set('checklist_id', self.model.id);
-                        checklist_item.set('position', i);
-                        checklist_item.set('name', _.escape(item.replace('\r', '')));
-                        checklist_item.set('is_completed', false);
-                        checklist_item.card = self.model.card;
-                        checklist_item.checklist = new App.CheckList();
-                        checklist_item.checklist = self.model;
-                        self.model.card.list.collection.board.checklist_items.add(checklist_item, {
-                            silent: true
+                    self.renderItemsCollection(false);
+                    self.renderProgress();
+                    if (!_.isUndefined(response.activities)) {
+                        _.each(response.activities, function(_activity) {
+                            var activity = new App.Activity();
+                            activity.set(_activity);
+                            var view = new App.ActivityView({
+                                model: activity
+                            });
+                            self.model.set('activities', activity);
+                            var view_activity = $('#js-card-activities-' + self.model.card.attributes.id);
+                            view_activity.prepend(view.render().el).find('.timeago').timeago();
                         });
-                        self.model.checklist_items.add(checklist_item, {
-                            silent: true
-                        });
-                        i++;
-                    });
-                    self.model.set({
-                        checklist_item_count: parseInt(self.model.attributes.checklist_item_count) + i
-                    }, {
-                        silent: true
-                    });
-                    self.model.card.set({
-                        checklist_item_count: parseInt(self.model.card.attributes.checklist_item_count) + i
-                    });
+                    }
                 }
-                self.model.card.list.collection.board.cards.get(self.model.card).set({
-                    checklist_item_count: self.model.card.attributes.checklist_item_count
-                }, {
-                    silent: true
-                });
-                self.renderItemsCollection(false);
-                self.renderProgress();
-                if (!_.isUndefined(response.activities)) {
-                    _.each(response.activities, function(_activity) {
-                        var activity = new App.Activity();
-                        activity.set(_activity);
-                        var view = new App.ActivityView({
-                            model: activity
-                        });
-                        self.model.set('activities', activity);
-                        var view_activity = $('#js-card-activities-' + self.model.card.attributes.id);
-                        view_activity.prepend(view.render().el).find('.timeago').timeago();
-                    });
-                }
-            }
-        });
+            });
+        }
     },
     /**
      * renderProgress()

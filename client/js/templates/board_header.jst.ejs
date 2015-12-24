@@ -15,16 +15,16 @@
 					<span><img src="<%= logo_path %>" height="16" width="16" alt="[Image: <%= board.attributes.organization_name%>]" title="<%= board.attributes.organization_name%>"></span> 
 					<strong><%- board.attributes.organization_name %></strong>
 				</a>
-				<span class="well-sm navbar-btn mob-no-mar pull-left">/</span>
+				<span class="navbar-btn mob-no-mar pull-left icon"><span class="navbar-btn pull-left">&nbsp;/&nbsp;</span></span>
 			   </li>
 			   <% } %>
 			</ul>
-			<div class="well-sm pull-left navbar-btn mob-no-mar col-flex <% if(board.attributes.organization_id != 0) { %> col-flex2 <% } else { %> col-flex3  <% } %>">	
+			<div class="navbar-btn pull-left mob-no-mar list-group-item-text col-flex <% if(board.attributes.organization_id != 0) { %> col-flex2 <% } else { %> col-flex3  <% } %>">	
 					  <form name="BoardStarForm" id="BoardStarForm">
-						<input id="inputBoardStar" name="is_starred" type="hidden" value="<%if(!_.isUndefined(star)) {%><%- star.attributes.is_starred %><%}else{%>0<%}%>">
+						<input id="inputBoardStar" name="is_starred" type="hidden" value="<%if(!_.isUndefined(star)) {%><%- star.attributes.is_starred %><%}else{%>0<%}%>"> 
 					  </form>
-					<div class="col-xs-12 nav pull-left <% if(!_.isEmpty(role_links.where({slug: 'edit_board'}))){ %>dropdown<% } %>">
-					  <% if(!_.isUndefined(star) && (star.attributes.is_starred || star.attributes.is_starred == 't')) { %>
+					<div class="col-xs-12 pull-left navbar-btn list-group-item-text <% if(!_.isEmpty(role_links.where({slug: 'edit_board'}))){ %>dropdown<% } %>">
+					  <% if(!_.isUndefined(star) && (star.attributes.is_starred || star.attributes.is_starred == 1)) { %>
 					  <% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
 					  <a href="#" class="js-star-board pull-left" name="unstar" title="unstar"><i class="icon-star text-primary"></i></a>
 					  <% } %>
@@ -45,7 +45,7 @@
 						<form class="normal" name="BoardRenameForm" id="BoardRenameForm">
 						  <div class="required form-group">
 							<label for="inputBoardName">Name</label>
-							<input type="text" id="inputBoardName" name="name" class="form-control input-sm" value="<%- board.attributes.name %>" title="Board Name" required>
+							<input type="text" id="inputBoardName" name="name" class="form-control input-sm" title="Whitespace alone not allowed" required pattern=".*\S+.*" value="<%- board.attributes.name %>">
 						  </div>
 						  <div class="submit">
 							<input type="submit" value="Rename" id="submitBoardRename" class="btn btn-primary btn-sm">
@@ -64,7 +64,7 @@
 			  <div class="navbar-right">
 			  <% if(!_.isUndefined(authuser.user)){ %>
 			  <ul class="nav nav-pills pull-left pillsuser-list">
-				  <li class="dropdown navbar-btn"> <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle show clearfix navbar-btn h4">
+				  <li class="dropdown"> <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle show clearfix navbar-btn h4">
 				  <% 
 			  var i = 1;
 			  var admin_board_users_count = board.admin_board_users.length;
@@ -73,15 +73,15 @@
 				if(i <= 3){
 			  %>
             	<span class="pull-left btn-xs nav">
-					<span class="col-xs-12 btn-block navbar-btn" title="<%-admin_board_user.attributes.full_name %>">
+					<span class="col-xs-12 btn-block navbar-btn" title="<%-admin_board_user.attributes.full_name %> (<%-admin_board_user.attributes.username %>)">
 						<% if(!_.isEmpty(admin_board_user.attributes.profile_picture_path)) {
 								var profile_picture_path = board.showImage('User', admin_board_user.attributes.user_id, 'small_thumb' );%>
-						<img  width="30" height="30" class="img-responsive img-rounded avatar" title="<%-admin_board_user.attributes.full_name %>" alt="[Images: <%-admin_board_user.attributes.full_name %>]" src="<%=profile_picture_path %>">
+						<img  width="30" height="30" class="img-responsive img-rounded board-user-img" title="<%-admin_board_user.attributes.full_name %> (<%-admin_board_user.attributes.username %>)" alt="[Images: <%-admin_board_user.attributes.full_name %>]" src="<%=profile_picture_path %>">
 						<% } else {%>
-							<i class="avatar avatar-color-194 img-rounded"><%= (admin_board_user.attributes.initials) %></i>
+							<i class="avatar avatar-sm avatar-color-194 img-rounded"><%= (admin_board_user.attributes.initials) %></i>
 						<% } %>
 						<% if(admin_board_user.attributes.is_admin) { %>
-							<span class="name-block col-xs-12 label btn-xs col-xs-push-0">Owner</span>
+							<span class="name-block htruncate col-xs-12 label btn-xs col-xs-push-0">Owner</span>
 						<% } %>
 					</span>
 				</span>
@@ -95,17 +95,17 @@
 				}
 			  %>
             	<span class="pull-left btn-xs nav <%- mobHidden %>">
-					<span class="col-xs-12 btn-block navbar-btn" title="<%-normal_board_user.attributes.full_name %>">
+					<span class="col-xs-12 btn-block navbar-btn" title="<%-normal_board_user.attributes.full_name %> (<%-normal_board_user.attributes.username %>)">
 						<% if(!_.isEmpty(normal_board_user.attributes.profile_picture_path)) {
 								var profile_picture_path = board.showImage('User', normal_board_user.attributes.user_id, 'small_thumb' );%>
-						<img  width="30" height="30" class="img-responsive img-rounded" title="<%-normal_board_user.attributes.full_name %>" alt="[Images: <%-normal_board_user.attributes.full_name %>]" src="<%=profile_picture_path %>">
+						<img  width="30" height="30" class="img-responsive img-rounded board-user-img" title="<%-normal_board_user.attributes.full_name %> (<%-normal_board_user.attributes.username %>)" alt="[Images: <%-normal_board_user.attributes.full_name %>]" src="<%=profile_picture_path %>">
 						<% } else {%>
-							<i class="avatar avatar-color-194 img-rounded"><%= (normal_board_user.attributes.initials) %></i>
+							<i class="avatar avatar-sm avatar-color-194 img-rounded"><%= (normal_board_user.attributes.initials) %></i>
 						<% } %>
 					</span>
 				</span>
 			  <% i++; }}); }%>
-				  <span class="col-xs-3 label small hidden-xs"> <span class="small navbar-btn"><span class="show text-left" title="Owner <%= admin_board_users_count %>">Owner <%- admin_board_users_count %></span> <span class="show navbar-btn text-left" title="Member <%= normal_board_users_count %>">Member <%- normal_board_users_count %></span></span> </span> </a>
+				  <span class="col-xs-3 label small hidden-xs"> <span class="small"><span class="show text-left" title="Owner <%= admin_board_users_count %>">Owner <%- admin_board_users_count %></span> <span class="show text-left" title="Member <%= normal_board_users_count %>">Member <%- normal_board_users_count %></span></span> </span> </a>
 					<ul class="list-unstyled js-visibility-chooser dropdown-menu arrow arrow-right">
 					  <li class="text-center">
 						<strong>Members</strong>
@@ -150,9 +150,9 @@
 				  </li>
 				</ul>
 				<% } %>
-				<ul class="nav nav-pills pull-left navbar-btn">
+				<ul class="nav nav-pills pull-left">
 					<% if (is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
-					<li class="navbar-btn">
+					<li>
 						<div class="btn-group navbar-btn js-visibility-list-dropdown dropdown">
 							<% 	var board_visibility = '';
 								var board_visibility_icon = '';
@@ -181,7 +181,7 @@
 					</div>
 	              </li>
 				  <% } else { %>
-					<li class="navbar-btn">
+					<li>
 						<div class="btn-group navbar-btn js-visibility-list-dropdown dropdown">
 							<% 	var board_visibility = '';
 								var board_visibility_icon = '';
@@ -200,29 +200,32 @@
 						</div>
 					</li>
 				  <% } %>
-				  <li>
-					<form name="BoardSubscribeForm" id="BoardSubscribeForm">
-					  <input id="inputBoardSubscribe" name="is_subscribed" type="hidden" value=" <% if(!_.isUndefined(subscriber)) { %> <%- subscriber.attributes.is_subscribed %><%}else{%>0<%}%>">
-					</form> 
-					<% if(!_.isUndefined(subscriber) && subscriber.attributes.is_subscribed) { %>
-					<% if(!_.isEmpty(role_links.where({slug: "subscribe_board"}))){ %>
-					<a href="#" class="js-subscribe-board navbar-btn h4" name="unsubscribe" title="Unsubscribe" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-close"></i><span class="hidden-xs">Unsubscribe</span></a>
-					<% } %>
-					<% } else {%>
-					<% if(!_.isEmpty(role_links.where({slug: "unsubscribe_board"}))){ %>
-					<a href="#" class="js-subscribe-board navbar-btn h4" name="subscribe" title="Subscribe" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-open"></i><span class="hidden-xs">Subscribe</span></a>
-					<% } %>
-					<% } %>
-				  </li>
-				  <li class="js-switch-view"><a href="#" class=" navbar-btn h4 js-switch-grid-view text-muted initialism" title="Grid" data-placement="bottom" data-toggle="tooltip"><i class="icon-th"></i></a></li>
-				  <li class="js-switch-view"><a href="#" class=" navbar-btn h4 js-switch-list-view text-muted initialism" title="List" data-placement="bottom" data-toggle="tooltip"><i class="icon-list-ul"></i></a></li>
-				  <li class="js-switch-view"><a href="#" class=" navbar-btn h4 js-switch-calendar-view text-muted initialism" title="Calendar" data-placement="bottom" data-toggle="tooltip"><i class="icon-calendar"></i></a></li>
+				  <%if(!_.isUndefined(authuser.user)) {%> 
+					  <li>
+						<form name="BoardSubscribeForm" id="BoardSubscribeForm">
+						  <input id="inputBoardSubscribe" name="is_subscribed" type="hidden" value=" <% if(!_.isUndefined(subscriber)) { %> <%- subscriber.attributes.is_subscribed %><%}else{%>0<%}%>">
+						</form> 
+						<% if(!_.isUndefined(subscriber) && subscriber.attributes.is_subscribed) { %>
+						<% if(!_.isEmpty(role_links.where({slug: "subscribe_board"}))){ %>
+						<a href="#" class="js-subscribe-board navbar-btn h4 list-group-item-text" name="unsubscribe" title="Unsubscribe" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-close"></i><span class="hidden-xs">Unsubscribe</span></a>
+						<% } %>
+						<% } else {%>
+						<% if(!_.isEmpty(role_links.where({slug: "unsubscribe_board"}))){ %>
+						<a href="#" class="js-subscribe-board navbar-btn h4" name="subscribe" title="Subscribe" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-open"></i><span class="hidden-xs">Subscribe</span></a>
+						<% } %>
+						<% } %>
+					  </li>
+				  <% } %>
+				  <li class="js-switch-view"><a href="#" class=" navbar-btn h4 js-switch-grid-view text-muted list-group-item-text" title="Grid" data-placement="bottom" data-toggle="tooltip"><i class="icon-th"></i></a></li>
+				  <li class="js-switch-view"><a href="#" class=" navbar-btn h4 js-switch-list-view text-muted list-group-item-text" title="List" data-placement="bottom" data-toggle="tooltip"><i class="icon-list-ul"></i></a></li>
+				  <li class="js-switch-view"><a href="#" class=" navbar-btn h4 js-switch-calendar-view text-muted list-group-item-text" title="Calendar" data-placement="bottom" data-toggle="tooltip"><i class="icon-calendar"></i></a></li>
+				  <li class="js-switch-view"><a href="#" class=" navbar-btn h4 js-switch-timeline-view text-muted list-group-item-text" title="Gantt" data-placement="bottom" data-toggle="tooltip"><i class="icon-time"></i></a></li>
 				</ul>
-				<div class="pull-right dropdown navbar-btn"> 
-				  <a data-toggle="dropdown" class=" navbar-btn h4 btn btn-primary dropdown-toggle js-back-setting-response col-sm-offset-1 show" type="button"><i class="icon-cog h3 cur"></i></a>
+				<div class="pull-right dropdown"> 
+				  <a data-toggle="dropdown" class="navbar-btn icon h4 btn btn-primary dropdown-toggle js-back-setting-response col-sm-offset-1 show" type="button"><i class="icon-cog h3 cur"></i></a>
 				  <ul class="dropdown-menu arrow arrow-right col-xs-12 js-setting-response">
 							<li class="js-list-form"><a class="nav-list-item js-show-filters" href="#"><span class="icon-sm icon-filter icon-type"></span> Filter Cards</a></li>
-							<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+							<% if(!_.isUndefined(authuser.user)) {%>
 								<% if(!_.isEmpty(role_links.where({slug: "view_archived_lists"})) || !_.isEmpty(role_links.where({slug: "view_archived_cards"}))){ %>
 								<li><a class="nav-list-item js-archived-items" href="#"><span class="icon-sm icon-archive icon-type"></span> Archived Items</a></li>
 								<% } %>
@@ -250,18 +253,18 @@
 								 }
 							%>
 							<li><a href="#" class="nav-list-item nav-list-sub-item js-change-background"> Change Background</a></li>
-					<% }%>
-					<% if(!is_offline_data) {%>
+							<% }%>
+							<% if(!is_offline_data && is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
 							<li class="js-sync-google-dropdown inner-dropdown"><a data-toggle="dropdown" href="#" class="js-show-copy-board">Copy Board</a>
 							</li>
-							<% }%>
-							<% }%>
 							<li class="divider"></li>
+							<% }%>
+							<% }%>
 							<li><a href="#" class="js-show-board-modal" data-toggle="modal" data-target="#modalListView">Show Attachments</a></li>
 							<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
 							<li><a href="#" class="js-additional-settings">Additional Settings</a></li>
 							<li class="divider"></li>
-							<li class="dropdown js-open-dropdown inner-dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Close Board</a>
+							<li class="dropdown js-open-dropdown inner-dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-sm icon-warning-sign icon-type text-primary"></i>Close Board</a>
 							  <ul class="dropdown-menu arrow pull-right">
 								<li class="js-dropdown-popup dropdown-popup">
 								  <div class="clearfix text-center col-xs-12">

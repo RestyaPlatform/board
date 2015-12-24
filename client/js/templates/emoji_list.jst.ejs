@@ -1,0 +1,21 @@
+<li class="col-xs-12 clearfix text-center">
+<div><span class="col-xs-10"><strong>Add emoji</strong></span>
+<a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div>
+</li>
+<li class="col-xs-12 divider"></li>
+<li class="col-xs-12 js-comment-emoji-search-response">
+  <div class="clearfix">
+	<label class="sr-only">Search Member</label>
+	<input value="<%- search_value %>" type="text" autocomplete="off" placeholder="Search emoji" name="member" class="js-search-emoji form-control input-sm js-no-action" title="Search emoji">
+  </div>
+</li>
+<% if(!_.isEmpty(emojiLists)){  %>
+<% _.each(emojiLists, function(emojiList){%>
+	<li class="col-xs-12 navbar-btn">
+	  <span>:<%- emojiList %>:</span>
+	  <span class="js-comment-add-emoji"><%- emojiList %></span>
+	</li>
+<%})%>
+<% } else {%>
+	<li class="col-xs-12 navbar-btn">No emoji available.</li>
+<% } %>

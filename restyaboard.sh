@@ -15,16 +15,53 @@
 	POSTGRES_DBPASS=hjVl2!rGd
 	POSTGRES_DBPORT=5432
 	DOWNLOAD_DIR=/opt/restyaboard
+	
+	update_version()
+	{
+		echo "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available. Do you want to get it now y/n?"
+		read answer
+		case "${answer}" in
+			[Yy])
+			echo -n "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):"
+			read dir
+			
+			echo -n "Downloading files..."
+			curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
+			unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
+			
+			echo -n "Updating files..."
+			cp -r ${DOWNLOAD_DIR} $dir
+			
+			echo -n "Connecting database to run SQL changes..."
+			psql -U postgres -c "\q"
+			if [ "$?" = 0 ];
+			then
+				break
+			fi	
+			sleep 1
+			
+			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
+			echo '*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh' >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
+			echo '0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh' >> /var/spool/cron/root
+			
+			echo "Updating SQL..."
+			psql -d ${POSTGRES_DBNAME} -f $dir/sql/${RESTYABOARD_VERSION}.sql -U ${POSTGRES_DBUSER}
+			/bin/echo $RESTYABOARD_VERSION > /opt/restyaboard/release
+		esac
+	}
+	
 	if [ -d "$DOWNLOAD_DIR" ];
 	then
 		version=`cat /opt/restyaboard/release`
-		compare=`/bin/echo "$version < ${RESTYABOARD_VERSION}" | /usr/bin/bc`
-		if [ $compare -eq 1 ];
+		if [[ $version < $RESTYABOARD_VERSION ]];
 		then
 			update_version
 			exit
 		else
 			echo "No new version available"
+			exit;
 		fi
 	else
 		echo "Already installed Restyaboard y/n?"
@@ -35,33 +72,6 @@
 			exit
 		esac
 	fi
-	
-	update_version()
-	{
-		echo "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available. Do you want to get it now y/n?"
-		read answer
-		case "${answer}" in
-			[Yy])
-			echo -n "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):"
-			read dir
-			echo -n "Downloading files..."
-			curl -L -o /tmp/restyaboard.zip \
-			https://github.com/RestyaPlatform/board/releases/download/${RESTYABOARD_VERSION}/board-${RESTYABOARD_VERSION}.zip &&\
-			unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
-			echo -n "Updating files..."
-			cp -r ${DOWNLOAD_DIR} $dir
-			echo -n "Connecting database to run SQL changes..."
-			psql -U postgres -c "\q"
-			if [ "$?" = 0 ];
-			then
-				break
-			fi	
-			sleep 1
-			echo "Updating SQL..."
-			psql -d ${POSTGRES_DBNAME} -f $dir/sql/${RESTYABOARD_VERSION}.sql -U ${POSTGRES_DBUSER}
-		esac
-	}
-	
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ])
 	then
 		echo "Setup script will install version ${RESTYABOARD_VERSION} and create database ${POSTGRES_DBNAME} with user ${POSTGRES_DBUSER} and password ${POSTGRES_DBPASS}. To continue enter \"y\" or to quit the process and edit the version and database details enter \"n\" (y/n)?" 
@@ -111,6 +121,13 @@
 				apt-get install -y php5-mbstring
 			fi
 			
+			echo "Checking PHP ldap extension..."
+			php -m | grep ldap
+			if [ "$?" -gt 0 ]; then
+				echo "Installing php5-ldap..."
+				apt-get install -y php5-ldap
+			fi
+			
 			echo "Checking PostgreSQL..."
 			id -a postgres
 			if [ $? != 0 ]; then
@@ -158,8 +175,8 @@
 
 			echo "Downloading Restyaboard script..."
 			mkdir /opt/restyaboard
-			curl -L -o /tmp/restyaboard.zip https://github.com/RestyaPlatform/board/releases/download/${RESTYABOARD_VERSION}/board-${RESTYABOARD_VERSION}.zip  
-			unzip /tmp/restyaboard.zip -d /opt/restyaboard &&\
+			curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
+			unzip /tmp/restyaboard.zip -d /opt/restyaboard
 			cp /opt/restyaboard/restyaboard.conf /etc/nginx/conf.d
 			rm /tmp/restyaboard.zip
 			
@@ -182,6 +199,8 @@
 			echo "Changing permission..."
 			chmod -R go+w $dir/media
 			chmod -R go+w $dir/client/img
+			chmod -R go+w $dir/tmp/cache
+			chmod -R go+w $dir/server/php/R/shell/cron/*.sh
 
 			psql -U postgres -c "\q"
 			if [ "$?" = 0 ]; then
@@ -210,7 +229,13 @@
 			$dir/server/php/R/config.inc.php
 			
 			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo '*/5 * * * * php $dirserver/php/R/shell/cron.php' > /var/spool/cron/root
+			echo '*/5 * * * * $dir/server/php/R/shell/cron.sh' >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
+			echo '*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh' >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
+			echo '0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh' >> /var/spool/cron/root
 
 			echo "Starting services..."
 			service cron restart
@@ -255,6 +280,14 @@
 			then
 				echo "Installing php-mbstring..."
 				yum install -y php-mbstring
+			fi
+			
+			echo "Checking PHP ldap extension..."
+			php -m | grep ldap
+			if [ "$?" -gt 0 ];
+			then
+				echo "Installing php-ldap..."
+				yum install -y php-ldap
 			fi
 
 			PHP_VERSION=$(php -v | grep "PHP 5" | sed 's/.*PHP \([^-]*\).*/\1/' | cut -c 1-3)
@@ -322,9 +355,8 @@
 
 			echo "Downloading Restyaboard script..."
 			mkdir ${DOWNLOAD_DIR}
-			curl -L -o /tmp/restyaboard.zip \
-			https://github.com/RestyaPlatform/board/releases/download/${RESTYABOARD_VERSION}/board-${RESTYABOARD_VERSION}.zip &&\
-			unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR} &&\
+			curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
+			unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
 			cp ${DOWNLOAD_DIR}/restyaboard.conf /etc/nginx/conf.d
 			rm /tmp/restyaboard.zip
 
@@ -347,6 +379,8 @@
 			echo "Changing permission..."
 			chmod -R go+w $dir/media
 			chmod -R go+w $dir/client/img
+			chmod -R go+w $dir/tmp/cache
+			chmod -R go+w $dir/server/php/R/shell/cron/*.sh
 
 			psql -U postgres -c "\q"
 			if [ "$?" = 0 ];
@@ -376,12 +410,20 @@
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" \
 			  $dir/server/php/R/config.inc.php
 			
-			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."  
-			echo '*/5 * * * * php $dir/server/php/R/shell/cron.php' >> /var/spool/cron/root
+			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
+			echo '*/5 * * * * $dir/server/php/R/shell/cron.sh' >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
+			echo '*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh' >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
+			echo '0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh' >> /var/spool/cron/root
 
 			echo "Starting services..."
 			/etc/init.d/php-fpm restart
 			/etc/init.d/nginx restart
+						
+			/bin/echo $RESTYABOARD_VERSION > /opt/restyaboard/release
 		esac
 	fi
 } | tee -a restyaboard_install.log

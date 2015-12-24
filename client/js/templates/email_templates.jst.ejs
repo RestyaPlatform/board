@@ -29,35 +29,37 @@
 				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == email_tempalte.get('id')) { %> active <%} else if (_.isUndefined(id) && email_tempalte.get('id') == 1) { %> active <%}%>" id="settingTab<%- email_tempalte.get('id') %>">
 					<% if(!_.isEmpty(template)){ %>
 					<p class="alert alert-info "><%- template.description %></p>
-					<form class="form-horizontal clearfix col-lg-6 col-md-8 col-sm-12 col-xs-12 js-email-templates-form" role="form" id="js-email-templates-form">
+					<form class="form-horizontal js-email-templates-form" role="form" id="js-email-templates-form">
 					  <div class="form-group">
-						 <label for="inputFromEmail" class="col-sm-4 control-label col-xs-12">From</label>
-						 <div class="col-sm-8 col-xs-12">
+						 <label for="inputFromEmail" class="col-md-2 col-sm-3 control-label">From</label>
+						 <div class="col-md-4 col-sm-9">
 							<input type="text" id="inputFromEmail" name="from_email" class="form-control" value="<%- template.from_email %>" />
 						 </div>
 					  </div>
 					  <div class="form-group">
-						 <label for="inputReplyToEmail" class="col-sm-4 control-label col-xs-12">Reply To</label>
-						 <div class="col-sm-8 col-xs-12">
+						 <label for="inputReplyToEmail" class="col-md-2 col-sm-3 control-label">Reply To</label>
+						 <div class="col-md-4 col-sm-9">
 							<input type="text" id="inputReplyToEmail" name="reply_to_email" class="form-control" value="<%- template.reply_to_email %>" />
 						 </div>
 					  </div>
 					  <div class="form-group">
-						 <label for="inputSubject" class="col-sm-4 control-label col-xs-12">Subject</label>
-						 <div class="col-sm-8 col-xs-12">
+						 <label for="inputSubject" class="col-md-2 col-sm-3 control-label">Subject</label>
+						 <div class="col-md-4 col-sm-9">
 							<input type="text" id="inputSubject" name="subject" class="form-control" value="<%- template.subject %>" />
+							<span class="info"><%- template.email_variables %></span>
 						 </div>
 					  </div>
 					  <div class="form-group">
-						 <label class="col-sm-4 control-label col-xs-12" for="EmailTemplateEmailTextContent">Email Text Content</label>
-						<div class="col-sm-8 col-xs-12">
-							<textarea rows="6" id="EmailTemplateEmailTextContent" class="form-control" name="email_text_content"><%- template.email_text_content %></textarea>
+						 <label class="col-md-2 col-sm-3 control-label" for="EmailTemplateEmailTextContent">Email Content</label>
+						<div class="col-md-10 col-sm-9">
+							<textarea id="EmailTemplateEmailTextContent" class="form-control" name="email_text_content"	rows="20"><%- template.email_text_content %></textarea>
+							<span class="info"><%- template.email_variables %></span>
 						</div>
 					  </div>
 					  <div class="form-group">
-						<label for="submit2" class="sr-only col-sm-4 control-label col-xs-12">submit</label>
-						<div class="col-sm-8 col-xs-12">
-						<input type="submit" value="Submit" id="submit2" class="btn btn-primary">
+						<label for="submit2" class="sr-only col-md-2 col-sm-3 control-label">submit</label>
+						<div class="col-md-4 col-sm-9">
+						<input type="submit" value="Update" id="submit2" class="btn btn-primary">
 						</div>
 					  </div>
 					</form>

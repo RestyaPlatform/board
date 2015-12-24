@@ -20,7 +20,7 @@
 			<div class="tab-pane js-get-organization-member-lists-response  <% if(!_.isUndefined(type) && type == 'users'){ %>active<%}%>" id="member"></div>
 		</div>
   </div>
-  <div id="js-org-drag" class="col-lg-2 col-md-3 col-sm-3 col-xs-12">
+  <form class="col-lg-2 col-md-3 col-sm-3 col-xs-12 js-org-drag" role="form" enctype="multipart/form-data" id="js-org-drag">
 	<div class="well well-sm clearfix text-center">
 	<%
 		var logo_path = "img/default-organization.png"; 
@@ -30,14 +30,14 @@
 			logo_path = organization.showImage('Organization', organization.attributes.id, 'medium_thumb' ) +'?'+ new Date().getTime();
 		}
 	%>
-	  <div <% if(!_.isUndefined(authuser.user)){%> id="dropzone" <%}%>class="navbar-btn btn-xs"><% if(!_.isUndefined(authuser.user) && is_logo_added){ %><span class="profile-block show"><i class="js-remove-image icon icon-remove close-block cur"></i><span><%}%><img src="<%= logo_path %>" alt="[Image: <%= organization.attributes.name%>]" title="<%= organization.attributes.name%>" class="img-responsive img-thumbnail <% if(!_.isEmpty(role_links.where({slug: 'starred_board'}))){ %>drag-box<% } %>" id="js-organization-logo-<%-organization.attributes.id %>">
+	  <div <% if(!_.isUndefined(authuser.user)){%> id="dropzone" <%}%>class="navbar-btn btn-xs"><% if(!_.isUndefined(authuser.user) && is_logo_added){ %><span class="profile-block show"><i class="js-remove-image icon icon-remove close-block cur"></i><span><%}%><img src="<%= logo_path %>" alt="[Image: <%= organization.attributes.name%>]" title="<%= organization.attributes.name%>" class="js-org-image-uploaded img-responsive img-thumbnail <% if(!_.isEmpty(role_links.where({slug: 'starred_board'}))){ %>drag-box<% } %>" id="js-organization-logo-<%-organization.attributes.id %>">
 		<div id="manager-area">
 			
 		</div>
 		</span>
 		</span>
 		<div class="drag-drop drag-drop-sm">Drop Files Here</div>
-	</div>
+	</form>
 	<span id="org-loader"></span>
 	
   </div>

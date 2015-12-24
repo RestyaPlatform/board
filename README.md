@@ -20,6 +20,7 @@ To upgrade, overwrite application files and apply respective DB script:
 *  v0.1.2 to v0.1.3 - `/sql/upgrade-0.1.2-0.1.3.sql`
 *  v0.1.3 to v0.1.4 - `/sql/upgrade-0.1.3-0.1.4.sql`
 *  v0.1.4 to v0.1.5 - `/sql/upgrade-0.1.4-0.1.5.sql`
+*  v0.1.5 to v0.1.6 - `/sql/upgrade-0.1.5-0.1.6.sql`
 
 ### Forum
 
@@ -42,16 +43,12 @@ To give you some idea about of our plans:
   * Simple app architecture
   * "Import from GitHub" sample app
   * Current API tweaks to accept other oAuth clients "properly"
-* UI enhancements
-* Better responsive mobile view
 * Address some [known issues](http://restya.com/board/issues.html)
 * Notifier iOS App (Possibly, Free and non-open source)
 
 
 #### Next
 
-* Email notifications
-  * Brainstorm for "best" approach
 * Refactor R framework
   * Our focus on shipping this somewhat bloated "ultra thin" R framework. Better use new "REST URL to DB Query builder" code once that is tested (?).
 * Merge caching layer works (Or, only in commerical?)
@@ -82,7 +79,7 @@ Required sofware: nginx, php-fpm (with mbstring), PostgreSQL, ElasticSearch, Gru
 * `grunt watch` - Converts LESS to CSS and EJS to JS, automatically by "watching" for file changes
 * `restyaboard_with_empty_data.sql` - Database generation script 
 * `server/php/R/config.inc.php` - Database and other configurations
-* `media` & `client/img` - Need write permission for php; can be `chmod 655` or `755` or `777` depending upon server configuration
+* `media`, `client/img` & `server/php/R/shell/*.sh` - Need write permission for php; can be `chmod 655` or `755` or `777` depending upon server configuration
 * `grunt build:live` - Generates restyaboard.zip, deployable code. Replace your DB details in `build/live.json`.
 
 ------------

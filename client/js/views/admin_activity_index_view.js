@@ -17,6 +17,7 @@ App.AdminActivityIndexView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         this.render();
+        emojify.run();
     },
     template: JST['templates/admin_activity_index'],
     converter: new Showdown.converter(),
@@ -68,6 +69,7 @@ App.AdminActivityIndexView = Backbone.View.extend({
             patch: true,
             success: function(model, response) {
                 self.flash('danger', "Undo Succeed");
+                emojify.run();
             }
         });
         return false;

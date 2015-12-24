@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Common functions
  *
@@ -12,6 +12,67 @@
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
+/**
+ * Returns an OAuth2 access token to the client
+ *
+ * @param array $post Post data
+ *
+ * @return mixed
+ */
+function getToken($post)
+{
+    $old_server_method = $_SERVER['REQUEST_METHOD'];
+    if (!empty($_SERVER['CONTENT_TYPE'])) {
+        $old_content_type = $_SERVER['CONTENT_TYPE'];
+    }
+    $_SERVER['REQUEST_METHOD'] = 'POST';
+    $_SERVER['CONTENT_TYPE'] = 'application/x-www-form-urlencoded';
+    $_POST = $post;
+    OAuth2\Autoloader::register();
+    $oauth_config = array(
+        'user_table' => 'users'
+    );
+    $val_array = array(
+        'dsn' => 'pgsql:host=' . R_DB_HOST . ';dbname=' . R_DB_NAME . ';port=' . R_DB_PORT,
+        'username' => R_DB_USER,
+        'password' => R_DB_PASSWORD
+    );
+    $storage = new OAuth2\Storage\Pdo($val_array, $oauth_config);
+    $server = new OAuth2\Server($storage);
+    if (isset($_POST['grant_type']) && $_POST['grant_type'] == 'password') {
+        $val_array = array(
+            'password' => $_POST['password']
+        );
+        $users = array(
+            $_POST['username'] => $val_array
+        );
+        $user_credentials = array(
+            'user_credentials' => $users
+        );
+        $storage = new OAuth2\Storage\Memory($user_credentials);
+        $server->addGrantType(new OAuth2\GrantType\UserCredentials($storage));
+    } elseif (isset($_POST['grant_type']) && $_POST['grant_type'] == 'refresh_token') {
+        $server->addGrantType(new OAuth2\GrantType\RefreshToken($storage));
+    } else {
+        $val_array = array(
+            'client_secret' => OAUTH_CLIENT_SECRET
+        );
+        $clients = array(
+            OAUTH_CLIENTID => $val_array
+        );
+        $credentials = array(
+            'client_credentials' => $clients
+        );
+        $storage = new OAuth2\Storage\Memory($credentials);
+        $server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
+    }
+    $response = $server->handleTokenRequest(OAuth2\Request::createFromGlobals())->send('return');
+    $_SERVER['REQUEST_METHOD'] = $old_server_method;
+    if (!empty($old_content_type)) {
+        $_SERVER['CONTENT_TYPE'] = $old_content_type;
+    }
+    return json_decode($response, true);
+}
 /**
  * To generate random string
  *
@@ -117,7 +178,7 @@ function getCryptHash($str)
  */
 function curlExecute($url, $method = 'get', $post = array() , $format = 'plain')
 {
-    $filename = '';
+    $filename['file_name'] = '';
     $mediadir = '';
     if ($format == 'image') {
         $mediadir = $post;
@@ -125,7 +186,7 @@ function curlExecute($url, $method = 'get', $post = array() , $format = 'plain')
             mkdir($mediadir, 0777, true);
         }
         $path = explode('/', $url);
-        $filename = $path[count($path) - 1];
+        $filename['file_name'] = $path[count($path) - 1];
     }
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -133,6 +194,7 @@ function curlExecute($url, $method = 'get', $post = array() , $format = 'plain')
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
     if ($format != 'image') {
         curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 300 seconds (5min)
         
@@ -162,13 +224,15 @@ function curlExecute($url, $method = 'get', $post = array() , $format = 'plain')
         $info = curl_getinfo($ch);
         array_change_key_case($info);
         $content_type = explode('/', $info['content_type']);
-        $filename = (strpos($filename, '.') !== false) ? $filename : $filename . '.' . $content_type[1];
-        $filename = preg_replace('/[^A-Za-z0-9\-.]/', '', $filename);
+        $extension = explode(';', $content_type[1]);
+        $filename['extension'] = $extension[0];
+        $filename['file_name'] = (strpos($filename['file_name'], '.') !== false) ? $filename['file_name'] : $filename['file_name'] . '.' . $content_type[1];
+        $filename['file_name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $filename['file_name']);
         curl_close($ch);
-        if (file_exists($mediadir . DIRECTORY_SEPARATOR . $filename)) {
-            unlink($mediadir . DIRECTORY_SEPARATOR . $filename);
+        if (file_exists($mediadir . DIRECTORY_SEPARATOR . $filename['file_name'])) {
+            unlink($mediadir . DIRECTORY_SEPARATOR . $filename['file_name']);
         }
-        $fp = fopen($mediadir . DIRECTORY_SEPARATOR . $filename, 'x');
+        $fp = fopen($mediadir . DIRECTORY_SEPARATOR . $filename['file_name'], 'x');
         fwrite($fp, $response);
         fclose($fp);
         return $filename;
@@ -467,32 +531,38 @@ function executeQuery($qry, $arr = array())
 /**
  * Common method to send mail
  *
- * @param string $data Mail informations
+ * @param string $template        Email template name
+ * @param string $replace_content Email content replace array
+ * @param string $to              To email address
  *
  * @return void
  */
-function sendMail($data)
+function sendMail($template, $replace_content, $to)
 {
-    global $r_debug, $db_lnk;
-    $data['from'] = DEFAULT_FROM_EMAIL;
-    $data['##FROM_EMAIL##'] = DEFAULT_FROM_EMAIL;
-    $data['##SITE_NAME##'] = SITE_NAME;
-    $data['##SITE_URL##'] = 'http://' . $_SERVER['HTTP_HOST'];
-    $data['##CONTACT_MAIL##'] = DEFAULT_FROM_EMAIL;
-    $data['##SUPPORT_EMAIL##'] = DEFAULT_FROM_EMAIL;
-    $to = $data['to'];
-    $from = $data['from'];
-    $headers = 'From:' . SITE_NAME . '<' . $data['from'] . '>';
-    $qry_val_arr = array(
-        $data['mail']
+    global $r_debug, $db_lnk, $_server_domain_url;
+    if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
+        include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
+    }
+    $default_content = array(
+        '##SITE_NAME##' => SITE_NAME,
+        '##SITE_URL##' => $_server_domain_url,
+        '##FROM_EMAIL##' => DEFAULT_FROM_EMAIL_ADDRESS,
+        '##CONTACT_EMAIL##' => DEFAULT_CONTACT_EMAIL_ADDRESS
     );
+    $qry_val_arr = array(
+        $template
+    );
+    $emailFindReplace = array_merge($default_content, $replace_content);
     $template = executeQuery('SELECT * FROM email_templates WHERE name = $1', $qry_val_arr);
     if ($template) {
-        unset($data['mail']);
-        unset($data['from']);
-        unset($data['to']);
-        $subject = strtr($template['subject'], $data);
-        $message = strtr($template['email_text_content'], $data);
+        $message = strtr($template['email_text_content'], $emailFindReplace);
+        $subject = strtr($template['subject'], $emailFindReplace);
+        $from_email = strtr($template['from_email'], $emailFindReplace);
+        $headers = 'From:' . $from_email . "\r\n";
+        $headers.= "MIME-Version: 1.0\r\n";
+        $headers.= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+        $headers.= "X-Mailer: Restyaboard (0.1.6; +http://restya.com/board)\r\n";
+        $headers.= "X-Auto-Response-Suppress: All\r\n";
         mail($to, $subject, $message, $headers);
     }
 }
@@ -802,7 +872,7 @@ function getbindValues($table, $data, $expected_fields_arr = array())
     return $bindValues;
 }
 /**
- * Import trello
+ * Import Trello board
  *
  * @param array $board Boards from trello
  *
@@ -946,10 +1016,10 @@ function importTrelloBoard($board = array())
                     foreach ($card['attachments'] as $attachment) {
                         $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
                         $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
-						$save_path = str_replace('\\', '/', $save_path);
+                        $save_path = str_replace('\\', '/', $save_path);
                         $filename = curlExecute($attachment['url'], 'get', $mediadir, 'image');
-                        $path = $save_path . DIRECTORY_SEPARATOR . $filename;
-                        $name = $filename;
+                        $path = $save_path . DIRECTORY_SEPARATOR . $filename['file_name'];
+                        $name = $filename['file_name'];
                         $created = $modified = str_replace('T', ' ', $attachment['date']);
                         $qry_val_arr = array(
                             $created,
@@ -957,7 +1027,7 @@ function importTrelloBoard($board = array())
                             $new_board['id'],
                             $lists[$card['idList']],
                             $_card['id'],
-                            $filename,
+                            $filename['file_name'],
                             $path,
                             $attachment['mimeType']
                         );
@@ -1087,7 +1157,7 @@ function importTrelloBoard($board = array())
                     $comment = '##USER_NAME## added member to board';
                 } else if ($action['type'] == 'removeChecklistFromCard') {
                     $type = 'delete_checklist';
-                    $comment = '##USER_NAME## deleted checklist from card ##CARD_LINK##';
+                    $comment = '##USER_NAME## deleted checklist ##CHECKLIST_NAME## from card ##CARD_LINK##';
                 }
                 $created = $modified = str_replace('T', ' ', $action['date']);
                 $qry_val_arr = array(
@@ -1106,6 +1176,13 @@ function importTrelloBoard($board = array())
         return $new_board;
     }
 }
+/**
+ * Email to name
+ *
+ * @param string $email Email
+ *
+ * @return string
+ */
 function email2name($email)
 {
     $email = substr($email, 0, strrpos($email, '@'));
@@ -1118,4 +1195,56 @@ function email2name($email)
         $full_name = $name;
     }
     return $full_name;
+}
+/**
+ * Find and replace comment variables
+ *
+ * @param string $activity is activity informations
+ *
+ * @return string
+ */
+function findAndReplaceVariables($activity)
+{
+    global $_server_domain_url;
+    if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
+        include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
+    }
+    $data = array(
+        '##ORGANIZATION_LINK##' => $activity['organization_name'],
+        '##CARD_LINK##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '/card/' . $activity['card_id'] . '">' . $activity['card_name'] . '</a>',
+        '##LABEL_NAME##' => $activity['label_name'],
+        '##CARD_NAME##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '/card/' . $activity['card_id'] . '">' . $activity['card_name'] . '</a>',
+        '##DESCRIPTION##' => $activity['card_description'],
+        '##LIST_NAME##' => $activity['list_name'],
+        '##BOARD_NAME##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '">' . $activity['board_name'] . '</a>',
+        '##USER_NAME##' => '<strong>' . $activity['full_name'] . '</strong>',
+        '##CHECKLIST_ITEM_NAME##' => $activity['checklist_item_name'],
+        '##CHECKLIST_ITEM_PARENT_NAME##' => $activity['checklist_item_parent_name'],
+        '##CHECKLIST_NAME##' => $activity['checklist_name']
+    );
+    $comment = strtr($activity['comment'], $data);
+    return $comment;
+}
+/**
+ * Common method to convert boolean values
+ *
+ * @param string $table Table name to get values
+ * @param array  $row   Field list
+ *
+ * @return mixed
+ */
+function convertBooleanValues($table, $row)
+{
+    global $db_lnk;
+    $qry_val_arr = array(
+        $table
+    );
+    $result = pg_query_params($db_lnk, 'SELECT * FROM information_schema.columns WHERE table_name = $1 ', $qry_val_arr);
+    $bindValues = array();
+    while ($field_details = pg_fetch_assoc($result)) {
+        if ($field_details['data_type'] == 'boolean') {
+            $row[$field_details['column_name']] = ($row[$field_details['column_name']] == 'f') ? 0 : 1;
+        }
+    }
+    return $row;
 }

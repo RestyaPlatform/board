@@ -20,11 +20,14 @@ App.ActivityView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function(options) {
+        var self = this;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
+        _.bindAll(this, 'render', 'undo', 'undo_all');
         this.type = options.type;
         this.board = options.board;
+        emojify.run();
     },
     converter: new Showdown.converter(),
     template: JST['templates/activity'],
@@ -129,6 +132,7 @@ App.ActivityView = Backbone.View.extend({
                                 board: self.board
                             });
                             view_activity.append(view.render().el).find('.timeago').timeago();
+                            emojify.run();
                             $('#js-loader-img').addClass('hide');
                         });
                     }
@@ -162,13 +166,23 @@ App.ActivityView = Backbone.View.extend({
      * @return false
      */
     undo_all: function(e) {
-        var self = this;
         e.preventDefault();
+        var self = this;
         this.model.url = api_url + 'activities/undo/' + this.model.id + '.json';
         this.model.save({}, {
             patch: true,
             success: function(model, response) {
                 self.flash('danger', "Undo Succeed");
+                if (!_.isUndefined(response.activity)) {
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    var view = new App.ActivityView({
+                        model: activity
+                    });
+                    var view_activity = $('#js-list-user-activities-list');
+                    view_activity.prepend(view.render().el).find('.timeago').timeago();
+                    emojify.run();
+                }
             }
         });
         return false;

@@ -23,6 +23,7 @@ App.UserActivityView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         this.render();
+        emojify.run();
     },
     converter: new Showdown.converter(),
     template: JST['templates/user_activity'],
@@ -74,6 +75,7 @@ App.UserActivityView = Backbone.View.extend({
             patch: true,
             success: function(model, response) {
                 self.flash('danger', "Undo Succeed");
+                emojify.run();
             }
         });
         return false;

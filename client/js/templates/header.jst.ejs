@@ -1,15 +1,16 @@
-<% if(_.isEmpty(current_param) || ((typeof(user) == "undefined" || (typeof(user) != "undefined" && user.role_id != 1)) || (current_param !== 'activities' && current_param !== 'users' && current_param !== 'roles' && current_param !== 'settings' && current_param !== 'email_templates'))){ %>
+<% if(_.isEmpty(current_param) || ((typeof(user) == "undefined" || (typeof(user) != "undefined" && user.role_id != 1)) || (current_param !== 'activities' && current_param !== 'users' && current_param !== 'roles' && current_param !== 'settings' && current_param !== 'email_templates' && current_param !== 'boards' && current_param !== 'admin_boards_list'))){ %>
 <div id="js-navbar-default" class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
-  <div class="col-xs-12 btn-block">
-	<div class="navbar-header">
+  <div class="row">
+	<div class="navbar-left">
 	  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-	  <h1 class="clearfix"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></h1>
+	  <div class="clearfix"><h2 class="navbar-left navbar-btn list-group-item-text"><span class="navbar-left"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span></h1>
+	  </div>
 	</div>
-	<nav class="navbar-collapse collapse row">
+	<div class="navbar-right navbar-btn h4">
 	  
 	  <%  if(typeof(user) == "undefined") { %>
-	  	<ul class="nav navbar-nav navbar-right text-center">
+	  	<ul class="nav nav-pills navbar-left">
 	  	<%
 			if(!_.isEmpty(role_links.where({slug: "users_register"}))) {
 				if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") {
@@ -25,19 +26,19 @@
 		 	}
 		 %>
 		 </ul>
-	 <% }else{ %>
-	 	<ul class="nav nav-pills navbar-right">
-			<li class="<%  var fragment = Backbone.history.fragment; var fragments = fragment.split('/'); if(fragment.indexOf('boards')  != -1 && fragments.length == 1){%>active<%}%> navbar-btn"><a href="#/boards" title="My Boards" class="text-muted initialism"><i class="icon-user"></i></a></li>
-            <li class="<% if(Backbone.history.fragment.indexOf('boards/closed') != -1){%>active<%}%> navbar-btn"><a href="#/boards/closed" title="Closed Boards" class="text-muted initialism"><i class="icon-th-large"></i></a></li>
-            <li class="<% if(Backbone.history.fragment.indexOf('boards/starred') != -1){%>active<%}%> navbar-btn"><a href="#/boards/starred" title="Starred Boards" class="text-muted initialism"><i class="icon-star"></i></a></li>
+	 <% }else{ %> 
+	 	<ul class="nav nav-pills navbar-left">
+			<li class="<%  var fragment = Backbone.history.fragment; var fragments = fragment.split('/'); if(fragment.indexOf('boards')  != -1 && fragments.length == 1){%>active<%}%>"><a href="#/boards" title="My Boards" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-user"></i></a></li>
+            <li class="<% if(Backbone.history.fragment.indexOf('boards/starred') != -1){%>active<%}%>"><a href="#/boards/starred" title="Starred Boards" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-star"></i></a></li>
+			<li class="<% if(Backbone.history.fragment.indexOf('boards/closed') != -1){%>active<%}%>"><a href="#/boards/closed" title="Closed Boards" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-th-large"></i></a></li>
         </ul>
 	 <% }%>
 	  
-	</nav>
+	</div>
    </div>
   </div>
 </div>
-<% } else if(typeof(user) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'roles' || current_param === 'settings' || current_param === 'email_templates')){ %>
+<% } else if(typeof(user) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'roles' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list')){ %>
 <% 
 	if(!_.isEmpty(current_param) && (current_param === 'activities')) {
 		current_title = 'Activities';
@@ -49,6 +50,8 @@
 		current_title = 'Settings';
 	} else if(!_.isEmpty(current_param) && (current_param === 'email_templates')){ 
 		current_title = 'Email Templates';
+	} else if(!_.isEmpty(current_param) && (current_param === 'admin_boards_list')){ 
+		current_title = 'Boards';
 	} 
 %>
 
@@ -58,7 +61,7 @@
 		<span class="sr-only">Toggle navigation</span> 
 		<span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> 
 	</button>
-  <div class="clearfix navbar-btn navbar-left">
+  <div class="clearfix navbar-left"> 
 	<h1 class="navbar-left navbar-btn mob-no-mar clearfix"><div class="navbar-left"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"></a></div></h1>
 	<ul class="list-inline navbar-left h2 navbar-btn navbar-form whitec text-center hidden-xs">
             <li class="navbar-btn "><span class="h5">/</span></li>
@@ -68,7 +71,7 @@
      </ul>
 	 <% if(!_.isEmpty(current_param) && (current_param === 'users')){ %>
 	 <div class="pull-left well-sm"> <div class="js-dropdown dropdown  docmodal-submenu row">
-              <a data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle btn btn-link label show" href="#"> <i class="icon-cog h3"></i></a>
+              <a data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle label" href="#"> <i class="icon-cog h3"></i></a>
               <ul role="menu" class="dropdown-menu arrow">
                  <li class="text-center text-muted"><strong>Sort</strong></li>
                  <li class="divider"></li>
@@ -112,21 +115,24 @@
 				<% 
 				if(!_.isEmpty(role_links.where({slug: "users"}))) {
 					if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") { %>
-					<div class="pull-left well-sm"><a class="btn btn-link show label" href="#/users/admin_user_add" title="Add User"><i class="icon-plus-sign h3"></i><span class="h4">Add User</span></a></div>
+					<div class="pull-left well-sm"><a class="label" href="#/users/admin_user_add" title="Add User"><i class="icon-plus-sign h3"></i><span class="h4">Add User</span></a></div>
 				<% } 
 				} %>
 			<% } %>
 	</div>
 	</div>
-	<nav class="navbar-collapse collapse">
+	<nav class="navbar-collapse collapse"> 
 	<div class="navbar-right clearfix">
-		<ul class="nav nav-pills navbar-left">
+		<ul class="nav nav-pills navbar-left navbar-btn">
 			<% if(!_.isEmpty(role_links.where({slug: "activities_listing"}))){ %>
 				<li class="js-admin-activity-menu navbar-btn"><a title="Activities" href="#/activities">Activities</a></li>
 			<% } %>		
 			<% if(!_.isEmpty(role_links.where({slug: "view_user_listing"}))){ %>
 				<li class="js-admin-user-menu navbar-btn"><a title="Users" href="#/users">Users</a></li>
-			<% } %>		
+			<% } %>	
+            <% if(!_.isEmpty(role_links.where({slug: "view_board_listing"}))){ %>
+				<li class="js-admin-board-menu navbar-btn"><a title="Boards" href="#/boards/list">Boards</a></li>
+			<% } %>				
 			<% if(!_.isEmpty(role_links.where({slug: "roles"}))){ %>
 				<li class="js-admin-role-menu navbar-btn"><a title="Roles" href="#/roles">Roles</a></li>
 			<% } %>
@@ -139,5 +145,18 @@
 		</ul>
 	</div>
 	</nav>
+</div>
+<% } else { %>
+<div role="navigation" class="navbar navbar-default" id="js-navbar-default">
+  <div class="container-fluid">
+  <div class="row">
+	<div class="navbar-left">
+	  
+	  <div class="clearfix"><h2 class="navbar-left navbar-btn list-group-item-text"><span class="navbar-left"><a title="Restyaboard1" href="#/"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span></h2>
+	  </div>
+	</div>
+	
+   </div>
+  </div>
 </div>
 <% } %>

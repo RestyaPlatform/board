@@ -1,5 +1,60 @@
-<div class="panel clearfix col-xs-12">
+<div class="well-lg navbar-btn"></div>
+<form role="form" class="col-xs-12">
 	<div class="table-responsive">
-		<table class="table table-hover js-user-list table-list"></table>
+		<table class="table table-striped table-bordered table-hover list-group-item-text">
+		<thead>
+                <tr class="active">
+                  <th rowspan="2" class="text-center">Select</th>
+				  <th rowspan="2" class="col-xs-2"><span class="js-sort cur" data-field="username" data-direction="asc" title="User"><span class="icon-caret-down"></span>User</span></th>
+                  <th colspan="3" class="text-center">Organizations</th>
+                  <th colspan="3" class="text-center">Boards</th>
+                  <th colspan="3" class="text-center">Login</th>
+                  <th colspan="2" class="text-center">Registered</th>
+                  <th rowspan="2" class="text-center col-xs-1"><span class="js-sort cur" data-field="role_id" data-direction="asc" title="Role"><span class="icon-caret-down hide"></span>Role</span></th>
+				  <th rowspan="2" class="text-center">Actions</th>
+                </tr>
+                <tr class="active">
+				  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="created_organization_count" data-direction="asc" title="Created">Created</span></th>
+                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="owner_organization_count" data-direction="asc" title="Owner">Owner</span></th>
+                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="member_organization_count" data-direction="asc" title="Member">Member</span></th>
+				  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="created_board_count" data-direction="asc" title="Created">Created</span></th>
+                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="owner_board_count" data-direction="asc" title="Owner">Owner</span></th>
+                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="member_board_count" data-direction="asc" title="Member">Member</span></th>
+                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="user_login_count" data-direction="asc" title="Count">Count</span></th>
+                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="created" data-direction="asc" title="Time">Time</span></th>
+                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="register_country_name" data-direction="asc" title="IP">IP</span></th>
+				  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="last_login_date" data-direction="asc" title="Time">Time</span></th>
+                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="register_country_name" data-direction="asc" title="IP">IP</span></th>
+                </tr>
+			
+        </thead>
+			<tbody class="js-user-list">
+			 </tbody>
+	    </thead>
+        </table>
 	</div>
-</div>
+</form>
+<div class="clearfix navbar-btn col-xs-12">
+		  <div class="well-sm navbar-btn"></div>
+          <ul class="list-inline pull-left">
+            <li>Select:</li>
+            <li><a href="#/users" class="js-select js-no-pjax" data-checked="js-checkbox-list" title="All">All</a></li>
+            <li><a href="#/users" class="js-select js-no-pjax" data-unchecked="js-checkbox-list" title="None">None</a></li>
+            <li><a title="Blocked" href="#/users" class="js-select" data-unchecked="js-checkbox-active" data-checked="js-checkbox-inactive">Blocked</a></li>
+            <li><a title="Unblocked" href="#/users" class="js-select" data-unchecked="js-checkbox-inactive" data-checked="js-checkbox-active">Unblocked</a></li>
+			 				  
+          </ul>
+          <div class="pull-left">
+            <form class="form-inline" role="form">
+              <div class="pr clearfix">
+	                <select class="js-more-action-user" id="js-more-action">
+	                  <option>More Actions</option>
+	                  <option value="1">Block</option>
+	                  <option value="2">Unblock</option>
+	                  <option value="3">Delete</option>
+	                </select>
+                </div>
+            </form>
+          </div>
+		  <div class="pull-right pagination pagination-right pagination-boxes list-group-item-heading"></div>
+      </div>

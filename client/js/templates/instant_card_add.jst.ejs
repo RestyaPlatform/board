@@ -56,12 +56,12 @@
 		 <div class="form-group">
 		 	<label class="sr-only">Description</label>
 			<div class="col-xs-12">
-				<textarea class="form-control" rows="3" placeholder="Description" name="description" id="inputCardDescription" tile="Description"></textarea>
+				<textarea class="form-control" rows="3" placeholder="Description" name="description" id="inputCardDescription" tile="Description" required></textarea>
 			</div>
 		</div>
 		<div class="clearfix form-group">
 			<div class="col-xs-12">
-				<ul class="list-inline pull-left">
+				<ul class="list-inline pull-left card-view-mn">
 					<li class="dropdown dropup">
 						<a title="Users" class="btn btn-link dropdown-toggle js-add-member-dropdown" data-toggle="dropdown" href="#"><i class="icon-user js-instant-user text-muted"></i></a>
 						<ul class="dropdown-menu js-dropdown-popup arrow arrow-bottom">
@@ -78,8 +78,13 @@
 						</ul>
 					</li>
 					<li class="duedate">
-						<span title="Calendar" class="btn btn-link"><i class="icon-calendar cur js-instant-date text-muted"></i></span>
-						<input type="hidden" class="form-control input-sm js-instant-duedate" name="due_date" />
+						<div class="form-group">
+							<label for="calendar" class="control-label col-xs-12 text-right">Calendar</label>
+							<div class="input-group">
+								<span class="input-group-addon"><i class="icon-calendar cur js-instant-date text-muted"></i></span>
+								<input type="text" id="calendar" class="form-control js-instant-duedate" name="due_date">
+							</div>
+						</div>
 					</li>
 					<li class="dropdown dropup">
 						<a class="btn btn-link js-show-card-label-form" data-toggle="dropdown" title="Labels" href="#"><i class="icon-tag js-instant-label"></i></a>

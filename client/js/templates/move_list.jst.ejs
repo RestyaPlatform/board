@@ -23,7 +23,7 @@ boards.each(function(board) {
 			content_position += '<option value="' + next_position + '">' + next_position+ '</option>';
 		}
 	} else {
-		if (board.attributes.is_closed == false || board.attributes.is_closed == 'f') {
+		if (board.attributes.is_closed == false || board.attributes.is_closed == 0) {
 			content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + '</option>';
 		}
 	}

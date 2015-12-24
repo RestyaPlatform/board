@@ -1,7 +1,7 @@
   <div class="container-fluid">
-	<div class="navbar-left navbar-btn col-sm-11 col-xs-10 nav  col-lg-5 col-md-4">
-		<div class="clearfix navbar-btn row-flex">
-			<h2 class="navbar-left navbar-btn col-flex col-flex1"><span class="navbar-left"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span></h2>
+	<div class="navbar-left navbar-btn col-sm-11 col-xs-10 nav  col-lg-5 col-md-4 list-group-item-text">
+		<div class="clearfix row-flex">
+			<h2 class="navbar-left navbar-btn col-flex col-flex1 list-group-item-heading list-group-item-text"><span class="navbar-left"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span></h2>
 			<ul class="list-inline navbar-left h3 navbar-btn navbar-form text-center col-flex col-flex2">
 				<li>
 					<span class=" pull-left h4 navbar-btn">/</span>
@@ -13,8 +13,8 @@
   <div class="navbar-right navbar-btn">
 	<ul class="nav nav-pills navbar-left">
 	<% if(!_.isEmpty(role_links.where({slug: "delete_organization"}))){ %>
-	  <li class="dropdown navbar-btn">
-			<a href="#" title="Delete" class="text-muted initialism dropdown-toggle" data-toggle="dropdown"><i class="icon-trash"></i></a>
+	  <li class="dropdown">
+			<a href="#" title="Delete" class="text-muted list-group-item-text navbar-btn h4 dropdown-toggle" data-toggle="dropdown"><i class="icon-trash"></i></a>
 			<ul class="dropdown-menu arrow arrow-right list-unstyled">
 					<li class="col-xs-12 text-center clearfix">						
 							<div class="clearfix"><span class="col-xs-10"><strong>Delete Organization?</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a></div>

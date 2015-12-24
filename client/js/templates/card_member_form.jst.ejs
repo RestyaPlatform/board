@@ -11,11 +11,11 @@
 				 var added_user = card.users.findWhere({ user_id: board_user.get('user_id') }); 
 				 if (_.isEmpty(added_user)) { %>
 				 	<li>
-						<a href="#" class="highlight-icon js-add-card-member" data-user-id="<%- board_user.get('user_id') %>" data-user-name="<%-  board_user.get('username') %>" data-user-initial="<%-board_user.get('initials') %>" data-user-profile-picture-path="<%=board_user.get('profile_picture_path')%>">				
+						<a href="#" class="highlight-icon js-add-card-member" data-toggle="tooltip" title="<%-board_user.attributes.full_name %> (<%-board_user.attributes.username %>)" data-user-id="<%- board_user.get('user_id') %>" data-user-name="<%-  board_user.get('username') %>" data-user-initial="<%-board_user.get('initials') %>" data-user-profile-picture-path="<%=board_user.get('profile_picture_path')%>" data-user-fullname="<%-board_user.get('full_name') %>">				
 						<% if(!_.isEmpty(board_user.attributes.profile_picture_path)) { 
-							var profile_picture_path = board_user.showImage('User', board_user.attributes.id, 'micro_thumb' );
+							var profile_picture_path = board_user.showImage('User', board_user.attributes.user_id, 'micro_thumb' );
 						%>
-							<img src="<%=profile_picture_path %>" alt="[Image: <%-board_user.attributes.username %>]" title="<%-board_user.attributes.username %>" class="img-rounded img-responsive avatar  avatar-sm">
+							<img src="<%=profile_picture_path %>" alt="[Image: <%-board_user.attributes.username %>]" class="img-rounded img-responsive avatar  avatar-sm">
 						<% } else {%>
 							<i class="avatar avatar-color-194 avatar-sm img-rounded"><%- board_user.attributes.initials %></i>			
 						<% } %>

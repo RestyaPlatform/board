@@ -121,7 +121,7 @@ App.CardCheckListItemView = Backbone.View.extend({
         items = new App.CheckListItemCollection();
         items.add(checklist_items);
         var completed_count = items.filter(function(checklist_item) {
-            return checklist_item.get('is_completed') === true || checklist_item.get('is_completed') == 'true' || checklist_item.get('is_completed') == 't';
+            return checklist_item.get('is_completed') === true || checklist_item.get('is_completed') == 'true' || checklist_item.get('is_completed') == 1;
         }).length;
         var total_count = items.models.length;
         completed_count = 0 < total_count ? Math.round(100 * completed_count / total_count) : 0;

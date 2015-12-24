@@ -26,7 +26,7 @@ App.CardActionsView = Backbone.View.extend({
     },
     template: JST['templates/card_actions'],
     tagName: 'ul',
-    className: 'dropdown-menu dropdown-menu-right arrow arrow-right js-card-action-list-response js-dropdown-popup',
+    className: 'dropdown-menu dropdown-menu-right arrow arrow-right js-card-action-list-response',
     /**
      * render()
      * populate the html to the dom

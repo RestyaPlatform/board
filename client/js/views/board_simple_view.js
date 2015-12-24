@@ -61,7 +61,7 @@ App.BoardSimpleView = Backbone.View.extend({
         if (this.model !== null && this.model.attributes.users !== null) {
             for (i = 0; i < this.model.attributes.users.length; i++) {
                 if (authuser.user.id == this.model.attributes.users[i].user_id) {
-                    this.model.attributes.is_admin = (this.model.attributes.users[i].is_admin === true || this.model.attributes.users[i].is_admin === 't') ? true : false;
+                    this.model.attributes.is_admin = (this.model.attributes.users[i].is_admin === true || this.model.attributes.users[i].is_admin === 1) ? true : false;
                 }
             }
         }
@@ -233,7 +233,7 @@ App.BoardSimpleView = Backbone.View.extend({
         var insert = $('.js-visibility-list', parent);
         insert.nextAll().remove();
         $(new App.BoardOrganizationFormView({
-            model: authuser.user.organizations,
+            model: auth_user_organizations,
             board: this.model
         }).el).insertAfter(insert);
     },
@@ -317,7 +317,7 @@ App.BoardSimpleView = Backbone.View.extend({
         data = target.serializeObject();
         data.board_visibility = 1;
 
-        var organizations = authuser.user.organizations;
+        var organizations = auth_user_organizations;
         var org = organizations.findWhere({
             id: parseInt(data.organization_id)
         });

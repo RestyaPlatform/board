@@ -35,10 +35,13 @@ define('R_DB_PASSWORD', 'hjVl2!rGd');
 define('R_DB_NAME', 'restyaboard');
 define('R_DB_PORT', 5432);
 define('SECURITYSALT', 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf');
-if (!($db_lnk = @pg_connect('host=' . R_DB_HOST . ' port=' . R_DB_PORT . ' dbname=' . R_DB_NAME . ' user=' . R_DB_USER . ' password=' . R_DB_PASSWORD . ' options=--client_encoding=UTF8'))) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-    $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+if (!file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
+    $fh = fopen(APP_PATH . '/tmp/cache/site_url_for_shell.php', 'a');
+    fwrite($fh, '<?php' . "\n");
+    fwrite($fh, '$_server_domain_url = \'' . $_server_domain_url . '\';');
+    fclose($fh);
 }
+$db_lnk = pg_connect('host=' . R_DB_HOST . ' port=' . R_DB_PORT . ' dbname=' . R_DB_NAME . ' user=' . R_DB_USER . ' password=' . R_DB_PASSWORD . ' options=--client_encoding=UTF8') or die('Database could not connect');
 $settings = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE setting_category_id in (1,2,3) OR setting_category_parent_id in (1,2,3)', array());
 while ($setting = pg_fetch_assoc($settings)) {
     if ($setting['name'] == 'LDAP_LOGIN_ENABLED' || $setting['name'] == 'STANDARD_LOGIN_ENABLED') {

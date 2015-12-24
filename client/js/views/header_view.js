@@ -62,6 +62,9 @@ App.HeaderView = Backbone.View.extend({
         var current_param = Backbone.history.fragment;
         var current_param_split = current_param.split('/');
         this.model.current_param = (current_param.indexOf('changepassword') === -1 && current_param.indexOf('login') === -1 && current_param.indexOf('forgotpassword') === -1 && current_param.indexOf('register') === -1 && current_param.indexOf('activation') === -1) ? current_param_split[0] : '';
+        if (!_.isEmpty(current_param_split[1]) && current_param_split[1] === 'list') {
+            this.model.current_param = 'admin_boards_list';
+        }
         if (typeof Notification != 'undefined') {
             this.model.is_show_enable_notification = (Notification.permission == 'default') ? true : false;
         }

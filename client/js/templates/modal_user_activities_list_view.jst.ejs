@@ -2,8 +2,8 @@
 	<div class="modal-dialog">
 		  <div class="modal-content">
 			<div class="modal-header">
-			<span class="col-xs-10"><strong><% if(!_.isEmpty(list.attributes.full_name)) { %><%- list.attributes.full_name %><% } else { %><%- list.attributes.username %><% } %></span><span> ( <%- list.attributes.username %> ) </strong></span>
 			  <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true">&times;</button>			  
+			<h4 id="myModalLabel" class="modal-title"><strong><%- list.attributes.full_name %></strong> (<%- list.attributes.username %>)</h4>
 			</div>			
 			<div class="modal-body scrollbar">
 				<div>
