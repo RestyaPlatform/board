@@ -975,7 +975,6 @@ END;
 $$;
 
 ALTER TABLE users ADD CONSTRAINT username CHECK (char_length(username) > 0);
-ALTER TABLE users ADD CONSTRAINT email CHECK (char_length(email) > 0);
 ALTER TABLE users ADD CONSTRAINT password CHECK (char_length(password) > 0);
 ALTER TABLE boards ADD CONSTRAINT name CHECK (char_length(name) > 0);
 ALTER TABLE lists ADD CONSTRAINT name CHECK (char_length(name) > 0);

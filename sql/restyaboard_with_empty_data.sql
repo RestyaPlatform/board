@@ -1437,7 +1437,6 @@ CREATE TABLE users (
     member_board_count bigint DEFAULT 0::bigint,
     owner_organization_count bigint DEFAULT 0::bigint,
     member_organization_count bigint DEFAULT 0::bigint,
-    CONSTRAINT email CHECK ((char_length((email)::text) > 0)),
     CONSTRAINT password CHECK ((char_length((password)::text) > 0)),
     CONSTRAINT username CHECK ((char_length((username)::text) > 0))
 );
