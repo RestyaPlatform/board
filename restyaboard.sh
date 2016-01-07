@@ -430,13 +430,13 @@
 			  $dir/server/php/R/config.inc.php
 			
 			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo '*/5 * * * * $dir/server/php/R/shell/cron.sh' >> /var/spool/cron/root
+			echo "*/5 * * * * $dir/server/php/R/shell/cron.sh" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
-			echo '*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh' >> /var/spool/cron/root
+			echo "*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
-			echo '0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh' >> /var/spool/cron/root
+			echo "0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh" >> /var/spool/cron/root
 
 			# Start services
             ps -q 1 | grep -c "systemd"
