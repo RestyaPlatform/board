@@ -327,7 +327,7 @@
 					fi
 					yum install -y postgresql94-server postgresql04-contrib
 
-                    ps -q 1 | grep -c "systemd"
+                    ps -q 1 | grep -q -c "systemd"
                     if [ "$?" -eq 0 ]; then
                         if [ -f /usr/pgsql-9.4/bin/postgresql94-setup ]; then
                             /usr/pgsql-9.4/bin/postgresql94-setup initdb
@@ -344,7 +344,7 @@
 					mv pg_hba.conf pg_hba.conf_old
 					mv pg_hba.conf.1 pg_hba.conf
                     
-                    ps -q 1 | grep -c "systemd"
+                    ps -q 1 | grep -q -c "systemd"
                     if [ "$?" -eq 0 ]; then
                         systemctl restart postgresql-9.4.service
                     else
@@ -435,7 +435,7 @@
 			echo "0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh" >> /var/spool/cron/root
 
 			# Start services
-            ps -q 1 | grep -c "systemd"
+            ps -q 1 | grep -q -c "systemd"
             if [ "$?" -eq 0 ]; then
                 echo "Starting services with systemd"
                 systemctl start nginx
