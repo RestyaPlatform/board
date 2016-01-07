@@ -326,14 +326,30 @@
 						yum install http://yum.postgresql.org/9.4/redhat/rhel-6.6-x86_64/pgdg-centos94-9.4-1.noarch.rpm
 					fi
 					yum install -y postgresql94-server postgresql04-contrib
-					service postgresql-9.4 initdb
-					/etc/init.d/postgresql-9.4 start
-					chkconfig --levels 35 postgresql-9.4 on
+
+                    ps -q 1 | grep -c "systemd"
+                    if [ "$?" -eq 0 ]; then
+                        if [ -f /usr/pgsql-9.4/bin/postgresql94-setup ]; then
+                            /usr/pgsql-9.4/bin/postgresql94-setup initdb
+                        fi
+                        systemctl start postgresql-9.4.service
+                        systemctl enable postgresql-9.4.service
+                    else
+                        service postgresql-9.4 initdb
+                        /etc/init.d/postgresql-9.4 start
+                        chkconfig --levels 35 postgresql-9.4 on
+                    fi
 					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /var/lib/pgsql/9.4/data/pg_hba.conf > /var/lib/pgsql/9.4/data/pg_hba.conf.1
 					cd /var/lib/pgsql/9.4/data
 					mv pg_hba.conf pg_hba.conf_old
 					mv pg_hba.conf.1 pg_hba.conf
-					/etc/init.d/postgresql-9.4 restart
+                    
+                    ps -q 1 | grep -c "systemd"
+                    if [ "$?" -eq 0 ]; then
+                        systemctl restart postgresql-9.4.service
+                    else
+                        /etc/init.d/postgresql-9.4 restart
+                    fi
 				esac
 			fi
 
@@ -354,6 +370,9 @@
 			fi
 
 			echo "Downloading Restyaboard script..."
+            if [ ! -f /usr/bin/unzip ]; then
+                yum install -y unzip
+            fi
 			mkdir ${DOWNLOAD_DIR}
 			curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
 			unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
@@ -419,9 +438,18 @@
 			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
 			echo '0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh' >> /var/spool/cron/root
 
-			echo "Starting services..."
-			/etc/init.d/php-fpm restart
-			/etc/init.d/nginx restart
+			# Start services
+            ps -q 1 | grep -c "systemd"
+            if [ "$?" -eq 0 ]; then
+                echo "Starting services with systemd"
+                systemctl start nginx
+                systemctl start php-fpm
+                
+            else
+                echo "Starting services..."
+                /etc/init.d/php-fpm restart
+                /etc/init.d/nginx restart
+            fi
 						
 			/bin/echo $RESTYABOARD_VERSION > /opt/restyaboard/release
 		esac
