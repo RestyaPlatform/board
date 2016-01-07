@@ -401,11 +401,7 @@
 			chmod -R go+w $dir/tmp/cache
 			chmod -R go+w $dir/server/php/R/shell/cron/*.sh
 
-			psql -U postgres -c "\q"
-			if [ "$?" = 0 ];
-			then
-				break
-			fi	
+			psql -U postgres -c "\q"	
 			sleep 1
 
 			echo "Creating PostgreSQL user and database..."
