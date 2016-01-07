@@ -399,7 +399,7 @@
 			chmod -R go+w $dir/media
 			chmod -R go+w $dir/client/img
 			chmod -R go+w $dir/tmp/cache
-			chmod -R go+w $dir/server/php/R/shell/*.sh
+			chmod -R 0755 $dir/server/php/R/shell/*.sh
 
 			psql -U postgres -c "\q"	
 			sleep 1
