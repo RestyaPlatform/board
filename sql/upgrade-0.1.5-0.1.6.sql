@@ -216,7 +216,7 @@ INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply
 <main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">
 <div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
 <div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
-<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Here''s what you missed…</h2>
+<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Here''s what you missed...</h2>
 <p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</p>
 </pre>
 </div>
