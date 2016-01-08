@@ -41,10 +41,10 @@
 			sleep 1
 			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
-			echo '*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh' >> /var/spool/cron/root
+			echo "*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
-			echo '0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh' >> /var/spool/cron/root
+			echo "0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh" >> /var/spool/cron/root
 			
 			echo "Updating SQL..."
 			psql -d ${POSTGRES_DBNAME} -f $dir/sql/${RESTYABOARD_VERSION}.sql -U ${POSTGRES_DBUSER}
@@ -229,13 +229,13 @@
 			$dir/server/php/R/config.inc.php
 			
 			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo '*/5 * * * * $dir/server/php/R/shell/cron.sh' >> /var/spool/cron/root
+			echo "*/5 * * * * $dir/server/php/R/shell/cron.sh" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
-			echo '*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh' >> /var/spool/cron/root
+			echo "*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
-			echo '0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh' >> /var/spool/cron/root
+			echo "0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh" >> /var/spool/cron/root
 
 			echo "Starting services..."
 			service cron restart
@@ -320,20 +320,36 @@
 					[Yy])
 					echo "Installing PostgreSQL..."
 					if [ $(getconf LONG_BIT) = "32" ]; then
-						yum install http://yum.postgresql.org/9.4/redhat/rhel-6.6-i386/pgdg-centos94-9.4-1.noarch.rpm
+						yum install -y http://yum.postgresql.org/9.4/redhat/rhel-6.6-i386/pgdg-centos94-9.4-1.noarch.rpm
 					fi
 					if [ $(getconf LONG_BIT) = "64" ]; then
-						yum install http://yum.postgresql.org/9.4/redhat/rhel-6.6-x86_64/pgdg-centos94-9.4-1.noarch.rpm
+						yum install -y http://yum.postgresql.org/9.4/redhat/rhel-6.6-x86_64/pgdg-centos94-9.4-1.noarch.rpm
 					fi
 					yum install -y postgresql94-server postgresql04-contrib
-					service postgresql-9.4 initdb
-					/etc/init.d/postgresql-9.4 start
-					chkconfig --levels 35 postgresql-9.4 on
+
+                    ps -q 1 | grep -q -c "systemd"
+                    if [ "$?" -eq 0 ]; then
+                        if [ -f /usr/pgsql-9.4/bin/postgresql94-setup ]; then
+                            /usr/pgsql-9.4/bin/postgresql94-setup initdb
+                        fi
+                        systemctl start postgresql-9.4.service
+                        systemctl enable postgresql-9.4.service
+                    else
+                        service postgresql-9.4 initdb
+                        /etc/init.d/postgresql-9.4 start
+                        chkconfig --levels 35 postgresql-9.4 on
+                    fi
 					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /var/lib/pgsql/9.4/data/pg_hba.conf > /var/lib/pgsql/9.4/data/pg_hba.conf.1
 					cd /var/lib/pgsql/9.4/data
 					mv pg_hba.conf pg_hba.conf_old
 					mv pg_hba.conf.1 pg_hba.conf
-					/etc/init.d/postgresql-9.4 restart
+                    
+                    ps -q 1 | grep -q -c "systemd"
+                    if [ "$?" -eq 0 ]; then
+                        systemctl restart postgresql-9.4.service
+                    else
+                        /etc/init.d/postgresql-9.4 restart
+                    fi
 				esac
 			fi
 
@@ -354,6 +370,9 @@
 			fi
 
 			echo "Downloading Restyaboard script..."
+            if [ ! -f /usr/bin/unzip ]; then
+                yum install -y unzip
+            fi
 			mkdir ${DOWNLOAD_DIR}
 			curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
 			unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
@@ -380,13 +399,9 @@
 			chmod -R go+w $dir/media
 			chmod -R go+w $dir/client/img
 			chmod -R go+w $dir/tmp/cache
-			chmod -R go+w $dir/server/php/R/shell/cron/*.sh
+			chmod -R 0755 $dir/server/php/R/shell/*.sh
 
-			psql -U postgres -c "\q"
-			if [ "$?" = 0 ];
-			then
-				break
-			fi	
+			psql -U postgres -c "\q"	
 			sleep 1
 
 			echo "Creating PostgreSQL user and database..."
@@ -411,17 +426,26 @@
 			  $dir/server/php/R/config.inc.php
 			
 			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo '*/5 * * * * $dir/server/php/R/shell/cron.sh' >> /var/spool/cron/root
+			echo "*/5 * * * * $dir/server/php/R/shell/cron.sh" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
-			echo '*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh' >> /var/spool/cron/root
+			echo "*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
-			echo '0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh' >> /var/spool/cron/root
+			echo "0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh" >> /var/spool/cron/root
 
-			echo "Starting services..."
-			/etc/init.d/php-fpm restart
-			/etc/init.d/nginx restart
+			# Start services
+            ps -q 1 | grep -q -c "systemd"
+            if [ "$?" -eq 0 ]; then
+                echo "Starting services with systemd"
+                systemctl start nginx
+                systemctl start php-fpm
+                
+            else
+                echo "Starting services..."
+                /etc/init.d/php-fpm restart
+                /etc/init.d/nginx restart
+            fi
 						
 			/bin/echo $RESTYABOARD_VERSION > /opt/restyaboard/release
 		esac
