@@ -335,7 +335,7 @@ App.CardView = Backbone.View.extend({
             content_position += '<option value="' + i + '">' + i + '</option>';
         }
         self.$el.find('.js-card-add-position').val(i);
-        content_position += '<option value="' + i + '" selected="selected">' + i + ' (current)</option>';
+        content_position += '<option value="' + i + '" selected="selected">' + i + ' ' + i18next.t('(current)') + '</option>';
         self.$el.find('.js-position').html(content_position);
         return false;
     },
@@ -366,7 +366,10 @@ App.CardView = Backbone.View.extend({
             return false;
         }
         if (!_.isEmpty(this.model.attributes.name)) {
-            changeTitle('Card - ' + _.escape(this.model.attributes.name) + ' on ' + _.escape(this.model.list.collection.board.attributes.name));
+            changeTitle(i18next.t('Card - %s on %s', {
+                postProcess: 'sprintf',
+                sprintf: [_.escape(this.model.attributes.name), _.escape(this.model.list.collection.board.attributes.name)]
+            }));
         }
         var current_param = Backbone.history.fragment;
         if (!_.isUndefined(this.model.id) && (card_ids_ref[0] === 0 || _.indexOf(card_ids_ref, this.model.id) === -1)) {

@@ -17,13 +17,13 @@
 			<a href="#" title="Delete" class="text-muted list-group-item-text navbar-btn h4 dropdown-toggle" data-toggle="dropdown"><i class="icon-trash"></i></a>
 			<ul class="dropdown-menu arrow arrow-right list-unstyled">
 					<li class="col-xs-12 text-center clearfix">						
-							<div class="clearfix"><span class="col-xs-10"><strong>Delete Organization?</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a></div>
+							<div class="clearfix"><span class="col-xs-10"><strong><%- i18next.t('Delete Organization')+'?' %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a></div>
 					</li>
 					<li class="col-xs-12 divider"></li>
 					<li>
 						<a class="js-delete-organization show clearfix small well-xs" href="#">
-							<span class="show text-primary col-xs-12 navbar-btn h5">Remove from organization</span>
-							<span class="col-xs-12 navbar-btn">Deleting an organization is permanent. Are you sure you want to delete this organization? There is no undo. Boards with this organization won't be deleted. Your boards in this organization will appear in your personal boards list.</span>
+							<span class="show text-primary col-xs-12 navbar-btn h5"><%- i18next.t('Remove from organization') %></span>
+							<span class="col-xs-12 navbar-btn"><%- i18next.t("Deleting an organization is permanent. Are you sure you want to delete this organization? There is no undo. Boards with this organization won't be deleted. Your boards in this organization will appear in your personal boards list.") %></span>
 						</a>
 					</li>					
 			</ul>
@@ -37,20 +37,20 @@
 					<div class="js-organization-edit-block col-xs-12">
 						<form name="OrganizationEditForm" id="OrganizationEditForm"> 
 							<div class="form-group required">
-								<label for="inputOrganizationName">Name</label>
+								<label for="inputOrganizationName"><%- i18next.t('Name') %></label>
 								<input type="text" id="inputOrganizationName" maxlength="255" name="name" class="form-control input-sm" value="<%- organization.attributes.name %>" required />
 							</div>
 							<div class="form-group">
-								<label for="inputOrganizationWebsite">Website</label>
+								<label for="inputOrganizationWebsite"><%- i18next.t('Website') %></label>
 								<input type="text" id="inputOrganizationWebsite" name="website_url" class="form-control input-sm" value="<%= organization.attributes.website_url %>" />
 							</div>
 							<div class="form-group">
-								<label for="inputOrganizationDescription">Description</label>
+								<label for="inputOrganizationDescription"><%- i18next.t('Description') %></label>
 								<textarea type="textarea" id="inputOrganizationDescription" class="form-control" name="description"><%- organization.attributes.description %></textarea>
 							</div>
 							<div class="submit">
-								<input type="submit" value="Save" id="js-edit-organization" class="btn btn-primary" />
-								<input type="button" class="js-close-popover btn btn-default" value="Cancel" />
+								<input type="submit" value="<%- i18next.t('Save') %>" id="js-edit-organization" class="btn btn-primary" />
+								<input type="button" class="js-close-popover btn btn-default" value="<%- i18next.t('Cancel') %>" />
 							</div>
 						</form>
 					</div>
@@ -59,7 +59,7 @@
 		  </li>
 	  <% } %>
 	  <li class="dropdown navbar-btn">
-		<a href="" title="<% if(organization.attributes.organization_visibility == 1){ %>Public<% } else { %>Private<% } %>" class="js-org-visibility-name js-show-organization-visibility-form text-muted dropdown-toggle" data-toggle="dropdown"><span class="js-org-visibility-icon <% if(organization.attributes.organization_visibility == 1){ %>icon-circle <% } else { %>icon-lock<% } %> text-muted"></span><span class="h4 js-org-visibility-type"><% if(organization.attributes.organization_visibility == 1){ %>Public<% } else { %>Private<% } %></span></a>
+		<a href="" title="<% if(organization.attributes.organization_visibility == 1){ %><%- i18next.t('Public') %><% } else { %><%- i18next.t('Private') %><% } %>" class="js-org-visibility-name js-show-organization-visibility-form text-muted dropdown-toggle" data-toggle="dropdown"><span class="js-org-visibility-icon <% if(organization.attributes.organization_visibility == 1){ %>icon-circle <% } else { %>icon-lock<% } %> text-muted"></span><span class="h4 js-org-visibility-type"><% if(organization.attributes.organization_visibility == 1){ %><%- i18next.t('Public') %><% } else { %><%- i18next.t('Private') %><% } %></span></a>
 		<ul class="dropdown-menu arrow arrow-right list-unstyled clearfix pull-left js-organization-visibility">
 			
 		</ul>

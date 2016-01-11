@@ -192,15 +192,19 @@ App.UserView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                self.flash('danger', 'Unable to update. Please try again.');
+                self.flash('danger', i18next.t('Unable to update. Please try again.'));
             },
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
-                    self.flash('success', response.success);
-                } else if (!_.isEmpty(response.error)) {
-                    self.flash('danger', response.error);
+                    self.flash('success', i18next.t('User Profile has been updated.'));
+                } else if (response.error) {
+                    if (response.error === 1) {
+                        self.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
+                    } else if (response.error === 2) {
+                        self.flash('danger', i18next.t('Email address already exist. User Profile could not be updated. Please, try again.'));
+                    }
                 } else {
-                    self.flash('danger', 'User Profile could not be updated. Please, try again.');
+                    self.flash('danger', i18next.t('User Profile could not be updated. Please, try again.'));
                 }
                 if (!_.isUndefined(response.activity.profile_picture_path)) {
                     self.model.set('profile_picture_path', response.activity.profile_picture_path);
@@ -247,7 +251,10 @@ App.UserView = Backbone.View.extend({
                         }).el);
                     });
                 } else {
-                    self.$('#cards').html('No cards available.');
+                    self.$('#cards').html(i18next.t('No %s available.', {
+                        postProcess: 'sprintf',
+                        sprintf: [i18next.t('cards')]
+                    }));
                 }
                 $('#tab-loaded-content').load();
             }
@@ -340,7 +347,7 @@ App.UserView = Backbone.View.extend({
         $('#dropzone-cssloader').addClass('cssloader');
         var ext = $('#js-user-profile-attachment').val().split('.').pop().toLowerCase();
         if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == -1) {
-            self.flash('danger', 'File extension not supported. It supports only jpg, png, bmp and gif.');
+            self.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
             $('#dropzone-cssloader').removeClass('cssloader');
             return false;
         } else {
@@ -356,8 +363,12 @@ App.UserView = Backbone.View.extend({
                 contentType: false,
                 success: function(model, response) {
                     $('#dropzone-cssloader').removeClass('cssloader');
-                    if (!_.isEmpty(response.error)) {
-                        self.flash('danger', response.error);
+                    if (response.error) {
+                        if (response.error === 1) {
+                            self.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
+                        } else if (response.error === 2) {
+                            self.flash('danger', i18next.t('Email address already exist. User Profile could not be updated. Please, try again.'));
+                        }
                     }
                     self.model.set('profile_picture_path', response.profile_picture_path);
                     var Auth = JSON.parse(window.sessionStorage.getItem('auth'));

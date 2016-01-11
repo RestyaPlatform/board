@@ -43,12 +43,14 @@ DTEND:' . date('Ymd\THis\Z', strtotime($row['due_date'])) . '
 SUMMARY:' . $row['card_name'] . '
 URL:http://' . $_SERVER['HTTP_HOST'] . '/client/#/board/' . $_GET['id'] . '
 DESCRIPTION:' . $row['description'] . '
-END:VEVENT
-END:VCALENDAR';
+END:VEVENT';
                 }
-                $ical.= 'X-WR-CALNAME:' . $board_name . ' (via ' . SITE_NAME . ')';
+                $ical.= '
+X-WR-CALNAME:' . $board_name . ' (via ' . SITE_NAME . ')';
                 $ical.= $event;
             }
+            $ical.= '
+END:VCALENDAR';
             header('Content-type: text/calendar; charset=utf-8');
             header('Content-Disposition: inline; filename=calendar.ics');
             echo $ical;

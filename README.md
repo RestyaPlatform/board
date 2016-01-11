@@ -78,8 +78,8 @@ Required sofware: nginx, php-fpm (with mbstring), PostgreSQL, ElasticSearch, Gru
 * `grunt jst` - Converts EJS to JS
 * `grunt watch` - Converts LESS to CSS and EJS to JS, automatically by "watching" for file changes
 * `restyaboard_with_empty_data.sql` - Database generation script 
-* `server/php/R/config.inc.php` - Database and other configurations
-* `media`, `client/img`, `tmp/cache` & `server/php/R/shell/*.sh` - Need write permission for php; can be `chmod 655` or `755` or `777` depending upon server configuration
+* `server/php/config.inc.php` - Database and other configurations
+* `media`, `client/img`, `tmp/cache` & `server/php/shell/*.sh` - Need write permission for php; can be `chmod 655` or `755` or `777` depending upon server configuration
 * `grunt build:live` - Generates restyaboard.zip, deployable code. Replace your DB details in `build/live.json`.
 
 ------------

@@ -33,11 +33,11 @@ content_board += '</select></div>';
 content_position += '</select></div>';
 var content = content_board + content_position;
 %>
-<div class="clearfix text-center col-xs-12"><a data-list-id="268" class="js-back-to-list-actions pull-left" href="#"><i class="icon-caret-left"></i></a><span class="col-xs-10"><strong>Move List</strong></span><a class="js-close-popup pull-right" href="#"><i class="icon-remove"></i></a></div><div class="col-xs-12 divider"></div>
+<div class="clearfix text-center col-xs-12"><a data-list-id="268" class="js-back-to-list-actions pull-left" href="#"><i class="icon-caret-left"></i></a><span class="col-xs-10"><strong><%- i18next.t('Move List') %></strong></span><a class="js-close-popup pull-right" href="#"><i class="icon-remove"></i></a></div><div class="col-xs-12 divider"></div>
 <form role="form" class="js-move-list" name="MoveListForm" id="MoveListForm">
 <%= content %>
   <div class="form-group clearfix panel-body">
-	<label class="sr-only">Move</label>
-	<input type="submit" id="submitListMove" class="btn btn-primary col-xs-12" value="Move" />
+	<label class="sr-only"><%- i18next.t('Move') %></label>
+	<input type="submit" id="submitListMove" class="btn btn-primary col-xs-12" value="<%- i18next.t('Move') %>" />
   </div>
 </form>

@@ -65,7 +65,7 @@ App.OrganizationAddView = Backbone.View.extend({
                 }
             });
         } else {
-            this.flash('Enter organization name', 'Organization name is empty');
+            this.flash(i18next.t('Enter organization name'), i18next.t('Organization name is empty'));
         }
         return false;
     }

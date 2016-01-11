@@ -172,7 +172,7 @@ App.ActivityView = Backbone.View.extend({
         this.model.save({}, {
             patch: true,
             success: function(model, response) {
-                self.flash('danger', "Undo Succeed");
+                self.flash('danger', i18next.t('Undo Succeed'));
                 if (!_.isUndefined(response.activity)) {
                     var activity = new App.Activity();
                     activity.set(response.activity);

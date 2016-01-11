@@ -14,5 +14,5 @@
 		</span> <span><%- user.attributes.full_name %> (<%- user.attributes.username %>)</span>
 	<% if(!_.isUndefined(user.attributes.is_existing_user) || is_added_user){ %><i class="icon-ok"></i><%}%></a>
 <% } else{ %>
-	<div class="col-xs-12">No users available.</div>
+	<div class="col-xs-12"> <%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('users')] }) %></div>
 <% } %>

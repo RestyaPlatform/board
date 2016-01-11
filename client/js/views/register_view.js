@@ -48,11 +48,15 @@ App.RegisterView = Backbone.View.extend({
         user.url = api_url + 'users/register.json';
         user.save(data, {
             success: function(model, response) {
-                if (!_.isEmpty(response.error)) {
-                    self.flash('danger', response.error);
+                if (response.error) {
+                    if (response.error === 1) {
+                        self.flash('danger', i18next.t('Email address already exist. Your registration process is not completed. Please, try again.'));
+                    } else if (response.error === 2) {
+                        self.flash('danger', i18next.t('Username already exists. Your registration process is not completed. Please, try again.'));
+                    }
                     $('#inputPassword').val('');
                 } else {
-                    self.flash('success', 'You have successfully registered with our site and your activation mail has been sent to your mail inbox.');
+                    self.flash('success', i18next.t('You have successfully registered with our site and your activation mail has been sent to your mail inbox.'));
                     target[0].reset();
                 }
             }

@@ -5,18 +5,18 @@
 	<input type="hidden" name="card_labels" class="js-card-add-labels" value="">
 	<input type="hidden" name="position" class="js-card-add-position" value="">
 	<div class="form-group">
-		<textarea placeholder="Add a Card" rows="3" id="AddCard" class="form-control" name="name" required><%- name %></textarea> 
+		<textarea placeholder=" <%- i18next.t('Add a card') %>" rows="3" id="AddCard" class="form-control" name="name" required><%- name %></textarea> 
 	</div>
 	<div class="row">     
 		<div class="pull-left">
-			<input type="submit" value="Add" class="btn btn-primary js-cardAddForm-btn">
+			<input type="submit" value="<%- i18next.t('Add') %>" class="btn btn-primary js-cardAddForm-btn">
 		</div>
 		<ul class="list-unstyled pull-right">
 			<li class="pull-left">
-				<a title="cancel" href="#" class="btn btn-link js-cancel-card-add"><i class="icon-remove text-muted"></i></a>
+				<a title="<%- i18next.t('Cancel') %>" href="#" class="btn btn-link js-cancel-card-add"><i class="icon-remove text-muted"></i></a>
 			</li>
 			<li class="pull-right dropdown inner-dropdown">
-				<a title="Options" data-toggle="dropdown" class="btn btn-link btn-block dropdown-toggle js-show-card-action-list" href="#"><i class="icon-cog text-muted"></i></a>
+				<a title="<%- i18next.t('Options') %>" data-toggle="dropdown" class="btn btn-link btn-block dropdown-toggle js-show-card-action-list" href="#"><i class="icon-cog text-muted"></i></a>
 			</li>
 		</ul>
 	</div>

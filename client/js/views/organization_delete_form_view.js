@@ -61,7 +61,7 @@ App.OrganizationDeleteFormView = Backbone.View.extend({
         target.parents('li.dropdown').removeClass('open');
         this.model.url = api_url + 'organizations/' + this.model.id + '.json';
         this.model.set('id', this.model.id);
-        this.flash('success', 'Organization deleted successfully.');
+        this.flash('success', i18next.t('Organization deleted successfully.'));
         auth_user_organizations.remove(self.model);
         this.model.destroy({
             success: function(model, response) {

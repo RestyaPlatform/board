@@ -1,0 +1,29 @@
+<div class="well-sm">
+	<h3><%- plugin_settings[0].plugin_name %> - <%- i18next.t('Settings') %></h3>
+</div>
+<div class="alert alert-info list-group-item-text"><%= plugin_settings[0].settings_description %></div>
+<div class="well-sm"></div>
+<form class="js-plugin-setting-form" role="form" id="js-plugin-setting-form">
+<% if (plugin_settings.length > 0 ) { 
+var folder = '';
+_.each(plugin_settings, function(plugin_setting) { 
+	folder = plugin_setting.folder;
+%>
+	<div class="form-group col-xs-12">
+			  <label class="col-sm-2  control-label col-xs-12"><%- plugin_setting.label %></label>
+			  <div class=" col-sm-7  col-xs-12">
+				<input type="text" value="<%- plugin_setting.value %>" class="form-control" name="<%- plugin_setting.name %>" id="<%- plugin_setting.name %>">
+				<div><span class="help-block"><%- plugin_setting.info %></span></div>
+			  </div>
+	</div>
+
+<% }); 
+} %>
+<input type="hidden" value="<%- folder %>" name="folder" id="folder">
+  <div class="form-group">
+	<label for="submit" class="sr-only  col-sm-4  control-label col-xs-12"><%- i18next.t('Submit') %></label>
+	<div class="col-xs-offset-2">
+	<input type="submit" value="<%- i18next.t('Update') %>" id="submit" class="btn btn-primary">
+	</div>
+  </div>
+</form>

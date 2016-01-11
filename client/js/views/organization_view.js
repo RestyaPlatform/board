@@ -215,7 +215,7 @@ App.OrganizationsView = Backbone.View.extend({
                 $('#org-loader').addClass('cssloader');
                 var allowedExt = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png)$/i;
                 if (!allowedExt.exec(file.attributes.data.name)) {
-                    _this.flash('danger', 'File extension not supported. It supports only jpg, png, bmp and gif.');
+                    _this.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
                     $('#org-loader').removeClass('cssloader');
                 }
             });
@@ -295,7 +295,7 @@ App.OrganizationsView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                self.flash('danger', 'Unable to update. Please try again.');
+                self.flash('danger', i18next.t('Unable to update. Please try again.'));
             },
             success: function(model, response) {
                 $('#org-loader').removeClass('cssloader');

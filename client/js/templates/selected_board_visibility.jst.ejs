@@ -1,12 +1,12 @@
 <span class="pull-left">
-	<span class="pull-left navbar-btn">This board will be </span>
+	<span class="pull-left navbar-btn"><%- i18next.t('This board will be') %> </span>
 </span>
 <div class="btn-group pull-right">
-	<button type="button" class="btn btn-default btn-sm js-change-visibility"><i class="icon-lock"></i><% if (name == 'org') { %>Organization <%}else if (name == 'public') { %>Public <%}else{%>Private<%}%></button>
+	<button type="button" class="btn btn-default btn-sm js-change-visibility"><i class="icon-lock"></i><% if (name == 'org') { %><%- i18next.t('Organization') %> <%}else if (name == 'public') { %><%- i18next.t('Public') %> <%}else{%><%- i18next.t('Private') %><%}%></button>
 	<button type="button" class="btn btn-default btn-sm dropdown-toggle js-change-visibility" data-toggle="dropdown" aria-expanded="false">
 		<span>
 			<i class="icon-caret-down"></i>
 		</span>
-		<span class="sr-only">Toggle Dropdown</span>
+		<span class="sr-only"><%- i18next.t('Toggle Dropdown') %></span>
 	</button>
 </div>

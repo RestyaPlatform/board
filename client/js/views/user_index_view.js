@@ -171,7 +171,7 @@ App.UserIndex = Backbone.View.extend({
         e.preventDefault();
         this.$el.remove();
         this.model.url = api_url + 'users/' + this.model.attributes.id + '.json';
-        this.flash('success', 'User deleted successfully.');
+        this.flash('success', i18next.t('User deleted successfully.'));
         this.model.destroy();
     },
     showUserActivities: function(e) {

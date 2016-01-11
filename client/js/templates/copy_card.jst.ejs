@@ -1,12 +1,12 @@
 <%        if (card.attachments.length > 0 || card.activities.length > 0 || card.labels.length > 0 || card.checklists.length > 0 || card.users.length > 0) { %>
 		<div class="form-group">
-			<h4>Keep...</h4>
+			<h4> <%- i18next.t('Keep...') %></h4>
 			<% if (card.attachments.length > 0) {%>
 				<div class="form-group">
 					<div class="checkbox">
 					<input id="Attachments" class="hide" type="checkbox" name="keep_attachments" value="1" checked="checked">
 						<label for="Attachments">
-							Attachments (<%- card.attachments.length %>)
+						<%- i18next.t('Attachments') %>(<%- card.attachments.length %>)
 						</label>
 					</div>
 				</div>
@@ -17,7 +17,7 @@
 				   <div class="checkbox">
 					    <input id="Activities" class="hide" type="checkbox" name="keep_activities" value="1" checked="checked">
 						<label for="Activities">
-							Comments (<%- comment.length %>)
+							<%- i18next.t('Comments') %> (<%- comment.length %>)
 						</label>
 					</div>
 				</div>
@@ -27,7 +27,7 @@
 				   <div class="checkbox">
 					    <input id="Labels" class="hide" type="checkbox" name="keep_labels" value="1" checked="checked">
 						<label for="Labels">
-							Labels (<%- card.labels.length %>)
+							<%- i18next.t('Labels') %> (<%- card.labels.length %>)
 						</label>
 					</div>
 				</div>
@@ -37,7 +37,7 @@
 					<div class="checkbox">
 						<input id="Checklists" class="hide" type="checkbox" name="keep_checklists" value="1" checked="checked">
 						<label for="Checklists">
-							Checklists (<%- card.checklists.length %>)
+							<%- i18next.t('Checklists') %> (<%- card.checklists.length %>)
 						</label>
 					</div>
 				</div>
@@ -47,7 +47,7 @@
 					<div class="checkbox">
 						<input id="users" class="hide" type="checkbox" name="keep_users" value="1" checked="checked">
 						<label for="users">
-							Members (<%- card.users.length %>)
+							<%- i18next.t('Members') %> (<%- card.users.length %>)
 						</label>
 					</div>
 				</div>

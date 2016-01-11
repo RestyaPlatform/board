@@ -18,7 +18,8 @@ App.AdminBoardsIndexView = Backbone.View.extend({
      * Constructor
      * initialize default values and actions
      */
-    initialize: function() {
+    initialize: function(options) {
+        this.filter_count = options.filter_count;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
@@ -35,6 +36,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         'change .js-more-action-user': 'boardsMoreActions',
         'click .js-delete-board': 'deleteBoard',
         'click .js-sort': 'sortBoard',
+        'click .js-filter': 'filterBoard',
     },
     /**
      * deleteBoard()
@@ -68,12 +70,62 @@ App.AdminBoardsIndexView = Backbone.View.extend({
      */
     render: function() {
         this.$el.html(this.template({
-            'board': this.model
+            'board': this.model,
+            filter_count: this.filter_count
         }));
         $('.js-admin-board-menu').addClass('active');
         $('.js-admin-activity-menu, .js-admin-setting-menu, .js-admin-email-menu, .js-admin-role-menu, .js-admin-user-menu').removeClass('active');
         this.showTooltip();
         return this;
+    },
+    /**	
+     * filterBoard()
+     * @param NULL
+     * @return object
+     *
+     */
+    filterBoard: function(e) {
+        var _this = this;
+        _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
+        _this.filterField = (!_.isUndefined(e)) ? $(e.currentTarget).data('filter') : _this.filterField;
+        var boards = new App.BoardCollection();
+        boards.url = api_url + 'boards.json?page=' + _this.current_page + '&filter=' + _this.filterField;
+        app.navigate('#/' + 'boards/list?page=' + _this.current_page + '&filter=' + _this.filterField, {
+            trigger: false,
+            trigger_function: false,
+        });
+        $('.js-my-boards').html('');
+        boards.fetch({
+            cache: false,
+            abortPending: true,
+            success: function(boards, response) {
+                if (boards.length !== 0) {
+                    boards.each(function(board) {
+                        $('.js-my-boards').append(new App.AdminBoardView({
+                            model: board
+                        }).el);
+                    });
+                } else {
+                    $('.js-my-boards').html('<tr><td class="text-center" colspan="12">No record found</td></tr>');
+                }
+                $('.js-filter-list').children().removeClass('active');
+                $(e.currentTarget).parent().addClass('active');
+                $('.js-my-boards').find('.timeago').timeago();
+                $('.pagination-boxes').unbind();
+                $('.pagination-boxes').pagination({
+                    total_pages: response._metadata.noOfPages,
+                    current_page: _this.current_page,
+                    display_max: 4,
+                    callback: function(event, page) {
+                        event.preventDefault();
+                        if (page) {
+                            _this.current_page = page;
+                            _this.sortBoard();
+                        }
+                    }
+                });
+            }
+        });
     },
     /**
      * sortBoard()
@@ -89,6 +141,10 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         var boards = new App.BoardCollection();
         boards.setSortField(_this.sortField, _this.sortDirection);
         boards.url = api_url + 'boards.json?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection;
+        app.navigate('#/' + 'boards/list?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection, {
+            trigger: false,
+            trigger_function: false,
+        });
         if (!_.isUndefined(e)) {
             if ($(e.currentTarget).data('direction') == 'desc') {
                 $(e.currentTarget).data('direction', 'asc');
@@ -141,7 +197,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
             alert('Please select atleast one record!');
             return false;
         } else {
-            if (window.confirm('Are you sure you want to do this action?')) {
+            if (window.confirm(i18next.t('Are you sure you want to do this action?'))) {
                 var Board = Backbone.Model.extend({});
                 var Boards = Backbone.BatchCollection.extend({
                     model: Board,
@@ -161,7 +217,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
                 boards.save({
                     'success': function(response) {
                         if (!_.isEmpty(response.success)) {
-                            self.flash('success', response.success);
+                            self.flash('success', i18next.t('Checked boards are closed successfully.'));
                             app.navigate('#/boards/list', {
                                 trigger: true,
                             });

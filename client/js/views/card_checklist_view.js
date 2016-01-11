@@ -249,7 +249,7 @@ App.CardCheckListView = Backbone.View.extend({
     updateChecklist: function(e) {
         if (!$.trim($('#checklistEditName').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">Whitespace alone not allowed</div>').insertAfter('#checklistEditName');
+            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#checklistEditName');
         } else {
             $('.error-msg').remove();
             e.preventDefault();
@@ -369,7 +369,7 @@ App.CardCheckListView = Backbone.View.extend({
     addChecklistItem: function(e) {
         if (!$.trim($('#ChecklistItem').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">Whitespace alone not allowed</div>').insertAfter('#ChecklistItem');
+            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#ChecklistItem');
             return false;
         } else {
             $('.error-msg').remove();

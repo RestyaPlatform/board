@@ -9,24 +9,24 @@
 				<% } else { %>
 					<%- board.attributes.name%>					
 				<% } %>
-				</span>
+				</span> 
 			</h4>
 			<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
 				<span class="pull-right dropdown">
 					<a href="#" class="js-board-visibility text-muted h5 show" data-toggle="dropdown">
 						<% if(board.attributes.board_visibility == 0) { %>
-							<span title="Private" class="icon-lock col-lg-2 text-primary"></span>
+							<span title="<%- i18next.t('Private') %>" class="icon-lock col-lg-2 text-primary"></span>
 						<% } else if(board.attributes.board_visibility == 1) { %> 
-							<span title="Organization" class="icon-group col-lg-2 text-primary"></span>
+							<span title="<%- i18next.t('Organization') %>" class="icon-group col-lg-2 text-primary"></span>
 						<% } else if(board.attributes.board_visibility == 2) { %>
-							<span title="Public" class="icon-circle col-lg-2 text-primary"></span>
+							<span title="<%- i18next.t('Public') %>" class="icon-circle col-lg-2 text-primary"></span>
 						<% } %>
 					</a>
 					<ul class="dropdown-menu arrow arrow-right">
 						<li class="js-visibility-popup js-dropdown-popup dropdown-popup">
 							<div class="clearfix text-center col-xs-12">
 							  <a class="js-back-to-board-visibility hide pull-left" href="#"><i class="icon-caret-left"></i></a>
-							  <span class="col-xs-10"><strong>Change Visibility</strong></span><a class="js-close-span-popover pull-right" href="#"><i class="icon-remove"></i></a>
+							  <span class="col-xs-10"><strong><%- i18next.t('Change Visibility') %></strong></span><a class="js-close-span-popover pull-right" href="#"><i class="icon-remove"></i></a>
 							</div>
 						</li>
 						<li class="col-xs-12 divider js-visibility-list"></li>
@@ -35,9 +35,9 @@
 			<% } %>
 			<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
 				<% if(!_.isEmpty(stared)){ %>
-					<a title="Unstar" href="#" class="h5 pull-right js-star-board" name="unstar"><i class="icon-star  text-primary"></i></a>
+					<a title="<%- i18next.t('Unstar') %>" href="#" class="h5 pull-right js-star-board" name="unstar"><i class="icon-star  text-primary"></i></a>
 				<% } else {%>
-					<a title="Star" href="#" class="h5 pull-right js-star-board" name="star"><i class="icon-star-empty"></i></a>
+					<a title="<%- i18next.t('Star') %>" href="#" class="h5 pull-right js-star-board" name="star"><i class="icon-star-empty"></i></a>
 				<% } %>
 			<% } %>
 	  </div>
@@ -71,6 +71,6 @@
 </div>
 <% }else{ %>
 	<div class="alert alert-info">
-	No boards available.
+	<%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('boards')] }) %>
 </div>
 <%}%>

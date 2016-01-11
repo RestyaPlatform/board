@@ -34,25 +34,25 @@
 		<li><small><span class="icon-eye-open"></span></small></li>
 	<% } %> 
 	<% if(card.card_voters.length > 0){ %>
-	<li><small title="<%- card.card_voters.length %> Votes"><span class="icon-thumbs-up"></span><span><%- card.card_voters.length %></span></small></li>
+	<li><small  title="<%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %> "><span class="icon-thumbs-up"></span><span><%- card.card_voters.length %></span></small></li>
 	<% } %>
 	<% 
 	if(card.attributes.comment_count > 0){ 
 	%>
-	<li><small title="<%- card.attributes.comment_count %> Comments" ><span class="icon-comment"></span><span><%- card.attributes.comment_count %></span></small></li>
+	<li><small title="<%- i18next.t('{{count}} Comment', {count: card.attributes.comment_count}) %> " ><span class="icon-comment"></span><span><%- card.attributes.comment_count %></span></small></li>
 	<% } %>
 	<% if(!_.isEmpty(card.attributes.description)){ %>
-	<li><small title="Description"><span class="icon-align-left"></span><span></span></small></li>
+	<li><small title="<%- i18next.t('Description') %>"><span class="icon-align-left"></span><span></span></small></li>
 	<% } %>
 	<% if(card.attributes.checklist_item_count > 0){ %>
-		<li><small title="<%- card.attributes.checklist_item_completed_count %> checklist completed out of <%- card.attributes.checklist_item_count %>"><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %><div class="label label-success"> <% } %><span class="icon-list-ul"></span><span><%- card.attributes.checklist_item_completed_count %>/<%- card.attributes.checklist_item_count %></span><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %></div><% } %></small></li>
+		<li><small title="<%- i18next.t('%s checklist completed out of %s', { postProcess: 'sprintf', sprintf: [card.attributes.checklist_item_completed_count, card.attributes.checklist_item_count]}) %> "><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %><div class="label label-success"> <% } %><span class="icon-list-ul"></span><span><%- card.attributes.checklist_item_completed_count %>/<%- card.attributes.checklist_item_count %></span><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %></div><% } %></small></li>
 	<% } %> 
 	<% if(card.attributes.due_date > 0){ %>
-		<li><small title="Due Date"><span class="icon-time"></span><span><%- card.attributes.due_date %></span></small></li>
+		<li><small title="<%- i18next.t('Due Date') %>"><span class="icon-time"></span><span><%- card.attributes.due_date %></span></small></li>
 	<% } %> 
 	<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0){ %>
 	<li>
-		<small title="<%- card.attachments.length %> Attachments">
+		<small title="<%- i18next.t('{{count}} Attachment', {count: card.attachments.length}) %> ">
 			<span class="icon-paper-clip"></span>
 			<span>
 			<%- card.attachments.length %>
@@ -67,7 +67,7 @@
 		var date_time = card.attributes.due_date.split('T');
 		date_time = date_time[0].split(' ');
 	%>
-	<li><small title="Due Date"><span class="label label-default"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
+	<li><small title=" <%- i18next.t('Due Date') %>"><span class="label label-default"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
 	<% } %>
 	</ul>
 	<div class="clearfix pull-right">

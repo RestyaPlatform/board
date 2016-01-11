@@ -220,6 +220,9 @@ function curlExecute($url, $method = 'get', $post = array() , $format = 'plain')
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_string);
     }
     $response = curl_exec($ch);
+    if ($format == 'token') {
+        return $response;
+    }
     if ($format == 'image') {
         $info = curl_getinfo($ch);
         array_change_key_case($info);
@@ -534,10 +537,11 @@ function executeQuery($qry, $arr = array())
  * @param string $template        Email template name
  * @param string $replace_content Email content replace array
  * @param string $to              To email address
+ * @param string $reply_to_mail   Reply to email address
  *
  * @return void
  */
-function sendMail($template, $replace_content, $to)
+function sendMail($template, $replace_content, $to, $reply_to_mail = '')
 {
     global $r_debug, $db_lnk, $_server_domain_url;
     if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
@@ -559,6 +563,9 @@ function sendMail($template, $replace_content, $to)
         $subject = strtr($template['subject'], $emailFindReplace);
         $from_email = strtr($template['from_email'], $emailFindReplace);
         $headers = 'From:' . $from_email . "\r\n";
+        if (!empty($reply_to_mail)) {
+            $headers.= 'Reply-To:' . $reply_to_mail . "\r\n";
+        }
         $headers.= "MIME-Version: 1.0\r\n";
         $headers.= "Content-Type: text/html; charset=ISO-8859-1\r\n";
         $headers.= "X-Mailer: Restyaboard (0.1.6; +http://restya.com/board)\r\n";
@@ -880,6 +887,7 @@ function getbindValues($table, $data, $expected_fields_arr = array())
  */
 function importTrelloBoard($board = array())
 {
+    set_time_limit(0);
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
     $users = array();
     if (!empty($board)) {

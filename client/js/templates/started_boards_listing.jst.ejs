@@ -22,6 +22,6 @@
 </a>
 <% }else{ %>
  <div class="alert alert-info">
-	No boards available.
+	<%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('boards')] }) %>
 </div>
 <%}%>

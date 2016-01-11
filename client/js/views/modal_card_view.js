@@ -461,7 +461,8 @@ App.ModalCardView = Backbone.View.extend({
      */
     showMemberSearch: function(e) {
         var q = $(e.target).val();
-        if (q !== '' && q === '@') {
+        var x = e.which || e.keyCode;
+        if (x === 50) {
             var target = $('.js-show-members').parents('.dropdown:first');
             target.addClass('open');
         } else {
@@ -613,7 +614,10 @@ App.ModalCardView = Backbone.View.extend({
                 subscribed = ' <span class="icon-eye-open"></span>';
             }
             var class_name = '';
-            var text = _.escape(this.model.attributes.name) + ' in list ' + _.escape(this.model.list.attributes.name) + subscribed;
+            var text = i18next.t('%s in list %s %s', {
+                postProcess: 'sprintf',
+                sprintf: [_.escape(this.model.attributes.name), _.escape(this.model.list.attributes.name), subscribed]
+            });
             if (this.model.attributes.is_archived === 1) {
                 class_name = ' label label-warning';
                 text = _.escape('This card is archived.');
@@ -632,8 +636,7 @@ App.ModalCardView = Backbone.View.extend({
                     autoUpload: true,
                     singleFileUploads: false,
                     formData: $('form.js-user-profile-edit').serialize(),
-                    dropZone: $('#dropzone' + self.model.id),
-
+                    dropZone: $('#dropzone' + self.model.id)
                 });
                 var loader_id = '';
                 uploadManager.on('fileadd', function(file) {
@@ -727,11 +730,14 @@ App.ModalCardView = Backbone.View.extend({
             this.renderLabelsCollection();
             this.renderUsersCollection();
             this.renderChecklistsCollection();
-            var title = _.escape(this.model.attributes.name) + ' in list ' + _.escape(this.model.list.attributes.name) + subscribed;
+            var title = i18next.t('%s in list %s %s', {
+                postProcess: 'sprintf',
+                sprintf: [_.escape(this.model.attributes.name), _.escape(this.model.list.attributes.name), subscribed]
+            });
             var class_name = '';
             if (this.model.attributes.is_archived === 1) {
                 class_name = ' label label-warning';
-                title = _.escape('This card is archived.');
+                title = i18next.t('This card is archived.');
             }
             this.$el.dockmodal({
                 initialState: initialState,
@@ -809,11 +815,14 @@ App.ModalCardView = Backbone.View.extend({
                 autoUpload: true,
                 singleFileUploads: false,
                 formData: $('form.js-user-profile-edit').serialize(),
-                dropZone: $('#dropzone' + self.model.id),
-
+                dropZone: $('#dropzone' + self.model.id)
             });
             var loader_id = '';
             uploadManager.on('fileadd', function(file) {
+                if (!file.attributes.data.name) {
+                    var currentdate = new Date();
+                    file.attributes.data.name = 'upload_' + (currentdate.getMonth() + 1) + '_' + currentdate.getDate() + '_' + currentdate.getFullYear() + '_at_' + ((currentdate.getHours() + 11) % 12 + 1) + '_' + currentdate.getMinutes() + '_' + currentdate.getSeconds() + '_' + ((currentdate.getHours() >= 12) ? 'PM' : 'AM') + '.' + file.attributes.data.type.split('/')[1];
+                }
                 loader_id = new Date().getTime();
                 $('.js-attachment-loader', $('#js-card-modal-' + self.model.id)).html('<div class="navbar-btn dockheader-loader"><span class="cssloader"></span></div>');
                 self.$('.js_card_image_upload').addClass('cssloader');
@@ -956,7 +965,7 @@ App.ModalCardView = Backbone.View.extend({
         var board_id = this.model.attributes.board_id;
         var uuid = new Date().getTime();
         $(e.currentTarget).removeClass('js-add-card-vote');
-        $('.panel-title', e.currentTarget).html('<i class="icon-thumbs-up-alt"></i> Unvote');
+        $('.panel-title', e.currentTarget).html('<i class="icon-thumbs-up-alt"></i> ' + i18next.t('Unvote'));
         var card_voter = new App.CardVoter();
         card_voter.set('is_offline', true);
         card_voter.set('card_id', parseInt(card_id));
@@ -1024,7 +1033,7 @@ App.ModalCardView = Backbone.View.extend({
         });
         var voter_id = voted_user.id;
         $(e.currentTarget).removeClass('js-delete-card-vote').addClass('js-add-card-vote');
-        $('.panel-title', e.currentTarget).html('<i class="icon-thumbs-up-alt"></i> Vote');
+        $('.panel-title', e.currentTarget).html('<i class="icon-thumbs-up-alt"></i> ' + i18next.t('Vote'));
 
         $('i.icon-ok', e.currentTarget).remove();
         var card_voter = new App.CardVoter();
@@ -1991,7 +2000,7 @@ App.ModalCardView = Backbone.View.extend({
         } else {
             $(e.target).find('.error-msg').remove();
             var self = this;
-            $('.js-add-comment-response').html('<span class="js-show-add-comment-form cur">Add Comment</span>');
+            $('.js-add-comment-response').html('<span class="js-show-add-comment-form cur">' + i18next.t('Add Comment') + '</span>');
             var board_id = this.model.attributes.board_id;
             var data = $(e.target).serializeObject();
             var is_reply = $(e.target).hasClass('js-reply-form');
@@ -2086,7 +2095,7 @@ App.ModalCardView = Backbone.View.extend({
         e.preventDefault();
         if (!$.trim($('.js-inputComment').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">Whitespace alone not allowed</div>').insertAfter('.js-inputComment');
+            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('.js-inputComment');
         } else {
             $('.error-msg').remove();
             var self = this;
@@ -2418,7 +2427,7 @@ App.ModalCardView = Backbone.View.extend({
                     is_first_list = false;
                     for (var i = 1; i <= list.attributes.card_count; i++) {
                         if (self.model.attributes.list_id == list.attributes.id && i == current_position) {
-                            content_position += '<option value="' + i + '" selected="selected">' + i + '(current)</option>';
+                            content_position += '<option value="' + i + '" selected="selected">' + i + i18next.t('(current)') + '</option>';
                         } else {
                             content_position += '<option value="' + i + '">' + i + '</option>';
                         }
@@ -2454,7 +2463,7 @@ App.ModalCardView = Backbone.View.extend({
         var current_position = this.model.collection.indexOf(this.model) + 1;
         for (var i = 1; i <= list.attributes.card_count; i++) {
             if (self.model.attributes.list_id == list.attributes.id && i == current_position) {
-                content_position += '<option value="' + self.model.attributes.position + '" selected="selected">' + self.model.attributes.position + '(current)</option>';
+                content_position += '<option value="' + self.model.attributes.position + '" selected="selected">' + self.model.attributes.position + i18next.t('(current)') + '</option>';
             } else {
                 content_position += '<option value="' + i + '">' + i + '</option>';
             }
@@ -2642,7 +2651,7 @@ App.ModalCardView = Backbone.View.extend({
         e.preventDefault();
         var target = $(e.currentTarget);
         var user_name = target.data('user-name');
-        this.$el.find('.js-comment').val('@' + user_name + ' ' + this.$el.find('.js-comment').val());
+        this.$el.find('.js-comment').val(this.$el.find('.js-comment').val().replace('@' + $('.js-search-member').val(), '@' + user_name));
     },
     renderBoardUsers: function() {
         var self = this;

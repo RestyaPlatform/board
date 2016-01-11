@@ -28,7 +28,7 @@ App.ChecklistActionsView = Backbone.View.extend({
     tagName: 'a',
     className: 'js-show-confirm-checklist-delete',
     attributes: {
-        'title': 'Delete This Checklist',
+        'title': i18next.t('Delete This Checklist'),
         'href': '#'
     },
     /**

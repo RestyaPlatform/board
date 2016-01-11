@@ -2,9 +2,9 @@
 <section class="clearfix row">
  <div class="col-xs-12 h4">
 	<ul class="nav nav-tabs">
-		<li <% if(_.isUndefined(type) || type == 'boards'){ %>class="active" <%}%>><a href="#/organization/<%-organization.attributes.id%>/boards" class="">Boards</a></li>
+		<li <% if(_.isUndefined(type) || type == 'boards'){ %>class="active" <%}%>><a href="#/organization/<%-organization.attributes.id%>/boards" class=""><%- i18next.t('Boards') %></a></li>
 		<% if(!_.isEmpty(role_links.where({slug: "view_organization_user_listing"})) || !_.isEmpty(role_links.where({slug: "add_organization_user"}))){ %>
-			<li <% if(!_.isUndefined(type) && type == 'users'){ %>class="active" <%}%>><a href="#/organization/<%-organization.attributes.id%>/users" class="">Members</a></li>
+			<li <% if(!_.isUndefined(type) && type == 'users'){ %>class="active" <%}%>><a href="#/organization/<%-organization.attributes.id%>/users" class=""><%- i18next.t('Members') %></a></li>
 		<% } %>
 	</ul>
 </div>
@@ -36,7 +36,7 @@
 		</div>
 		</span>
 		</span>
-		<div class="drag-drop drag-drop-sm">Drop Files Here</div>
+		<div class="drag-drop drag-drop-sm"><%- i18next.t('Drop Files Here') %></div>
 	</form>
 	<span id="org-loader"></span>
 	

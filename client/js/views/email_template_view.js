@@ -41,9 +41,9 @@ App.EmailTemplateView = Backbone.View.extend({
         email_template.save(data, {
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
-                    self.flash('success', response.success);
+                    self.flash('success', i18next.t('Email Template has been updated successfully.'));
                 } else {
-                    self.flash('danger', 'Email Template not updated properly.');
+                    self.flash('danger', i18next.t('Email Template not updated properly.'));
                 }
             }
         });

@@ -31,13 +31,13 @@
     <main id="content" class="container-fluid">
      <div id="life"></div>
     </main>
-    <a class="company hide" href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator">Powered by Restyaboard</a>
+    <div class="text-center"><a class="company hide" href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator">Powered by Restyaboard</a></div>
    </div>
    <footer id="footer" class="navbar-fixed-bottom container-fluid footer"></footer>
   </div>
   <script>
-  var api_url = '/api/v1/';
-  var template_url = '/client/';
+  var api_url = '/restyaboard/api/v1/';
+  var template_url = '/restyaboard/client/';
   </script>
   <script>window.addEventListener('load', function(e){window.applicationCache.addEventListener('updateready', function(e){if (window.applicationCache.status == window.applicationCache.UPDATEREADY){window.applicationCache.swapCache();if (confirm('A new version of this site is available. Load it?')){window.location.reload();}}}, false);}, false);</script>
   <!-- build:js js/default.cache.js -->
@@ -62,12 +62,10 @@
   <script src="js/libs/bootstrap-transition.js"></script>
   <script src="js/libs/bootstrap-tab.js"></script>
   <script src="js/libs/bootstrap-modal.js"></script>
-  <script src="js/libs/modernizr.custom.js"></script>
   <script src="js/libs/md5.js"></script>
   <script src="js/libs/select2.js"></script>
   <script src="js/libs/ImageSelect.jquery.js"></script>
   <script src="js/libs/date.format.js"></script>
-  <script src="js/libs/i18n.js"></script>
   <script src="js/libs/jquery.gritter.min.js"></script>
   <script src="js/libs/jquery.scrollTo-min.js"></script>
   <script src="js/libs/jquery.dockmodal.js"></script>
@@ -93,6 +91,9 @@
   <script src="js/libs/splitter.js"></script>
   <script src="js/libs/musical.js"></script>
   <script src="js/libs/favico-0.3.8.min.js"></script>
+  <script src="js/libs/i18next.min.js"></script>
+  <script src="js/libs/i18nextXHRBackend.min.js"></script>
+  <script src="js/libs/i18nextSprintfPostProcessor.min.js"></script>
   <script src="js/models/oauth.js"></script>
   <script src="js/models/user.js"></script>
   <script src="js/models/board.js"></script>
@@ -121,6 +122,7 @@
   <script src="js/models/boards_star.js"></script>
   <script src="js/models/instant_card_add.js"></script>
   <script src="js/models/email_template.js"></script>
+  <script src="js/models/plugin.js"></script>
   <script src="js/collections/user_collection.js"></script>
   <script src="js/collections/attachment_collection.js"></script>
   <script src="js/collections/list_collection.js"></script>
@@ -149,6 +151,7 @@
   <script src="js/collections/board_star_collection.js"></script>
   <script src="js/collections/email_template_collection.js"></script>
   <script src="js/collections/role_settings_collection.js"></script>
+  <script src="js/collections/plugin_collection.js"></script>
   <script src="js/templates/templates.js"></script>
   <script src="js/views/application_view.js"></script>
   <script src="js/views/admin_user_add_view.js"></script>
@@ -307,6 +310,10 @@
   <script src="js/views/emoji_list_view.js"></script>
   <script src="js/views/admin_user_index_view.js"></script>
   <script src="js/views/admin_boards_list_view.js"></script>
+  <script src="js/views/plugin_view.js"></script>
+  <script src="js/views/plugin_setting_view.js"></script>
+  <script src="js/views/email_to_board_setting_view.js"></script>
+  <script src="js/views/qr_code_view.js"></script>
   <script src="js/common.js"></script>
   <script src="js/application.js"></script>
   <!-- endbuild -->

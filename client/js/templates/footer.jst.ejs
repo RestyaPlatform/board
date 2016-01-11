@@ -1,7 +1,7 @@
 <section class="action-block action-content">
 <div class="row navbar navbar-default list-group-item-text">
 <ul class="nav nav-pills navbar-left"> 
-  <li class="footer-logo visible-xs"> 
+  <li class="footer-logo visible-xs active"> 
   	<a href="javascript:void(0);" title="<%- SITE_NAME %>" class="js-start"><sup class="badge notification-count js-notification-count"></sup><img src="img/logo-icon.png" alt="[Images: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" id="js-footer-brand-img" /></a>
 	<!-- Todo: quick fix. load image before offline. call after when goes offline
 	<img src="img/logo-icon-offline.png" alt="[Images: <%- SITE_NAME %>]" style="display:none;" />--->
@@ -9,7 +9,7 @@
   <li class="hidden-xs about-btn">
 	<a href="#/about" title="RestyaBoard">
 		<img title="Restya" alt="[Image: <%- SITE_NAME %>]" src="img/logo-icon.png">
-		<span class="hidden-lg hidden-md hidden-sm navbar-btn">&nbsp;About</span>
+		<span class="hidden-lg hidden-md hidden-sm navbar-btn">&nbsp;<%- i18next.t("About") %></span>
 		<!-- Todo: quick fix. load image before offline. call after when goes offline--->
 		<img src="img/logo-icon-offline.png" alt="[Images: <%- SITE_NAME %>]" style="display:none;" />
 	</a>
@@ -17,7 +17,7 @@
   <% if(!_.isUndefined(authuser.user)){%>
 	<li class="hidden-xs music-btn pa">
 		<% if(board_id !== undefined && board_id !== null && board_id !== "" && !_.isEmpty(this.music_content) && this.music_content !== ''){ %>
-			<% if(authuser.user.is_productivity_beats === true || authuser.user.is_productivity_beats === 1) { %>
+			<% if(authuser.user.is_productivity_beats === true || parseInt(authuser.user.is_productivity_beats) === 1) { %>
 				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="Productivity Beats - <%- this.music_name %>" title="Productivity Beats - <%- this.music_name %>" class="animation btn btn-default js-product-beat-action" data-type='on'>
 				<span class="show"><i class="icon-volume-up lead tada-animation"></i></span>
 				</a>
@@ -47,7 +47,7 @@
  <% if(!_.isUndefined(authuser.user)){%>	
   <% if(!_.isEmpty(role_links.where({slug: "view_board_listing"}))){ %>
   <li class="dropdown hidden-xs board-btn"> 
-	  <a title="Dashboard" href="#" data-toggle="dropdown" class="btn btn-default js-show-boards-list"><span>Boards </span><span><i class="icon-collapse"></i></span> </a>
+	  <a title="<%- i18next.t('Dashboard') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-boards-list"><span><%- i18next.t("Boards") %> </span><span><i class="icon-collapse"></i></span> </a>
 	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12 js-show-add-boards-list">
 	  	 <li class="js-show-boards-list-response"></li>
 		 <li class="clearfix js-qsearch-container js-boards-list-container">
@@ -63,7 +63,7 @@
 			}))) {
 		%>
 			<li class="clearfix js-closed-board-list dropdown dropdown-submenu dropdown js-boards-list-container-search">            
-				<a href="#" class="js-board-dropdown dropdown-toggle js-open-popover" data-toggle="dropdown" title="Closed Boards">Closed Boards</a>
+				<a href="#" class="js-board-dropdown dropdown-toggle js-open-popover js-closed-boards" data-toggle="dropdown" title="<%- i18next.t('Closed Boards') %>"><%- i18next.t("Closed Boards") %></a>
 				<ul class="sidebar-boards-list js-closedboard-list  list-unstyled list-group dropdown-menu"></ul>
 				</li>
 		<%
@@ -73,7 +73,7 @@
 			}))) {
 		%>
 			<li class="clearfix js-board-dropdown js-stared-board-lists dropdown-submenu dropdown js-boards-list-container-search">            
-					<a href="#" class="dropdown-toggle js-open-popover" data-toggle="dropdown" title="Starred Boards">Starred Boards</a>				
+					<a href="#" class="dropdown-toggle js-open-popover js-starred-boards" data-toggle="dropdown" title="<%- i18next.t('Starred Boards') %>"><%- i18next.t("Starred Boards") %></a>				
 					<ul class="sidebar-boards-list js-board-starred-list list-unstyled list-group dropdown-menu"></ul>			
 				</li>
 		<%
@@ -84,14 +84,14 @@
 			}))) {
 		%>
 				<li class="clearfix js-my-board-lists dropdown-submenu dropdown js-boards-list-container-search">			
-					<a href="#" class="js-board-dropdown dropdown-toggle js-open-popover" data-toggle="dropdown" title="My Boards">My Boards</a>
+					<a href="#" class="js-board-dropdown dropdown-toggle js-open-popover js-my-boards-listing" data-toggle="dropdown" title="<%- i18next.t('My Boards') %>"><%- i18next.t("My Boards") %></a>
 					<ul class="sidebar-boards-list js-myboard-list list-unstyled list-group dropdown-menu"></ul>			
 				</li>
 		<%
 			} 		
 		%>
 			<li class="clearfix js-boards-list-container-search">            
-			<a href="#/" title="Boards">Boards</a>
+			<a href="#/" title="<%- i18next.t('Boards') %>"><%- i18next.t("Boards") %></a>
 			</li>
 		<%
 
@@ -103,7 +103,7 @@
 		%>		
 			<li class="divider js-boards-list-container-search"></li>
 			<li class="js-boards-list-container-search dropdown clearfix">
-				<a title="Add Board or Organization" class="dropdown-toggle js-show-organizations-board-from btn btn-link" data-toggle="dropdown" href="#"><span class="pull-left"><i class="icon-plus"></i></span> Add Board or Organization</a><ul role="menu" class="dropdown-menu dropdown-menu-right js-show-organizations-board-from-response js-dropdown-popup navbar-btn"></ul>
+				<a title="<%- i18next.t('Add Board or Organization') %>" class="dropdown-toggle js-show-organizations-board-from btn btn-link" data-toggle="dropdown" href="#"><span class="pull-left"><i class="icon-plus"></i></span> <%- i18next.t("Add Board or Organization") %></a><ul role="menu" class="dropdown-menu dropdown-menu-right js-show-organizations-board-from-response js-dropdown-popup navbar-btn"></ul>
 				</li>
 		<%   
 			 }
@@ -112,14 +112,14 @@
 	</li>
   <% } %>
   <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user) && (!_.isEmpty(role_links.where({slug: "view_organization_listing"})))){ %>
-  <li class="hidden-xs org-btn"><a title="Organizations" href="#/organizations" class="btn btn-default"><span>Organizations</span></a></li>
+  <li class="hidden-xs org-btn"><a title="<%- i18next.t('Organizations') %>" href="#/organizations" class="btn btn-default"><span><%- i18next.t("Organizations") %></span></a></li>
    <% } %>	
    <% } %>	
 </ul>
 <% if(!_.isUndefined(authuser.user)){%>
-<div class="col-xs-push-0 col-sm-push-0 col-md-push-1 col-lg-push-1 col-lg-4 col-md-3 col-sm-1 col-xs-12 hidden-xs search-xs list-group-item-heading clearfix">
+<div class="col-xs-push-0 col-sm-push-1 col-md-push-1 col-lg-push-1 col-lg-4 col-md-3 col-sm-1 col-xs-12 hidden-xs search-xs list-group-item-heading clearfix">
 	<form role="form" class="search-container clearfix">
-	<div class="text-center clearfix hide search-loader" id="js-loader-img"><img src="img/ajax-loader.gif" alt="[Images:Loader]" title="Loading ..." /></div>
+	<div class="text-center clearfix hide search-loader" id="js-loader-img"><img src="img/ajax-loader.gif" alt="[Images:Loader]" title="Loading..." /></div>
 	  <div class="form-group">
 		<input id="search-box" type="search" class="search-box pull-right form-control js-search search-box">
 		<i class="icon-circle-blank search-loader hide" id="res"></i>
@@ -130,15 +130,16 @@
 			</li>
 		</ul>
 	  </div>
-	  <button type="submit" class="search-submit sr-only">Submit</button>
+	  <button type="submit" class="search-submit sr-only"><%- i18next.t("Submit") %></button>
 	</form>
 </div>
  <% } %>
 <div class="navbar-right clearfix">
 	<ul class="nav nav-pills navbar-right">
 	<% if(!_.isUndefined(authuser.user)){%>
+	<li class="phone-block"><a class="btn btn-primary pull-right js-show-qr-code" id="phone" title="<%- i18next.t('View in iOS App') %>" href=""><i class="icon-mobile-phone lead"></i></a></li>
 	<% if(!_.isUndefined(authuser.user) &&  !_.isEmpty(model.user) && model.user.role_id == 1 && (!_.isEmpty(role_links.where({slug: "view_user_listing"})) || !_.isEmpty(role_links.where({slug: "setting_list"})) || !_.isEmpty(role_links.where({slug: "roles"})) || !_.isEmpty(role_links.where({slug: "view_email_template_listing"})) || !_.isEmpty(role_links.where({slug: "activities_listing"}))) ){ %>
-	  	<li class="hidden-xs"><a title="Admin CP" class="btn btn-default pull-right admin-cp" href="#/activities"><span class="icon-user lead text-primary"></span><span class="hidden-xs text-primary">Admin</span></a></li>
+	  	<li class="hidden-xs"><a title="<%- i18next.t('Admin CP') %>" class="btn btn-default pull-right admin-cp" href="#/activities"><span class="icon-user lead text-primary"></span><span class="hidden-xs text-primary"><%- i18next.t("Admin") %></span></a></li>
 	  <% } %>
 	  <li class="dropdown">
 	   <a href="#" data-toggle="dropdown" class="dropdown-toggle btn btn-default pull-right" title="<%-model.user.full_name%> (<%-model.user.username%>)">
@@ -153,17 +154,27 @@
 			</span>&nbsp; <b class="caret"></b>
 	   </a>
 		<ul class="dropdown-menu text-left js-change-avatar-form-response">
-			<li> <a title="Logout" href="#/users/logout">Logout</a> </li>			
+			<li> <a title="<%- i18next.t('Logout') %>" href="#/users/logout"><%- i18next.t("Logout") %></a> </li>			
 			<li class="divider"></li>
 			<% if(model.is_show_enable_notification === true) { %>
-				<li><a title="Enable Desktop Notification" href="#" class="js-enable-desktop-notification">Enable Desktop Notification</a></li>
+				<li><a title="<%- i18next.t('Enable Desktop Notification') %>" href="#" class="js-enable-desktop-notification"><%- i18next.t("Enable Desktop Notification") %></a></li>
 			<% } %>	
 			<% if(!_.isEmpty(role_links.where({slug: "user_changepassword"}))){ %>
-				<li><a title="Change Password" href="#/users/<%-model.user.id%>/changepassword">Change Password</a></li>
+				<li><a title="<%- i18next.t('Change Password') %>" href="#/users/<%-model.user.id%>/changepassword"><%- i18next.t("Change Password") %></a></li>
 			<% } %>
 		    <% if(!_.isEmpty(role_links.where({slug: "view_user"}))){ %>
-				<li><a title="Profile" href="#/user/<%-model.user.id%>">Profile</a></li>
+				<li><a title="<%- i18next.t('Profile') %>" href="#/user/<%-model.user.id%>"><%- i18next.t("Profile") %></a></li>
 			<% } %>
+		</ul>
+	  </li>
+	  <li class="dropdown">
+	   <a href="#" data-toggle="dropdown" class="dropdown-toggle btn btn-default pull-right" title="<%- i18next.t('Change Language') %>"><i class="icon-globe"></i>
+	   </a>
+	   <ul class="dropdown-menu text-left js-change-language-form-response">
+		   <% _.each(languages, function(language) { %>
+			    <% var lang = language.split(':'); %>
+				<li> <a class="cur <% if(lang[0].replace(/[^a-z\d\s]+/gi, '') !== authuser.user.language){ %>js-change-language<%}%>" data-lang="<%- lang[0].replace(/[^a-z\d\s]+/gi, '') %>"><%- lang[1].replace(/[^a-z\d\s]+/gi, '') %><% if((!_.isEmpty(authuser.user.language) && lang[0].replace(/[^a-z\d\s]+/gi, '') === authuser.user.language) || (_.isEmpty(authuser.user.language) && lang[0].replace(/[^a-z\d\s]+/gi, '') === DEFAULT_LANGUAGE)){ %><i class="icon-ok"></i><% } %></a> </li>			
+		   <% }); %>
 		</ul>
 	  </li>
 	  <li class="hidden-xs"><a data-toggle="tooltip" data-placement="top" title="Chat" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-chat<% }%>" data-original-title="Chat"><i class="icon-comment lead"></i></a></li> 
@@ -183,14 +194,14 @@
 			  <% } %>
 				<% if(!_.isEmpty(board_id) && board_id !== 0 && board_id !== '0') { %>
 					<div class="text-center js-load-link" id="js-load-link1">
-						<a href="#" title="View all activity" id="js-notification-load-more" class="js-board-load-more btn btn-link">Load more activities</a>
+						<a href="#" title="View all activity" id="js-notification-load-more" class="js-board-load-more btn btn-link"><%- i18next.t("Load more activities") %></a>
 					</div>
 					<div class="text-center js-load-link hide" id="js-load-link2">
-						<a href="#" title="View all activity" id="js-notification-load-more-all" class="js-board-load-more-all btn btn-link">Load more activities</a>
+						<a href="#" title="<%- i18next.t('View all activity') %>" id="js-notification-load-more-all" class="js-board-load-more-all btn btn-link"><%- i18next.t("Load more activities") %></a>
 					</div>
 				<%} else { %>
 				<div class="text-center js-load-link" id="js-load-link">
-					<a href="#" title="View all activity" id="js-notification-load-more-all" class="js-all-load-more-all btn btn-link">Load more activities</a>
+					<a href="#" title="<%- i18next.t('View all activity') %>" id="js-notification-load-more-all" class="js-all-load-more-all btn btn-link"><%- i18next.t("Load more activities") %></a>
 				</div>
 				<% } %>
 			 </div>
@@ -198,15 +209,15 @@
 				<li><a href="#all_" data-toggle="tab" class="js-all-activities">All</a></li>
 				
 				<% if(!_.isEmpty(board_id) && board_id !== 0 && board_id !== '0'){ %>
-					<li class="active"><a href="#board_" data-toggle="tab" class="js-board-activities">In this board</a></li>
+					<li class="active"><a href="#board_" data-toggle="tab" class="js-board-activities"><%- i18next.t("In this board") %></a></li>
 				<% } %>
 			</ul>
 		</div>
 	  </li>
 	  <% } else { %>
 		<% if(board_id !== undefined && board_id !== null && board_id !== ""){ %>
-	  		<li class="<% if(Backbone.history.fragment.indexOf('users/register') != -1){%>active<%}%>"><a href="#/users/register" title="Register"><strong>Register</strong></a></li>
-			<li class="<% if(Backbone.history.fragment.indexOf('users/login') != -1){%>active<%}%>"><a href="#/users/login"	title="Login"><strong>Login</strong></a></li>
+	  		<li class="<% if(Backbone.history.fragment.indexOf('users/register') != -1){%>active<%}%>"><a href="#/users/register" title="<%- i18next.t('Register') %>"><strong><%- i18next.t("Register") %></strong></a></li>
+			<li class="<% if(Backbone.history.fragment.indexOf('users/login') != -1){%>active<%}%>"><a href="#/users/login"	title="<%- i18next.t('Login') %>"><strong><%- i18next.t("Login") %></strong></a></li>
 		<% } %>
 	  <% } %>
 	 </ul>

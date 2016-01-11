@@ -1,6 +1,6 @@
 <li>		
 	<div class="clearfix text-center col-xs-12">
-		<span class="col-xs-10"><strong>Voters</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a>
+		<span class="col-xs-10"><strong> <%- i18next.t('Voters') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a>
 	</div>
 </li>
 <li class="col-xs-12 divider"></li>
@@ -21,5 +21,5 @@
 		<span><%- voter.attributes.username %></span></a></li>
    <% });
    }else{ %>
-	<li class="col-xs-12">No voters available.</i>
+	<li class="col-xs-12"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('voters')] }) %></i>
    <% }  %>

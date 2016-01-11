@@ -65,10 +65,14 @@ App.ShowCopyBoardView = Backbone.View.extend({
         board.url = api_url + 'boards/' + this.model.id + '/copy.json';
         board.save(data, {
             success: function(model, response) {
-                app.navigate('#/board/' + board.get('id'), {
-                    trigger: true,
-                    replace: true,
-                });
+                if (!_.isUndefined(board.get('id'))) {
+                    app.navigate('#/board/' + board.get('id'), {
+                        trigger: true,
+                        replace: true,
+                    });
+                } else {
+                    self.flash('danger', i18next.t('Unable to copy the board.'));
+                }
             }
         });
         return false;

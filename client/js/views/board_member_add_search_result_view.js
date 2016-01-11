@@ -62,6 +62,7 @@ App.BoardMemberAddSearchResultView = Backbone.View.extend({
         }, {
             success: function(model, response) {
                 response.boards_users.is_admin = 0;
+                response.boards_users.user_id = parseInt(response.boards_users.user_id);
                 board_user.set(response.boards_users);
                 self.board.board_users.add(board_user);
             }

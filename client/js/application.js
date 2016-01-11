@@ -18,7 +18,9 @@ var FLICKR_API_KEY = '';
 var LABEL_ICON = '';
 var SITE_TIMEZONE = '';
 var LDAP_LOGIN_ENABLED = '';
+var DEFAULT_LANGUAGE = '';
 var STANDARD_LOGIN_ENABLED = '';
+var IMAP_EMAIL = '';
 var last_activity = '';
 var SecuritySalt = 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf';
 var last_user_activity_id = 0,
@@ -26,6 +28,9 @@ var last_user_activity_id = 0,
     last_board_activity_id = 0,
     last_user_board_activity_id = 0;
 var xhrPool = [];
+var PLUGINS = [];
+var load_count = 1;
+var from_url = '';
 Backbone.View.prototype.flash = function(type, message) {
     $.bootstrapGrowl(message, {
         type: type,
@@ -86,7 +91,7 @@ callbackTranslator = {
                 $(this).remove();
             });
             if (model === null) {
-                changeTitle('404 not found');
+                changeTitle('404 Page not found');
                 this.headerView = new App.HeaderView({
                     model: authuser
                 });
@@ -109,7 +114,7 @@ callbackTranslator = {
                 model.is_offline = true;
                 $('.js-hide-on-offline').addClass('hide');
                 $('#js-activity-loader').remove();
-                $('#js-footer-brand-img').attr('title', 'Site is in offline').attr('src', 'img/logo-icon-offline.png').tooltip("show");
+                $('#js-footer-brand-img').attr('title', i18next.t('Site is in offline')).attr('src', 'img/logo-icon-offline.png').tooltip("show");
             } else {
                 is_online = true;
                 $('.js-hide-on-offline').removeClass('hide');
@@ -118,7 +123,7 @@ callbackTranslator = {
             if (is_online && is_offline_data) {
                 is_offline_data = false;
                 window.sessionStorage.removeItem('is_offline_data');
-                $('#js-footer-brand-img').attr('title', 'Syncing...').attr('src', 'img/logo-icon-sync.gif').attr('data-original-title', 'Syncing...').tooltip("show");
+                $('#js-footer-brand-img').attr('title', i18next.t('Syncing...')).attr('src', 'img/logo-icon-sync.gif').attr('data-original-title', i18next.t('Syncing...')).tooltip("show");
                 var offline_data = new App.ListCollection();
                 offline_data.syncDirty();
             }
@@ -136,7 +141,9 @@ callbackTranslator = {
                                 Auth.access_token = response.access_token;
                                 api_token = response.access_token;
                                 window.sessionStorage.setItem('auth', JSON.stringify(Auth));
-                                Backbone.history.loadUrl(Backbone.history.fragment);
+                                if (from_url !== 'board_view') {
+                                    Backbone.history.loadUrl(Backbone.history.fragment);
+                                }
                             } else {
                                 app.navigate('#/users/logout', {
                                     trigger: true,
@@ -227,6 +234,8 @@ var AppRouter = Backbone.Router.extend({
         'organization/:id/:type': 'organizations_view_type',
         'organizations_user/:id': 'organizations_user_view',
         'roles': 'role_settings',
+        'plugins': 'plugins',
+        'plugins/:name': 'plugin_settings',
         'settings': 'settings',
         'settings/:id': 'settings_type',
         'email_templates': 'email_templates',
@@ -237,37 +246,31 @@ var AppRouter = Backbone.Router.extend({
         $('body').removeAttr('style');
     },
     about_us: function() {
-        changeTitle('About');
         new App.ApplicationView({
             model: 'aboutus'
         });
     },
     admin_user_add: function() {
-        changeTitle('Admin Add User');
         new App.ApplicationView({
             model: 'admin_user_add'
         });
     },
     register: function() {
-        changeTitle('Register');
         new App.ApplicationView({
             model: 'register'
         });
     },
     login: function() {
-        changeTitle('Login');
         new App.ApplicationView({
             model: 'login'
         });
     },
     forgotpassword: function() {
-        changeTitle('Forgot Password');
         new App.ApplicationView({
             model: 'forgotpassword'
         });
     },
     user_activation: function(id, hash) {
-        changeTitle('User Activation');
         new App.ApplicationView({
             model: 'user_activation',
             'id': id,
@@ -275,7 +278,6 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     changepassword: function(id) {
-        changeTitle('Change Password');
         var Auth_check = JSON.parse(window.sessionStorage.getItem('auth'));
         if (window.sessionStorage.getItem('auth') !== null) {
             if (Auth_check.user.id == id || Auth_check.user.role_id == '1') {
@@ -302,7 +304,6 @@ var AppRouter = Backbone.Router.extend({
                 });
             }
         } else {
-            changeTitle('Login');
             new App.ApplicationView({
                 model: 'login'
             });
@@ -324,42 +325,38 @@ var AppRouter = Backbone.Router.extend({
                 });
                 clearInterval(set_interval_id);
                 var view = new Backbone.View();
-                view.flash('success', 'Logout successfully.');
+                view.flash('success', i18next.t('Logout successfully.'));
             }
         });
     },
     settings: function() {
-        changeTitle('Settings');
         new App.ApplicationView({
             model: 'settings'
         });
     },
     settings_type: function(id) {
-        changeTitle('Settings');
         new App.ApplicationView({
             model: 'settings',
             id: id
         });
     },
     boards_index: function() {
-        changeTitle('Boards');
         new App.ApplicationView({
             model: 'boards_index'
         });
     },
     starred_boards_index: function() {
-        changeTitle('Starred Boards');
         new App.ApplicationView({
             model: 'starred_boards_index'
         });
     },
     closed_boards_index: function() {
-        changeTitle('Closed Boards');
         new App.ApplicationView({
             model: 'closed_boards_index'
         });
     },
     boards_view: function(id) {
+        from_url = 'board_view';
         new App.ApplicationView({
             model: 'boards_view',
             'id': id
@@ -393,14 +390,12 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     organizations_view: function(id) {
-        changeTitle('Organization');
         new App.ApplicationView({
             model: 'organizations_view',
             'id': id
         });
     },
     organizations_view_type: function(id, type) {
-        changeTitle('Organization');
         new App.ApplicationView({
             model: 'organizations_view',
             'id': id,
@@ -408,20 +403,18 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     organizations_user_view: function(id) {
-        changeTitle('Organization User');
+        changeTitle(i18next.t('Organization User'));
         new App.ApplicationView({
             model: 'organizations_user_view',
             'id': id
         });
     },
     users_index: function() {
-        changeTitle('Users');
         new App.ApplicationView({
             model: 'users_index'
         });
     },
     admin_boards_index: function() {
-        changeTitle('Boards');
         new App.ApplicationView({
             model: 'admin_boards_index'
         });
@@ -440,32 +433,38 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     role_settings: function() {
-        changeTitle('Role Settings');
         new App.ApplicationView({
             model: 'role_settings',
         });
     },
+    plugins: function() {
+        new App.ApplicationView({
+            model: 'plugins',
+        });
+    },
+    plugin_settings: function(id) {
+        new App.ApplicationView({
+            model: 'plugin_settings',
+            id: id
+        });
+    },
     organizations_index: function() {
-        changeTitle('Organizations');
         new App.ApplicationView({
             model: 'organizations_index'
         });
     },
     email_templates: function() {
-        changeTitle('Email Templates');
         new App.ApplicationView({
             model: 'email_template_type'
         });
     },
     email_template_type: function(id) {
-        changeTitle('Email Templates');
         new App.ApplicationView({
             model: 'email_template_type',
             id: id
         });
     },
     activity_index: function() {
-        changeTitle('Activities');
         new App.ApplicationView({
             model: 'activity_index'
         });

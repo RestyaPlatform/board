@@ -87,6 +87,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-close-sub-popover': 'closeSubPopup',
         'click #js-select-google-sync-url': 'selectGoogleSyncUrl',
         'click .js-change-background': 'showChangeBackground',
+        'click .js-email-to-board-settings': 'showEmailToBoardSetting',
         'click .js-open-dropdown': 'openDropdown',
         'click .js-change-visibility': 'showAllVisibility',
         'click .js-show-board-modal': 'showListModal',
@@ -229,10 +230,10 @@ App.BoardHeaderView = Backbone.View.extend({
         e.preventDefault();
         var name = $(e.currentTarget).attr('name');
         var value = 'unsubscribe';
-        var content = '<i class="icon-eye-close"></i>Unsubscribe';
+        var content = '<i class="icon-eye-close"></i>' + i18next.t('Unsubscribe');
         if (name == 'unsubscribe') {
             value = 'subscribe';
-            content = '<i class="icon-eye-open"></i>Subscribe';
+            content = '<i class="icon-eye-open"></i>' + i18next.t('Subscribe');
         }
         $(e.currentTarget).attr('name', value);
         $(e.currentTarget).attr('title', value);
@@ -308,9 +309,6 @@ App.BoardHeaderView = Backbone.View.extend({
                     App.boards.get(self.model.attributes.id).boards_stars.reset(self.boardStar);
                 }
                 self.model.boards_stars.add(self.boardStar);
-                self.footerView = new App.FooterView({
-                    model: authuser
-                }).renderStarredBoards();
             }
         });
         return false;
@@ -326,11 +324,11 @@ App.BoardHeaderView = Backbone.View.extend({
     closeBoard: function(e) {
         e.preventDefault();
         this.model.url = api_url + 'boards/' + this.model.id + '.json';
-        App.boards.get(this.model.id).set('is_closed', true);
-        this.footerView = new App.FooterView({
-            model: authuser,
-            board_id: this.model.id
-        }).renderClosedBoards();
+        App.boards.get(this.model.id).set({
+            is_closed: true
+        }, {
+            silent: true
+        });
         var board_id = this.model.id;
         this.model.save({
             is_closed: true
@@ -350,6 +348,28 @@ App.BoardHeaderView = Backbone.View.extend({
             model: visibility
         }).el).insertAfter(insert);
         parent.addClass('open');
+        return false;
+    },
+    /**
+     * showEmailToBoardSetting()
+     * display Email to board setting form
+     * @return false
+     *
+     */
+    showEmailToBoardSetting: function() {
+        $('.js-side-bar-' + this.model.id).addClass('side-bar-large');
+        var el = this.$el;
+        el.find('.js-setting-response').html(new App.EmailToBoardSettingView({
+            model: this.model
+        }).el);
+        var headerH = $('header').height();
+        var windowH = $(window).height();
+        var footerH = $('footer').height();
+        var boardH = windowH - headerH - footerH - 14;
+        $('.member-modal.js-pre-scrollable').css({
+            'max-height': boardH - 50,
+            'overflow-y': 'auto'
+        });
         return false;
     },
     /**
@@ -1678,8 +1698,8 @@ App.BoardHeaderView = Backbone.View.extend({
             contentType: false,
             success: function(model, response) {
                 $('#custom-dropzone-cssloader').removeClass('cssloader');
-                if (!_.isEmpty(response.error)) {
-                    self.flash('danger', response.error);
+                if (response.error) {
+                    self.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
                 } else {
                     self.model.set({
                         background_picture_url: ''
@@ -1774,15 +1794,15 @@ App.BoardHeaderView = Backbone.View.extend({
     selectBoardVisibility: function(e) {
         var name = $(e.currentTarget).attr('name');
         var value = 0;
-        var content = '<i class="icon-lock"></i>Private';
+        var content = '<i class="icon-lock"></i>' + i18next.t('Private');
         $('#js-board-add-organization').html('');
         if (name == 'org') {
             value = 1;
-            content = '<i class="icon-group"></i>Organization';
+            content = '<i class="icon-group"></i>' + i18next.t('Organization');
             $('#js-change-visible-content').html(content);
             this.showBoardAddeOrganizationForm(e);
         } else if (name == 'public') {
-            content = '<i class="icon-circle"></i>Public';
+            content = '<i class="icon-circle"></i>' + i18next.t('Public');
             value = 2;
         }
 

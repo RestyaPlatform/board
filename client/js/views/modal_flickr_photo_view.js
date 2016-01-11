@@ -93,7 +93,7 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
             Flickr.fetch({
                 cache: false,
                 success: function(photos, response) {
-                    $('.js-flickr-loader-and-more').html('<a href="javascript:void(0);" class="btn-link js-flickr-loadmore">Load More</a>');
+                    $('.js-flickr-loader-and-more').html('<a href="javascript:void(0);" class="btn-link js-flickr-loadmore">' + i18next.t('Load More') + '</a>');
                     $('.js-flickr-loader-and-more').show();
                     if (!_.isUndefined(photos.attributes.photos) && photos.attributes.photos !== null) {
                         var fl_photos = photos.attributes.photos.photo;
@@ -113,7 +113,7 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
                             self.total_page = parseInt(photos.attributes.photos.pages);
                             self.page = parseInt(photos.attributes.photos.page);
                             if (self.page == 1) {
-                                $('.js-flickr-loader-and-more').html('<a href="#" class="btn-link ">No Photo Found....</a>');
+                                $('.js-flickr-loader-and-more').html('<a href="#" class="btn-link ">' + i18next.t('No record found') + '....</a>');
                                 $('.js-flickr-loader-and-more').show();
                             } else {
                                 self.page = parseInt(photos.attributes.photos.page) + 1;
@@ -203,10 +203,18 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
                 background_picture_url: image_path,
                 background_pattern_url: 'NULL'
             };
-            App.boards.get(this.model.id).set('background_name', title);
-            App.boards.get(this.model.id).set('background_picture_url', image_path);
-            App.boards.get(this.model.id).set('background_pattern_url', '');
-            App.boards.get(this.model.id).set('background_color', '');
+            App.boards.get(this.model.id).set('background_name', title, {
+                silent: true
+            });
+            App.boards.get(this.model.id).set('background_picture_url', image_path, {
+                silent: true
+            });
+            App.boards.get(this.model.id).set('background_pattern_url', '', {
+                silent: true
+            });
+            App.boards.get(this.model.id).set('background_color', '', {
+                silent: true
+            });
 
         } else {
             $('body').removeAttr('style').css({
@@ -215,10 +223,18 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
             this.model.set('background_name', title);
             this.model.set('background_picture_url', '');
             this.model.set('background_pattern_url', image_path);
-            App.boards.get(this.model.id).set('background_name', title);
-            App.boards.get(this.model.id).set('background_picture_url', '');
-            App.boards.get(this.model.id).set('background_pattern_url', image_path);
-            App.boards.get(this.model.id).set('background_color', '');
+            App.boards.get(this.model.id).set('background_name', title, {
+                silent: true
+            });
+            App.boards.get(this.model.id).set('background_picture_url', '', {
+                silent: true
+            });
+            App.boards.get(this.model.id).set('background_pattern_url', image_path, {
+                silent: true
+            });
+            App.boards.get(this.model.id).set('background_color', '', {
+                silent: true
+            });
             image_path = 'http://farm' + farm + '.static.flickr.com/' + server + '/' + id + '_' + secret + '_XXXX.jpg';
             data = {
                 background_name: title,

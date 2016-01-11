@@ -59,8 +59,11 @@ App.HeaderView = Backbone.View.extend({
      */
     render: function() {
         this.model.is_show_enable_notification = false;
-        var current_param = Backbone.history.fragment;
-        var current_param_split = current_param.split('/');
+        var current_param = Backbone.history.fragment.split('?');
+        if (current_param[0].indexOf('/') === 0) {
+            current_param[0] = current_param[0].substr(1);
+        }
+        var current_param_split = current_param[0].split('/');
         this.model.current_param = (current_param.indexOf('changepassword') === -1 && current_param.indexOf('login') === -1 && current_param.indexOf('forgotpassword') === -1 && current_param.indexOf('register') === -1 && current_param.indexOf('activation') === -1) ? current_param_split[0] : '';
         if (!_.isEmpty(current_param_split[1]) && current_param_split[1] === 'list') {
             this.model.current_param = 'admin_boards_list';
@@ -70,6 +73,37 @@ App.HeaderView = Backbone.View.extend({
         }
         this.$el.html(this.template(this.model));
         this.showTooltip();
+        if (load_count === 1) {
+            load_count++;
+            _.each(PLUGINS, function(plugin, key) {
+                var s, l, v = '';
+                if (key === 'settings') {
+                    s = document.createElement('script');
+                    _.each(plugin, function(client_id, key) {
+                        v += "var " + client_id.name + " = '" + client_id.value + "';";
+                    });
+                    s.text = v;
+                    document.body.appendChild(s);
+                }
+                if (key === 'js') {
+                    _.each(plugin, function(js, key) {
+                        s = document.createElement('script');
+                        s.type = 'text/javascript';
+                        s.src = js;
+                        document.body.appendChild(s);
+                    });
+                }
+                if (key === 'css') {
+                    _.each(plugin, function(css, key) {
+                        l = document.createElement('link');
+                        l.rel = 'stylesheet';
+                        l.type = 'text/css';
+                        l.href = css;
+                        document.head.appendChild(l);
+                    });
+                }
+            });
+        }
         return this;
     },
     renderList: function() {

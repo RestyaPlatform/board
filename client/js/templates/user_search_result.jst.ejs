@@ -8,8 +8,8 @@
 	<i class="avatar avatar-color-194 avatar-sm img-rounded"><%- user.attributes.initials %></i>									
 <% } %>
 </span> <span><%- user.attributes.username %></span></a>
-<% }else if(user == null && _.isUndefined(q)){ %>
-	No users avaailable.
+<% }else if(user == null && _.isUndefined(q)){ %>	
+	<%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('users')] }) %>
 <% } else{ %>
-	Search for a person in <%- SITE_NAME %> by name or email address. 								
+	<%- i18next.t('Search for a person in %s by name or email address.', { postProcess: 'sprintf', sprintf: [SITE_NAME]}) %>
 <% } %>

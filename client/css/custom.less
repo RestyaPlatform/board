@@ -635,8 +635,7 @@ header {
 		cursor: pointer;
 		border-color: transparent;
 		&:focus {
-			padding-left: 15px;
-			padding-right: 65px;
+			padding: 1px 65px 1px 15px;
 			border-color: #f47564;
 			cursor: text;
 			width: 300px;
@@ -747,6 +746,7 @@ table.acl-link-list > tbody> tr {
 	flex-direction: row;
 	margin-bottom: 10px;
 	overflow-x: auto;
+	overflow-x: inherit \9;
 	padding-bottom: 10px;
 	-webkit-overflow-scrolling: touch;
 	&::-webkit-scrollbar {
@@ -770,6 +770,7 @@ table.acl-link-list > tbody> tr {
 		background-color: #f3f5f7;
 		color: #555555;
 		margin: 0 5px;
+		margin: 0 20px \9;
 		border-radius: 4px;
 		border: 1px solid #eeeeee;
 		-webkit-box-sizing: border-box;
@@ -846,6 +847,7 @@ table.acl-link-list > tbody> tr {
 		}
 		&:first-child {
 			margin-left: 15px;
+			margin-left: 20px \9;
 		}
 	}
 	.board-list-placeholder.list {
@@ -1084,7 +1086,7 @@ footer {
 			height: 32px;
 			line-height: 30px;
 			width: 35px;
-			font-size: 17px;
+			font-size: 16px;
 		}
 	}
 }
@@ -1109,6 +1111,7 @@ footer, header {
 }
 .thumb-img {
 	display: table-cell;
+	line-height: 134px;
 	font-size: 35px;
 	font-weight: bold;
 	text-align: center;
@@ -1117,6 +1120,7 @@ footer, header {
 	color: lighten(@gray-light,20%);
 	.img-responsive {
 		max-height: 100%;
+		display: inline-block;
 	}
 }
 .boardlist-scrollbar {
@@ -1478,56 +1482,6 @@ footer, header {
 		height: 80px;
 	}
 }
-#life a {
-	text-decoration: underline;
-}
-#life {
-	padding-top: 40px;
-	padding-bottom: 5em;
-	position: relative;
-	cursor: -webkit-grab;
-	cursor: -moz-grab;
-	cursor: grab;
-}
-#life section.year {
-	min-height: 100%;
-	box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	border-left: 1px dashed rgba(204,204,204,.5);
-	color: #999999;
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	padding-left: 10px;
-	padding-top: 10px;
-	pointer-events: none;
-	font-weight: 300;
-	white-space: nowrap;
-}
-#life .event {
-	padding-right: 20px;
-	padding-bottom: 5px;
-	vertical-align: middle;
-	white-space: nowrap;
-}
-#life .event b {
-	font-weight: normal;
-	color: rgba(244,117,100,.5);
-}
-#life .event .time {
-	display: inline-block;
-	overflow: hidden;
-	height: 0;
-	border: 4px solid #f47564;
-	border-radius: 4px;
-	margin-right: 10px;
-	opacity: .5;
-	position: relative;
-	left: -2px;
-}
-#life .event:hover .time {
-	opacity: 1;
-}
 .avatar-color-194 {
 	background-color: #ffffff!important;
 	border: 1px solid #d7d9db;
@@ -1662,22 +1616,6 @@ footer, header {
 	background: #d6dadc;
 	padding: 1px 4px;
 	margin: -1px 0;
-}
-a.company {
-	display: block;
-	height: 15px;
-	margin: -50px 0 0;
-	position: absolute;
-	right: 42%;
-	width: 190px;
-	@media(max-width:767px) {
-		top: 18%;
-	}
-	@media(max-width:767px) {
-		display: inline-block;
-		position: static;
-		width: 79px;
-	}
 }
 .board-user-img {
 	height: 18px;
@@ -2084,4 +2022,13 @@ div.popped-out + div + div.datetimepicker {
 	padding-top: 110%;
 	display: inline-block;
 	vertical-align: middle;
+}
+.dockmodal-body {
+	.dockmodal-phone {
+		.phone-content {
+			display: table-cell;
+			height: 100%;
+			vertical-align: middle;
+		}
+	}
 }

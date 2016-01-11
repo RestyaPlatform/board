@@ -12,14 +12,14 @@
 	</a>
 	<div class="clearfix btn-block col-xs-12">
 		<a target="_blank" class="htruncate col-xs-12 btn-block" href="<%= attachment.downloadLink('download', attachment.get('id')) %>" title="<%- attachment.get('name') %>"><%- attachment.get('name') %>
-		<span class="show">Added <small class="text-muted"><abbr class="timeago" title="<%- attachment.get('created') %>"><%- attachment.get("created") %></abbr></small></span>
+		<span class="show"><%- i18next.t("Added") %> <small class="text-muted"><abbr class="timeago" title="<%- attachment.get('created') %>"><%- attachment.get("created") %></abbr></small></span>
 		</a> 
 		<%if(!_.isUndefined(authuser.user)) {%>
 		<div class="btn-toolbar navbar-btn">
 			<div class="btn-group btn-group-xs navbar-btn">
 				<div class="btn btn-primary">
 				<% var download_link = attachment.downloadLink('download', attachment.get('id')); %>
-					<a target="_blank" href="<%= download_link %>" title="Download">
+					<a target="_blank" href="<%= download_link %>" title="<%- i18next.t('Download') %>">
 						<i class="icon-arrow-down cur icon-light"></i>
 					</a>
 				</div>
@@ -36,5 +36,5 @@
 		<% } %>
 	</div>
 <% }else{ %> 
-	<span>No attachments available</span>
+	<span><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('attachments')] }) %></span>
 <% } %> 

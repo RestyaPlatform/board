@@ -27,6 +27,7 @@ App.FooterView = Backbone.View.extend({
         'click .js-show-organizations-add-form': 'showOrganizationsAddForm',
         'click .js-show-instant-card-from': 'showInstantCardFrom',
         'click .js-show-chat': 'showChat',
+        'click .js-show-qr-code': 'showQrCode',
         'click .js-show-boards-list': 'showBoardsList',
         'click .js-collapse-myboards': 'collapseMyBoards',
         'click .js-collapse-closedboards': 'collapseClosedBoards',
@@ -38,6 +39,7 @@ App.FooterView = Backbone.View.extend({
         'click .js-all-activities': function() {
             $('#js-load-link2, .js-all-activity-list').removeClass('hide');
             $('#js-load-link1, .js-boards-activity-list').addClass('hide');
+            $('#js-all-activities').empty();
             this.userActivities(false, 2);
         },
         'click .js-all-user-activities': 'showUserActivities',
@@ -47,6 +49,7 @@ App.FooterView = Backbone.View.extend({
             $('#js-notification-load-more-all').removeClass('js-all-load-more-all').addClass('js-board-load-more-all');
             $('#js-load-link2, .js-all-activity-list').addClass('hide');
             $('#js-load-link1, .js-boards-activity-list').removeClass('hide');
+            $('#js-board-activities').empty();
             this.boardActivities();
         },
         'click .js-all-board-activities': 'showBoardActivities',
@@ -57,6 +60,7 @@ App.FooterView = Backbone.View.extend({
         'focusout .js-search': 'searchClose',
         'submit form.js-instantCardAddForm': 'addInstantCard',
         'click .js-show-notification': 'showNotification',
+        'click .js-change-language': 'changeLanguage',
         'click .js-back-boards-list': 'showBackBoardsList',
         'click .js-board-load-more': function(e) {
             e.preventDefault();
@@ -81,6 +85,9 @@ App.FooterView = Backbone.View.extend({
         'click .js-enable-desktop-notification': 'enabledesktopNotification',
         'click .js-show-board-import-form': 'showBoardImportForm',
         'change .js-board-import-file': 'importBoard',
+        'click .js-closed-boards': 'renderClosedBoards',
+        'click .js-starred-boards': 'renderStarredBoards',
+        'click .js-my-boards-listing': 'renderMyBoards',
     },
     /**
      * Constructor
@@ -102,9 +109,6 @@ App.FooterView = Backbone.View.extend({
         this.board = options.board;
         this.boards = options.boards;
         _.bindAll(this, 'renderClosedBoards', 'renderStarredBoards');
-        if (!_.isUndefined(App.boards)) {
-            App.boards.bind('add remove change', this.renderClosedBoards);
-        }
     },
     /**
      * render()
@@ -135,6 +139,7 @@ App.FooterView = Backbone.View.extend({
         this.$el.html(this.template({
             model: this.model,
             board_id: this.board_id,
+            languages: window.sessionStorage.getItem('languages').split(',')
         }));
         if (_.isEmpty(this.board_id)) {
             if (!_.isUndefined(authuser.user)) {
@@ -218,6 +223,38 @@ App.FooterView = Backbone.View.extend({
         return false;
     },
     /**
+     * changeLanguage()
+     * Change language
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    changeLanguage: function(e) {
+        e.preventDefault();
+        var self = this;
+        authuser.user.language = $(e.currentTarget).data('lang');
+        var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+        Auth.user.language = $(e.currentTarget).data('lang');
+        window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+        var user = new App.User();
+        user.url = api_url + 'users/' + authuser.user.id + '.json';
+        user.set('id', parseInt(authuser.user.id));
+        user.save({
+            'language': $(e.currentTarget).data('lang')
+        }, {
+            success: function(user, response) {
+                i18next.changeLanguage($(e.currentTarget).data('lang'));
+                if (!_.isEmpty(response.success)) {
+                    $('.js-change-language-form-response').find('i').remove();
+                    self.flash('success', i18next.t('Language changed successfully.'));
+                    $(e.currentTarget).append('<i class="icon-ok"></i>');
+                }
+            }
+        });
+        return false;
+    },
+    /**
      * showInstantCardFrom()
      * show instant card add form
      * @param e
@@ -249,6 +286,21 @@ App.FooterView = Backbone.View.extend({
         e.preventDefault();
         var chat = new App.ChatView({
             model: chat,
+        });
+        return false;
+    },
+    /**
+     * showQrCode()
+     * show QR code form
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showQrCode: function(e) {
+        e.preventDefault();
+        var qr_code = new App.QrCodeView({
+            model: qr_code,
         });
         return false;
     },
@@ -406,10 +458,16 @@ App.FooterView = Backbone.View.extend({
         var my_boards = '';
         var self = this;
         self.boards = App.boards;
-        if (!_.isUndefined(App.boards)) {
-            App.boards.bind('add remove change', this.renderClosedBoards);
-        }
-        if (!_.isEmpty(role_links.where({
+    },
+    /**
+     * renderMyBoards()
+     * collapse my board lists
+     * @return false
+     *
+     */
+    renderMyBoards: function() {
+        this.boards = App.boards;
+        if (!_.isEmpty(this.boards) && !_.isEmpty(role_links.where({
                 slug: 'view_my_boards'
             }))) {
             var view_my_board = $('.js-myboard-list');
@@ -439,9 +497,6 @@ App.FooterView = Backbone.View.extend({
                 }).el);
             }
         }
-        this.renderStarredBoards();
-        this.renderClosedBoards();
-
     },
     /**
      * renderStarredBoards()
@@ -690,6 +745,7 @@ App.FooterView = Backbone.View.extend({
             success: function() {
                 $('#js-activity-loader').remove();
                 if (!_.isEmpty(activities.models)) {
+                    $('#js-load-link').removeClass('hide');
                     var last_activity = _.min(activities.models, function(activity) {
                         return activity.id;
                     });
@@ -1379,7 +1435,7 @@ App.FooterView = Backbone.View.extend({
                                     model: response.hits.hits
                                 }).el;
                             } else {
-                                content = 'No results.';
+                                content = i18next.t('No record found.');
                             }
                             $('.js-show-search-result').html(content);
                             $('.js-boards-list-container-search').addClass('hide');
@@ -1505,7 +1561,7 @@ App.FooterView = Backbone.View.extend({
         if (type === 'user') {
             view_activity = $('#js-all-activities');
             query_string = (last_user_activity_id !== 0 && !_.isUndefined(last_user_activity_id)) ? '&last_activity_id=' + last_user_activity_id : '';
-            activities.url = api_url + 'users/' + authuser.user.id + '/activities.json?type=all' + query_string;
+            activities.url = api_url + 'users/' + authuser.user.id + '/activities.json?type=profile' + query_string;
         } else {
             view_activity = $('#js-board-activities');
             query_string = (load_more_last_board_activity_id !== 0 && !_.isUndefined(load_more_last_board_activity_id)) ? '&last_activity_id=' + load_more_last_board_activity_id : '';
@@ -1542,6 +1598,7 @@ App.FooterView = Backbone.View.extend({
                         modeType = '';
                     }
                     activities.each(function(activity) {
+                        activity.from_footer = true;
                         var view = new App.ActivityView({
                             model: activity,
                             board: self.board,
@@ -1551,6 +1608,7 @@ App.FooterView = Backbone.View.extend({
                     });
                 } else {
                     if (type == 'user') {
+                        $('#js-load-link').addClass('hide');
                         $('#js-load-link2').addClass('hide');
                     } else if (type == 'board') {
                         $('#js-load-link1').addClass('hide');
@@ -1626,12 +1684,7 @@ App.FooterView = Backbone.View.extend({
                         replace: true
                     });
                 } else {
-                    var error = 'Unable to import. please try again.';
-                    if (!_.isUndefined(response.error)) {
-                        error = response.error;
-                    }
-                    self.flash('danger', error);
-
+                    self.flash('danger', i18next.t('Unable to import. please try again.'));
                 }
             }
         });

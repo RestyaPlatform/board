@@ -1,17 +1,17 @@
 <section class="row js-card-dock-modal-<%- card.attributes.id %> js-card-container" id="dropzone<%- card.attributes.id %>">
   <div class="pull-right js-attachment-loader"></div>
   <div class="clearfix col-xs-12">
-  <h3 class="navbar-btn"> <span class="icon-credit-card text-muted"></span> <a href="" title="<%- card.attributes.name %>" class="<% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "edit_card"}))){ %>js-show-card-title-edit-form<% }else{ %> js-no-action<%}%>"><%- card.attributes.name %></a><small> in list</small> <span class="dropdown"><a class="dropdown-toggle <% if(!_.isUndefined(authuser.user)){ %>js-show-move-card-form<%}else{%>js-no-action<%}%>" data-toggle="dropdown" title="<%- list.attributes.name %>" href="#"><%- list.attributes.name %></a>
+  <h3 class="navbar-btn"> <span class="icon-credit-card text-muted"></span> <a href="" title="<%- card.attributes.name %>" class="<% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "edit_card"}))){ %>js-show-card-title-edit-form<% }else{ %> js-no-action<%}%>"><%- card.attributes.name %></a><small><%- i18next.t('in list') %></small> <span class="dropdown"><a class="dropdown-toggle <% if(!_.isUndefined(authuser.user)){ %>js-show-move-card-form<%}else{%>js-no-action<%}%>" data-toggle="dropdown" title="<%- list.attributes.name %>" href="#"><%- list.attributes.name %></a>
   <% if(!_.isUndefined(authuser.user)){ %>
 	<ul class="dropdown-menu arrow col-xs-12 panel-body">
-		<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong>Move Card</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
+		<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 		<li class="col-xs-12 divider"></li>
 		<li class="col-xs-12">
 		<form role="form" class="js-move-card" name="MoveCardForm" id="MoveCardForm">
 		  <div class="js-show-move-card-form-response"> </div>
 		  <div class="form-group clearfix panel-body">
-			<label class="sr-only">Move</label>
-			<input type="submit" id="submitListMove" class="btn btn-primary col-xs-12" value="Move" />
+			<label class="sr-only"><%- i18next.t('Move') %></label>
+			<input type="submit" id="submitListMove" class="btn btn-primary col-xs-12" value="<%- i18next.t('Move') %>" />
 		  </div>
 		</form>
 	  </li>
@@ -56,23 +56,23 @@
 				</div>
 				<ul class="list-group-item-text list-inline clearfix">
 				  <li class="">
-					<h4 class="text-muted list-group-item-heading">Members</h4>
+					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Members') %></h4>
 					<ul class="list-inline clearfix" id="js-card-users-list-<%- card.attributes.id %>">
 					<% if(!_.isUndefined(authuser.user)){ %>
 					  <li id="js-card-user-add-container">
-						<div class="dropdown js-member-dropdown"> <a class="dropdown-toggle js-show-add-member-form btn btn-default" role="button" data-toggle="dropdown" title="Add new Members" href="#"> <i class="icon-plus"></i> </a>
+						<div class="dropdown js-member-dropdown"> <a class="dropdown-toggle js-show-add-member-form btn btn-default" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Member') %>" href="#"> <i class="icon-plus"></i> </a>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
-							<li> <div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>Members</strong></span><i class="icon-remove cur"></i></div></li>
+							<li> <div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong><%- i18next.t('Members') %></strong></span><i class="icon-remove cur"></i></div></li>
 							<li class="col-xs-12 divider"></li>
 							<li class="col-xs-12">
 							  <form method="post" class="text-center" name="addMember">
 								<div class="form-group">
-								  <label class="sr-only">Search Member</label>
-								  <input type="text" autocomplete="off" id="inputOrganizationUserSearch" placeholder="Search members" name="email" required class="js-search-users form-control input-sm" title="Search members">
+								  <label class="sr-only"><%- i18next.t('Search Member') %></label>
+								  <input type="text" autocomplete="off" id="inputOrganizationUserSearch" placeholder="<%- i18next.t('Search Members') %>" name="email" required class="js-search-users form-control input-sm" title="<%- i18next.t('Search Members') %>">
 								</div>
 							  </form>
 							</li>
-							<li class="js-organization-member-search-response col-xs-12 small"> Search for a person in <%- SITE_NAME %> by name or email address. </li>
+							<li class="js-organization-member-search-response col-xs-12 small"><%- i18next.t('Search for a person in %s by name or email address.', { postProcess: 'sprintf', sprintf: [SITE_NAME] }) %></li>
 						  </ul>
 						</div>
 					  </li>
@@ -81,11 +81,11 @@
 				  </li>
 				  <% if(!_.isEmpty(role_links.where({slug: "view_card_labels"}))){ %>
 				  <li class="">
-					<h4 class="text-muted list-group-item-heading">Labels</h4>
+					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Labels') %></h4>
 					<ul class="list-inline clearfix js-card-labels-list">
 					<% if(!_.isUndefined(authuser.user)){ %>
 					  <li>
-						<div class="dropdown js-label-dropdown"> <a class="dropdown-toggle js-show-card-label-form btn btn-default" role="button" data-toggle="dropdown" title="Add new Labels" href="#"> <i class="icon-plus"></i></a>
+						<div class="dropdown js-label-dropdown"> <a class="dropdown-toggle js-show-card-label-form btn btn-default" role="button" data-toggle="dropdown" title="<%- i18next.t('Add new Labels') %>" href="#"> <i class="icon-plus"></i></a>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 js-show-card-label-form-response">
 						  </ul>
 						</div>
@@ -96,9 +96,9 @@
 				  <% } %>
 				  <% if (!_.isEmpty(card.card_voters)) { %>
 				  <li class="">
-					<h4 class="text-muted list-group-item-heading">Votes</h4>
+					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Votes') %></h4>
 					<ul class="list-inline clearfix">
-					  <li class="dropdown"><a href="#" title="Add Vote" class="btn btn-default js-show-card-voters-list dropdown-toggle" data-toggle="dropdown"><%- card.card_voters.length %> vote</a>
+					  <li class="dropdown"><a href="#" title="<%- i18next.t('Add Vote') %>" class="btn btn-default js-show-card-voters-list dropdown-toggle" data-toggle="dropdown"><%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %></a>
 						<ul class="dropdown-menu dropdown-menu-left arrow js-show-card-voters-list-response">
 						</ul>
 					  </li>
@@ -107,40 +107,40 @@
 				  <% } %>
 				  <% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL') { %>
 				  <li class="">
-					<h4 class="text-muted list-group-item-heading">Due Date</h4>
+					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Due Date') %></h4>
 					<ul class="list-inline clearfix">
 					<% 
 						var date_time = card.attributes.due_date.split('T');
 						date_time = date_time[0].split(' ');
 					%>
-					  <li class="dropdown"> <a class="btn btn-default dropdown-toggle <% if(!_.isUndefined(authuser.user)){ %>js-edit-card-due-date-form<%}else{%>js-no-action <%}%>" role="button" data-toggle="dropdown" title="Due date" href="#"><%= dateFormat(date_time[0], 'mediumDate')  %></a>
+					  <li class="dropdown"> <a class="btn btn-default dropdown-toggle <% if(!_.isUndefined(authuser.user)){ %>js-edit-card-due-date-form<%}else{%>js-no-action <%}%>" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><%= dateFormat(date_time[0], 'mediumDate')  %></a>
 					  <% if(!_.isUndefined(authuser.user)){ %>
 						<ul class="dropdown-menu arrow col-xs-12 panel-body">
 						  <li>
-							<h4 class="text-center">Due date</h4>
+							<h4 class="text-center"><%- i18next.t('Due Date') %></h4>
 						  </li>
 						  <li class="divider"></li>
 						  <li class="js-edit-card-due-date-form-response">
 							<form class="form-horizontal clearfix js-card-edit-form" name="cardDueDateEditForm" id="cardDueDateEditForm">
 							  <div class="form-group">
 								<div class="col-xs-6">
-								  <label>Date</label>
+								  <label><%- i18next.t('Date') %></label>
 								  <input type="text" class="form-control input-sm js-card-duedate-edit-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" required/>
 								</div>
 								<div class="col-xs-6">
-								  <label>Time</label>
+								  <label><%- i18next.t('Time') %></label>
 								  <input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm:ss" required/>
 								</div>
 							  </div>
 							  <div class="form-group">
 								<div class="col-xs-6">
-								  <label for="save" class="sr-only">Save</label>
-								  <input type="submit" value="Save" id="save" class="btn btn-primary" id="submitCardDueDateEditForm">
+								  <label for="save" class="sr-only"><%- i18next.t('Save') %></label>
+								  <input type="submit" value="<%- i18next.t('Save') %>" id="save" class="btn btn-primary" id="submitCardDueDateEditForm">
 								</div>
 								<% if(card.attributes.due_date != null && card.attributes.due_date != '') { %>
 								<div class="col-xs-6">
-								  <label for="remove" class="sr-only">Remove</label>
-								  <input type="reset" value="Remove" id="js-remove-due-date" class="btn btn-default">
+								  <label for="remove" class="sr-only"><%- i18next.t('Remove') %></label>
+								  <input type="reset" value="<%- i18next.t('Remove') %>" id="js-remove-due-date" class="btn btn-default">
 								</div>
 								<% } %>
 							  </div>
@@ -154,7 +154,7 @@
 				  <% } %>
 				</ul>
 				<div class="list-group-item-text clearfix">
-				  <h4 class="text-muted">Description <a href="#" class="<%if(!_.isUndefined(authuser.user)) {%>js-show-card-desc-edit-form<%}else{%>js-no-action<%}%>" title="Edit">
+				  <h4 class="text-muted"><%- i18next.t('Description') %> <a href="#" class="<%if(!_.isUndefined(authuser.user)) {%>js-show-card-desc-edit-form<%}else{%>js-no-action<%}%>" title="<%- i18next.t('Edit') %>">
 				  <%if(!_.isUndefined(authuser.user)) {%>
 					<i class="icon-pencil"></i>
 				   <% } %>
@@ -168,7 +168,7 @@
 					  <textarea rows="4" id="inputCarddescription" name="description" class="form-control" required><%- card.attributes.description %></textarea>
 					</div>
 					<div class="submit panel-body">
-					  <input type="submit" value="Save" id="submitCardDescriptionEditForm" class="btn btn-primary">
+					  <input type="submit" value="<%- i18next.t('Save') %>" id="submitCardDescriptionEditForm" class="btn btn-primary">
 					  <a class="js-cancel-card-description-edit"><i class="icon-remove btn btn-link"></i></a> </div>
 				  </form>
 				  <% }%>
@@ -176,31 +176,31 @@
 				<div id="js-card-checklists"></div>
 				<% if(!_.isEmpty(card.attachments)){ %>
 				<div class="list-group-item-heading clearfix">
-				  <h3 class="pull-left"> <span class="pull-left"><i class="icon-paper-clip lead"></i></span> Attachment </h3>
+				  <h3 class="pull-left"> <span class="pull-left"><i class="icon-paper-clip lead"></i></span><%- i18next.t('Attachment') %></h3>
 				</div>
 				<div class="list-group-item-text clearfix">
 				  <ul class="list-unstyled clearfix attachment-list" id="js-card-attachments-list"></ul>
 				  <% if(!_.isEmpty(role_links.where({slug: "add_card_attachment"}))){ %>
 				  <div class="clearfix dropdown"> 
 				  <% if(!_.isUndefined(authuser.user)){%>
-				  <a class="dropdown-toggle btn-link h4 js-load-dropbox" role="button" data-toggle="dropdown" title="Add an attachment" href="#"> <span class="text-muted panel-title" >Add an attachment</span> </a>
+				  <a class="dropdown-toggle btn-link h4 js-load-dropbox" role="button" data-toggle="dropdown" title="<%- i18next.t('Add an attachment') %>" href="#"> <span class="text-muted panel-title" ><%- i18next.t('Add an attachment') %></span> </a>
 				  <% } %>
 					<ul class="dropdown-menu arrow col-xs-3">
-						<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong>Attach From... </strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
+						<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Attach From...') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 						<li class="col-xs-12 divider"></li>
-						<li class="col-xs-12"><a href="#" title="Computer" class="js-attachment-computer-open row">Computer</a></li>
-						<li class="col-xs-12"><a href="#" title="Dropbox" class="js-attachment-dropbox-open row">Dropbox</a></li>
+						<li class="col-xs-12"><a href="#" title="<%- i18next.t('Computer') %>" class="js-attachment-computer-open row"><%- i18next.t('Computer') %></a></li>
+						<li class="col-xs-12"><a href="#" title="<%- i18next.t('Dropbox') %>" class="js-attachment-dropbox-open row"><%- i18next.t('Dropbox') %></a></li>
 						<li class="col-xs-12 divider"></li>
 						<li class="col-xs-12">
-						  <span class="col-xs-10 sr-only">Attach a Link</span>
+						  <span class="col-xs-10 sr-only"><%- i18next.t('Attach a Link') %></span>
 						  <form class="js-card-attachment-link-form col-xs-12" method="post" role="form">
 							<div class="form-group row">  
-							  <input type="url" id="AttachList" class="form-control input-sm" name="image_link" placeHolder="Paste any link here" title="Whitespace alone not allowed" required pattern=".*\S+.*">
+							  <input type="url" id="AttachList" class="form-control input-sm" name="image_link" placeHolder="<%- i18next.t('Paste any link here') %>" title="<%- i18next.t('Whitespace alone not allowed') %>" required pattern=".*\S+.*">
 							</div>
 							<div class="form-group row">
 							  <input type="submit" value="Submit" id="submit2" class="btn btn-primary btn-sm">
 							</div>
-							<span class="help-block row small">Tip: You can drag and drop files and links onto cards to upload them.</span>
+							<span class="help-block row small"><%- i18next.t('Tip: You can drag and drop files and links onto cards to upload them.') %></span>
 						  </form>
 					  </li>
 					</ul>
@@ -218,7 +218,7 @@
 		<ul class="list-unstyled navbar-btn row">
 		  <li class="list-group-item list-group-item-info clearfix">
 			<div class="list-group-item-heading">
-				  <h3 class="list-group-item-heading">Activity</h3>
+				  <h3 class="list-group-item-heading"><%- i18next.t('Activity') %></h3>
 				</div>
 			<div class="list-group-item-text">
 			  <ul class="media-list" id="js-board-activities">
@@ -240,8 +240,8 @@
 					  <div class="media-heading clearfix">
 						<div class="form-group list-group-item-text">
 							<div class="col-xs-12 list-group-item-text navbar-right">
-								<label class="sr-only">Comment</label>
-								<textarea id="inputAddComment" class="form-control input-sm js-comment" rows="4" name="comment" placeHolder="Write a comment" required title="Write a comment"></textarea>	
+								<label class="sr-only"><%- i18next.t('Comment') %></label>
+								<textarea id="inputAddComment" class="form-control input-sm js-comment" rows="4" name="comment" placeHolder="<%- i18next.t('Write a comment') %>" required title="<%- i18next.t('Write a comment') %>"></textarea>	
 							</div>
 						</div>
 					  </div>
@@ -251,35 +251,35 @@
 					<div class="col-xs-11 radio pull-right btn-block">
 						<ul class="list-unstyled clearfix col-xs-12">
 							<li class="pull-left radio-inline">
-								<div class="clearfix dropdown js-show-emoji-list-response"> <a class="js-show-emoji-list show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="Add Emoji" href="#"> <span class="text-muted show" >Add Emoji</span> </a>
+								<div class="clearfix dropdown js-show-emoji-list-response"> <a class="js-show-emoji-list show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Emoji') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Emoji') %></span> </a>
 								</div>
 							</li>
 							<li class="pull-left radio radio-inline">
-							  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="Add Card" href="#"> <span class="text-muted show" >Add Card</span> </a>
+							  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Card') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Card') %></span> </a>
 								<ul class="dropdown-menu arrow col-xs-3 list-group">
 								  <li class="col-xs-12 clearfix text-center">
-									<div><span class="col-xs-10"><strong>Add Card</strong></span>
+									<div><span class="col-xs-10"><strong><%- i18next.t('Add Card') %></strong></span>
 									<a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div>
 								  </li>
 								  <li class="col-xs-12 divider"></li>
 								  <li class="col-xs-12 js_activity_card_search_response">
 									  <div class="clearfix">
-										<label class="sr-only">Search Card</label>                            
-										  <input type="text" placeholder="Search Card" name="card" class="js-search-card form-control input-sm  js-no-action" title="Search Card">
+										<label class="sr-only"><%- i18next.t('Search Card') %></label>                            
+										  <input type="text" placeholder="<%- i18next.t('Search Card') %>" name="card" class="js-search-card form-control input-sm  js-no-action" title="<%- i18next.t('Search Card') %>">
 									  </div>
 								  </li>
 								</ul>
 							  </div>
 							</li>
 							<li class="dropdown pull-left radio-inline radio">
-							  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block js-show-members" role="button" data-toggle="dropdown" title="Mention a member" href="#"> <span class="text-muted show" >Mention a member</span> </a>
+							  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block js-show-members" role="button" data-toggle="dropdown" title="<%- i18next.t('Mention a member') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Mention a member') %></span> </a>
 								<ul class="dropdown-menu arrow col-xs-3">
-								  <li class="col-xs-12 clearfix text-center"><div><span class="col-xs-10"><strong>Mention a Members</strong></span> <a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
+								  <li class="col-xs-12 clearfix text-center"><div><span class="col-xs-10"><strong><%- i18next.t('Mention a member') %></strong></span> <a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 								  <li class="col-xs-12 divider"></li>
 								  <li class="col-xs-12 js-comment-member-search-response">
 									  <div class="clearfix">
-										<label class="sr-only">Search Member</label>
-										<input type="text" autocomplete="off" placeholder="Search members" name="member" class="js-search-member form-control input-sm js-no-action" title="Search members">
+										<label class="sr-only"><%- i18next.t('Search Member') %></label>
+										<input type="text" autocomplete="off" placeholder="<%- i18next.t('Search Members') %>" name="member" class="js-search-member form-control input-sm js-no-action" title="<%- i18next.t('Search Members') %>">
 									  </div>
 								  </li>
 								</ul>
@@ -287,9 +287,9 @@
 							</li>
 					    </ul>
 					<div class="pull-left col-xs-12">
-					  <label class="sr-only" for="submit2">submit</label>
+					  <label class="sr-only" for="submit2"><%- i18next.t('Submit') %></label>
 					  <div class="radio-inline">
-						  <input type="submit" id="submitCommentAdd" class="btn btn-primary" value="Comment"/>
+						  <input type="submit" id="submitCommentAdd" class="btn btn-primary" value="<%- i18next.t('Comment') %>"/>
 					  </div>
 					</div>
 				  </div>
@@ -302,7 +302,7 @@
 				<li> </li>
 				<li class="col-xs-12 divider"><hr></li>
 			  </ul>
-			  <div class="text-center clearfix hide" id="js-loader-img"><img src="img/select2-spinner.gif" alt="[Images:Loader]" title="Loading ..." /></div>
+			  <div class="text-center clearfix hide" id="js-loader-img"><img src="img/select2-spinner.gif" alt="[Images:Loader]" title="<%- i18next.t('Loading...') %>" /></div>
 			  <ul class="media-list col-xs-12 clearfix btn-block" id="js-card-activities-<%= card.attributes.id%>">
 			  </ul>
 			</div>
@@ -311,7 +311,7 @@
 		</div>
 	  </div>
   </div>
-  <div class="drag-drop">Drop Files Here</div>
+  <div class="drag-drop"><%- i18next.t('Drop Files Here') %></div>
     
   </div>
   <!-- Side Menu block start -->
@@ -320,68 +320,68 @@
   <a aria-expanded="true" data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle label"> <i class="icon-cog h3"></i></a>
   <ul role="menu" class="dropdown-menu arrow">
 	  <li class="dropdown-submenu dropdown"> 
-		<a href="#" title="Add" class="dropdown-toggle js-open-popover" data-toggle="dropdown" >Add</a>
+		<a href="#" title="<%- i18next.t('Add') %>" class="dropdown-toggle js-open-popover" data-toggle="dropdown" ><%- i18next.t('Add') %></a>
 		<ul class="dropdown-menu">
-		<li class="dropdown"> <a class="dropdown-toggle js-show-card-due-date-form" role="button" data-toggle="dropdown" title="Due date" href="#">Due date</a>
+		<li class="dropdown"> <a class="dropdown-toggle js-show-card-due-date-form" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><%- i18next.t('Due Date') %></a>
 		  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
-			<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong>Due date</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
+			<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Due Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 			<li class="col-xs-12 divider"></li>
 			<li class="js-show-card-due-date-form-response col-xs-12"> </li>
 		  </ul>
 		</li>
 		<% if(!_.isEmpty(role_links.where({slug: "add_card_user"}))){ %>
-			<li class="dropdown"><a data-toggle="dropdown" class="dropdown-toggle js-show-add-member-form js-card-header-action" title="Members" href="#">Members</a>
+			<li class="dropdown"><a data-toggle="dropdown" class="dropdown-toggle js-show-add-member-form js-card-header-action" title="<%- i18next.t('Members') %>" href="#"><%- i18next.t('Members') %></a>
 				  <ul class="dropdown-menu arrow">
 					<li class="col-xs-12 text-center clearfix">
-					  <div><span class="col-xs-10"><strong>Members</strong></span> <a href="#" class="js-close-popover pull-right"><i class="icon-remove"></i></a></div>
+					  <div><span class="col-xs-10"><strong><%- i18next.t('Members') %></strong></span> <a href="#" class="js-close-popover pull-right"><i class="icon-remove"></i></a></div>
 					</li>
 					<li class="col-xs-12 divider"></li>
 					<li class="col-xs-12">
 					  <form method="post" class="text-center" name="addMember">
 						<div class="form-group">
-						  <label class="sr-only">Search Member</label>
-						  <input type="text" autocomplete="off" id="inputOrganizationUserSearch" placeholder="Search members" name="email" required class="js-search-users form-control input-sm" title="Search members">
+						  <label class="sr-only"><%- i18next.t('Search Member') %></label>
+						  <input type="text" autocomplete="off" id="inputOrganizationUserSearch" placeholder="<%- i18next.t('Search Members') %>" name="email" required class="js-search-users form-control input-sm" title="<%- i18next.t('Search Members') %>">
 						</div>
 					  </form>
 					</li>
-					<li class="clearfix js-organization-member-search-response col-xs-12 small"> Search for a person in <%- SITE_NAME %> by name or email address. </li>
+					<li class="clearfix js-organization-member-search-response col-xs-12 small"><%- i18next.t('Search for a person in %s by name or email address.', { postProcess: 'sprintf', sprintf: [SITE_NAME] }) %></li>
 				  </ul>
 			</li>
 		<% } %>
 		<% if(!_.isEmpty(role_links.where({slug: "add_labels"}))){ %>
-			<li class="dropdown"> <a class="dropdown-toggle js-show-card-label-form js-card-header-action" role="button" data-toggle="dropdown" title="Labels" href="#">Labels</a>
+			<li class="dropdown"> <a class="dropdown-toggle js-show-card-label-form js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Labels') %>" href="#"><%- i18next.t('Labels') %></a>
 				<ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 js-show-card-label-form-response">
 				</ul>
 			</li>
 		<% } %>
 		<% if(!_.isEmpty(role_links.where({slug: "add_checklists"}))){ %>
-		    <li class="dropdown"> <a class="dropdown-toggle js-show-checklist-add-form" role="button" data-toggle="dropdown" title="Checklist" href="#">Checklist</a>
+		    <li class="dropdown"> <a class="dropdown-toggle js-show-checklist-add-form" role="button" data-toggle="dropdown" title="<%- i18next.t('Checklist') %>" href="#"><%- i18next.t('Checklist') %></a>
 		      <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
-				<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong>Add Checklist</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
+				<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Add Checklist') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 		        <li class="col-xs-12 divider"></li>
 				<li class="col-xs-12 js-checklist-add-form-response"> </li>
 		      </ul>
 		    </li>
 	    <% } %>
 		<% if(!_.isEmpty(role_links.where({slug: "edit_card"}))){ %>
-			<li class="dropdown"> <a class="js-show-side-card-title-edit-form" role="button" data-toggle="dropdown" title="Checklist" href="#">Info</a>
+			<li class="dropdown"> <a class="js-show-side-card-title-edit-form" role="button" data-toggle="dropdown" title="<%- i18next.t('Checklist') %>" href="#"><%- i18next.t('Info') %></a>
 			  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
-				<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong>Edit Card Info</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
+				<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Edit Card Info') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 				<li class="col-xs-12 divider"></li>
 				<li class="col-xs-12 js-show-side-card-title-edit-form-response">
 				  <form class="js-card-edit-form" method="POST">
 					<div class="form-group">
-					  <label for="cardTitle<%- card.id%>">Title</label>
+					  <label for="cardTitle<%- card.id%>"><%- i18next.t('Title') %></label>
 					  <input type="text" class="form-control" id="cardTitle<%- card.id%>" name="name" data-format="hh:mm:ss" value="<%- card.attributes.name %>"/>
 					</div>
 					<div class="form-group">
-					  <label for="cardDescription<%- card.id%>">Description</label>
+					  <label for="cardDescription<%- card.id%>"><%- i18next.t('Description') %></label>
 					  <textarea name="description" rows="3" class="form-control" id="cardDescription<%- card.id%>"><%- card.attributes.description %></textarea>
 					</div>
 					<div class="form-group">
 					  <div class="col-xs-6 nav">
-						<label for="save" class="sr-only">Save</label>
-						<input type="submit" value="Save" id="save" class="btn btn-primary" id="submitCardInfoEditForm">
+						<label for="save" class="sr-only"><%- i18next.t('Save') %></label>
+						<input type="submit" value="<%- i18next.t('Save') %>" id="save" class="btn btn-primary" id="submitCardInfoEditForm">
 					  </div>
 					</div>
 				  </form>
@@ -390,23 +390,23 @@
 			</li>
 			<% } %>
 			<% if(!_.isEmpty(role_links.where({slug: "add_card_attachment"}))){ %>
-			<li class="dropdown"> <a class="dropdown-toggle js-load-dropbox js-card-header-action" role="button" data-toggle="dropdown" title="Attachment" href="#">Attachment</a>
+			<li class="dropdown"> <a class="dropdown-toggle js-load-dropbox js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Attachment') %>" href="#"><%- i18next.t('Attachment') %></a>
 			  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
-			   <li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong>Attach From... </strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
+			   <li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Attach From...') %> </strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 				<li class="col-xs-12 divider"></li>
-				<li class="col-xs-12"><a href="#" title="Computer" class="js-attachment-computer-open row">Computer</a></li>
-				<li class="col-xs-12"><a href="#" title="Dropbox" class="js-attachment-dropbox-open row">Dropbox</a></li>
+				<li class="col-xs-12"><a href="#" title="<%- i18next.t('Computer') %>" class="js-attachment-computer-open row"><%- i18next.t('Computer') %></a></li>
+				<li class="col-xs-12"><a href="#" title="<%- i18next.t('Dropbox') %>" class="js-attachment-dropbox-open row"><%- i18next.t('Dropbox') %></a></li>
 				<li class="col-xs-12 divider"></li>
 				<li class="col-xs-12">
-				  <span class="col-xs-10 sr-only">Attach a Link</span>
+				  <span class="col-xs-10 sr-only"><%- i18next.t('Attach a Link') %></span>
 				  <form class="js-card-attachment-link-form col-xs-12" method="post" role="form">
 					<div class="form-group row">
-					  <input type="url" class="form-control input-sm"   id="" name="image_link" placeHolder="Paste any link here" title="Whitespace alone not allowed" required pattern=".*\S+.*">
+					  <input type="url" class="form-control input-sm"   id="" name="image_link" placeHolder="<%- i18next.t('Paste any link here') %>" title="<%- i18next.t('Whitespace alone not allowed') %>" required pattern=".*\S+.*">
 					</div>
 					<div class="form-group row">
-					  <input type="submit" value="Submit" id="submit2" class="btn btn-primary btn-sm">
+					  <input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary btn-sm">
 					</div>
-					<span class="help-block row small">Tip: You can drag and drop files and links onto cards to upload them.</span>
+					<span class="help-block row small"><%- i18next.t('Tip: You can drag and drop files and links onto cards to upload them.') %></span>
 				  </form>
 				</li>
 			  </ul>
@@ -414,38 +414,38 @@
 			<% } %>
 		</ul>
 	  </li>
-	  <li class="dropdown-submenu dropdown"> <a href="#" title="Actions" class="dropdown-toggle js-open-popover" data-toggle="dropdown">Actions</a>
+	  <li class="dropdown-submenu dropdown"> <a href="#" title="<%- i18next.t('Actions') %>" class="dropdown-toggle js-open-popover" data-toggle="dropdown"><%- i18next.t('Actions') %></a>
 		  <ul class="dropdown-menu">
-			<li class="dropdown"> <a class="dropdown-toggle js-show-move-card-form js-card-header-action" role="button" data-toggle="dropdown" title="Move " href="#">Move</a>
+			<li class="dropdown"> <a class="dropdown-toggle js-show-move-card-form js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><%- i18next.t('Move') %></a>
 			  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
-				<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong>Move Card</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
+				<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 				<li class="col-xs-12 divider"></li>
 				<li class="col-xs-12">
 				  <form role="form" class="js-move-card" name="MoveCardForm" id="MoveCardForm">
 					<div class="js-show-move-card-form-response"> </div>
 					<div class="form-group clearfix panel-body">
-					  <label class="sr-only">Move</label>
-					  <input type="submit" id="submitListMove" class="btn btn-primary col-xs-12" value="Move" />
+					  <label class="sr-only"><%- i18next.t('Move') %></label>
+					  <input type="submit" id="submitListMove" class="btn btn-primary col-xs-12" value="<%- i18next.t('Move') %>" />
 					</div>
 				  </form>
 				</li>
 			  </ul>
 			</li>
 			<% if(!_.isEmpty(role_links.where({slug: "copy_card"}))  && !is_offline_data){ %>
-				<li class="dropdown js-hide-on-offline"> <a class="dropdown-toggle js-show-copy-card-form" role="button" data-toggle="dropdown" title="Copy" href="#">Copy</a>
+				<li class="dropdown js-hide-on-offline"> <a class="dropdown-toggle js-show-copy-card-form" role="button" data-toggle="dropdown" title="<%- i18next.t('Copy') %>" href="#"><%- i18next.t('Copy') %></a>
 				  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 pre-scrollable vertical-scrollbar">
-					<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong>Copy Card</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
+					<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Copy Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 					<li class="col-xs-12 divider"></li>
 					<li class="col-xs-12">
 					  <form role="form" method="post" class="js-copy-card">
 						<div class="form-group">
-						  <label for="card-title">Title</label>
+						  <label for="card-title"><%- i18next.t('Title') %></label>
 						  <textarea id="card-title" class="form-control" rows="4" name="name"><%- card.attributes.name%></textarea>
 						</div>
 						<div class="js-show-copy-card-form-response"> </div>
 						<div class="form-group clearfix panel-body">
-						  <label class="sr-only">Create card</label>
-						  <input type="submit" class="btn btn-primary col-xs-12" value="Create card">
+						  <label class="sr-only"><%- i18next.t('Create card') %></label>
+						  <input type="submit" class="btn btn-primary col-xs-12" value="<%- i18next.t('Create card') %>">
 						</div>
 					  </form>
 					</li>
@@ -453,7 +453,7 @@
 				</li>
 			<% } %>
 			<% if(!_.isEmpty(role_links.where({slug: "subscribe_card"}))){ %>
-			    <li> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title=" Subscribe " href="">Subscribe
+			    <li> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- i18next.t('Subscribe') %> " href=""><%- i18next.t('Subscribe') %>
 		       <% if(!_.isEmpty(cards_subscribers)){ %>
 			    <i class="icon-ok"></i>
 		      <% } %>
@@ -470,34 +470,34 @@
 			%>
 		      <% if(_.isEmpty(voted_user)){  %>
 		      <% if(!_.isEmpty(role_links.where({slug: "vote_card"}))){ %>
-		      <a class="panel-heading show js-add-card-vote" title="Vote" href="#">Vote</a>
+		      <a class="panel-heading show js-add-card-vote" title="<%- i18next.t('Vote') %>" href="#"><%- i18next.t('Vote') %></a>
 			  <% } %>
 			  <% } else{ %>
 			  <% if(!_.isEmpty(role_links.where({slug: "unvote_card"}))){ %>
-			  <a class="panel-heading show js-delete-card-vote"" title="Unvote" href="#" data-id="<%- voted_user.id %>"> <span class="text-muted show panel-title" ><i class="icon-thumbs-up-alt"></i> Unvote </span> </a>
+			  <a class="panel-heading show js-delete-card-vote"" title="<%- i18next.t('Unvote') %>" href="#" data-id="<%- voted_user.id %>"> <span class="text-muted show panel-title" ><i class="icon-thumbs-up-alt"></i><%- i18next.t('Unvote') %></span> </a>
 			  <% } %>
 			  <% } }%>
 			</li>
 		 <% } %>
-			<li> <a class="panel-heading show <% if(card.attributes.is_archived == false){ %>js-archive-card<% }else{ %> js-card-send-to-board<% } %>" title="<% if(card.attributes.is_archived == false){%>Archive<% }else{ %>Send to board<%}%>" href="">
+			<li> <a class="panel-heading show <% if(card.attributes.is_archived == false){ %>js-archive-card<% }else{ %> js-card-send-to-board<% } %>" title="<% if(card.attributes.is_archived == false){%><%- i18next.t('Archive') %><% }else{ %><%- i18next.t('Send to board') %><%}%>" href="">
 		      <% if(card.attributes.is_archived == false){ %>
-			      Archive
+			      <%- i18next.t('Archive') %>
 		      <% }else{ %>
-				  Send to board
+				  <%- i18next.t('Send to board') %>
 		      <% } %>
 				</a> 
 			</li>
 		    <% if(card.attributes.is_archived == true && !_.isEmpty(role_links.where({slug: "delete_card"}))){ %>
 			<li >
 			  <ul class="list-unstyled panel-body">
-				<li class="dropdown"> <a class="col-xs-12 btn btn-primary whitec dropdown-toggle js-open-dropdown" href="#" data-toggle="dropdown"> <span><i class="icon-archive"></i></span> <span>Delete</span> </a>
+				<li class="dropdown"> <a class="col-xs-12 btn btn-primary whitec dropdown-toggle js-open-dropdown" href="#" data-toggle="dropdown"> <span><i class="icon-archive"></i></span> <span><%- i18next.t('Delete') %></span> </a>
 				  <ul class="dropdown-menu dropdown-menu-left arrow">
 					<li class="js-dropdown-popup dropdown-popup">
-					  <div class="clearfix text-center col-xs-12"> <span class="col-xs-10"><strong>Delete Card?</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a> </div>
+					  <div class="clearfix text-center col-xs-12"> <span class="col-xs-10"><strong><%- i18next.t('Delete Card') %>?</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a> </div>
 					  <div class="col-xs-12 divider"></div>
 					  <div class="col-xs-12">
-						<p>All actions will be removed from the activity feed and you won\'t be able to reopen the card. There is no undo. You can archive a card to remove it from the board and preserve the activity. </p>
-						<a class="js-delete-card btn  btn-primary" title="Delete">Delete</a> </div>
+						<p><%- i18next.t('All actions will be removed from the activity feed and you won\'t be able to reopen the card. There is no undo. You can archive a card to remove it from the board and preserve the activity.') %></p>
+						<a class="js-delete-card btn  btn-primary" title="<%- i18next.t('Delete') %>"><%- i18next.t('Delete') %></a> </div>
 					</li>
 				  </ul>
 				</li>
@@ -508,15 +508,22 @@
 	  </li>
 	  <li class="dropdown js-more-dropdown">
 	  <div class="col-xs-12 divider"></div>
-	  <a class="show btn btn-link js-more-menu quiet-button" data-toggle="dropdown" title="More options share, print, export, and delete." href="#"> Share and more...</a>
+	  <a class="show btn btn-link js-more-menu quiet-button" data-toggle="dropdown" title="<%- i18next.t('More options share, print, export, and delete.') %>" href="#"><%- i18next.t('Share and more...') %></a>
 		<ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
-			<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong>More</strong></span> <a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
+			<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('More') %></strong></span> <a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 			<li class="col-xs-12 divider"></li>       
 			<li class="col-xs-12">
-			  <p class="text-muted"> <span class="show"> Card #<%- card.attributes.id %> </span> <span class="show">Link to this card</span> </p>
+			  <p class="text-muted"> <span class="show"> Card #<%- card.attributes.id %> </span> <span class="show"><%- i18next.t('Link to this card') %></span> </p>
 			  <form role="form">
 				<div class="form-group">
 				  <input type="text" value="<%= window.location.origin %><%= window.location.pathname %>#/board/<%- card.attributes.board_id %>/card/<%- card.attributes.id %>" class="form-control input-sm js-select-card-url" readonly="readonly">
+				</div>
+				<div class="form-group">
+					<% var imap_email = IMAP_EMAIL.split('@');
+					   var card_email = imap_email[0] + '+' + card.attributes.board_id + '+' + card.attributes.id + '+' + calcMD5(SecuritySalt + card.attributes.board_id + card.attributes.id + SITE_NAME)+'@'+imap_email[1];
+					%>
+				  <span class="show"><%- i18next.t("Email for this card") %></span>
+				  <input readonly="readonly" class="form-control" value="<%- card_email %>">
 				</div>
 			  </form>
 			</li>

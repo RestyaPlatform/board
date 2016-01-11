@@ -55,16 +55,18 @@ App.ListView = Backbone.View.extend({
         }
         _.bindAll(this, 'render', 'renderCardsCollection', 'removeRender');
         this.model.bind('change:name', this.render);
-        this.model.collection.board.labels.bind('add', this.renderCardsCollection);
-        this.model.collection.board.attachments.bind('add', this.renderCardsCollection);
-        this.model.collection.board.attachments.bind('remove', this.renderCardsCollection);
-        this.model.collection.board.cards.bind('add', this.renderCardsCollection);
-        this.model.collection.board.cards.bind('add:name', this.renderCardsCollection);
-        this.model.collection.board.cards.bind('add:id', this.renderCardsCollection);
-        this.model.collection.board.cards.bind('remove', this.renderCardsCollection);
-        this.model.collection.board.cards.bind('change:position', this.renderCardsCollection);
-        this.model.collection.board.cards.bind('change:is_archived', this.renderCardsCollection);
-        this.model.collection.board.cards.bind('change:list_id', this.renderCardsCollection);
+        if (!_.isUndefined(this.model.collection)) {
+            this.model.collection.board.labels.bind('add', this.renderCardsCollection);
+            this.model.collection.board.attachments.bind('add', this.renderCardsCollection);
+            this.model.collection.board.attachments.bind('remove', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('add', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('add:name', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('add:id', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('remove', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:position', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:is_archived', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:list_id', this.renderCardsCollection);
+        }
         this.model.bind('remove', this.removeRender);
     },
     template: JST['templates/list'],
@@ -677,8 +679,11 @@ App.ListView = Backbone.View.extend({
             list_id: list_id
         });
         _.each(archived_cards, function(archived_card) {
-            self.model.collection.board.cards.get(archived_card.attributes.id).set('is_archived', 1);
+            self.model.collection.board.cards.get(archived_card.attributes.id).set('is_archived', 1, {
+                silent: true
+            });
         });
+        this.renderCardsCollection();
         var card = new App.Card();
         card.set('id', list_id);
         card.url = api_url + 'boards/' + this.board.id + '/lists/' + list_id + '/cards.json';
@@ -709,7 +714,7 @@ App.ListView = Backbone.View.extend({
                 placeholder: 'card-list-placeholder',
                 appendTo: document.body,
                 dropOnEmpty: true,
-                cursor: 'grabbing',
+                cursor: 'grab',
                 helper: 'clone',
                 tolerance: 'pointer',
                 scrollSensitivity: 100,
@@ -725,35 +730,101 @@ App.ListView = Backbone.View.extend({
                 },
                 stop: function(ev, ui) {
                     $('.js-show-modal-card-view ').addClass('cur');
+                    clearInterval(App.sortable.setintervalid_horizontal);
+                    clearInterval(App.sortable.setintervalid_vertical);
+                    App.sortable.is_create_setinterval_horizontal = true;
+                    App.sortable.is_create_setinterval_vertical = true;
+                    App.sortable.previous_offset_horizontal = 0;
+                    App.sortable.previous_offset_vertical = 0;
                 },
                 over: function(ev, ui) {
+                    if ($(ui.placeholder).parents('.js-board-list-cards').attr('id') == App.sortable.previous_id) {
+                        clearInterval(App.sortable.setintervalid_horizontal);
+                    }
                     var scrollLeft = 0;
-                    if ((($(window).width() - ui.offset.left) < 520) || (ui.offset.left > $(window).width())) {
-                        scrollLeft = $('#js-board-lists').stop().scrollLeft() + ($(window).width() - ui.offset.left);
-                        $('#js-board-lists').animate({
-                            scrollLeft: scrollLeft
-                        }, 800);
-                    } else if (ui.offset.left <= 260) {
-                        scrollLeft = $('#js-board-lists').stop().scrollLeft() - ($(window).width() - ui.offset.left);
-                        $('#js-board-lists').animate({
-                            scrollLeft: scrollLeft
-                        }, 800);
+                    var list_per_page = Math.floor($(window).width() / 270);
+                    if (App.sortable.previous_offset_horizontal !== 0 && App.sortable.previous_offset_horizontal != ui.offset.left) {
+                        if (App.sortable.previous_offset_horizontal > ui.offset.left) {
+                            App.sortable.is_moving_right = false;
+                        } else {
+                            App.sortable.is_moving_right = true;
+                        }
                     }
-
+                    if (App.sortable.previous_move_horizontal !== App.sortable.is_moving_right) {
+                        clearInterval(App.sortable.setintervalid_horizontal);
+                        App.sortable.is_create_setinterval_horizontal = true;
+                    }
+                    if (App.sortable.is_moving_right === true && ui.offset.left > (list_per_page - 1) * 230) {
+                        if (App.sortable.is_create_setinterval_horizontal) {
+                            App.sortable.setintervalid_horizontal = setInterval(function() {
+                                scrollLeft = parseInt($('#js-board-lists').scrollLeft()) + 50;
+                                $('#js-board-lists').animate({
+                                    scrollLeft: scrollLeft
+                                }, 10);
+                            }, 100);
+                            App.sortable.is_create_setinterval_horizontal = false;
+                        }
+                    } else if (App.sortable.is_moving_right === false && ui.offset.left < (list_per_page - 1) * 100) {
+                        if (App.sortable.is_create_setinterval_horizontal) {
+                            App.sortable.setintervalid_horizontal = setInterval(function() {
+                                scrollLeft = parseInt($('#js-board-lists').scrollLeft()) - 50;
+                                $('#js-board-lists').animate({
+                                    scrollLeft: scrollLeft
+                                }, 10);
+                            }, 100);
+                            App.sortable.is_create_setinterval_horizontal = false;
+                        }
+                    }
+                    App.sortable.previous_offset_horizontal = ui.offset.left;
+                    App.sortable.previous_move_horizontal = App.sortable.is_moving_right;
                 },
-                change: function(event, ui) {
+                sort: function(event, ui) {
+                    App.sortable.previous_id = $(ui.placeholder).parents('.js-board-list-cards').attr('id');
                     var scrollTop = 0;
-                    if ((($(window).height() - ui.offset.top) < 350) || (ui.offset.top > $(window).height())) {
-                        scrollTop = $(this).scrollTop() + ($(window).height() - ui.offset.top);
-                        $(this).stop().animate({
-                            scrollTop: scrollTop
-                        }, 800);
-                    } else if (ui.offset.top <= 230) {
-                        scrollTop = $(this).scrollTop() - ($(window).height() - ui.offset.top);
-                        $(this).stop().animate({
-                            scrollTop: scrollTop
-                        }, 800);
+                    var decrease_height = 0;
+                    var list_height = $('#' + App.sortable.previous_id).height();
+                    var additional_top = parseInt($('#js-board-lists').position().top) + parseInt($('#' + App.sortable.previous_id).position().top);
+                    var total_top = parseInt(list_height) + parseInt(additional_top);
+                    if (ui.placeholder.height() > list_height) {
+                        decrease_height = parseInt(ui.placeholder.height()) - parseInt(list_height);
+                    } else {
+                        decrease_height = parseInt(list_height) - parseInt(ui.placeholder.height());
                     }
+                    var total_top1 = (parseInt($('#js-board-lists').position().top) + parseInt(ui.placeholder.position().top)) - decrease_height;
+                    if (App.sortable.previous_offset_vertical !== 0) {
+                        if (App.sortable.previous_offset_vertical > ui.offset.top) {
+                            App.sortable.is_moving_top = false;
+                        } else {
+                            App.sortable.is_moving_top = true;
+                        }
+                    }
+                    if (App.sortable.previous_move_vertical !== App.sortable.is_moving_top) {
+                        clearInterval(App.sortable.setintervalid_vertical);
+                        App.sortable.is_create_setinterval_vertical = true;
+                    }
+                    if (App.sortable.is_moving_top === true && (ui.offset.top > total_top || (total_top1 > 0 && ui.offset.top > total_top1))) {
+                        if (App.sortable.is_create_setinterval_vertical) {
+                            App.sortable.setintervalid_vertical = setInterval(function() {
+                                scrollTop = parseInt($('#' + App.sortable.previous_id).scrollTop()) + 50;
+                                $('#' + App.sortable.previous_id).animate({
+                                    scrollTop: scrollTop
+                                }, 50);
+                            }, 100);
+                            App.sortable.is_create_setinterval_vertical = false;
+                        }
+                    } else if (App.sortable.is_moving_top === false && ui.offset.top < (additional_top - 20)) {
+                        if (App.sortable.is_create_setinterval_vertical) {
+                            App.sortable.setintervalid_vertical = setInterval(function() {
+                                scrollTop = parseInt($('#' + App.sortable.previous_id).scrollTop()) - 50;
+                                $('#' + App.sortable.previous_id).animate({
+                                    scrollTop: scrollTop
+                                }, 50);
+                            }, 100);
+                            App.sortable.is_create_setinterval_vertical = false;
+                        }
+                    }
+                    App.sortable.previous_offset_vertical = ui.offset.top;
+                    App.sortable.previous_move_vertical = App.sortable.is_moving_top;
                 }
             });
         }
@@ -1147,7 +1218,7 @@ App.ListView = Backbone.View.extend({
             var current_position = this.model.collection.indexOf(this.model) + 1;
             for (var i = 1; i <= board_lists.length; i++) {
                 if (self.model.attributes.board_id == board.attributes.id && i == current_position) {
-                    content_position += '<option value="' + i + '" selected="selected">' + i + '(current)</option>';
+                    content_position += '<option value="' + i + '" selected="selected">' + i + i18next.t('(current)') + '</option>';
                 } else {
                     content_position += '<option value="' + i + '">' + i + '</option>';
                 }
@@ -1181,7 +1252,7 @@ App.ListView = Backbone.View.extend({
             var current_position = this.model.collection.indexOf(this.model) + 1;
             for (var i = 1; i <= list.attributes.card_count; i++) {
                 if (self.model.attributes.list_id == list.attributes.id && i == current_position) {
-                    content_position += '<option value="' + self.model.attributes.position + '" selected="selected">' + self.model.attributes.position + '(current)</option>';
+                    content_position += '<option value="' + self.model.attributes.position + '" selected="selected">' + self.model.attributes.position + i18next.t('(current)') + '</option>';
                 } else {
                     content_position += '<option value="' + i + '">' + i + '</option>';
                 }
@@ -1213,7 +1284,7 @@ App.ListView = Backbone.View.extend({
         var is_first_list = true;
         board.lists.each(function(list) {
             if (self.model.attributes.list_id == self.model.attributes.id) {
-                content_list += '<option value="' + list.id + '" selected="selected">' + list.attributes.name + '(current)</option>';
+                content_list += '<option value="' + list.id + '" selected="selected">' + list.attributes.name + i18next.t('(current)') + '</option>';
                 is_first_list = true;
             } else {
                 content_list += '<option value="' + list.id + '">' + list.attributes.name + '</option>';

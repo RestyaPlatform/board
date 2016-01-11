@@ -306,10 +306,10 @@ App.BoardView = Backbone.View.extend({
         e.preventDefault();
         var name = $(e.currentTarget).attr('name');
         var value = 'unsubscribe';
-        var content = '<i class="icon-eye-close"></i>Unsubscribe';
+        var content = '<i class="icon-eye-close"></i>' + i18next.t('Unsubscribe');
         if (name == 'unsubscribe') {
             value = 'subscribe';
-            content = '<i class="icon-eye-open"></i>Subscribe';
+            content = '<i class="icon-eye-open"></i>' + i18next.t('Subscribe');
         }
         $(e.currentTarget).attr('name', value);
         $(e.currentTarget).attr('title', value);
@@ -640,6 +640,11 @@ App.BoardView = Backbone.View.extend({
         this.renderListsCollection();
         this.setBoardBackground();
         if (!_.isUndefined(authuser.user)) {
+            var setintervalid = '',
+                is_moving_right = '',
+                previous_offset = 0,
+                previous_move = '',
+                is_create_setinterval = true;
             $('#js-board-lists', this.$el).sortable({
                 containment: 'window',
                 axis: 'x',
@@ -660,21 +665,48 @@ App.BoardView = Backbone.View.extend({
                     $(ev.target).find('.js-list-head').children('div.dropdown').removeClass('open');
                 },
                 stop: function(ev, ui) {
+                    clearInterval(setintervalid);
+                    is_create_setinterval = true;
+                    previous_offset = 0;
                     $(ev.target).find('.js-list-head').addClass('cur-grab');
                 },
                 over: function(ev, ui) {
                     var scrollLeft = 0;
-                    if ((($(window).width() - ui.offset.left) < 520) || (ui.offset.left > $(window).width())) {
-                        scrollLeft = $('#js-board-lists').scrollLeft() + ($(window).width() - ui.offset.left);
-                        $('#js-board-lists').stop().animate({
-                            scrollLeft: scrollLeft
-                        }, 800);
-                    } else if (ui.offset.left <= 260) {
-                        scrollLeft = $('#js-board-lists').scrollLeft() - ($(window).width() - ui.offset.left);
-                        $('#js-board-lists').stop().animate({
-                            scrollLeft: scrollLeft
-                        }, 800);
+                    var list_per_page = Math.floor($(window).width() / 270);
+                    if (previous_offset !== 0 && previous_offset != ui.offset.left) {
+                        if (previous_offset > ui.offset.left) {
+                            is_moving_right = false;
+                        } else {
+                            is_moving_right = true;
+                        }
                     }
+                    if (previous_move !== is_moving_right) {
+                        clearInterval(setintervalid);
+                        is_create_setinterval = true;
+                    }
+                    if (is_moving_right === true && ui.offset.left > (list_per_page - 1) * 270) {
+                        if (is_create_setinterval) {
+                            setintervalid = setInterval(function() {
+                                scrollLeft = parseInt($('#js-board-lists').scrollLeft()) + 50;
+                                $('#js-board-lists').animate({
+                                    scrollLeft: scrollLeft
+                                }, 10);
+                            }, 100);
+                            is_create_setinterval = false;
+                        }
+                    } else if (is_moving_right === false && ui.offset.left < 50) {
+                        if (is_create_setinterval) {
+                            setintervalid = setInterval(function() {
+                                scrollLeft = parseInt($('#js-board-lists').scrollLeft()) - 50;
+                                $('#js-board-lists').animate({
+                                    scrollLeft: scrollLeft
+                                }, 10);
+                            }, 100);
+                            is_create_setinterval = false;
+                        }
+                    }
+                    previous_offset = ui.offset.left;
+                    previous_move = is_moving_right;
                 }
             });
         }
@@ -702,6 +734,18 @@ App.BoardView = Backbone.View.extend({
      *
      */
     renderListsCollection: function() {
+        App.sortable = {};
+        App.sortable.setintervalid_horizontal = '';
+        App.sortable.setintervalid_vertical = '';
+        App.sortable.is_moving_right = '';
+        App.sortable.is_moving_top = '';
+        App.sortable.previous_offset_horizontal = 0;
+        App.sortable.previous_offset_vertical = 0;
+        App.sortable.previous_move_horizontal = '';
+        App.sortable.previous_move_vertical = '';
+        App.sortable.is_create_setinterval_horizontal = true;
+        App.sortable.is_create_setinterval_vertical = true;
+        App.sortable.previous_id = '';
         var self = this;
         var view_list = self.$('#js-add-list-block');
         var list_content = '';
@@ -971,10 +1015,18 @@ App.BoardView = Backbone.View.extend({
         }
         data.is_archived = false;
         data.board_id = self.model.id;
-        if (_.isUndefined(data.clone_list_id)) {
+        var view = '';
+        if (!_.isUndefined(data.clone_list_id)) {
             list.set(data, {
                 silent: true
             });
+            view = new App.ListView({
+                model: list,
+                attributes: {
+                    'data-list_id': list.attributes.id,
+                },
+            });
+            $(view.render().el).insertAfter($(e.target).parents('.js-board-list'));
         }
         list.url = api_url + 'boards/' + self.model.id + '/lists.json';
         list.save(data, {
@@ -998,7 +1050,9 @@ App.BoardView = Backbone.View.extend({
                     }
                     list.set(response.list);
                     list.set('cards', response.list.cards);
-                    self.model.cards.add(response.list.cards);
+                    self.model.cards.add(response.list.cards, {
+                        silent: true
+                    });
                     var i = 1;
                     _.each(response.list.attachments, function(attachment) {
                         var options = {
@@ -1078,15 +1132,15 @@ App.BoardView = Backbone.View.extend({
                 });
                 App.boards.get(list.attributes.board_id).lists.add(list);
                 list.board_users = self.model.board_users;
-                var view = new App.ListView({
-                    model: list,
-                    attributes: {
-                        'data-list_id': list.attributes.id,
-                    },
-                });
                 if (!_.isUndefined(data.clone_list_id)) {
                     $(view.render().el).insertAfter($(e.target).parents('.js-board-list'));
                 } else {
+                    view = new App.ListView({
+                        model: list,
+                        attributes: {
+                            'data-list_id': list.attributes.id,
+                        },
+                    });
                     $(view.render().el).insertBefore($('#js-add-list-block'));
                 }
             }

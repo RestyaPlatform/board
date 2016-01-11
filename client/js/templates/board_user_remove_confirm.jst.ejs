@@ -1,6 +1,6 @@
 <li>
 	<div class="col-xs-12">
-		<h4>Remove Member?
+		<h4><%- i18next.t('Remove Member') %>?
 			<span class="pull-right">
 				<a class="js-close-popover" href="#"><i class="icon-remove"></i></a>
 			</span>
@@ -9,11 +9,12 @@
 	</div>
 	<div class="col-xs-12">
 		<form class="normal" name="BoardUserForm" id="BoardUserForm">
-			<div class="h5">Are you sure?</div>
+			<div class="h5"><%- i18next.t('Are you sure you want to do this action') %>?</div>
 			<ul class="dropdown-menu dropdown-list show">
 				<li>
 					<a class="js-delete-board-member" data-board_user_id="<%- board_user.attributes.id %>" href="#">
-					 Remove <%- board_user.attributes.username %> from <%- board_user.attributes.board_name %> Boards? The member will be removed from all cards on this board. 
+					 
+					 <%- i18next.t('Remove %s from %s Boards? The member will be removed from all cards on this board.', { postProcess: 'sprintf', sprintf: [board_user.attributes.username,board_user.attributes.board_name]}) %>
 				 </li>
 			</ul>
 		</form>

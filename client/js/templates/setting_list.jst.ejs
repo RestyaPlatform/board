@@ -58,7 +58,7 @@
 									<hr>
 									<fieldset>
 										<legend>
-											<span class="show h4">LDAP configuration</span>
+											<span class="show h4"><%- i18next.t('LDAP configuration') %></span>
 										</legend>
 									</fieldset>
 								<% } %>
@@ -87,13 +87,28 @@
 							</div>
 						<% } %>
 						<% } else {%>
-							<div class="form-group">
-							  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- setting.label %></label>
-							  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
-								<input type="text" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" class="form-control" value="<%- setting.value %>" />
-								<div><span class="help-block"><%= setting.description %></span></div>
-							  </div>
-							</div>
+							<% if(setting.id == 31){ %>
+								<div class="form-group">
+								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- setting.label %></label>
+								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
+									<select name="<%- setting.name %>" id="inputSetting<%- setting.id %>" class="form-control">
+									 <% _.each(window.sessionStorage.getItem('languages').split(','), function(language) { %>
+											<% var lang = language.split(':'); %>
+											<option <% if(lang[0].replace(/[^a-z\d\s]+/gi, '') === setting.value){ %>selected <% }%> value="<%- lang[0].replace(/[^a-z\d\s]+/gi, '') %>"><%- lang[1].replace(/[^a-z\d\s]+/gi, '') %></option>
+									 <% }); %>
+									</select>
+									<div><span class="help-block"><%= setting.description %></span></div>
+								  </div>
+								</div>
+							<% } else {%>
+								<div class="form-group">
+								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- setting.label %></label>
+								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
+									<input type="text" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" class="form-control" value="<%- setting.value %>" />
+									<div><span class="help-block"><%= setting.description %></span></div>
+								  </div>
+								</div>
+							<% } %>
 						<% } %>
 						<% 
 							if((setting.setting_category_id == 4 || setting.setting_category_id == 5) && (current_server_detail_fields_count == server_detail_fields_count || current_connection_detail_fields_count == connection_detail_fields_count)){ 
@@ -106,9 +121,9 @@
 						<%}%>
 					<% }); %>
 					  <div class="form-group">
-						<label for="submit2" class="sr-only <% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12">submit</label>
+						<label for="submit2" class="sr-only <% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t('Submit') %></label>
 						<div class="col-sm-8">
-						<input type="submit" value="Submit" id="submit2" class="btn btn-primary">
+						<input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary">
 						</div>
 					  </div>
 					</form>

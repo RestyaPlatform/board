@@ -65,7 +65,9 @@ App.LoginView = Backbone.View.extend({
                     auth_response.board_id = response.board_id;
                     auth_response.user.notify_count = response.user.notify_count;
                     auth_response.user.last_activity_id = response.user.last_activity_id;
+                    auth_response.user.language = response.user.language;
                     window.sessionStorage.setItem('auth', JSON.stringify(auth_response));
+                    i18next.changeLanguage(response.user.language);
                     api_token = response.access_token;
                     var links = JSON.parse(response.links);
                     window.sessionStorage.setItem('links', response.links);
@@ -78,17 +80,15 @@ App.LoginView = Backbone.View.extend({
                     this.headerView = new App.HeaderView({
                         model: model
                     });
-                    $('#content').html('');
                     $('.company').addClass('hide');
                     $('#header').html(this.headerView.el);
                     app.navigate('#/boards', {
                         trigger: true,
                         replace: true
                     });
-                    //self.flash('success', 'Wellcome ' + authuser.user.username);
                 } else {
                     $('input#inputPassword', target).val('');
-                    self.flash('danger', response.error);
+                    self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
                 }
 
             }
@@ -117,6 +117,8 @@ App.LoginView = Backbone.View.extend({
     changeFavicon: function(count) {
         if (!_.isUndefined(count) && count !== '0') {
             favicon.badge(count);
+        } else {
+            favicon.badge(0);
         }
     }
 });

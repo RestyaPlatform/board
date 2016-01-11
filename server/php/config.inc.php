@@ -15,7 +15,10 @@
 define('R_DEBUG', false);
 ini_set('display_errors', R_DEBUG);
 define('R_API_VERSION', 1);
-define('APP_PATH', dirname(dirname(dirname(dirname(__FILE__)))));
+if (!defined('JSON_PRETTY_PRINT')) {
+    define('JSON_PRETTY_PRINT', 128);
+}
+define('APP_PATH', dirname(dirname(dirname(__FILE__))));
 // While changing below oAuth credentials, have to update in oauth_clients table also.
 if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
     define('OAUTH_CLIENTID', $_SERVER['PHP_AUTH_USER']);
@@ -42,7 +45,7 @@ if (!file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
     fclose($fh);
 }
 $db_lnk = pg_connect('host=' . R_DB_HOST . ' port=' . R_DB_PORT . ' dbname=' . R_DB_NAME . ' user=' . R_DB_USER . ' password=' . R_DB_PASSWORD . ' options=--client_encoding=UTF8') or die('Database could not connect');
-$settings = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE setting_category_id in (1,2,3) OR setting_category_parent_id in (1,2,3)', array());
+$settings = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE setting_category_id in (1,2,3,10) OR setting_category_parent_id in (1,2,3)', array());
 while ($setting = pg_fetch_assoc($settings)) {
     if ($setting['name'] == 'LDAP_LOGIN_ENABLED' || $setting['name'] == 'STANDARD_LOGIN_ENABLED') {
         $setting_array = array(

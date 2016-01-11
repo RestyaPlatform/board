@@ -20,10 +20,10 @@ $_server_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? '
 $_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST']; // http://localhost
 header('Access-Control-Allow-Origin: ' . $_server_domain_url);
 header('Access-Control-Allow-Methods: *');
-require_once 'config.inc.php';
-require_once 'libs/vendors/finediff.php';
-require_once 'libs/core.php';
-require_once 'libs/vendors/OAuth2/Autoloader.php';
+require_once '../config.inc.php';
+require_once '../libs/vendors/finediff.php';
+require_once '../libs/core.php';
+require_once '../libs/vendors/OAuth2/Autoloader.php';
 /** 
  * Common method to handle GET method
  *
@@ -45,11 +45,23 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $response['users'] = array();
         $order_by = 'id';
         $direction = 'desc';
+        $filter_condition = '';
         if (!empty($r_resource_filters['sort'])) {
             $order_by = $r_resource_filters['sort'];
             $direction = $r_resource_filters['direction'];
+        } else if (!empty($r_resource_filters['filter'])) {
+            $filter_condition = 'WHERE ';
+            if ($r_resource_filters['filter'] == 'active') {
+                $filter_condition.= 'is_active = 1';
+            } else if ($r_resource_filters['filter'] == 'inactive') {
+                $filter_condition.= 'is_active = 0';
+            } else if ($r_resource_filters['filter'] == 'ldap') {
+                $filter_condition.= 'is_ldap = 1';
+            } else {
+                $filter_condition.= 'role_id = ' . $r_resource_filters['filter'];
+            }
         }
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_listing ul  ORDER BY ' . $order_by . ' ' . $direction . ') as d ';
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ') as d ';
         $c_sql = 'SELECT COUNT(*) FROM users_listing ul';
         break;
 
@@ -89,8 +101,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($org_users)) {
             $org_ids[] = $row['organization_id'];
         }
-        if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users']) {
-            $condition = (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE al.id > $1' : "";
+        if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users'] && empty($r_resource_filters['board_id'])) {
+            if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
+                $condition = (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE al.id < $1' : "";
+            } else {
+                $condition = (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE al.id > $1' : "";
+            }
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         } else {
@@ -133,6 +149,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $sql = 'SELECT row_to_json(d) FROM (SELECT u.id, u.username, u.profile_picture_path,u.initials, u.full_name FROM users u JOIN boards_users bu ON bu.user_id = u.id WHERE u.is_active = true AND u.is_email_confirmed = true AND ';
             $sql.= 'bu.board_id = $1 AND';
             array_push($pg_params, $r_resource_filters['board_id']);
+        } else if (!empty($r_resource_filters['filter'])) {
+            $sql = 'SELECT row_to_json(d) FROM (SELECT u.id, u.username, u.profile_picture_path,u.initials, u.full_name FROM users u WHERE ';
         } else {
             $sql = 'SELECT row_to_json(d) FROM (SELECT u.id, u.username, u.profile_picture_path,u.initials, u.full_name FROM users u WHERE  u.is_active = true AND u.is_email_confirmed = true AND ';
         }
@@ -302,9 +320,24 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             $order_by = 'name';
             $direction = 'asc';
+            $filter_condition = '';
             if (!empty($r_resource_filters['sort'])) {
                 $order_by = $r_resource_filters['sort'];
                 $direction = $r_resource_filters['direction'];
+            } else if (!empty($r_resource_filters['filter'])) {
+                $filter_condition = 'WHERE ';
+                if ($r_resource_filters['filter'] == 'open') {
+                    $filter_condition.= 'is_closed = 0';
+                } else if ($r_resource_filters['filter'] == 'closed') {
+                    $filter_condition.= 'is_closed = 1';
+                } else if ($r_resource_filters['filter'] == 'private') {
+                    $filter_condition.= 'board_visibility = 0';
+                } else if ($r_resource_filters['filter'] == 'public') {
+                    $filter_condition.= 'board_visibility = 1';
+                } else if ($r_resource_filters['filter'] == 'organization') {
+                    $filter_condition.= 'board_visibility = 2';
+                }
+                $sql.= $filter_condition;
             }
             $sql.= ' ORDER BY ' . $order_by . ' ' . $direction . ') as d ';
             if ($authUser['role_id'] != 1 && empty($board_ids)) {
@@ -597,9 +630,55 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/settings':
         $role_id = (empty($user['role_id'])) ? 3 : $user['role_id'];
-        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\' or name = \'LDAP_LOGIN_ENABLED\' or name = \'STANDARD_LOGIN_ENABLED\'', array());
+        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\' or name = \'LDAP_LOGIN_ENABLED\' OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'STANDARD_LOGIN_ENABLED\'', array());
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
+        }
+        $files = glob(APP_PATH . '/client/plugins/*/plugin.json', GLOB_BRACE);
+        foreach ($files as $file) {
+            $content = file_get_contents($file);
+            $data = json_decode($content, true);
+            if ($data['enabled'] === true) {
+                if (!empty($data['settings'])) {
+                    foreach ($data['settings'] as $key => $value) {
+                        if ($value['is_public']) {
+                            $value['name'] = $key;
+                            $response['plugins']['settings'][] = $value;
+                        }
+                    }
+                }
+                foreach ($data['assets']['js'] as $jsfiles) {
+                    $response['plugins']['js'][] = $jsfiles;
+                }
+                foreach ($data['assets']['css'] as $cssfiles) {
+                    $response['plugins']['css'][] = $cssfiles;
+                }
+            }
+        }
+        break;
+
+    case '/plugins':
+        $files = glob(APP_PATH . '/client/plugins/*/plugin.json', GLOB_BRACE);
+        foreach ($files as $file) {
+            $folder = explode('/', $file);
+            $content = file_get_contents($file);
+            $data = json_decode($content, true);
+            $data['folder'] = $folder[count($folder) - 2];
+            $response[] = $data;
+        }
+        break;
+
+    case '/plugins/settings':
+        $content = file_get_contents(APP_PATH . '/client/plugins/' . $r_resource_filters['plugin'] . '/plugin.json');
+        $data = json_decode($content, true);
+        if (!empty($data['settings'])) {
+            foreach ($data['settings'] as $key => $value) {
+                $value['name'] = $key;
+                $value['folder'] = $r_resource_filters['plugin'];
+                $value['plugin_name'] = $data['name'];
+                $value['settings_description'] = $data['settings_description'];
+                $response[] = $value;
+            }
         }
         break;
 
@@ -624,6 +703,66 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 'maxSize' => 5
             );
             $sql.= ' LIMIT ' . PAGING_COUNT . ' OFFSET ' . $start;
+        }
+        if ($r_resource_cmd == '/users') {
+            $filter_count = array();
+            $val_array = array(
+                true
+            );
+            $active_count = executeQuery('SELECT count(*) FROM users WHERE is_active = $1', $val_array);
+            $filter_count['active'] = $active_count['count'];
+            $val_array = array(
+                0
+            );
+            $inactive_count = executeQuery('SELECT count(*) FROM users WHERE is_active = $1', $val_array);
+            $filter_count['inactive'] = $inactive_count['count'];
+            $val_array = array(
+                true
+            );
+            $ldap_count = executeQuery('SELECT count(*) FROM users WHERE is_ldap = $1', $val_array);
+            $filter_count['ldap'] = $ldap_count['count'];
+            $val_array = array();
+            $s_result = pg_query_params($db_lnk, 'SELECT * FROM roles', $val_array);
+            $roles = array();
+            $i = 0;
+            while ($row = pg_fetch_assoc($s_result)) {
+                $roles[$i]['id'] = $row['id'];
+                $roles[$i]['name'] = ucfirst($row['name']);
+                $val_array = array(
+                    $row['id']
+                );
+                $user_count = executeQuery('SELECT count(*) FROM users WHERE role_id = $1', $val_array);
+                $roles[$i]['count'] = $user_count['count'];
+                $i++;
+            }
+        }
+        if ($r_resource_cmd == '/boards') {
+            $filter_count = array();
+            $val_array = array(
+                true
+            );
+            $closed_count = executeQuery('SELECT count(*) FROM boards WHERE is_closed = $1', $val_array);
+            $filter_count['closed'] = $closed_count['count'];
+            $val_array = array(
+                0
+            );
+            $open_count = executeQuery('SELECT count(*) FROM boards WHERE is_closed = $1', $val_array);
+            $filter_count['open'] = $open_count['count'];
+            $val_array = array(
+                0
+            );
+            $private_count = executeQuery('SELECT count(*) FROM boards WHERE board_visibility = $1', $val_array);
+            $filter_count['private'] = $private_count['count'];
+            $val_array = array(
+                1
+            );
+            $public_count = executeQuery('SELECT count(*) FROM boards WHERE board_visibility = $1', $val_array);
+            $filter_count['public'] = $public_count['count'];
+            $val_array = array(
+                2
+            );
+            $organization_count = executeQuery('SELECT count(*) FROM boards WHERE board_visibility = $1', $val_array);
+            $filter_count['organization'] = $organization_count['count'];
         }
         $arrayResponse = array(
             '/users/?/cards',
@@ -804,6 +943,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (!empty($_metadata)) {
                 $data['_metadata'] = $_metadata;
             }
+            if (!empty($_metadata) && !empty($filter_count)) {
+                $data['filter_count'] = $filter_count;
+            }
+            if (!empty($roles)) {
+                $data['roles'] = $roles;
+            }
             echo json_encode($data);
             pg_free_result($result);
         } else {
@@ -969,9 +1114,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         } else {
             $msg = '';
             if ($user['email'] == $r_post['email']) {
-                $msg = 'Email address already exists. Your registration process is not completed. Please, try again.';
+                $msg = 1;
             } else if ($user['username'] == $r_post['username']) {
-                $msg = 'Username already exists. Your registration process is not completed. Please, try again.';
+                $msg = 2;
             }
             $response = array(
                 'error' => $msg
@@ -997,9 +1142,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         } else {
             $msg = '';
             if ($user['email'] == $r_post['email']) {
-                $msg = 'Email address already exist. Your registration process is not completed. Please, try again.';
+                $msg = 1;
             } else if ($user['username'] == $r_post['username']) {
-                $msg = 'Username address already exist. Your registration process is not completed. Please, try again.';
+                $msg = 2;
             }
             $response = array(
                 'error' => $msg
@@ -1128,17 +1273,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     }
                 } else {
                     $response = array(
-                        'error' => 'Your old password is incorrect, please try again.'
+                        'error' => 1
                     );
                 }
             } else {
                 $response = array(
-                    'error' => 'Unable to change password. Please try again.'
+                    'error' => 2
                 );
             }
         } else {
             $response = array(
-                'error' => 'New and confirm password field must match, please try again.'
+                'error' => 3
             );
         }
         break;
@@ -1185,7 +1330,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 pg_query_params($db_lnk, 'UPDATE users SET profile_picture_path = $1 WHERE id = $2', $qry_val_arr);
             } else {
                 $no_error = false;
-                $msg = 'File extension not supported. It supports only jpg, png, bmp and gif.';
+                $msg = 1;
             }
         } else {
             if (!empty($_POST['email'])) {
@@ -1195,7 +1340,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $user = executeQuery('SELECT * FROM users WHERE email = $1', $usr_val_arr);
                 if ($user['id'] != $r_resource_vars['users'] && $user['email'] == $_POST['email']) {
                     $no_error = false;
-                    $msg = 'Email address already exist. User Profile could not be updated. Please, try again.';
+                    $msg = 2;
                 }
             }
             if ($no_error) {
@@ -1341,18 +1486,20 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
             $result = pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, board_id, user_id, is_starred) VALUES (now(), now(), $1, $2, true) RETURNING id', $qry_val_arr);
         } else {
-            if ($subcriber['is_starred'] == 1) {
+            if ($subcriber['is_starred'] == true) {
                 $qry_val_arr = array(
+                    0,
                     $r_resource_vars['boards'],
                     $authUser['id']
                 );
-                $result = pg_query_params($db_lnk, 'UPDATE ' . $table_name . ' SET is_starred = false Where  board_id = $1 and user_id = $2 RETURNING id', $qry_val_arr);
+                $result = pg_query_params($db_lnk, 'UPDATE ' . $table_name . ' SET is_starred = $1 Where  board_id = $2 and user_id = $3 RETURNING id', $qry_val_arr);
             } else {
                 $qry_val_arr = array(
+                    1,
                     $r_resource_vars['boards'],
                     $authUser['id']
                 );
-                $result = pg_query_params($db_lnk, 'UPDATE ' . $table_name . ' SET is_starred = True Where  board_id = $1 and user_id = $2 RETURNING id', $qry_val_arr);
+                $result = pg_query_params($db_lnk, 'UPDATE ' . $table_name . ' SET is_starred = $1 Where  board_id = $2 and user_id = $3 RETURNING id', $qry_val_arr);
             }
         }
         $star = pg_fetch_assoc($result);
@@ -1963,6 +2110,24 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         break;
 
+    case '/plugins/settings':
+        $folder_name = $r_post['folder'];
+        unset($r_post['folder']);
+        $content = file_get_contents(APP_PATH . '/client/plugins/' . $folder_name . '/plugin.json');
+        $plugin = json_decode($content, true);
+        if (isset($r_post['enable'])) {
+            $plugin['enabled'] = $r_post['enable'];
+        } else {
+            foreach ($r_post as $key => $val) {
+                $plugin['settings'][$key]['value'] = $val;
+            }
+        }
+        $fh = fopen(APP_PATH . '/client/plugins/' . $folder_name . '/plugin.json', 'w');
+        fwrite($fh, json_encode($plugin, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        fclose($fh);
+        $response['success'] = 'Plugin updated successfully';
+        break;
+
     default:
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
         break;
@@ -2108,6 +2273,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 $response['list']['cards'] = json_decode($response['list']['cards'], true);
                 $response['list']['lists_subscribers'] = json_decode($response['list']['lists_subscribers'], true);
+                $qry_val_arr = array(
+                    $r_post['board_id']
+                );
+                $list_count = executeQuery('SELECT count(*) as count FROM lists WHERE board_id = $1', $qry_val_arr);
+                if ($list_count['count'] == 1) {
+                    $qry_val_arr = array(
+                        $r_post['board_id'],
+                        $response['id']
+                    );
+                    $board_query = pg_query_params($db_lnk, 'UPDATE boards SET default_email_list_id = $2 WHERE id = $1', $qry_val_arr);
+                }
             } else if ($r_resource_cmd == '/boards/?/lists/?/cards' || $r_resource_cmd == '/boards/?/lists/?/cards/?/checklists/?/items/?/convert_to_card') {
                 $qry_val_arr = array(
                     $r_post['list_id']
@@ -2957,8 +3133,9 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $username = pg_fetch_assoc($s_result);
             $comment = '##USER_NAME## ' . $is_active . ' ' . $username['username'] . '';
             $foreign_id['user_id'] = $r_resource_vars['users'];
-        } else if (isset($r_put['last_activity_id'])) {
+        } else if (isset($r_put['last_activity_id']) || isset($r_put['language'])) {
             $comment = '';
+            $response['success'] = 'Language changed successfully.';
         }
         $foreign_ids['user_id'] = $authUser['id'];
         break;
@@ -2993,7 +3170,9 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             'Public'
         );
         $foreign_ids['board_id'] = $r_resource_vars['boards'];
-        if (isset($r_put['board_visibility'])) {
+        if (isset($r_put['default_email_list_id']) || isset($r_put['is_default_email_position_as_bottom'])) {
+            $comment = '';
+        } else if (isset($r_put['board_visibility'])) {
             $comment = '##USER_NAME## changed visibility to ' . $board_visibility[$r_put['board_visibility']];
             $activity_type = 'change_visibility';
         } else if (!empty($r_put['is_closed'])) {
@@ -3847,7 +4026,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
             );
             $response = executeQuery("SELECT user_id as username, expires FROM oauth_access_tokens WHERE client_id = $1 AND access_token = $2", $conditions);
             $expires = strtotime($response['expires']);
-            if (!empty($response['error']) || ($expires > 0 && $expires < time())) {
+            if (empty($response) || !empty($response['error']) || ($expires > 0 && $expires < time())) {
                 $response['error']['type'] = 'OAuth';
                 echo json_encode($response);
                 exit;
@@ -3886,6 +4065,16 @@ if (!empty($_GET['_url']) && $db_lnk) {
             );
             $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $qry_val_arr);
             $response = array_merge($response, $role_links);
+            $files = glob(APP_PATH . '/client/locales/*/translation.json', GLOB_BRACE);
+            foreach ($files as $file) {
+                $folder = explode('/', $file);
+                $qry_val_arr = array(
+                    $folder[count($folder) - 2]
+                );
+                $language = executeQuery('SELECT name FROM languages WHERE iso2 = $1', $qry_val_arr);
+                $response['languages'][$folder[count($folder) - 2]] = $language['name'];
+            }
+            $response['languages'] = json_encode($response['languages']);
             echo json_encode($response);
             exit;
         }

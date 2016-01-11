@@ -144,7 +144,10 @@ App.BoardSimpleView = Backbone.View.extend({
             if (this.starred_boards.length === 0 || $('.js-header-starred-boards > .js-board-view').length === 0) {
                 $('.js-header-starred-boards').append(new App.BoardSimpleView({
                     model: null,
-                    message: 'No starred boards available.',
+                    message: i18next.t('No %s available.', {
+                        postProcess: 'sprintf',
+                        sprintf: [i18next.t('starred boards')]
+                    }),
                     id: 'js-starred-board-empty',
                     className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 media-list'
                 }).el);
@@ -168,9 +171,6 @@ App.BoardSimpleView = Backbone.View.extend({
             success: function(model, response) {
                 App.boards.get(self.model.attributes.id).boards_stars.reset(self.boardStar);
                 self.model.boards_stars.add(self.boardStar);
-                self.footerView = new App.FooterView({
-                    model: authuser
-                }).renderStarredBoards();
             }
         });
         return false;
@@ -327,7 +327,7 @@ App.BoardSimpleView = Backbone.View.extend({
         this.model.set('organization_id', parseInt(data.organization_id));
 
 
-        $('.js-sidebar-board-visibility').html('Change Visibility');
+        $('.js-sidebar-board-visibility').html(i18next.t('Change Visibility'));
         var board = new App.Board();
         this.model.url = api_url + 'boards/' + this.model.attributes.id + '.json';
 

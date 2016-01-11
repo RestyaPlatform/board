@@ -36,6 +36,10 @@ App.AdminBoardsListView = Backbone.View.extend({
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.boards = new App.BoardCollection();
         _this.boards.url = api_url + 'boards.json?page=' + _this.current_page;
+        app.navigate('#/' + 'boards/list?page=' + _this.current_page, {
+            trigger: false,
+            trigger_function: false,
+        });
         _this.boards.fetch({
             cache: false,
             abortPending: true,
@@ -46,7 +50,9 @@ App.AdminBoardsListView = Backbone.View.extend({
                 });
                 $('#header').html(_this.headerView.el);
                 $('#js-navbar-default').remove();
-                var view = $('#content').html(new App.AdminBoardsIndexView({}).el);
+                var view = $('#content').html(new App.AdminBoardsIndexView({
+                    filter_count: response.filter_count
+                }).el);
                 boards.each(function(board) {
                     $('.js-my-boards').append(new App.AdminBoardView({
                         model: board

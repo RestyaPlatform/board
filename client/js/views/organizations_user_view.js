@@ -75,7 +75,10 @@ App.OrganizationsUserView = Backbone.View.extend({
     clearMemberList: function(e) {
         var self = this;
         self.$('.js-organization-member-search-response').nextAll().remove();
-        self.$('.js-organization-member-search-response').after('<li class="small col-xs-12">Search for a person in Restyaboard by name or email address.</li>');
+        self.$('.js-organization-member-search-response').after('<li class="small col-xs-12">' + i18next.t('Search for a person in %s by name or email address.', {
+            postProcess: 'sprintf',
+            sprintf: [SITE_NAME]
+        }) + '</li>');
     },
     /**
      * organizationUsersSearch()
@@ -161,7 +164,7 @@ App.OrganizationsUserView = Backbone.View.extend({
         var organizations_user_id = target.data('organizations_user_id');
         target.parents('li.dropdown').removeClass('open');
         self.model.organizations_users.remove(self.model.organizations_users.get(parseInt(organizations_user_id)));
-        self.flash('success', 'User removed from this organization');
+        self.flash('success', i18next.t('User removed from this organization'));
         self.render();
         var organizationsUser = new App.OrganizationsUser();
         organizationsUser.url = api_url + 'organizations_users/' + organizations_user_id + '.json';

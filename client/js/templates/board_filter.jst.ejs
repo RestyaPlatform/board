@@ -2,7 +2,7 @@
 	<a href="#" class="js-back-to-sidebar pull-left btn btn-xs btn-link">
 			<i class="icon-caret-left"></i>
 	</a>
-	<span class="col-xs-10 navbar-btn"><strong>Filter Cards</strong></span>
+	<span class="col-xs-10 navbar-btn"><strong><%- i18next.t('Filter Cards') %></strong></span>
 </div>
 <div class="col-xs-12 divider"></div>
 <div class="col-xs-12 member-modal js-pre-scrollable vertical-scrollbar">
@@ -47,9 +47,9 @@
 	<hr>
 	<% } %>
 	<ul class="nav nav-pills nav-stacked js-board-dues">
-		<li class="clearfix js-due-filter cur h5 btn-link"><div class="navbar-btn clearfix media">Due in the next day <span class="js-due hide">day</span></div></li>
-		<li class="clearfix js-due-filter cur h5 btn-link"><div class="navbar-btn clearfix media">Due in the next week <span class="js-due hide">week</span></div></li>
-		<li class="clearfix js-due-filter cur h5 btn-link"><div class="navbar-btn clearfix media">Due in the next month <span class="js-due hide">month</span></div></li>
-		<li class="clearfix js-due-filter cur h5 btn-link"><div class="navbar-btn clearfix media">Overdue <span class="js-due hide">overdue</span></div></li>
+		<li class="clearfix js-due-filter cur h5 btn-link"><div class="navbar-btn clearfix media"><%- i18next.t('Due in the next day') %> <span class="js-due hide">day</span></div></li>
+		<li class="clearfix js-due-filter cur h5 btn-link"><div class="navbar-btn clearfix media"><%- i18next.t('Due in the next week') %> <span class="js-due hide">week</span></div></li>
+		<li class="clearfix js-due-filter cur h5 btn-link"><div class="navbar-btn clearfix media"><%- i18next.t('Due in the next month') %> <span class="js-due hide">month</span></div></li>
+		<li class="clearfix js-due-filter cur h5 btn-link"><div class="navbar-btn clearfix media"><%- i18next.t('Overdue') %> <span class="js-due hide">overdue</span></div></li>
 	</ul>
 </div>
