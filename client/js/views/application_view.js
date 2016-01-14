@@ -8,7 +8,7 @@ if (typeof App == 'undefined') {
     App = {};
 }
 var loginExceptionUrl = ['register', 'login', 'forgotpassword', 'user_activation', 'aboutus'];
-var adminUrl = ['roles', 'activities', 'users', 'plugins', 'settings', 'email_templates'];
+var adminUrl = ['roles', 'activities', 'users', 'apps', 'settings', 'email_templates'];
 /**
  * Application View
  * @class ApplicationView
@@ -81,7 +81,7 @@ App.ApplicationView = Backbone.View.extend({
                                 LDAP_LOGIN_ENABLED = settings_response.LDAP_LOGIN_ENABLED;
                                 DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                                 STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
-                                PLUGINS = settings_response.plugins;
+                                APPS = settings_response.apps;
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 var current_language = DEFAULT_LANGUAGE;
                                 if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null) {
@@ -138,7 +138,7 @@ App.ApplicationView = Backbone.View.extend({
                             LDAP_LOGIN_ENABLED = settings_response.LDAP_LOGIN_ENABLED;
                             DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                             STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
-                            PLUGINS = settings_response.plugins;
+                            APPS = settings_response.apps;
                             IMAP_EMAIL = settings_response.IMAP_EMAIL;
                             var current_language = DEFAULT_LANGUAGE;
                             if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null && authuser.user.language !== null && authuser.user.language !== undefined) {
@@ -247,8 +247,8 @@ App.ApplicationView = Backbone.View.extend({
         if (this.model == 'role_settings') {
             changeTitle(i18next.t('Role Settings'));
         }
-        if (this.model == 'plugins' || this.model == 'plugin_settings') {
-            changeTitle(i18next.t('Plugins'));
+        if (this.model == 'apps' || this.model == 'app_settings') {
+            changeTitle(i18next.t('Apps'));
         }
         if (this.model == 'organizations_index') {
             changeTitle(i18next.t('Organizations'));
@@ -489,6 +489,7 @@ App.ApplicationView = Backbone.View.extend({
             changeTitle(i18next.t('Organization'));
             page.organization_view();
         } else if (_.isEmpty(authuser.user) && _.indexOf(loginExceptionUrl, page.model) <= -1) {
+            window.sessionStorage.setItem('redirect_link', window.location.hash);
             app.navigate('#/users/login', {
                 trigger: true,
                 replace: true
@@ -815,31 +816,31 @@ App.ApplicationView = Backbone.View.extend({
                         }).el);
                     }
                 });
-            } else if (page.model == 'plugins') {
-                changeTitle(i18next.t('Plugins'));
-                var plugins = new App.PluginCollection();
-                plugins.url = api_url + 'plugins.json';
-                plugins.fetch({
+            } else if (page.model == 'apps') {
+                changeTitle(i18next.t('Apps'));
+                var apps = new App.AppCollection();
+                apps.url = api_url + 'apps.json';
+                apps.fetch({
                     cache: false,
                     abortPending: true,
                     success: function(collections, response) {
                         $('#js-navbar-default').remove();
-                        $('#content').html(new App.PluginsView({
+                        $('#content').html(new App.AppsView({
                             model: response,
                         }).el);
                     }
                 });
-            } else if (page.model == 'plugin_settings') {
-                changeTitle(i18next.t('Plugin Settings'));
-                var plugin_settings = new App.PluginCollection();
-                plugin_settings.url = api_url + 'plugins/settings.json?plugin=' + page.page_view_id;
-                plugin_settings.fetch({
+            } else if (page.model == 'app_settings') {
+                changeTitle(i18next.t('App Settings'));
+                var app_settings = new App.AppCollection();
+                app_settings.url = api_url + 'apps/settings.json?app=' + page.page_view_id;
+                app_settings.fetch({
                     cache: false,
                     abortPending: true,
                     success: function(collections, response) {
                         $('#js-navbar-default').remove();
-                        $('#content').html(new App.PluginSettingsView({
-                            plugin_settings: response,
+                        $('#content').html(new App.AppSettingsView({
+                            app_settings: response,
                             folder: page.page_view_id
                         }).el);
                     }

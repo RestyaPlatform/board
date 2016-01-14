@@ -195,6 +195,7 @@
 										role_id: parseInt(role.attributes.id)
 									});
 									if(role.attributes.id === "1") {
+										if(acl_link.attributes.is_allow_only_to_admin === 1) {
 									%>
 										<td class="text-center">
 											<div class="checkbox">
@@ -202,9 +203,13 @@
 											<label class="js-update-role" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
 											</div>
 										</td>
-									<%
+									<% } else { %>
+											<td class="text-center">
+													<label class="js-update-role" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
+											</td>
+									<% }
 									} else if(role.attributes.id === "2") {
-										if(acl_link.attributes.is_allow_only_to_admin === 1) {
+										if(acl_link.attributes.is_allow_only_to_user === 0) {
 																					%>
 												<td class="text-center">
 													<label class="js-update-role" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
@@ -221,7 +226,7 @@
 											<%									
 										}
 									} else if(role.attributes.id === "3") {
-										if(acl_link.attributes.is_allow_only_to_admin === 1 || acl_link.attributes.is_allow_only_to_user === 1 ) {
+										if((acl_link.attributes.is_allow_only_to_admin === 1 || acl_link.attributes.is_allow_only_to_user === 1) && !_.contains(['User activation', 'View board', 'Card activities'], acl_link.attributes.name)) {
 											%>
 												<td class="text-center">
 													<label class="js-update-role" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>

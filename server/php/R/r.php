@@ -8,7 +8,7 @@
  * @package    REST
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014 Restya
+ * @copyright  2014-2016 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  * @todo       Fix code duplication & make it really lightweight
@@ -634,7 +634,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
-        $files = glob(APP_PATH . '/client/plugins/*/plugin.json', GLOB_BRACE);
+        $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
         foreach ($files as $file) {
             $content = file_get_contents($file);
             $data = json_decode($content, true);
@@ -643,22 +643,22 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     foreach ($data['settings'] as $key => $value) {
                         if ($value['is_public']) {
                             $value['name'] = $key;
-                            $response['plugins']['settings'][] = $value;
+                            $response['apps']['settings'][] = $value;
                         }
                     }
                 }
                 foreach ($data['assets']['js'] as $jsfiles) {
-                    $response['plugins']['js'][] = $jsfiles;
+                    $response['apps']['js'][] = $jsfiles;
                 }
                 foreach ($data['assets']['css'] as $cssfiles) {
-                    $response['plugins']['css'][] = $cssfiles;
+                    $response['apps']['css'][] = $cssfiles;
                 }
             }
         }
         break;
 
-    case '/plugins':
-        $files = glob(APP_PATH . '/client/plugins/*/plugin.json', GLOB_BRACE);
+    case '/apps':
+        $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
         foreach ($files as $file) {
             $folder = explode('/', $file);
             $content = file_get_contents($file);
@@ -668,15 +668,22 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         break;
 
-    case '/plugins/settings':
-        $content = file_get_contents(APP_PATH . '/client/plugins/' . $r_resource_filters['plugin'] . '/plugin.json');
+    case '/apps/settings':
+        $content = file_get_contents(APP_PATH . '/client/apps/' . $r_resource_filters['app'] . '/app.json');
         $data = json_decode($content, true);
+        if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
+            include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
+        }
         if (!empty($data['settings'])) {
             foreach ($data['settings'] as $key => $value) {
                 $value['name'] = $key;
-                $value['folder'] = $r_resource_filters['plugin'];
-                $value['plugin_name'] = $data['name'];
-                $value['settings_description'] = $data['settings_description'];
+                $value['folder'] = $r_resource_filters['app'];
+                $value['app_name'] = $data['name'];
+                $replaceContent = array(
+                    '##SITE_NAME##' => SITE_NAME,
+                    '##SITE_URL##' => $_server_domain_url,
+                );
+                $value['settings_description'] = strtr($data['settings_description'], $replaceContent);
                 $response[] = $value;
             }
         }
@@ -721,8 +728,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             );
             $ldap_count = executeQuery('SELECT count(*) FROM users WHERE is_ldap = $1', $val_array);
             $filter_count['ldap'] = $ldap_count['count'];
-            $val_array = array();
-            $s_result = pg_query_params($db_lnk, 'SELECT * FROM roles', $val_array);
+            $val_array = array(
+                3
+            );
+            $s_result = pg_query_params($db_lnk, 'SELECT * FROM roles WHERE id != $1', $val_array);
             $roles = array();
             $i = 0;
             while ($row = pg_fetch_assoc($s_result)) {
@@ -2110,22 +2119,22 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         break;
 
-    case '/plugins/settings':
+    case '/apps/settings':
         $folder_name = $r_post['folder'];
         unset($r_post['folder']);
-        $content = file_get_contents(APP_PATH . '/client/plugins/' . $folder_name . '/plugin.json');
-        $plugin = json_decode($content, true);
+        $content = file_get_contents(APP_PATH . '/client/apps/' . $folder_name . '/app.json');
+        $app = json_decode($content, true);
         if (isset($r_post['enable'])) {
-            $plugin['enabled'] = $r_post['enable'];
+            $app['enabled'] = $r_post['enable'];
         } else {
             foreach ($r_post as $key => $val) {
-                $plugin['settings'][$key]['value'] = $val;
+                $app['settings'][$key]['value'] = $val;
             }
         }
-        $fh = fopen(APP_PATH . '/client/plugins/' . $folder_name . '/plugin.json', 'w');
-        fwrite($fh, json_encode($plugin, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
+        fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         fclose($fh);
-        $response['success'] = 'Plugin updated successfully';
+        $response['success'] = 'App updated successfully';
         break;
 
     default:

@@ -1,7 +1,7 @@
 <div class="well-sm"></div>
 <section class="clearfix">
  <div class="col-xs-12">
-	<ul class="nav nav-pills text-center js-filter-list">
+	<ul class="nav nav-pills text-center thumbnail js-filter-list">
 		<li><a class="js-filter cur" data-filter="active" title="<%- i18next.t('Active') %>"><span class="show"><strong><%- filter_count.active %></strong></span><%- i18next.t('Active') %></a></li>
 		<li><a class="js-filter cur" data-filter="inactive" title="<%- i18next.t('Inactive') %>"><span class="show"><strong><%- filter_count.inactive %></strong></span><%- i18next.t('Inactive') %></a></li>
 		<% if (!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED == "true") { %>

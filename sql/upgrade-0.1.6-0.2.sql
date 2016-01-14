@@ -536,3 +536,17 @@ BEGIN
 	END IF;
 END;
 $$;
+
+UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '1';
+UPDATE "acl_links" SET "is_allow_only_to_admin" = '0', "is_allow_only_to_user" = '0' WHERE "name" = 'Forgot password';
+UPDATE "acl_links" SET "is_allow_only_to_admin" = '0', "is_allow_only_to_user" = '0' WHERE "name" = 'Register';
+UPDATE "acl_links" SET "is_allow_only_to_admin" = '0', "is_allow_only_to_user" = '0' WHERE "name" = 'Login';
+UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '0' WHERE "name" = 'Users management';
+UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '0' WHERE "name" = 'Create user';
+UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '0' WHERE "name" = 'Boards management';
+UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '0' WHERE "name" = 'All activities';
+UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '0' WHERE "name" = 'Download attachment from card';
+UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '0' WHERE "group_id" = 6;
+
+UPDATE "acl_links" SET "name" = 'App', "url" = '/apps', "slug" = 'app' WHERE "slug" = 'plugin';
+UPDATE "acl_links" SET "name" = 'App Settings', "url" = '/apps/settings', "slug" = 'app_settings' WHERE "slug" = 'plugin_settings';

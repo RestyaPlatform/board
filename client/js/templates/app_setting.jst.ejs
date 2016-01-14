@@ -1,0 +1,29 @@
+<div class="well-sm">
+	<h3><%- app_settings[0].app_name %> - <%- i18next.t('Settings') %></h3>
+</div>
+<div class="alert alert-info list-group-item-text"><%= app_settings[0].settings_description %></div>
+<div class="well-sm"></div>
+<form class="js-app-setting-form" role="form" id="js-app-setting-form">
+<% if (app_settings.length > 0 ) { 
+var folder = '';
+_.each(app_settings, function(app_setting) { 
+	folder = app_setting.folder;
+%>
+	<div class="form-group col-xs-12">
+			  <label class="col-sm-2  control-label col-xs-12"><%- app_setting.label %></label>
+			  <div class=" col-sm-7  col-xs-12">
+				<input type="text" value="<%- app_setting.value %>" class="form-control" name="<%- app_setting.name %>" id="<%- app_setting.name %>">
+				<div><span class="help-block"><%- app_setting.info %></span></div>
+			  </div>
+	</div>
+
+<% }); 
+} %>
+<input type="hidden" value="<%- folder %>" name="folder" id="folder">
+  <div class="form-group">
+	<label for="submit" class="sr-only  col-sm-4  control-label col-xs-12"><%- i18next.t('Submit') %></label>
+	<div class="col-xs-offset-2">
+	<input type="submit" value="<%- i18next.t('Update') %>" id="submit" class="btn btn-primary">
+	</div>
+  </div>
+</form>

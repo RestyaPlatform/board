@@ -82,10 +82,19 @@ App.LoginView = Backbone.View.extend({
                     });
                     $('.company').addClass('hide');
                     $('#header').html(this.headerView.el);
-                    app.navigate('#/boards', {
-                        trigger: true,
-                        replace: true
-                    });
+                    if (!_.isEmpty(window.sessionStorage.getItem('redirect_link'))) {
+                        var redirect_link = window.sessionStorage.getItem('redirect_link');
+                        sessionStorage.removeItem('redirect_link');
+                        app.navigate(redirect_link, {
+                            trigger: true,
+                            replace: true
+                        });
+                    } else {
+                        app.navigate('#/boards', {
+                            trigger: true,
+                            replace: true
+                        });
+                    }
                 } else {
                     $('input#inputPassword', target).val('');
                     self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));

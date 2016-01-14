@@ -28,7 +28,7 @@ var last_user_activity_id = 0,
     last_board_activity_id = 0,
     last_user_board_activity_id = 0;
 var xhrPool = [];
-var PLUGINS = [];
+var APPS = [];
 var load_count = 1;
 var from_url = '';
 Backbone.View.prototype.flash = function(type, message) {
@@ -234,8 +234,8 @@ var AppRouter = Backbone.Router.extend({
         'organization/:id/:type': 'organizations_view_type',
         'organizations_user/:id': 'organizations_user_view',
         'roles': 'role_settings',
-        'plugins': 'plugins',
-        'plugins/:name': 'plugin_settings',
+        'apps': 'apps',
+        'apps/:name': 'app_settings',
         'settings': 'settings',
         'settings/:id': 'settings_type',
         'email_templates': 'email_templates',
@@ -437,14 +437,14 @@ var AppRouter = Backbone.Router.extend({
             model: 'role_settings',
         });
     },
-    plugins: function() {
+    apps: function() {
         new App.ApplicationView({
-            model: 'plugins',
+            model: 'apps',
         });
     },
-    plugin_settings: function(id) {
+    app_settings: function(id) {
         new App.ApplicationView({
-            model: 'plugin_settings',
+            model: 'app_settings',
             id: id
         });
     },

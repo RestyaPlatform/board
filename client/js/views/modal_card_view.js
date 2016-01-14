@@ -461,14 +461,28 @@ App.ModalCardView = Backbone.View.extend({
      */
     showMemberSearch: function(e) {
         var q = $(e.target).val();
-        var x = e.which || e.keyCode;
-        if (x === 50) {
-            var target = $('.js-show-members').parents('.dropdown:first');
-            target.addClass('open');
-        } else {
-            var qsplit = q.split('@');
-            $('.js-search-member').val(qsplit[1]);
-            $('.js-search-member').trigger('keyup');
+        var keyCode = e.which || e.keyCode;
+        if (keyCode === 50) {
+            this.autoMentionSelectionStart = e.target.selectionStart;
+            $('.js-show-members').parents('.dropdown:first').addClass('open');
+        } else if (this.autoMentionSelectionStart) {
+            if (keyCode == 32) {
+                this.autoMentionSelectionStart = 0;
+                $('.js-show-members').parents('.dropdown:first').removeClass('open');
+            } else {
+                var regex = / /gi,
+                    result, indice;
+                while ((result = regex.exec(q))) {
+                    if (result.index >= this.autoMentionSelectionStart) {
+                        indice = result.index;
+                        break;
+                    }
+                }
+                if (!indice) {
+                    indice = q.length;
+                }
+                $('.js-search-member').val(q.substr(this.autoMentionSelectionStart, indice - this.autoMentionSelectionStart)).trigger('keyup');
+            }
         }
         return false;
     },
@@ -2588,7 +2602,6 @@ App.ModalCardView = Backbone.View.extend({
                         self.model.activities.unshift(new_activity, options);
                         i++;
                     });
-                    console.log(card);
                     self.model.list.collection.board.cards.add(card);
                     self.model.list.collection.board.checklists.add(response.cards.cards_checklists);
                     self.model.list.collection.board.labels.add(response.cards.cards_labels);
@@ -2649,9 +2662,9 @@ App.ModalCardView = Backbone.View.extend({
      */
     AddCommentMember: function(e) {
         e.preventDefault();
-        var target = $(e.currentTarget);
-        var user_name = target.data('user-name');
-        this.$el.find('.js-comment').val(this.$el.find('.js-comment').val().replace('@' + $('.js-search-member').val(), '@' + user_name));
+        this.$el.find('.js-comment').val(this.$el.find('.js-comment').val().replace('@' + $('.js-search-member').val(), '@' + $(e.currentTarget).data('user-name')));
+        this.autoMentionSelectionStart = 0;
+        $('.js-search-member').val('').trigger('keyup');
     },
     renderBoardUsers: function() {
         var self = this;

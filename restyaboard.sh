@@ -4,7 +4,7 @@
 #
 # Usage: ./restyaboard.sh
 #
-# Copyright (c) 2014-2015 Restya.
+# Copyright (c) 2014-2016 Restya.
 # Dual License (OSL 3.0 & Commercial License)
 {
 	OS_REQUIREMENT=$(cat /etc/issue | awk '{print $1}' | sed 's/Kernel//g')
@@ -42,20 +42,23 @@
 			psql -U postgres -c "\q"
 			sleep 1
 			
+			sed -i "s/server\/php\/R\/oauth_callback.php/server\/php\/oauth_callback.php/" /etc/nginx/conf.d/restyaboard.conf
+			sed -i "s/server\/php\/R\/download.php/server\/php\/download.php/" /etc/nginx/conf.d/restyaboard.conf
+			sed -i "s/server\/php\/R\/ical.php/server\/php\/ical.php/" /etc/nginx/conf.d/restyaboard.conf
+			sed -i "s/server\/php\/R\/image.php/server\/php\/image.php/" /etc/nginx/conf.d/restyaboard.conf
+			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ])
 			then
-				echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/crontabs/root
+				sed -i "s/server\/php\/R\/cron.sh/server\/php\/cron.sh/" /var/spool/cron/crontabs/root
+				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/instant_email_notification.sh/" /var/spool/cron/crontabs/root
+				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/periodic_email_notification.sh/" /var/spool/cron/crontabs/root
+				echo "*/5 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/crontabs/root
 			else
-				echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/root
-			fi
-			
-			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
-			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ])
-			then
-				echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh" >> /var/spool/cron/crontabs/root
-			else
-				echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh" >> /var/spool/cron/root
+				sed -i "s/server\/php\/R\/cron.sh/server\/php\/cron.sh/" /var/spool/cron/root
+				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/instant_email_notification.sh/" /var/spool/cron/root
+				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/periodic_email_notification.sh/" /var/spool/cron/root
+				echo "*/5 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/root
 			fi
 			
 			echo "Updating SQL..."
@@ -164,6 +167,13 @@
 				apt-get install -y php5-imagick
 			fi
 			
+			echo "Checking PHP imap extension..."
+			php -m | grep imap
+			if [ "$?" -gt 0 ]; then
+				echo "Installing php5-imap..."
+				apt-get install -y php5-imap
+			fi
+			
 			echo "Setting up timezone..."
 			timezone=$(cat /etc/timezone)
 			sed -i -e 's/date.timezone/;date.timezone/g' /etc/php5/fpm/php.ini
@@ -218,7 +228,7 @@
 			read -r webdir
 			echo "$webdir"
 			echo -n "Changing server_name in nginx configuration..."
-			sed -i "s/server_name.*$/server_name $webdir;/" /etc/nginx/conf.d/restyaboard.conf
+			sed -i "s/server_name.*$/server_name \"$webdir\";/" /etc/nginx/conf.d/restyaboard.conf
 			sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
 			
 			echo -n "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):"
@@ -270,6 +280,9 @@
 			
 			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
 			echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh" >> /var/spool/cron/crontabs/root
+			
+			echo "Setting up cron for every 30 minutes to fetch IMAP email..."
+			echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/crontabs/root
 
 			echo "Starting services..."
 			service cron restart
@@ -354,6 +367,14 @@
 			then
 				echo "Installing php-imagick..."
 				yum install -y php-imagick
+			fi
+			
+			echo "Checking PHP imap extension..."
+			php -m | grep imap
+			if [ "$?" -gt 0 ];
+			then
+				echo "Installing php-imap..."
+				yum install -y php-imap
 			fi
 			
 			echo "Setting up timezone..."
@@ -484,6 +505,9 @@
 			
 			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
 			echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh" >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 30 minutes to fetch IMAP email..."
+			echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/root
 			
 			echo "Reset php-fpm (use unix socket mode)..."
 			sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf

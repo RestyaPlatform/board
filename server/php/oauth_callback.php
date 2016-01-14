@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Plugin
  * @author     Restya <info@restya.com>
- * @copyright  2014 Restya
+ * @copyright  2014-2016 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -23,6 +23,11 @@ if (!empty($_GET['plugin'])) {
         'code' => $_GET['code']
     );
     $response = doPost($data['settings'][$_GET['plugin'] . '_oauth_token_url']['value'], $post_data, 'token');
-    parse_str($response);
+    $response_array = json_decode($response, true);
+    if (json_last_error() == JSON_ERROR_NONE) {
+        $access_token = $response_array['access_token'];
+    } else {
+        parse_str($response);
+    }
     echo (!empty($access_token)) ? $access_token : 'failed';
 }

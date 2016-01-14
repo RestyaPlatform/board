@@ -75,18 +75,18 @@ App.HeaderView = Backbone.View.extend({
         this.showTooltip();
         if (load_count === 1) {
             load_count++;
-            _.each(PLUGINS, function(plugin, key) {
+            _.each(APPS, function(app, key) {
                 var s, l, v = '';
                 if (key === 'settings') {
                     s = document.createElement('script');
-                    _.each(plugin, function(client_id, key) {
+                    _.each(app, function(client_id, key) {
                         v += "var " + client_id.name + " = '" + client_id.value + "';";
                     });
                     s.text = v;
                     document.body.appendChild(s);
                 }
                 if (key === 'js') {
-                    _.each(plugin, function(js, key) {
+                    _.each(app, function(js, key) {
                         s = document.createElement('script');
                         s.type = 'text/javascript';
                         s.src = js;
@@ -94,7 +94,7 @@ App.HeaderView = Backbone.View.extend({
                     });
                 }
                 if (key === 'css') {
-                    _.each(plugin, function(css, key) {
+                    _.each(app, function(css, key) {
                         l = document.createElement('link');
                         l.rel = 'stylesheet';
                         l.type = 'text/css';

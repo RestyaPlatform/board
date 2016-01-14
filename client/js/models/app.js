@@ -2,9 +2,9 @@ if (typeof App == 'undefined') {
     App = {};
 }
 /**
- * Plugin Model
- * @class Plugin
+ * App Model
+ * @class App
  * @constructor
  * @extends Backbone.Model
  */
-App.Plugin = Backbone.Model.extend({});
+App.App = Backbone.Model.extend({});

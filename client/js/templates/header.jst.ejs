@@ -1,4 +1,4 @@
-<% if(_.isEmpty(current_param) || ((typeof(user) == "undefined" || (typeof(user) != "undefined" && user.role_id != 1)) || (current_param !== 'activities' && current_param !== 'users' && current_param !== 'roles' && current_param !== 'plugins' && current_param !== 'settings' && current_param !== 'email_templates' && current_param !== 'boards' && current_param !== 'admin_boards_list'))){ %>
+<% if(_.isEmpty(current_param) || ((typeof(user) == "undefined" || (typeof(user) != "undefined" && user.role_id != 1)) || (current_param !== 'activities' && current_param !== 'users' && current_param !== 'roles' && current_param !== 'apps' && current_param !== 'settings' && current_param !== 'email_templates' && current_param !== 'boards' && current_param !== 'admin_boards_list'))){ %>
 <div id="js-navbar-default" class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
   <div class="row">
@@ -40,7 +40,7 @@
    </div>
   </div>
 </div>
-<% } else if(typeof(user) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'roles' || current_param === 'plugins' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list')){ %>
+<% } else if(typeof(user) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'roles' || current_param === 'apps' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list')){ %>
 <% 
 	if(!_.isEmpty(current_param) && (current_param === 'activities')) {
 		current_title = 'Activities';
@@ -48,8 +48,8 @@
 		current_title = 'Users';
 	} else if(!_.isEmpty(current_param) && (current_param === 'roles')){ 
 		current_title = 'Roles';
-	} else if(!_.isEmpty(current_param) && (current_param === 'plugins')){ 
-		current_title = 'Plugins';
+	} else if(!_.isEmpty(current_param) && (current_param === 'apps')){ 
+		current_title = 'Apps';
 	} else if(!_.isEmpty(current_param) && (current_param === 'settings')){ 
 		current_title = 'Settings';
 	} else if(!_.isEmpty(current_param) && (current_param === 'email_templates')){ 
@@ -140,8 +140,8 @@
 			<% if(!_.isEmpty(role_links.where({slug: "roles"}))){ %>
 				<li class="js-admin-role-menu navbar-btn"><a title="<%- i18next.t('Roles') %>" href="#/roles"><%- i18next.t("Roles") %></a></li>
 			<% } %>
-			<% if(!_.isEmpty(role_links.where({slug: "plugin"}))){ %>
-				<li class="js-admin-plugin-menu navbar-btn"><a title="<%- i18next.t('Plugins') %>" href="#/plugins"><%- i18next.t("Plugins") %></a></li>
+			<% if(!_.isEmpty(role_links.where({slug: "app"}))){ %>
+				<li class="js-admin-app-menu navbar-btn"><a title="<%- i18next.t('Apps') %>" href="#/apps"><%- i18next.t("Apps") %></a></li>
 			<% } %>
 			<% if(!_.isEmpty(role_links.where({slug: "setting_list"}))){ %>
 				<li class="js-admin-setting-menu navbar-btn"><a title="<%- i18next.t('Settings') %>" href="#/settings"><%- i18next.t("Settings") %></a></li>
