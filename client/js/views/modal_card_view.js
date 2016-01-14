@@ -2399,7 +2399,7 @@ App.ModalCardView = Backbone.View.extend({
         } else {
             var board = self.boards.findWhere({
                 id: parseInt(board_id),
-                is_closed: false
+                is_closed: 0
             });
             board.lists.add(board.attributes.lists);
             var board_lists = board.lists.where({

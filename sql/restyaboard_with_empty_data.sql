@@ -2956,7 +2956,7 @@ CREATE VIEW simple_board_listing AS
                     lists.user_id,
                     lists.name,
                     lists."position",
-                    lists.is_archived,
+                    (lists.is_archived)::integer AS is_archived,
                     lists.card_count,
                     lists.lists_subscriber_count,
                     lists.is_deleted
