@@ -42,7 +42,6 @@ To give you some idea about of our plans:
 * App
   * Simple app architecture
   * "Import from GitHub" sample app
-  * Current API tweaks to accept other oAuth clients "properly"
 * Address some [known issues](http://restya.com/board/issues.html)
 * Notifier iOS App (Possibly, Free and non-open source)
 
