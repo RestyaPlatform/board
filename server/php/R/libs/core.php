@@ -425,8 +425,8 @@ function ldapAuthenticate($p_user_id, $p_password)
     $t_search_filter = "(&$t_ldap_organization($t_ldap_uid_field=$t_username))";
     $t_search_attrs = array(
         $t_ldap_uid_field,
-        'dn',
-        '*'
+        'name',
+        'mail'
     );
     $t_ldap_server = $g_ldap_server;
     $t_ldap_port = $g_ldap_port;
@@ -435,6 +435,7 @@ function ldapAuthenticate($p_user_id, $p_password)
         $t_protocol_version = $g_ldap_protocol_version;
         if ($t_protocol_version > 0) {
             ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, $t_protocol_version);
+            ldap_set_option($t_ds, LDAP_OPT_REFERRALS, 0);
         }
         // If no Bind DN and Password is set, attempt to login as the configured
         //  Bind DN.
