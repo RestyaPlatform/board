@@ -8,6 +8,7 @@
 # Dual License (OSL 3.0 & Commercial License)
 {
 	set -x
+	echo $(cat /etc/issue)
 	OS_REQUIREMENT=$(cat /etc/issue | awk '{print $1}' | sed 's/Kernel//g')
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ])
 	then
