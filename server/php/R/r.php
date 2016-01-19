@@ -1023,13 +1023,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (!$user) {
                     $r_post['password'] = getCryptHash($r_post['password']);
                     $r_post['role_id'] = 2; // user
+                    preg_match_all('/\b\w/', $check_user['User']['first_name'], $match);
                     $val_arr = array(
                         $r_post['email'],
                         $check_user['User']['email'],
                         $r_post['password'],
-                        strtoupper(substr($r_post['email'], 0, 1))
+                        $check_user['User']['first_name'],
+                        strtoupper(implode($match[0]))
                     );
-                    $result = pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, role_id, username, email, password, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, true, true, true) RETURNING * ', $val_arr);
+                    $result = pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5, true, true, true) RETURNING * ', $val_arr);
                     $user = pg_fetch_assoc($result);
                     $val_arr = array(
                         $user['id']
