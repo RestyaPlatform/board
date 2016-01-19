@@ -7,6 +7,11 @@
 # Copyright (c) 2014-2015 Restya.
 # Dual License (OSL 3.0 & Commercial License)
 {
+	if [[ $EUID -ne 0 ]];
+	then
+		echo "This script must be run as root"
+		exit 1
+	fi
 	set -x
 	whoami
 	echo $(cat /etc/issue)
