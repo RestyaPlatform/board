@@ -10,14 +10,14 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -26,7 +26,7 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
--- Name: label_card_count_update(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: label_card_count_update(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION label_card_count_update() RETURNS trigger
@@ -70,10 +70,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.label_card_count_update() OWNER TO postgres;
-
 --
--- Name: update_board_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_board_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_board_count() RETURNS trigger
@@ -117,10 +115,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_board_count() OWNER TO postgres;
-
 --
--- Name: update_board_star_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_board_star_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_board_star_count() RETURNS trigger
@@ -170,10 +166,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_board_star_count() OWNER TO postgres;
-
 --
--- Name: update_board_subscriber_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_board_subscriber_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_board_subscriber_count() RETURNS trigger
@@ -223,10 +217,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_board_subscriber_count() OWNER TO postgres;
-
 --
--- Name: update_board_user_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_board_user_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_board_user_count() RETURNS trigger
@@ -256,10 +248,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_board_user_count() OWNER TO postgres;
-
 --
--- Name: update_card_activity_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_activity_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_activity_count() RETURNS trigger
@@ -303,10 +293,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_activity_count() OWNER TO postgres;
-
 --
--- Name: update_card_attachment_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_attachment_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_attachment_count() RETURNS trigger
@@ -342,10 +330,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_attachment_count() OWNER TO postgres;
-
 --
--- Name: update_card_checklist_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_checklist_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_checklist_count() RETURNS trigger
@@ -389,10 +375,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_checklist_count() OWNER TO postgres;
-
 --
--- Name: update_card_checklist_item_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_checklist_item_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_checklist_item_count() RETURNS trigger
@@ -468,10 +452,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_checklist_item_count() OWNER TO postgres;
-
 --
--- Name: update_card_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_count() RETURNS trigger
@@ -499,10 +481,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_count() OWNER TO postgres;
-
 --
--- Name: update_card_subscriber_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_subscriber_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_subscriber_count() RETURNS trigger
@@ -552,10 +532,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_subscriber_count() OWNER TO postgres;
-
 --
--- Name: update_card_user_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_user_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_user_count() RETURNS trigger
@@ -599,10 +577,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_user_count() OWNER TO postgres;
-
 --
--- Name: update_card_voters_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_voters_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_voters_count() RETURNS trigger
@@ -646,10 +622,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_voters_count() OWNER TO postgres;
-
 --
--- Name: update_comment_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_comment_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_comment_count() RETURNS trigger
@@ -685,10 +659,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_comment_count() OWNER TO postgres;
-
 --
--- Name: update_list_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_list_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_list_count() RETURNS trigger
@@ -713,10 +685,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_list_count() OWNER TO postgres;
-
 --
--- Name: update_list_subscriber_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_list_subscriber_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_list_subscriber_count() RETURNS trigger
@@ -766,10 +736,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_list_subscriber_count() OWNER TO postgres;
-
 --
--- Name: update_organization_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_organization_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_organization_count() RETURNS trigger
@@ -805,10 +773,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_organization_count() OWNER TO postgres;
-
 --
--- Name: update_organization_user_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_organization_user_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_organization_user_count() RETURNS trigger
@@ -838,10 +804,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_organization_user_count() OWNER TO postgres;
-
 --
--- Name: update_user_delete(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_user_delete(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_user_delete() RETURNS trigger
@@ -879,10 +843,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_user_delete() OWNER TO postgres;
-
 --
--- Name: update_users_user_login_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_users_user_login_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_users_user_login_count() RETURNS trigger
@@ -932,10 +894,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_users_user_login_count() OWNER TO postgres;
-
 --
--- Name: acl_links_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: acl_links_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE acl_links_id_seq
@@ -946,14 +906,12 @@ CREATE SEQUENCE acl_links_id_seq
     CACHE 1;
 
 
-ALTER TABLE acl_links_id_seq OWNER TO postgres;
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
--- Name: acl_links; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: acl_links; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE acl_links (
@@ -970,10 +928,8 @@ CREATE TABLE acl_links (
 );
 
 
-ALTER TABLE acl_links OWNER TO postgres;
-
 --
--- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE acl_links_roles_roles_id_seq
@@ -984,10 +940,8 @@ CREATE SEQUENCE acl_links_roles_roles_id_seq
     CACHE 1;
 
 
-ALTER TABLE acl_links_roles_roles_id_seq OWNER TO postgres;
-
 --
--- Name: acl_links_roles; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: acl_links_roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE acl_links_roles (
@@ -999,10 +953,8 @@ CREATE TABLE acl_links_roles (
 );
 
 
-ALTER TABLE acl_links_roles OWNER TO postgres;
-
 --
--- Name: acl_links_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: acl_links_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW acl_links_listing AS
@@ -1014,10 +966,8 @@ CREATE VIEW acl_links_listing AS
      JOIN acl_links acl ON ((acl.id = aclr.acl_link_id)));
 
 
-ALTER TABLE acl_links_listing OWNER TO postgres;
-
 --
--- Name: activities_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: activities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE activities_id_seq
@@ -1028,10 +978,8 @@ CREATE SEQUENCE activities_id_seq
     CACHE 1;
 
 
-ALTER TABLE activities_id_seq OWNER TO postgres;
-
 --
--- Name: activities; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE activities (
@@ -1055,10 +1003,8 @@ CREATE TABLE activities (
 );
 
 
-ALTER TABLE activities OWNER TO postgres;
-
 --
--- Name: boards_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: boards_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE boards_id_seq
@@ -1069,10 +1015,8 @@ CREATE SEQUENCE boards_id_seq
     CACHE 1;
 
 
-ALTER TABLE boards_id_seq OWNER TO postgres;
-
 --
--- Name: boards; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: boards; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE boards (
@@ -1100,16 +1044,14 @@ CREATE TABLE boards (
     background_picture_path character varying(255),
     music_name character varying(255),
     music_content text,
-    archived_list_count bigint DEFAULT 0::bigint,
-    archived_card_count bigint DEFAULT 0::bigint,
+    archived_list_count bigint DEFAULT (0)::bigint,
+    archived_card_count bigint DEFAULT (0)::bigint,
     CONSTRAINT name CHECK ((char_length(name) > 0))
 );
 
 
-ALTER TABLE boards OWNER TO postgres;
-
 --
--- Name: cards_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: cards_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE cards_id_seq
@@ -1120,10 +1062,8 @@ CREATE SEQUENCE cards_id_seq
     CACHE 1;
 
 
-ALTER TABLE cards_id_seq OWNER TO postgres;
-
 --
--- Name: cards; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE cards (
@@ -1153,10 +1093,8 @@ CREATE TABLE cards (
 );
 
 
-ALTER TABLE cards OWNER TO postgres;
-
 --
--- Name: cards_labels_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: cards_labels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE cards_labels_id_seq
@@ -1167,10 +1105,8 @@ CREATE SEQUENCE cards_labels_id_seq
     CACHE 1;
 
 
-ALTER TABLE cards_labels_id_seq OWNER TO postgres;
-
 --
--- Name: cards_labels; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_labels; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE cards_labels (
@@ -1184,10 +1120,8 @@ CREATE TABLE cards_labels (
 );
 
 
-ALTER TABLE cards_labels OWNER TO postgres;
-
 --
--- Name: labels_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: labels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE labels_id_seq
@@ -1198,10 +1132,8 @@ CREATE SEQUENCE labels_id_seq
     CACHE 1;
 
 
-ALTER TABLE labels_id_seq OWNER TO postgres;
-
 --
--- Name: labels; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: labels; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE labels (
@@ -1214,10 +1146,8 @@ CREATE TABLE labels (
 );
 
 
-ALTER TABLE labels OWNER TO postgres;
-
 --
--- Name: cards_labels_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: cards_labels_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW cards_labels_listing AS
@@ -1235,10 +1165,8 @@ CREATE VIEW cards_labels_listing AS
      LEFT JOIN labels l ON ((l.id = cl.label_id)));
 
 
-ALTER TABLE cards_labels_listing OWNER TO postgres;
-
 --
--- Name: checklist_items_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: checklist_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE checklist_items_id_seq
@@ -1249,10 +1177,8 @@ CREATE SEQUENCE checklist_items_id_seq
     CACHE 1;
 
 
-ALTER TABLE checklist_items_id_seq OWNER TO postgres;
-
 --
--- Name: checklist_items; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklist_items; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE checklist_items (
@@ -1269,10 +1195,8 @@ CREATE TABLE checklist_items (
 );
 
 
-ALTER TABLE checklist_items OWNER TO postgres;
-
 --
--- Name: checklists_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: checklists_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE checklists_id_seq
@@ -1283,10 +1207,8 @@ CREATE SEQUENCE checklists_id_seq
     CACHE 1;
 
 
-ALTER TABLE checklists_id_seq OWNER TO postgres;
-
 --
--- Name: checklists; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklists; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE checklists (
@@ -1303,10 +1225,8 @@ CREATE TABLE checklists (
 );
 
 
-ALTER TABLE checklists OWNER TO postgres;
-
 --
--- Name: lists_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: lists_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE lists_id_seq
@@ -1317,10 +1237,8 @@ CREATE SEQUENCE lists_id_seq
     CACHE 1;
 
 
-ALTER TABLE lists_id_seq OWNER TO postgres;
-
 --
--- Name: lists; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: lists; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE lists (
@@ -1339,10 +1257,8 @@ CREATE TABLE lists (
 );
 
 
-ALTER TABLE lists OWNER TO postgres;
-
 --
--- Name: organizations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: organizations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE organizations_id_seq
@@ -1353,10 +1269,8 @@ CREATE SEQUENCE organizations_id_seq
     CACHE 1;
 
 
-ALTER TABLE organizations_id_seq OWNER TO postgres;
-
 --
--- Name: organizations; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organizations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE organizations (
@@ -1375,10 +1289,8 @@ CREATE TABLE organizations (
 );
 
 
-ALTER TABLE organizations OWNER TO postgres;
-
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE users_id_seq
@@ -1389,10 +1301,8 @@ CREATE SEQUENCE users_id_seq
     CACHE 1;
 
 
-ALTER TABLE users_id_seq OWNER TO postgres;
-
 --
--- Name: users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE users (
@@ -1431,21 +1341,19 @@ CREATE TABLE users (
     is_productivity_beats boolean DEFAULT false NOT NULL,
     user_login_count bigint DEFAULT (0)::bigint NOT NULL,
     is_ldap boolean DEFAULT false NOT NULL,
-    is_send_newsletter smallint DEFAULT 2::smallint,
-    last_email_notified_activity_id bigint DEFAULT 0::bigint,
-    owner_board_count bigint DEFAULT 0::bigint,
-    member_board_count bigint DEFAULT 0::bigint,
-    owner_organization_count bigint DEFAULT 0::bigint,
-    member_organization_count bigint DEFAULT 0::bigint,
+    is_send_newsletter smallint DEFAULT (2)::smallint,
+    last_email_notified_activity_id bigint DEFAULT (0)::bigint,
+    owner_board_count bigint DEFAULT (0)::bigint,
+    member_board_count bigint DEFAULT (0)::bigint,
+    owner_organization_count bigint DEFAULT (0)::bigint,
+    member_organization_count bigint DEFAULT (0)::bigint,
     CONSTRAINT password CHECK ((char_length((password)::text) > 0)),
     CONSTRAINT username CHECK ((char_length((username)::text) > 0))
 );
 
 
-ALTER TABLE users OWNER TO postgres;
-
 --
--- Name: activities_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: activities_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW activities_listing AS
@@ -1493,10 +1401,8 @@ CREATE VIEW activities_listing AS
      LEFT JOIN organizations organizations ON ((organizations.id = activity.organization_id)));
 
 
-ALTER TABLE activities_listing OWNER TO postgres;
-
 --
--- Name: attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE attachments_id_seq
@@ -1507,10 +1413,8 @@ CREATE SEQUENCE attachments_id_seq
     CACHE 1;
 
 
-ALTER TABLE attachments_id_seq OWNER TO postgres;
-
 --
--- Name: boards_stars_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: boards_stars_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE boards_stars_id_seq
@@ -1521,10 +1425,8 @@ CREATE SEQUENCE boards_stars_id_seq
     CACHE 1;
 
 
-ALTER TABLE boards_stars_id_seq OWNER TO postgres;
-
 --
--- Name: board_stars; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_stars; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE board_stars (
@@ -1537,10 +1439,8 @@ CREATE TABLE board_stars (
 );
 
 
-ALTER TABLE board_stars OWNER TO postgres;
-
 --
--- Name: boards_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: boards_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE boards_subscribers_id_seq
@@ -1551,10 +1451,8 @@ CREATE SEQUENCE boards_subscribers_id_seq
     CACHE 1;
 
 
-ALTER TABLE boards_subscribers_id_seq OWNER TO postgres;
-
 --
--- Name: board_subscribers; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_subscribers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE board_subscribers (
@@ -1567,10 +1465,8 @@ CREATE TABLE board_subscribers (
 );
 
 
-ALTER TABLE board_subscribers OWNER TO postgres;
-
 --
--- Name: boards_labels_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: boards_labels_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW boards_labels_listing AS
@@ -1586,10 +1482,8 @@ CREATE VIEW boards_labels_listing AS
      LEFT JOIN labels labels ON ((labels.id = cards_labels.label_id)));
 
 
-ALTER TABLE boards_labels_listing OWNER TO postgres;
-
 --
--- Name: boards_users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: boards_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE boards_users_id_seq
@@ -1600,10 +1494,8 @@ CREATE SEQUENCE boards_users_id_seq
     CACHE 1;
 
 
-ALTER TABLE boards_users_id_seq OWNER TO postgres;
-
 --
--- Name: boards_users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: boards_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE boards_users (
@@ -1616,10 +1508,8 @@ CREATE TABLE boards_users (
 );
 
 
-ALTER TABLE boards_users OWNER TO postgres;
-
 --
--- Name: boards_users_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: boards_users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW boards_users_listing AS
@@ -1642,10 +1532,8 @@ CREATE VIEW boards_users_listing AS
      JOIN boards b ON ((b.id = bu.board_id)));
 
 
-ALTER TABLE boards_users_listing OWNER TO postgres;
-
 --
--- Name: card_attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: card_attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE card_attachments_id_seq
@@ -1656,10 +1544,8 @@ CREATE SEQUENCE card_attachments_id_seq
     CACHE 1;
 
 
-ALTER TABLE card_attachments_id_seq OWNER TO postgres;
-
 --
--- Name: card_attachments; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_attachments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE card_attachments (
@@ -1676,10 +1562,8 @@ CREATE TABLE card_attachments (
 );
 
 
-ALTER TABLE card_attachments OWNER TO postgres;
-
 --
--- Name: cards_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: cards_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE cards_subscribers_id_seq
@@ -1690,10 +1574,8 @@ CREATE SEQUENCE cards_subscribers_id_seq
     CACHE 1;
 
 
-ALTER TABLE cards_subscribers_id_seq OWNER TO postgres;
-
 --
--- Name: card_subscribers; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_subscribers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE card_subscribers (
@@ -1706,10 +1588,8 @@ CREATE TABLE card_subscribers (
 );
 
 
-ALTER TABLE card_subscribers OWNER TO postgres;
-
 --
--- Name: card_voters_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: card_voters_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE card_voters_id_seq
@@ -1720,10 +1600,8 @@ CREATE SEQUENCE card_voters_id_seq
     CACHE 1;
 
 
-ALTER TABLE card_voters_id_seq OWNER TO postgres;
-
 --
--- Name: card_voters; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_voters; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE card_voters (
@@ -1735,10 +1613,8 @@ CREATE TABLE card_voters (
 );
 
 
-ALTER TABLE card_voters OWNER TO postgres;
-
 --
--- Name: card_voters_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: card_voters_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW card_voters_listing AS
@@ -1756,10 +1632,8 @@ CREATE VIEW card_voters_listing AS
      LEFT JOIN users users ON ((users.id = card_voters.user_id)));
 
 
-ALTER TABLE card_voters_listing OWNER TO postgres;
-
 --
--- Name: cards_users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: cards_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE cards_users_id_seq
@@ -1770,10 +1644,8 @@ CREATE SEQUENCE cards_users_id_seq
     CACHE 1;
 
 
-ALTER TABLE cards_users_id_seq OWNER TO postgres;
-
 --
--- Name: cards_users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE cards_users (
@@ -1785,10 +1657,8 @@ CREATE TABLE cards_users (
 );
 
 
-ALTER TABLE cards_users OWNER TO postgres;
-
 --
--- Name: cards_users_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: cards_users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW cards_users_listing AS
@@ -1805,10 +1675,8 @@ CREATE VIEW cards_users_listing AS
      LEFT JOIN users u ON ((u.id = cu.user_id)));
 
 
-ALTER TABLE cards_users_listing OWNER TO postgres;
-
 --
--- Name: checklists_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: checklists_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW checklists_listing AS
@@ -1837,10 +1705,8 @@ CREATE VIEW checklists_listing AS
    FROM checklists checklists;
 
 
-ALTER TABLE checklists_listing OWNER TO postgres;
-
 --
--- Name: cards_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: cards_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW cards_listing AS
@@ -1938,10 +1804,8 @@ CREATE VIEW cards_listing AS
      LEFT JOIN lists l ON ((l.id = cards.list_id)));
 
 
-ALTER TABLE cards_listing OWNER TO postgres;
-
 --
--- Name: lists_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: lists_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE lists_subscribers_id_seq
@@ -1952,10 +1816,8 @@ CREATE SEQUENCE lists_subscribers_id_seq
     CACHE 1;
 
 
-ALTER TABLE lists_subscribers_id_seq OWNER TO postgres;
-
 --
--- Name: list_subscribers; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: list_subscribers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE list_subscribers (
@@ -1968,10 +1830,8 @@ CREATE TABLE list_subscribers (
 );
 
 
-ALTER TABLE list_subscribers OWNER TO postgres;
-
 --
--- Name: lists_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: lists_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW lists_listing AS
@@ -2031,10 +1891,8 @@ CREATE VIEW lists_listing AS
    FROM lists lists;
 
 
-ALTER TABLE lists_listing OWNER TO postgres;
-
 --
--- Name: boards_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: boards_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW boards_listing AS
@@ -2168,10 +2026,8 @@ CREATE VIEW boards_listing AS
      LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
 
 
-ALTER TABLE boards_listing OWNER TO postgres;
-
 --
--- Name: cards_elasticsearch_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: cards_elasticsearch_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW cards_elasticsearch_listing AS
@@ -2227,10 +2083,8 @@ CREATE VIEW cards_elasticsearch_listing AS
              LEFT JOIN lists lists ON ((lists.id = cards.list_id)))) card;
 
 
-ALTER TABLE cards_elasticsearch_listing OWNER TO postgres;
-
 --
--- Name: checklist_add_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: checklist_add_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW checklist_add_listing AS
@@ -2246,10 +2100,8 @@ CREATE VIEW checklist_add_listing AS
   ORDER BY c.id;
 
 
-ALTER TABLE checklist_add_listing OWNER TO postgres;
-
 --
--- Name: cities; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cities; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE cities (
@@ -2265,10 +2117,8 @@ CREATE TABLE cities (
 );
 
 
-ALTER TABLE cities OWNER TO postgres;
-
 --
--- Name: cities_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: cities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE cities_id_seq
@@ -2279,10 +2129,8 @@ CREATE SEQUENCE cities_id_seq
     CACHE 1;
 
 
-ALTER TABLE cities_id_seq OWNER TO postgres;
-
 --
--- Name: cities_id_seq1; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: cities_id_seq1; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE cities_id_seq1
@@ -2293,17 +2141,15 @@ CREATE SEQUENCE cities_id_seq1
     CACHE 1;
 
 
-ALTER TABLE cities_id_seq1 OWNER TO postgres;
-
 --
--- Name: cities_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: cities_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE cities_id_seq1 OWNED BY cities.id;
 
 
 --
--- Name: countries; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: countries; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE countries (
@@ -2334,10 +2180,8 @@ CREATE TABLE countries (
 );
 
 
-ALTER TABLE countries OWNER TO postgres;
-
 --
--- Name: countries_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: countries_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE countries_id_seq
@@ -2348,10 +2192,8 @@ CREATE SEQUENCE countries_id_seq
     CACHE 1;
 
 
-ALTER TABLE countries_id_seq OWNER TO postgres;
-
 --
--- Name: countries_id_seq1; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: countries_id_seq1; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE countries_id_seq1
@@ -2362,17 +2204,15 @@ CREATE SEQUENCE countries_id_seq1
     CACHE 1;
 
 
-ALTER TABLE countries_id_seq1 OWNER TO postgres;
-
 --
--- Name: countries_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: countries_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE countries_id_seq1 OWNED BY countries.id;
 
 
 --
--- Name: email_templates_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: email_templates_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE email_templates_id_seq
@@ -2383,10 +2223,8 @@ CREATE SEQUENCE email_templates_id_seq
     CACHE 1;
 
 
-ALTER TABLE email_templates_id_seq OWNER TO postgres;
-
 --
--- Name: email_templates; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: email_templates; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE email_templates (
@@ -2404,10 +2242,8 @@ CREATE TABLE email_templates (
 );
 
 
-ALTER TABLE email_templates OWNER TO postgres;
-
 --
--- Name: gadget_users_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: gadget_users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW gadget_users_listing AS
@@ -2434,10 +2270,8 @@ CREATE VIEW gadget_users_listing AS
    FROM checklists checklists;
 
 
-ALTER TABLE gadget_users_listing OWNER TO postgres;
-
 --
--- Name: ips_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: ips_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE ips_id_seq
@@ -2448,10 +2282,8 @@ CREATE SEQUENCE ips_id_seq
     CACHE 1;
 
 
-ALTER TABLE ips_id_seq OWNER TO postgres;
-
 --
--- Name: ips; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ips; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE ips (
@@ -2470,10 +2302,8 @@ CREATE TABLE ips (
 );
 
 
-ALTER TABLE ips OWNER TO postgres;
-
 --
--- Name: list_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: list_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE list_subscribers_id_seq
@@ -2484,10 +2314,8 @@ CREATE SEQUENCE list_subscribers_id_seq
     CACHE 1;
 
 
-ALTER TABLE list_subscribers_id_seq OWNER TO postgres;
-
 --
--- Name: login_types_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: login_types_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE login_types_id_seq
@@ -2498,10 +2326,8 @@ CREATE SEQUENCE login_types_id_seq
     CACHE 1;
 
 
-ALTER TABLE login_types_id_seq OWNER TO postgres;
-
 --
--- Name: login_types; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: login_types; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE login_types (
@@ -2512,10 +2338,8 @@ CREATE TABLE login_types (
 );
 
 
-ALTER TABLE login_types OWNER TO postgres;
-
 --
--- Name: oauth_access_tokens; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_access_tokens; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE oauth_access_tokens (
@@ -2527,10 +2351,8 @@ CREATE TABLE oauth_access_tokens (
 );
 
 
-ALTER TABLE oauth_access_tokens OWNER TO postgres;
-
 --
--- Name: oauth_authorization_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_authorization_codes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE oauth_authorization_codes (
@@ -2543,10 +2365,8 @@ CREATE TABLE oauth_authorization_codes (
 );
 
 
-ALTER TABLE oauth_authorization_codes OWNER TO postgres;
-
 --
--- Name: oauth_clients; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_clients; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE oauth_clients (
@@ -2559,10 +2379,8 @@ CREATE TABLE oauth_clients (
 );
 
 
-ALTER TABLE oauth_clients OWNER TO postgres;
-
 --
--- Name: oauth_jwt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_jwt; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE oauth_jwt (
@@ -2572,10 +2390,8 @@ CREATE TABLE oauth_jwt (
 );
 
 
-ALTER TABLE oauth_jwt OWNER TO postgres;
-
 --
--- Name: oauth_refresh_tokens; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_refresh_tokens; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE oauth_refresh_tokens (
@@ -2587,10 +2403,8 @@ CREATE TABLE oauth_refresh_tokens (
 );
 
 
-ALTER TABLE oauth_refresh_tokens OWNER TO postgres;
-
 --
--- Name: oauth_scopes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_scopes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE oauth_scopes (
@@ -2599,10 +2413,8 @@ CREATE TABLE oauth_scopes (
 );
 
 
-ALTER TABLE oauth_scopes OWNER TO postgres;
-
 --
--- Name: organizations_users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: organizations_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE organizations_users_id_seq
@@ -2613,10 +2425,8 @@ CREATE SEQUENCE organizations_users_id_seq
     CACHE 1;
 
 
-ALTER TABLE organizations_users_id_seq OWNER TO postgres;
-
 --
--- Name: organizations_users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organizations_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE organizations_users (
@@ -2629,10 +2439,8 @@ CREATE TABLE organizations_users (
 );
 
 
-ALTER TABLE organizations_users OWNER TO postgres;
-
 --
--- Name: organizations_users_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: organizations_users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW organizations_users_listing AS
@@ -2687,10 +2495,8 @@ CREATE VIEW organizations_users_listing AS
      LEFT JOIN organizations organizations ON ((organizations.id = organizations_users.organization_id)));
 
 
-ALTER TABLE organizations_users_listing OWNER TO postgres;
-
 --
--- Name: organizations_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: organizations_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW organizations_listing AS
@@ -2781,10 +2587,8 @@ CREATE VIEW organizations_listing AS
      LEFT JOIN users u ON ((u.id = organizations.user_id)));
 
 
-ALTER TABLE organizations_listing OWNER TO postgres;
-
 --
--- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE roles_id_seq
@@ -2795,10 +2599,8 @@ CREATE SEQUENCE roles_id_seq
     CACHE 1;
 
 
-ALTER TABLE roles_id_seq OWNER TO postgres;
-
 --
--- Name: roles; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE roles (
@@ -2809,10 +2611,8 @@ CREATE TABLE roles (
 );
 
 
-ALTER TABLE roles OWNER TO postgres;
-
 --
--- Name: role_links_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: role_links_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW role_links_listing AS
@@ -2824,10 +2624,8 @@ CREATE VIEW role_links_listing AS
    FROM roles role;
 
 
-ALTER TABLE role_links_listing OWNER TO postgres;
-
 --
--- Name: setting_categories; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: setting_categories; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE setting_categories (
@@ -2841,10 +2639,8 @@ CREATE TABLE setting_categories (
 );
 
 
-ALTER TABLE setting_categories OWNER TO postgres;
-
 --
--- Name: setting_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: setting_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE setting_categories_id_seq
@@ -2855,17 +2651,15 @@ CREATE SEQUENCE setting_categories_id_seq
     CACHE 1;
 
 
-ALTER TABLE setting_categories_id_seq OWNER TO postgres;
-
 --
--- Name: setting_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: setting_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE setting_categories_id_seq OWNED BY setting_categories.id;
 
 
 --
--- Name: settings_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE settings_id_seq
@@ -2876,10 +2670,8 @@ CREATE SEQUENCE settings_id_seq
     CACHE 1;
 
 
-ALTER TABLE settings_id_seq OWNER TO postgres;
-
 --
--- Name: settings; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: settings; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE settings (
@@ -2896,10 +2688,8 @@ CREATE TABLE settings (
 );
 
 
-ALTER TABLE settings OWNER TO postgres;
-
 --
--- Name: settings_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: settings_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW settings_listing AS
@@ -2925,10 +2715,8 @@ CREATE VIEW settings_listing AS
    FROM setting_categories setting_categories;
 
 
-ALTER TABLE settings_listing OWNER TO postgres;
-
 --
--- Name: simple_board_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: simple_board_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW simple_board_listing AS
@@ -2994,10 +2782,8 @@ CREATE VIEW simple_board_listing AS
   ORDER BY board.name;
 
 
-ALTER TABLE simple_board_listing OWNER TO postgres;
-
 --
--- Name: states; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: states; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE states (
@@ -3010,10 +2796,8 @@ CREATE TABLE states (
 );
 
 
-ALTER TABLE states OWNER TO postgres;
-
 --
--- Name: states_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: states_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE states_id_seq
@@ -3024,10 +2808,8 @@ CREATE SEQUENCE states_id_seq
     CACHE 1;
 
 
-ALTER TABLE states_id_seq OWNER TO postgres;
-
 --
--- Name: states_id_seq1; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: states_id_seq1; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE states_id_seq1
@@ -3038,17 +2820,15 @@ CREATE SEQUENCE states_id_seq1
     CACHE 1;
 
 
-ALTER TABLE states_id_seq1 OWNER TO postgres;
-
 --
--- Name: states_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: states_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE states_id_seq1 OWNED BY states.id;
 
 
 --
--- Name: user_logins; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_logins; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE user_logins (
@@ -3061,10 +2841,8 @@ CREATE TABLE user_logins (
 );
 
 
-ALTER TABLE user_logins OWNER TO postgres;
-
 --
--- Name: user_logins_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: user_logins_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE user_logins_id_seq
@@ -3075,17 +2853,15 @@ CREATE SEQUENCE user_logins_id_seq
     CACHE 1;
 
 
-ALTER TABLE user_logins_id_seq OWNER TO postgres;
-
 --
--- Name: user_logins_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: user_logins_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE user_logins_id_seq OWNED BY user_logins.id;
 
 
 --
--- Name: users_cards_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: users_cards_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW users_cards_listing AS
@@ -3120,10 +2896,8 @@ CREATE VIEW users_cards_listing AS
      JOIN lists l ON ((l.id = c.list_id)));
 
 
-ALTER TABLE users_cards_listing OWNER TO postgres;
-
 --
--- Name: users_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW users_listing AS
@@ -3217,45 +2991,43 @@ CREATE VIEW users_listing AS
      LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
 
 
-ALTER TABLE users_listing OWNER TO postgres;
-
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cities ALTER COLUMN id SET DEFAULT nextval('cities_id_seq1'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY countries ALTER COLUMN id SET DEFAULT nextval('countries_id_seq1'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY setting_categories ALTER COLUMN id SET DEFAULT nextval('setting_categories_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states ALTER COLUMN id SET DEFAULT nextval('states_id_seq1'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY user_logins ALTER COLUMN id SET DEFAULT nextval('user_logins_id_seq'::regclass);
 
 
 --
--- Data for Name: acl_links; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: acl_links; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_allow_only_to_admin, is_allow_only_to_user) FROM stdin;
@@ -3370,14 +3142,14 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_all
 
 
 --
--- Name: acl_links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: acl_links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('acl_links_id_seq', 121, true);
 
 
 --
--- Data for Name: acl_links_roles; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: acl_links_roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
@@ -3726,14 +3498,14 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 
 
 --
--- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1217, true);
 
 
 --
--- Data for Name: activities; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: activities; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY activities (id, created, modified, board_id, list_id, card_id, user_id, foreign_id, type, comment, revisions, root, freshness_ts, depth, path, materialized_path, organization_id) FROM stdin;
@@ -3741,21 +3513,21 @@ COPY activities (id, created, modified, board_id, list_id, card_id, user_id, for
 
 
 --
--- Name: activities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: activities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('activities_id_seq', 2, true);
 
 
 --
--- Name: attachments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: attachments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('attachments_id_seq', 1, false);
 
 
 --
--- Data for Name: board_stars; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: board_stars; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY board_stars (id, created, modified, board_id, user_id, is_starred) FROM stdin;
@@ -3763,7 +3535,7 @@ COPY board_stars (id, created, modified, board_id, user_id, is_starred) FROM std
 
 
 --
--- Data for Name: board_subscribers; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: board_subscribers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY board_subscribers (id, created, modified, board_id, user_id, is_subscribed) FROM stdin;
@@ -3771,7 +3543,7 @@ COPY board_subscribers (id, created, modified, board_id, user_id, is_subscribed)
 
 
 --
--- Data for Name: boards; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: boards; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY boards (id, created, modified, user_id, organization_id, name, board_visibility, background_color, background_picture_url, commenting_permissions, voting_permissions, inivitation_permissions, is_closed, is_allow_organization_members_to_join, boards_user_count, list_count, card_count, boards_subscriber_count, background_pattern_url, boards_star_count, is_show_image_front_of_card, background_picture_path, music_name, music_content, archived_list_count, archived_card_count) FROM stdin;
@@ -3779,28 +3551,28 @@ COPY boards (id, created, modified, user_id, organization_id, name, board_visibi
 
 
 --
--- Name: boards_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: boards_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('boards_id_seq', 2, true);
 
 
 --
--- Name: boards_stars_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: boards_stars_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('boards_stars_id_seq', 1, false);
 
 
 --
--- Name: boards_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: boards_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('boards_subscribers_id_seq', 1, true);
 
 
 --
--- Data for Name: boards_users; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: boards_users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY boards_users (id, created, modified, board_id, user_id, is_admin) FROM stdin;
@@ -3808,14 +3580,14 @@ COPY boards_users (id, created, modified, board_id, user_id, is_admin) FROM stdi
 
 
 --
--- Name: boards_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: boards_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('boards_users_id_seq', 2, true);
 
 
 --
--- Data for Name: card_attachments; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: card_attachments; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY card_attachments (id, created, modified, card_id, name, path, list_id, board_id, mimetype, link) FROM stdin;
@@ -3823,14 +3595,14 @@ COPY card_attachments (id, created, modified, card_id, name, path, list_id, boar
 
 
 --
--- Name: card_attachments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: card_attachments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('card_attachments_id_seq', 1, true);
 
 
 --
--- Data for Name: card_subscribers; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: card_subscribers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY card_subscribers (id, created, modified, card_id, user_id, is_subscribed) FROM stdin;
@@ -3838,7 +3610,7 @@ COPY card_subscribers (id, created, modified, card_id, user_id, is_subscribed) F
 
 
 --
--- Data for Name: card_voters; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: card_voters; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY card_voters (id, created, modified, card_id, user_id) FROM stdin;
@@ -3846,14 +3618,14 @@ COPY card_voters (id, created, modified, card_id, user_id) FROM stdin;
 
 
 --
--- Name: card_voters_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: card_voters_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('card_voters_id_seq', 1, true);
 
 
 --
--- Data for Name: cards; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: cards; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY cards (id, created, modified, board_id, list_id, name, description, due_date, "position", is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, cards_user_count, cards_subscriber_count, card_voter_count, activity_count, user_id, is_deleted, comment_count) FROM stdin;
@@ -3861,14 +3633,14 @@ COPY cards (id, created, modified, board_id, list_id, name, description, due_dat
 
 
 --
--- Name: cards_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cards_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('cards_id_seq', 1, true);
 
 
 --
--- Data for Name: cards_labels; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: cards_labels; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY cards_labels (id, created, modified, label_id, card_id, list_id, board_id) FROM stdin;
@@ -3876,21 +3648,21 @@ COPY cards_labels (id, created, modified, label_id, card_id, list_id, board_id) 
 
 
 --
--- Name: cards_labels_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cards_labels_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('cards_labels_id_seq', 1, true);
 
 
 --
--- Name: cards_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cards_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('cards_subscribers_id_seq', 1, true);
 
 
 --
--- Data for Name: cards_users; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: cards_users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY cards_users (id, created, modified, card_id, user_id) FROM stdin;
@@ -3898,14 +3670,14 @@ COPY cards_users (id, created, modified, card_id, user_id) FROM stdin;
 
 
 --
--- Name: cards_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cards_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('cards_users_id_seq', 1, true);
 
 
 --
--- Data for Name: checklist_items; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: checklist_items; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY checklist_items (id, created, modified, user_id, card_id, checklist_id, name, is_completed, "position") FROM stdin;
@@ -3913,14 +3685,14 @@ COPY checklist_items (id, created, modified, user_id, card_id, checklist_id, nam
 
 
 --
--- Name: checklist_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: checklist_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('checklist_items_id_seq', 1, true);
 
 
 --
--- Data for Name: checklists; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: checklists; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY checklists (id, created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, "position") FROM stdin;
@@ -3928,14 +3700,14 @@ COPY checklists (id, created, modified, user_id, card_id, name, checklist_item_c
 
 
 --
--- Name: checklists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: checklists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('checklists_id_seq', 1, true);
 
 
 --
--- Data for Name: cities; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: cities; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY cities (id, created, modified, country_id, state_id, latitude, longitude, name, is_active) FROM stdin;
@@ -3944,21 +3716,21 @@ COPY cities (id, created, modified, country_id, state_id, latitude, longitude, n
 
 
 --
--- Name: cities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('cities_id_seq', 15178, false);
 
 
 --
--- Name: cities_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cities_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('cities_id_seq1', 1, true);
 
 
 --
--- Data for Name: countries; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: countries; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capital, areainsqkm, population, continent, tld, currency, currencyname, phone, postalcodeformat, postalcoderegex, languages, geonameid, neighbours, equivalentfipscode, created, iso2, iso3, modified) FROM stdin;
@@ -4216,21 +3988,21 @@ COPY countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capita
 
 
 --
--- Name: countries_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: countries_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('countries_id_seq', 262, false);
 
 
 --
--- Name: countries_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: countries_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('countries_id_seq1', 1, false);
 
 
 --
--- Data for Name: email_templates; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: email_templates; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY email_templates (id, created, modified, from_email, reply_to_email, name, description, subject, email_text_content, email_variables, display_name) FROM stdin;
@@ -4244,14 +4016,14 @@ COPY email_templates (id, created, modified, from_email, reply_to_email, name, d
 
 
 --
--- Name: email_templates_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: email_templates_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('email_templates_id_seq', 1, true);
 
 
 --
--- Data for Name: ips; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: ips; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY ips (id, created, modified, ip, host, user_agent, "order", city_id, state_id, country_id, latitude, longitude) FROM stdin;
@@ -4260,14 +4032,14 @@ COPY ips (id, created, modified, ip, host, user_agent, "order", city_id, state_i
 
 
 --
--- Name: ips_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: ips_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('ips_id_seq', 1, true);
 
 
 --
--- Data for Name: labels; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: labels; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY labels (id, created, modified, name, card_count) FROM stdin;
@@ -4275,14 +4047,14 @@ COPY labels (id, created, modified, name, card_count) FROM stdin;
 
 
 --
--- Name: labels_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: labels_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('labels_id_seq', 1, true);
 
 
 --
--- Data for Name: list_subscribers; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: list_subscribers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY list_subscribers (id, created, modified, list_id, user_id, is_subscribed) FROM stdin;
@@ -4290,14 +4062,14 @@ COPY list_subscribers (id, created, modified, list_id, user_id, is_subscribed) F
 
 
 --
--- Name: list_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: list_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('list_subscribers_id_seq', 1, false);
 
 
 --
--- Data for Name: lists; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: lists; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY lists (id, created, modified, board_id, user_id, name, "position", is_archived, card_count, lists_subscriber_count, is_deleted) FROM stdin;
@@ -4305,21 +4077,21 @@ COPY lists (id, created, modified, board_id, user_id, name, "position", is_archi
 
 
 --
--- Name: lists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: lists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('lists_id_seq', 196, true);
 
 
 --
--- Name: lists_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: lists_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('lists_subscribers_id_seq', 1, true);
 
 
 --
--- Data for Name: login_types; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: login_types; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY login_types (id, created, modified, name) FROM stdin;
@@ -4329,14 +4101,14 @@ COPY login_types (id, created, modified, name) FROM stdin;
 
 
 --
--- Name: login_types_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: login_types_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('login_types_id_seq', 2, true);
 
 
 --
--- Data for Name: oauth_access_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: oauth_access_tokens; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY oauth_access_tokens (access_token, client_id, user_id, expires, scope) FROM stdin;
@@ -4344,7 +4116,7 @@ COPY oauth_access_tokens (access_token, client_id, user_id, expires, scope) FROM
 
 
 --
--- Data for Name: oauth_authorization_codes; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: oauth_authorization_codes; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY oauth_authorization_codes (authorization_code, client_id, user_id, redirect_uri, expires, scope) FROM stdin;
@@ -4352,7 +4124,7 @@ COPY oauth_authorization_codes (authorization_code, client_id, user_id, redirect
 
 
 --
--- Data for Name: oauth_clients; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: oauth_clients; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY oauth_clients (client_id, client_secret, redirect_uri, grant_types, scope, user_id) FROM stdin;
@@ -4361,7 +4133,7 @@ COPY oauth_clients (client_id, client_secret, redirect_uri, grant_types, scope, 
 
 
 --
--- Data for Name: oauth_jwt; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: oauth_jwt; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY oauth_jwt (client_id, subject, public_key) FROM stdin;
@@ -4369,7 +4141,7 @@ COPY oauth_jwt (client_id, subject, public_key) FROM stdin;
 
 
 --
--- Data for Name: oauth_refresh_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: oauth_refresh_tokens; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY oauth_refresh_tokens (refresh_token, client_id, user_id, expires, scope) FROM stdin;
@@ -4380,7 +4152,7 @@ b43d289f47100a9c70ebd21f31c15db059ef82bb	7742632501382313	admin	2015-06-04 08:15
 
 
 --
--- Data for Name: oauth_scopes; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: oauth_scopes; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY oauth_scopes (scope, is_default) FROM stdin;
@@ -4388,7 +4160,7 @@ COPY oauth_scopes (scope, is_default) FROM stdin;
 
 
 --
--- Data for Name: organizations; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: organizations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY organizations (id, created, modified, user_id, name, website_url, description, logo_url, organization_visibility, organizations_user_count, board_count) FROM stdin;
@@ -4396,14 +4168,14 @@ COPY organizations (id, created, modified, user_id, name, website_url, descripti
 
 
 --
--- Name: organizations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: organizations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('organizations_id_seq', 1, true);
 
 
 --
--- Data for Name: organizations_users; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: organizations_users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY organizations_users (id, created, modified, organization_id, user_id, is_admin) FROM stdin;
@@ -4411,14 +4183,14 @@ COPY organizations_users (id, created, modified, organization_id, user_id, is_ad
 
 
 --
--- Name: organizations_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: organizations_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('organizations_users_id_seq', 1, true);
 
 
 --
--- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY roles (id, created, modified, name) FROM stdin;
@@ -4429,14 +4201,14 @@ COPY roles (id, created, modified, name) FROM stdin;
 
 
 --
--- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('roles_id_seq', 3, true);
 
 
 --
--- Data for Name: setting_categories; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: setting_categories; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY setting_categories (id, created, modified, parent_id, name, description, "order") FROM stdin;
@@ -4452,14 +4224,14 @@ COPY setting_categories (id, created, modified, parent_id, name, description, "o
 
 
 --
--- Name: setting_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: setting_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('setting_categories_id_seq', 5, true);
 
 
 --
--- Data for Name: settings; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: settings; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY settings (id, setting_category_id, setting_category_parent_id, name, value, description, type, options, label, "order") FROM stdin;
@@ -4489,14 +4261,14 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 
 
 --
--- Name: settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('settings_id_seq', 23, true);
 
 
 --
--- Data for Name: states; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: states; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY states (id, created, modified, country_id, name, is_active) FROM stdin;
@@ -4505,21 +4277,21 @@ COPY states (id, created, modified, country_id, name, is_active) FROM stdin;
 
 
 --
--- Name: states_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: states_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('states_id_seq', 15138, false);
 
 
 --
--- Name: states_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: states_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('states_id_seq1', 1, true);
 
 
 --
--- Data for Name: user_logins; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: user_logins; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY user_logins (id, created, modified, user_id, ip_id, user_agent) FROM stdin;
@@ -4529,14 +4301,14 @@ COPY user_logins (id, created, modified, user_id, ip_id, user_agent) FROM stdin;
 
 
 --
--- Name: user_logins_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: user_logins_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('user_logins_id_seq', 2, true);
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count) FROM stdin;
@@ -4546,14 +4318,14 @@ COPY users (id, created, modified, role_id, username, email, password, full_name
 
 
 --
--- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('users_id_seq', 2, true);
 
 
 --
--- Name: acl_links_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: acl_links_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY acl_links
@@ -4561,7 +4333,7 @@ ALTER TABLE ONLY acl_links
 
 
 --
--- Name: acl_links_roles_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: acl_links_roles_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY acl_links_roles
@@ -4569,7 +4341,7 @@ ALTER TABLE ONLY acl_links_roles
 
 
 --
--- Name: activities_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY activities
@@ -4577,7 +4349,7 @@ ALTER TABLE ONLY activities
 
 
 --
--- Name: board_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY board_subscribers
@@ -4585,7 +4357,7 @@ ALTER TABLE ONLY board_subscribers
 
 
 --
--- Name: board_users_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_users_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY boards_users
@@ -4593,7 +4365,7 @@ ALTER TABLE ONLY boards_users
 
 
 --
--- Name: boards_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: boards_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY boards
@@ -4601,7 +4373,7 @@ ALTER TABLE ONLY boards
 
 
 --
--- Name: card_attachments_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_attachments_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY card_attachments
@@ -4609,7 +4381,7 @@ ALTER TABLE ONLY card_attachments
 
 
 --
--- Name: card_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY card_subscribers
@@ -4617,7 +4389,7 @@ ALTER TABLE ONLY card_subscribers
 
 
 --
--- Name: card_users_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_users_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY cards_users
@@ -4625,7 +4397,7 @@ ALTER TABLE ONLY cards_users
 
 
 --
--- Name: card_voters_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_voters_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY card_voters
@@ -4633,7 +4405,7 @@ ALTER TABLE ONLY card_voters
 
 
 --
--- Name: cards_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY cards
@@ -4641,7 +4413,7 @@ ALTER TABLE ONLY cards
 
 
 --
--- Name: cards_labels_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_labels_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY cards_labels
@@ -4649,7 +4421,7 @@ ALTER TABLE ONLY cards_labels
 
 
 --
--- Name: checklist_items_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklist_items_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY checklist_items
@@ -4657,7 +4429,7 @@ ALTER TABLE ONLY checklist_items
 
 
 --
--- Name: checklists_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklists_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY checklists
@@ -4665,7 +4437,7 @@ ALTER TABLE ONLY checklists
 
 
 --
--- Name: cities_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cities_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY cities
@@ -4673,7 +4445,7 @@ ALTER TABLE ONLY cities
 
 
 --
--- Name: countries_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: countries_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY countries
@@ -4681,7 +4453,7 @@ ALTER TABLE ONLY countries
 
 
 --
--- Name: email_templates_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: email_templates_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY email_templates
@@ -4689,7 +4461,7 @@ ALTER TABLE ONLY email_templates
 
 
 --
--- Name: ips_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ips_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY ips
@@ -4697,7 +4469,7 @@ ALTER TABLE ONLY ips
 
 
 --
--- Name: labels_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: labels_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY labels
@@ -4705,7 +4477,7 @@ ALTER TABLE ONLY labels
 
 
 --
--- Name: lists_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: lists_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY lists
@@ -4713,7 +4485,7 @@ ALTER TABLE ONLY lists
 
 
 --
--- Name: lists_subscribers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: lists_subscribers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY list_subscribers
@@ -4721,7 +4493,7 @@ ALTER TABLE ONLY list_subscribers
 
 
 --
--- Name: oauth_access_tokens_access_token; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_access_tokens_access_token; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY oauth_access_tokens
@@ -4729,7 +4501,7 @@ ALTER TABLE ONLY oauth_access_tokens
 
 
 --
--- Name: oauth_authorization_codes_authorization_code; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_authorization_codes_authorization_code; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY oauth_authorization_codes
@@ -4737,7 +4509,7 @@ ALTER TABLE ONLY oauth_authorization_codes
 
 
 --
--- Name: oauth_clients_client_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_clients_client_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY oauth_clients
@@ -4745,7 +4517,7 @@ ALTER TABLE ONLY oauth_clients
 
 
 --
--- Name: oauth_jwt_client_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_jwt_client_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY oauth_jwt
@@ -4753,7 +4525,7 @@ ALTER TABLE ONLY oauth_jwt
 
 
 --
--- Name: oauth_refresh_tokens_refresh_token; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_refresh_tokens_refresh_token; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY oauth_refresh_tokens
@@ -4761,7 +4533,7 @@ ALTER TABLE ONLY oauth_refresh_tokens
 
 
 --
--- Name: organization_users_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organization_users_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY organizations_users
@@ -4769,7 +4541,7 @@ ALTER TABLE ONLY organizations_users
 
 
 --
--- Name: organizations_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organizations_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY organizations
@@ -4777,7 +4549,7 @@ ALTER TABLE ONLY organizations
 
 
 --
--- Name: roles_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: roles_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY roles
@@ -4785,7 +4557,7 @@ ALTER TABLE ONLY roles
 
 
 --
--- Name: setting_categories_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: setting_categories_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY setting_categories
@@ -4793,7 +4565,7 @@ ALTER TABLE ONLY setting_categories
 
 
 --
--- Name: settings_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: settings_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY settings
@@ -4801,7 +4573,7 @@ ALTER TABLE ONLY settings
 
 
 --
--- Name: states_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: states_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY states
@@ -4809,7 +4581,7 @@ ALTER TABLE ONLY states
 
 
 --
--- Name: users_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY users
@@ -4817,616 +4589,616 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: acl_links_roles_acl_link_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: acl_links_roles_acl_link_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX acl_links_roles_acl_link_id ON acl_links_roles USING btree (acl_link_id);
 
 
 --
--- Name: acl_links_roles_role_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: acl_links_roles_role_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX acl_links_roles_role_id ON acl_links_roles USING btree (role_id);
 
 
 --
--- Name: acl_links_slug; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: acl_links_slug; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX acl_links_slug ON acl_links USING btree (slug);
 
 
 --
--- Name: activities_attachment_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_attachment_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_attachment_id ON activities USING btree (foreign_id);
 
 
 --
--- Name: activities_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_board_id ON activities USING btree (board_id);
 
 
 --
--- Name: activities_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_card_id ON activities USING btree (card_id);
 
 
 --
--- Name: activities_depth; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_depth; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_depth ON activities USING btree (depth);
 
 
 --
--- Name: activities_freshness_ts; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_freshness_ts; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_freshness_ts ON activities USING btree (freshness_ts);
 
 
 --
--- Name: activities_list_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_list_id ON activities USING btree (list_id);
 
 
 --
--- Name: activities_materialized_path; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_materialized_path; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_materialized_path ON activities USING btree (materialized_path);
 
 
 --
--- Name: activities_path; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_path; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_path ON activities USING btree (path);
 
 
 --
--- Name: activities_root; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_root; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_root ON activities USING btree (root);
 
 
 --
--- Name: activities_type; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_type ON activities USING btree (type);
 
 
 --
--- Name: activities_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_user_id ON activities USING btree (user_id);
 
 
 --
--- Name: attachments_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: attachments_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX attachments_card_id ON card_attachments USING btree (card_id);
 
 
 --
--- Name: board_stars_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_stars_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX board_stars_board_id ON board_stars USING btree (board_id);
 
 
 --
--- Name: board_stars_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_stars_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX board_stars_user_id ON board_stars USING btree (user_id);
 
 
 --
--- Name: board_subscribers_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_subscribers_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX board_subscribers_board_id ON board_subscribers USING btree (board_id);
 
 
 --
--- Name: board_subscribers_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_subscribers_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX board_subscribers_user_id ON board_subscribers USING btree (user_id);
 
 
 --
--- Name: board_users_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_users_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX board_users_board_id ON boards_users USING btree (board_id);
 
 
 --
--- Name: board_users_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_users_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX board_users_user_id ON boards_users USING btree (user_id);
 
 
 --
--- Name: boards_organization_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: boards_organization_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX boards_organization_id ON boards USING btree (organization_id);
 
 
 --
--- Name: boards_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: boards_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX boards_user_id ON boards USING btree (user_id);
 
 
 --
--- Name: card_attachments_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_attachments_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_attachments_board_id ON card_attachments USING btree (board_id);
 
 
 --
--- Name: card_attachments_list_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_attachments_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_attachments_list_id ON card_attachments USING btree (list_id);
 
 
 --
--- Name: card_subscribers_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_subscribers_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_subscribers_card_id ON card_subscribers USING btree (card_id);
 
 
 --
--- Name: card_subscribers_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_subscribers_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_subscribers_user_id ON card_subscribers USING btree (user_id);
 
 
 --
--- Name: card_users_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_users_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_users_card_id ON cards_users USING btree (card_id);
 
 
 --
--- Name: card_users_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_users_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_users_user_id ON cards_users USING btree (user_id);
 
 
 --
--- Name: card_voters_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_voters_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_voters_card_id ON card_voters USING btree (card_id);
 
 
 --
--- Name: card_voters_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_voters_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_voters_user_id ON card_voters USING btree (user_id);
 
 
 --
--- Name: cards_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_board_id ON cards USING btree (board_id);
 
 
 --
--- Name: cards_labels_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_labels_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_labels_board_id ON cards_labels USING btree (board_id);
 
 
 --
--- Name: cards_labels_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_labels_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_labels_card_id ON cards_labels USING btree (card_id);
 
 
 --
--- Name: cards_labels_label_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_labels_label_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_labels_label_id ON cards_labels USING btree (label_id);
 
 
 --
--- Name: cards_labels_list_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_labels_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_labels_list_id ON cards_labels USING btree (list_id);
 
 
 --
--- Name: cards_list_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_list_id ON cards USING btree (list_id);
 
 
 --
--- Name: cards_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_user_id ON cards USING btree (user_id);
 
 
 --
--- Name: checklist_items_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklist_items_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX checklist_items_card_id ON checklist_items USING btree (card_id);
 
 
 --
--- Name: checklist_items_checklist_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklist_items_checklist_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX checklist_items_checklist_id ON checklist_items USING btree (checklist_id);
 
 
 --
--- Name: checklist_items_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklist_items_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX checklist_items_user_id ON checklist_items USING btree (user_id);
 
 
 --
--- Name: checklists_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklists_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX checklists_card_id ON checklists USING btree (card_id);
 
 
 --
--- Name: checklists_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklists_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX checklists_user_id ON checklists USING btree (user_id);
 
 
 --
--- Name: email_templates_name; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: email_templates_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX email_templates_name ON email_templates USING btree (name);
 
 
 --
--- Name: labels_name; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: labels_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX labels_name ON labels USING btree (name);
 
 
 --
--- Name: list_subscribers_list_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: list_subscribers_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX list_subscribers_list_id ON list_subscribers USING btree (list_id);
 
 
 --
--- Name: list_subscribers_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: list_subscribers_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX list_subscribers_user_id ON list_subscribers USING btree (user_id);
 
 
 --
--- Name: lists_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: lists_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX lists_board_id ON lists USING btree (board_id);
 
 
 --
--- Name: lists_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: lists_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX lists_user_id ON lists USING btree (user_id);
 
 
 --
--- Name: oauth_access_tokens_client_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_access_tokens_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_access_tokens_client_id ON oauth_access_tokens USING btree (client_id);
 
 
 --
--- Name: oauth_access_tokens_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_access_tokens_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_access_tokens_user_id ON oauth_access_tokens USING btree (user_id);
 
 
 --
--- Name: oauth_authorization_codes_client_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_authorization_codes_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_authorization_codes_client_id ON oauth_authorization_codes USING btree (client_id);
 
 
 --
--- Name: oauth_authorization_codes_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_authorization_codes_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_authorization_codes_user_id ON oauth_authorization_codes USING btree (user_id);
 
 
 --
--- Name: oauth_clients_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_clients_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_clients_user_id ON oauth_clients USING btree (user_id);
 
 
 --
--- Name: oauth_refresh_tokens_client_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_refresh_tokens_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_refresh_tokens_client_id ON oauth_refresh_tokens USING btree (client_id);
 
 
 --
--- Name: oauth_refresh_tokens_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_refresh_tokens_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_refresh_tokens_user_id ON oauth_refresh_tokens USING btree (user_id);
 
 
 --
--- Name: organization_users_organization_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organization_users_organization_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX organization_users_organization_id ON organizations_users USING btree (organization_id);
 
 
 --
--- Name: organization_users_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organization_users_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX organization_users_user_id ON organizations_users USING btree (user_id);
 
 
 --
--- Name: organizations_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organizations_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX organizations_user_id ON organizations USING btree (user_id);
 
 
 --
--- Name: roles_name; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: roles_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX roles_name ON roles USING btree (name);
 
 
 --
--- Name: setting_categories_parent_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: setting_categories_parent_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX setting_categories_parent_id ON setting_categories USING btree (parent_id);
 
 
 --
--- Name: settings_setting_category_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: settings_setting_category_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX settings_setting_category_id ON settings USING btree (setting_category_id);
 
 
 --
--- Name: settings_setting_category_parent_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: settings_setting_category_parent_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX settings_setting_category_parent_id ON settings USING btree (setting_category_parent_id);
 
 
 --
--- Name: users_email; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users_email; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX users_email ON users USING btree (email);
 
 
 --
--- Name: users_last_activity_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users_last_activity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX users_last_activity_id ON users USING btree (last_activity_id);
 
 
 --
--- Name: users_role_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users_role_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX users_role_id ON users USING btree (role_id);
 
 
 --
--- Name: users_username; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users_username; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX users_username ON users USING btree (username);
 
 
 --
--- Name: label_card_count_update; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: label_card_count_update; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER label_card_count_update AFTER INSERT OR DELETE OR UPDATE ON cards_labels FOR EACH ROW EXECUTE PROCEDURE label_card_count_update();
 
 
 --
--- Name: update_board_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_board_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_board_count AFTER INSERT OR DELETE OR UPDATE ON boards FOR EACH ROW EXECUTE PROCEDURE update_board_count();
 
 
 --
--- Name: update_board_star_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_board_star_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_board_star_count AFTER INSERT OR DELETE OR UPDATE ON board_stars FOR EACH ROW EXECUTE PROCEDURE update_board_star_count();
 
 
 --
--- Name: update_board_subscriber_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_board_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_board_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON board_subscribers FOR EACH ROW EXECUTE PROCEDURE update_board_subscriber_count();
 
 
 --
--- Name: update_board_user_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_board_user_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_board_user_count AFTER INSERT OR DELETE OR UPDATE ON boards_users FOR EACH ROW EXECUTE PROCEDURE update_board_user_count();
 
 
 --
--- Name: update_card_activity_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_activity_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_activity_count AFTER INSERT OR DELETE OR UPDATE ON activities FOR EACH ROW EXECUTE PROCEDURE update_card_activity_count();
 
 
 --
--- Name: update_card_attachment_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_attachment_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_attachment_count AFTER INSERT OR DELETE OR UPDATE ON card_attachments FOR EACH ROW EXECUTE PROCEDURE update_card_attachment_count();
 
 
 --
--- Name: update_card_checklist_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_checklist_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_checklist_count AFTER INSERT OR DELETE OR UPDATE ON checklists FOR EACH ROW EXECUTE PROCEDURE update_card_checklist_count();
 
 
 --
--- Name: update_card_checklist_item_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_checklist_item_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_checklist_item_count AFTER INSERT OR DELETE OR UPDATE ON checklist_items FOR EACH ROW EXECUTE PROCEDURE update_card_checklist_item_count();
 
 
 --
--- Name: update_card_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_count AFTER INSERT OR DELETE OR UPDATE ON cards FOR EACH ROW EXECUTE PROCEDURE update_card_count();
 
 
 --
--- Name: update_card_subscriber_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON card_subscribers FOR EACH ROW EXECUTE PROCEDURE update_card_subscriber_count();
 
 
 --
--- Name: update_card_user_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_user_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_user_count AFTER INSERT OR DELETE OR UPDATE ON cards_users FOR EACH ROW EXECUTE PROCEDURE update_card_user_count();
 
 
 --
--- Name: update_card_voters_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_voters_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_voters_count AFTER INSERT OR DELETE OR UPDATE ON card_voters FOR EACH ROW EXECUTE PROCEDURE update_card_voters_count();
 
 
 --
--- Name: update_comment_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_comment_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_comment_count AFTER INSERT OR DELETE OR UPDATE ON activities FOR EACH ROW EXECUTE PROCEDURE update_comment_count();
 
 
 --
--- Name: update_list_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_list_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_list_count AFTER INSERT OR DELETE OR UPDATE ON lists FOR EACH ROW EXECUTE PROCEDURE update_list_count();
 
 
 --
--- Name: update_list_subscriber_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_list_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_list_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON list_subscribers FOR EACH ROW EXECUTE PROCEDURE update_list_subscriber_count();
 
 
 --
--- Name: update_organization_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_organization_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_organization_count AFTER INSERT OR DELETE OR UPDATE ON organizations FOR EACH ROW EXECUTE PROCEDURE update_organization_count();
 
 
 --
--- Name: update_organization_user_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_organization_user_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_organization_user_count AFTER INSERT OR DELETE OR UPDATE ON organizations_users FOR EACH ROW EXECUTE PROCEDURE update_organization_user_count();
 
 
 --
--- Name: update_user_delete; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_user_delete; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_user_delete AFTER DELETE ON users FOR EACH ROW EXECUTE PROCEDURE update_user_delete();
 
 
 --
--- Name: update_users_user_login_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_users_user_login_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_users_user_login_count AFTER INSERT OR DELETE OR UPDATE ON user_logins FOR EACH ROW EXECUTE PROCEDURE update_users_user_login_count();
 
 
 --
--- Name: cities_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: cities_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cities
@@ -5434,7 +5206,7 @@ ALTER TABLE ONLY cities
 
 
 --
--- Name: cities_state_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: cities_state_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cities
@@ -5442,7 +5214,7 @@ ALTER TABLE ONLY cities
 
 
 --
--- Name: states_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: states_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states
@@ -5450,7 +5222,7 @@ ALTER TABLE ONLY states
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: postgres
+-- Name: public; Type: ACL; Schema: -; Owner: -
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
@@ -5460,7 +5232,7 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
--- Name: acl_links_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: acl_links_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE acl_links_id_seq FROM PUBLIC;
@@ -5469,7 +5241,7 @@ GRANT ALL ON SEQUENCE acl_links_id_seq TO postgres;
 
 
 --
--- Name: acl_links; Type: ACL; Schema: public; Owner: postgres
+-- Name: acl_links; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE acl_links FROM PUBLIC;
@@ -5478,7 +5250,7 @@ GRANT ALL ON TABLE acl_links TO postgres;
 
 
 --
--- Name: acl_links_roles_roles_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: acl_links_roles_roles_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE acl_links_roles_roles_id_seq FROM PUBLIC;
@@ -5487,7 +5259,7 @@ GRANT ALL ON SEQUENCE acl_links_roles_roles_id_seq TO postgres;
 
 
 --
--- Name: acl_links_roles; Type: ACL; Schema: public; Owner: postgres
+-- Name: acl_links_roles; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE acl_links_roles FROM PUBLIC;
@@ -5496,7 +5268,7 @@ GRANT ALL ON TABLE acl_links_roles TO postgres;
 
 
 --
--- Name: acl_links_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: acl_links_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE acl_links_listing FROM PUBLIC;
@@ -5505,7 +5277,7 @@ GRANT ALL ON TABLE acl_links_listing TO postgres;
 
 
 --
--- Name: activities_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: activities_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE activities_id_seq FROM PUBLIC;
@@ -5514,7 +5286,7 @@ GRANT ALL ON SEQUENCE activities_id_seq TO postgres;
 
 
 --
--- Name: activities; Type: ACL; Schema: public; Owner: postgres
+-- Name: activities; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE activities FROM PUBLIC;
@@ -5523,7 +5295,7 @@ GRANT ALL ON TABLE activities TO postgres;
 
 
 --
--- Name: boards_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: boards_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE boards_id_seq FROM PUBLIC;
@@ -5532,7 +5304,7 @@ GRANT ALL ON SEQUENCE boards_id_seq TO postgres;
 
 
 --
--- Name: boards; Type: ACL; Schema: public; Owner: postgres
+-- Name: boards; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE boards FROM PUBLIC;
@@ -5541,7 +5313,7 @@ GRANT ALL ON TABLE boards TO postgres;
 
 
 --
--- Name: cards_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE cards_id_seq FROM PUBLIC;
@@ -5550,7 +5322,7 @@ GRANT ALL ON SEQUENCE cards_id_seq TO postgres;
 
 
 --
--- Name: cards; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE cards FROM PUBLIC;
@@ -5559,7 +5331,7 @@ GRANT ALL ON TABLE cards TO postgres;
 
 
 --
--- Name: cards_labels_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_labels_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE cards_labels_id_seq FROM PUBLIC;
@@ -5568,7 +5340,7 @@ GRANT ALL ON SEQUENCE cards_labels_id_seq TO postgres;
 
 
 --
--- Name: cards_labels; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_labels; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE cards_labels FROM PUBLIC;
@@ -5577,7 +5349,7 @@ GRANT ALL ON TABLE cards_labels TO postgres;
 
 
 --
--- Name: labels_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: labels_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE labels_id_seq FROM PUBLIC;
@@ -5586,7 +5358,7 @@ GRANT ALL ON SEQUENCE labels_id_seq TO postgres;
 
 
 --
--- Name: labels; Type: ACL; Schema: public; Owner: postgres
+-- Name: labels; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE labels FROM PUBLIC;
@@ -5595,7 +5367,7 @@ GRANT ALL ON TABLE labels TO postgres;
 
 
 --
--- Name: cards_labels_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_labels_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE cards_labels_listing FROM PUBLIC;
@@ -5604,7 +5376,7 @@ GRANT ALL ON TABLE cards_labels_listing TO postgres;
 
 
 --
--- Name: checklist_items_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: checklist_items_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE checklist_items_id_seq FROM PUBLIC;
@@ -5613,7 +5385,7 @@ GRANT ALL ON SEQUENCE checklist_items_id_seq TO postgres;
 
 
 --
--- Name: checklist_items; Type: ACL; Schema: public; Owner: postgres
+-- Name: checklist_items; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE checklist_items FROM PUBLIC;
@@ -5622,7 +5394,7 @@ GRANT ALL ON TABLE checklist_items TO postgres;
 
 
 --
--- Name: checklists_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: checklists_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE checklists_id_seq FROM PUBLIC;
@@ -5631,7 +5403,7 @@ GRANT ALL ON SEQUENCE checklists_id_seq TO postgres;
 
 
 --
--- Name: checklists; Type: ACL; Schema: public; Owner: postgres
+-- Name: checklists; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE checklists FROM PUBLIC;
@@ -5640,7 +5412,7 @@ GRANT ALL ON TABLE checklists TO postgres;
 
 
 --
--- Name: lists_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: lists_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE lists_id_seq FROM PUBLIC;
@@ -5649,7 +5421,7 @@ GRANT ALL ON SEQUENCE lists_id_seq TO postgres;
 
 
 --
--- Name: lists; Type: ACL; Schema: public; Owner: postgres
+-- Name: lists; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE lists FROM PUBLIC;
@@ -5658,7 +5430,7 @@ GRANT ALL ON TABLE lists TO postgres;
 
 
 --
--- Name: organizations_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: organizations_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE organizations_id_seq FROM PUBLIC;
@@ -5667,7 +5439,7 @@ GRANT ALL ON SEQUENCE organizations_id_seq TO postgres;
 
 
 --
--- Name: organizations; Type: ACL; Schema: public; Owner: postgres
+-- Name: organizations; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE organizations FROM PUBLIC;
@@ -5676,7 +5448,7 @@ GRANT ALL ON TABLE organizations TO postgres;
 
 
 --
--- Name: users_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE users_id_seq FROM PUBLIC;
@@ -5685,7 +5457,7 @@ GRANT ALL ON SEQUENCE users_id_seq TO postgres;
 
 
 --
--- Name: users; Type: ACL; Schema: public; Owner: postgres
+-- Name: users; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE users FROM PUBLIC;
@@ -5694,7 +5466,7 @@ GRANT ALL ON TABLE users TO postgres;
 
 
 --
--- Name: activities_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: activities_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE activities_listing FROM PUBLIC;
@@ -5703,7 +5475,7 @@ GRANT ALL ON TABLE activities_listing TO postgres;
 
 
 --
--- Name: attachments_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: attachments_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE attachments_id_seq FROM PUBLIC;
@@ -5712,7 +5484,7 @@ GRANT ALL ON SEQUENCE attachments_id_seq TO postgres;
 
 
 --
--- Name: boards_stars_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: boards_stars_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE boards_stars_id_seq FROM PUBLIC;
@@ -5721,7 +5493,7 @@ GRANT ALL ON SEQUENCE boards_stars_id_seq TO postgres;
 
 
 --
--- Name: board_stars; Type: ACL; Schema: public; Owner: postgres
+-- Name: board_stars; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE board_stars FROM PUBLIC;
@@ -5730,7 +5502,7 @@ GRANT ALL ON TABLE board_stars TO postgres;
 
 
 --
--- Name: boards_subscribers_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: boards_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE boards_subscribers_id_seq FROM PUBLIC;
@@ -5739,7 +5511,7 @@ GRANT ALL ON SEQUENCE boards_subscribers_id_seq TO postgres;
 
 
 --
--- Name: board_subscribers; Type: ACL; Schema: public; Owner: postgres
+-- Name: board_subscribers; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE board_subscribers FROM PUBLIC;
@@ -5748,7 +5520,7 @@ GRANT ALL ON TABLE board_subscribers TO postgres;
 
 
 --
--- Name: boards_labels_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: boards_labels_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE boards_labels_listing FROM PUBLIC;
@@ -5757,7 +5529,7 @@ GRANT ALL ON TABLE boards_labels_listing TO postgres;
 
 
 --
--- Name: boards_users_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: boards_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE boards_users_id_seq FROM PUBLIC;
@@ -5766,7 +5538,7 @@ GRANT ALL ON SEQUENCE boards_users_id_seq TO postgres;
 
 
 --
--- Name: boards_users; Type: ACL; Schema: public; Owner: postgres
+-- Name: boards_users; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE boards_users FROM PUBLIC;
@@ -5775,7 +5547,7 @@ GRANT ALL ON TABLE boards_users TO postgres;
 
 
 --
--- Name: card_attachments_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: card_attachments_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE card_attachments_id_seq FROM PUBLIC;
@@ -5784,7 +5556,7 @@ GRANT ALL ON SEQUENCE card_attachments_id_seq TO postgres;
 
 
 --
--- Name: card_attachments; Type: ACL; Schema: public; Owner: postgres
+-- Name: card_attachments; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE card_attachments FROM PUBLIC;
@@ -5793,7 +5565,7 @@ GRANT ALL ON TABLE card_attachments TO postgres;
 
 
 --
--- Name: cards_subscribers_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE cards_subscribers_id_seq FROM PUBLIC;
@@ -5802,7 +5574,7 @@ GRANT ALL ON SEQUENCE cards_subscribers_id_seq TO postgres;
 
 
 --
--- Name: card_subscribers; Type: ACL; Schema: public; Owner: postgres
+-- Name: card_subscribers; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE card_subscribers FROM PUBLIC;
@@ -5811,7 +5583,7 @@ GRANT ALL ON TABLE card_subscribers TO postgres;
 
 
 --
--- Name: card_voters_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: card_voters_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE card_voters_id_seq FROM PUBLIC;
@@ -5820,7 +5592,7 @@ GRANT ALL ON SEQUENCE card_voters_id_seq TO postgres;
 
 
 --
--- Name: card_voters; Type: ACL; Schema: public; Owner: postgres
+-- Name: card_voters; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE card_voters FROM PUBLIC;
@@ -5829,7 +5601,7 @@ GRANT ALL ON TABLE card_voters TO postgres;
 
 
 --
--- Name: card_voters_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: card_voters_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE card_voters_listing FROM PUBLIC;
@@ -5838,7 +5610,7 @@ GRANT ALL ON TABLE card_voters_listing TO postgres;
 
 
 --
--- Name: cards_users_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE cards_users_id_seq FROM PUBLIC;
@@ -5847,7 +5619,7 @@ GRANT ALL ON SEQUENCE cards_users_id_seq TO postgres;
 
 
 --
--- Name: cards_users; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_users; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE cards_users FROM PUBLIC;
@@ -5856,7 +5628,7 @@ GRANT ALL ON TABLE cards_users TO postgres;
 
 
 --
--- Name: cards_users_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_users_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE cards_users_listing FROM PUBLIC;
@@ -5865,7 +5637,7 @@ GRANT ALL ON TABLE cards_users_listing TO postgres;
 
 
 --
--- Name: checklists_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: checklists_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE checklists_listing FROM PUBLIC;
@@ -5874,7 +5646,7 @@ GRANT ALL ON TABLE checklists_listing TO postgres;
 
 
 --
--- Name: lists_subscribers_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: lists_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE lists_subscribers_id_seq FROM PUBLIC;
@@ -5883,7 +5655,7 @@ GRANT ALL ON SEQUENCE lists_subscribers_id_seq TO postgres;
 
 
 --
--- Name: list_subscribers; Type: ACL; Schema: public; Owner: postgres
+-- Name: list_subscribers; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE list_subscribers FROM PUBLIC;
@@ -5892,7 +5664,7 @@ GRANT ALL ON TABLE list_subscribers TO postgres;
 
 
 --
--- Name: checklist_add_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: checklist_add_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE checklist_add_listing FROM PUBLIC;
@@ -5901,7 +5673,7 @@ GRANT ALL ON TABLE checklist_add_listing TO postgres;
 
 
 --
--- Name: cities; Type: ACL; Schema: public; Owner: postgres
+-- Name: cities; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE cities FROM PUBLIC;
@@ -5910,7 +5682,7 @@ GRANT ALL ON TABLE cities TO postgres;
 
 
 --
--- Name: cities_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: cities_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE cities_id_seq FROM PUBLIC;
@@ -5919,7 +5691,7 @@ GRANT ALL ON SEQUENCE cities_id_seq TO postgres;
 
 
 --
--- Name: cities_id_seq1; Type: ACL; Schema: public; Owner: postgres
+-- Name: cities_id_seq1; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE cities_id_seq1 FROM PUBLIC;
@@ -5928,7 +5700,7 @@ GRANT ALL ON SEQUENCE cities_id_seq1 TO postgres;
 
 
 --
--- Name: countries; Type: ACL; Schema: public; Owner: postgres
+-- Name: countries; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE countries FROM PUBLIC;
@@ -5937,7 +5709,7 @@ GRANT ALL ON TABLE countries TO postgres;
 
 
 --
--- Name: countries_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: countries_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE countries_id_seq FROM PUBLIC;
@@ -5946,7 +5718,7 @@ GRANT ALL ON SEQUENCE countries_id_seq TO postgres;
 
 
 --
--- Name: countries_id_seq1; Type: ACL; Schema: public; Owner: postgres
+-- Name: countries_id_seq1; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE countries_id_seq1 FROM PUBLIC;
@@ -5955,7 +5727,7 @@ GRANT ALL ON SEQUENCE countries_id_seq1 TO postgres;
 
 
 --
--- Name: email_templates_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: email_templates_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE email_templates_id_seq FROM PUBLIC;
@@ -5964,7 +5736,7 @@ GRANT ALL ON SEQUENCE email_templates_id_seq TO postgres;
 
 
 --
--- Name: email_templates; Type: ACL; Schema: public; Owner: postgres
+-- Name: email_templates; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE email_templates FROM PUBLIC;
@@ -5973,7 +5745,7 @@ GRANT ALL ON TABLE email_templates TO postgres;
 
 
 --
--- Name: gadget_users_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: gadget_users_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE gadget_users_listing FROM PUBLIC;
@@ -5982,7 +5754,7 @@ GRANT ALL ON TABLE gadget_users_listing TO postgres;
 
 
 --
--- Name: ips_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: ips_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE ips_id_seq FROM PUBLIC;
@@ -5991,7 +5763,7 @@ GRANT ALL ON SEQUENCE ips_id_seq TO postgres;
 
 
 --
--- Name: ips; Type: ACL; Schema: public; Owner: postgres
+-- Name: ips; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE ips FROM PUBLIC;
@@ -6000,7 +5772,7 @@ GRANT ALL ON TABLE ips TO postgres;
 
 
 --
--- Name: list_subscribers_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: list_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE list_subscribers_id_seq FROM PUBLIC;
@@ -6009,7 +5781,7 @@ GRANT ALL ON SEQUENCE list_subscribers_id_seq TO postgres;
 
 
 --
--- Name: login_types_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: login_types_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE login_types_id_seq FROM PUBLIC;
@@ -6018,7 +5790,7 @@ GRANT ALL ON SEQUENCE login_types_id_seq TO postgres;
 
 
 --
--- Name: login_types; Type: ACL; Schema: public; Owner: postgres
+-- Name: login_types; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE login_types FROM PUBLIC;
@@ -6027,7 +5799,7 @@ GRANT ALL ON TABLE login_types TO postgres;
 
 
 --
--- Name: oauth_access_tokens; Type: ACL; Schema: public; Owner: postgres
+-- Name: oauth_access_tokens; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE oauth_access_tokens FROM PUBLIC;
@@ -6036,7 +5808,7 @@ GRANT ALL ON TABLE oauth_access_tokens TO postgres;
 
 
 --
--- Name: oauth_authorization_codes; Type: ACL; Schema: public; Owner: postgres
+-- Name: oauth_authorization_codes; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE oauth_authorization_codes FROM PUBLIC;
@@ -6045,7 +5817,7 @@ GRANT ALL ON TABLE oauth_authorization_codes TO postgres;
 
 
 --
--- Name: oauth_clients; Type: ACL; Schema: public; Owner: postgres
+-- Name: oauth_clients; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE oauth_clients FROM PUBLIC;
@@ -6054,7 +5826,7 @@ GRANT ALL ON TABLE oauth_clients TO postgres;
 
 
 --
--- Name: oauth_jwt; Type: ACL; Schema: public; Owner: postgres
+-- Name: oauth_jwt; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE oauth_jwt FROM PUBLIC;
@@ -6063,7 +5835,7 @@ GRANT ALL ON TABLE oauth_jwt TO postgres;
 
 
 --
--- Name: oauth_refresh_tokens; Type: ACL; Schema: public; Owner: postgres
+-- Name: oauth_refresh_tokens; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE oauth_refresh_tokens FROM PUBLIC;
@@ -6072,7 +5844,7 @@ GRANT ALL ON TABLE oauth_refresh_tokens TO postgres;
 
 
 --
--- Name: oauth_scopes; Type: ACL; Schema: public; Owner: postgres
+-- Name: oauth_scopes; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE oauth_scopes FROM PUBLIC;
@@ -6081,7 +5853,7 @@ GRANT ALL ON TABLE oauth_scopes TO postgres;
 
 
 --
--- Name: organizations_users_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: organizations_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE organizations_users_id_seq FROM PUBLIC;
@@ -6090,7 +5862,7 @@ GRANT ALL ON SEQUENCE organizations_users_id_seq TO postgres;
 
 
 --
--- Name: organizations_users; Type: ACL; Schema: public; Owner: postgres
+-- Name: organizations_users; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE organizations_users FROM PUBLIC;
@@ -6099,7 +5871,7 @@ GRANT ALL ON TABLE organizations_users TO postgres;
 
 
 --
--- Name: roles_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: roles_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE roles_id_seq FROM PUBLIC;
@@ -6108,7 +5880,7 @@ GRANT ALL ON SEQUENCE roles_id_seq TO postgres;
 
 
 --
--- Name: roles; Type: ACL; Schema: public; Owner: postgres
+-- Name: roles; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE roles FROM PUBLIC;
@@ -6117,7 +5889,7 @@ GRANT ALL ON TABLE roles TO postgres;
 
 
 --
--- Name: role_links_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: role_links_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE role_links_listing FROM PUBLIC;
@@ -6126,7 +5898,7 @@ GRANT ALL ON TABLE role_links_listing TO postgres;
 
 
 --
--- Name: setting_categories; Type: ACL; Schema: public; Owner: postgres
+-- Name: setting_categories; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE setting_categories FROM PUBLIC;
@@ -6135,7 +5907,7 @@ GRANT ALL ON TABLE setting_categories TO postgres;
 
 
 --
--- Name: setting_categories_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: setting_categories_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE setting_categories_id_seq FROM PUBLIC;
@@ -6144,7 +5916,7 @@ GRANT ALL ON SEQUENCE setting_categories_id_seq TO postgres;
 
 
 --
--- Name: settings_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: settings_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE settings_id_seq FROM PUBLIC;
@@ -6153,7 +5925,7 @@ GRANT ALL ON SEQUENCE settings_id_seq TO postgres;
 
 
 --
--- Name: settings; Type: ACL; Schema: public; Owner: postgres
+-- Name: settings; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE settings FROM PUBLIC;
@@ -6162,7 +5934,7 @@ GRANT ALL ON TABLE settings TO postgres;
 
 
 --
--- Name: settings_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: settings_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE settings_listing FROM PUBLIC;
@@ -6171,7 +5943,7 @@ GRANT ALL ON TABLE settings_listing TO postgres;
 
 
 --
--- Name: states; Type: ACL; Schema: public; Owner: postgres
+-- Name: states; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE states FROM PUBLIC;
@@ -6180,7 +5952,7 @@ GRANT ALL ON TABLE states TO postgres;
 
 
 --
--- Name: states_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: states_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE states_id_seq FROM PUBLIC;
@@ -6189,7 +5961,7 @@ GRANT ALL ON SEQUENCE states_id_seq TO postgres;
 
 
 --
--- Name: states_id_seq1; Type: ACL; Schema: public; Owner: postgres
+-- Name: states_id_seq1; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE states_id_seq1 FROM PUBLIC;
@@ -6198,7 +5970,7 @@ GRANT ALL ON SEQUENCE states_id_seq1 TO postgres;
 
 
 --
--- Name: user_logins; Type: ACL; Schema: public; Owner: postgres
+-- Name: user_logins; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE user_logins FROM PUBLIC;
@@ -6207,7 +5979,7 @@ GRANT ALL ON TABLE user_logins TO postgres;
 
 
 --
--- Name: user_logins_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: user_logins_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE user_logins_id_seq FROM PUBLIC;
