@@ -475,7 +475,7 @@ App.FooterView = Backbone.View.extend({
             var is_displayed = false;
             if (!_.isEmpty(App.boards.models)) {
                 _.each(App.boards.models, function(board) {
-                    if (board.attributes.is_closed === false || board.attributes.is_closed === 0) {
+                    if (parseInt(board.attributes.is_closed) === 0) {
                         is_displayed = true;
                         view_my_board.append(new App.MyBoardsListingView({
                             model: board,
@@ -517,9 +517,9 @@ App.FooterView = Backbone.View.extend({
                     var starred = board.boards_stars.findWhere({
                         board_id: parseInt(board.id),
                         user_id: parseInt(authuser.user.id),
-                        is_starred: true
+                        is_starred: 1
                     });
-                    if (!_.isUndefined(starred) && !_.isEmpty(starred) && (board.attributes.is_closed === 0)) {
+                    if (!_.isUndefined(starred) && !_.isEmpty(starred) && (parseInt(board.attributes.is_closed) === 0)) {
                         is_displayed = true;
                         view_starred_board.append(new App.StartedBoardsListingView({
                             model: board,
@@ -557,7 +557,7 @@ App.FooterView = Backbone.View.extend({
             var is_displayed = false;
             if (!_.isEmpty(App.boards.models)) {
                 _.each(App.boards.models, function(board) {
-                    if (board.attributes.is_closed === 1) {
+                    if (parseInt(board.attributes.is_closed) === 1) {
                         is_displayed = true;
                         view_closed_board.append(new App.ClosedBoardsListingView({
                             model: board,
@@ -887,7 +887,7 @@ App.FooterView = Backbone.View.extend({
                                                 items = new App.CheckListItemCollection();
                                                 items.add(checklist_items);
                                                 completed_count = items.filter(function(checklist_item) {
-                                                    return checklist_item.get('is_completed') === true || checklist_item.get('is_completed') == 'true' || checklist_item.get('is_completed') == 1;
+                                                    return parseInt(checklist_item.get('is_completed')) === 1;
                                                 }).length;
                                                 total_count = items.models.length;
                                                 card.set('checklist_item_completed_count', completed_count);
@@ -948,7 +948,7 @@ App.FooterView = Backbone.View.extend({
                                             items = new App.CheckListItemCollection();
                                             items.add(added_checklist_items);
                                             var added_completed_count = items.filter(function(checklist_item) {
-                                                return checklist_item.get('is_completed') === true || checklist_item.get('is_completed') == 'true' || checklist_item.get('is_completed') == 1;
+                                                return parseInt(checklist_item.get('is_completed')) === 1;
                                             }).length;
                                             var added_total_count = items.models.length;
                                             card.set('checklist_item_completed_count', added_completed_count);
@@ -981,7 +981,7 @@ App.FooterView = Backbone.View.extend({
                                                 items = new App.CheckListItemCollection();
                                                 items.add(checklist_items);
                                                 completed_count = items.filter(function(checklist_item) {
-                                                    return checklist_item.get('is_completed') === true || checklist_item.get('is_completed') == 'true' || checklist_item.get('is_completed') == 1;
+                                                    return parseInt(checklist_item.get('is_completed')) === 1;
                                                 }).length;
                                                 total_count = items.models.length;
                                                 card.set('checklist_item_completed_count', completed_count);
@@ -1059,7 +1059,7 @@ App.FooterView = Backbone.View.extend({
                                             items = new App.CheckListItemCollection();
                                             items.add(checklist_items);
                                             var completed_count = items.filter(function(checklist_item) {
-                                                return checklist_item.get('is_completed') === true || checklist_item.get('is_completed') == 'true' || checklist_item.get('is_completed') == 1;
+                                                return parseInt(checklist_item.get('is_completed')) === 1;
                                             }).length;
                                             var total_count = items.models.length;
                                             card.set('checklist_item_completed_count', completed_count);
@@ -1074,7 +1074,7 @@ App.FooterView = Backbone.View.extend({
                                             items = new App.CheckListItemCollection();
                                             items.add(update_checklist_items);
                                             var update_completed_count = items.filter(function(checklist_item) {
-                                                return checklist_item.get('is_completed') === true || checklist_item.get('is_completed') == 'true' || checklist_item.get('is_completed') == 1;
+                                                return parseInt(checklist_item.get('is_completed')) === 1;
                                             }).length;
                                             var update_total_count = items.models.length;
                                             card.set('checklist_item_completed_count', update_completed_count);
@@ -1163,7 +1163,7 @@ App.FooterView = Backbone.View.extend({
                                                     self.board.cards.findWhere({
                                                         id: parseInt(card.attributes.id)
                                                     }).set({
-                                                        is_archived: true
+                                                        is_archived: 1
                                                     }, options);
                                                     l++;
                                                 });
@@ -1190,89 +1190,91 @@ App.FooterView = Backbone.View.extend({
                                         id: parseInt(activity.attributes.board_id)
                                     });
                                 }
-                                if (activity.attributes.list_id) {
-                                    board_list = board.lists.findWhere({
-                                        id: parseInt(activity.attributes.list_id)
-                                    });
-                                }
-                                if (activity.attributes.type === 'edit_organization' || activity.attributes.type === 'add_organization_attachment' || activity.attributes.type === 'delete_organization_attachment') {
-                                    organization_boards = self.boards.findWhere({
-                                        organization_id: parseInt(activity.attributes.organization_id)
-                                    });
-                                }
-                                if (activity.attributes.type == 'edit_board') {
-                                    board.set('name', activity.attributes.revisions.new_value.name);
-                                } else if (activity.attributes.type == 'change_visibility') {
-                                    board.set('board_visibility', activity.attributes.revisions.new_value.board_visibility);
-                                } else if (activity.attributes.type == 'change_background') {
-                                    board.set('background_color', activity.attributes.revisions.new_value.background_color);
-                                    board.set('background_picture_url', activity.attributes.revisions.new_value.background_picture_url);
-                                    board.set('background_pattern_url', activity.attributes.revisions.new_value.background_pattern_url);
-                                } else if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card') {
-                                    if (parseInt(activity.attributes.user_id) === parseInt(authuser.user.id) && activity.attributes.type === 'add_card') {
-                                        // While using instant add card, count duplicates for logged in user. So skipped the card count update while fetch activities.
-                                    } else {
-                                        card_count = board.attributes.card_count + 1;
-                                        board.set('card_count', card_count);
-                                        board_list.set('card_count', board_list.attributes.card_count + 1);
+                                if (!_.isUndefined(board)) {
+                                    if (activity.attributes.list_id) {
+                                        board_list = board.lists.findWhere({
+                                            id: parseInt(activity.attributes.list_id)
+                                        });
                                     }
-                                } else if (activity.attributes.type === 'delete_card') {
-                                    card_count = board.attributes.card_count - 1;
-                                    board.set('card_count', card_count);
-                                    board_list.set('card_count', board_list.attributes.card_count - 1);
-                                } else if (activity.attributes.type === 'change_card_position' || activity.attributes.type === 'moved_list_card') {
-                                    if (!_.isEmpty(activity.attributes.revisions.new_value)) {
-                                        board.set('card_count', '');
+                                    if (activity.attributes.type === 'edit_organization' || activity.attributes.type === 'add_organization_attachment' || activity.attributes.type === 'delete_organization_attachment') {
+                                        organization_boards = self.boards.findWhere({
+                                            organization_id: parseInt(activity.attributes.organization_id)
+                                        });
+                                    }
+                                    if (activity.attributes.type == 'edit_board') {
+                                        board.set('name', activity.attributes.revisions.new_value.name);
+                                    } else if (activity.attributes.type == 'change_visibility') {
+                                        board.set('board_visibility', activity.attributes.revisions.new_value.board_visibility);
+                                    } else if (activity.attributes.type == 'change_background') {
+                                        board.set('background_color', activity.attributes.revisions.new_value.background_color);
+                                        board.set('background_picture_url', activity.attributes.revisions.new_value.background_picture_url);
+                                        board.set('background_pattern_url', activity.attributes.revisions.new_value.background_pattern_url);
+                                    } else if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card') {
+                                        if (parseInt(activity.attributes.user_id) === parseInt(authuser.user.id) && activity.attributes.type === 'add_card') {
+                                            // While using instant add card, count duplicates for logged in user. So skipped the card count update while fetch activities.
+                                        } else {
+                                            card_count = board.attributes.card_count + 1;
+                                            board.set('card_count', card_count);
+                                            board_list.set('card_count', board_list.attributes.card_count + 1);
+                                        }
+                                    } else if (activity.attributes.type === 'delete_card') {
+                                        card_count = board.attributes.card_count - 1;
+                                        board.set('card_count', card_count);
+                                        board_list.set('card_count', board_list.attributes.card_count - 1);
+                                    } else if (activity.attributes.type === 'change_card_position' || activity.attributes.type === 'moved_list_card') {
+                                        if (!_.isEmpty(activity.attributes.revisions.new_value)) {
+                                            board.set('card_count', '');
+                                            card_count = board.attributes.card_count;
+                                            board.set('card_count', card_count);
+                                            var new_board_list = board.lists.findWhere({
+                                                id: parseInt(activity.attributes.revisions.new_value.list_id)
+                                            });
+                                            new_board_list.set('card_count', new_board_list.attributes.card_count + 1);
+                                            var old_board_list = board.lists.findWhere({
+                                                id: parseInt(activity.attributes.revisions.old_value.list_id)
+                                            });
+                                            old_board_list.set('card_count', old_board_list.attributes.card_count - 1);
+                                        }
+                                    } else if (activity.attributes.type === 'change_list_position') {
+                                        if (!_.isEmpty(activity.attributes.revisions.new_value)) {
+                                            var change_new_list = board.lists.findWhere({
+                                                id: parseInt(activity.attributes.revisions.new_value.board_id)
+                                            });
+                                            change_new_list.add(activity.attributes.list);
+                                            var new_board = self.boards.findWhere({
+                                                id: parseInt(activity.attributes.revisions.new_value.board_id)
+                                            });
+                                            new_board.set('card_count', change_new_list.attributes.card_count + 1);
+                                            var change_old_list = board.lists.findWhere({
+                                                id: parseInt(activity.attributes.revisions.old_value.board_id)
+                                            });
+                                            change_old_list.remove(activity.attributes.list);
+                                            var old_board = self.boards.findWhere({
+                                                id: parseInt(activity.attributes.revisions.old_value.board_id)
+                                            });
+                                            old_board.set('card_count', change_old_list.attributes.card_count - 1);
+                                        }
+                                    } else if (activity.attributes.type === 'edit_list') {
+                                        board_list.set('name', activity.attributes.revisions.new_value.name);
+                                    } else if (activity.attributes.type === 'delete_list') {
                                         card_count = board.attributes.card_count;
-                                        board.set('card_count', card_count);
-                                        var new_board_list = board.lists.findWhere({
-                                            id: parseInt(activity.attributes.revisions.new_value.list_id)
+                                        board.set('card_count', card_count - board_list.attributes.card_count);
+                                        board_list.remove(board.attributes.list);
+                                    } else if (activity.attributes.type === 'edit_organization') {
+                                        _.each(organization_boards.collection.models, function(organization_board) {
+                                            var rename_organization_board = self.boards.findWhere({
+                                                id: parseInt(organization_board.id)
+                                            });
+                                            rename_organization_board.set('organization_name', activity.attributes.revisions.new_value.name);
                                         });
-                                        new_board_list.set('card_count', new_board_list.attributes.card_count + 1);
-                                        var old_board_list = board.lists.findWhere({
-                                            id: parseInt(activity.attributes.revisions.old_value.list_id)
+                                    } else if (activity.attributes.type === 'add_organization_attachment' || activity.attributes.type === 'delete_organization_attachment') {
+                                        _.each(organization_boards.collection.models, function(organization_board) {
+                                            var change_organization_board = self.boards.findWhere({
+                                                id: parseInt(organization_board.id)
+                                            });
+                                            change_organization_board.set('organization_logo_url', activity.attributes.organization_logo_url);
                                         });
-                                        old_board_list.set('card_count', old_board_list.attributes.card_count - 1);
                                     }
-                                } else if (activity.attributes.type === 'change_list_position') {
-                                    if (!_.isEmpty(activity.attributes.revisions.new_value)) {
-                                        var change_new_list = board.lists.findWhere({
-                                            id: parseInt(activity.attributes.revisions.new_value.board_id)
-                                        });
-                                        change_new_list.add(activity.attributes.list);
-                                        var new_board = self.boards.findWhere({
-                                            id: parseInt(activity.attributes.revisions.new_value.board_id)
-                                        });
-                                        new_board.set('card_count', change_new_list.attributes.card_count + 1);
-                                        var change_old_list = board.lists.findWhere({
-                                            id: parseInt(activity.attributes.revisions.old_value.board_id)
-                                        });
-                                        change_old_list.remove(activity.attributes.list);
-                                        var old_board = self.boards.findWhere({
-                                            id: parseInt(activity.attributes.revisions.old_value.board_id)
-                                        });
-                                        old_board.set('card_count', change_old_list.attributes.card_count - 1);
-                                    }
-                                } else if (activity.attributes.type === 'edit_list') {
-                                    board_list.set('name', activity.attributes.revisions.new_value.name);
-                                } else if (activity.attributes.type === 'delete_list') {
-                                    card_count = board.attributes.card_count;
-                                    board.set('card_count', card_count - board_list.attributes.card_count);
-                                    board_list.remove(board.attributes.list);
-                                } else if (activity.attributes.type === 'edit_organization') {
-                                    _.each(organization_boards.collection.models, function(organization_board) {
-                                        var rename_organization_board = self.boards.findWhere({
-                                            id: parseInt(organization_board.id)
-                                        });
-                                        rename_organization_board.set('organization_name', activity.attributes.revisions.new_value.name);
-                                    });
-                                } else if (activity.attributes.type === 'add_organization_attachment' || activity.attributes.type === 'delete_organization_attachment') {
-                                    _.each(organization_boards.collection.models, function(organization_board) {
-                                        var change_organization_board = self.boards.findWhere({
-                                            id: parseInt(organization_board.id)
-                                        });
-                                        change_organization_board.set('organization_logo_url', activity.attributes.organization_logo_url);
-                                    });
                                 }
                             }
                         }

@@ -92,6 +92,7 @@ App.ApplicationView = Backbone.View.extend({
                                     fallbackLng: current_language,
                                     load: "all",
                                     keySeparator: '~',
+                                    nsSeparator: '^',
                                     backend: {
                                         loadPath: "locales/{{lng}}/{{ns}}.json"
                                     }
@@ -149,6 +150,7 @@ App.ApplicationView = Backbone.View.extend({
                                 fallbackLng: current_language,
                                 load: "all",
                                 keySeparator: '~',
+                                nsSeparator: '^',
                                 backend: {
                                     loadPath: "locales/{{lng}}/{{ns}}.json"
                                 }
@@ -561,13 +563,13 @@ App.ApplicationView = Backbone.View.extend({
                 $('#content').html(this.pageView.el);
             } else if (page.model == 'boards_index' || page.model == 'starred_boards_index' || page.model == 'closed_boards_index') {
                 changeTitle(i18next.t('Boards'));
-                var page_title = 'My Boards';
+                var page_title = i18next.t('My Boards');
                 if (page.model == 'starred_boards_index') {
                     changeTitle(i18next.t('Starred Boards'));
-                    page_title = 'Starred Boards';
+                    page_title = i18next.t('Starred Boards');
                 } else if (page.model == 'closed_boards_index') {
                     changeTitle(i18next.t('Closed Boards'));
-                    page_title = 'Closed Boards';
+                    page_title = i18next.t('Closed Boards');
                 }
                 this.headerView = new App.BoardIndexHeaderView({
                     model: page_title,

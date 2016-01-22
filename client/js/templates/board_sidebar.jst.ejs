@@ -21,7 +21,7 @@
 <% } %>
 <%if(!_.isUndefined(authuser.user)) {%>
 <% if(!_.isEmpty(role_links.where({slug: "view_sync_calendar"}))){ %>
-<li class="dropdown js-sync-google-dropdown inner-dropdown"><a href="#" class="js-syn-google-calendar" data-toggle="dropdown"><span class="icon-calendar"></span><%- i18next.t('Sync with Google Calendar') %></a>
+<li class="dropdown js-sync-google-dropdown inner-dropdown"><a href="#" class="js-syn-google-calendar" data-toggle="dropdown"><span class="icon-calendar"></span><%- i18next.t('iCal Feed') %></a>
   <ul class="dropdown-menu arrow">
 	<li class="js-dropdown-popup dropdown-popup">
 	  <div class="col-xs-12 text-center clearfix">

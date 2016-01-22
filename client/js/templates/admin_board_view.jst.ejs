@@ -1,7 +1,7 @@
 <td>
     <div class="form-group text-center">
 	    <div class="checkbox">
-            <input id="<%- board.attributes.id%>"  name="board_id[<%- board.attributes.id %>]" value="<%- board.attributes.id%>" class="js-checkbox-list <%if(board.attributes.is_closed == false){%>js-checkbox-active<%}else{%>js-checkbox-inactive<%}%>" type="checkbox">
+            <input id="<%- board.attributes.id%>"  name="board_id[<%- board.attributes.id %>]" value="<%- board.attributes.id%>" class="js-checkbox-list <%if(parseInt(board.attributes.is_closed) === 0){%>js-checkbox-active<%}else{%>js-checkbox-inactive<%}%>" type="checkbox">
             <label class="js-update-board" data-board_id="<%- board.attributes.id %>" for="<%- board.attributes.id%>"></label>
         </div>
     </div>

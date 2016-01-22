@@ -43,19 +43,19 @@
 <% } else if(typeof(user) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'roles' || current_param === 'apps' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list')){ %>
 <% 
 	if(!_.isEmpty(current_param) && (current_param === 'activities')) {
-		current_title = 'Activities';
+		current_title = i18next.t('Activities');
 	} else if(!_.isEmpty(current_param) && (current_param === 'users')){ 
-		current_title = 'Users';
+		current_title = i18next.t('Users');
 	} else if(!_.isEmpty(current_param) && (current_param === 'roles')){ 
-		current_title = 'Roles';
+		current_title = i18next.t('Roles');
 	} else if(!_.isEmpty(current_param) && (current_param === 'apps')){ 
-		current_title = 'Apps';
+		current_title = i18next.t('Apps');
 	} else if(!_.isEmpty(current_param) && (current_param === 'settings')){ 
-		current_title = 'Settings';
+		current_title = i18next.t('Settings');
 	} else if(!_.isEmpty(current_param) && (current_param === 'email_templates')){ 
-		current_title = 'Email Templates';
+		current_title = i18next.t('Email Templates');
 	} else if(!_.isEmpty(current_param) && (current_param === 'admin_boards_list')){ 
-		current_title = 'Boards';
+		current_title = i18next.t('Boards');
 	} 
 %>
 

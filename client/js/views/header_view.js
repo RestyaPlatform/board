@@ -68,6 +68,9 @@ App.HeaderView = Backbone.View.extend({
         if (!_.isEmpty(current_param_split[1]) && current_param_split[1] === 'list') {
             this.model.current_param = 'admin_boards_list';
         }
+        if (!_.isEmpty(current_param_split[2]) && current_param_split[2] === 'changepassword') {
+            this.model.current_param = 'changepassword';
+        }
         if (typeof Notification != 'undefined') {
             this.model.is_show_enable_notification = (Notification.permission == 'default') ? true : false;
         }

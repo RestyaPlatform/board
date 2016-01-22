@@ -195,6 +195,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         var self = this;
         if (_.isUndefined($('.js-checkbox-list:checked').val())) {
             alert('Please select atleast one record!');
+            $("#js-more-action").val('0');
             return false;
         } else {
             if (window.confirm(i18next.t('Are you sure you want to do this action?'))) {
@@ -224,6 +225,9 @@ App.AdminBoardsIndexView = Backbone.View.extend({
                         }
                     }
                 });
+            } else {
+                $("#js-more-action").val('0');
+                return false;
             }
         }
     }

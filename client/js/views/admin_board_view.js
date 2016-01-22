@@ -100,11 +100,11 @@ App.AdminBoardView = Backbone.View.extend({
     renderAdminBoardUsers: function() {
         if (this.model.attributes.boards_users !== null) {
             var admins = this.model.attributes.boards_users.filter(function(normal_user) {
-                return normal_user.is_admin === true || normal_user.is_admin === 1;
+                return parseInt(normal_user.is_admin) === 1;
             });
             this.model.admin_board_users = admins;
             var normal_users = this.model.attributes.boards_users.filter(function(normal_user) {
-                return normal_user.is_admin === false || normal_user.is_admin === 0;
+                return parseInt(normal_user.is_admin) === 0;
             });
             this.model.normal_board_users = normal_users;
         }
@@ -133,12 +133,12 @@ App.AdminBoardView = Backbone.View.extend({
         e.preventDefault();
         var name = $(e.currentTarget).attr('name');
         var value = 'unstar';
-        var is_starred = true;
+        var is_starred = 1;
         var self = this;
         var content = '<i class="icon-star text-primary"></i>';
         if (name == 'unstar') {
             value = 'star';
-            is_starred = false;
+            is_starred = 0;
             content = '<i class="icon-star-empty"></i>';
         }
         $(e.currentTarget).attr('name', value);

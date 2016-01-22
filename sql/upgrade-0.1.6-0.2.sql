@@ -537,6 +537,7 @@ BEGIN
 END;
 $$;
 
+
 UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '1';
 UPDATE "acl_links" SET "is_allow_only_to_admin" = '0', "is_allow_only_to_user" = '0' WHERE "name" = 'Forgot password';
 UPDATE "acl_links" SET "is_allow_only_to_admin" = '0', "is_allow_only_to_user" = '0' WHERE "name" = 'Register';
@@ -550,3 +551,47 @@ UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" =
 
 UPDATE "acl_links" SET "name" = 'App', "url" = '/apps', "slug" = 'app' WHERE "slug" = 'plugin';
 UPDATE "acl_links" SET "name" = 'App Settings', "url" = '/apps/settings', "slug" = 'app_settings' WHERE "slug" = 'plugin_settings';
+
+CREATE OR REPLACE VIEW activities_listing AS
+ SELECT activity.id, 
+    activity.created, 
+    activity.modified, 
+    activity.board_id, 
+    activity.list_id, 
+    activity.card_id, 
+    activity.user_id, 
+    activity.foreign_id, 
+    activity.type, 
+    activity.comment, 
+    activity.revisions, 
+    activity.root, 
+    activity.freshness_ts, 
+    activity.depth, 
+    activity.path, 
+    activity.materialized_path, 
+    board.name AS board_name, 
+    list.name AS list_name, 
+    card.name AS card_name, 
+    users.username, 
+    users.full_name, 
+    users.profile_picture_path, 
+    users.initials, 
+    la.name AS label_name, 
+    card.description AS card_description, 
+    users.role_id AS user_role_id, 
+    checklist_item.name AS checklist_item_name, 
+    checklist.name AS checklist_item_parent_name, 
+    checklist1.name AS checklist_name, 
+    organizations.id AS organization_id, 
+    organizations.name AS organization_name, 
+    organizations.logo_url AS organization_logo_url
+   FROM (((((((((activities activity
+   LEFT JOIN boards board ON ((board.id = activity.board_id)))
+   LEFT JOIN lists list ON ((list.id = activity.list_id)))
+   LEFT JOIN cards card ON ((card.id = activity.card_id)))
+   LEFT JOIN labels la ON (((la.id = activity.foreign_id) AND ((activity.type)::text = 'add_card_label'::text))))
+   LEFT JOIN checklist_items checklist_item ON ((checklist_item.id = activity.foreign_id)))
+   LEFT JOIN checklists checklist ON ((checklist.id = checklist_item.checklist_id)))
+   LEFT JOIN checklists checklist1 ON ((checklist1.id = activity.foreign_id)))
+   LEFT JOIN users users ON ((users.id = activity.user_id)))
+   LEFT JOIN organizations organizations ON ((organizations.id = activity.organization_id)));

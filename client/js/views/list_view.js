@@ -513,11 +513,11 @@ App.ListView = Backbone.View.extend({
         var subscribe_id = $(e.currentTarget).data('subscribe-id');
         $(e.currentTarget).removeClass('js-list-subscribe').addClass('js-list-unsubscribe');
         $('i.icon-ok', e.currentTarget).removeClass('hide');
-        $('.js-subscribe-text', e.currentTarget).html('Subscribed');
+        $('.js-subscribe-text', e.currentTarget).html(i18next.t('Subscribed'));
         $('.js-list-subscribed-' + list_id).removeClass('hide');
         var list_subscribe = new App.ListSubscriber();
         list_subscribe.set('user_id', parseInt(authuser.user.id));
-        list_subscribe.set('is_subscribed', true);
+        list_subscribe.set('is_subscribed', 1);
         this.model.lists_subscribers.add(list_subscribe);
         if (typeof subscribe_id === 'undefined' || subscribe_id === 'undefined' || subscribe_id === '') {
             var subscribe = {
@@ -527,13 +527,13 @@ App.ListView = Backbone.View.extend({
             };
             list_subscribe.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '/list_subscribers.json';
             list_subscribe.save({
-                is_subscribed: true
+                is_subscribed: 1
             });
         } else {
             list_subscribe.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '/list_subscribers/' + subscribe_id + '.json';
             list_subscribe.save({
                 id: parseInt(subscribe_id),
-                is_subscribed: true
+                is_subscribed: 1
             });
         }
         return false;
@@ -549,25 +549,25 @@ App.ListView = Backbone.View.extend({
     listUnsubscribe: function(e) {
         $(e.currentTarget).removeClass('js-list-unsubscribe').addClass('js-list-subscribe');
         $('i.icon-ok', e.currentTarget).addClass('hide');
-        $('.js-subscribe-text', e.currentTarget).html('Subscribe');
+        $('.js-subscribe-text', e.currentTarget).html(i18next.t('Subscribe'));
         var subscribe_id = $(e.currentTarget).data('subscribe-id');
         var list_id = this.model.id;
         $('.js-list-subscribed-' + list_id).addClass('hide');
         var list_subscribe = new App.ListSubscriber();
         this.model.lists_subscribers.remove(this.model.lists_subscribers.findWhere({
             user_id: parseInt(authuser.user.id),
-            is_subscribed: true
+            is_subscribed: 1
         }));
         if (typeof subscribe_id === 'undefined' || subscribe_id === 'undefined' || subscribe_id === '') {
             list_subscribe.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '/list_subscribers.json';
             list_subscribe.save({
-                is_subscribed: false
+                is_subscribed: 0
             });
         } else {
             list_subscribe.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '/list_subscribers/' + subscribe_id + '.json';
             list_subscribe.save({
                 id: parseInt(subscribe_id),
-                is_subscribed: false
+                is_subscribed: 0
             });
         }
         return false;
@@ -688,7 +688,7 @@ App.ListView = Backbone.View.extend({
         card.set('id', list_id);
         card.url = api_url + 'boards/' + this.board.id + '/lists/' + list_id + '/cards.json';
         card.save({
-            is_archived: true
+            is_archived: 1
         }, {
             patch: true
         });
@@ -864,7 +864,7 @@ App.ListView = Backbone.View.extend({
             cards.sortByColumn('position');
             cards.each(function(card) {
                 var card_id = card.id;
-                if (card.get('is_archived') === false || card.get('is_archived') === 0) {
+                if (parseInt(card.get('is_archived')) === 0) {
                     card.board_users = self.model.board_users;
                     var filter_labels = self.model.labels.filter(function(model) {
                         return parseInt(model.get('card_id')) === parseInt(card_id);
@@ -1022,7 +1022,7 @@ App.ListView = Backbone.View.extend({
             card.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.id + '/cards.json';
             card.set({
                 name: data.name,
-                is_archived: false,
+                is_archived: 0,
                 list_id: parseInt(data.list_id),
                 board_id: parseInt(data.board_id),
                 due_date: null,
@@ -1212,8 +1212,8 @@ App.ListView = Backbone.View.extend({
             });
             board.lists.add(board.attributes.lists);
             var board_lists = board.lists.where({
-                is_archived: false,
-                is_deleted: false
+                is_archived: 0,
+                is_deleted: 0
             });
             var current_position = this.model.collection.indexOf(this.model) + 1;
             for (var i = 1; i <= board_lists.length; i++) {

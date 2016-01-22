@@ -138,13 +138,13 @@ App.OrganizationsUserView = Backbone.View.extend({
         organizations_user.save({
             organization_id: self.model.id,
             user_id: user_id,
-            is_admin: 'FALSE'
+            is_admin: 0
         }, {
             success: function(model, response) {
                 organizations_user.set(response.organizations_users);
                 organizations_user.set('organization_id', self.model.id);
                 organizations_user.set('user_id', parseInt(user_id));
-                organizations_user.set('is_admin', false);
+                organizations_user.set('is_admin', 0);
                 organizations_user.set('id', parseInt(response.id));
                 self.model.organizations_users.add(organizations_user);
             }

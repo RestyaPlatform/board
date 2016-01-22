@@ -1,5 +1,5 @@
 <div class="form-group">
-	<label for="inputListName">Title</label>
+	<label for="inputListName"><%- i18next.t('Title') %></label>
 	<input id="inputListName" type="text" placeholder=" <%- i18next.t('Title') %>
 " autocomplete="off" class="form-control input-sm" name="name" value="Checklist" title="<%- i18next.t('Whitespace alone not allowed') %> " required pattern=".*\S+.*">
 </div>
@@ -28,6 +28,6 @@
 	</select>
 </div>
 <div class="form-group">
-	<label for="submit" class="sr-only col-sm-4 control-label">submit</label>
-	<input type="submit" name="Save" class="btn btn-primary" value="Add">
+	<label for="submit" class="sr-only col-sm-4 control-label"><%- i18next.t('submit') %></label>
+	<input type="submit" name="Save" class="btn btn-primary" value="<%- i18next.t('Add') %>">
 </div>

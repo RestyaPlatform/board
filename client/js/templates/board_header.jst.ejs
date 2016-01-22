@@ -24,7 +24,7 @@
 						<input id="inputBoardStar" name="is_starred" type="hidden" value="<%if(!_.isUndefined(star)) {%><%- star.attributes.is_starred %><%}else{%>0<%}%>"> 
 					  </form>
 					<div class="col-xs-12 pull-left navbar-btn list-group-item-text <% if(!_.isEmpty(role_links.where({slug: 'edit_board'}))){ %>dropdown<% } %>">
-					  <% if(!_.isUndefined(star) && (star.attributes.is_starred || star.attributes.is_starred == 1)) { %>
+					  <% if(!_.isUndefined(star) && (parseInt(star.attributes.is_starred) === 1)) { %>
 					  <% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
 					  <a href="#" class="js-star-board pull-left" name="unstar" title="
 <%- i18next.t('Unstar') %>"><i class="icon-star text-primary"></i></a>
@@ -166,13 +166,13 @@
 							<% 	var board_visibility = '';
 								var board_visibility_icon = '';
 								if(board.attributes.board_visibility == 0) { 
-									board_visibility = 'Private';
+									board_visibility = i18next.t('Private');
 									board_visibility_icon = 'icon-lock';
 								} else if(board.attributes.board_visibility == 1 && board.attributes.organization_id > 0) {
-									board_visibility = 'Organization';
+									board_visibility = i18next.t('Organization');
 									board_visibility_icon = 'icon-group';
 								} else if(board.attributes.board_visibility == 2) {
-									board_visibility = 'Public';
+									board_visibility = i18next.t('Public');
 									board_visibility_icon = 'icon-circle';
 								}
 							%>
@@ -214,7 +214,7 @@
 						<form name="BoardSubscribeForm" id="BoardSubscribeForm">
 						  <input id="inputBoardSubscribe" name="is_subscribed" type="hidden" value=" <% if(!_.isUndefined(subscriber)) { %> <%- subscriber.attributes.is_subscribed %><%}else{%>0<%}%>">
 						</form> 
-						<% if(!_.isUndefined(subscriber) && subscriber.attributes.is_subscribed) { %>
+						<% if(!_.isUndefined(subscriber) && parseInt(subscriber.attributes.is_subscribed)) { %>
 						<% if(!_.isEmpty(role_links.where({slug: "unsubscribe_board"}))){ %>
 						<a href="#" class="js-subscribe-board navbar-btn h4 list-group-item-text" name="unsubscribe" title="<%- i18next.t('Unsubscribe') %>" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-close"></i><span class="hidden-xs"><%- i18next.t('Unsubscribe') %></span></a>
 						<% } %>
@@ -241,7 +241,7 @@
 							<% } %>
 							<% if(!_.isUndefined(authuser.user)){ %>
 							<% if(!_.isEmpty(role_links.where({slug: "view_sync_calendar"}))){ %>
-							<li class="js-sync-google-dropdown inner-dropdown"><a href="#" class="js-syn-google-calendar" data-toggle="dropdown"><span class="icon-calendar"></span><%- i18next.t('Sync with Google Calendar') %></a>
+							<li class="js-sync-google-dropdown inner-dropdown"><a href="#" class="js-syn-google-calendar" data-toggle="dropdown"><span class="icon-calendar"></span><%- i18next.t('iCal Feed') %></a>
 							</li>
 							<% } %>
 							<li class="divider"></li>
@@ -286,7 +286,7 @@
 									  <input id="inputBoardClose" name="is_closed" type="hidden" value="true">
 									  <p><%- i18next.t('You can reopen the board by clicking the "Boards" menu from the header, selecting "View Closed Boards", finding the board and clicking "Reopen".') %></p>
 									  <div class="submit">
-										<input type="submit" value="Close" id="submitBoardClose" class="btn btn-primary js-close-board">
+										<input type="submit" value="<%- i18next.t('Close') %>" id="submitBoardClose" class="btn btn-primary js-close-board">
 									  </div>
 									</form>
 								  </div>

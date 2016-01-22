@@ -356,7 +356,7 @@ App.CardCheckListView = Backbone.View.extend({
      */
     hideChecklistItemAddForm: function(e) {
         e.preventDefault();
-        $(e.target).parents('div.js-checklist-item-add-form-view').prev('a.js-add-item-view').removeClass('hide').addClass('js-show-checklist-item-add-form').html('Add Item');
+        $(e.target).parents('div.js-checklist-item-add-form-view').prev('a.js-add-item-view').removeClass('hide').addClass('js-show-checklist-item-add-form').html(i18next.t('Add Item'));
         $(e.target).parents('div.js-checklist-item-add-form-view').html('');
     },
     /**
@@ -423,7 +423,7 @@ App.CardCheckListView = Backbone.View.extend({
                             checklist_item.set('checklist_id', self.model.id);
                             checklist_item.set('position', i);
                             checklist_item.set('name', _.escape(item.replace('\r', '')));
-                            checklist_item.set('is_completed', false);
+                            checklist_item.set('is_completed', 0);
                             checklist_item.card = self.model.card;
                             checklist_item.checklist = new App.CheckList();
                             checklist_item.checklist = self.model;
@@ -475,7 +475,7 @@ App.CardCheckListView = Backbone.View.extend({
      */
     renderProgress: function() {
         var completed_count = this.model.checklist_items.filter(function(checklist_item) {
-            return checklist_item.get('is_completed') === true || checklist_item.get('is_completed') == 'true';
+            return parseInt(checklist_item.get('is_completed')) === 1;
         }).length;
         var total_count = this.model.checklist_items.length;
         completed_count = 0 < total_count ? Math.round(100 * completed_count / total_count) : 0;

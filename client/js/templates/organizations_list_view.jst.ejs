@@ -36,7 +36,7 @@
 			</li>
 			<li class="navbar-btn">
 				<div class="checkbox-inline dropdown">
-					<a title="<%- i18next.t('Boards') %>" class="btn btn-default <% if(organization.attributes.board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.board_count != 0){ %>data-toggle="dropdown"<%}%>><%- organization.attributes.board_count%> Boards</a>
+					<a title="<%- i18next.t('Boards') %>" class="btn btn-default <% if(organization.attributes.board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.board_count != 0){ %>data-toggle="dropdown"<%}%>><%- organization.attributes.board_count%> <%- i18next.t('Boards') %></a>
 					<% if(organization.attributes.board_count != 0){ %>
 						<ul class="dropdown-menu arrow arrow-right  text-left" role="boards">
 							<% _.each(organization.attributes.boards_listing, function(board){%>

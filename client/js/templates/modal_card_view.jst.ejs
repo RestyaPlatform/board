@@ -21,7 +21,7 @@
 	<%
 		if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
 			var cards_subscribers = card.cards_subscribers.where({
-				is_subscribed: true,
+				is_subscribed: 1,
 				user_id: parseInt(authuser.user.id)
 			});
 		}
@@ -48,7 +48,7 @@
 					</div>
 					<div class="form-group">
 					  <div class="col-sm-8">
-						<input type="submit" value="Save" id="submitCardTitleEditForm" class="btn btn-primary">
+						<input type="submit" value="<%- i18next.t('Save') %>" id="submitCardTitleEditForm" class="btn btn-primary">
 						<a class="js-cancel-card-title-edit btn btn-link"><i class="icon-remove"></i></a> </div>
 					</div>
 				  </form>
@@ -198,7 +198,7 @@
 							  <input type="url" id="AttachList" class="form-control input-sm" name="image_link" placeHolder="<%- i18next.t('Paste any link here') %>" title="<%- i18next.t('Whitespace alone not allowed') %>" required pattern=".*\S+.*">
 							</div>
 							<div class="form-group row">
-							  <input type="submit" value="Submit" id="submit2" class="btn btn-primary btn-sm">
+							  <input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary btn-sm">
 							</div>
 							<span class="help-block row small"><%- i18next.t('Tip: You can drag and drop files and links onto cards to upload them.') %></span>
 						  </form>
@@ -479,15 +479,15 @@
 			  <% } }%>
 			</li>
 		 <% } %>
-			<li> <a class="panel-heading show <% if(card.attributes.is_archived == false){ %>js-archive-card<% }else{ %> js-card-send-to-board<% } %>" title="<% if(card.attributes.is_archived == false){%><%- i18next.t('Archive') %><% }else{ %><%- i18next.t('Send to board') %><%}%>" href="">
-		      <% if(card.attributes.is_archived == false){ %>
+			<li> <a class="panel-heading show <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else{ %> js-card-send-to-board<% } %>" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else{ %><%- i18next.t('Send to board') %><%}%>" href="">
+		      <% if(parseInt(card.attributes.is_archived) === 0){ %>
 			      <%- i18next.t('Archive') %>
 		      <% }else{ %>
 				  <%- i18next.t('Send to board') %>
 		      <% } %>
 				</a> 
 			</li>
-		    <% if(card.attributes.is_archived == true && !_.isEmpty(role_links.where({slug: "delete_card"}))){ %>
+		    <% if(parseInt(card.attributes.is_archived) === 1 && !_.isEmpty(role_links.where({slug: "delete_card"}))){ %>
 			<li >
 			  <ul class="list-unstyled panel-body">
 				<li class="dropdown"> <a class="col-xs-12 btn btn-primary whitec dropdown-toggle js-open-dropdown" href="#" data-toggle="dropdown"> <span><i class="icon-archive"></i></span> <span><%- i18next.t('Delete') %></span> </a>
@@ -496,7 +496,7 @@
 					  <div class="clearfix text-center col-xs-12"> <span class="col-xs-10"><strong><%- i18next.t('Delete Card') %>?</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a> </div>
 					  <div class="col-xs-12 divider"></div>
 					  <div class="col-xs-12">
-						<p><%- i18next.t('All actions will be removed from the activity feed and you won\'t be able to reopen the card. There is no undo. You can archive a card to remove it from the board and preserve the activity.') %></p>
+						<p><%- i18next.t("All actions will be removed from the activity feed and you won't be able to reopen the card. There is no undo. You can archive a card to remove it from the board and preserve the activity.") %></p>
 						<a class="js-delete-card btn  btn-primary" title="<%- i18next.t('Delete') %>"><%- i18next.t('Delete') %></a> </div>
 					</li>
 				  </ul>
@@ -513,7 +513,7 @@
 			<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('More') %></strong></span> <a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 			<li class="col-xs-12 divider"></li>       
 			<li class="col-xs-12">
-			  <p class="text-muted"> <span class="show"> Card #<%- card.attributes.id %> </span> <span class="show"><%- i18next.t('Link to this card') %></span> </p>
+			  <p class="text-muted"> <span class="show"><%- i18next.t('Card # %s', { postProcess: 'sprintf', sprintf: [card.attributes.id] }) %></span> <span class="show"><%- i18next.t('Link to this card') %></span> </p>
 			  <form role="form">
 				<div class="form-group">
 				  <input type="text" value="<%= window.location.origin %><%= window.location.pathname %>#/board/<%- card.attributes.board_id %>/card/<%- card.attributes.id %>" class="form-control input-sm js-select-card-url" readonly="readonly">

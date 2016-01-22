@@ -63,7 +63,7 @@
 		content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) + ' (current)</option>';
 		board.lists.add(board.attributes.lists);
 		var filtered_lists = board.lists.where({
-			is_archived: false
+			is_archived: 0
 		});
 		_.each(filtered_lists, function(list) {
 			if (card.attributes.list_id == list.id) {

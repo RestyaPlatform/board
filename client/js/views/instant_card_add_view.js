@@ -61,7 +61,7 @@ App.InstantCardAddView = Backbone.View.extend({
                 collection: function() {
                     var board_arr = [];
                     _.each(this.boards.models, function(board) {
-                        if (!_.isEmpty(board.attributes.lists) && board.attributes.lists.length > 0 && board.attributes.is_closed === 0) {
+                        if (!_.isEmpty(board.attributes.lists) && board.attributes.lists.length > 0 && parseInt(board.attributes.is_closed) === 0) {
                             var temp = {};
                             temp.id = board.id;
                             temp.name = _.escape(board.attributes.name);
@@ -108,7 +108,7 @@ App.InstantCardAddView = Backbone.View.extend({
                     var list_arr = [];
                     if (!_.isUndefined(board)) {
                         _.each(board.attributes.lists, function(list) {
-                            if (list.is_archived === false) {
+                            if (parseInt(list.is_archived) === 0) {
                                 var list_temp = {};
                                 list_temp.id = list.id;
                                 list_temp.name = _.escape(list.name);
@@ -221,7 +221,7 @@ App.InstantCardAddView = Backbone.View.extend({
             var list_id = parseInt(data.list_id);
             data.list_id = list_id;
             card.url = api_url + 'boards/' + data.board_id + '/lists/' + data.list_id + '/cards.json';
-            card.set('is_archived', false);
+            card.set('is_archived', 0);
             card.set(data);
             card.set('board_id', board_id);
             card.set('due_date', null);

@@ -200,6 +200,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         var self = this;
         if (_.isUndefined($('.js-checkbox-list:checked').val())) {
             alert(i18next.t('Please select atleast one record!'));
+            $("#js-more-action").val('0');
             return false;
         } else {
             if (window.confirm(i18next.t('Are you sure you want to do this action?'))) {
@@ -229,6 +230,9 @@ App.UserIndexContainerView = Backbone.View.extend({
                         }
                     }
                 });
+            } else {
+                $("#js-more-action").val('0');
+                return false;
             }
         }
     }

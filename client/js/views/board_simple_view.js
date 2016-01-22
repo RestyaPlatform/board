@@ -61,7 +61,7 @@ App.BoardSimpleView = Backbone.View.extend({
         if (this.model !== null && this.model.attributes.users !== null) {
             for (i = 0; i < this.model.attributes.users.length; i++) {
                 if (authuser.user.id == this.model.attributes.users[i].user_id) {
-                    this.model.attributes.is_admin = (this.model.attributes.users[i].is_admin === true || this.model.attributes.users[i].is_admin === 1) ? true : false;
+                    this.model.attributes.is_admin = (parseInt(this.model.attributes.users[i].is_admin) === 1) ? 1 : 0;
                 }
             }
         }
@@ -122,12 +122,12 @@ App.BoardSimpleView = Backbone.View.extend({
         e.preventDefault();
         var name = $(e.currentTarget).attr('name');
         var value = 'unstar';
-        var is_starred = true;
+        var is_starred = 1;
         var self = this;
         var content = '<i class="icon-star text-primary"></i>';
         if (name == 'unstar') {
             value = 'star';
-            is_starred = false;
+            is_starred = 0;
             content = '<i class="icon-star-empty"></i>';
         }
         $(e.currentTarget).attr('name', value);

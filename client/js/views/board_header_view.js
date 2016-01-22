@@ -257,7 +257,7 @@ App.BoardHeaderView = Backbone.View.extend({
         } else {
             var subscribe_data = {
                 board_id: this.model.id,
-                is_subscribed: true
+                is_subscribed: 1
             };
             var self = this;
             boardSubscriber.url = api_url + 'boards/' + this.model.id + '/board_subscribers.json';
@@ -266,7 +266,6 @@ App.BoardHeaderView = Backbone.View.extend({
                     boardSubscriber.set('id', parseInt(response.id));
                     boardSubscriber.set('user_id', parseInt(response.user_id));
                     boardSubscriber.set('board_id', parseInt(response.board_id));
-                    boardSubscriber.set('board_id', (response.is_subscribed === 1) ? true : false);
                     self.model.board_subscriber = boardSubscriber;
                     self.model.board_subscribers.add(boardSubscriber);
                     self.render();
@@ -287,12 +286,12 @@ App.BoardHeaderView = Backbone.View.extend({
         e.preventDefault();
         var name = $(e.currentTarget).attr('name');
         var value = 'unstar';
-        var is_starred = true;
+        var is_starred = 1;
         var self = this;
         var content = '<i class="icon-star text-primary"></i>';
         if (name == 'unstar') {
             value = 'star';
-            is_starred = false;
+            is_starred = 0;
             content = '<i class="icon-star-empty"></i>';
         }
         $(e.currentTarget).attr('name', value);
@@ -325,13 +324,13 @@ App.BoardHeaderView = Backbone.View.extend({
         e.preventDefault();
         this.model.url = api_url + 'boards/' + this.model.id + '.json';
         App.boards.get(this.model.id).set({
-            is_closed: true
+            is_closed: 1
         }, {
             silent: true
         });
         var board_id = this.model.id;
         this.model.save({
-            is_closed: true
+            is_closed: 1
         }, {
             patch: true,
             success: function(model, response) {}
@@ -504,7 +503,7 @@ App.BoardHeaderView = Backbone.View.extend({
             if (!_.isEmpty(filtered_cards)) {
                 var _i = 0;
                 _.each(filtered_cards, function(card) {
-                    if (card.attributes.is_archived === 1) {
+                    if (parseInt(card.attributes.is_archived) === 1) {
                         el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                             model: card
                         }).el);
@@ -979,11 +978,11 @@ App.BoardHeaderView = Backbone.View.extend({
     },
     renderAdminBoardUsers: function() {
         var admins = this.model.board_users.filter(function(normal_user) {
-            return normal_user.attributes.is_admin === true || normal_user.attributes.is_admin === 1;
+            return parseInt(normal_user.attributes.is_admin) === 1;
         });
         this.model.admin_board_users = admins;
         var normal_users = this.model.board_users.filter(function(normal_user) {
-            return normal_user.attributes.is_admin === false || normal_user.attributes.is_admin === 0;
+            return parseInt(normal_user.attributes.is_admin) === 0;
         });
         this.model.normal_board_users = normal_users;
         this.render();
@@ -1002,18 +1001,18 @@ App.BoardHeaderView = Backbone.View.extend({
     },
     renderBoardUsers: function() {
         $('.js-get-board-member-lists-response').html('');
-        var is_admin = false;
+        var is_admin = 0;
         if (!_.isUndefined(this.authuser)) {
             var admin = this.model.board_users.find(function(normal_user) {
-                return normal_user.attributes.user_id === authuser.user.id && normal_user.attributes.is_admin === true || normal_user.attributes.is_admin === 1;
+                return parseInt(normal_user.attributes.user_id) === parseInt(authuser.user.id) && parseInt(normal_user.attributes.is_admin === 1);
             });
-            is_admin = (!_.isEmpty(admin) || authuser.user.role_id === 1) ? true : false;
+            is_admin = (!_.isEmpty(admin) || authuser.user.role_id === 1) ? 1 : 0;
         }
 
         var self = this;
         this.model.board_users.sortBy('is_admin');
         this.model.board_users.each(function(board_user) {
-            is_admin = (board_user.attributes.is_admin === true || board_user.attributes.is_admin === 1) ? true : false;
+            is_admin = (parseInt(board_user.attributes.is_admin) === 1) ? 1 : 0;
             self.$('.js-get-board-member-lists-response').append(new App.BoardUsersView({
                 model: board_user,
                 is_admin: is_admin
@@ -1228,7 +1227,7 @@ App.BoardHeaderView = Backbone.View.extend({
             if (!_.isEmpty(filtered_lists)) {
                 var _i = 0;
                 _.each(filtered_lists, function(list) {
-                    if (list.attributes.is_archived === 1) {
+                    if (parseInt(list.attributes.is_archived) === 1) {
                         el.find('.js-archived-cards-container').append(new App.ArchivedListView({
                             model: list
                         }).el);
@@ -1269,7 +1268,7 @@ App.BoardHeaderView = Backbone.View.extend({
         $(e.currentTarget).parents('li').remove();
         var card = new App.Card();
         card.set('id', card_id);
-        card.set('is_archived', false);
+        card.set('is_archived', 0);
         card.url = api_url + 'boards/' + this.model.attributes.id + '/lists/' + find_card.attributes.list_id + '/cards/' + card_id + '.json';
         card.save({
             success: function(model, response) {}
@@ -1480,7 +1479,7 @@ App.BoardHeaderView = Backbone.View.extend({
         $(e.currentTarget).parents('li').remove();
         var list = new App.List();
         list.set('id', list_id);
-        list.set('is_archived', false);
+        list.set('is_archived', 0);
         list.url = api_url + 'boards/' + this.model.attributes.id + '/lists/' + list_id + '.json';
         list.save({
             success: function(model, response) {}
@@ -1498,20 +1497,20 @@ App.BoardHeaderView = Backbone.View.extend({
         var target = $(e.currentTarget);
         if (target.hasClass('js-AdditionalSettings-enabled')) {
             data = {
-                'is_show_image_front_of_card': false
+                'is_show_image_front_of_card': 0
             };
             $('div.js-card-attachment-image').addClass('hide');
             $('.js-AdditionalSettings-enabled').addClass('hide');
             $('.js-AdditionalSettings-enable').removeClass('hide');
-            this.model.set('is_show_image_front_of_card', false);
+            this.model.set('is_show_image_front_of_card', 0);
         } else {
             data = {
-                'is_show_image_front_of_card': true
+                'is_show_image_front_of_card': 1
             };
             $('div.js-card-attachment-image').removeClass('hide');
             $('.js-AdditionalSettings-enabled').removeClass('hide');
             $('.js-AdditionalSettings-enable').addClass('hide');
-            this.model.set('is_show_image_front_of_card', true);
+            this.model.set('is_show_image_front_of_card', 1);
         }
         var board = new App.Board();
         board.url = api_url + 'boards/' + this.model.attributes.id + '.json';

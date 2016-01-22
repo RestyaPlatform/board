@@ -356,11 +356,11 @@ App.BoardView = Backbone.View.extend({
         $('.js-star-load').removeClass('hide');
         var name = $(e.currentTarget).attr('name');
         var value = 'unstar';
-        var is_starred = true;
+        var is_starred = 1;
         var content = '<i class="icon-star text-primary"></i>';
         if (name == 'unstar') {
             value = 'star';
-            is_starred = false;
+            is_starred = 0;
             content = '<i class="icon-star-empty"></i>';
         }
         $(e.currentTarget).attr('name', value);
@@ -372,11 +372,11 @@ App.BoardView = Backbone.View.extend({
             value = '';
             if ($('#inputBoardStar').val() == 'false') {
                 value = 'true';
-                is_starred = true;
+                is_starred = 1;
                 $('#inputBoardStar').val(value);
             } else {
                 value = 'false';
-                is_starred = false;
+                is_starred = 0;
                 $('#inputBoardStar').val(value);
             }
             var data = $('form#BoardStarForm').serializeObject();
@@ -419,14 +419,14 @@ App.BoardView = Backbone.View.extend({
     closeBoard: function(e) {
         e.preventDefault();
         this.model.url = api_url + 'boards/' + this.model.id + '.json';
-        App.boards.get(this.model.id).set('is_closed', true);
-        this.model.set('is_closed', true);
+        App.boards.get(this.model.id).set('is_closed', 1);
+        this.model.set('is_closed', 1);
         this.footerView = new App.FooterView({
             model: authuser,
             board_id: this.model.id
         }).renderClosedBoards();
         this.model.save({
-            is_closed: true
+            is_closed: 1
         }, {
             patch: true,
             success: function(model, response) {
@@ -444,9 +444,9 @@ App.BoardView = Backbone.View.extend({
     reopenBoard: function(e) {
         var data = $(e.target).serializeObject();
         this.model.url = api_url + 'boards/' + this.model.id + '.json';
-        this.model.set('is_closed', false);
+        this.model.set('is_closed', 0);
         this.model.save({
-            is_closed: false
+            is_closed: 0
         }, {
             patch: true,
             success: function(model, response) {}
@@ -779,7 +779,7 @@ App.BoardView = Backbone.View.extend({
             if (!_.isUndefined(list.get('is_new')) && list.get('is_new') === true) {
                 list.set('board_id', self.model.id);
             } else {
-                if (list.get('is_archived') === false || list.get('is_archived') === 0) {
+                if (parseInt(list.get('is_archived')) === 0) {
                     var subscribers = new App.ListSubscriberCollection();
                     subscribers.add(list.get('lists_subscribers'), {
                         silent: true
@@ -1013,7 +1013,7 @@ App.BoardView = Backbone.View.extend({
             var newPosition = difference + before.position();
             data.position = newPosition;
         }
-        data.is_archived = false;
+        data.is_archived = 0;
         data.board_id = self.model.id;
         var view = '';
         if (!_.isUndefined(data.clone_list_id)) {
@@ -1122,7 +1122,7 @@ App.BoardView = Backbone.View.extend({
                 }
                 list.set('board_id', self.model.id);
                 if (list.attributes.is_archived === 0) {
-                    list.attributes.is_archived = false;
+                    list.attributes.is_archived = 0;
                 }
                 self.model.lists.add(list, {
                     silent: true
@@ -1189,7 +1189,7 @@ App.BoardView = Backbone.View.extend({
         }
         el.find('.js-archived-cards-container').html('');
         cards.each(function(card) {
-            if (card.attributes.is_archived === true) {
+            if (card.attributes.is_archived === 1) {
                 el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                     model: card
                 }).el);
@@ -1216,7 +1216,7 @@ App.BoardView = Backbone.View.extend({
         }
         el.find('.js-archived-cards-container').html('');
         lists.each(function(list) {
-            if (list.attributes.is_archived === true) {
+            if (list.attributes.is_archived === 1) {
                 el.find('.js-archived-cards-container').append(new App.ArchivedListView({
                     model: list
                 }).el);

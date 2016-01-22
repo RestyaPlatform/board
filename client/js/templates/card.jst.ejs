@@ -25,7 +25,7 @@
   	<%
 		if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
 			var cards_subscribers = card.cards_subscribers.where({
-				is_subscribed: true,
+				is_subscribed: 1,
 				user_id: parseInt(authuser.user.id) 
 			});
 		}

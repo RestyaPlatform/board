@@ -17,12 +17,12 @@
   <% if(!_.isUndefined(authuser.user)){%>
 	<li class="hidden-xs music-btn pa">
 		<% if(board_id !== undefined && board_id !== null && board_id !== "" && !_.isEmpty(this.music_content) && this.music_content !== ''){ %>
-			<% if(authuser.user.is_productivity_beats === true || parseInt(authuser.user.is_productivity_beats) === 1) { %>
-				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="Productivity Beats - <%- this.music_name %>" title="Productivity Beats - <%- this.music_name %>" class="animation btn btn-default js-product-beat-action" data-type='on'>
+			<% if(parseInt(authuser.user.is_productivity_beats) === 1) { %>
+				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" class="animation btn btn-default js-product-beat-action" data-type='on'>
 				<span class="show"><i class="icon-volume-up lead tada-animation"></i></span>
 				</a>
 			<% } else { %>
-				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="Productivity Beats - <%- this.music_name %>" title="Productivity Beats - <%- this.music_name %>" class="animation btn btn-default js-product-beat-action" data-type='off'>
+				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" class="animation btn btn-default js-product-beat-action" data-type='off'>
 				<span class="show"><i class="icon-volume-off lead text-muted"></i></span>
 				</a>
 			<% } %>
@@ -32,11 +32,11 @@
 	<li class="hidden-xs music-btn pa">
 		<% if(board_id !== undefined && board_id !== null && board_id !== "" && !_.isEmpty(this.music_content) && this.music_content !== ''){ %>
 			<% if(window.sessionStorage.getItem('music_play') === "1") { %>
-				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="Productivity Beats - <%- this.music_name %>" title="Productivity Beats - <%- this.music_name %>" class="animation btn btn-default js-product-beat-action" data-type='on'>
+				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" class="animation btn btn-default js-product-beat-action" data-type='on'>
 				<span class="show"><i class="icon-volume-up lead show"></i></span>
 				</a>
 			<% } else { %>
-				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="Productivity Beats - <%- this.music_name %>" title="Productivity Beats - <%- this.music_name %>" class="animation btn btn-default js-product-beat-action" data-type='off'>
+				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" class="animation btn btn-default js-product-beat-action" data-type='off'>
 				<span class="show"><i class="icon-volume-off lead show text-muted"></i></span>
 				</a>
 			<% } %>
@@ -177,9 +177,9 @@
 		   <% }); %>
 		</ul>
 	  </li>
-	  <li class="hidden-xs"><a data-toggle="tooltip" data-placement="top" title="Chat" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-chat<% }%>" data-original-title="Chat"><i class="icon-comment lead"></i></a></li> 
+	  <li class="hidden-xs"><a data-toggle="tooltip" data-placement="top" title="<%- i18next.t('Chat') %>" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-chat<% }%>" data-original-title="<%- i18next.t('Chat') %>"><i class="icon-comment lead"></i></a></li> 
 	  <% if(!_.isEmpty(role_links.where({slug: "add_card"}))){ %>
-	  	<li class="hidden-xs"><a data-container="body" data-toggle="tooltip" data-placement="top" title="Instant add card" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-instant-card-from<% }%>" data-original-title="Add New"><i class="icon-plus-sign lead"></i></a></li>
+	  	<li class="hidden-xs"><a data-container="body" data-toggle="tooltip" data-placement="top" title="<%- i18next.t('Instant add card') %>" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-instant-card-from<% }%>" data-original-title="Add New"><i class="icon-plus-sign lead"></i></a></li>
 	  <% } %>
 	  <li class="dropdown notifications pull-right hidden-xs"><a data-toggle="dropdown" href="#" class="btn btn-default pull-right js-show-notification" title="Notifications"><sup class="badge notification-count hide js-notification-count"></sup><i class="icon-bell lead"></i></a>
 		<div class="tabbable tabs-below dropdown-menu pull-right js-dropdown-popup" role="menu">

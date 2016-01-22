@@ -620,7 +620,7 @@ App.ModalCardView = Backbone.View.extend({
         var self = this;
         if (doc.length !== 0) {
             var cards_subscribers = this.model.cards_subscribers.where({
-                is_subscribed: true,
+                is_subscribed: 1,
                 user_id: parseInt(authuser.user.id)
             });
             var subscribed = '';
@@ -632,9 +632,9 @@ App.ModalCardView = Backbone.View.extend({
                 postProcess: 'sprintf',
                 sprintf: [_.escape(this.model.attributes.name), _.escape(this.model.list.attributes.name), subscribed]
             });
-            if (this.model.attributes.is_archived === 1) {
+            if (parseInt(this.model.attributes.is_archived) === 1) {
                 class_name = ' label label-warning';
-                text = _.escape('This card is archived.');
+                text = i18next.t('This card is archived.');
             }
             $('.title-text', doc.parent().prev('.dockmodal-header')).html('<div class="card-id pull-left"><strong>#' + this.model.id + '</strong></div><span class="title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + text + '</span>');
             doc.html(this.template({
@@ -721,7 +721,7 @@ App.ModalCardView = Backbone.View.extend({
         var subscribed = '';
         if (!_.isUndefined(authuser.user)) {
             var cards_subscribers = this.model.cards_subscribers.where({
-                is_subscribed: true,
+                is_subscribed: 1,
                 user_id: parseInt(authuser.user.id)
             });
             if (!_.isEmpty(cards_subscribers)) {
@@ -749,7 +749,7 @@ App.ModalCardView = Backbone.View.extend({
                 sprintf: [_.escape(this.model.attributes.name), _.escape(this.model.list.attributes.name), subscribed]
             });
             var class_name = '';
-            if (this.model.attributes.is_archived === 1) {
+            if (parseInt(this.model.attributes.is_archived) === 1) {
                 class_name = ' label label-warning';
                 title = i18next.t('This card is archived.');
             }
@@ -1096,7 +1096,7 @@ App.ModalCardView = Backbone.View.extend({
         card_subscribe.set('board_id', board_id);
         card_subscribe.set('list_id', list_id);
         card_subscribe.set('user_id', parseInt(authuser.user.id));
-        card_subscribe.set('is_subscribed', true);
+        card_subscribe.set('is_subscribed', 1);
         self.model.cards_subscribers.add(card_subscribe);
         if (typeof card_subscribe_id == 'undefined' || card_subscribe_id == 'undefined') {
             var subscribe = {
@@ -1110,7 +1110,7 @@ App.ModalCardView = Backbone.View.extend({
             card_subscribe.url = api_url + 'boards/' + board_id + '/lists/' + list_id + '/cards/' + card_id + '/card_subscribers/' + subscribe_id + '.json';
         }
         card_subscribe.save({
-            is_subscribed: true
+            is_subscribed: 1
         }, {
             success: function(model, response, options) {
                 if (_.isUndefined(options.temp_id)) {
@@ -1174,7 +1174,7 @@ App.ModalCardView = Backbone.View.extend({
             card_subscribe.url = api_url + 'boards/' + board_id + '/lists/' + list_id + '/cards/' + card_id + '/card_subscribers/' + subscribe_id + '.json';
         }
         card_subscribe.save({
-            is_subscribed: false
+            is_subscribed: 0
         }, {
             success: function(model, response, options) {
                 if (_.isUndefined(options.temp_id)) {
@@ -1403,7 +1403,7 @@ App.ModalCardView = Backbone.View.extend({
         this.model.set('is_offline', true);
         this.model.set('is_archived', 0);
         this.model.save({
-            is_archived: false
+            is_archived: 0
         }, {
             patch: true,
             success: function(model, response, options) {
@@ -1778,7 +1778,7 @@ App.ModalCardView = Backbone.View.extend({
                         checklist_item.set('user_id', parseInt(item.user_id));
                         checklist_item.set('checklist_id', card_checklist.id);
                         checklist_item.set('name', item.name);
-                        checklist_item.set('is_completed', false);
+                        checklist_item.set('is_completed', 0);
                         checklist_item.card = self.model.card;
                         checklist_item.checklist = new App.CheckList();
                         checklist_item.checklist = self.model;
@@ -1797,7 +1797,7 @@ App.ModalCardView = Backbone.View.extend({
                             checklist_item.set('user_id', parseInt(item.attributes.user_id));
                             checklist_item.set('checklist_id', card_checklist.id);
                             checklist_item.set('name', item.attributes.name);
-                            checklist_item.set('is_completed', false);
+                            checklist_item.set('is_completed', 0);
                             checklist_item.card = self.model.card;
                             checklist_item.checklist = new App.CheckList();
                             checklist_item.checklist = self.model;
@@ -1816,7 +1816,7 @@ App.ModalCardView = Backbone.View.extend({
                 items = new App.CheckListItemCollection();
                 items.add(__checklist_items);
                 var completed_count = items.filter(function(checklist_item) {
-                    return checklist_item.get('is_completed') === true || checklist_item.get('is_completed') == 'true' || checklist_item.get('is_completed') == 1;
+                    return parseInt(checklist_item.get('is_completed')) === 1;
                 }).length;
                 var total_count = items.models.length;
                 self.model.set('checklist_item_completed_count', completed_count);
@@ -2422,7 +2422,7 @@ App.ModalCardView = Backbone.View.extend({
         } else {
             var board = self.boards.findWhere({
                 id: parseInt(board_id),
-                is_closed: false
+                is_closed: 0
             });
             board.lists.add(board.attributes.lists);
             var board_lists = board.lists.where({
@@ -2662,7 +2662,7 @@ App.ModalCardView = Backbone.View.extend({
      */
     AddCommentMember: function(e) {
         e.preventDefault();
-        this.$el.find('.js-comment').val(this.$el.find('.js-comment').val().replace('@' + $('.js-search-member').val(), '@' + $(e.currentTarget).data('user-name')));
+        this.$el.find('.js-comment').val(this.$el.find('.js-comment').val().replace('@' + $('.js-search-member').val(), '@' + $(e.currentTarget).data('user-name'))).focus();
         this.autoMentionSelectionStart = 0;
         $('.js-search-member').val('').trigger('keyup');
     },

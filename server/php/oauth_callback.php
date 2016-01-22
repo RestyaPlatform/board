@@ -15,7 +15,7 @@
 require_once 'config.inc.php';
 require_once 'libs/core.php';
 if (!empty($_GET['plugin'])) {
-    $content = file_get_contents(APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $_GET['plugin'] . DIRECTORY_SEPARATOR . 'plugin.json');
+    $content = file_get_contents(APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'apps' . DIRECTORY_SEPARATOR . $_GET['plugin'] . DIRECTORY_SEPARATOR . 'app.json');
     $data = json_decode($content, true);
     $post_data = array(
         'client_id' => $data['settings'][$_GET['plugin'] . '_client_id']['value'],

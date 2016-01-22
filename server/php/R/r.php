@@ -333,9 +333,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 } else if ($r_resource_filters['filter'] == 'private') {
                     $filter_condition.= 'board_visibility = 0';
                 } else if ($r_resource_filters['filter'] == 'public') {
-                    $filter_condition.= 'board_visibility = 1';
-                } else if ($r_resource_filters['filter'] == 'organization') {
                     $filter_condition.= 'board_visibility = 2';
+                } else if ($r_resource_filters['filter'] == 'organization') {
+                    $filter_condition.= 'board_visibility = 1';
                 }
                 $sql.= $filter_condition;
             }
@@ -763,12 +763,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $private_count = executeQuery('SELECT count(*) FROM boards WHERE board_visibility = $1', $val_array);
             $filter_count['private'] = $private_count['count'];
             $val_array = array(
-                1
+                2
             );
             $public_count = executeQuery('SELECT count(*) FROM boards WHERE board_visibility = $1', $val_array);
             $filter_count['public'] = $public_count['count'];
             $val_array = array(
-                2
+                1
             );
             $organization_count = executeQuery('SELECT count(*) FROM boards WHERE board_visibility = $1', $val_array);
             $filter_count['organization'] = $organization_count['count'];
@@ -1177,13 +1177,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (!$user) {
                     $r_post['password'] = getCryptHash($r_post['password']);
                     $r_post['role_id'] = 2; // user
+                    preg_match_all('/\b\w/', $check_user['User']['first_name'], $match);
                     $val_arr = array(
                         $r_post['email'],
                         $check_user['User']['email'],
                         $r_post['password'],
-                        strtoupper(substr($r_post['email'], 0, 1))
+                        $check_user['User']['first_name'],
+                        strtoupper(implode($match[0]))
                     );
-                    $result = pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, role_id, username, email, password, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, true, true, true) RETURNING * ', $val_arr);
+                    $result = pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5, true, true, true) RETURNING * ', $val_arr);
                     $user = pg_fetch_assoc($result);
                     $val_arr = array(
                         $user['id']
@@ -2168,6 +2170,23 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board', $foreign_id);
                     $result = pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, is_admin) VALUES (now(), now(), $1, $2, true)', $qry_val_arr);
+                    if (!empty($row['board_visibility']) && $row['board_visibility'] == 1 && !empty($r_post['organization_id'])) {
+                        $qry_val_arr = array(
+                            $r_post['organization_id']
+                        );
+                        $organization_users = pg_query_params($db_lnk, 'SELECT * FROM organizations_users WHERE organization_id = $1', $qry_val_arr);
+                        while ($organization_user = pg_fetch_assoc($organization_users)) {
+                            if (!empty($organization_user)) {
+                                if ($organization_user['user_id'] != $row['user_id']) {
+                                    $qry_val_arr = array(
+                                        $row['id'],
+                                        $organization_user['user_id']
+                                    );
+                                    pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, is_admin) VALUES (now(), now(), $1, $2, false)', $qry_val_arr);
+                                }
+                            }
+                        }
+                    }
                     if (isset($lists) && !empty($lists)) {
                         $position = 1;
                         $total_list = count($lists);
@@ -2356,7 +2375,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, card_id, label_id, board_id, list_id) VALUES (now(), now(), $1, $2, $3, $4) RETURNING *', $qry_val_arr);
                     }
                     $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ##LABEL_NAME##';
-                    insertActivity($authUser['id'], $comment, 'add_card_label', $foreign_ids);
+                    insertActivity($authUser['id'], $comment, 'add_card_label', $foreign_ids, null, $r_post['label_id']);
                 }
                 $qry_val_arr = array(
                     $response['id']
@@ -3031,6 +3050,27 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_organization_user', $foreign_ids, null, $foreign_id);
                 $response['organizations_users'] = executeQuery('SELECT * FROM organizations_users_listing WHERE id = $1', $qry_val_arr);
                 $response['organizations_users']['boards_users'] = json_decode($response['organizations_users']['boards_users'], true);
+                $qry_val_arr = array(
+                    $r_post['organization_id']
+                );
+                $boards = pg_query_params($db_lnk, 'SELECT * FROM boards WHERE organization_id = $1', $qry_val_arr);
+                while ($board = pg_fetch_assoc($boards)) {
+                    if (!empty($board)) {
+                        $qry_val_arr = array(
+                            $board['id'],
+                            $r_post['user_id']
+                        );
+                        $boards_users = pg_query_params($db_lnk, 'SELECT * FROM boards_users WHERE board_id = $1 AND user_id = $2', $qry_val_arr);
+                        $boards_users = pg_fetch_assoc($boards_users);
+                        if (empty($boards_users)) {
+                            $qry_val_arr = array(
+                                $board['id'],
+                                $r_post['user_id']
+                            );
+                            pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, is_admin) VALUES (now(), now(), $1, $2, false)', $qry_val_arr);
+                        }
+                    }
+                }
             }
         }
     }

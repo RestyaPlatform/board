@@ -17,25 +17,26 @@
 <div class="col-xs-12">
 	<ul class="list-unstyled dropdown-menu dropdown-list show">
 		<li class="dropdown <%if(!is_admin){%>disabled<%}%>"> 
-			<a href="#" data-toggle="dropdown" class="dropdown-toggle <%if(is_admin){%>js-show-dropdown<%}%>"> <%- i18next.t('Change permissions') %> (<% if(user.attributes.is_admin == true || user.attributes.is_admin == 1){ %> <%- i18next.t('Owner') %> <%}else{%> <%- i18next.t('Member') %><%}%>)</a>
+			<a href="#" data-toggle="dropdown" class="dropdown-toggle <%if(is_admin){%>js-show-dropdown<%}%>"> <%- i18next.t('Change permissions') %> (<% if(parseInt(user.attributes.is_admin) === 1){ %> <%- i18next.t('Owner') %> <%}else{%> <%- i18next.t('Member') %><%}%>)</a>
 			<ul class="dropdown-menu dropdown-menu-right arrow arrow-right js-list-actions-response">
 				<div class="clearfix text-center col-xs-12"> <span class="col-xs-10"><strong><%- i18next.t('Change permissions') %></strong></span><a href="#" class="js-close-popup pull-right"><i class="icon-remove "></i></a> </div>
 				<div class="col-xs-12 divider"></div>
 				<div class="col-xs-12">
 				  <ul class="list-unstyled">
-					<li> <a href="#" class="<% if(user.attributes.is_admin == false || user.attributes.is_admin == 0){ %>js-edit-board-member-permission-to-admin<%}else{%>js-no-action<%}%>"> <span class="show text-primary"><%- i18next.t('Owner') %> <% if(user.attributes.is_admin == true || user.attributes.is_admin == 1){ %><i class="icon-ok"></i><%}%></span> <span class="text-muted"><%- i18next.t('Can view and edit cards, remove members, and change settings for the board.') %></span> </a> </li>
+					<li> <a href="#" class="<% if(parseInt(user.attributes.is_admin) === 0){ %>js-edit-board-member-permission-to-admin<%}else{%>js-no-action<%}%>"> <span class="show text-primary"><%- i18next.t('Owner') %> <% if(parseInt(user.attributes.is_admin) === 1){ %><i class="icon-ok"></i><%}%></span> <span class="text-muted"><%- i18next.t('Can view and edit cards, remove members, and change settings for the board.') %></span> </a> </li>
 					<li class="divider"></li>
-					<li> <a href="#" class="<% if(user.attributes.is_admin == true || user.attributes.is_admin == 1){ %>js-edit-board-member-permission-to-normal<%}else{%>js-no-action<%}%>"><span class="show text-primary"><%- i18next.t('Member') %> <% if(user.attributes.is_admin == false || user.attributes.is_admin == 0){ %><i class="icon-ok"></i><%}%></span> <span class="text-muted"><%- i18next.t("Can view and edit cards. Can't change settings.") %></span></a> </li>
+					<li> <a href="#" class="<% if(parseInt(user.attributes.is_admin) === 1){ %>js-edit-board-member-permission-to-normal<%}else{%>js-no-action<%}%>"><span class="show text-primary"><%- i18next.t('Member') %> <% if(parseInt(user.attributes.is_admin) === 0){ %><i class="icon-ok"></i><%}%></span> <span class="text-muted"><%- i18next.t("Can view and edit cards. Can't change settings.") %></span></a> </li>
 				  </ul>
 				</div>
 			</ul>
 		</li>
 		<li>
-			<a href="#" title="View member's board activity" data-user-id="<%- user.attributes.user_id %>" class="js-view-user-activities">
+			<% var title = i18next.t("View member's board activity"); %>
+			<a href="#" title="<%- title %>" data-user-id="<%- user.attributes.user_id %>" class="js-view-user-activities">
 				<span><%- i18next.t("View member's board activity") %></span>
 			</a>
 		</li>
-		<% if ((!_.isUndefined(authuser.user) && authuser.user.role_id == 1) || ((user.attributes.is_admin == false || user.attributes.is_admin == 0) && (parseInt(authuser.user.id) === user.attributes.user_id || (is_admin))) || (user.collection.board.admin_board_users.length > 1 && is_admin)) { %>
+		<% if ((!_.isUndefined(authuser.user) && authuser.user.role_id == 1) || ((parseInt(user.attributes.is_admin) === 0) && (parseInt(authuser.user.id) === user.attributes.user_id || (is_admin))) || (user.collection.board.admin_board_users.length > 1 && is_admin)) { %>
 			<li><a href="#" title="<%if(parseInt(authuser.user.id) != user.attributes.user_id ){%><%- i18next.t('Remove from board') %><%}else{%><%- i18next.t('Leave from board') %><%}%>" class="js-show-confirm-delete-board-member"><% if(parseInt(authuser.user.id) != user.attributes.user_id ){%><%- i18next.t('Remove from board') %><%}else{%><%- i18next.t('Leave from board') %><%}%></a></li>
 		<% } %>
 		

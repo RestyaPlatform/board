@@ -144,7 +144,7 @@ App.OrganizationsView = Backbone.View.extend({
         this.model.organizations_users.get(parseInt(organizations_user_id)).set('is_admin', 0);
         self.getOrganizationMemberLists();
         organizationsUser.save({
-            is_admin: false
+            is_admin: 0
         });
         return false;
     },
@@ -168,7 +168,7 @@ App.OrganizationsView = Backbone.View.extend({
         this.model.organizations_users.get(parseInt(organizations_user_id)).set('is_admin', 1);
         self.getOrganizationMemberLists();
         organizationsUser.save({
-            is_admin: true
+            is_admin: 1
         });
 
         return false;

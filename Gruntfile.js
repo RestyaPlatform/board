@@ -162,7 +162,7 @@ module.exports = function(grunt) {
             },
             i18n: {
                 cmd: [
-                    'php build/i18n.php client/js/*.js client/js/views/*.js client/js/templates/*.ejs'
+                    'php build/i18n.php client/js/*.js client/js/views/*.js client/js/templates/*.ejs client/apps/**/js/*.js'
                 ].join('&&')
             }
         },

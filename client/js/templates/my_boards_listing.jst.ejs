@@ -20,7 +20,7 @@
 	<span class="details navbar-btn">
 		<span title="<%- board.attributes.name %>" class="board-list-item-name htruncate btn-block navbar-btn "><%-  board.attributes.name %></span><span class="pull-right hide js-stared-conatiner js-stared-conatiner-<%- board.attributes.id %>">
 			<%
-				if (!_.isUndefined(subscriber) && !_.isEmpty(subscriber) && subscriber.attributes.is_subscribe === false) {
+				if (!_.isUndefined(subscriber) && !_.isEmpty(subscriber) && parseInt(subscriber.attributes.is_subscribe) === 0) {
 			%>
 				<span title="<%- i18next.t('Click to star this board. It will show up at top of your boards list.') %>" name="unsubscribe" class="icon-star js-star-board" data-subscriber_id="<%- subscriber.attributes.id %>" data-board_id="<%- board.attributes.id %>"></span>
 		  <%

@@ -139,10 +139,10 @@ App.UserIndex = Backbone.View.extend({
      */
     blockUser: function(e) {
         e.preventDefault();
-        this.model.set('is_active', false);
+        this.model.set('is_active', 0);
         this.model.url = api_url + 'users/' + this.model.attributes.id + '.json';
         this.model.save({
-            is_active: false
+            is_active: 0
         }, {
             patch: true
         });
@@ -154,10 +154,10 @@ App.UserIndex = Backbone.View.extend({
      */
     unBlockUser: function(e) {
         e.preventDefault();
-        this.model.set('is_active', true);
+        this.model.set('is_active', 1);
         this.model.url = api_url + 'users/' + this.model.attributes.id + '.json';
         this.model.save({
-            is_active: true
+            is_active: 1
         }, {
             patch: true
         });

@@ -256,11 +256,13 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     register: function() {
+        $('.dockmodal, .dockmodal-overlay').remove();
         new App.ApplicationView({
             model: 'register'
         });
     },
     login: function() {
+        $('.dockmodal, .dockmodal-overlay').remove();
         new App.ApplicationView({
             model: 'login'
         });

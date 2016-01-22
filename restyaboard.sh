@@ -7,6 +7,14 @@
 # Copyright (c) 2014-2016 Restya.
 # Dual License (OSL 3.0 & Commercial License)
 {
+	if [[ $EUID -ne 0 ]];
+	then
+		echo "This script must be run as root"
+		exit 1
+	fi
+	set -x
+	whoami
+	echo $(cat /etc/issue)
 	OS_REQUIREMENT=$(cat /etc/issue | awk '{print $1}' | sed 's/Kernel//g')
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ])
 	then
@@ -24,21 +32,29 @@
 	
 	update_version()
 	{
+		set +x
 		echo "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available. Do you want to get it now y/n?"
 		read -r answer
+		set -x
 		case "${answer}" in
 			[Yy])
-			echo -n "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):"
+			set +x
+			echo "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):"
 			read -r dir
+			while [[ -z "$dir" ]]
+			do
+				read -r -p "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):" dir
+			done
+			set -x
 			
-			echo -n "Downloading files..."
+			echo "Downloading files..."
 			curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
 			unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
 			
-			echo -n "Updating files..."
+			echo "Updating files..."
 			cp -r ${DOWNLOAD_DIR} "$dir"
 			
-			echo -n "Connecting database to run SQL changes..."
+			echo "Connecting database to run SQL changes..."
 			psql -U postgres -c "\q"
 			sleep 1
 			
@@ -79,8 +95,10 @@
 			exit;
 		fi
 	else
+		set +x
 		echo "Already installed Restyaboard y/n?"
 		read -r answer
+		set -x
 		case "${answer}" in
 			[Yy])
 			update_version
@@ -89,8 +107,10 @@
 	fi
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ])
 	then
-		echo "Setup script will install version ${RESTYABOARD_VERSION} and create database ${POSTGRES_DBNAME} with user ${POSTGRES_DBUSER} and password ${POSTGRES_DBPASS}. To continue enter \"y\" or to quit the process and edit the version and database details enter \"n\" (y/n)?" 
+		set +x
+		echo "Setup script will install version ${RESTYABOARD_VERSION} and create database ${POSTGRES_DBNAME} with user ${POSTGRES_DBUSER} and password ${POSTGRES_DBPASS}. To continue enter \"y\" or to quit the process and edit the version and database details enter \"n\" (y/n)?"
 		read -r answer
+		set -x
 		case "${answer}" in
 			[Yy])
 			echo "deb http://mirrors.linode.com/debian/ wheezy main contrib non-free" >> /etc/apt/sources.list
@@ -109,8 +129,10 @@
 			echo "Checking nginx..."
 			if ! which nginx > /dev/null 2>&1; then
 				echo "nginx not installed!"
+				set +x
 				echo "Do you want to install nginx (y/n)?"
 				read -r answer
+				set -x
 				case "${answer}" in
 					[Yy])
 					echo "Installing nginx..."
@@ -122,8 +144,10 @@
 			echo "Checking PHP..."
 			if ! hash php 2>&-; then
 				echo "PHP is not installed!"
-				echo "Do you want to install PHP (y/n)?" 
+				set +x
+				echo "Do you want to install PHP (y/n)?"
 				read -r answer
+				set -x
 				case "${answer}" in
 					[Yy])
 					echo "Installing PHP..."
@@ -183,8 +207,10 @@
 			id -a postgres
 			if [ $? != 0 ]; then
 				echo "PostgreSQL not installed!"
+				set +x
 				echo "Do you want to install PostgreSQL (y/n)?"
 				read -r answer
+				set -x
 				case "${answer}" in
 					[Yy])
 					echo "Installing PostgreSQL..."
@@ -198,15 +224,17 @@
 					cd /etc/postgresql/9.4/main || exit
 					mv pg_hba.conf pg_hba.conf_old
 					mv pg_hba.conf.1 pg_hba.conf
-					service postgresql restart		
+					service postgresql restart
 				esac
 			fi
 			
 			echo "Checking ElasticSearch..."
 			if ! curl http://localhost:9200 > /dev/null 2>&1; then
 				echo "ElasticSearch not installed!"
+				set +x
 				echo "Do you want to install ElasticSearch (y/n)?"
 				read -r answer
+				set -x
 				case "${answer}" in
 					[Yy])
 					echo "Installing ElasticSearch..."
@@ -224,20 +252,32 @@
 			cp /opt/restyaboard/restyaboard.conf /etc/nginx/conf.d
 			rm /tmp/restyaboard.zip
 			
-			echo -n "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
+			set +x
+			echo "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
 			read -r webdir
+			while [[ -z "$webdir" ]]
+			do
+				read -r -p "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+			done
+			set -x
 			echo "$webdir"
-			echo -n "Changing server_name in nginx configuration..."
+			echo "Changing server_name in nginx configuration..."
 			sed -i "s/server_name.*$/server_name \"$webdir\";/" /etc/nginx/conf.d/restyaboard.conf
 			sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
 			
-			echo -n "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):"
+			set +x
+			echo "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):"
 			read -r dir
+			while [[ -z "$dir" ]]
+			do
+				read -r -p "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):" dir
+			done
+			set -x
 			echo "$dir"
 			mkdir -p "$dir"
-			echo -n "Changing root directory in nginx configuration..."
+			echo "Changing root directory in nginx configuration..."
 			sed -i "s|root.*html|root $dir|" /etc/nginx/conf.d/restyaboard.conf
-			echo -n "Copying Restyaboard script to root directory..."
+			echo "Copying Restyaboard script to root directory..."
 			cp -r /opt/restyaboard/* "$dir"
 			
 			echo "Installing postfix..."
@@ -246,19 +286,19 @@
 			echo "postfix postfix/main_mailer_type string 'Internet Site'"\
 			| debconf-set-selections &&\
 			apt-get install -y postfix
-		
+			
 			echo "Changing permission..."
 			chmod -R go+w "$dir/media"
 			chmod -R go+w "$dir/client/img"
 			chmod -R go+w "$dir/tmp/cache"
-			chmod -R 0755 "$dir/server/php/shell/*.sh"
+			chmod -R 0755 $dir/server/php/shell/*.sh
 
 			psql -U postgres -c "\q"
 			sleep 1
 
 			echo "Creating PostgreSQL user and database..."
 			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8'"
+			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ "$?" = 0 ];
 			then
 				echo "Importing empty SQL..."
@@ -292,8 +332,10 @@
 			service elasticsearch restart
 		esac
 	else
-		echo "Setup script will install version ${RESTYABOARD_VERSION} and create database ${POSTGRES_DBNAME} with user ${POSTGRES_DBUSER} and password ${POSTGRES_DBPASS}. To continue enter \"y\" or to quit the process and edit the version and database details enter \"n\" (y/n)?" 
+		set +x
+		echo "Setup script will install version ${RESTYABOARD_VERSION} and create database ${POSTGRES_DBNAME} with user ${POSTGRES_DBUSER} and password ${POSTGRES_DBPASS}. To continue enter \"y\" or to quit the process and edit the version and database details enter \"n\" (y/n)?"
 		read -r answer
+		set -x
 		case "${answer}" in
 			[Yy])
 
@@ -301,8 +343,10 @@
 			if ! which nginx > /dev/null 2>&1;
 			then
 				echo "nginx not installed!"
+				set +x
 				echo "Do you want to install nginx (y/n)?"
 				read -r answer
+				set -x
 				case "${answer}" in
 					[Yy])
 					echo "Installing nginx..."
@@ -317,8 +361,10 @@
 			if ! hash php 2>&-;
 			then
 				echo "PHP is not installed!"
+				set +x
 				echo "Do you want to install PHP (y/n)?" 
 				read -r answer
+				set -x
 				case "${answer}" in
 					[Yy])
 					echo "Installing PHP..."
@@ -390,8 +436,10 @@
 			if [ $? != 0 ];
 			then
 				echo "PostgreSQL not installed!"
+				set +x
 				echo "Do you want to install PostgreSQL (y/n)?"
 				read -r answer
+				set -x
 				case "${answer}" in
 					[Yy])
 					echo "Installing PostgreSQL..."
@@ -433,8 +481,10 @@
 			if ! curl http://localhost:9200 > /dev/null 2>&1;
 			then
 				echo "ElasticSearch not installed!"
+				set +x
 				echo "Do you want to install ElasticSearch (y/n)?"
 				read -r answer
+				set -x
 				case "${answer}" in
 					[Yy])
 					echo "Installing ElasticSearch..."
@@ -456,34 +506,46 @@
 			cp ${DOWNLOAD_DIR}/restyaboard.conf /etc/nginx/conf.d
 			rm /tmp/restyaboard.zip
 
-			echo -n "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
+			set +x
+			echo "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
 			read -r webdir
+			while [[ -z "$webdir" ]]
+			do
+				read -r -p "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+			done
+			set -x
 			echo "$webdir"
-			echo -n "Changing server_name in nginx configuration..."
+			echo "Changing server_name in nginx configuration..."
 			sed -i "s/server_name.*$/server_name \"$webdir\";/" /etc/nginx/conf.d/restyaboard.conf
 			sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
 
-			echo -n "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):"
+			set +x
+			echo "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):"
 			read -r dir
+			while [[ -z "$dir" ]]
+			do
+				read -r -p "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):" dir
+			done
+			set -x
 			echo "$dir"
 			mkdir -p "$dir"
-			echo -n "Changing root directory in nginx configuration..."
+			echo "Changing root directory in nginx configuration..."
 			sed -i "s|root.*html|root $dir|" /etc/nginx/conf.d/restyaboard.conf
-			echo -n "Copying Restyaboard script to root directory..."
+			echo "Copying Restyaboard script to root directory..."
 			cp -r "$DOWNLOAD_DIR"/* "$dir"
 
 			echo "Changing permission..."
 			chmod -R go+w "$dir/media"
 			chmod -R go+w "$dir/client/img"
 			chmod -R go+w "$dir/tmp/cache"
-			chmod -R 0755 "$dir/server/php/shell/*.sh"
+			chmod -R 0755 $dir/server/php/shell/*.sh
 
 			psql -U postgres -c "\q"	
 			sleep 1
 
 			echo "Creating PostgreSQL user and database..."
 			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8'"
+			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ "$?" = 0 ];
 			then
 				echo "Importing empty SQL..."
@@ -528,4 +590,5 @@
 			/bin/echo "$RESTYABOARD_VERSION" > /opt/restyaboard/release
 		esac
 	fi
-} | tee -a restyaboard_install.log
+	set +x
+} 2>&1 | tee -a restyaboard_install.log

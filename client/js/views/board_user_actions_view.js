@@ -52,7 +52,7 @@ App.BoardUserActionsView = Backbone.View.extend({
         if (this.model !== null && this.model.collection !== null && this.model.collection.models !== null) {
             for (i = 0; i < this.model.collection.models.length; i++) {
                 if (this.model.collection.models[i].attributes.user_id == authuser.user.id) {
-                    is_admin = (this.model.collection.models[i].attributes.is_admin === true || this.model.collection.models[i].attributes.is_admin === 1) ? true : false;
+                    is_admin = (parseInt(this.model.collection.models[i].attributes.is_admin) === 1) ? 1 : 0;
                 }
             }
         }
@@ -108,9 +108,9 @@ App.BoardUserActionsView = Backbone.View.extend({
         var self = this;
         var target = $(e.currentTarget);
         this.model.url = api_url + 'boards_users/' + this.model.attributes.id + '.json';
-        this.model.set('is_admin', true);
+        this.model.set('is_admin', 1);
         this.model.save({
-            is_admin: true
+            is_admin: 1
         }, {
             success: function(model, response) {
 
@@ -130,9 +130,9 @@ App.BoardUserActionsView = Backbone.View.extend({
         var self = this;
         var target = $(e.currentTarget);
         this.model.url = api_url + 'boards_users/' + this.model.attributes.id + '.json';
-        this.model.set('is_admin', false);
+        this.model.set('is_admin', 0);
         this.model.save({
-            is_admin: false
+            is_admin: 0
         }, {
             success: function(model, response) {
 
