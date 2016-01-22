@@ -1,5 +1,7 @@
 ### Restyaboard
 
+[![Build Status](https://travis-ci.org/RestyaPlatform/board.svg?branch=master)](https://travis-ci.org/RestyaPlatform/board)
+
 Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [Restya platform] (http://restya.com/).
 
 ### Demo
