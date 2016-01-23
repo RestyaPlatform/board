@@ -595,3 +595,5 @@ CREATE OR REPLACE VIEW activities_listing AS
    LEFT JOIN checklists checklist1 ON ((checklist1.id = activity.foreign_id)))
    LEFT JOIN users users ON ((users.id = activity.user_id)))
    LEFT JOIN organizations organizations ON ((organizations.id = activity.organization_id)));
+
+UPDATE "oauth_clients" SET "grant_types" = 'client_credentials password refresh_token authorization_code' WHERE "client_id" = '7742632501382313';
