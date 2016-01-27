@@ -52,7 +52,10 @@ function getToken($post)
         $storage = new OAuth2\Storage\Memory($user_credentials);
         $server->addGrantType(new OAuth2\GrantType\UserCredentials($storage));
     } elseif (isset($_POST['grant_type']) && $_POST['grant_type'] == 'refresh_token') {
-        $server->addGrantType(new OAuth2\GrantType\RefreshToken($storage));
+        $always_issue_new_refresh_token = array(
+            'always_issue_new_refresh_token' => true
+        );
+        $server->addGrantType(new OAuth2\GrantType\RefreshToken($storage, $always_issue_new_refresh_token));
     } else {
         $val_array = array(
             'client_secret' => OAUTH_CLIENT_SECRET

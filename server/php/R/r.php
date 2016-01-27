@@ -68,10 +68,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/users/logout':
         $response['user'] = array();
         $conditions = array(
-            $authUser['username']
+            $_GET['token']
         );
-        pg_query_params($db_lnk, 'DELETE FROM oauth_access_tokens WHERE user_id= $1', $conditions);
-        pg_query_params($db_lnk, 'DELETE FROM oauth_refresh_tokens WHERE user_id= $1', $conditions);
+        pg_query_params($db_lnk, 'DELETE FROM oauth_access_tokens WHERE access_token= $1', $conditions);
         $authUser = array();
         break;
 
@@ -1285,6 +1284,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $r_resource_vars['users']
                     );
                     $result = pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
+                    $conditions = array(
+                        $authUser['username']
+                    );
+                    pg_query_params($db_lnk, 'DELETE FROM oauth_access_tokens WHERE user_id= $1', $conditions);
+                    pg_query_params($db_lnk, 'DELETE FROM oauth_refresh_tokens WHERE user_id= $1', $conditions);
                     if ($authUser['role_id'] == 1) {
                         $emailFindReplace = array(
                             '##PASSWORD##' => $r_post['password']
@@ -2151,10 +2155,21 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $response['success'] = 'App updated successfully';
         break;
 
+    case '/oauth/token':
+        $post_val = array(
+            'grant_type' => 'authorization_code',
+            'code' => $r_post['code'],
+            'client_id' => OAUTH_CLIENTID,
+            'client_secret' => OAUTH_CLIENT_SECRET
+        );
+        $response = getToken($post_val);
+        break;
+
     case '/oauth/clients':
         $sql = true;
         $table_name = 'clients';
         break;
+
     default:
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
         break;
