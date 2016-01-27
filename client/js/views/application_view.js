@@ -835,7 +835,7 @@ App.ApplicationView = Backbone.View.extend({
                     cache: false,
                     abortPending: true,
                     success: function(collections, response) {
-						$('#js-navbar-default').remove();
+                        $('#js-navbar-default').remove();
                         $('#content').html(new App.OauthClientView({
                             model: response,
                         }).el);

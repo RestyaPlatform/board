@@ -52,7 +52,7 @@ App.OauthClientView = Backbone.View.extend({
      *
      */
     render: function() {
-		this.$el.html(this.template({
+        this.$el.html(this.template({
             oauth_clients: this.model.data,
         }));
         $('.js-admin-client-menu').addClass('active');

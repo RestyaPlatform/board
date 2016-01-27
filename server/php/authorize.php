@@ -51,7 +51,9 @@ if (empty($_POST)) {
     } ?>
 	<section class="clearfix">
 	  <div class="col-md-5 col-md-offset-4">
-		<div class="text-center navbar-btn"><a title="Restya" href="#/"><img title="<?php echo SITE_NAME; ?>" alt="[Image: <?php echo SITE_NAME; ?>]" src="../client/img/logo.png"></a></div>
+		<div class="text-center navbar-btn"><a title="Restya" href="#/"><img title="<?php
+    echo SITE_NAME; ?>" alt="[Image: <?php
+    echo SITE_NAME; ?>]" src="../client/img/logo.png"></a></div>
 			<div class="well">
 				<div class="panel panel-default">
 					<div class="panel-heading lead">Login</div>
@@ -94,10 +96,13 @@ if (empty($_POST)) {
         if (!empty($user)) { ?>
             <section class="clearfix">
 			  <div class="col-md-5 col-md-offset-4">
-				<div class="text-center navbar-btn"><a title="Restya" href="#/"><img title="<?php echo SITE_NAME; ?>" alt="[Image: <?php echo SITE_NAME; ?>]" src="../client/img/logo.png"></a></div>
+				<div class="text-center navbar-btn"><a title="Restya" href="#/"><img title="<?php
+            echo SITE_NAME; ?>" alt="[Image: <?php
+            echo SITE_NAME; ?>]" src="../client/img/logo.png"></a></div>
 				<div class="well">
 				  <div class="text-center">
-					<div class="h2 list-group-item-heading"> Let <strong>Sandbox <?php echo SITE_NAME; ?> Application </strong> use your account?</div>
+					<div class="h2 list-group-item-heading"> Let <strong>Sandbox <?php
+            echo SITE_NAME; ?> Application </strong> use your account?</div>
 					<form method="post">
 					<ul class="list-inline h2">
 					  <li><input type="submit" value="Allow" name="authorized" class="btn btn-primary btn-lg" title="Allow" /></li>
@@ -107,7 +112,7 @@ if (empty($_POST)) {
 				  </div>
 				  <hr>
 				  <p>You are logged in as <strong><?php
-            echo $user['full_name'] . ' (' . $user['username'].')'; ?></strong> The app will be able to use your account <strong> until you disable it.</strong></p>
+            echo $user['full_name'] . ' (' . $user['username'] . ')'; ?></strong> The app will be able to use your account <strong> until you disable it.</strong></p>
 				  <hr>
 				  <div class="clearfix"> <strong>The app will be able to:</strong>
 					<ul>
@@ -118,7 +123,8 @@ if (empty($_POST)) {
 					</ul>
 					<strong>It won't be able to:</strong>
 					<ul>
-					  <li>see your <?php echo SITE_NAME; ?> password </li>
+					  <li>see your <?php
+            echo SITE_NAME; ?> password </li>
 					</ul>
 				  </div>
 				</div>
