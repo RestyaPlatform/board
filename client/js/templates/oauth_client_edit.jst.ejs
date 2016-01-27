@@ -1,0 +1,45 @@
+<div class="well-sm"><h3><%- i18next.t('Edit Client') %></h3></div>
+<form id="oauthClientEditForm" name="oauthClientEditForm" class="form-horizontal col-xs-12">
+  <div class="form-group required">
+	<label class="col-sm-2 control-label col-xs-12" for="inputClientName"><%- i18next.t("Client Name") %></label>
+	<div class="col-sm-8 col-xs-12">
+		<input type="text" required name="client_name" value="<%- oauth_client.client_name %>" id="inputClientName" class="form-control" placeholder="<%- i18next.t('Client Name') %>" title="<%- i18next.t('Client Name') %>">
+	</div>
+  </div>
+  <div class="form-group required">
+	<label class="col-sm-2 control-label col-xs-12" for="inputClientUrl"><%- i18next.t("Client URL") %></label>
+	<div class="col-sm-8 col-xs-12">
+		<input type="text" required name="client_url" value="<%- oauth_client.client_url %>" id="inputClientUrl" class="form-control" placeholder="<%- i18next.t('Client URL') %>" title="<%- i18next.t('Client URL') %>">
+	</div>
+  </div>
+  <div class="form-group required">
+	<label class="col-sm-2 control-label col-xs-12" for="inputLogoUrl"><%- i18next.t("Logo URL") %></label>
+	<div class="col-sm-8 col-xs-12">
+		<input type="text" required name="logo_url" value="<%- oauth_client.logo_url %>" id="inputLogoUrl" class="form-control" placeholder="<%- i18next.t('Logo URL') %>" title="<%- i18next.t('Logo URL') %>">
+	</div>
+  </div>
+  <div class="form-group required">
+	<label class="col-sm-2 control-label col-xs-12" for="inputTosUrl"><%- i18next.t("Tos URL") %></label>
+	<div class="col-sm-8 col-xs-12">
+		<input type="text" required name="tos_url" value="<%- oauth_client.tos_url %>" id="inputTosUrl" class="form-control" placeholder="<%- i18next.t('Tos URL') %>" title="<%- i18next.t('Tos URL') %>">
+	</div>
+  </div>
+  <div class="form-group required">
+	<label class="col-sm-2 control-label col-xs-12" for="inputPolicyUrl"><%- i18next.t("Policy URL") %></label>
+	<div class="col-sm-8 col-xs-12">
+		<input type="text" required name="policy_url" value="<%- oauth_client.policy_url %>" id="inputPolicyUrl" class="form-control" placeholder="<%- i18next.t('Policy URL') %>" title="<%- i18next.t('Policy URL') %>">
+	</div>
+  </div>
+  <div class="form-group required">
+	<label class="col-sm-2 control-label col-xs-12" for="inputRedirectUris"><%- i18next.t("Redirect Uris URL") %></label>
+	<div class="col-sm-8 col-xs-12">
+		<input type="text" required name="redirect_uris" value="<%- oauth_client.redirect_uris %>" id="inputRedirectUris" class="form-control" placeholder="<%- i18next.t('Redirect Uris URL') %>" title="<%- i18next.t('Redirect Uris URL') %>">
+	</div>
+  </div>
+  <div class="form-group">
+	<label class="sr-only col-sm-2 control-label col-xs-12" for="submit2"><%- i18next.t('Update') %></label>
+	<div class="col-sm-8">
+		<input type="submit" class="btn btn-primary" id="submitEditClient" value="<%- i18next.t('Update') %>">
+	</div>
+  </div>
+</form>
