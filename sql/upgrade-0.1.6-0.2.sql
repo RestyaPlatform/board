@@ -594,6 +594,61 @@ CREATE OR REPLACE VIEW activities_listing AS
    LEFT JOIN checklists checklist ON ((checklist.id = checklist_item.checklist_id)))
    LEFT JOIN checklists checklist1 ON ((checklist1.id = activity.foreign_id)))
    LEFT JOIN users users ON ((users.id = activity.user_id)))
-   LEFT JOIN organizations organizations ON ((organizations.id = activity.organization_id)));
-
 UPDATE "oauth_clients" SET "grant_types" = 'client_credentials password refresh_token authorization_code' WHERE "client_id" = '7742632501382313';
+
+--
+-- Name: clients_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE clients_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: clients; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE clients ( 
+    id bigint DEFAULT nextval('clients_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    client_name character varying(255) NOT NULL,
+    client_url character varying(255) NOT NULL,
+    logo_url character varying(255) NOT NULL,
+    tos_url character varying(255) NOT NULL,
+    policy_url character varying(255) NOT NULL,
+    redirect_uris character varying(255) NOT NULL
+);
+
+
+INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user")
+VALUES ('130', now(), now(), 'View client listing', '/oauth/clients', 'GET', 'view_client_listing', '6', '1', '0'),
+('131', now(), now(), 'Add client', '/oauth/clients', 'POST', 'add_client', '6', '1', '0'),
+('132', now(), now(), 'Edit client', '/oauth/clients/?', 'PUT', 'edit_client', '6', '1', '0'),
+('133', now(), now(), 'Delete client', '/oauth/clients/?', 'DELETE', 'delete_client', '6', '1', '0');
+
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
+VALUES (now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/clients' AND method = 'GET'), 1),
+(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/clients' AND method = 'POST'), 1),
+(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/clients/?' AND method = 'PUT'), 1),
+(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/clients/?' AND method = 'DELETE'), 1);
+
+
+INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user")
+VALUES ('134', now(), now(), 'View connected applications', '/oauth/applications', 'GET', 'view_connected_applications', '6', '1', '1'),
+('135', now(), now(), 'Delete connected applications', '/oauth/applications/?', 'DELETE', 'delete_connected_applications', '6', '1', '1');
+
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
+VALUES (now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/applications' AND method = 'GET'), 1),
+(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/applications' AND method = 'GET'), 2),
+(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/applications/?' AND method = 'DELETE'), 1),
+(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/applications/?' AND method = 'DELETE'), 2);

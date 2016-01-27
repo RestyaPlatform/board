@@ -688,6 +688,17 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         break;
 
+    case '/oauth/clients':
+        $response['clients'] = array();
+        $condition = '';
+        if ($_GET['id']) {
+            $condition = 'WHERE id = $1';
+            array_push($pg_params, $_GET['id']);
+        }
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM clients c ' . $condition . ' ORDER BY id ASC) as d ';
+        $c_sql = 'SELECT COUNT(*) FROM clients c';
+        break;
+
     default:
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
     }
@@ -783,7 +794,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/boards/?/lists/?/cards/?/search',
             '/cards/search',
             '/organizations',
-            '/activities'
+            '/activities',
+            '/oauth/clients',
         );
         if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
             $data = array();
@@ -2153,6 +2165,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $response = getToken($post_val);
         break;
 
+    case '/oauth/clients':
+        $sql = true;
+        $table_name = 'clients';
+        break;
+
     default:
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
         break;
@@ -3210,6 +3227,13 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $response['success'] = 'Email Template has been updated successfully.';
         break;
 
+    case '/oauth/clients/?':
+        $json = true;
+        $table_name = 'clients';
+        $id = $r_resource_vars['clients'];
+        $response['success'] = 'Client has been updated successfully.';
+        break;
+
     case '/boards_users/?':
         $json = true;
         $table_name = 'boards_users';
@@ -4042,6 +4066,11 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_card_users', $foreign_ids, null, $r_resource_vars['cards_users']);
         $sql = 'DELETE FROM cards_users WHERE id = $1';
         array_push($pg_params, $r_resource_vars['cards_users']);
+        break;
+
+    case '/oauth/clients/?':
+        $sql = 'DELETE FROM clients WHERE id= $1';
+        array_push($pg_params, $r_resource_vars['clients']);
         break;
 
     default:

@@ -234,6 +234,9 @@ var AppRouter = Backbone.Router.extend({
         'organization/:id/:type': 'organizations_view_type',
         'organizations_user/:id': 'organizations_user_view',
         'roles': 'role_settings',
+        'oauth_clients': 'oauth_clients',
+        'oauth_clients/add': 'add_oauth_client',
+        'oauth_clients/edit/:id': 'edit_oauth_client',
         'apps': 'apps',
         'apps/:name': 'app_settings',
         'settings': 'settings',
@@ -437,6 +440,22 @@ var AppRouter = Backbone.Router.extend({
     role_settings: function() {
         new App.ApplicationView({
             model: 'role_settings',
+        });
+    },
+    oauth_clients: function() {
+        new App.ApplicationView({
+            model: 'oauth_clients',
+        });
+    },
+    add_oauth_client: function() {
+        new App.ApplicationView({
+            model: 'add_oauth_client',
+        });
+    },
+    edit_oauth_client: function(id) {
+        new App.ApplicationView({
+            model: 'edit_oauth_client',
+            'id': id
         });
     },
     apps: function() {

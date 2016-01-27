@@ -8,7 +8,7 @@ if (typeof App == 'undefined') {
     App = {};
 }
 var loginExceptionUrl = ['register', 'login', 'forgotpassword', 'user_activation', 'aboutus'];
-var adminUrl = ['roles', 'activities', 'users', 'apps', 'settings', 'email_templates'];
+var adminUrl = ['roles', 'activities', 'users', 'oauth_clients', 'apps', 'settings', 'email_templates'];
 /**
  * Application View
  * @class ApplicationView
@@ -248,6 +248,15 @@ App.ApplicationView = Backbone.View.extend({
         }
         if (this.model == 'role_settings') {
             changeTitle(i18next.t('Role Settings'));
+        }
+        if (this.model == 'oauth_clients') {
+            changeTitle(i18next.t('Oauth clients'));
+        }
+        if (this.model == 'add_oauth_client') {
+            changeTitle(i18next.t('Add Oauth Client'));
+        }
+        if (this.model == 'edit_oauth_client') {
+            changeTitle(i18next.t('Edit Oauth Client'));
         }
         if (this.model == 'apps' || this.model == 'app_settings') {
             changeTitle(i18next.t('Apps'));
@@ -818,6 +827,33 @@ App.ApplicationView = Backbone.View.extend({
                         }).el);
                     }
                 });
+            } else if (page.model == 'oauth_clients') {
+                changeTitle(i18next.t('Oauth Clients'));
+                var oauth_clients = new App.OauthClientCollection();
+                oauth_clients.url = api_url + 'oauth/clients.json';
+                oauth_clients.fetch({
+                    cache: false,
+                    abortPending: true,
+                    success: function(collections, response) {
+                        $('#js-navbar-default').remove();
+                        $('#content').html(new App.OauthClientView({
+                            model: response,
+                        }).el);
+                    }
+                });
+            } else if (page.model == 'add_oauth_client') {
+                changeTitle(i18next.t('Add Oauth Client'));
+                var oauth_client = new App.OauthClient();
+                this.pageView = new App.OauthClientAddView({
+                    model: oauth_client
+                });
+                $('#content').html(this.pageView.el);
+            } else if (page.model == 'edit_oauth_client') {
+                changeTitle(i18next.t('Edit Oauth Client'));
+                this.pageView = new App.OauthClientEditView({
+                    id: page.page_view_id
+                });
+                $('#content').html(this.pageView.el);
             } else if (page.model == 'apps') {
                 changeTitle(i18next.t('Apps'));
                 var apps = new App.AppCollection();
