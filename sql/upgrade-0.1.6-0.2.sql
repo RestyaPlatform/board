@@ -652,3 +652,49 @@ VALUES (now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/applications
 (now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/applications' AND method = 'GET'), 2),
 (now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/applications/?' AND method = 'DELETE'), 1),
 (now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/applications/?' AND method = 'DELETE'), 2);
+
+
+CREATE SEQUENCE webhooks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+
+CREATE TABLE webhooks (
+    id bigint DEFAULT nextval('webhooks_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    description character varying(255) NOT NULL,
+    url character varying(255) NOT NULL,
+    secret character varying(255) NOT NULL,
+    is_active boolean NOT NULL DEFAULT 'false'
+);
+
+
+INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user")
+VALUES ('136', now(), now(), 'View webhooks', '/webhooks', 'GET', 'view_webhooks', '6', '1', '1'),
+('137', now(), now(), 'Add webhooks', '/webhooks', 'POST', 'add_webhook', '6', '1', '1'),
+('138', now(), now(), 'Edit webhooks', '/webhooks/?', 'PUT', 'edit_webhook', '6', '1', '1'),
+('139', now(), now(), 'Delete webhooks', '/webhooks/?', 'DELETE', 'delete_webhook', '6', '1', '1');
+
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
+VALUES (now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks' AND method = 'GET'), 1),
+(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks' AND method = 'POST'), 1),
+(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks/?' AND method = 'PUT'), 1),
+(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks/?' AND method = 'DELETE'), 1),
+(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks' AND method = 'GET'), 2),
+(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks' AND method = 'POST'), 2),
+(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks/?' AND method = 'PUT'), 2),
+(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks/?' AND method = 'DELETE'), 2);
+
+INSERT INTO "settings" ("id", "setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
+VALUES ('36', '0', '0', 'webhooks.last_processed_activtiy_id', 0, NULL, 'hidden', NULL, 'Webhook Activity ID', '0');

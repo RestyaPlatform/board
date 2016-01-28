@@ -1,0 +1,193 @@
+{
+    "apiVersion": "1.0.0",
+    "swaggerVersion": "1.2",
+    "basePath": "/api",
+    "resourcePath": "/webhooks",
+    "produces": [
+        "application/json",
+        "application/xml",
+        "text/plain",
+        "text/html"
+    ],
+    "apis": [
+	{
+            "path": "/v1/webhooks.json",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "Webhooks",
+                    "notes": "Returns webhooks listing",
+                    "type": "Webhooks",
+                    "nickname": "webhooksListing",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 404,
+                            "message": "Webhook not found"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/webhooks.json",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Add a webhook",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "addWebhook",
+                    "consumes": [
+                        "application/json",
+                        "application/xml"
+                    ],
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Created webhook object",
+                            "required": true,
+                            "type": "addWebhook",
+                            "paramType": "body"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 405,
+                            "message": "Invalid input"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "path": "/v1/webhooks/{webhookId}.json",
+            "operations": [
+                {
+                    "method": "PUT",
+                    "summary": "Edit webhook",
+                    "notes": "Update the webhook",
+                    "type": "Comment",
+                    "nickname": "editWebhook",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "webhookId",
+                            "description": "Webhook to edit",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        },
+                        {
+                            "name": "body",
+                            "description": "Edit Webhook",
+                            "required": true,
+                            "type": "editWebhook",
+                            "paramType": "body"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 400,
+                            "message": "Invalid ID supplied"
+                        },
+                        {
+                            "code": 404,
+                            "message": "Page not found"
+                        }
+                    ]
+                },
+                {
+                    "method": "DELETE",
+                    "summary": "Delete webhook",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "deleteWebhook",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "token",
+                            "description": "OAuth token",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "query"
+                        },
+                        {
+                            "name": "webhookId",
+                            "description": "Webhook to delete",
+                            "required": true,
+                            "type": "string",
+                            "paramType": "path"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "models": {
+        "addWebhook": {
+            "id": "addWebhook",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+		"description": {
+                    "type": "string"
+                },
+		"url": {
+                    "type": "string"
+                },
+		"secret": {
+                    "type": "string"
+                },
+		"is_active": {
+                    "type": "string"
+                }
+            }
+        },
+	"editWebhook": {
+            "id": "editWebhook",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+		"description": {
+                    "type": "string"
+                },
+		"url": {
+                    "type": "string"
+                },
+		"secret": {
+                    "type": "string"
+                },
+		"is_active": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

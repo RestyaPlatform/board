@@ -50,6 +50,18 @@ echo '{
 		{
             "path": "organizations.json",
             "description": "Operations about Organizations"
+        },
+		{
+            "path": "oauth_clients.json",
+            "description": "Operations about Clients"
+        },
+		{
+            "path": "oauth_applications.json",
+            "description": "Operations about Applications"
+        },
+		{
+            "path": "webhooks.json",
+            "description": "Operations about Webhooks"
         }
     ],    
     "info": {
