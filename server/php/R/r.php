@@ -699,6 +699,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $c_sql = 'SELECT COUNT(*) FROM clients c';
         break;
 
+    case '/oauth/applications':
+        $response['applications'] = array();
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM oauth_clients oc WHERE user_id = $1) as d ';
+        array_push($pg_params, $authUser['id']);
+        $c_sql = 'SELECT COUNT(*) FROM oauth_clients oc';
+        break;
+
     default:
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
     }
@@ -796,6 +803,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/organizations',
             '/activities',
             '/oauth/clients',
+            '/oauth/applications'
         );
         if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
             $data = array();
@@ -4071,6 +4079,16 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/oauth/clients/?':
         $sql = 'DELETE FROM clients WHERE id= $1';
         array_push($pg_params, $r_resource_vars['clients']);
+        break;
+
+    case '/oauth/applications/?':
+        $conditions = array(
+            $r_resource_vars['applications']
+        );
+        pg_query_params($db_lnk, 'DELETE FROM oauth_access_tokens WHERE client_id = $1', $conditions);
+        pg_query_params($db_lnk, 'DELETE FROM oauth_refresh_tokens WHERE client_id = $1', $conditions);
+        $sql = 'DELETE FROM oauth_clients WHERE id= $1';
+        array_push($pg_params, $r_resource_vars['applications']);
         break;
 
     default:

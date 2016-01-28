@@ -56,7 +56,7 @@ App.UserView = Backbone.View.extend({
      *
      */
     render: function() {
-        if (!_.isUndefined(this.type) && (this.type == 'cards' || this.type == 'settings')) {
+        if (!_.isUndefined(this.type) && (this.type == 'cards' || this.type == 'settings' || this.type == 'oauth_applications')) {
             this.renderType();
         } else {
             var self = this;
@@ -111,6 +111,8 @@ App.UserView = Backbone.View.extend({
         }));
         if (this.type == 'cards') {
             this.userCards();
+        } else if (this.type == 'oauth_applications') {
+            this.oauthApplications();
         } else {
             var _this = this;
             _(function() {
@@ -222,6 +224,29 @@ App.UserView = Backbone.View.extend({
                     self.model.set('is_send_newsletter', data.is_send_newsletter);
                     $('.js-user-img').html('<i class="avatar avatar-color-194 avatar-sm">' + $('#inputinitials').val() + '</i>');
                 }
+            }
+        });
+    },
+    /**
+     * oauthApplications()
+     * display connected applications
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     */
+    oauthApplications: function() {
+        var self = this;
+        var oauth_applications = new App.OauthApplicationCollection();
+        oauth_applications.url = api_url + 'oauth/applications.json';
+        oauth_applications.fetch({
+            cache: false,
+            success: function(model, response) {
+                if (!_.isEmpty(response)) {
+                    self.$('#oauth_applications').append(new App.OauthApplicationsView({
+                        model: response
+                    }).el);
+                }
+                $('#tab-loaded-content').load();
             }
         });
     },

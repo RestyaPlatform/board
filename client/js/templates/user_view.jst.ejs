@@ -10,6 +10,9 @@
 				<% if(!_.isEmpty(role_links.where({slug: "edit_user_details"}))){ %>
 					<li <% if (!_.isUndefined(type) && type == 'settings') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/settings" ><%- i18next.t("Settings") %></a></li>
 				<% } %>
+				<% if(!_.isEmpty(role_links.where({slug: "view_connected_applications"}))){ %>
+					<li <% if (!_.isUndefined(type) && type == 'oauth_applications') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/oauth_applications" ><%- i18next.t("Oauth Applications") %></a></li>
+				<% } %>
 			</ul>
 		</div>
 		<div class="row">
@@ -90,6 +93,10 @@
 								</div>
 							</div>
 						</form>
+					</div>
+				<% } %>
+				<% if(!_.isEmpty(role_links.where({slug: "view_connected_applications"}))){ %>
+					<div class="modal-body tab-pane <% if (!_.isUndefined(type) && type == 'oauth_applications') { %>active<%}%>" id="oauth_applications">
 					</div>
 				<% } %>
 			</div>
