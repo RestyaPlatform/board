@@ -135,6 +135,28 @@
                 }
             ]
         },
+	{
+            "path": "/v1/oauth/token.json",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Get token",
+                    "notes": "",
+                    "type": "void",
+                    "nickname": "getToken",
+                    "authorizations": {},
+                    "parameters": [
+                        {
+                            "name": "code",
+                            "description": "token",
+                            "required": true,
+                            "type": "Token",
+                            "paramType": "body"
+                        }
+                    ]
+                }
+            ]
+        },
         {
             "path": "/v1/users/login.json",
             "operations": [

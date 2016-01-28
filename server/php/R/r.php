@@ -706,6 +706,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $c_sql = 'SELECT COUNT(*) FROM oauth_clients oc';
         break;
 
+    case '/webhooks':
+        $response['webhooks'] = array();
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM webhooks w ORDER BY id ASC) as d ';
+        $c_sql = 'SELECT COUNT(*) FROM webhooks w';
+        break;
+
     default:
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
     }
@@ -802,8 +808,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/cards/search',
             '/organizations',
             '/activities',
-            '/oauth/clients',
-            '/oauth/applications'
+            '/clients',
+            '/oauth/applications',
+            '/webhooks'
         );
         if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
             $data = array();
@@ -2176,6 +2183,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     case '/oauth/clients':
         $sql = true;
         $table_name = 'clients';
+        break;
+
+    case '/webhooks':
+        $sql = true;
+        $table_name = 'webhooks';
         break;
 
     default:
@@ -3693,6 +3705,12 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $organizations_user = executeQuery('SELECT id FROM ' . $table_name . ' WHERE id =  $1', $qry_val_arr);
         break;
 
+    case '/webhooks/?':
+        $json = true;
+        $table_name = 'webhooks';
+        $id = $r_resource_vars['webhooks'];
+        break;
+
     default:
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
         break;
@@ -4089,6 +4107,11 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         pg_query_params($db_lnk, 'DELETE FROM oauth_refresh_tokens WHERE client_id = $1', $conditions);
         $sql = 'DELETE FROM oauth_clients WHERE id= $1';
         array_push($pg_params, $r_resource_vars['applications']);
+        break;
+
+    case '/webhooks/?':
+        $sql = 'DELETE FROM webhooks WHERE id= $1';
+        array_push($pg_params, $r_resource_vars['webhooks']);
         break;
 
     default:
