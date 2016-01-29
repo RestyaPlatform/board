@@ -126,6 +126,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-no-action': 'noAction',
         'click .js-back-to-board-visibility': 'showBoardVisibility',
         'click .js-select': 'selectBoardVisibility',
+        'click .js-clear-all': 'clearAll'
     },
     /**
      * openDropdown()
@@ -1659,6 +1660,9 @@ App.BoardHeaderView = Backbone.View.extend({
         } else if (filter_label_arr.length || filter_user_arr.length || filter_due_arr.length) {
             $('.js-show-modal-card-view').hide();
         }
+        if ($('.js-clear-all').hasClass('text-muted')) {
+            $('.js-clear-all').removeClass('text-muted');
+        }
     },
     /**
      * computerOpenBoardBackground()
@@ -1766,6 +1770,22 @@ App.BoardHeaderView = Backbone.View.extend({
         });
         var target = $(e.target);
         target.parents('div.dropdown').removeClass('open');
+        return false;
+    },
+    /**
+     * clearAll()
+     * Clear the filters
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    clearAll: function(e) {
+        e.preventDefault();
+        $('.js-board-dues, .js-board-users, .js-board-labels').find('.js-filter-icon').remove();
+        $('.js-board-dues, .js-board-users, .js-board-labels').children().removeClass('selected');
+        $('.js-clear-all').addClass('text-muted');
+        $('.js-show-modal-card-view').show();
         return false;
     },
     /**
