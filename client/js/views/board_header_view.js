@@ -1774,7 +1774,7 @@ App.BoardHeaderView = Backbone.View.extend({
     },
     /**
      * clearAll()
-     * change the board visibility as organization
+     * Clear the filters
      * @param e
      * @type Object(DOM event)
      * @return false
