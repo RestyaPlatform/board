@@ -509,9 +509,12 @@ App.CardView = Backbone.View.extend({
             var labels = _.pluck(self.$('.js-card-label').select2('data'), 'text');
             labels.push(e.choice.text);
             self.$el.find('.js-card-add-labels').val(labels.join(','));
+            var iTag = '<i style="color:#' + calcMD5("" + e.choice.text).slice(0, 6).substring(0, 6) + '" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="' + e.choice.text + '" title="' + e.choice.text + '" class="js-label-' + e.choice.text + ' ' + LABEL_ICON + '"></i>';
+            $('.js-lables-list').append(iTag);
         }).on('select2-removed', function(e) {
             var _labels = _.pluck(self.$('.js-card-label').select2('data'), 'text');
             self.$el.find('.js-card-add-labels').val(_labels.join(','));
+            $('.js-lables-list').children().remove('.js-label-' + e.choice.text);
         });
         return false;
     },
