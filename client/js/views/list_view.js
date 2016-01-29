@@ -924,7 +924,6 @@ App.ListView = Backbone.View.extend({
         card.collection = this.model.cards;
         var view = new App.CardView({
             model: card,
-            className: 'col-xs-12',
             attributes: '',
             id: 'js-list-card-add-form-' + this.model.id
         });
@@ -1085,6 +1084,7 @@ App.ListView = Backbone.View.extend({
             $('#js-card-listing-' + this.model.id).scrollTop($('#js-card-listing-' + this.model.id)[0].scrollHeight);
             card.save(data, {
                 success: function(model, response, options) {
+                    $('.js-lables-list').empty();
                     if (_.isUndefined(options.temp_id)) {
                         card.set('is_offline', false);
                     }
