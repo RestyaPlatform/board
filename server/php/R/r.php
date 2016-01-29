@@ -1814,8 +1814,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $response['card_attachments'][] = pg_fetch_assoc($s_result);
             }
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][0]['id'];
-                $list = glob($mediadir . '.*');
+                $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
+                $list = glob($imgdir . '.*');
                 @unlink($list[0]);
             }
             $foreign_ids['board_id'] = $r_resource_vars['boards'];
