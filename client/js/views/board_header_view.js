@@ -1785,7 +1785,7 @@ App.BoardHeaderView = Backbone.View.extend({
         $('.js-board-dues, .js-board-users, .js-board-labels').find('.js-filter-icon').remove();
         $('.js-board-dues, .js-board-users, .js-board-labels').children().removeClass('selected');
         $('.js-clear-all').addClass('text-muted');
-		$('.js-show-modal-card-view').show();
+        $('.js-show-modal-card-view').show();
         return false;
     },
     /**
