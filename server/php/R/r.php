@@ -1528,7 +1528,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
             $result = pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, board_id, user_id, is_starred) VALUES (now(), now(), $1, $2, true) RETURNING id', $qry_val_arr);
         } else {
-            if ($subcriber['is_starred'] == true) {
+            $subcriber = convertBooleanValues($table_name, $subcriber);
+            if ($subcriber['is_starred'] == 1) {
                 $qry_val_arr = array(
                     0,
                     $r_resource_vars['boards'],
