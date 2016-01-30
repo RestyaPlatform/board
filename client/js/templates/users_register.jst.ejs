@@ -9,11 +9,11 @@
 	  </div>
 	  <div class="form-group required">
 		<label class="sr-only control-label" for="inputUsername">Username</label>
-		<input type="name" name="username" id="inputUsername" class="form-control" placeholder="Username" required pattern=".{6,15}" title="Username. Minimum 6 characters">
+		<input type="name" name="username" id="inputUsername" class="form-control" placeholder="Username" required pattern=".{3,15}" title="Username. Minimum 3 characters">
 	  </div>
 	  <div class="form-group required">
 		<label class="sr-only control-label" for="inputPassword">Password</label>
-		<input type="password" required name="password" id="inputPassword"class="form-control" placeholder="Password" pattern="[A-Za-z0-9\S]{6,15}" title="Password. Minimum 6 characters and white space not allowed">
+		<input type="password" required name="password" id="inputPassword"class="form-control" placeholder="Password" pattern="[A-Za-z0-9\S]{6,50}" title="Password. Minimum 6 characters and white space not allowed">
 	  </div>
 	  <div class="form-group">
 		<label class="sr-only ontrol-label" for="submitRegister">Join Now</label>
@@ -23,13 +23,13 @@
 	  		<%
 			  if(!_.isEmpty(role_links.where({slug: "users_login"}))){
 			%>
-				
+
 			<%
 			  }
 			%>
 		  <% if(!_.isEmpty(role_links.where({slug: "users_forgotpassword"}))){ %>
 		  	<li><a href="#/users/forgotpassword" title="Forgot your password?" class="text-primary">Forgot your password?</a></li>
-			
+
 			<% }%>
 		</ul>
 	</form>
