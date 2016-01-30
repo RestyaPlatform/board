@@ -4208,6 +4208,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
                 $language = executeQuery('SELECT name FROM languages WHERE iso2 = $1', $qry_val_arr);
                 $response['languages'][$folder[count($folder) - 2]] = $language['name'];
             }
+            array_multisort($response['languages']);
             $response['languages'] = json_encode($response['languages']);
             echo json_encode($response);
             exit;
