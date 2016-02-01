@@ -4200,20 +4200,20 @@ if (!empty($_GET['_url']) && $db_lnk) {
             $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $qry_val_arr);
             $response = array_merge($response, $role_links);
             $files = glob(APP_PATH . '/client/locales/*/translation.json', GLOB_BRACE);
-			$lang_iso2_codes = array();
+            $lang_iso2_codes = array();
             foreach ($files as $file) {
                 $folder = explode('/', $file);
-				$folder_iso2_code = $folder[count($folder) - 2];
-				array_push($lang_iso2_codes, $folder_iso2_code);
+                $folder_iso2_code = $folder[count($folder) - 2];
+                array_push($lang_iso2_codes, $folder_iso2_code);
             }
             $qry_val_arr = array(
-				'{' . implode($lang_iso2_codes, ',') . '}'
-			);
-			$result = pg_query_params($db_lnk, 'SELECT name, iso2 FROM languages WHERE iso2 = ANY ( $1 ) ORDER BY name ASC', $qry_val_arr);
-			while ($row = pg_fetch_assoc($result)) {
-				$languages[$row['iso2']] = $row['name'];
-			}
-			$response['languages'] = json_encode($languages);
+                '{' . implode($lang_iso2_codes, ',') . '}'
+            );
+            $result = pg_query_params($db_lnk, 'SELECT name, iso2 FROM languages WHERE iso2 = ANY ( $1 ) ORDER BY name ASC', $qry_val_arr);
+            while ($row = pg_fetch_assoc($result)) {
+                $languages[$row['iso2']] = $row['name'];
+            }
+            $response['languages'] = json_encode($languages);
             echo json_encode($response);
             exit;
         }
