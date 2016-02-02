@@ -39,11 +39,11 @@
 		case "${answer}" in
 			[Yy])
 			set +x
-			echo "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):"
+			echo "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):"
 			read -r dir
 			while [[ -z "$dir" ]]
 			do
-				read -r -p "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):" dir
+				read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):" dir
 			done
 			set -x
 			
@@ -93,7 +93,7 @@
 		fi
 	else
 		set +x
-		echo "Already installed Restyaboard y/n?"
+		echo "Is Restyaboard already installed y/n?"
 		read -r answer
 		set -x
 		case "${answer}" in
@@ -256,11 +256,11 @@
 			sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
 			
 			set +x
-			echo "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):"
+			echo "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):"
 			read -r dir
 			while [[ -z "$dir" ]]
 			do
-				read -r -p "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):" dir
+				read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):" dir
 			done
 			set -x
 			echo "$dir"
@@ -499,11 +499,11 @@
 			sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
 
 			set +x
-			echo "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):"
+			echo "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):"
 			read -r dir
 			while [[ -z "$dir" ]]
 			do
-				read -r -p "To copy downloaded script, enter your document root path (e.g., /usr/share/nginx/html):" dir
+				read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):" dir
 			done
 			set -x
 			echo "$dir"
