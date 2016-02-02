@@ -9,6 +9,10 @@ Options -Indexes
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteRule ^client/img/([a-zA-Z_]*)/([a-zA-Z_]*)/([a-zA-Z0-9_\.]*)$ server/php/R/image.php?size=$1&model=$2&filename=$3 [NC]
 	RewriteRule ^ical/([0-9]*)/([a-zA-Z0-9]*).ics$ server/php/R/ical.php?id=$1&hash=$2 [NC]
-	RewriteRule ^client/download/([0-9]*)/([a-zA-Z0-9_\.]*)$ server/php/R/download.php?id=$1&hash=$2 [NC]
+	RewriteRule ^download/([0-9]*)/([a-zA-Z0-9_\.]*)$ server/php/R/download.php?id=$1&hash=$2 [NC]
 	RewriteRule ^api/(.*)$ server/php/R/r.php?_url=$1 [QSA,L]
+	RewriteRule ^$ client/ [QSA,L]
+	RewriteRule ^(css|js|img|font)/(.*)$ client/$1/$2 [QSA,L]
+	RewriteRule ^favicon.ico$ client/favicon.ico [L]
+	RewriteRule ^apple-touch-icon(.*)$ client/apple-touch-icon$1 [L]
 </IfModule>
