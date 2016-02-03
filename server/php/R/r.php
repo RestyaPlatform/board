@@ -1856,22 +1856,44 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
             }
         } else if (isset($r_post['image_link']) && !empty($r_post['image_link'])) {
-            $filename = curlExecute($r_post['image_link'], 'get', $mediadir, 'image');
-            $sql = true;
-            if ($filename['extension'] == 'html') {
-                $r_post['link'] = $r_post['image_link'];
-                $r_post['name'] = 'link';
-                $test = parse_url($r_post['image_link'], PHP_URL_HOST);
-                if (parse_url($r_post['image_link'], PHP_URL_HOST) == 'docs.google.com') {
-                    $r_post['name'] = 'google_drive';
-                } else if (parse_url($r_post['image_link'], PHP_URL_HOST) == 'www.dropbox.com') {
-                    $r_post['name'] = 'dropbox';
+            if (!empty($r_post['image_link']) && is_array($r_post['image_link'])) {
+                $i = 0;
+                foreach ($r_post['image_link'] as $image_link) {
+                    $attachment_url_host = parse_url($image_link, PHP_URL_HOST);
+                    $r_post['name'] = $r_post['link'] = $image_link;
+                    $qry_val_arr = array(
+                        $r_post['card_id'],
+                        $r_post['name'],
+                        'NULL',
+                        $r_post['list_id'],
+                        $r_post['board_id'],
+                        'NULL',
+                        $r_post['link']
+                    );
+                    $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype, link) VALUES (now(), now(), $1, $2, $3, $4, $5, $6, $7) RETURNING *', $qry_val_arr);
+                    $response['card_attachments'][] = pg_fetch_assoc($s_result);
+                    $foreign_ids['board_id'] = $r_resource_vars['boards'];
+                    $foreign_ids['list_id'] = $r_resource_vars['lists'];
+                    $foreign_ids['card_id'] = $r_resource_vars['cards'];
+                    $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
+                    $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['card_attachments'][$i]['id']);
+                    $i++;
                 }
             } else {
-                $r_post['name'] = $filename['file_name'];
+                $sql = true;
+                $attachment_url_host = parse_url($r_post['image_link'], PHP_URL_HOST);
+                if (in_array($attachment_url_host, array(
+                    'docs.google.com',
+                    'www.dropbox.com'
+                ))) {
+                    $r_post['name'] = $r_post['link'] = $r_post['image_link'];
+                } else {
+                    $filename = curlExecute($r_post['image_link'], 'get', $mediadir, 'image');
+                    $r_post['name'] = $filename['file_name'];
+                }
+                unset($r_post['image_link']);
+                $r_post['path'] = $save_path . '/' . $filename['file_name'];
             }
-            unset($r_post['image_link']);
-            $r_post['path'] = $save_path . '/' . $filename['file_name'];
         }
         break;
 

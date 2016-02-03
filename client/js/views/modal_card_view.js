@@ -1490,12 +1490,15 @@ App.ModalCardView = Backbone.View.extend({
                 var image_link = '';
                 _.map(files, function(file) {
                     var thumbnails = _(file.thumbnails).toArray();
-                    image_link = thumbnails[1];
+                    image_link = thumbnails;
                 });
                 $.ajax({
                     type: 'POST',
                     url: attachmentUrl,
                     data: JSON.stringify({
+                        card_id: self.model.id,
+                        list_id: self.model.attributes.list_id,
+                        board_id: self.model.attributes.board_id,
                         image_link: image_link
                     }),
                     success: function(response) {
