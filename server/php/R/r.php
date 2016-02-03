@@ -1849,8 +1849,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
                     $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['card_attachments'][$i]['id']);
                     foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                        $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
-                        $list = glob($mediadir . '.*');
+                        $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
+                        $list = glob($imgdir . '.*');
                         @unlink($list[0]);
                     }
                 }
