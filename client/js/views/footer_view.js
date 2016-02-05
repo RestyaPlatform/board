@@ -1278,7 +1278,7 @@ App.FooterView = Backbone.View.extend({
                                 }
                             }
                         }
-                        if (activity.attributes.card_id) {
+                        if (parseInt(activity.attributes.card_id) !== 0 && parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
                             $('#js-card-' + activity.attributes.card_id).stop().animate({
                                 backgroundColor: '#FCEA88'
                             }, 800, function() {

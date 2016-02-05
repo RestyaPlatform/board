@@ -34,8 +34,12 @@
 			} else {
 				if(!_.isUndefined(activity.from_footer)) {
 					var comment = activity.attributes.full_name + ' commented in card ' + cardLink;
-					var _username = (activity.attributes.comment.match(/@([^ ]*)/) != null) ? activity.attributes.comment.match(/@([^ ]*)/)[1]:'';
-					if(!_.isEmpty(_username) && (_username === authuser.user.username)){
+					var matches = activity.attributes.comment.match(/@([^ ]*)/g);
+					var _username = [];
+					_.each(matches, function(match) {
+						_username.push(match.substr(1));
+					});
+					if(_.contains(_username, authuser.user.username)){
 						comment = activity.attributes.full_name + ' has mentioned you in card ' + cardLink;
 					}
 				}

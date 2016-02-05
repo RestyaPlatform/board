@@ -466,20 +466,47 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         break;
 
+    case '/boards/?/lists/?/cards/?/activities':
+    case '/boards/?/lists/?/activities':
     case '/boards/?/activities':
-        $condition = '';
-        if (isset($r_resource_filters['last_activity_id']) && $r_resource_filters['last_activity_id'] > 0) {
-            if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all') {
-                $condition = ' AND al.id < $2';
-            } else {
-                $condition = ' AND al.id > $2';
+        $val_array = array(
+            $r_resource_vars['boards']
+        );
+        $board = executeQuery('SELECT board_visibility FROM boards_listing WHERE id = $1', $val_array);
+        $val_array = array(
+            $r_resource_vars['boards'],
+            $authUser['id']
+        );
+        $boards_user = executeQuery('SELECT * FROM boards_users WHERE board_id = $1 AND user_id = $2', $val_array);
+        if ((!empty($authUser) && $authUser['role_id'] == 1) || $board['board_visibility'] == 2 || !empty($boards_user)) {
+            $condition = '';
+            array_push($pg_params, $r_resource_vars['boards']);
+            $i = 2;
+            if (isset($r_resource_filters['last_activity_id']) && $r_resource_filters['last_activity_id'] > 0) {
+                if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all') {
+                    $condition = ' AND al.id < $' . $i;
+                } else {
+                    $condition = ' AND al.id > $' . $i;
+                }
+                array_push($pg_params, $r_resource_filters['last_activity_id']);
+                $i++;
             }
-        }
-        $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, c.name as card_name FROM activities_listing al left join cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ORDER BY al.id DESC LIMIT ' . PAGING_COUNT . ') as d ';
-        array_push($pg_params, $r_resource_vars['boards']);
-        $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1' . $condition;
-        if (!empty($condition)) {
-            array_push($pg_params, $r_resource_filters['last_activity_id']);
+            if (!empty($r_resource_vars['lists'])) {
+                $condition.= ' AND al.list_id = $' . $i;
+                array_push($pg_params, $r_resource_vars['lists']);
+                $i++;
+            }
+            if (!empty($r_resource_vars['cards'])) {
+                $condition.= ' AND al.card_id = $' . $i;
+                array_push($pg_params, $r_resource_vars['cards']);
+            }
+            if (!empty($r_resource_filters['filter'])) {
+                $condition.= ' AND al.type = $' . $i;
+                array_push($pg_params, $r_resource_filters['filter']);
+                $i++;
+            }
+            $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ORDER BY al.id DESC LIMIT ' . PAGING_COUNT . ') as d ';
+            $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1' . $condition;
         }
         break;
 
@@ -514,19 +541,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/boards/?/lists':
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM lists_listing cll WHERE board_id = $1) as d ';
+        $fields = !empty($r_resource_filters['fields']) ? $r_resource_filters['fields'] : '*';
+        $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM lists_listing cll WHERE board_id = $1) as d ';
         array_push($pg_params, $r_resource_vars['boards']);
         break;
 
     case '/boards/?/lists/?/cards':
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
+        $fields = !empty($r_resource_filters['fields']) ? $r_resource_filters['fields'] : '*';
+        $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
         array_push($pg_params, $r_resource_vars['boards']);
         array_push($pg_params, $r_resource_vars['lists']);
-        break;
-
-    case '/boards/?/lists/?/cards/?/activities':
-        $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c ON  al.card_id = c.id WHERE card_id = $1 ORDER BY freshness_ts DESC, materialized_path ASC) as d ';
-        array_push($pg_params, $r_resource_vars['cards']);
         break;
 
     case '/activities':
