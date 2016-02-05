@@ -293,6 +293,7 @@ App.ApplicationView = Backbone.View.extend({
                 abortPending: true,
                 success: function(model, response) {
                     if (!_.isUndefined(response.error)) {
+                        window.sessionStorage.setItem('redirect_link', window.location.hash);
                         $('#content').html(new App.Board404View({
                             model: authuser
                         }).el);
