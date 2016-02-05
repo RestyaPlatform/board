@@ -9,7 +9,9 @@
 <% } %>
 </span> <span><%- user.attributes.username %></span></a>
 <% }else if(user == null && _.isUndefined(q)){ %>	
+<span class="alert alert-info">
 	<%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('users')] }) %>
+</span>
 <% } else{ %>
 	<%- i18next.t('Search for a person in %s by name or email address.', { postProcess: 'sprintf', sprintf: [SITE_NAME]}) %>
 <% } %>

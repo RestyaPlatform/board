@@ -9,5 +9,7 @@
 				<% } %>
 			</span><span><%- user.attributes.full_name %></span></a>
 <% } else{ %>
+<span class="alert alert-info">
 	<%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('users')] }) %>
+</span>
 <% } %>			

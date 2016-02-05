@@ -6,7 +6,7 @@
 	});
 	_.each(filtered_lists, function(list) {
 		if (card.attributes.list_id == list.id) {
-			content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' (current)</option>';
+			content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' ' + i18next.t('(current)') +'</option>';
 			var filtered_cards_count = card.list.collection.board.cards.where({
 				list_id: list.id,
 				is_archived:0
@@ -14,7 +14,7 @@
 			var current_position = filtered_cards_count + 1;
 			for(var i = 1; i <= filtered_cards_count + 1; i++){
 				if (card.attributes.list_id == list.attributes.id && i == current_position) {
-					content_position += '<option value="' + i + '" selected="selected">' + i + ' (current)</option>';
+					content_position += '<option value="' + i + '" selected="selected">' + i + ' ' + i18next.t('(current)') +' </option>';
 				} else {
 					content_position += '<option value="' + i + '">' + i+ '</option>';
 				}
@@ -32,7 +32,7 @@
 	var content = content_list + content_position;
 %>
 <div class="clearfix text-center col-xs-12">	
-		<a href="#" class="js-back-to-card-actions pull-left" ><i class="icon-caret-left  no-pad"></i></a> <span class="col-xs-10"><strong> Position </strong></span><a href="#" class="js-close-sub-popover pull-right"><i class="icon-remove "></i></a>	
+		<a href="#" class="js-back-to-card-actions pull-left" ><i class="icon-caret-left  no-pad"></i></a> <span class="col-xs-10"><strong><%- i18next.t('Position') %></strong></span><a href="#" class="js-close-sub-popover pull-right"><i class="icon-remove "></i></a>	
 </div>
 <div class="col-xs-12 divider"></div>
 <div class="col-xs-12">

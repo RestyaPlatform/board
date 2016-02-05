@@ -1,7 +1,7 @@
 <td>
     <div class="form-group text-center">
 	    <div class="checkbox">
-            <input id="<%- user.attributes.id%>"  name="user_id[<%- user.attributes.id %>]" value="<%- user.attributes.id%>" class="js-checkbox-list <%if(parseInt(user.attributes.is_active) === 1){%>js-checkbox-active<%}else{%>js-checkbox-inactive<%}%>" type="checkbox">
+            <input <% if(user.attributes.role_id == 1){%>disabled<%}%> id="<%- user.attributes.id%>"  name="user_id[<%- user.attributes.id %>]" value="<%- user.attributes.id%>" class="js-checkbox-list <%if(parseInt(user.attributes.is_active) === 1){%>js-checkbox-active<%}else{%>js-checkbox-inactive<%}%>" type="checkbox">
             <label class="js-update-user" data-user_id="<%- user.attributes.id %>" for="<%- user.attributes.id%>"></label>
         </div>
     </div>
@@ -126,8 +126,10 @@
     <a href="#" class="js-no-action" title="<%- user.attributes.user_login_count%>"><span class="navbar-btn"><%- user.attributes.user_login_count%></span></a>
 </td>
 <td class="text-center">
-    <a href="#" class="js-no-action"><abbr class="timeago" title="<%- user.get('created') %>"><%- user.get("created") %></abbr></a>
-</td> 
+    <a href="#" class="js-no-action">
+	    <% if(user.get('last_login_date') !== null){ %><abbr class="timeago" title="<%- user.get('last_login_date') %>"><%- user.get("last_login_date") %></abbr><%}else{%>-<%}%>
+	</a>
+</td>
 <td class="text-center">
     <a href="#" class="js-no-action" title=<%- user.attributes.last_login_ip%> <%- user.attributes.login_country_name %> <%- user.attributes.register_city_name %>">
 		<span class="show"><%- user.attributes.last_login_ip%></span> 
@@ -141,10 +143,8 @@
 	</a>
 </td>
 <td class="text-center">
-    <a href="#" class="js-no-action">
-	    <% if(user.get('last_login_date') !== null){ %><abbr class="timeago" title="<%- user.get('last_login_date') %>"><%- user.get("last_login_date") %></abbr><%}else{%>-<%}%>
-	</a>
-</td>
+    <a href="#" class="js-no-action"><abbr class="timeago" title="<%- user.get('created') %>"><%- user.get("created") %></abbr></a>
+</td> 
 <td class="text-center">
     <a href="#" class="js-no-action" title=<%- user.attributes.registered_ip%> <%- user.attributes.register_country_name %> <%- user.attributes.register_city_name %>">
 	    <span class="show"><%- user.attributes.registered_ip%></span> 

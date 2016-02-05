@@ -9,12 +9,12 @@
 			is_org_found = true;
 		}
 		var selected = (parseInt(organization.id) === board.attributes.organization_id) ? 'selected="selected"' : '';
-		var current = (parseInt(organization.id) === board.attributes.organization_id) ? ' (current)' : ''; 
+		var current = (parseInt(organization.id) === board.attributes.organization_id) ? ' '+i18next.t('(current)') : ''; 
 		organization_options += '<option value="' + organization.id + '" ' + selected + '>' + _.escape(organization.attributes.name) + current + '</option>'; 
 	}); 
 	if(!is_org_found && board.attributes.organization_id != 0){
 		display_options = true;
-		organization_options += '<option value="' + board.attributes.organization_id + '" selected="selected" >' + _.escape(board.attributes.organization_name) + '(current)</option>'; 
+		organization_options += '<option value="' + board.attributes.organization_id + '" selected="selected" >' + _.escape(board.attributes.organization_name) + ' '+i18next.t('(current)')+'</option>'; 
 	}
 %> 
 <form class="normal js-save-board-visibility" name="BoardVisibilityForm">

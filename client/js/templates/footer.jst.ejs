@@ -114,7 +114,19 @@
   <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user) && (!_.isEmpty(role_links.where({slug: "view_organization_listing"})))){ %>
   <li class="hidden-xs org-btn"><a title="<%- i18next.t('Organizations') %>" href="#/organizations" class="btn btn-default"><span><%- i18next.t("Organizations") %></span></a></li>
    <% } %>	
-   <% } %>	
+  <li class="dropdown hidden-xs board-btn js-show-add-apps-list"> 
+	  <a title="<%- i18next.t('Apps') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-apps-list"><span><%- i18next.t("Apps") %> </span><span><i class="icon-collapse"></i></span> </a>
+	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12">
+			<% _.each(apps, function(key,value) { %>
+				<li id="<%- value %>" class="hidden-xs org-btn"><a title="<%- key.name %>" href="#" data-toggle="modal" data-target="#<%- value %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- key.name %></span></a></li>
+			<% }); %>
+			<li class="divider js-apps-list-container-search"></li>
+			<li class="dropdown clearfix">
+				<a title="<%- i18next.t('Add Apps') %>" class="dropdown-toggle  btn-link" target="_blank" href="http://restya.com/board/apps"><span class="pull-left"><i class="icon-plus"></i></span> &nbsp; <%- i18next.t("Add Apps") %></a>
+			</li>
+	  </ul>
+	</li>
+  <% } %>
 </ul>
 <% if(!_.isUndefined(authuser.user)){%>
 <div class="col-xs-push-0 col-sm-push-1 col-md-push-1 col-lg-push-1 col-lg-4 col-md-3 col-sm-1 col-xs-12 hidden-xs search-xs list-group-item-heading clearfix">

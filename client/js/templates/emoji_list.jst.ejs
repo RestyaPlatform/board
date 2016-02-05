@@ -17,5 +17,5 @@
 	</li>
 <%})%>
 <% } else {%>
-	<li class="col-xs-12 navbar-btn"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('emoji')] }) %></li>
+	<li class="col-xs-12 navbar-btn"><span class="alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('emoji')] }) %></span></li>
 <% } %>

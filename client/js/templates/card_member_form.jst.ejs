@@ -35,5 +35,5 @@
 					<% } 
 			}); 
 		}else{ %>
-			<li><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('members')] }) %></li>
+			<li><span class="alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('members')] }) %></span></li>
 		<% } %>

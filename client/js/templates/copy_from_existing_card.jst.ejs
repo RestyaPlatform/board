@@ -18,7 +18,7 @@
 			boards.each(function(board) {
 				 if (card.attributes.board_id == board.id) {
 				 	 is_first = true;
-					 content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) + '(current)</option>';
+					 content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) + ' '+i18next.t('(current)')+'</option>';
 				 } else {
 					 content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + '</option>';
 				 }
@@ -31,7 +31,7 @@
 						is_first = false;
 						 if (card.attributes.list_id == list.id) {
 						 	 is_first_list = true;
-							 content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + '(current)</option>';
+							 content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' '+i18next.t('(current)')+'</option>';
 							 board.cards.add(board.attributes.cards);
 						 } else {
 							 content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';

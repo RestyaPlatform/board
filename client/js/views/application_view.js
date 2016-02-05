@@ -66,6 +66,7 @@ App.ApplicationView = Backbone.View.extend({
                         api_token = response.access_token;
                         window.sessionStorage.setItem('links', response.links);
                         window.sessionStorage.setItem('languages', response.languages);
+                        window.sessionStorage.setItem('apps', response.apps);
                         role_links.add(JSON.parse(response.links));
                         settings.url = api_url + 'settings.json';
                         settings.fetch({

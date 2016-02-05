@@ -2435,7 +2435,7 @@ App.ModalCardView = Backbone.View.extend({
             var is_first_list = true;
             _.each(board_lists, function(list) {
                 if (self.model.attributes.list_id == list.attributes.id) {
-                    content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + '(current)</option>';
+                    content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' ' + i18next.t('(current)') + '</option>';
                     is_first_list = true;
                 } else {
                     content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
@@ -2444,7 +2444,7 @@ App.ModalCardView = Backbone.View.extend({
                     is_first_list = false;
                     for (var i = 1; i <= list.attributes.card_count; i++) {
                         if (self.model.attributes.list_id == list.attributes.id && i == current_position) {
-                            content_position += '<option value="' + i + '" selected="selected">' + i + i18next.t('(current)') + '</option>';
+                            content_position += '<option value="' + i + '" selected="selected">' + i + ' ' + i18next.t('(current)') + '</option>';
                         } else {
                             content_position += '<option value="' + i + '">' + i + '</option>';
                         }
@@ -2480,7 +2480,7 @@ App.ModalCardView = Backbone.View.extend({
         var current_position = this.model.collection.indexOf(this.model) + 1;
         for (var i = 1; i <= list.attributes.card_count; i++) {
             if (self.model.attributes.list_id == list.attributes.id && i == current_position) {
-                content_position += '<option value="' + self.model.attributes.position + '" selected="selected">' + self.model.attributes.position + i18next.t('(current)') + '</option>';
+                content_position += '<option value="' + self.model.attributes.position + '" selected="selected">' + self.model.attributes.position + ' ' + i18next.t('(current)') + '</option>';
             } else {
                 content_position += '<option value="' + i + '">' + i + '</option>';
             }

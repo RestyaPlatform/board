@@ -7,4 +7,6 @@ if (typeof App == 'undefined') {
  * @constructor
  * @extends Backbone.Model
  */
-App.OauthApplication = Backbone.Model.extend({});
+App.OauthApplication = Backbone.Model.extend({
+    idAttribute: 'client_id',
+});

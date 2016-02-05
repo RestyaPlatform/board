@@ -513,6 +513,17 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         array_push($pg_params, $r_resource_vars['cards']);
         break;
 
+    case '/boards/?/lists':
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM lists_listing cll WHERE board_id = $1) as d ';
+        array_push($pg_params, $r_resource_vars['boards']);
+        break;
+
+    case '/boards/?/lists/?/cards':
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
+        array_push($pg_params, $r_resource_vars['boards']);
+        array_push($pg_params, $r_resource_vars['lists']);
+        break;
+
     case '/boards/?/lists/?/cards/?/activities':
         $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c ON  al.card_id = c.id WHERE card_id = $1 ORDER BY freshness_ts DESC, materialized_path ASC) as d ';
         array_push($pg_params, $r_resource_vars['cards']);
@@ -689,20 +700,22 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/oauth/clients':
-        $response['clients'] = array();
-        $condition = '';
-        if ($_GET['id']) {
+        $response['oauth_clients'] = array();
+        $condition = 'WHERE client_id != $1';
+        $condition_param = '7742632501382313';
+        if (!empty($_GET['id'])) {
             $condition = 'WHERE id = $1';
-            array_push($pg_params, $_GET['id']);
+            $condition_param = $_GET['id'];
         }
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM clients c ' . $condition . ' ORDER BY id ASC) as d ';
-        $c_sql = 'SELECT COUNT(*) FROM clients c';
+        array_push($pg_params, $condition_param);
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM oauth_clients c ' . $condition . ') as d ';
+        $c_sql = 'SELECT COUNT(*) FROM oauth_clients c';
         break;
 
     case '/oauth/applications':
         $response['applications'] = array();
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM oauth_clients oc WHERE user_id = $1) as d ';
-        array_push($pg_params, $authUser['id']);
+        $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_refresh_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) as d ';
+        array_push($pg_params, $authUser['username'], '7742632501382313');
         $c_sql = 'SELECT COUNT(*) FROM oauth_clients oc';
         break;
 
@@ -1165,7 +1178,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['username'],
             $r_post['email']
         );
-        $user = executeQuery('SELECT * FROM users WHERE username = $1 OR email = $2', $val_arr);
+        $user = executeQuery('SELECT * FROM users WHERE (username = $1 AND username<>\'\') OR (email = $2 AND email<>\'\')', $val_arr);
         if (!$user) {
             $sql = true;
             $table_name = 'users';
@@ -1173,7 +1186,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['role_id'] = 2; // user
             $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
-            $r_post['full_name'] = email2name($r_post['email']);
+            $r_post['full_name'] = ($r_post['email'] == '') ? $r_post['username'] : email2name($r_post['email']);
         } else {
             $msg = '';
             if ($user['email'] == $r_post['email']) {
@@ -1882,10 +1895,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             } else {
                 $sql = true;
                 $attachment_url_host = parse_url($r_post['image_link'], PHP_URL_HOST);
-                if (in_array($attachment_url_host, array(
+                $url_hosts = array(
                     'docs.google.com',
-                    'www.dropbox.com'
-                ))) {
+                    'www.dropbox.com',
+                    'github.com'
+                );
+                if (in_array($attachment_url_host, $url_hosts)) {
                     $r_post['name'] = $r_post['link'] = $r_post['image_link'];
                 } else {
                     $filename = curlExecute($r_post['image_link'], 'get', $mediadir, 'image');
@@ -2197,6 +2212,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $post_val = array(
             'grant_type' => 'authorization_code',
             'code' => $r_post['code'],
+            'redirect_uri' => $r_post['redirect_uri'],
             'client_id' => OAUTH_CLIENTID,
             'client_secret' => OAUTH_CLIENT_SECRET
         );
@@ -2205,7 +2221,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
 
     case '/oauth/clients':
         $sql = true;
-        $table_name = 'clients';
+        $table_name = 'oauth_clients';
+        $r_post['client_id'] = isClientIdAvailable();
+        $r_post['client_secret'] = isClientSecretAvailable();
+        $r_post['grant_types'] = 'client_credentials refresh_token authorization_code';
         break;
 
     case '/webhooks':
@@ -3272,7 +3291,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
 
     case '/oauth/clients/?':
         $json = true;
-        $table_name = 'clients';
+        $table_name = 'oauth_clients';
         $id = $r_resource_vars['clients'];
         $response['success'] = 'Client has been updated successfully.';
         break;
@@ -4118,7 +4137,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/oauth/clients/?':
-        $sql = 'DELETE FROM clients WHERE id= $1';
+        $sql = 'DELETE FROM oauth_clients WHERE id= $1';
         array_push($pg_params, $r_resource_vars['clients']);
         break;
 
@@ -4128,7 +4147,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         pg_query_params($db_lnk, 'DELETE FROM oauth_access_tokens WHERE client_id = $1', $conditions);
         pg_query_params($db_lnk, 'DELETE FROM oauth_refresh_tokens WHERE client_id = $1', $conditions);
-        $sql = 'DELETE FROM oauth_clients WHERE id= $1';
+        $sql = 'DELETE FROM oauth_clients WHERE client_id= $1';
         array_push($pg_params, $r_resource_vars['applications']);
         break;
 
@@ -4155,7 +4174,8 @@ $exception_url = array(
     '/users/login',
     '/users/?/activation',
     '/settings',
-    '/boards/?'
+    '/boards/?',
+    '/oauth/token'
 );
 if (!empty($_GET['_url']) && $db_lnk) {
     $r_debug.= __LINE__ . ': ' . $_GET['_url'] . "\n";
@@ -4174,13 +4194,21 @@ if (!empty($_GET['_url']) && $db_lnk) {
     // /users/5/products/10 -> /users/?/products/? ...
     $r_resource_cmd = preg_replace('/\/\d+/', '/?', $_url_parts_with_ext[0]);
     header('Content-Type: application/json');
+    $scope_exception_url = array(
+        '/users/login',
+        '/oauth/token'
+    );
     if ($r_resource_cmd != '/users/login') {
+        $token_exception_url = array(
+            '/settings',
+            '/oauth/token'
+        );
         if (!empty($_GET['token'])) {
             $conditions = array(
                 'client_id' => OAUTH_CLIENTID,
                 'access_token' => $_GET['token']
             );
-            $response = executeQuery("SELECT user_id as username, expires FROM oauth_access_tokens WHERE client_id = $1 AND access_token = $2", $conditions);
+            $response = executeQuery("SELECT user_id as username, expires, scope FROM oauth_access_tokens WHERE client_id = $1 AND access_token = $2", $conditions);
             $expires = strtotime($response['expires']);
             if (empty($response) || !empty($response['error']) || ($expires > 0 && $expires < time())) {
                 $response['error']['type'] = 'OAuth';
@@ -4209,7 +4237,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
             $response = getToken($post_val);
             echo json_encode($response);
             exit;
-        } else if ($r_resource_cmd != '/settings') {
+        } else if (!in_array($r_resource_cmd, $token_exception_url)) {
             $post_val = array(
                 'grant_type' => 'client_credentials',
                 'client_id' => OAUTH_CLIENTID,
@@ -4236,6 +4264,20 @@ if (!empty($_GET['_url']) && $db_lnk) {
                 $languages[$row['iso2']] = $row['name'];
             }
             $response['languages'] = json_encode($languages);
+            $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
+            foreach ($files as $file) {
+                $content = file_get_contents($file);
+                $data = json_decode($content, true);
+                $folder = explode('/', $file);
+                if ($data['enabled'] === true) {
+                    foreach ($data as $key => $value) {
+                        if ($key != 'settings') {
+                            $response['apps'][$folder[count($folder) - 2]][$key] = $value;
+                        }
+                    }
+                }
+            }
+            $response['apps'] = json_encode($response['apps']);
             echo json_encode($response);
             exit;
         }
@@ -4248,37 +4290,50 @@ if (!empty($_GET['_url']) && $db_lnk) {
                 $r_resource_vars[$matches[1][$i]] = $matches[2][$i];
             }
         }
+        if (!empty($response['scope'])) {
+            $scope = explode(" ", $response['scope']);
+        }
         if ($r_resource_type == 'json') {
             $is_valid_req = false;
             // Server...
             switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
-                r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters);
-                $is_valid_req = true;
+                if (in_array('read', $scope)) {
+                    r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters);
+                    $is_valid_req = true;
+                } else {
+                    header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication failed', true, 401);
+                }
                 break;
 
             case 'POST':
-                if ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser))) {
+                if (((!empty($scope) && in_array('write', $scope)) || in_array($r_resource_cmd, $scope_exception_url)) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) {
                     $r_post = json_decode(file_get_contents('php://input'));
                     $r_post = (array)$r_post;
                     r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post);
                     $is_valid_req = true;
+                } else {
+                    header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication failed', true, 401);
                 }
                 break;
 
             case 'PUT':
-                if ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser))) {
+                if ((in_array('write', $scope)) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) {
                     $r_put = json_decode(file_get_contents('php://input'));
                     $r_put = (array)$r_put;
                     r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put);
                     $is_valid_req = true;
+                } else {
+                    header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication failed', true, 401);
                 }
                 break;
 
             case 'DELETE':
-                if ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser))) {
+                if ((in_array('write', $scope)) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) {
                     r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters);
                     $is_valid_req = true;
+                } else {
+                    header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication failed', true, 401);
                 }
                 break;
 

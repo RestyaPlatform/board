@@ -276,10 +276,10 @@ App.UserView = Backbone.View.extend({
                         }).el);
                     });
                 } else {
-                    self.$('#cards').html(i18next.t('No %s available.', {
+                    self.$('#cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
                         postProcess: 'sprintf',
                         sprintf: [i18next.t('cards')]
-                    }));
+                    }) + '</span>');
                 }
                 $('#tab-loaded-content').load();
             }

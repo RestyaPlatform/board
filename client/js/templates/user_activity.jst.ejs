@@ -82,5 +82,5 @@
 			<li><hr></li>
 		</ul>
 <% }else{ %>
-	<span id="js-no-activities"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></span>
+	<span id="js-no-activities" class="alert alert-info col-xs-12"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></span>
 <% } %>

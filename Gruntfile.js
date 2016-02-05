@@ -13,7 +13,8 @@ module.exports = function(grunt) {
         less: {
             development: {
                 files: {
-                    'client/css/bootstrap.css': 'client/css/bootstrap.less'
+                    'client/css/bootstrap.css': 'client/css/bootstrap.less',
+                    'client/css/authorize.css': 'client/css/authorize.less'
                 }
             }
         },
@@ -180,7 +181,7 @@ module.exports = function(grunt) {
         },
         zip: {
             'using-cwd': {
-                src: ['manifest.xml', 'api_explorer/**/*.*', 'server/php/**/*.*', 'media/**/*.*', 'client/*.*', 'client/css/default.cache.*.css', 'client/js/default.cache.*.js', 'client/js/workflow_templates/*.*', 'client/font/**/*.*', 'client/img/**/*.*'],
+                src: ['manifest.xml', 'api_explorer/**/*.*', 'server/php/**/*.*', 'media/**/*.*', 'client/*.*', 'client/css/authorize.css', 'client/css/default.cache.*.css', 'client/js/default.cache.*.js', 'client/js/workflow_templates/*.*', 'client/font/**/*.*', 'client/img/**/*.*'],
                 dest: 'restyaboard.zip'
             }
         },

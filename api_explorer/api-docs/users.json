@@ -146,11 +146,11 @@
                     "nickname": "getToken",
                     "authorizations": {},
                     "parameters": [
-                        {
-                            "name": "code",
-                            "description": "token",
+			{
+                            "name": "body",
+                            "description": "oauthToken",
                             "required": true,
-                            "type": "Token",
+                            "type": "oauthToken",
                             "paramType": "body"
                         }
                     ]
@@ -386,6 +386,17 @@
                 "email": {
                     "type": "string"
                 }
+            }
+        },
+	"oauthToken": {
+            "id": "oauthToken",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+		"redirect_uri":{
+		    "type": "string"
+		}
             }
         },
         "Login": {

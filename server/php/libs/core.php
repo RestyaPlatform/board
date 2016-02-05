@@ -56,6 +56,8 @@ function getToken($post)
             'always_issue_new_refresh_token' => true
         );
         $server->addGrantType(new OAuth2\GrantType\RefreshToken($storage, $always_issue_new_refresh_token));
+    } elseif (isset($_POST['grant_type']) && $_POST['grant_type'] == 'authorization_code') {
+        $server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
     } else {
         $val_array = array(
             'client_secret' => OAUTH_CLIENT_SECRET
@@ -1259,4 +1261,43 @@ function convertBooleanValues($table, $row)
         }
     }
     return $row;
+}
+/**
+ * Genrate client id
+ *
+ * @return client_id
+ */
+function isClientIdAvailable()
+{
+    do {
+        $client_id = '';
+        for ($i = 0; $i < 16; $i++) {
+            $client_id.= mt_rand(0, 9);
+        }
+        $qry_val_arr = array(
+            $client_id
+        );
+        $oauth_client = executeQuery('SELECT * FROM oauth_clients WHERE client_id = $1', $qry_val_arr);
+    } while (!empty($oauth_client));
+    return $client_id;
+}
+/**
+ * Genrate client secret
+ *
+ * @return client_secret
+ */
+function isClientSecretAvailable()
+{
+    $characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    do {
+        $client_secret = '';
+        for ($i = 0; $i < 26; $i++) {
+            $client_secret.= $characters[mt_rand(0, strlen($characters) - 1) ];
+        }
+        $qry_val_arr = array(
+            $client_secret
+        );
+        $oauth_client = executeQuery('SELECT * FROM oauth_clients WHERE client_secret = $1', $qry_val_arr);
+    } while (!empty($oauth_client));
+    return $client_secret;
 }

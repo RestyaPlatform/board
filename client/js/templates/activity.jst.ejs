@@ -32,8 +32,12 @@
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', _.escape(activity.attributes.checklist_item_parent_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
 			} else {
-				if(!_.isUndefined(activity.from_footer)) { 
+				if(!_.isUndefined(activity.from_footer)) {
 					var comment = activity.attributes.full_name + ' commented in card ' + cardLink;
+					var _username = (activity.attributes.comment.match(/@([^ ]*)/) != null) ? activity.attributes.comment.match(/@([^ ]*)/)[1]:'';
+					if(!_.isEmpty(_username) && (_username === authuser.user.username)){
+						comment = activity.attributes.full_name + ' has mentioned you in card ' + cardLink;
+					}
 				}
 			}
 		%>             
@@ -111,4 +115,4 @@
 	</div>
 </div>
 <hr class="clearfix col-xs-12 btn-block"/>
-<% }else{ %><div class="media-body"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></div><% } %>
+<% }else{ %><div class="media-body alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></div><% } %>

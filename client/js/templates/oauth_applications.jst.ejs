@@ -1,9 +1,8 @@
-<div class="well-lg navbar-btn"></div>
 <% if (!_.isUndefined(oauth_applications) && oauth_applications.length > 0 ) { 
 				_.each(oauth_applications, function(oauth_application) { %>
   <div class="clearfix">
     <div class="col-xs-10">
-      <h4><span class="c"><%- oauth_application.client_id %></span></h4>
+      <h4><span class="c"><%- oauth_application.client_name %></span></h4>
     </div>
 	<div class="col-xs-2 pull-right">
 	  <div class="row-fluid">
@@ -20,5 +19,6 @@
 <%
 				}); 
 } else { %>
-	<div class="col-xs-12 text-center"><%- i18next.t('No %s available', { postProcess: 'sprintf', sprintf: ['oauth application']}) %></div>
+	<div class="col-xs-12 alert alert-info">
+	<%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('connected application')] }) %></div>
 <% } %>

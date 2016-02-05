@@ -139,7 +139,8 @@ App.FooterView = Backbone.View.extend({
         this.$el.html(this.template({
             model: this.model,
             board_id: this.board_id,
-            languages: window.sessionStorage.getItem('languages').split(',')
+            languages: window.sessionStorage.getItem('languages').split(','),
+            apps: JSON.parse(window.sessionStorage.getItem('apps'))
         }));
         if (_.isEmpty(this.board_id)) {
             if (!_.isUndefined(authuser.user)) {
@@ -247,8 +248,7 @@ App.FooterView = Backbone.View.extend({
                 i18next.changeLanguage($(e.currentTarget).data('lang'));
                 if (!_.isEmpty(response.success)) {
                     $('.js-change-language-form-response').find('i').remove();
-                    self.flash('success', i18next.t('Language changed successfully.'));
-                    $(e.currentTarget).append('<i class="icon-ok"></i>');
+                    location.reload();
                 }
             }
         });
@@ -1277,6 +1277,15 @@ App.FooterView = Backbone.View.extend({
                                     }
                                 }
                             }
+                        }
+                        if (activity.attributes.card_id) {
+                            $('#js-card-' + activity.attributes.card_id).stop().animate({
+                                backgroundColor: '#FCEA88'
+                            }, 800, function() {
+                                $('#js-card-' + activity.attributes.card_id).animate({
+                                    backgroundColor: '#FFFFFF'
+                                }, 800);
+                            });
                         }
                     });
                 } else {

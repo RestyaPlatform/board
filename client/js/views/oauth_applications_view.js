@@ -37,6 +37,10 @@ App.OauthApplicationsView = Backbone.View.extend({
         oauth_application.destroy({
             success: function(model, response) {
                 self.flash('success', i18next.t('Application deleted successfully.'));
+                app.navigate('#/user/' + authuser.user.id + '/oauth_applications', {
+                    trigger: true,
+                    replace: true
+                });
             }
         });
         return false;

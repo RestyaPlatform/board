@@ -12,9 +12,13 @@
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
+session_start();
 require_once 'config.inc.php';
 require_once 'libs/core.php';
 require_once 'libs/vendors/OAuth2/Autoloader.php';
+if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
+    include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
+}
 OAuth2\Autoloader::register();
 $oauth_config = array(
     'user_table' => 'users'
@@ -32,12 +36,17 @@ if (!$server->validateAuthorizeRequest($request, $response)) {
     $response->send();
     die;
 }
+$val_arr = array(
+    $_GET['client_id'],
+);
+$oauth_client = executeQuery('SELECT client_name FROM oauth_clients WHERE client_id = $1', $val_arr);
 ?>
 <!DOCTYPE html>
 <html class="no-js" lang="en">
  <head>
 	 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	 <link rel="stylesheet" type="text/css" href="../client/css/bootstrap.css">
+	 <link rel="stylesheet" type="text/css" href="<?php
+echo $_server_domain_url . '/css/authorize.css'; ?>">
  </head>
  <body style="cursor: auto">
 	 <div class="navbar-btn"></div>
@@ -53,7 +62,8 @@ if (empty($_POST)) {
 	  <div class="col-md-5 col-md-offset-4">
 		<div class="text-center navbar-btn"><a title="Restya" href="#/"><img title="<?php
     echo SITE_NAME; ?>" alt="[Image: <?php
-    echo SITE_NAME; ?>]" src="../client/img/logo.png"></a></div>
+    echo SITE_NAME; ?>]" src="<?php
+    echo $_server_domain_url . '/img/logo.png'; ?>"></a></div>
 			<div class="well">
 				<div class="panel panel-default">
 					<div class="panel-heading lead">Login</div>
@@ -93,16 +103,19 @@ if (empty($_POST)) {
             1
         );
         $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
-        if (!empty($user)) { ?>
+        if (!empty($user)) {
+            $_SESSION["username"] = $user['username'];
+?>
             <section class="clearfix">
 			  <div class="col-md-5 col-md-offset-4">
 				<div class="text-center navbar-btn"><a title="Restya" href="#/"><img title="<?php
             echo SITE_NAME; ?>" alt="[Image: <?php
-            echo SITE_NAME; ?>]" src="../client/img/logo.png"></a></div>
+            echo SITE_NAME; ?>]" src="<?php
+            echo $_server_domain_url . '/img/logo.png'; ?>"></a></div>
 				<div class="well">
 				  <div class="text-center">
-					<div class="h2 list-group-item-heading"> Let <strong>Sandbox <?php
-            echo SITE_NAME; ?> Application </strong> use your account?</div>
+					<div class="h2 list-group-item-heading"> Let <strong><?php
+            echo $oauth_client['client_name']; ?> application </strong> use your account?</div>
 					<form method="post">
 					<ul class="list-inline h2">
 					  <li><input type="submit" value="Allow" name="authorized" class="btn btn-primary btn-lg" title="Allow" /></li>
@@ -116,14 +129,14 @@ if (empty($_POST)) {
 				  <hr>
 				  <div class="clearfix"> <strong>The app will be able to:</strong>
 					<ul>
-					  <li> Read all of your boards and teams </li>
+					  <li> Read all of your boards and organizations </li>
 					  <li>Create and update cards, lists and boards </li>
 					  <li>Make comments for you </li>
 					  <li>Read your email address </li>
 					</ul>
 					<strong>It won't be able to:</strong>
 					<ul>
-					  <li>see your <?php
+					  <li>See your <?php
             echo SITE_NAME; ?> password </li>
 					</ul>
 				  </div>
@@ -139,7 +152,7 @@ if (empty($_POST)) {
     } else {
         // print the authorization code if the user has authorized your client
         $is_authorized = ($_POST['authorized'] === 'Allow') ? true : false;
-        $server->handleAuthorizeRequest($request, $response, $is_authorized);
+        $server->handleAuthorizeRequest($request, $response, $is_authorized, $_SESSION["username"]);
         if ($is_authorized) {
             // this is only here so that you get to see your code in the cURL request. Otherwise, we'd redirect back to the client
             header('Location: ' . $response->getHttpHeader('Location'));

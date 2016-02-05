@@ -9,11 +9,11 @@
 	  </div>
 	  <div class="form-group required">
 		<label class="sr-only control-label" for="inputUsername"><%- i18next.t("Username") %></label>
-		<input type="name" name="username" id="inputUsername" class="form-control" placeholder="<%- i18next.t('Username') %>" required pattern=".{6,15}" title="<%- i18next.t('Username. Minimum 6 characters') %>">
+		<input type="name" name="username" id="inputUsername" class="form-control" placeholder="<%- i18next.t('Username') %>" required pattern=".{3,15}" title="<%- i18next.t('Username. Minimum 3 characters') %>">
 	  </div>
 	  <div class="form-group required">
 		<label class="sr-only control-label" for="inputPassword"><%- i18next.t("Password") %></label>
-		<input type="password" required name="password" id="inputPassword"class="form-control" placeholder="<%- i18next.t('Password') %>" pattern="[A-Za-z0-9\S]{6,15}" title="<%- i18next.t('Password. Minimum 6 characters and white space not allowed') %>">
+		<input type="password" required name="password" id="inputPassword"class="form-control" placeholder="<%- i18next.t('Password') %>" pattern="[A-Za-z0-9\S]{6,50}" title="<%- i18next.t('Password. Minimum 6 characters and white space not allowed') %>">
 	  </div>
 	  <div class="form-group">
 		<label class="sr-only control-label" for="submitAddUser"><%- i18next.t("Join Now") %></label>

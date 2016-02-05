@@ -152,7 +152,7 @@
 				</tr>
 				<% }); %>
 			<% } else { %>
-				<tr><td><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('members')] }) %></td></tr>
+				<tr><td class="alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('members')] }) %></td></tr>
 			<% } %>
 		</tbody>
 	</table>

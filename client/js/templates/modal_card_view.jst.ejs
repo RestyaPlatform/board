@@ -55,7 +55,7 @@
 				  <% } %>
 				</div>
 				<ul class="list-group-item-text list-inline clearfix">
-				  <li class="">
+				  <li class="mar-bottom">
 					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Members') %></h4>
 					<ul class="list-inline clearfix" id="js-card-users-list-<%- card.attributes.id %>">
 					<% if(!_.isUndefined(authuser.user)){ %>
@@ -80,7 +80,7 @@
 					</ul>
 				  </li>
 				  <% if(!_.isEmpty(role_links.where({slug: "view_card_labels"}))){ %>
-				  <li class="">
+				  <li class="mar-bottom">
 					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Labels') %></h4>
 					<ul class="list-inline clearfix js-card-labels-list">
 					<% if(!_.isUndefined(authuser.user)){ %>
@@ -95,7 +95,7 @@
 				  </li>
 				  <% } %>
 				  <% if (!_.isEmpty(card.card_voters)) { %>
-				  <li class="">
+				  <li class="mar-bottom">
 					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Votes') %></h4>
 					<ul class="list-inline clearfix">
 					  <li class="dropdown"><a href="#" title="<%- i18next.t('Add Vote') %>" class="btn btn-default js-show-card-voters-list dropdown-toggle" data-toggle="dropdown"><%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %></a>
