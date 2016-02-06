@@ -309,6 +309,7 @@ var AppRouter = Backbone.Router.extend({
                 });
             }
         } else {
+            window.sessionStorage.setItem('redirect_link', window.location.hash);
             new App.ApplicationView({
                 model: 'login'
             });
