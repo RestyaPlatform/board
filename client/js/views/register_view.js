@@ -41,6 +41,7 @@ App.RegisterView = Backbone.View.extend({
      * @return false
      */
     register: function(e) {
+        $('#submitRegister').attr('disabled', 'disabled');
         var target = $(e.target);
         var data = target.serializeObject();
         var self = this;
@@ -56,6 +57,7 @@ App.RegisterView = Backbone.View.extend({
                     }
                     $('#inputPassword').val('');
                 } else {
+                    $('#submitRegister').removeAttr('disabled');
                     self.flash('success', i18next.t('You have successfully registered with our site and your activation mail has been sent to your mail inbox.'));
                     target[0].reset();
                 }
