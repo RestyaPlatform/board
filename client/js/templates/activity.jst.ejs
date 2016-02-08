@@ -1,4 +1,8 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
+<% 
+if(!_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %> 
+	<span class="label label-success">Unread</span>
+<% } %>
 <div class="media">
 	<a data-placement="bottom" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" data-toggle="tooltip" data-container="body" data-html="true" class="js-tooltip pull-left" href="#/user/<%- activity.attributes.user_id %>">
 		<% if(!_.isEmpty(activity.attributes.profile_picture_path)) {
