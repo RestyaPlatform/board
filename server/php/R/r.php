@@ -1930,6 +1930,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 } else {
                     $filename = curlExecute($r_post['image_link'], 'get', $mediadir, 'image');
                     $r_post['name'] = $filename['file_name'];
+                    $r_post['link'] = $r_post['image_link'];
                 }
                 unset($r_post['image_link']);
                 $r_post['path'] = $save_path . '/' . $filename['file_name'];
