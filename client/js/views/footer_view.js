@@ -1274,8 +1274,16 @@ App.FooterView = Backbone.View.extend({
                                             });
                                             change_organization_board.set('organization_logo_url', activity.attributes.organization_logo_url);
                                         });
+                                    } else if (activity.attributes.type === 'add_board_user') {
+                                        board.board_users.add(activity.attributes.board_user);
                                     }
                                 }
+                            }
+                            if (activity.attributes.type === 'add_board') {
+                                var new_board = new App.Board();
+                                new_board.set('id', parseInt(activity.attributes.board_id));
+                                new_board.set('name', parseInt(activity.attributes.board_name));
+                                App.boards.add(new_board);
                             }
                         }
                         if (parseInt(activity.attributes.card_id) !== 0 && parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
