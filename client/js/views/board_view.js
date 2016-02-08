@@ -882,6 +882,10 @@ App.BoardView = Backbone.View.extend({
             $('body').css({
                 'background': background_color,
             }).addClass('board-view');
+        } else {
+            $('body').css({
+                'background': '',
+            }).addClass('board-view');
         }
     },
     /**
