@@ -1947,7 +1947,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $qry_val_arr = array(
             $r_resource_vars['cards']
         );
-        $delete_labels = pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE card_id = $1', $qry_val_arr);
+        $delete_labels = pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE card_id = $1 RETURNING label_id', $qry_val_arr);
+        $delete_label = pg_fetch_assoc($delete_labels);
         $delete_labels_count = pg_affected_rows($delete_labels);
         if (!empty($r_post['name'])) {
             $label_names = explode(',', $r_post['name']);
@@ -1984,6 +1985,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         } else {
             $response['cards_labels'] = array();
             $comment = '##USER_NAME## removed label(s) in this card ##CARD_LINK## - ##LABEL_NAME##';
+            $foreign_ids['foreign_id'] = $delete_label['label_id'];
         }
         $foreign_ids['board_id'] = $r_post['board_id'];
         $foreign_ids['list_id'] = $r_post['list_id'];
