@@ -22,9 +22,16 @@ if (!empty($_GET['plugin'])) {
         'client_secret' => $data['settings'][$_GET['plugin'] . '_client_secret']['value'],
         'code' => $_GET['code']
     );
-    $response = doPost($data['settings'][$_GET['plugin'] . '_oauth_token_url']['value'], $post_data, 'token');
-    $response_array = json_decode($response, true);
-    if (json_last_error() == JSON_ERROR_NONE) {
+	if ($_GET['plugin'] == 'r_zapier') {
+		$post_data['redirect_uri'] = $data['settings'][$_GET['plugin'] . '_redirect_uri']['value'];
+	}
+	$format = ($_GET['plugin'] == 'r_zapier') ? 'json' : 'token';
+    $response = doPost($data['settings'][$_GET['plugin'] . '_oauth_token_url']['value'], $post_data, $format);
+	if (is_array($response)) {
+		$response = json_encode($response);
+	}
+    $response_array = json_decode($response, true);	
+    if (json_last_error() == JSON_ERROR_NONE) {		
         $access_token = $response_array['access_token'];
     } else {
         parse_str($response);
