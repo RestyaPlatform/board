@@ -1,30 +1,36 @@
-<% if(attachment.attributes.name === 'dropbox' || attachment.attributes.name === 'google_drive' || attachment.attributes.name === 'link') { %>
+<% if(_.isEmpty(attachment.attributes.link) && !_.isEmpty(attachment.attributes.name)){ %>
+	<a target="_blank" href="<%= attachment.downloadLink('download', attachment.attributes.id) %>" class="pull-left navbar-btn img-thumbnail">
+	<% if(attachment.attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ 
+		var picture_path = attachment.showImage('CardAttachment', attachment.attributes.id, 'large_thumb' );
+	%>
+		<img src="<%= picture_path %>">
+	<% } else {
+		var extension = attachment.attributes.name.split('.');
+	%>
+		<p class="thumb-img"><%- extension[extension.length - 1].toUpperCase() %></p>
+	<% } %>
+	</a>
+<% } else if(!_.isEmpty(attachment.attributes.link)){ %>
 	<a target="_blank" href="<%= attachment.attributes.link %>" title="<%- attachment.attributes.link %>" class="pull-left navbar-btn img-thumbnail">
 		<p class="thumb-img">
-			<% if(attachment.attributes.name === 'dropbox') { %>
-				<i class="icon-dropbox"></i>
-			<% } else if(attachment.attributes.name === 'google_drive') { %>
-				<i class="icon-cloud"></i>
-			<% } else { %>
-				<%- attachment.attributes.name.toUpperCase() %>
-			<% } %>
+		<% if (attachment.attributes.link.indexOf("dropbox.com") > -1) {%>
+			<i class="icon-dropbox"></i>
+		<% } else if(attachment.attributes.link.indexOf("docs.google.com") > -1){ %>
+			<i class="icon-cloud"></i>
+		<% } else if(attachment.attributes.link.indexOf("github.com") > -1){ %>
+			<i class="icon-github"></i>
+		<% } else if(!_.isEmpty(attachment.attributes.name) && !_.isEmpty(attachment.attributes.link)) {  var extension = attachment.attributes.name.split('.'); %><% if(!_.isUndefined(extension) && extension.length > 1) { %><% if(attachment.attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ %><%- extension[extension.length - 1].toUpperCase() %><% } else { %>LINK<% } } %><% }%>
 		</p>
 	</a>
-<% } else { %>
-	<a target="_blank" href="<%= attachment.downloadLink('download', attachment.attributes.id) %>" class="pull-left navbar-btn img-thumbnail"><% if(_.isEmpty(attachment.attributes.link) && !_.isEmpty(attachment.attributes.name) && attachment.attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ 
-	var picture_path = attachment.showImage('CardAttachment', attachment.attributes.id, 'large_thumb' );
-	%>
-	<img src="<%= picture_path %>"><% } else if(!_.isEmpty(attachment.attributes.link) && (attachment.attributes.link.indexOf("dropbox.com") > -1)) {%><p class="thumb-img"><i class="icon-dropbox"></i></p> <% } else if(!_.isEmpty(attachment.attributes.link) && (attachment.attributes.link.indexOf("docs.google.com") > -1)){ %><p class="thumb-img"><i class="icon-cloud"></i></p><% } else if(!_.isEmpty(attachment.attributes.link) && (attachment.attributes.link.indexOf("github.com") > -1)){ %><p class="thumb-img"><i class="icon-github"></i></p><% } else if(!_.isEmpty(attachment.attributes.name)) {  var extension = attachment.attributes.name.split('.'); %><p class="thumb-img"><% if(!_.isUndefined(extension) && extension.length > 1) { %><%- extension[extension.length - 1].toUpperCase() %><% }%></p><% }%></a>
-<% } %> 
-
+<% } %>
 <div class="clearfix btn-block col-xs-12">
-<% if(attachment.attributes.name === 'dropbox' || attachment.attributes.name === 'google_drive' || attachment.attributes.name === 'link') { %>
-	<a target="_blank" href="<%= attachment.attributes.link %>" title="<%- attachment.attributes.link %>">
-		<span class="show htruncate col-xs-11 nav"><%- attachment.attributes.link %></span><span class="show btn-block col-xs-12"><%- i18next.t('Added') %> <small class="text-muted"><abbr class="timeago" title="<%- attachment.attributes.created %>"><%- attachment.attributes.created %></abbr></small></span>
-	</a>
-<% } else { %>
-<a target="_blank" href="<%= attachment.downloadLink('download', attachment.attributes.id) %>" title="<%- attachment.attributes.name %>"><span class="show htruncate col-xs-11 nav"><%- attachment.attributes.name %></span><span class="show btn-block col-xs-12"><%- i18next.t('Added') %> <small class="text-muted"><abbr class="timeago" title="<%- attachment.attributes.created %>"><%- attachment.attributes.created %></abbr></small></span></a>
-<% } %> 
+<% if(_.isEmpty(attachment.attributes.link) && !_.isEmpty(attachment.attributes.name)){ %>
+		<a target="_blank" href="<%= attachment.downloadLink('download', attachment.attributes.id) %>" title="<%- attachment.attributes.name %>"><span class="show htruncate col-xs-11 nav"><%- attachment.attributes.name %></span><span class="show btn-block col-xs-12"><%- i18next.t('Added') %> <small class="text-muted"><abbr class="timeago" title="<%- attachment.attributes.created %>"><%- attachment.attributes.created %></abbr></small></span></a>
+<% } else if(!_.isEmpty(attachment.attributes.link)){ %>
+		<a target="_blank" href="<%= attachment.attributes.link %>" title="<%- attachment.attributes.link %>">
+			<span class="show htruncate col-xs-11 nav"><%- attachment.attributes.link %></span><span class="show btn-block col-xs-12"><%- i18next.t('Added') %> <small class="text-muted"><abbr class="timeago" title="<%- attachment.attributes.created %>"><%- attachment.attributes.created %></abbr></small></span>
+		</a>
+<% } %>
 <%if(!_.isUndefined(authuser.user)) {%>
 	<div class="btn-toolbar navbar-btn">
 		<div class="btn-group btn-group-xs navbar-btn">
@@ -36,11 +42,13 @@
 				<a target="_blank" href="<%= download_link %>" title="<%- i18next.t('Download') %>">
 				<i class="icon-arrow-down cur icon-light"></i></a>
 			<% } else {%>
-				<% var link_title = 'Open in New Tab';
-				   if(attachment.attributes.name === 'dropbox') { %>
+				<% var link_title = 'Open in New Tab'; %>
+				   <% if (attachment.attributes.link.indexOf("dropbox.com") > -1) {%>
 					<% link_title = 'Open in Dropbox'; %>
-				<% } else if(attachment.attributes.name === 'google_drive') { %>
+				<% } else if(attachment.attributes.link.indexOf("docs.google.com") > -1){ %>
 					<% link_title = 'Open in Google Drive'; %>
+				<% } else if(attachment.attributes.link.indexOf("github.com") > -1){ %>
+					<% link_title = 'Open in Github'; %>
 				<% } %>
 				<a target="_blank" href="<%= attachment.attributes.link %>" title="<%- link_title %>">
 				<i class="icon-external-link cur icon-light"></i></a>
