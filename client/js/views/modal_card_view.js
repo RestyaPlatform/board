@@ -96,7 +96,8 @@ App.ModalCardView = Backbone.View.extend({
      * Constructor
      * initialize default values and actions
      */
-    initialize: function() {
+    initialize: function(options) {
+        this.initialState = options.initialState;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
@@ -728,8 +729,9 @@ App.ModalCardView = Backbone.View.extend({
                 subscribed = ' <span class="icon-eye-open"></span>';
             }
         }
-        var initialState = 'docked';
-        if (trigger_dockmodal) {
+        if (this.initialState) {
+            initialState = this.initialState;
+        } else if (trigger_dockmodal) {
             initialState = 'minimized';
         }
         var doc = $('#js-card-modal-' + this.model.id);

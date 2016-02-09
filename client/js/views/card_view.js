@@ -388,17 +388,18 @@ App.CardView = Backbone.View.extend({
                 trigger_function: false,
             });
         }
+        var initialState = 'docked';
+        if (e.ctrlKey || e.metaKey) {
+            initialState = 'modal';
+        }
         if (!_.isUndefined(this.model.id)) {
             var modalView = new App.ModalCardView({
-                model: this.model
+                model: this.model,
+                initialState: initialState
             });
             var view_card = this.$('#js-card-listing-' + this.model.id);
             view_card.html('&nbsp;');
             modalView.show();
-            if (e.ctrlKey || e.metaKey) {
-                var doc = $('#js-card-modal-' + this.model.id);
-                doc.dockmodal('popout');
-            }
             return false;
         }
     },
