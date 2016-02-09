@@ -1440,16 +1440,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     if ($table_name == 'users') {
                         unset($put['ip_id']);
                     }
+                    $sfields = '';
                     foreach ($put as $key => $value) {
                         if ($key != 'id') {
                             $fields.= ', ' . $key;
-                            if ($value === false) {
-                                array_push($values, 'false');
-                            } elseif ($value === 'null' || $value === 'NULL' || $value === 'null') {
-                                array_push($values, null);
-                            } else {
-                                array_push($values, $value);
-                            }
                         }
                         if ($key != 'id' && $key != 'position') {
                             $sfields.= (empty($sfields)) ? $key : ", " . $key;
