@@ -91,9 +91,9 @@ App.ModalCardView = Backbone.View.extend({
         'keypress input[type=text]': 'onEnter',
         'click .js-show-emoji-list': 'showEmojiList',
         'click .js-comment-add-emoji': 'addEmoji',
-		'click #modal-comments': 'hideActivity',
-		'click #modal-activities': 'hideActivity',
-		'click #modal-logged-user-activities': 'hideActivity',		
+        'click #modal-comments': 'hideActivity',
+        'click #modal-activities': 'hideActivity',
+        'click #modal-logged-user-activities': 'hideActivity',
     },
     /**
      * Constructor
@@ -219,7 +219,7 @@ App.ModalCardView = Backbone.View.extend({
         var target = $(e.currentTarget);
         this.$el.find('.js-comment').val(this.$el.find('.js-comment').val() + ':' + target.text() + ': ');
     },
-	/**
+    /**
      * hideActivity()
      * Hide activity and comment
      * @param e
@@ -228,8 +228,8 @@ App.ModalCardView = Backbone.View.extend({
     hideActivity: function(e) {
         e.preventDefault();
         var target = $(e.currentTarget);
-		$('.' + target.attr('id')).closest('ul').find('li').removeClass('hide');
-		$('.' + target.attr('id')).closest('li').addClass('hide');
+        $('.' + target.attr('id')).closest('ul').find('li').removeClass('hide');
+        $('.' + target.attr('id')).closest('li').addClass('hide');
     },
     /**
      * addCardLabel()
