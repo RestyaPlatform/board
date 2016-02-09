@@ -2254,8 +2254,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             'grant_type' => 'authorization_code',
             'code' => $r_post['code'],
             'redirect_uri' => $r_post['redirect_uri'],
-            'client_id' => OAUTH_CLIENTID,
-            'client_secret' => OAUTH_CLIENT_SECRET
+            'client_id' => $r_post['client_id'],
+            'client_secret' => $r_post['client_secret']
         );
         $response = getToken($post_val);
         break;
