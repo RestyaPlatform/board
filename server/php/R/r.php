@@ -1527,7 +1527,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             if ($_FILES['board_import']['error'] == 0) {
                 $get_files = file_get_contents($_FILES['board_import']['tmp_name']);
                 $imported_board = json_decode($get_files, true);
-                if (!empty($imported_board)) {
+                if (!empty($imported_board) && !empty($imported_board['prefs'])) {
                     $board = importTrelloBoard($imported_board);
                     $response['id'] = $board['id'];
                 } else {
@@ -1614,7 +1614,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $result = pg_query_params($db_lnk, 'UPDATE ' . $table_name . ' SET is_subscribed = True Where  board_id = $1 and user_id = $2 RETURNING *', $qry_val_arr);
             }
         }
-        $response = pg_fetch_assoc($result);
+		$_response = pg_fetch_assoc($result);
+		$response = convertBooleanValues($table_name, $_response);
         break;
 
     case '/boards/?/copy': //boards copy
@@ -1929,6 +1930,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 } else {
                     $filename = curlExecute($r_post['image_link'], 'get', $mediadir, 'image');
                     $r_post['name'] = $filename['file_name'];
+                    $r_post['link'] = $r_post['image_link'];
                 }
                 unset($r_post['image_link']);
                 $r_post['path'] = $save_path . '/' . $filename['file_name'];
@@ -1945,7 +1947,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $qry_val_arr = array(
             $r_resource_vars['cards']
         );
-        $delete_labels = pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE card_id = $1', $qry_val_arr);
+        $delete_labels = pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE card_id = $1 RETURNING label_id', $qry_val_arr);
+        $delete_label = pg_fetch_assoc($delete_labels);
         $delete_labels_count = pg_affected_rows($delete_labels);
         if (!empty($r_post['name'])) {
             $label_names = explode(',', $r_post['name']);
@@ -1982,6 +1985,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         } else {
             $response['cards_labels'] = array();
             $comment = '##USER_NAME## removed label(s) in this card ##CARD_LINK## - ##LABEL_NAME##';
+            $foreign_ids['foreign_id'] = $delete_label['label_id'];
         }
         $foreign_ids['board_id'] = $r_post['board_id'];
         $foreign_ids['list_id'] = $r_post['list_id'];
@@ -2161,33 +2165,46 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $_FILES['attachment'] = $_FILES['file'];
         }
         if (!empty($_FILES['attachment']) && $_FILES['attachment']['error'] == 0) {
-            $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'];
-            $save_path = 'media' . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'];
-            if (!file_exists($mediadir)) {
-                mkdir($mediadir, 0777, true);
-            }
-            $file = $_FILES['attachment'];
-            $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
-            if (move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
-                $logo_url = $save_path . DIRECTORY_SEPARATOR . $file['name'];
-                foreach ($thumbsizes['Organization'] as $key => $value) {
-                    $list = glob(APP_PATH . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'] . '.*');
-                    @unlink($list[0]);
+            $allowed_ext = array(
+                'gif',
+                'png',
+                'jpg',
+                'jpeg',
+                'bmp'
+            );
+            $filename = $_FILES['attachment']['name'];
+            $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+            if (in_array($file_ext, $allowed_ext)) {
+                $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'];
+                $save_path = 'media' . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'];
+                if (!file_exists($mediadir)) {
+                    mkdir($mediadir, 0777, true);
                 }
-                foreach ($thumbsizes['Organization'] as $key => $value) {
-                    $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $r_resource_vars['organizations'];
-                    $list = glob($mediadir . '.*');
-                    @unlink($list[0]);
+                $file = $_FILES['attachment'];
+                $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
+                if (move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
+                    $logo_url = $save_path . DIRECTORY_SEPARATOR . $file['name'];
+                    foreach ($thumbsizes['Organization'] as $key => $value) {
+                        $list = glob(APP_PATH . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'] . '.*');
+                        @unlink($list[0]);
+                    }
+                    foreach ($thumbsizes['Organization'] as $key => $value) {
+                        $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $r_resource_vars['organizations'];
+                        $list = glob($mediadir . '.*');
+                        @unlink($list[0]);
+                    }
+                    $qry_val_arr = array(
+                        $logo_url,
+                        $r_resource_vars['organizations']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE organizations SET logo_url = $1 WHERE id = $2', $qry_val_arr);
+                    $response['logo_url'] = $logo_url;
+                    $foreign_ids['organization_id'] = $r_resource_vars['organizations'];
+                    $comment = ((!empty($authUser['full_name'])) ? $authUser['full_name'] : $authUser['username']) . ' added attachment to this organization ##ORGANIZATION_LINK##';
+                    $response['activity'] = insertActivity($authUser['id'], $comment, 'add_organization_attachment', $foreign_ids);
                 }
-                $qry_val_arr = array(
-                    $logo_url,
-                    $r_resource_vars['organizations']
-                );
-                pg_query_params($db_lnk, 'UPDATE organizations SET logo_url = $1 WHERE id = $2', $qry_val_arr);
-                $response['logo_url'] = $logo_url;
-                $foreign_ids['organization_id'] = $r_resource_vars['organizations'];
-                $comment = ((!empty($authUser['full_name'])) ? $authUser['full_name'] : $authUser['username']) . ' added attachment to this organization ##ORGANIZATION_LINK##';
-                $response['activity'] = insertActivity($authUser['id'], $comment, 'add_organization_attachment', $foreign_ids);
+            } else {
+                $response['error'] = 1;
             }
         }
         break;
