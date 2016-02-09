@@ -274,6 +274,9 @@ App.ApplicationView = Backbone.View.extend({
         if (this.model == 'activity_index') {
             changeTitle(i18next.t('Activities'));
         }
+        if (this.model == 'upload') {
+            changeTitle(i18next.t('Upload'));
+        }
     },
     /**
      * board_view()
@@ -895,6 +898,12 @@ App.ApplicationView = Backbone.View.extend({
                 changeTitle(i18next.t('Activities'));
                 $('#js-navbar-default').remove();
                 $('#content').html(new App.ActivityIndexView({
+                    id: page.page_view_id
+                }).el);
+            } else if (page.model == 'upload') {
+                changeTitle(i18next.t('Upload'));
+                $('#js-navbar-default').remove();
+                $('#content').html(new App.UploadView({
                     id: page.page_view_id
                 }).el);
             }

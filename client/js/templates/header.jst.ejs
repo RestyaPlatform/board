@@ -122,8 +122,9 @@
 				if(!_.isEmpty(role_links.where({slug: "users"}))) {
 					if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") { %>
 					<div class="pull-left well-sm"><a class="label" href="#/users/admin_user_add" title="<%- i18next.t('Add User') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("Add User") %></span></a></div>
-				<% } 
-				} %>
+				<% } %>
+					<div class="pull-left well-sm"><a class="label" href="#/users/import" title="<%- i18next.t('Import Users') %>"><i class="icon-share h3"></i><span class="h4"><%- i18next.t("Import Users") %></span></a></div>
+			<% } %>
 			<% } %>
 			<% if(!_.isEmpty(current_param) && (current_param === 'oauth_clients')){ %>
 				<% if(!_.isEmpty(role_links.where({slug: "view_client_listing"}))) { %>
