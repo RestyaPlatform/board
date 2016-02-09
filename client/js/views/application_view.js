@@ -274,8 +274,8 @@ App.ApplicationView = Backbone.View.extend({
         if (this.model == 'activity_index') {
             changeTitle(i18next.t('Activities'));
         }
-        if (this.model == 'upload') {
-            changeTitle(i18next.t('Upload'));
+        if (this.model == 'users_import') {
+            changeTitle(i18next.t('Users Import'));
         }
     },
     /**
@@ -900,10 +900,10 @@ App.ApplicationView = Backbone.View.extend({
                 $('#content').html(new App.ActivityIndexView({
                     id: page.page_view_id
                 }).el);
-            } else if (page.model == 'upload') {
-                changeTitle(i18next.t('Upload'));
+            } else if (page.model == 'users_import') {
+                changeTitle(i18next.t('Users Import'));
                 $('#js-navbar-default').remove();
-                $('#content').html(new App.UploadView({
+                $('#content').html(new App.UsersImportView({
                     id: page.page_view_id
                 }).el);
             }

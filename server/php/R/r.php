@@ -2273,7 +2273,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $table_name = 'webhooks';
         break;
 
-    case '/upload/csv':
+    case '/users/import':
         if ($_FILES['file']['error'] == 0) {
             $filename = $_FILES['file']['name'];
             $file_ext = pathinfo($filename, PATHINFO_EXTENSION);

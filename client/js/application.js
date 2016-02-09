@@ -244,7 +244,7 @@ var AppRouter = Backbone.Router.extend({
         'email_templates': 'email_templates',
         'email_templates/:id': 'email_template_type',
         'activities': 'activity_index',
-        'users/import': 'upload'
+        'users/import': 'users_import'
     },
     initialize: function() {
         $('body').removeAttr('style');
@@ -492,9 +492,9 @@ var AppRouter = Backbone.Router.extend({
             model: 'activity_index'
         });
     },
-    upload: function() {
+    users_import: function() {
         new App.ApplicationView({
-            model: 'upload'
+            model: 'users_import'
         });
     }
 });

@@ -1,5 +1,5 @@
 /**
- * @fileOverview This file has functions related to activity index view. This view calling from application view.
+ * @fileOverview This file has functions related to users import view. This view calling from application view.
  * Available Object:
  *	App.boards						: this object contain all boards(Based on logged in user)
  *	this.model						: undefined
@@ -7,7 +7,7 @@
 if (typeof App == 'undefined') {
     App = {};
 }
-App.UploadView = Backbone.View.extend({
+App.UsersImportView = Backbone.View.extend({
     /**
      * Constructor
      * initialize default values and actions
@@ -22,8 +22,7 @@ App.UploadView = Backbone.View.extend({
     events: {
         'submit form#UploadForm': 'submitUpload',
     },
-    template: JST['templates/upload'],
-    converter: new Showdown.converter(),
+    template: JST['templates/users_import'],
     /**
      * render()
      * populate the html to the dom
@@ -44,7 +43,7 @@ App.UploadView = Backbone.View.extend({
         var fileData = new FormData(form[0]);
         console.log(fileData);
         var User = new App.User();
-        User.url = api_url + 'upload/csv.json';
+        User.url = api_url + 'users/import.json';
         User.save(fileData, {
             patch: true,
             type: 'POST',
