@@ -14,9 +14,6 @@
  */
 require_once 'config.inc.php';
 require_once 'libs/core.php';
-if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
-    include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
-}
 if (!empty($_GET['plugin'])) {
     $content = file_get_contents(APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'apps' . DIRECTORY_SEPARATOR . $_GET['plugin'] . DIRECTORY_SEPARATOR . 'app.json');
     $data = json_decode($content, true);
@@ -26,12 +23,15 @@ if (!empty($_GET['plugin'])) {
         'code' => $_GET['code']
     );
     if ($_GET['plugin'] == 'r_zapier') {
+        if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
+            include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
+        }
+        $url = explode("//", $_server_domain_url);
         $post_data['redirect_uri'] = $_server_domain_url . '/client/apps/r_zapier/login.html';
-    } else {
-        $_server_domain_url = '';
+        $data['settings'][$_GET['plugin'] . '_oauth_token_url']['value'] = $url[0] . '//' . $data['settings'][$_GET['plugin'] . '_client_id']['value'] . ':' . $data['settings'][$_GET['plugin'] . '_client_secret']['value'] . '@' . $url[1] . $data['settings'][$_GET['plugin'] . '_oauth_token_url']['value'];
     }
     $format = ($_GET['plugin'] == 'r_zapier') ? 'json' : 'token';
-    $response = doPost($_server_domain_url . $data['settings'][$_GET['plugin'] . '_oauth_token_url']['value'], $post_data, $format);
+    $response = doPost($data['settings'][$_GET['plugin'] . '_oauth_token_url']['value'], $post_data, $format);
     if (is_array($response)) {
         $response = json_encode($response);
     }
