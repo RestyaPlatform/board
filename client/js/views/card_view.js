@@ -360,7 +360,7 @@ App.CardView = Backbone.View.extend({
      * @return false
      *
      */
-    showCardModal: function() {
+    showCardModal: function(e) {
         $('ul.dropdown-menu').parent().removeClass('open');
         if (this.model === null || _.isEmpty(this.model)) {
             return false;
@@ -395,6 +395,10 @@ App.CardView = Backbone.View.extend({
             var view_card = this.$('#js-card-listing-' + this.model.id);
             view_card.html('&nbsp;');
             modalView.show();
+            if (e.ctrlKey || e.metaKey) {
+                var doc = $('#js-card-modal-' + this.model.id);
+                doc.dockmodal('popout');
+            }
             return false;
         }
     },
