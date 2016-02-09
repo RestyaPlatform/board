@@ -2267,6 +2267,46 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $table_name = 'webhooks';
         break;
 
+    case '/users/import':
+        if ($_FILES['file']['error'] == 0) {
+            $filename = $_FILES['file']['name'];
+            $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+            if ($file_ext == 'csv') {
+                //Import uploaded file to Database
+                $handle = fopen($_FILES['file']['tmp_name'], "r");
+                $i = 0;
+                while (($data = fgetcsv($handle, 1000, ",")) !== false) {
+                    if ($i > 0) {
+                        $role_id = 2;
+                        $username = $data[0];
+                        $email = $data[1];
+                        $password = getCryptHash($data[2]);
+                        $full_name = $data[3];
+                        $initials = strtoupper(substr($data[0], 0, 1));
+                        $qry_val_arr = array(
+                            'now()',
+                            'now()',
+                            $role_id,
+                            $username,
+                            $email,
+                            $password,
+                            $full_name,
+                            $initials
+                        );
+                        pg_query_params($db_lnk, 'INSERT into users(created, modified, role_id, username, email, password, full_name, initials) values($1, $2, $3, $4, $5, $6, $7, $8)', $qry_val_arr);
+                    }
+                    $i++;
+                }
+                fclose($handle);
+                $response['success'] = 'Imported successfully';
+            } else {
+                $response['error'] = 'file_format';
+            }
+        } else {
+            $response['error'] = 'not_import';
+        }
+        break;
+
     default:
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
         break;
