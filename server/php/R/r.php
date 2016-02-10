@@ -1608,8 +1608,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $result = pg_query_params($db_lnk, 'UPDATE ' . $table_name . ' SET is_subscribed = True Where  board_id = $1 and user_id = $2 RETURNING *', $qry_val_arr);
             }
         }
-		$_response = pg_fetch_assoc($result);
-		$response = convertBooleanValues($table_name, $_response);
+        $_response = pg_fetch_assoc($result);
+        $response = convertBooleanValues($table_name, $_response);
         break;
 
     case '/boards/?/copy': //boards copy
