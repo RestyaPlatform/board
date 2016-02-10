@@ -177,8 +177,8 @@
 		    <% if(!_.isEmpty(role_links.where({slug: "view_user"}))){ %>
 				<li><a title="<%- i18next.t('Profile') %>" href="#/user/<%-model.user.id%>"><%- i18next.t("Profile") %></a></li>
 			<% } %>
-			<li class="dropdown-submenu dropdown">
-				<a href="#" data-toggle="dropdown" class="dropdown-toggle js-open-popover" title="<%- i18next.t('Change Language') %>"><span><i class="icon-caret-left"></i></span><%- i18next.t('Change Language') %><span class="pull-right"><i class="icon-caret-right"></i></span></a>
+			<li class="dropdown-submenu dropdown language-dropdown">
+				<a href="#" data-toggle="dropdown" class="dropdown-toggle js-open-popover" title="<%- i18next.t('Change Language') %>"><span><i class="icon-caret-left"></i></span><%- i18next.t('Change Language') %></a>
 				<ul class="dropdown-menu text-left js-change-language-form-response">
 				   <% _.each(languages, function(language) { %>
 						<% var lang = language.split(':'); %>
