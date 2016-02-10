@@ -15,7 +15,6 @@
     "grunt-contrib-less": "~0.11.2",
     "grunt-contrib-jst": "~0.6.0",
     "grunt-contrib-concat": "~0.1.3",
-    "grunt-less-formatter": "~0.1.0",
     "grunt-jsbeautifier": "~0.2.7",
     "grunt-prettify": "~0.4.0",
     "grunt-contrib-cssmin": "~0.6.1",
