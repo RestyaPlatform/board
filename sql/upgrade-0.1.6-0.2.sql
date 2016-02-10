@@ -1612,8 +1612,6 @@ INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "
 
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES (now(), now(), '141', '1');
 
-INSERT INTO "oauth_scopes" ("scope", "is_default") VALUES ('read', 't'),('write', 'f');
-
 INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply_to_email", "name", "description", "subject", "email_text_content", "email_variables", "display_name") VALUES
 (7,	'2016-01-10 06:15:49.891',	'2016-01-10 06:15:49.891',	'##SITE_NAME## Restyaboard <##FROM_EMAIL##>',	'##REPLY_TO_EMAIL##',	'due_date_notification',	'We will send this mail, One day before when the card due date end.',	'Restyaboard / Due date notification',	'<html>
 <head></head>
