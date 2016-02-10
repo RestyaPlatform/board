@@ -915,9 +915,21 @@ App.BoardHeaderView = Backbone.View.extend({
             ignoreTimezone: false,
             aspectRatio: 3.35
         });
-        if (!_.isEmpty(this.model.cards)) {
-            $('div.js-baord-view-' + this.model.id).fullCalendar('addEventSource', this.model.cards.invoke('pick', ['title', 'start']));
-        }
+		if (!_.isEmpty(this.model.cards)) {
+		 $('div.js-baord-view-'+ this.model.id).fullCalendar({
+				events: this.model.cards.invoke('pick', ['id', 'title', 'start']),
+				eventRender: function(event, element) {
+					var card = self.model.cards.findWhere({
+						card_id: event.id
+					});
+					card.labels.each(function(label) {
+						if (_.escape(label.attributes.name) !== "") {
+							element.addClass(_.escape(label.attributes.name));
+						}
+					});
+				}
+		  });
+		}
         return false;
     },
     /**
