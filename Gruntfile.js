@@ -40,13 +40,6 @@ module.exports = function(grunt) {
                 dest: 'client/js/default.cache.js'
             }
         },
-        less_formatter: {
-            options: {
-                files: {
-                    src: ['client/css/custom.less', 'client/css/custom-responsive.less']
-                }
-            }
-        },
         jsbeautifier: {
             'pre-merge': {
                 src: source_js_files,
@@ -270,7 +263,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-complexity');
     grunt.loadNpmTasks('grunt-docco');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.registerTask('format', ['jsbeautifier:default', 'prettify', 'exec', 'less_formatter']);
+    grunt.registerTask('format', ['jsbeautifier:default', 'prettify', 'exec']);
     grunt.registerTask('pre-commit', ['jshint', 'phplint', 'jsbeautifier:pre-merge']);
     grunt.registerTask('build', 'Build task', function(env) {
         grunt.config.set('config', grunt.file.readJSON('build/' + env + '.json'));
