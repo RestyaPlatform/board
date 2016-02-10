@@ -71,14 +71,17 @@ App.OrganizationsView = Backbone.View.extend({
             iframe: true
         }, {
             success: function(model, response) {
-                model.set('logo_url', response.logo_url);
-                self.render();
-                if (self.type === 'users') {
-                    self.getOrganizationMemberLists();
+                if (response.error === 1) {
+                    self.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
+                } else {
+                    model.set('logo_url', response.logo_url);
+                    self.render();
+                    if (self.type === 'users') {
+                        self.getOrganizationMemberLists();
+                    }
+                    $('#js-organization-logo-9').attr('href', response.logo_url);
                 }
-                $('#js-organization-logo-9').attr('href', response.logo_url);
-            },
-            error: function(model, response) {}
+            }
         });
         return false;
     },
@@ -305,6 +308,8 @@ App.OrganizationsView = Backbone.View.extend({
                     if (self.type === 'users') {
                         self.getOrganizationMemberLists();
                     }
+                } else {
+                    self.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
                 }
             }
         });
