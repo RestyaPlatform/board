@@ -1440,16 +1440,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     if ($table_name == 'users') {
                         unset($put['ip_id']);
                     }
+                    $sfields = '';
                     foreach ($put as $key => $value) {
                         if ($key != 'id') {
                             $fields.= ', ' . $key;
-                            if ($value === false) {
-                                array_push($values, 'false');
-                            } elseif ($value === 'null' || $value === 'NULL' || $value === 'null') {
-                                array_push($values, null);
-                            } else {
-                                array_push($values, $value);
-                            }
                         }
                         if ($key != 'id' && $key != 'position') {
                             $sfields.= (empty($sfields)) ? $key : ", " . $key;
@@ -1614,8 +1608,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $result = pg_query_params($db_lnk, 'UPDATE ' . $table_name . ' SET is_subscribed = True Where  board_id = $1 and user_id = $2 RETURNING *', $qry_val_arr);
             }
         }
-		$_response = pg_fetch_assoc($result);
-		$response = convertBooleanValues($table_name, $_response);
+        $_response = pg_fetch_assoc($result);
+        $response = convertBooleanValues($table_name, $_response);
         break;
 
     case '/boards/?/copy': //boards copy
@@ -2271,6 +2265,46 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     case '/webhooks':
         $sql = true;
         $table_name = 'webhooks';
+        break;
+
+    case '/users/import':
+        if ($_FILES['file']['error'] == 0) {
+            $filename = $_FILES['file']['name'];
+            $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+            if ($file_ext == 'csv') {
+                //Import uploaded file to Database
+                $handle = fopen($_FILES['file']['tmp_name'], "r");
+                $i = 0;
+                while (($data = fgetcsv($handle, 1000, ",")) !== false) {
+                    if ($i > 0) {
+                        $role_id = 2;
+                        $username = $data[0];
+                        $email = $data[1];
+                        $password = getCryptHash($data[2]);
+                        $full_name = $data[3];
+                        $initials = strtoupper(substr($data[0], 0, 1));
+                        $qry_val_arr = array(
+                            'now()',
+                            'now()',
+                            $role_id,
+                            $username,
+                            $email,
+                            $password,
+                            $full_name,
+                            $initials
+                        );
+                        pg_query_params($db_lnk, 'INSERT into users(created, modified, role_id, username, email, password, full_name, initials) values($1, $2, $3, $4, $5, $6, $7, $8)', $qry_val_arr);
+                    }
+                    $i++;
+                }
+                fclose($handle);
+                $response['success'] = 'Imported successfully';
+            } else {
+                $response['error'] = 'file_format';
+            }
+        } else {
+            $response['error'] = 'not_import';
+        }
         break;
 
     default:

@@ -866,7 +866,19 @@ CREATE OR REPLACE VIEW "boards_listing" AS
    LEFT JOIN users users ON ((users.id = board.user_id)))
    LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
 
-
+CREATE OR REPLACE VIEW "cards_users_listing" AS
+ SELECT u.username,
+    u.profile_picture_path,
+    cu.id,
+    cu.created,
+    cu.modified,
+    cu.card_id,
+    cu.user_id,
+    u.initials,
+    u.full_name,
+    u.email
+   FROM (cards_users cu
+   LEFT JOIN users u ON ((u.id = cu.user_id)));
 
 CREATE OR REPLACE VIEW "cards_listing" AS
  SELECT cards.id,
@@ -916,7 +928,8 @@ CREATE OR REPLACE VIEW "cards_listing" AS
                     cards_users_listing.card_id,
                     cards_users_listing.user_id,
                     cards_users_listing.initials,
-                    cards_users_listing.full_name
+                    cards_users_listing.full_name,
+		    cards_users_listing.email
                    FROM cards_users_listing cards_users_listing
                   WHERE (cards_users_listing.card_id = cards.id)
                   ORDER BY cards_users_listing.id) cc) AS cards_users,
@@ -1594,3 +1607,34 @@ CREATE OR REPLACE VIEW "boards_listing" AS
 
 
 INSERT INTO "oauth_scopes" ("scope", "is_default") VALUES ('read', 't'),('write', 'f');
+
+INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('141', now(), now(), 'Users import', '/users/import', 'POST', 'users_import', '6', '1', '0');
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES (now(), now(), '141', '1');
+
+INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply_to_email", "name", "description", "subject", "email_text_content", "email_variables", "display_name") VALUES
+(7,	'2016-01-10 06:15:49.891',	'2016-01-10 06:15:49.891',	'##SITE_NAME## Restyaboard <##FROM_EMAIL##>',	'##REPLY_TO_EMAIL##',	'due_date_notification',	'We will send this mail, One day before when the card due date end.',	'Restyaboard / Due date notification',	'<html>
+<head></head>
+<body style="margin:0">
+<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">
+<div style="border: 1px solid #EEEEEE;">
+<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>
+</div>
+</header>
+<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">
+<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
+<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
+<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;">
+<h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Due soon…</h2>
+<p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</p>
+</pre>
+</div>
+</div>
+</main>
+<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
+<h6 style="text-align:center;margin:5px 15px;"> 
+<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>
+</h6>
+</footer>
+</body>
+</html>', 'SITE_URL, SITE_NAME, CONTENT', 'Due Date Notification');

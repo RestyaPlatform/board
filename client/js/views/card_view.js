@@ -360,7 +360,7 @@ App.CardView = Backbone.View.extend({
      * @return false
      *
      */
-    showCardModal: function() {
+    showCardModal: function(e) {
         $('ul.dropdown-menu').parent().removeClass('open');
         if (this.model === null || _.isEmpty(this.model)) {
             return false;
@@ -388,9 +388,14 @@ App.CardView = Backbone.View.extend({
                 trigger_function: false,
             });
         }
+        var initialState = 'docked';
+        if (e.ctrlKey || e.metaKey) {
+            initialState = 'modal';
+        }
         if (!_.isUndefined(this.model.id)) {
             var modalView = new App.ModalCardView({
-                model: this.model
+                model: this.model,
+                initialState: initialState
             });
             var view_card = this.$('#js-card-listing-' + this.model.id);
             view_card.html('&nbsp;');
