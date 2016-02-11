@@ -811,11 +811,23 @@ App.ApplicationView = Backbone.View.extend({
                     success: function(acl_links, response) {
                         acl_links.reset(response.acl_links);
                         var roles = new App.RoleCollection();
-                        roles.reset(response.roles);
+                        roles.reset(response.roles);						
+						var acl_board_links = new App.AclBoardLinksCollection();
+                        acl_board_links.reset(response.acl_board_links);
+						var acl_organization_links = new App.AclOrganizationLinksCollection();
+                        acl_organization_links.reset(response.acl_organization_links);
+						var organization_user_roles = new App.OrganizationUserRolesCollection();
+                        organization_user_roles.reset(response.organization_user_roles); 
+						var board_user_roles = new App.BoardUserRolesCollection();
+                        board_user_roles.reset(response.board_user_roles);
                         $('#js-navbar-default').remove();
                         $('#content').html(new App.RoleSettingsView({
                             model: acl_links,
-                            roles: roles
+                            roles: roles,
+							acl_board_links: acl_board_links,
+							board_user_roles: board_user_roles,
+							acl_organization_links: acl_organization_links,
+							organization_user_roles: organization_user_roles
                         }).el);
                     }
                 });

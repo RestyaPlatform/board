@@ -33,6 +33,10 @@ App.RoleSettingsView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         this.roles = options.roles;
+		this.acl_board_links = options.acl_board_links;
+		this.board_user_roles = options.board_user_roles;
+		this.acl_organization_links = options.acl_organization_links;
+		this.organization_user_roles = options.organization_user_roles;
         this.render();
     },
     /**
@@ -45,7 +49,11 @@ App.RoleSettingsView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             acl_links: this.model,
-            roles: this.roles
+            roles: this.roles,
+			acl_board_links: this.acl_board_links,
+			board_user_roles: this.board_user_roles,
+			acl_organization_links: this.acl_organization_links,
+			organization_user_roles: this.organization_user_roles
         }));
         $('.js-admin-role-menu').addClass('active');
         $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-email-menu, .js-admin-setting-menu, .js-admin-board-menu').removeClass('active');

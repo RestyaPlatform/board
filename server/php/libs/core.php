@@ -514,10 +514,16 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users')
         $r_resource_cmd
     );
     $allowed_link = executeQuery('SELECT * FROM acl_links_listing WHERE role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);
-    if (!empty($allowed_link)) {
-        return true;
+    if (empty($allowed_link)) {
+		$board_allowed_link = executeQuery('SELECT * FROM acl_board_links_listing WHERE board_user_role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);
+		 if (empty($board_allowed_link)) {
+			 $organization_allowed_link = executeQuery('SELECT * FROM acl_organization_links_listing WHERE organization_user_role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);
+			  if (empty($organization_allowed_link)) {
+				  return false;
+			  }
+		 }
     }
-    return false;
+    return true;
 }
 /**
  * To execute the query
