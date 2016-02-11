@@ -218,7 +218,11 @@ App.ModalCardView = Backbone.View.extend({
     addEmoji: function(e) {
         e.preventDefault();
         var target = $(e.currentTarget);
-        this.$el.find('.js-comment').val(this.$el.find('.js-comment').val() + ':' + target.text() + ': ');
+        var existing_comment = target.parents('form').find('.js-comment').val();
+        if (existing_comment !== '') {
+            existing_comment = existing_comment + ' ';
+        }
+        target.parents('form').find('.js-comment').val(existing_comment + ':' + target.text() + ': ');
     },
     /**
      * hideActivity()
@@ -2682,11 +2686,16 @@ App.ModalCardView = Backbone.View.extend({
      */
     AddCommentMember: function(e) {
         e.preventDefault();
+        var target = $(e.currentTarget);
+        var existing_comment = target.parents('form').find('.js-comment').val();
+        if (existing_comment !== '') {
+            existing_comment = existing_comment + ' ';
+        }
         if (_.isEmpty($('.js-search-member').val())) {
             var space = _.isEmpty(this.$el.find('.js-comment').val()) ? '' : ' ';
-            this.$el.find('.js-comment').val(this.$el.find('.js-comment').val() + space + '@' + $(e.currentTarget).data('user-name')).focus();
+            target.parents('form').find('.js-comment').val(existing_comment + space + '@' + $(e.currentTarget).data('user-name')).focus();
         } else {
-            this.$el.find('.js-comment').val(this.$el.find('.js-comment').val().replace('@' + $('.js-search-member').val(), '@' + $(e.currentTarget).data('user-name'))).focus();
+            target.parents('form').find('.js-comment').val(existing_comment.replace('@' + $('.js-search-member').val(), '@' + $(e.currentTarget).data('user-name'))).focus();
         }
         this.autoMentionSelectionStart = 0;
         $('.js-search-member').val('').trigger('keyup');
