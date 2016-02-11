@@ -33,9 +33,9 @@ if (ini_get('date.timezone')) {
 }
 date_default_timezone_set($default_timezone);
 define('R_DB_HOST', 'localhost');
-define('R_DB_USER', 'postgres');
-define('R_DB_PASSWORD', 'ahsan');
-define('R_DB_NAME', 'restyaboard_new');
+define('R_DB_USER', 'restya');
+define('R_DB_PASSWORD', 'hjVl2!rGd');
+define('R_DB_NAME', 'restyaboard');
 define('R_DB_PORT', 5432);
 define('SECURITYSALT', 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf');
 if (!file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
