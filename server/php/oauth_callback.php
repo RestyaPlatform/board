@@ -27,7 +27,7 @@ if (!empty($_GET['plugin'])) {
             include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
         }
         $url = explode("//", $_server_domain_url);
-        $post_data['redirect_uri'] = $_server_domain_url . '/client/apps/r_zapier/login.html';
+        $post_data['redirect_uri'] = $_server_domain_url . '/apps/r_zapier/login.html';
         $data['settings'][$_GET['plugin'] . '_oauth_token_url']['value'] = $url[0] . '//' . $data['settings'][$_GET['plugin'] . '_client_id']['value'] . ':' . $data['settings'][$_GET['plugin'] . '_client_secret']['value'] . '@' . $url[1] . $data['settings'][$_GET['plugin'] . '_oauth_token_url']['value'];
     }
     $format = ($_GET['plugin'] == 'r_zapier') ? 'json' : 'token';
