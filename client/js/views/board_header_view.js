@@ -713,7 +713,7 @@ App.BoardHeaderView = Backbone.View.extend({
                     });
                     var view = new App.CardView({
                         tagName: 'tr',
-                        className: 'js-show-modal-card-view',
+                        className: 'card-list-view',
                         model: card,
                         template: 'list_view'
                     });
@@ -1544,7 +1544,7 @@ App.BoardHeaderView = Backbone.View.extend({
             filter_user_arr = [],
             filter_due_arr = [];
         $('i.js-filter-icon').remove();
-        $('ul.js-card-labels').parents('.js-show-modal-card-view').show();
+        $('.js-show-modal-card-view').show();
         $('li.selected > div.js-label', $('ul.js-board-labels')).each(function() {
             filter_label_arr.push($(this).html());
             if ($(this).next('i').length === 0) {
@@ -1563,6 +1563,12 @@ App.BoardHeaderView = Backbone.View.extend({
                 $(this).after('<i class="icon-ok js-filter-icon cur"></i>');
             }
         });
+        var current_param = Backbone.history.fragment.split('?');
+        var current_url = current_param[0].split('/');
+        var filter = 'grid';
+        if (current_url.length === 3 && current_url[2] == 'list') {
+            filter = 'list';
+        }
         var show_label_arr = [],
             result_label_arr = [];
         if (!_.isEmpty(filter_label_arr)) {
@@ -1572,7 +1578,11 @@ App.BoardHeaderView = Backbone.View.extend({
                     if (_.isUndefined(show_label_arr[index])) {
                         show_label_arr[index] = [];
                     }
-                    show_label_arr[index].push($(this).parent().parent().attr('id'));
+                    if (filter == 'list') {
+                        show_label_arr[index].push($(this).parent().parent().find('div').attr('id'));
+                    } else {
+                        show_label_arr[index].push($(this).parent().parent().attr('id'));
+                    }
                 }
             });
             if (filter_label_arr.length != show_label_arr.length) {
@@ -1595,7 +1605,11 @@ App.BoardHeaderView = Backbone.View.extend({
                     if (_.isUndefined(show_user_arr[index])) {
                         show_user_arr[index] = [];
                     }
-                    show_user_arr[index].push($(this).parent().parent().attr('id'));
+                    if (filter == 'list') {
+                        show_user_arr[index].push($(this).parent().parent().find('div').attr('id'));
+                    } else {
+                        show_user_arr[index].push($(this).parent().parent().attr('id'));
+                    }
                 }
             });
             if (filter_user_arr.length != show_user_arr.length) {
@@ -1618,7 +1632,11 @@ App.BoardHeaderView = Backbone.View.extend({
                     if (_.isUndefined(show_due_arr[index])) {
                         show_due_arr[index] = [];
                     }
-                    show_due_arr[index].push($(this).parent().parent().attr('id'));
+                    if (filter == 'list') {
+                        show_due_arr[index].push($(this).parent().parent().find('div').attr('id'));
+                    } else {
+                        show_due_arr[index].push($(this).parent().parent().attr('id'));
+                    }
                 }
             });
             if (filter_due_arr.length != show_due_arr.length) {
