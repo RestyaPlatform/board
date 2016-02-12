@@ -6,11 +6,11 @@
 		</span>
 	</h3>
 	<% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "delete_checklist"}))){ %>
-	<div class="pull-right dropdown h4">
+	<div class="navbar-right dropdown h4">
 		<a class="btn btn-link dropdown-toggle js-show-checklist-actions" role="button" data-toggle="dropdown" title=" <%- i18next.t('Checklist') %>" href="#"> 
 			<span><i class="icon-chevron-sign-down text-primary"></i></span>
 		</a>
-		<ul class="dropdown-menu arrow arrow-right" id="js-checklist-confirm-response-<%- checklist.get('id') %>">
+		<ul class="dropdown-menu arrow dropdown-menu-left" id="js-checklist-confirm-response-<%- checklist.get('id') %>">
 			<li class="clearfix">
 				<div class="clearfix text-center col-xs-12">
 					<span class="col-xs-10"><strong><%- i18next.t("Checklist") %></strong></span>
