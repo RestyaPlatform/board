@@ -774,9 +774,7 @@ App.BoardHeaderView = Backbone.View.extend({
     ganttView: function(card_ids, is_from_filter) {
         var self = this;
         var gantt_response = [];
-        if (is_from_filter === false) {
-            var content = '';
-        }
+        var content = '';
         this.model.lists.each(function(list) {
             var cards = list.get('cards') || [];
             if (!_.isEmpty(cards)) {
@@ -874,7 +872,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 $('div.js-board-view-' + self.model.id).append(content);
             }
         });
-        return content;
+        return false;
     },
     /**
      * switchCalendarView()
