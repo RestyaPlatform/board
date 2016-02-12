@@ -26,7 +26,7 @@
 	<li><a href="#" title="<%- i18next.t('Subscribe') %>" class="highlight-icon <%= subscribe_class %>" data-list-id="<%- list.id %>" data-subscribe-id="<%- subscribe_id %>"><span class="js-subscribe-text"><%- i18next.t("Subscribe") %><%if (!_.isEmpty(subscribe) && parseInt(subscribe.attributes.is_subscribed) === 1) {%>d<%}%></span> <%= is_subscribed %></a></li>
 <% } %>	
 <li class="divider"></li>
-<% if(!_.isEmpty(role_links.where({slug: "move_list_cards"}))){ %>
+<% if(!_.isEmpty(list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(authuser.role_id)}))){ %>
 	<li><a href="#" title="<%- i18next.t('Move All Cards in This List') %>" class="js-show-move-card-list-form" data-list-id="<%- list.id %>"><%- i18next.t("Move All Cards in This List") %></a></li>
 <% } %>
 <% if(!_.isEmpty(list.collection.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(authuser.role_id)}))){ %>

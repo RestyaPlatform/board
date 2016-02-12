@@ -45,7 +45,7 @@
 	
 	<% }%>
  <% if(!_.isUndefined(authuser.user)){%>	
-  <% if(!_.isEmpty(board.acl_links.where({slug: "view_board_listing",board_user_role_id: parseInt(authuser.user.role_id)}))){ %>
+  <% if(!_.isEmpty(role_links.where({slug: "view_board_listing"}))){ %>
   <li class="dropdown hidden-xs board-btn"> 
 	  <a title="<%- i18next.t('Dashboard') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-boards-list"><span><%- i18next.t("Boards") %> </span><span><i class="icon-collapse"></i></span> </a>
 	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12 js-show-add-boards-list">
@@ -59,8 +59,8 @@
 		 <li class="divider"></li>
 		 <%
 
-			if (!_.isEmpty(board.acl_links.where({
-				slug: "view_closed_boards",board_user_role_id: parseInt(authuser.user.role_id)
+			if (!_.isEmpty(role_links.where({
+				slug: "view_closed_boards"
 			}))) {
 		%>
 			<li class="clearfix js-closed-board-list dropdown dropdown-submenu dropdown js-boards-list-container-search">            
@@ -80,8 +80,8 @@
 		<%
 			}
 
-			if (!_.isEmpty(board.acl_links.where({
-				slug: "view_my_boards",board_user_role_id: parseInt(authuser.user.role_id)
+			if (!_.isEmpty(role_links.where({
+				slug: "view_my_boards"
 			}))) {
 		%>
 				<li class="clearfix js-my-board-lists dropdown-submenu dropdown js-boards-list-container-search">			

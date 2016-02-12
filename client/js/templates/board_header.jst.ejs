@@ -23,21 +23,21 @@
 					  <form name="BoardStarForm" id="BoardStarForm">
 						<input id="inputBoardStar" name="is_starred" type="hidden" value="<%if(!_.isUndefined(star)) {%><%- star.attributes.is_starred %><%}else{%>0<%}%>"> 
 					  </form>
-					<div class="col-xs-12 pull-left navbar-btn list-group-item-text <% if(!_.isEmpty(role_links.where({slug: 'edit_board'}))){ %>dropdown<% } %>">
+					<div class="col-xs-12 pull-left navbar-btn list-group-item-text <% if(!_.isEmpty(board.acl_links.where({slug: 'edit_board',board_user_role_id: parseInt(authuser.user.role_id)}))){ %>dropdown<% } %>">
 					  <% if(!_.isUndefined(star) && (parseInt(star.attributes.is_starred) === 1)) { %>
-					  <% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
+					  <% if(!_.isEmpty(board.acl_links.where({slug: "starred_board",board_user_role_id: parseInt(authuser.user.role_id)}))){ %>
 					  <a href="#" class="js-star-board pull-left" name="unstar" title="
 <%- i18next.t('Unstar') %>"><i class="icon-star text-primary"></i></a>
 					  <% } %>
 					  <% } else {%>
-					  <% if(!_.isEmpty(role_links.where({slug: "unstarred_board"}))){ %>
+					  <% if(!_.isEmpty(board.acl_links.where({slug: "unstarred_board",board_user_role_id: parseInt(authuser.user.role_id)}))){ %>
 					  <a href="#" class="js-star-board pull-left" name="star" title="
 <%- i18next.t('Star') %>"><i class="icon-star-empty"></i></a>
 					  <% } %>
 					  <% } %>
 					  <a href="#" class="js-star-load pull-left text-primary hide"><img src="img/star-load.gif" alt="[Images: Star]" title="
-<%- i18next.t('Star') %>"></a><a href="#" class="col-xs-8 nav htruncate <%if(!_.isUndefined(authuser.user)) {%>js-rename-board<%}else{%>js-no-action<%}%>" data-toggle="<% if(!_.isEmpty(role_links.where({slug: 'edit_board'}))){ %>dropdown<% } %>" title="<%- board.attributes.name %>"><strong><%- board.attributes.name %></strong></a>
-				  <% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "edit_board"}))){ %>
+<%- i18next.t('Star') %>"></a><a href="#" class="col-xs-8 nav htruncate <%if(!_.isUndefined(authuser.user)) {%>js-rename-board<%}else{%>js-no-action<%}%>" data-toggle="<% if(!_.isEmpty(board.acl_links.where({slug: 'edit_board',board_user_role_id: parseInt(authuser.user.role_id)}))){ %>dropdown<% } %>" title="<%- board.attributes.name %>"><strong><%- board.attributes.name %></strong></a>
+				  <% if(!_.isUndefined(authuser.user) && !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(authuser.user.role_id)}))){ %>
 				  <ul class="dropdown-menu dropdown-menu-left arrow arrow-left">
 					<li class="js-rename-popup js-dropdown-popup dropdown-popup">
 					  <div class="clearfix text-center col-xs-12">
@@ -215,11 +215,11 @@
 						  <input id="inputBoardSubscribe" name="is_subscribed" type="hidden" value=" <% if(!_.isUndefined(subscriber)) { %> <%- subscriber.attributes.is_subscribed %><%}else{%>0<%}%>">
 						</form> 
 						<% if(!_.isUndefined(subscriber) && parseInt(subscriber.attributes.is_subscribed)) { %>
-						<% if(!_.isEmpty(role_links.where({slug: "unsubscribe_board"}))){ %>
+						<% if(!_.isEmpty(board.acl_links.where({slug: "unsubscribe_board",board_user_role_id: parseInt(authuser.user.role_id)}))){ %>
 						<a href="#" class="js-subscribe-board navbar-btn h4 list-group-item-text" name="unsubscribe" title="<%- i18next.t('Unsubscribe') %>" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-close"></i><span class="hidden-xs"><%- i18next.t('Unsubscribe') %></span></a>
 						<% } %>
 						<% } else {%>
-						<% if(!_.isEmpty(role_links.where({slug: "subscribe_board"}))){ %>
+						<% if(!_.isEmpty(board.acl_links.where({slug: "subscribe_board",board_user_role_id: parseInt(authuser.user.role_id)}))){ %>
 						<a href="#" class="js-subscribe-board navbar-btn h4" name="subscribe" title="<%- i18next.t('Subscribe') %>" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-open"></i><span class="hidden-xs"><%- i18next.t('Subscribe') %></span></a>
 						<% } %>
 						<% } %>
@@ -235,7 +235,7 @@
 				  <ul class="dropdown-menu arrow arrow-right col-xs-12 js-setting-response">
 							<li class="js-list-form"><a class="nav-list-item js-show-filters" href="#"><span class="icon-sm icon-filter icon-type"></span> <%- i18next.t('Filter Cards') %></a></li>
 							<% if(!_.isUndefined(authuser.user)) {%>
-								<% if(!_.isEmpty(board.acl_links.where({slug: "view_archived_lists",board_user_role_id: parseInt(authuser.user.role_id)})) || !_.isEmpty(role_links.where({slug: "view_archived_cards"}))){ %>
+								<% if(!_.isEmpty(board.acl_links.where({slug: "view_archived_lists",board_user_role_id: parseInt(authuser.user.role_id)})) || !_.isEmpty(board.acl_links.where({slug: "view_archived_cards",board_user_role_id: parseInt(authuser.user.role_id)}))){ %>
 								<li><a class="nav-list-item js-archived-items" href="#"><span class="icon-sm icon-archive icon-type"></span> <%- i18next.t('Archived Items') %></a></li>
 								<% } %>
 							<% } %>
