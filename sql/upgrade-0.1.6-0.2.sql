@@ -1638,3 +1638,7 @@ INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply
 </footer>
 </body>
 </html>', 'SITE_URL, SITE_NAME, CONTENT', 'Due Date Notification');
+
+
+INSERT INTO "oauth_clients" ("client_id", "client_secret", "redirect_uri", "grant_types", "scope", "user_id", "client_name", "client_url", "logo_url", "tos_url", "policy_url", "modified", "created")
+VALUES ('6664115227792148', 'hw3wpe2cfsxxygogwue47cwnf7', NULL, 'client_credentials refresh_token authorization_code', NULL, NULL, 'Mobile App', NULL, NULL, NULL, NULL, now(), now()),('7857596005287233', 'n0l2wlujcpkj0bd7gk8918gm6b', NULL, 'client_credentials refresh_token authorization_code', NULL, NULL, 'Zapier', NULL, NULL, NULL, NULL, now(), now());

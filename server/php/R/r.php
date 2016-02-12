@@ -4120,6 +4120,22 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         array_push($pg_params, $r_resource_vars['lists']);
         break;
 
+    case '/boards/?/lists': // delete Archived lists
+        $qry_val_arr = array(
+            $r_resource_vars['boards']
+        );
+        $sql = 'DELETE FROM lists WHERE board_id = $1 AND is_archived = true';
+        array_push($pg_params, $r_resource_vars['boards']);
+        break;
+
+    case '/boards/?/cards': // delete Archived cards
+        $qry_val_arr = array(
+            $r_resource_vars['boards']
+        );
+        $sql = 'DELETE FROM cards WHERE board_id = $1 AND is_archived = true';
+        array_push($pg_params, $r_resource_vars['boards']);
+        break;
+
     case '/organizations/?': // delete organization
         $qry_val_arr = array(
             $r_resource_vars['organizations']

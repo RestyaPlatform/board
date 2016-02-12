@@ -76,7 +76,6 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-subscribe-board': 'subcribeBoard',
         'click .js-switch-grid-view': 'switchGridView',
         'click .js-switch-list-view': 'switchListView',
-        'click .js-switch-time-view': 'switchTimeView',
         'click .js-switch-calendar-view': 'switchCalendarView',
         'click .js-switch-timeline-view': 'switchTimelineView',
         'click .js-show-filters': 'showFilters',
@@ -673,7 +672,7 @@ App.BoardHeaderView = Backbone.View.extend({
             });
         }
         var self = this;
-        $('div.js-baord-view-' + self.model.id).html(new App.SwitchToListView({
+        $('div.js-board-view-' + self.model.id).html(new App.SwitchToListView({
             model: self.model
         }).el);
         var is_card_empty = true;
@@ -747,50 +746,6 @@ App.BoardHeaderView = Backbone.View.extend({
         return false;
     },
     /**
-     * switchTimeView()
-     * swith to the list view
-     * @param e
-     * @type Object(DOM event)
-     *
-     */
-    switchTimeView: function() {
-        $('body').removeClass('modal-open');
-        $('#boards-view').addClass('col-xs-12');
-        $('#switch-board-view').addClass('Timesheet-view calendar-view');
-        $('#switch-board-view').removeClass('board-viewlist col-xs-12');
-        $('li.js-switch-view').removeClass('active');
-        $('a.js-switch-time-view').parent().addClass('active');
-        $('.js-list-form').removeClass('hide');
-        var current_param = Backbone.history.fragment;
-        if (current_param.indexOf('/gantt') === -1) {
-            app.navigate('#/board/' + this.model.id + '/gantt', {
-                trigger: false,
-                trigger_function: false,
-            });
-        }
-
-        var timedata = this.model.cards.invoke('pick', ['title', 'due_date']);
-        var timesheetData = '';
-        $.each(timedata.reverse(), function(index, value) {
-            if (value.due_date !== null) {
-                timesheetData += '- ' + value.due_date + ' ' + value.title + " \n ";
-            }
-        });
-        var config = {
-            yearLength: 120, // 120px per year
-            hideAge: true, // Hide age from year axis
-            customStylesheetURL: null, // Custom stylesheet
-            //fetchURL: 'http://localhost/restyaboard/client/js/libs/life.md', // url from where values need to  be fetched
-            renderData: timesheetData // fetched data
-        };
-        life.start(config);
-        slider.init();
-        $('div.js-baord-view-' + this.model.id).html('');
-        $('div.js-baord-view-' + this.model.id).html(life.$el.innerHTML);
-        changeTitle('Board - ' + _.escape(this.model.attributes.name));
-        return false;
-    },
-    /**
      * switchTimelineView()
      * swith to the timeline view
      * @param e
@@ -812,13 +767,20 @@ App.BoardHeaderView = Backbone.View.extend({
                 trigger_function: false,
             });
         }
+        var gantt_card_ids = [];
+        this.ganttView(gantt_card_ids, false, false);
+        return false;
+    },
+    ganttView: function(card_ids, is_from_filter) {
+        var self = this;
         var gantt_response = [];
+        var content = '';
         this.model.lists.each(function(list) {
             var cards = list.get('cards') || [];
             if (!_.isEmpty(cards)) {
                 var i = 0;
                 _.each(cards, function(card) {
-                    if (card.due_date !== null) {
+                    if ((is_from_filter === true && $.inArray(card.id, card_ids) !== -1 && card.due_date !== null) || (is_from_filter === false && card.due_date !== null)) {
                         var l = {};
                         var n = {};
                         var c = [];
@@ -857,12 +819,43 @@ App.BoardHeaderView = Backbone.View.extend({
                         l.values = c;
                         gantt_response.push(l);
                         i++;
+                        if (is_from_filter === false) {
+                            content += '<div id="js-card-' + card.id + '">';
+                            card = self.model.cards.findWhere({
+                                id: card.id
+                            });
+                            content += '<ul class="unstyled hide js-card-labels">';
+                            var filtered_labels = card.list.collection.board.labels.where({
+                                card_id: card.id
+                            });
+                            var labels = new App.CardLabelCollection();
+                            labels.add(filtered_labels);
+                            labels.each(function(label) {
+                                if (_.escape(label.attributes.name) !== "") {
+                                    content += '<li class="' + _.escape(label.attributes.name) + '">' + _.escape(label.attributes.name) + '</li>';
+                                }
+                            });
+                            content += '</ul>';
+                            content += '<ul class="unstyled js-card-users hide">';
+                            card.users.each(function(user) {
+                                content += '<li>user-filter-' + user.get('user_id') + '</li>';
+                            });
+                            content += '</ul>';
+                            content += '<ul class="unstyled js-card-due hide">';
+                            content += self.getDue(card.get('due_date'));
+                            content += '</ul>';
+                            content += '</div>';
+                        }
                     }
                 });
             }
         });
-        $('div.js-baord-view-' + this.model.id).html('');
-        $('div.js-baord-view-' + this.model.id).gantt({
+        if (is_from_filter === false) {
+            this.gantt_content = content;
+        } else {
+            content = this.gantt_content;
+        }
+        $('div.js-board-view-' + this.model.id).html('').gantt({
             source: gantt_response,
             navigate: 'scroll',
             maxScale: 'hours',
@@ -876,6 +869,7 @@ App.BoardHeaderView = Backbone.View.extend({
                     var NavContent = windowW - 335;
                     $('.nav-slider-content').css('width', (NavContent + 'px'));
                 });
+                $('div.js-board-view-' + self.model.id).append(content);
             }
         });
         return false;
@@ -888,6 +882,7 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     switchCalendarView: function() {
+        var self = this;
         $('body').removeClass('modal-open');
         $('#boards-view').addClass('col-xs-12');
         $('#switch-board-view').addClass('calendar-view');
@@ -902,8 +897,8 @@ App.BoardHeaderView = Backbone.View.extend({
                 trigger_function: false,
             });
         }
-        $('div.js-baord-view-' + this.model.id).html('');
-        $('div.js-baord-view-' + this.model.id).fullCalendar({
+        $('div.js-board-view-' + this.model.id).html('');
+        $('div.js-board-view-' + this.model.id).fullCalendar({
             header: {
                 left: 'prev,next today',
                 center: 'title',
@@ -913,12 +908,95 @@ App.BoardHeaderView = Backbone.View.extend({
             selectHelper: true,
             editable: false,
             ignoreTimezone: false,
-            aspectRatio: 3.35
+            aspectRatio: 3.35,
+            eventRender: function(event, element) {
+                var content = '';
+                element.addClass('js-show-modal-card-view');
+                element.attr('id', 'js-card-' + event.id);
+                var card = self.model.cards.findWhere({
+                    id: event.id
+                });
+                content += '<ul class="unstyled  hide js-card-labels">';
+                var filtered_labels = card.list.collection.board.labels.where({
+                    card_id: self.model.id
+                });
+                var labels = new App.CardLabelCollection();
+                labels.add(filtered_labels);
+                labels.each(function(label) {
+                    if (_.escape(label.attributes.name) !== "") {
+                        content += '<li class="' + _.escape(label.attributes.name) + '">' + _.escape(label.attributes.name) + '</li>';
+                    }
+                });
+                content += '</ul>';
+                content += '<ul class="unstyled  js-card-users hide">';
+                card.users.each(function(user) {
+                    content += '<li>user-filter-' + user.get('user_id') + '</li>';
+                });
+                content += '</ul>';
+                content += '<ul class="unstyled  js-card-due hide">';
+                content += self.getDue(card.get('due_date'));
+                content += '</ul>';
+                element.append(content);
+            }
         });
         if (!_.isEmpty(this.model.cards)) {
-            $('div.js-baord-view-' + this.model.id).fullCalendar('addEventSource', this.model.cards.invoke('pick', ['title', 'start']));
+            $('div.js-board-view-' + this.model.id).fullCalendar('addEventSource', this.model.cards.invoke('pick', ['id', 'title', 'start']));
         }
         return false;
+    },
+    /**
+     * getDue()
+     * show card due date
+     * @param card_due_date
+     * @type String
+     * @return message
+     * @type String
+     *
+     */
+    getDue: function(card_due_date) {
+        if (card_due_date === null) {
+            return '';
+        }
+        card_due_date = card_due_date.split(' ');
+        if (!_.isEmpty(card_due_date[1])) {
+            card_due_date = card_due_date[0] + 'T' + card_due_date[1];
+        }
+        var today = new Date();
+        var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+        var due_date = new Date(card_due_date);
+        var diff = Math.floor(due_date.getTime() - today.getTime());
+
+        var day = 1000 * 60 * 60 * 24;
+        var days = Math.floor(diff / day);
+        var months = Math.floor((days + (today.getDate() + 1)) / next_month_last_day.getDate());
+
+        var years = Math.floor(months / 12);
+        var week = days - (6 - (today.getDay()));
+        var due_content = '';
+        var message = 'feature';
+        due_content = '';
+        if (years > 0) {
+            message = 'year';
+            due_content += '<li>year</li>';
+        }
+        if (days >= 0 && days <= 7) {
+            message = 'week';
+            due_content += '<li>week</li>';
+        }
+        if (days >= 0 && days <= 30) {
+            message = 'month';
+            due_content += '<li>month</li>';
+        }
+        if (days === 0) {
+            message = 'day';
+            due_content += '<li>day</li>';
+        }
+        if (years < 0 || months < 0 || days <= -1) {
+            message = 'overdue';
+            due_content += '<li>overdue</li>';
+        }
+        return due_content;
     },
     /**
      * showSyncGoogleCalendar()
@@ -1545,30 +1623,32 @@ App.BoardHeaderView = Backbone.View.extend({
             filter_due_arr = [];
         $('i.js-filter-icon').remove();
         $('.js-show-modal-card-view').show();
-        $('li.selected > div.js-label', $('ul.js-board-labels')).each(function() {
-            filter_label_arr.push($(this).html());
-            if ($(this).next('i').length === 0) {
-                $(this).after('<i class="icon-ok js-filter-icon cur"></i>');
-            }
-        });
-        $('li.selected > div.media > span.navbar-btn > span.js-user', $('ul.js-board-users')).each(function() {
-            filter_user_arr.push($(this).html());
-            if ($(this).next('i').length === 0) {
-                $(this).after('<i class="icon-ok js-filter-icon cur"></i>');
-            }
-        });
-        $('li.selected > div.media > span.js-due', $('ul.js-board-dues')).each(function() {
-            filter_due_arr.push($(this).html());
-            if ($(this).next('i').length === 0) {
-                $(this).after('<i class="icon-ok js-filter-icon cur"></i>');
-            }
-        });
         var current_param = Backbone.history.fragment.split('?');
         var current_url = current_param[0].split('/');
         var filter = 'grid';
         if (current_url.length === 3 && current_url[2] == 'list') {
             filter = 'list';
+        } else if (current_url.length === 3 && current_url[2] == 'gantt') {
+            filter = 'gantt';
         }
+        $('li.selected > div.js-label', $('ul.js-board-labels')).each(function() {
+            filter_label_arr.push($(this).html());
+            if ($(this).next('i').length === 0) {
+                $(this).after('<i class="icon-ok js-filter-icon cur pull-right"></i>');
+            }
+        });
+        $('li.selected > div.media > span.navbar-btn > span.js-user', $('ul.js-board-users')).each(function() {
+            filter_user_arr.push($(this).html());
+            if ($(this).next('i').length === 0) {
+                $(this).parent().parent().append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
+            }
+        });
+        $('li.selected > div.media > span.js-due', $('ul.js-board-dues')).each(function() {
+            filter_due_arr.push($(this).html());
+            if ($(this).next('i').length === 0) {
+                $(this).parent().parent().append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
+            }
+        });
         var show_label_arr = [],
             result_label_arr = [];
         if (!_.isEmpty(filter_label_arr)) {
@@ -1673,10 +1753,21 @@ App.BoardHeaderView = Backbone.View.extend({
                 hide_card_list += ':not(#' + result[i] + ')';
             }
             show_card_list = show_card_list.substring(0, show_card_list.lastIndexOf(', '));
-            $(show_card_list).show();
-            $('.js-show-modal-card-view' + hide_card_list).hide();
+            if (filter == 'gantt') {
+                gantt_card_ids = [];
+                _.each(show_card_list.replace(/#js-card-/g, '').split(','), function(card_id) {
+                    gantt_card_ids.push(parseInt(card_id));
+                });
+                this.ganttView(gantt_card_ids, true);
+            } else {
+                $(show_card_list).show();
+                $('.js-show-modal-card-view' + hide_card_list).hide();
+            }
         } else if (filter_label_arr.length || filter_user_arr.length || filter_due_arr.length) {
             $('.js-show-modal-card-view').hide();
+        } else if (filter == 'gantt' && _.isEmpty(filter_label_arr) && _.isEmpty(filter_user_arr) && _.isEmpty(filter_due_arr)) {
+            gantt_card_ids = [];
+            this.ganttView(gantt_card_ids, false);
         }
         if ($('.js-clear-all').hasClass('text-muted')) {
             $('.js-clear-all').removeClass('text-muted');
@@ -1804,6 +1895,12 @@ App.BoardHeaderView = Backbone.View.extend({
         $('.js-board-dues, .js-board-users, .js-board-labels').children().removeClass('selected');
         $('.js-clear-all').addClass('text-muted');
         $('.js-show-modal-card-view').show();
+        var current_param = Backbone.history.fragment.split('?');
+        var current_url = current_param[0].split('/');
+        if (current_url[2] == 'gantt') {
+            gantt_card_ids = [];
+            this.ganttView(gantt_card_ids, false);
+        }
         return false;
     },
     /**

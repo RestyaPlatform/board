@@ -28,6 +28,23 @@ App.ArchivedListsView = Backbone.View.extend({
     tagName: 'div',
     className: 'clearfix col-xs-12',
     /**
+     * Events
+     * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
+     */
+    events: {
+        'click .js-delete-all-archived-lists': 'deleteAllArchivedlists'
+    },
+    deleteAllArchivedlists: function(e) {
+        var self = this;
+        self.model.url = api_url + 'boards/' + self.model.id + '/lists.json';
+        self.model.destroy({
+            success: function(model, response) {
+                self.flash('success', i18next.t('Lists deleted successfully.'));
+            }
+        });
+        return false;
+    },
+    /**
      * render()
      * populate the html to the dom
      * @param NULL
@@ -41,4 +58,5 @@ App.ArchivedListsView = Backbone.View.extend({
         this.showTooltip();
         return this;
     }
+
 });

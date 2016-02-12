@@ -34,7 +34,7 @@
   </h3>
   <div class="clearfix navbar-btn row">
 	  <div class="splitter-wrap editor ui-resizable" >
-		<div class="inner col-xs-12">
+		<div class="col-xs-12">
 			<ul class="list-unstyled navbar-btn row">
 			  <li class="list-group-item list-group-item-info clearfix">
 				<div class="list-group-item-heading">
@@ -122,28 +122,6 @@
 						  <li class="divider"></li>
 						  <li class="js-edit-card-due-date-form-response">
 							<form class="form-horizontal clearfix js-card-edit-form" name="cardDueDateEditForm" id="cardDueDateEditForm">
-							  <div class="form-group">
-								<div class="col-xs-6">
-								  <label><%- i18next.t('Date') %></label>
-								  <input type="text" class="form-control input-sm js-card-duedate-edit-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" required/>
-								</div>
-								<div class="col-xs-6">
-								  <label><%- i18next.t('Time') %></label>
-								  <input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm:ss" required/>
-								</div>
-							  </div>
-							  <div class="form-group">
-								<div class="col-xs-6">
-								  <label for="save" class="sr-only"><%- i18next.t('Save') %></label>
-								  <input type="submit" value="<%- i18next.t('Save') %>" id="save" class="btn btn-primary" id="submitCardDueDateEditForm">
-								</div>
-								<% if(card.attributes.due_date != null && card.attributes.due_date != '') { %>
-								<div class="col-xs-6">
-								  <label for="remove" class="sr-only"><%- i18next.t('Remove') %></label>
-								  <input type="reset" value="<%- i18next.t('Remove') %>" id="js-remove-due-date" class="btn btn-default">
-								</div>
-								<% } %>
-							  </div>
 							</form>
 						  </li>
 						</ul>
