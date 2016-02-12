@@ -3,7 +3,8 @@
  <div class="col-xs-12 h4">
 	<ul class="nav nav-tabs">
 		<li <% if(_.isUndefined(type) || type == 'boards'){ %>class="active" <%}%>><a href="#/organization/<%-organization.attributes.id%>/boards" class=""><%- i18next.t('Boards') %></a></li>
-		<% if(!_.isEmpty(role_links.where({slug: "view_organization_user_listing"})) || !_.isEmpty(role_links.where({slug: "add_organization_user"}))){ %>
+		<%		
+		if(!_.isEmpty(organization.acl_links.where({slug: "view_organization_user_listing",organization_user_role_id: parseInt(authuser.user.role_id)})) || !_.isEmpty(organization.acl_links.where({slug: "add_organization_user",organization_user_role_id: parseInt(authuser.user.role_id)}))){ %>
 			<li <% if(!_.isUndefined(type) && type == 'users'){ %>class="active" <%}%>><a href="#/organization/<%-organization.attributes.id%>/users" class=""><%- i18next.t('Members') %></a></li>
 		<% } %>
 	</ul>

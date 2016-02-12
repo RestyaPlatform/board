@@ -1004,6 +1004,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     global $_server_domain_url;
                     $md5_hash = md5(SECURITYSALT . $r_resource_vars['boards']);
                     $obj['google_syn_url'] = $_server_domain_url . '/ical/' . $r_resource_vars['boards'] . '/' . $md5_hash . '.ics';
+					$acl_links_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM acl_board_links_listing) as d';
+					$acl_links_result = pg_query_params($db_lnk, $acl_links_sql, array());
+					$obj['acl_links'] = array();
+					while ($row = pg_fetch_assoc($acl_links_result)) {
+						$obj['acl_links'][] = json_decode($row['row_to_json'], true);
+					}
                 } else if ($r_resource_cmd == '/activities') {
                     if (!empty($obj['revisions']) && trim($obj['revisions']) != '') {
                         $revisions = unserialize($obj['revisions']);
@@ -1027,7 +1033,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             $obj['difference'] = $dif;
                         }
                     }
-                }
+                } else if ($r_resource_cmd == '/organizations/?') {
+					$acl_links_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM acl_organization_links_listing) as d';
+					$acl_links_result = pg_query_params($db_lnk, $acl_links_sql, array());
+					$obj['acl_links'] = array();
+					while ($row = pg_fetch_assoc($acl_links_result)) {
+						$obj['acl_links'][] = json_decode($row['row_to_json'], true);
+					}
+				}
                 if (!empty($_metadata)) {
                     $data['data'][] = $obj;
                 } elseif (in_array($r_resource_cmd, $arrayResponse)) {
@@ -1045,22 +1058,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (!empty($roles)) {
                 $data['roles'] = $roles;
             }
-			if ($r_resource_cmd == '/organizations') {
-				$acl_links_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM acl_organization_links_organizations_user_roles ORDER BY id ASC) as d';
-				$acl_links_result = pg_query_params($db_lnk, $acl_links_sql, array());
-				$result['acl_links'] = array();
-				while ($row = pg_fetch_assoc($acl_links_result)) {
-					$result['acl_links'][] = json_decode($row['row_to_json'], true);
-				}
-			}
-			if ($r_resource_cmd == '/boards') {
-				$acl_links_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM acl_board_links_boards_user_roles ORDER BY id ASC) as d';
-				$acl_links_result = pg_query_params($db_lnk, $acl_links_sql, array());
-				$result['acl_links'] = array();
-				while ($row = pg_fetch_assoc($acl_links_result)) {
-					$result['acl_links'][] = json_decode($row['row_to_json'], true);
-				}
-			}
             echo json_encode($data);
             pg_free_result($result);
         } else {

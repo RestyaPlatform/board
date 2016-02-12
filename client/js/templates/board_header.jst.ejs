@@ -235,12 +235,12 @@
 				  <ul class="dropdown-menu arrow arrow-right col-xs-12 js-setting-response">
 							<li class="js-list-form"><a class="nav-list-item js-show-filters" href="#"><span class="icon-sm icon-filter icon-type"></span> <%- i18next.t('Filter Cards') %></a></li>
 							<% if(!_.isUndefined(authuser.user)) {%>
-								<% if(!_.isEmpty(role_links.where({slug: "view_archived_lists"})) || !_.isEmpty(role_links.where({slug: "view_archived_cards"}))){ %>
+								<% if(!_.isEmpty(board.acl_links.where({slug: "view_archived_lists",board_user_role_id: parseInt(authuser.user.role_id)})) || !_.isEmpty(role_links.where({slug: "view_archived_cards"}))){ %>
 								<li><a class="nav-list-item js-archived-items" href="#"><span class="icon-sm icon-archive icon-type"></span> <%- i18next.t('Archived Items') %></a></li>
 								<% } %>
 							<% } %>
 							<% if(!_.isUndefined(authuser.user)){ %>
-							<% if(!_.isEmpty(role_links.where({slug: "view_sync_calendar"}))){ %>
+							<% if(!_.isEmpty(board.acl_links.where({slug: "view_sync_calendar",board_user_role_id: parseInt(authuser.user.role_id)}))){ %>
 							<li class="js-sync-google-dropdown inner-dropdown"><a href="#" class="js-syn-google-calendar" data-toggle="dropdown"><span class="icon-calendar"></span><%- i18next.t('iCal Feed') %></a>
 							</li>
 							<% } %>

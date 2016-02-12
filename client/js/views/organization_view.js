@@ -24,12 +24,21 @@ App.OrganizationsView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         this.model.organizations_users.add(this.model.attributes.organizations_users);
+		this.populateAclLinks();
         this.render();
         if (this.type === 'users') {
             this.getOrganizationMemberLists();
         }
         this.model.boards.bind('change:organization_id remove', this.renderOrganizationCollection, this);
+		
 
+    },
+	// Resets this boards acl_links collection
+    populateAclLinks: function() {
+        var acl_links = this.model.get('acl_links') || [];
+        this.model.acl_links.reset(acl_links, {
+            silent: true
+        });
     },
     template: JST['templates/organization_view'],
     /**

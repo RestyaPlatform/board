@@ -12,5 +12,6 @@ App.Organization = Backbone.Model.extend({
         this.boards = new App.BoardCollection();
         this.board_users = new App.BoardsUserCollection();
         this.organizations_users = new App.OrganizationsUserCollection();
+		this.acl_links = new App.AclOrganizationLinksCollection();
     }
 });

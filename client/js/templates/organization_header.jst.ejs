@@ -12,7 +12,7 @@
 	<% if(!_.isUndefined(authuser.user)){%>
   <div class="navbar-right navbar-btn">
 	<ul class="nav nav-pills navbar-left">
-	<% if(!_.isEmpty(role_links.where({slug: "delete_organization"}))){ %>
+	<% if(!_.isEmpty(organization.acl_links.where({slug: "delete_organization",organization_user_role_id: parseInt(authuser.user.role_id)}))){ %>
 	  <li class="dropdown">
 			<a href="#" title="Delete" class="text-muted list-group-item-text navbar-btn h4 dropdown-toggle" data-toggle="dropdown"><i class="icon-trash"></i></a>
 			<ul class="dropdown-menu arrow arrow-right list-unstyled">

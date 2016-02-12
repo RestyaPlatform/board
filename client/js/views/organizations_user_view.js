@@ -60,6 +60,7 @@ App.OrganizationsUserView = Backbone.View.extend({
             this.is_admin = (!_.isEmpty(admin) || (!_.isUndefined(authuser.user) && parseInt(authuser.user.role_id) === 1)) ? true : false;
         }
         this.$el.html(this.template({
+			organization: this.model,
             organizations_users: this.model.organizations_users,
             is_admin: this.is_admin
         }));

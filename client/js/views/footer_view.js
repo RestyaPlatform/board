@@ -139,9 +139,11 @@ App.FooterView = Backbone.View.extend({
         this.$el.html(this.template({
             model: this.model,
             board_id: this.board_id,
+			board: this.board,
             languages: window.sessionStorage.getItem('languages').split(','),
             apps: JSON.parse(window.sessionStorage.getItem('apps'))
         }));
+		
         if (_.isEmpty(this.board_id)) {
             if (!_.isUndefined(authuser.user)) {
                 var board_activities = new App.FooterView({

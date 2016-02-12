@@ -75,7 +75,15 @@ App.BoardView = Backbone.View.extend({
         this.populateAttachments();
         this.populateSubscribers();
         this.populateStars();
+		this.populateAclLinks();
         this.render();
+    },
+	// Resets this boards acl_links collection
+    populateAclLinks: function() {
+        var acl_links = this.model.get('acl_links') || [];
+        this.model.acl_links.reset(acl_links, {
+            silent: true
+        });
     },
     // Resets this boards lists collection
     populateLists: function() {
