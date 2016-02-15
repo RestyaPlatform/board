@@ -58,7 +58,7 @@ App.BoardSimpleView = Backbone.View.extend({
      *
      */
     render: function() {
-        if (this.model !== null && this.model.attributes.users !== null) {
+        if (this.model !== null && this.model.attributes.users !== null && !_.isUndefined(this.model.attributes.users)) {
             for (i = 0; i < this.model.attributes.users.length; i++) {
                 if (authuser.user.id == this.model.attributes.users[i].user_id) {
                     this.model.attributes.is_admin = (parseInt(this.model.attributes.users[i].is_admin) === 1) ? 1 : 0;
