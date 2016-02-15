@@ -390,21 +390,31 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/boards/?':
-        $s_sql = 'SELECT b.board_visibility, bu.user_id FROM boards AS b LEFT JOIN boards_users AS bu ON bu.board_id = b.id WHERE b.id =  $1';
-        $arr[] = $r_resource_vars['boards'];
-        if (!empty($authUser) && $authUser['role_id'] != 1) {
-            $s_sql.= ' AND (b.board_visibility = 2 OR bu.user_id = $2)';
-            $arr[] = $authUser['id'];
-        } else if (empty($authUser)) {
-            $s_sql.= ' AND b.board_visibility = 2 ';
-        }
-        $check_visibility = executeQuery($s_sql, $arr);
-        if (!empty($check_visibility)) {
-            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM boards_listing ul WHERE id = $1 ORDER BY id DESC) as d ';
-            array_push($pg_params, $r_resource_vars['boards']);
+        $s_sql = 'SELECT id FROM boards WHERE id =  $1';
+        $board[] = $r_resource_vars['boards'];
+        $check_board = executeQuery($s_sql, $board);
+        if (!empty($check_board)) {
+            $s_sql = 'SELECT b.board_visibility, bu.user_id FROM boards AS b LEFT JOIN boards_users AS bu ON bu.board_id = b.id WHERE b.id =  $1';
+            $arr[] = $r_resource_vars['boards'];
+            if (!empty($authUser) && $authUser['role_id'] != 1) {
+                $s_sql.= ' AND (b.board_visibility = 2 OR bu.user_id = $2)';
+                $arr[] = $authUser['id'];
+            } else if (empty($authUser)) {
+                $s_sql.= ' AND b.board_visibility = 2 ';
+            }
+            $check_visibility = executeQuery($s_sql, $arr);
+            if (!empty($check_visibility)) {
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM boards_listing ul WHERE id = $1 ORDER BY id DESC) as d ';
+                array_push($pg_params, $r_resource_vars['boards']);
+            } else {
+                $response['error']['type'] = 'visibility';
+                $response['error']['message'] = 'Unauthorized';
+                header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+            }
         } else {
-            $response['error']['type'] = 'visibility';
-            $response['error']['message'] = 'Unauthorized';
+            $response['error']['type'] = 'board';
+            $response['error']['message'] = 'Bad Request';
+            header($_SERVER['SERVER_PROTOCOL'] . ' 400 board', true, 400);
         }
         break;
 
@@ -4304,6 +4314,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
             if (empty($response) || !empty($response['error']) || ($expires > 0 && $expires < time())) {
                 $response['error']['type'] = 'OAuth';
                 echo json_encode($response);
+                header($_SERVER['SERVER_PROTOCOL'] . ' 401 Not Found', true, 401);
                 exit;
             }
             $user = $role_links = array();
