@@ -554,6 +554,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $fields = !empty($r_resource_filters['fields']) ? $r_resource_filters['fields'] : '*';
         $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM lists_listing cll WHERE board_id = $1) as d ';
         array_push($pg_params, $r_resource_vars['boards']);
+        $c_sql = 'SELECT COUNT(*) FROM lists_listing cll';
         break;
 
     case '/boards/?/lists/?/cards':
@@ -561,6 +562,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
         array_push($pg_params, $r_resource_vars['boards']);
         array_push($pg_params, $r_resource_vars['lists']);
+        $c_sql = 'SELECT COUNT(*) FROM cards_listing cll';
         break;
 
     case '/activities':
