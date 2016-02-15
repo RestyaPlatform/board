@@ -1305,7 +1305,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'username' => $user['username'],
                 'password' => $r_post['password'],
                 'client_id' => OAUTH_CLIENTID,
-                'client_secret' => OAUTH_CLIENT_SECRET
+                'client_secret' => OAUTH_CLIENT_SECRET,
+                'scope' => 'read write'
             );
             $response = getToken($post_val);
             $response = array_merge($role_links, $response);
