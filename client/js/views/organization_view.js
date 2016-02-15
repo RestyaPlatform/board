@@ -52,7 +52,6 @@ App.OrganizationsView = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
-
         'click .js-close-popover': 'closePopup',
         'click .js-get-organization-member-lists': 'getOrganizationMemberLists',
         'click .js-edit-organization-member-permission-to-admin': 'editOrganizationMemberPermissionToAdmin',
@@ -210,7 +209,11 @@ App.OrganizationsView = Backbone.View.extend({
      * @return object
      *
      */
-    render: function() {		
+    render: function() {
+		$('#header').html(new App.OrganizationHeaderView({
+			model: this.model,
+			type: self.page_view_type
+		}).el);
         this.$el.html(this.template({
             organization: this.model,
             type: this.type
