@@ -390,21 +390,31 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/boards/?':
-        $s_sql = 'SELECT b.board_visibility, bu.user_id FROM boards AS b LEFT JOIN boards_users AS bu ON bu.board_id = b.id WHERE b.id =  $1';
-        $arr[] = $r_resource_vars['boards'];
-        if (!empty($authUser) && $authUser['role_id'] != 1) {
-            $s_sql.= ' AND (b.board_visibility = 2 OR bu.user_id = $2)';
-            $arr[] = $authUser['id'];
-        } else if (empty($authUser)) {
-            $s_sql.= ' AND b.board_visibility = 2 ';
-        }
-        $check_visibility = executeQuery($s_sql, $arr);
-        if (!empty($check_visibility)) {
-            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM boards_listing ul WHERE id = $1 ORDER BY id DESC) as d ';
-            array_push($pg_params, $r_resource_vars['boards']);
+        $s_sql = 'SELECT id FROM boards WHERE id =  $1';
+        $board[] = $r_resource_vars['boards'];
+        $check_board = executeQuery($s_sql, $board);
+        if (!empty($check_board)) {
+            $s_sql = 'SELECT b.board_visibility, bu.user_id FROM boards AS b LEFT JOIN boards_users AS bu ON bu.board_id = b.id WHERE b.id =  $1';
+            $arr[] = $r_resource_vars['boards'];
+            if (!empty($authUser) && $authUser['role_id'] != 1) {
+                $s_sql.= ' AND (b.board_visibility = 2 OR bu.user_id = $2)';
+                $arr[] = $authUser['id'];
+            } else if (empty($authUser)) {
+                $s_sql.= ' AND b.board_visibility = 2 ';
+            }
+            $check_visibility = executeQuery($s_sql, $arr);
+            if (!empty($check_visibility)) {
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM boards_listing ul WHERE id = $1 ORDER BY id DESC) as d ';
+                array_push($pg_params, $r_resource_vars['boards']);
+            } else {
+                $response['error']['type'] = 'visibility';
+                $response['error']['message'] = 'Unauthorized';
+                header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+            }
         } else {
-            $response['error']['type'] = 'visibility';
-            $response['error']['message'] = 'Unauthorized';
+            $response['error']['type'] = 'board';
+            $response['error']['message'] = 'Bad Request';
+            header($_SERVER['SERVER_PROTOCOL'] . ' 400 Bad Request', true, 400);
         }
         break;
 
@@ -1332,7 +1342,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'username' => $user['username'],
                 'password' => $r_post['password'],
                 'client_id' => OAUTH_CLIENTID,
-                'client_secret' => OAUTH_CLIENT_SECRET
+                'client_secret' => OAUTH_CLIENT_SECRET,
+                'scope' => 'read write'
             );
             $response = getToken($post_val);
             $response = array_merge($role_links, $response);
@@ -3712,7 +3723,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         );
         $prev_value = executeQuery('SELECT * FROM ' . $table_name . ' WHERE id =  $1', $qry_val_arr);
         $activity_type = 'update_card_checklist_item';
-        if (isset($r_put['is_completed']) && $r_put['is_completed'] == 'true') {
+        if (!empty($r_put['is_completed'])) {
             $comment = '##USER_NAME## updated ##CHECKLIST_ITEM_NAME## as completed on card ##CARD_LINK##';
         } else if (isset($r_put['position'])) {
             $comment = '##USER_NAME## moved checklist item on card ##CARD_LINK##';
@@ -4163,6 +4174,11 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         array_push($pg_params, $r_resource_vars['organizations']);
         break;
 
+    case '/boards/?/labels/?': // delete Labels in Filter
+        $sql = 'DELETE FROM cards_labels WHERE board_id = $1 AND label_id = $2';
+        array_push($pg_params, $r_resource_vars['boards'], $r_resource_vars['labels']);
+        break;
+
     case '/boards/?/lists/?/cards/?': // delete card
         $qry_val_arr = array(
             $r_resource_vars['cards']
@@ -4367,6 +4383,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
             if (empty($response) || !empty($response['error']) || ($expires > 0 && $expires < time())) {
                 $response['error']['type'] = 'OAuth';
                 echo json_encode($response);
+                header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
                 exit;
             }
             $user = $role_links = array();
