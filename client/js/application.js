@@ -91,8 +91,7 @@ callbackTranslator = {
                 $(this).remove();
             });
             if (!_.isUndefined(model.responseText)) {
-                var responseText = JSON.parse(model.responseText);
-                if (responseText.error.type === 'board') {
+                if (JSON.parse(model.responseText).error.type === 'board') {
                     changeTitle('404 Page not found');
                     this.headerView = new App.HeaderView({
                         model: authuser
@@ -100,7 +99,7 @@ callbackTranslator = {
                     $('#header').html(this.headerView.el);
                     $('#content').html(new App.Error404View().el);
                     return;
-                } else if (responseText.error.type === 'visibility') {
+                } else if (JSON.parse(model.responseText).error.type === 'visibility') {
                     changeTitle('Board not found');
                     this.headerView = new App.HeaderView({
                         model: authuser
@@ -149,7 +148,7 @@ callbackTranslator = {
                 var offline_data = new App.ListCollection();
                 offline_data.syncDirty();
             }
-            if (!_.isUndefined(model.responseText) && responseText.error.type === 'OAuth') {
+            if (!_.isUndefined(model.responseText) && JSON.parse(model.responseText).error.type === 'OAuth') {
                 api_token = '';
                 if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null) {
                     var Auth = JSON.parse(window.sessionStorage.getItem('auth'));

@@ -414,7 +414,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         } else {
             $response['error']['type'] = 'board';
             $response['error']['message'] = 'Bad Request';
-            header($_SERVER['SERVER_PROTOCOL'] . ' 400 board', true, 400);
+            header($_SERVER['SERVER_PROTOCOL'] . ' 400 Bad Request', true, 400);
         }
         break;
 
@@ -4314,7 +4314,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
             if (empty($response) || !empty($response['error']) || ($expires > 0 && $expires < time())) {
                 $response['error']['type'] = 'OAuth';
                 echo json_encode($response);
-                header($_SERVER['SERVER_PROTOCOL'] . ' 401 Not Found', true, 401);
+                header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
                 exit;
             }
             $user = $role_links = array();
