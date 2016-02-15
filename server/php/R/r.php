@@ -3665,7 +3665,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         );
         $prev_value = executeQuery('SELECT * FROM ' . $table_name . ' WHERE id =  $1', $qry_val_arr);
         $activity_type = 'update_card_checklist_item';
-        if (isset($r_put['is_completed']) && $r_put['is_completed'] == 'true') {
+        if (!empty($r_put['is_completed'])) {
             $comment = '##USER_NAME## updated ##CHECKLIST_ITEM_NAME## as completed on card ##CARD_LINK##';
         } else if (isset($r_put['position'])) {
             $comment = '##USER_NAME## moved checklist item on card ##CARD_LINK##';
