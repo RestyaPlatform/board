@@ -48,7 +48,7 @@
 		<div class="col-xs-12 btn-block">
 			<div class="<% if(_.isUndefined(activity.from_footer)) { %>panel<%}%>">
 				<div class="panel-body">
-					<span class="js-activity-<%- activity.attributes.id %>">
+					<span class="js-activity-<%- activity.attributes.id %> modal-<% if((activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment')) {%>comments<%} else { %>activities<%}%> <% if(activity.attributes.user_id == authuser.user.id) {%>modal-logged-user-activities<%}%>">
 					<% if((activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment')) { %>
 						<%if(!_.isUndefined(activity.from_footer)) { %>
 							<span><%= comment %></span>

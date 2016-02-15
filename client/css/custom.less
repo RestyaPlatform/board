@@ -262,11 +262,11 @@ header {
 				right: 12px;
 			}
 			&:after {
-				left: auto;
+				left: auto;   
 				right: 13px;
 			}
 		}
-		&.arrow-bottom {
+		&.arrow-bottom {  
 			&:before {
 				content: '';
 				display: inline-block;
@@ -1392,11 +1392,6 @@ div.popped-out + div + div.datetimepicker {
 	}
 }
 /* specific style */
-.inner {
-	overflow-y: auto;
-	overflow-x: hidden;
-	height: 100%;
-}
 .row-flex {
 	display: flex;
 	flex-direction: row;
@@ -1932,5 +1927,20 @@ footer, header {
 	}
 	dd{
 		margin-left: 120px;
+	}
+}
+.language-dropdown {
+	.dropdown-menu {
+		right: 100%;
+		left: auto;
+	}
+	&.dropdown-submenu > a::after {
+		display: none;
+	}
+}
+.js-activity {
+	.media, .media-body {
+		overflow:visible !important;
+		display: inline-block;
 	}
 }

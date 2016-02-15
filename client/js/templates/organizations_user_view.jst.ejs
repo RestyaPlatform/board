@@ -44,19 +44,15 @@
 				<tr>
 					<td>
 						<div class="clearfix">
-						<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
-								<a href="#/user/<%-organizations_user.attributes.user_id %>" >
-						<% } %><span class="pull-left navbar-btn">
-									<% if(!_.isEmpty(organizations_user.attributes.profile_picture_path)) {
-										 var profile_picture_path = organizations_users.showImage('User', organizations_user.attributes.user_id, 'small_thumb' );
-									%>
-										<img src="<%=profile_picture_path%>" alt="[Image: <%-organizations_user.attributes.username %>]" data-toggle="tooltip" data-placement="bottom" data-original-title="<%- organizations_user.attributes.username %>" class="img-rounded img-responsive">
-									<% } else {%>
-										<i data-toggle="tooltip" data-placement="bottom" data-original-title="<%- organizations_user.attributes.username %>" class="avatar avatar-color-194 img-rounded"><%- organizations_user.attributes.initials %></i>									
-									<% } %></span>
-							<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
-								</a>							
+						<span class="pull-left navbar-btn">
+							<% if(!_.isEmpty(organizations_user.attributes.profile_picture_path)) {
+								 var profile_picture_path = organizations_users.showImage('User', organizations_user.attributes.user_id, 'small_thumb' );
+							%>
+								<img src="<%=profile_picture_path%>" alt="[Image: <%-organizations_user.attributes.username %>]" data-toggle="tooltip" data-placement="bottom" data-original-title="<%- organizations_user.attributes.username %>" class="img-rounded img-responsive">
+							<% } else {%>
+								<i data-toggle="tooltip" data-placement="bottom" data-original-title="<%- organizations_user.attributes.username %>" class="avatar avatar-color-194 img-rounded"><%- organizations_user.attributes.initials %></i>									
 							<% } %>
+						</span>
 							<div class="pull-left col-xs-5">
 								<h4 class="list-group-item-text list-group-item-heading"><%- organizations_user.attributes.full_name %> (<%- organizations_user.attributes.username %>)</h4>
 								<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>

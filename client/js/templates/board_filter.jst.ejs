@@ -24,7 +24,7 @@
 	<% if (board.board_users.length > 0) { %>
 	<ul class="nav nav-pills nav-stacked js-board-users">
 		<% board.board_users.each(function(board_user) { %>
-		<li class="clearfix js-toggle-member-filter cur h5 btn-link">
+		<li class="clearfix js-toggle-member-filter cur card-label-show h5 btn-link">
 			<div class="navbar-btn clearfix media">
 				<span class="pull-left">
 					<% if(!_.isEmpty(board_user.attributes.profile_picture_path)){ 
@@ -36,7 +36,7 @@
 						<i class="avatar avatar-color-194 img-rounded" title="<%- board_user.attributes.username%>"><%- board_user.attributes.initials%></i>
 					<% } %> 
 				</span>			
-				<span class="pull-left navbar-btn">
+				<span class="pull-left navbar-btn htruncate">
 					<%-board_user.attributes.username %>
 					<span class="js-user hide">user-filter-<%-board_user.attributes.user_id %></span>
 				</span>
@@ -47,10 +47,10 @@
 	<hr>
 	<% } %>
 	<ul class="nav nav-pills nav-stacked js-board-dues">
-		<li class="clearfix js-due-filter cur h5 btn-link"><div class="navbar-btn clearfix media"><%- i18next.t('Due in the next day') %> <span class="js-due hide">day</span></div></li>
-		<li class="clearfix js-due-filter cur h5 btn-link"><div class="navbar-btn clearfix media"><%- i18next.t('Due in the next week') %> <span class="js-due hide">week</span></div></li>
-		<li class="clearfix js-due-filter cur h5 btn-link"><div class="navbar-btn clearfix media"><%- i18next.t('Due in the next month') %> <span class="js-due hide">month</span></div></li>
-		<li class="clearfix js-due-filter cur h5 btn-link"><div class="navbar-btn clearfix media"><%- i18next.t('Overdue') %> <span class="js-due hide">overdue</span></div></li>
+		<li class="clearfix js-due-filter cur card-label-show h5 btn-link"><div class="navbar-btn clearfix media htruncate"><%- i18next.t('Due in the next day') %> <span class="js-due hide">day</span></div></li>
+		<li class="clearfix js-due-filter cur card-label-show h5 btn-link"><div class="navbar-btn clearfix media htruncate"><%- i18next.t('Due in the next week') %> <span class="js-due hide">week</span></div></li>
+		<li class="clearfix js-due-filter cur card-label-show h5 btn-link"><div class="navbar-btn clearfix media htruncate"><%- i18next.t('Due in the next month') %> <span class="js-due hide">month</span></div></li>
+		<li class="clearfix js-due-filter cur card-label-show h5 btn-link"><div class="navbar-btn clearfix media htruncate"><%- i18next.t('Overdue') %> <span class="js-due hide">overdue</span></div></li>
 	</ul>
 	<hr>
 	<ul class="nav nav-pills nav-stacked">

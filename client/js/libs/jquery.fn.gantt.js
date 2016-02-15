@@ -1389,7 +1389,7 @@
                         element.loader = $('<div></div>');
                     }
                     $(element).append(element.loader);
-                    setTimeout(fn, 500);
+                    setTimeout(fn, 0);
 
                 } else if (element.loader) {
                   element.loader.detach();
