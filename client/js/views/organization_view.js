@@ -25,6 +25,12 @@ App.OrganizationsView = Backbone.View.extend({
         }
         this.model.organizations_users.add(this.model.attributes.organizations_users);
 		this.populateAclLinks();
+		var organization_user_role_id = this.model.organizations_users.findWhere({
+            user_id: parseInt(authuser.user.id)
+        });
+		if (!_.isEmpty(organization_user_role_id)) {
+			this.model.organization_user_role_id = organization_user_role_id.attributes.organization_user_role_id;
+		}
         this.render();
         if (this.type === 'users') {
             this.getOrganizationMemberLists();
@@ -204,7 +210,7 @@ App.OrganizationsView = Backbone.View.extend({
      * @return object
      *
      */
-    render: function() {
+    render: function() {		
         this.$el.html(this.template({
             organization: this.model,
             type: this.type
