@@ -98,8 +98,7 @@ callbackTranslator = {
                         model: authuser
                     });
                     $('#header').html(this.headerView.el);
-                    var view = new App.Error404View();
-                    $('#content').html(view.el);
+                    $('#content').html(new App.Error404View().el);
                     return;
                 } else if (responseText.error.type === 'visibility') {
                     changeTitle('Board not found');
