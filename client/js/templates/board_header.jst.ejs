@@ -234,6 +234,7 @@
 				  <a data-toggle="dropdown" class="navbar-btn icon h4 btn btn-primary dropdown-toggle js-back-setting-response col-sm-offset-1 show" type="button"><i class="icon-cog h3 cur"></i></a>
 				  <ul class="dropdown-menu arrow arrow-right col-xs-12 js-setting-response">
 							<li class="js-list-form"><a class="nav-list-item js-show-filters" href="#"><span class="icon-sm icon-filter icon-type"></span> <%- i18next.t('Filter Cards') %></a></li>
+							<li><a class="nav-list-item js-show-labels" href="#"><span class="icon-sm  icon-tag icon-type"></span> <%- i18next.t('Labels') %></a></li>
 							<% if(!_.isUndefined(authuser.user)) {%>
 								<% if(!_.isEmpty(role_links.where({slug: "view_archived_lists"})) || !_.isEmpty(role_links.where({slug: "view_archived_cards"}))){ %>
 								<li><a class="nav-list-item js-archived-items" href="#"><span class="icon-sm icon-archive icon-type"></span> <%- i18next.t('Archived Items') %></a></li>
@@ -242,7 +243,7 @@
 							<% if(!_.isUndefined(authuser.user)){ %>
 							<% if(!_.isEmpty(role_links.where({slug: "view_sync_calendar"}))){ %>
 							<li class="js-sync-google-dropdown inner-dropdown"><a href="#" class="js-syn-google-calendar" data-toggle="dropdown"><span class="icon-calendar"></span><%- i18next.t('iCal Feed') %></a>
-							</li>
+							</li> 
 							<% } %>
 							<li class="divider"></li>
 							<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>

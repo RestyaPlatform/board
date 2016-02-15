@@ -4100,6 +4100,11 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         array_push($pg_params, $r_resource_vars['organizations']);
         break;
 
+    case '/boards/?/labels/?': // delete Labels in Filter
+        $sql = 'DELETE FROM cards_labels WHERE board_id = $1 AND label_id = $2';
+        array_push($pg_params, $r_resource_vars['boards'], $r_resource_vars['labels']);
+        break;
+
     case '/boards/?/lists/?/cards/?': // delete card
         $qry_val_arr = array(
             $r_resource_vars['cards']
