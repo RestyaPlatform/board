@@ -405,10 +405,6 @@ App.ApplicationView = Backbone.View.extend({
                     });
                 } else {
                     Organization.boards.add(Organization.attributes.boards_listing);
-                    $('#header').html(new App.OrganizationHeaderView({
-                        model: Organization,
-                        type: self.page_view_type
-                    }).el);
                     $('#content').html(new App.OrganizationsView({
                         model: Organization,
                         type: self.page_view_type

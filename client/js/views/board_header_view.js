@@ -79,6 +79,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-switch-calendar-view': 'switchCalendarView',
         'click .js-switch-timeline-view': 'switchTimelineView',
         'click .js-show-filters': 'showFilters',
+        'click .js-show-labels': 'showLabels',
         'click .js-archived-items': 'showArchivedItems',
         'click .js-sync-google-dropdown': 'syncGoogleDropdown',
         'click .js-show-copy-board': 'showCopyBoard',
@@ -587,6 +588,23 @@ App.BoardHeaderView = Backbone.View.extend({
         $('.js-side-bar-' + this.model.id).addClass('side-bar-large');
         var el = this.$el;
         el.find('.js-setting-response').html(new App.BoardFilterView({
+            model: this.model,
+            labels: this.model.labels
+        }).el);
+        var headerH = $('header').height();
+        var windowH = $(window).height();
+        var footerH = $('footer').height();
+        var boardH = windowH - headerH - footerH - 14;
+        $('.member-modal.js-pre-scrollable').css({
+            'max-height': boardH - 50,
+            'overflow-y': 'auto'
+        });
+        return false;
+    },
+    showLabels: function() {
+        $('.js-side-bar-' + this.model.id).addClass('side-bar-large');
+        var el = this.$el;
+        el.find('.js-setting-response').html(new App.BoardLabelsView({
             model: this.model,
             labels: this.model.labels
         }).el);
