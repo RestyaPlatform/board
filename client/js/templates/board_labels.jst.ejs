@@ -17,5 +17,9 @@
 	<% }); %>
 	</ul>
 	<hr>
+	<% }else{ %>
+	<span class="alert alert-info">
+		<%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('labels')] }) %>
+    </span>
 	<% } %>
 </div>
