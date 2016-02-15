@@ -433,14 +433,19 @@
 				  </ul>
 				</li>
 			<% } %>
-			<% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(authuser.user.role_id)}))){ %>
-			    <li> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- i18next.t('Subscribe') %> " href=""><%- i18next.t('Subscribe') %>
-		       <% if(!_.isEmpty(cards_subscribers)){ %>
-			    <i class="icon-ok"></i>
-		      <% } %>
-		      </a> 
-			  </li>
-		   <% } %>
+		   <% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(authuser.user.role_id)})) || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(authuser.user.role_id)}))){ %>
+		    <li>		      
+		      <% if(!_.isEmpty(cards_subscribers)){  %>
+		      <% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(authuser.user.role_id)}))){ %>			  
+			  <a class="js-card-unsubscribe" title="<%- i18next.t('Subscribe') %> " href=""><%- i18next.t('Subscribe') %><i class="icon-ok"></i></a> 
+			  <% } %>
+			  <% } else{ %>
+			  <% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(authuser.user.role_id)}))){ %>
+			  <li> <a class="js-card-subscribe" title="<%- i18next.t('Subscribe') %> " href=""><%- i18next.t('Subscribe') %></a> 
+			  <% } %>
+			  <% } %>
+			</li>
+		 <% } %>
 		   <% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(authuser.user.role_id)})) || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(authuser.user.role_id)}))){ %>
 		    <li>
 		      <% if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){

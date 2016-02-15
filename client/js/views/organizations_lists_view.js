@@ -41,7 +41,9 @@ App.OrganizationsListsView = Backbone.View.extend({
      *
      */
     render: function() {
-        this.$el.html(this.template());
+        this.$el.html(this.template({
+			organization: this.model
+		}));
         this.renderOrganizationCollection();
         this.showTooltip();
         return this;

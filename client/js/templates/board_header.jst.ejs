@@ -124,8 +124,7 @@
 					  <li class="col-xs-12">
 						<ul class="list-unstyled clearfix js-get-board-member-lists-response">
 						</ul>
-						<% if(!is_offline_data){ %>
-						<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+						<% if(!_.isUndefined(authuser.user) && !_.isEmpty(board.acl_links.where({slug: "add_board_users",board_user_role_id: parseInt(authuser.user.role_id)}))) {%>
 						<ul class="list-unstyled clearfix js-hide-on-offline">
 						<li class="col-xs-12 navbar-btn text-left">
 								<div class="js-add-board-member-dropdown dropdown inner-dropdown col-xs-12"> 
@@ -153,7 +152,6 @@
 							</li>
 							</ul>
 							<% } %>
-						<% } %>
 					  </li>
 					</ul>
 				  </li>
@@ -264,7 +262,7 @@
 							<li><a href="#" class="nav-list-item nav-list-sub-item js-change-background"> <%- i18next.t('Change Background') %></a></li>
 							<li><a href="#" class="nav-list-item nav-list-sub-item js-email-to-board-settings"> <%- i18next.t('Email to board settings') %></a></li>
 							<% }%>
-							<% if(!is_offline_data && is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+							<% if(!_.isUndefined(authuser.user) && !_.isEmpty(board.acl_links.where({slug: "copy_board",board_user_role_id: parseInt(authuser.user.role_id)}))) {%>
 							<li class="js-sync-google-dropdown inner-dropdown"><a data-toggle="dropdown" href="#" class="js-show-copy-board"><%- i18next.t('Copy board') %></a>
 							</li>
 							<li class="divider"></li>
