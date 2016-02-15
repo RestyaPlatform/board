@@ -188,7 +188,9 @@
 			php -m | grep imagick
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-imagick..."
-				apt-get install -y php5-imagick
+				apt-get install gcc
+				apt-get install imagemagick
+				apt-get install php5-imagick
 			fi
 			
 			echo "Checking PHP imap extension..."
@@ -299,6 +301,8 @@
 			echo "Creating PostgreSQL user and database..."
 			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
 			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;"
+			psql -U postgres -c "COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';"
 			if [ "$?" = 0 ];
 			then
 				echo "Importing empty SQL..."
@@ -369,11 +373,14 @@
 					[Yy])
 					echo "Installing PHP..."
 					yum install -y epel-release
-					yum install -y php-fpm php-cli
-					service php-fpm start
-					chkconfig --levels 35 php-fpm on
+					yum install -y php
 				esac
 			fi
+			
+			echo "Installing PHP fpm and cli extension..."
+			yum install -y php-fpm php-cli
+			service php-fpm start
+			chkconfig --levels 35 php-fpm on
 
 			echo "Checking PHP curl extension..."
 			php -m | grep curl
@@ -412,7 +419,17 @@
 			if [ "$?" -gt 0 ];
 			then
 				echo "Installing php-imagick..."
-				yum install -y php-imagick
+				yum install ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
+				cd /usr/local/src
+				wget http://pecl.php.net/get/imagick-2.2.2.tgz
+				tar zxvf ./imagick-2.2.2.tgz
+				cd imagick-2.2.2
+				phpize
+				./configure
+				make
+				make test
+				make install
+				echo "extension=imagick.so" >> /etc/php.ini
 			fi
 			
 			echo "Checking PHP imap extension..."
@@ -542,6 +559,8 @@
 			echo "Creating PostgreSQL user and database..."
 			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
 			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;"
+			psql -U postgres -c "COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';"
 			if [ "$?" = 0 ];
 			then
 				echo "Importing empty SQL..."
