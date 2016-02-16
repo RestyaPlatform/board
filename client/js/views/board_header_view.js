@@ -38,11 +38,10 @@ App.BoardHeaderView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
-        this.model.lists.bind('remove', this.showArchivedListLists, this);
-        this.model.cards.bind('add', this.renderCardsCollection);
+        this.model.lists.bind('change:name', this.showArchivedListLists, this);
         this.model.lists.bind('change:is_archived', this.showArchivedListLists, this);
+        this.model.lists.bind('remove', this.showArchivedListLists, this);
         this.model.cards.bind('change:name', this.showArchivedCardsList, this);
-        this.model.cards.bind('change:due_date', this.showArchivedCardsList, this);
         this.model.cards.bind('change:is_archived', this.showArchivedCardsList, this);
         this.model.cards.bind('remove', this.showArchivedCardsList, this);
         this.model.bind('change:organization_id', this.render, this);
@@ -937,9 +936,23 @@ App.BoardHeaderView = Backbone.View.extend({
                 var card = self.model.cards.findWhere({
                     id: event.id
                 });
-                content += '<ul class="unstyled  hide js-card-labels">';
-                var filtered_labels = card.list.collection.board.labels.where({
-                    card_id: self.model.id
+                if (card.get('is_archived') === 1) {
+                    element.addClass('card-archived');
+                    element.find('.fc-event-skin').addClass('card-archived');
+                }
+                if (card.get('due_date') !== null) {
+                    var today = new Date();
+                    card_due_date = card.get('due_date').split('T');
+                    var due_date = new Date(card_due_date[0]);
+                    var days = Math.floor(Math.floor(due_date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    if (days < 0) {
+                        element.addClass('card-pastdue');
+                        element.find('.fc-event-skin').addClass('card-pastdue');
+                    }
+                }
+                content += '<ul class="unstyled hide js-card-labels">';
+                var filtered_labels = card.labels.where({
+                    card_id: event.id
                 });
                 var labels = new App.CardLabelCollection();
                 labels.add(filtered_labels);
@@ -949,12 +962,12 @@ App.BoardHeaderView = Backbone.View.extend({
                     }
                 });
                 content += '</ul>';
-                content += '<ul class="unstyled  js-card-users hide">';
+                content += '<ul class="unstyled js-card-users hide">';
                 card.users.each(function(user) {
                     content += '<li>user-filter-' + user.get('user_id') + '</li>';
                 });
                 content += '</ul>';
-                content += '<ul class="unstyled  js-card-due hide">';
+                content += '<ul class="unstyled js-card-due hide">';
                 content += self.getDue(card.get('due_date'));
                 content += '</ul>';
                 element.append(content);
@@ -1582,6 +1595,11 @@ App.BoardHeaderView = Backbone.View.extend({
         list.set('id', list_id);
         list.set('is_archived', 0);
         list.url = api_url + 'boards/' + this.model.attributes.id + '/lists/' + list_id + '.json';
+        self.model.attributes.lists.forEach(function(list) {
+            if (list.id === parseInt(list_id)) {
+                list.is_archived = 0;
+            }
+        });
         list.save({
             success: function(model, response) {}
         });
