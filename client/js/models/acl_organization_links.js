@@ -9,6 +9,6 @@ if (typeof App == 'undefined') {
  */
 App.AclOrganizationLinks = Backbone.Model.extend({
 	initialize: function() {
-        this.acl_board_links_boards_user_roles = new App.AclOrganizationLinksCollection();
+        this.acl_organization_links_organizations_user_roles = new App.AclOrganizationLinksCollection();
     }
 });

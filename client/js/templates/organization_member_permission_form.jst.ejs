@@ -19,13 +19,13 @@
 	<%				
 		if(!_.isEmpty(change_admin)){
 	%>
-	<a class="h6 navbar-btn js-edit-organization-member-permission-to-admin<%  if(parseInt(organization_user.attributes.is_admin) === 1){ %> btn-default <% } %>" data-organizations_user_id="<%- organization_user.organizations_user_id %>" href="#">
-		<span class="show text-primary navbar-btn h5"><%- i18next.t('Owner') %> <%  if(parseInt(organization_user.attributes.is_admin) === 1){ %><i class="icon-check well-sm"></i><%}%></span>
+	<a class="h6 navbar-btn js-edit-organization-member-permission-to-admin<%  if(parseInt(organization_user.organization_user_role_id) === 1){ %> btn-default <% } %>" data-organizations_user_id="<%- organization_user.organizations_user_id %>" href="#">
+		<span class="show text-primary navbar-btn h5"><%- i18next.t('Owner') %> <%  if(parseInt(organization_user.organization_user_role_id) === 1){ %><i class="icon-check well-sm"></i><%}%></span>
 		<span class="show"><%- i18next.t('Can view, create and edit org boards, and change settings for the organization.') %></span>
 	</a>
 	<% } else { %>
-		<a class="h6 navbar-btn<%  if(parseInt(organization_user.attributes.is_admin) === 1){ %> btn-default <% } %>">
-			<span class="show text-primary navbar-btn h5"><%- i18next.t('Owner') %> <%  if(parseInt(organization_user.attributes.is_admin) === 1){ %><i class="icon-check well-sm"></i><%}%></span>
+		<a class="h6 navbar-btn<%  if(parseInt(organization_user.organization_user_role_id) === 1){ %> btn-default <% } %>">
+			<span class="show text-primary navbar-btn h5"><%- i18next.t('Owner') %> <%  if(parseInt(organization_user.organization_user_role_id) === 1){ %><i class="icon-check well-sm"></i><%}%></span>
 			<span class="show"><%- i18next.t('Can view, create and edit org boards, and change settings for the organization.') %></span>
 		</a>
 	<% } %>
@@ -35,13 +35,13 @@
 	<%				
 		if(!_.isEmpty(change_normal)){
 	%>
-	<a class="<%= change_normal %><%  if(parseInt(organization_user.attributes.is_admin) === 0){ %> btn-default <% } %>" data-organizations_user_id="<%- organization_user.organizations_user_id %>" href="#">
-		<span class="show text-primary navbar-btn h5"><%- i18next.t('Member') %> <%  if(parseInt(organization_user.attributes.is_admin) === 0){ %><i class="icon-check well-sm"></i><%}%></span>
+	<a class="<%= change_normal %><%  if(parseInt(organization_user.organization_user_role_id) === 0){ %> btn-default <% } %>" data-organizations_user_id="<%- organization_user.organizations_user_id %>" href="#">
+		<span class="show text-primary navbar-btn h5"><%- i18next.t('Member') %> <%  if(parseInt(organization_user.organization_user_role_id) === 0){ %><i class="icon-check well-sm"></i><%}%></span>
 		<span class="show"><%- i18next.t('Can view, create, and edit org boards, but not change settings.') %></span>
 	</a>
 	<% } else { %>
-	<a class="h6 navbar-btn <%  if(parseInt(organization_user.attributes.is_admin) === 0){ %> btn-default <% } %>">
-		<span class="show text-primary navbar-btn h5"><%- i18next.t('Member') %><%  if(parseInt(organization_user.attributes.is_admin === 0)){ %><i class="icon-check well-sm"></i><%}%></span>
+	<a class="h6 navbar-btn <%  if(parseInt(organization_user.organization_user_role_id) === 0){ %> btn-default <% } %>">
+		<span class="show text-primary navbar-btn h5"><%- i18next.t('Member') %><%  if(parseInt(organization_user.organization_user_role_id === 0)){ %><i class="icon-check well-sm"></i><%}%></span>
 		<span class="show"><%- i18next.t('Can view, create, and edit org boards, but not change settings.') %></span>
 		</a>
 	<% } %>

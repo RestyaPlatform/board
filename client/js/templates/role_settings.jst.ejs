@@ -200,19 +200,19 @@
 										<td class="text-center">
 											<div class="checkbox">
 											<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
-											<label class="js-update-role" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
+											<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
 											</div>
 										</td>
 									<% } else { %>
 											<td class="text-center">
-													<label class="js-update-role" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
+													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
 											</td>
 									<% }
 									} else if(role.attributes.id === "2") {
 										if(acl_link.attributes.is_allow_only_to_user === 0) {
 																					%>
 												<td class="text-center">
-													<label class="js-update-role" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
+													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
 												</td>
 											<%									
 										} else {
@@ -220,7 +220,7 @@
 												<td class="text-center">
 													<div class="checkbox">
 													<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
-													<label class="js-update-role" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
+													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
 													</div>
 												</td>
 											<%									
@@ -229,7 +229,7 @@
 										if((acl_link.attributes.is_allow_only_to_admin === 1 || acl_link.attributes.is_allow_only_to_user === 1) && !_.contains(['User activation', 'View board', 'Card activities'], acl_link.attributes.name)) {
 											%>
 												<td class="text-center">
-													<label class="js-update-role" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
+													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
 												</td>
 											<%									
 										} else {
@@ -237,7 +237,7 @@
 												<td class="text-center">
 													<div class="checkbox">
 													<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
-													<label class="js-update-role" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
+													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
 													</div>
 												</td>
 											<%									
@@ -284,56 +284,40 @@
 								<% 
 								  board_user_roles.each(function(board_user_role) {
 									var is_enabled = acl_board_link.acl_board_links_boards_user_roles.findWhere({
-										role_id: parseInt(board_user_role.attributes.id)
+										board_user_role_id: parseInt(board_user_role.attributes.id)
 									});
 									if(board_user_role.attributes.id === "1") {
-										if(acl_board_link.attributes.is_allow_only_to_admin === 1) {
+										
 									%>
 										<td class="text-center">
 											<div class="checkbox">
 											<input type="checkbox" class="cur" name="acl_link_id[<%- board_user_role.attributes.id %>][<%- acl_board_link.attributes.id %>]" value="<%- acl_board_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"/>
-											<label class="js-update-role" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" for="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"></label>
+											<label class="js-update-role" data-table="acl_board_links_boards_user_roles" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" for="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"></label>
 											</div>
-										</td>
-									<% } else { %>
-											<td class="text-center">
-													<label class="js-update-role" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" for="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>">-</label>
-											</td>
-									<% }
+										</td>									
+									<% 
 									} else if(board_user_role.attributes.id === "2") {
-										if(acl_board_link.attributes.is_allow_only_to_user === 0) {
-																					%>
-												<td class="text-center">
-													<label class="js-update-role" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" for="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>">-</label>
-												</td>
-											<%									
-										} else {
+										
 											%>
 												<td class="text-center">
 													<div class="checkbox">
 													<input type="checkbox" class="cur" name="acl_link_id[<%- board_user_role.attributes.id %>][<%- acl_board_link.attributes.id %>]" value="<%- acl_board_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"/>
-													<label class="js-update-role" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" for="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"></label>
+													<label class="js-update-role" data-table="acl_board_links_boards_user_roles" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" for="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"></label>
 													</div>
 												</td>
 											<%									
-										}
+										
 									} else if(board_user_role.attributes.id === "3") {
-										if((acl_board_link.attributes.is_allow_only_to_admin === 1 || acl_board_link.attributes.is_allow_only_to_user === 1) && !_.contains(['User activation', 'View board', 'Card activities'], acl_board_link.attributes.name)) {
-											%>
-												<td class="text-center">
-													<label class="js-update-role" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" for="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>">-</label>
-												</td>
-											<%									
-										} else {
+										
 											%>
 												<td class="text-center">
 													<div class="checkbox">
 													<input type="checkbox" class="cur" name="acl_link_id[<%- board_user_role.attributes.id %>][<%- acl_board_link.attributes.id %>]" value="<%- acl_board_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"/>
-													<label class="js-update-role" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" for="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"></label>
+													<label class="js-update-role" data-table="acl_board_links_boards_user_roles" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" for="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"></label>
 													</div>
 												</td>
 											<%									
-										}
+										
 									}
 								});%>
 						</tr>
@@ -361,7 +345,7 @@
 						var old_group = '';
 						var group_id = '';
 						acl_organization_links.each(function(acl_organization_link) {
-							acl_organization_link.acl_board_links_boards_user_roles.add(acl_organization_link.attributes.acl_board_links_boards_user_roles);
+							acl_organization_link.acl_organization_links_organizations_user_roles.add(acl_organization_link.attributes.acl_organization_links_organizations_user_roles);
 							group_id = acl_organization_link.attributes.group_id - 1;
 							group = acl_organization_links_groups[group_id];
 							if( group != old_group){
@@ -376,58 +360,41 @@
 								<%- acl_organization_link.attributes.name%>
 							</td>
 								<% 
-								  organization_user_roles.each(function(organization_user_role) {
-									var is_enabled = acl_organization_link.acl_board_links_boards_user_roles.findWhere({
-										role_id: parseInt(organization_user_role.attributes.id)
+								  organization_user_roles.each(function(organization_user_role) {									
+									var is_enabled = acl_organization_link.acl_organization_links_organizations_user_roles.findWhere({
+										organization_user_role_id: parseInt(organization_user_role.attributes.id)
 									});
-									if(organization_user_role.attributes.id === "1") {
-										if(acl_organization_link.attributes.is_allow_only_to_admin === 1) {
+									if(organization_user_role.attributes.id === "1") {										
 									%>
 										<td class="text-center">
 											<div class="checkbox">
 											<input type="checkbox" class="cur" name="acl_link_id[<%- organization_user_role.attributes.id %>][<%- acl_organization_link.attributes.id %>]" value="<%- acl_organization_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"/>
-											<label class="js-update-role" data-acl_link_id="<%- acl_organization_link.attributes.id %>"  data-role_id="<%- organization_user_role.attributes.id %>" for="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"></label>
+											<label class="js-update-role" data-table="acl_organization_links_organizations_user_roles" data-acl_link_id="<%- acl_organization_link.attributes.id %>"  data-role_id="<%- organization_user_role.attributes.id %>" for="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"></label>
 											</div>
 										</td>
-									<% } else { %>
-											<td class="text-center">
-													<label class="js-update-role" data-acl_link_id="<%- acl_organization_link.attributes.id %>"  data-role_id="<%- organization_user_role.attributes.id %>" for="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>">-</label>
-											</td>
-									<% }
+									<%
 									} else if(organization_user_role.attributes.id === "2") {
-										if(acl_organization_link.attributes.is_allow_only_to_user === 0) {
-																					%>
-												<td class="text-center">
-													<label class="js-update-role" data-acl_link_id="<%- acl_organization_link.attributes.id %>"  data-role_id="<%- organization_user_role.attributes.id %>" for="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>">-</label>
-												</td>
-											<%									
-										} else {
+										
 											%>
 												<td class="text-center">
 													<div class="checkbox">
 													<input type="checkbox" class="cur" name="acl_link_id[<%- organization_user_role.attributes.id %>][<%- acl_organization_link.attributes.id %>]" value="<%- acl_organization_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"/>
-													<label class="js-update-role" data-acl_link_id="<%- acl_organization_link.attributes.id %>"  data-role_id="<%- organization_user_role.attributes.id %>" for="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"></label>
+													<label class="js-update-role" data-table="acl_organization_links_organizations_user_roles" data-acl_link_id="<%- acl_organization_link.attributes.id %>"  data-role_id="<%- organization_user_role.attributes.id %>" for="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"></label>
 													</div>
 												</td>
 											<%									
-										}
+										
 									} else if(organization_user_role.attributes.id === "3") {
-										if((acl_organization_link.attributes.is_allow_only_to_admin === 1 || acl_organization_link.attributes.is_allow_only_to_user === 1) && !_.contains(['User activation', 'View board', 'Card activities'], acl_organization_link.attributes.name)) {
-											%>
-												<td class="text-center">
-													<label class="js-update-role" data-acl_link_id="<%- acl_organization_link.attributes.id %>"  data-role_id="<%- organization_user_role.attributes.id %>" for="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>">-</label>
-												</td>
-											<%									
-										} else {
+										
 											%>
 												<td class="text-center">
 													<div class="checkbox">
 													<input type="checkbox" class="cur" name="acl_link_id[<%- organization_user_role.attributes.id %>][<%- acl_organization_link.attributes.id %>]" value="<%- acl_organization_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"/>
-													<label class="js-update-role" data-acl_link_id="<%- acl_organization_link.attributes.id %>"  data-role_id="<%- organization_user_role.attributes.id %>" for="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"></label>
+													<label class="js-update-role" data-table="acl_organization_links_organizations_user_roles" data-acl_link_id="<%- acl_organization_link.attributes.id %>"  data-role_id="<%- organization_user_role.attributes.id %>" for="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"></label>
 													</div>
 												</td>
 											<%									
-										}
+										
 									}
 								});%>
 						</tr>

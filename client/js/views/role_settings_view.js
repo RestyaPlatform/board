@@ -70,7 +70,8 @@ App.RoleSettingsView = Backbone.View.extend({
         var self = $(e.target);
         var data = {
             'acl_link_id': self.data('acl_link_id'),
-            'role_id': self.data('role_id')
+            'role_id': self.data('role_id'),
+			'table': self.data('table')
         };
         var role_setting = new App.RoleSetting();
         role_setting.set(data);

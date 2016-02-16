@@ -1050,6 +1050,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 					while ($row = pg_fetch_assoc($acl_links_result)) {
 						$obj['acl_links'][] = json_decode($row['row_to_json'], true);
 					}
+					$organization_user_roles_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organization_user_roles) as d';
+					$organization_user_roles_result = pg_query_params($db_lnk, $organization_user_roles_sql, array());
+					$obj['organization_user_roles'] = array();
+					while ($row = pg_fetch_assoc($organization_user_roles_result)) {
+						$obj['organization_user_roles'][] = json_decode($row['row_to_json'], true);
+					}
 				}
                 if (!empty($_metadata)) {
                     $data['data'][] = $obj;
@@ -2252,24 +2258,29 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         break;
 
     case '/acl_links':
-        $table_name = 'acl_links_roles';
+        $table_name = $r_post['table'];
+		$colmns = array(
+			'acl_links_roles'=>array('acl_link_id','role_id'),
+			'acl_board_links_boards_user_roles'=>array('acl_board_link_id','board_user_role_id'),
+			'acl_organization_links_organizations_user_roles'=>array('acl_organization_link_id','organization_user_role_id')
+		);		
         $qry_val_arr = array(
             $r_post['acl_link_id'],
             $r_post['role_id']
         );
-        $acl = executeQuery('SELECT * FROM ' . $table_name . ' WHERE acl_link_id = $1 AND role_id = $2', $qry_val_arr);
+        $acl = executeQuery('SELECT * FROM ' . $table_name . ' WHERE ' . $colmns[$table_name][0] . ' = $1 AND ' . $colmns[$table_name][1] . ' = $2', $qry_val_arr);
         if ($acl) {
             $qry_val_arr = array(
                 $r_post['acl_link_id'],
                 $r_post['role_id']
             );
-            pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE acl_link_id = $1 AND role_id = $2', $qry_val_arr);
+            pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE ' . $colmns[$table_name][0] . ' = $1 AND ' . $colmns[$table_name][1] . ' = $2', $qry_val_arr);
         } else {
             $qry_val_arr = array(
                 $r_post['acl_link_id'],
                 $r_post['role_id']
             );
-            pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, acl_link_id, role_id) VALUES(now(), now(), $1, $2)', $qry_val_arr);
+            pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, ' . $colmns[$table_name][0] . ', ' . $colmns[$table_name][1] . ') VALUES(now(), now(), $1, $2)', $qry_val_arr);
         }
         break;
 

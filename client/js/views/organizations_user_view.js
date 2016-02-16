@@ -186,7 +186,9 @@ App.OrganizationsUserView = Backbone.View.extend({
         var organizationsUser = this.model.organizations_users.findWhere({
             id: parseInt(organizations_user_id)
         });
+		organizationsUser.organization_user_role_id = this.model.organization_user_role_id;	
         organizationsUser.organizations_user_id = organizations_user_id;
+		organizationsUser.organization_user_roles = this.model.organization_user_roles;
         $('.js-show-organization-member-permission-form-response').html(new App.OrganizationMemberPermissionFormView({
             model: organizationsUser
         }).el);

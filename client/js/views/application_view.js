@@ -405,6 +405,7 @@ App.ApplicationView = Backbone.View.extend({
                     });
                 } else {
                     Organization.boards.add(Organization.attributes.boards_listing);
+					Organization.organization_user_roles = response.organization_user_roles;
                     $('#content').html(new App.OrganizationsView({
                         model: Organization,
                         type: self.page_view_type
