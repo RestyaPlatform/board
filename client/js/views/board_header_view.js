@@ -1559,12 +1559,12 @@ App.BoardHeaderView = Backbone.View.extend({
         list.set('id', list_id);
         list.set('is_archived', 0);
         list.url = api_url + 'boards/' + this.model.attributes.id + '/lists/' + list_id + '.json';
-		self.model.attributes.lists.forEach(function(list) {
-			if (list.id === parseInt(list_id)) {
-				list.is_archived = 0;
-			}
-		});
-		list.save({
+        self.model.attributes.lists.forEach(function(list) {
+            if (list.id === parseInt(list_id)) {
+                list.is_archived = 0;
+            }
+        });
+        list.save({
             success: function(model, response) {}
         });
         return false;

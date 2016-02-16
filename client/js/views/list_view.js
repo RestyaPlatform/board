@@ -138,18 +138,18 @@ App.ListView = Backbone.View.extend({
         }
         App.boards.get(this.model.attributes.board_id).lists.get(this.model.attributes.id).set('position', this.model.attributes.position);
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.id + '.json';
-		var list_id = this.model.attributes.id;
-		var list_position = this.model.attributes.position;
+        var list_id = this.model.attributes.id;
+        var list_position = this.model.attributes.position;
         this.model.save({
             position: this.model.attributes.position
         }, {
             patch: true,
             success: function(model, response) {
-				self.model.attributes.lists.forEach(function(list) {
-					if (list.id === parseInt(list_id)) {
-						list.position = list_position;
-					}
-				});
+                self.model.attributes.lists.forEach(function(list) {
+                    if (list.id === parseInt(list_id)) {
+                        list.position = list_position;
+                    }
+                });
             }
         });
     },
@@ -223,7 +223,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     editList: function(e) {
-		var self = this;
+        var self = this;
         var list_id = self.model.id;
         var bool = $('.js-list-subscribed-' + list_id).hasClass('hide');
         var data = $(e.target).serializeObject();
@@ -231,14 +231,14 @@ App.ListView = Backbone.View.extend({
         self.model.save(data, {
             patch: true,
             success: function(model, response) {
-				self.model.collection.board.attributes.lists.forEach(function(list) {
-					if (list.id === parseInt(list_id)) {
-						list.name = data.name;
-					}
-				});
+                self.model.collection.board.attributes.lists.forEach(function(list) {
+                    if (list.id === parseInt(list_id)) {
+                        list.name = data.name;
+                    }
+                });
             }
         });
-		if (bool) {
+        if (bool) {
             $('.js-list-subscribed-' + list_id).addClass('hide');
         } else {
             $('.js-list-subscribed-' + list_id).removeClass('hide');
@@ -328,11 +328,11 @@ App.ListView = Backbone.View.extend({
         }, {
             patch: true,
             success: function(model, response) {
-				self.board.attributes.lists.forEach(function(list, index) {
-					if (list.id === parseInt(list_id)) {
-						list.is_archived = 1;
-					}
-				});
+                self.board.attributes.lists.forEach(function(list, index) {
+                    if (list.id === parseInt(list_id)) {
+                        list.is_archived = 1;
+                    }
+                });
                 self.board.activities.unshift(response.activity);
             }
         });
@@ -379,11 +379,11 @@ App.ListView = Backbone.View.extend({
         this.model.url = api_url + 'boards/' + self.board.id + '/lists/' + list_id + '.json';
         this.model.destroy({
             success: function(model, response) {
-				self.board.attributes.lists.forEach(function(list, index) {
-					if (list.id === parseInt(list_id)) {
-						self.board.attributes.lists.splice(index, 1);
-					}
-				});
+                self.board.attributes.lists.forEach(function(list, index) {
+                    if (list.id === parseInt(list_id)) {
+                        self.board.attributes.lists.splice(index, 1);
+                    }
+                });
                 self.board.activities.unshift(response.activity);
             }
         });
@@ -520,11 +520,11 @@ App.ListView = Backbone.View.extend({
         this.model.save(data, {
             patch: true,
             success: function(model, response) {
-				self.model.attributes.lists.forEach(function(list) {
-					if (list.id === parseInt(list_id)) {
-						list.position = data.position;
-					}
-				});
+                self.model.attributes.lists.forEach(function(list) {
+                    if (list.id === parseInt(list_id)) {
+                        list.position = data.position;
+                    }
+                });
             }
         });
         this.closePopup(e);
@@ -559,11 +559,11 @@ App.ListView = Backbone.View.extend({
             list_subscribe.save({
                 is_subscribed: 1
             });
-			this.model.attributes.lists_subscribers.forEach(function(list) {
-				if (list.user_id === parseInt(authuser.user.id)) {
-					list.is_subscribed = 1;
-				}
-			});
+            this.model.attributes.lists_subscribers.forEach(function(list) {
+                if (list.user_id === parseInt(authuser.user.id)) {
+                    list.is_subscribed = 1;
+                }
+            });
         } else {
             list_subscribe.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '/list_subscribers/' + subscribe_id + '.json';
             list_subscribe.save({
@@ -598,17 +598,17 @@ App.ListView = Backbone.View.extend({
             list_subscribe.save({
                 is_subscribed: 0
             });
-			this.model.attributes.lists_subscribers.forEach(function(list) {
-				if (list.user_id === parseInt(authuser.user.id)) {
-					list.is_subscribed = 0;
-				}
-			});
+            this.model.attributes.lists_subscribers.forEach(function(list) {
+                if (list.user_id === parseInt(authuser.user.id)) {
+                    list.is_subscribed = 0;
+                }
+            });
         } else {
-			this.model.attributes.lists_subscribers.forEach(function(list) {
-				if (list.user_id === parseInt(authuser.user.id)) {
-					list.is_subscribed = 0;
-				}
-			});			
+            this.model.attributes.lists_subscribers.forEach(function(list) {
+                if (list.user_id === parseInt(authuser.user.id)) {
+                    list.is_subscribed = 0;
+                }
+            });
             list_subscribe.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '/list_subscribers/' + subscribe_id + '.json';
             list_subscribe.save({
                 id: parseInt(subscribe_id),
