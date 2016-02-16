@@ -73,7 +73,8 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-board-visibility': 'showBoardVisibility',
         'click .js-add-board-member-dropdown': 'addBoardMemberDropdown',
         'click .js-close-popover-board-member-dropdown': 'closeBoardMemberDropdown',
-        'click .js-subscribe-board': 'subcribeBoard',
+        'click .js-show-subscribe-form': 'showSubscribeForm',
+        'click .js-show-unsubscribe-form': 'showUnsubscribeForm',
         'click .js-switch-grid-view': 'switchGridView',
         'click .js-switch-list-view': 'switchListView',
         'click .js-switch-calendar-view': 'switchCalendarView',
@@ -227,52 +228,16 @@ App.BoardHeaderView = Backbone.View.extend({
      * @return false
      *
      */
-    subcribeBoard: function(e) {
-        e.preventDefault();
-        var name = $(e.currentTarget).attr('name');
-        var value = 'unsubscribe';
-        var content = '<i class="icon-eye-close"></i>' + i18next.t('Unsubscribe');
-        if (name == 'unsubscribe') {
-            value = 'subscribe';
-            content = '<i class="icon-eye-open"></i>' + i18next.t('Subscribe');
-        }
-        $(e.currentTarget).attr('name', value);
-        $(e.currentTarget).attr('title', value);
-        $(e.currentTarget).html(content);
-        var boardSubscriber = new App.BoardSubscriber();
-        if (!_.isUndefined(this.model.board_subscriber) && this.model.board_subscriber.attributes.id) {
-            value = '';
-            if ($('#inputBoardSubscribe').val() == 'false') {
-                value = 'true';
-                $('#inputBoardSubscribe').val(value);
-            } else {
-                value = 'false';
-                $('#inputBoardSubscribe').val(value);
-            }
-            var data = $('form#BoardSubscribeForm').serializeObject();
-            boardSubscriber.url = api_url + 'boards/' + this.model.id + '/board_subscribers/' + this.model.board_subscriber.attributes.id + '.json';
-            boardSubscriber.set('id', this.model.board_subscriber.attributes.id);
-            boardSubscriber.save(data, {
-                success: function(model, response) {}
-            });
-        } else {
-            var subscribe_data = {
-                board_id: this.model.id,
-                is_subscribed: 1
-            };
-            var self = this;
-            boardSubscriber.url = api_url + 'boards/' + this.model.id + '/board_subscribers.json';
-            boardSubscriber.save(subscribe_data, {
-                success: function(model, response) {
-                    boardSubscriber.set('id', parseInt(response.id));
-                    boardSubscriber.set('user_id', parseInt(response.user_id));
-                    boardSubscriber.set('board_id', parseInt(response.board_id));
-                    self.model.board_subscriber = boardSubscriber;
-                    self.model.board_subscribers.add(boardSubscriber);
-                    self.render();
-                }
-            });
-        }
+    showSubscribeForm: function(e) {
+        $('.js-setting-response').html(new App.SubscribeBoardConfirmView({
+            model: this.model,
+        }).el);
+        return false;
+    },
+    showUnsubscribeForm: function(e) {
+        $('.js-setting-response').html(new App.UnsubscribeBoardConfirmView({
+            model: this.model,
+        }).el);
         return false;
     },
     /**

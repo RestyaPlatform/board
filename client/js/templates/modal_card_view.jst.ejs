@@ -434,7 +434,17 @@
 				</li>
 			<% } %>
 			<% if(!_.isEmpty(role_links.where({slug: "subscribe_card"}))){ %>
-			    <li> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- i18next.t('Subscribe') %> " href=""><%- i18next.t('Subscribe') %>
+				<%
+					var subscribe_disabled = '';
+					var subscribed = card.list.collection.board.board_subscribers.findWhere({
+						user_id: parseInt(authuser.user.id),
+						is_subscribed: 1
+					}); 
+					if (subscribed) {
+						subscribe_disabled = 'disabled';
+					}
+				%>
+			    <li class="<%= subscribe_disabled %>"> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- i18next.t('Subscribe') %> " href=""><%- i18next.t('Subscribe') %>
 		       <% if(!_.isEmpty(cards_subscribers)){ %>
 			    <i class="icon-ok"></i>
 		      <% } %>
