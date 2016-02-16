@@ -65,7 +65,7 @@ CREATE OR REPLACE VIEW "users_listing" AS
            FROM ( SELECT boards_users.id,
                     boards_users.board_id,
                     boards_users.user_id,
-                    boards_users.is_admin,
+                    boards_users.board_user_role_id,
                     boards.name,
                     boards.background_picture_url,
                     boards.background_pattern_url,
@@ -695,7 +695,7 @@ CREATE OR REPLACE VIEW "boards_listing" AS
                     boards_users.modified,
                     boards_users.board_id,
                     boards_users.user_id,
-                    boards_users.is_admin::boolean::int,
+                    boards_users.board_user_role_id::boolean::int,
                     boards_users.username,
                     boards_users.email,
                     boards_users.full_name,
@@ -978,7 +978,7 @@ CREATE OR REPLACE VIEW "organizations_listing" AS
                     organizations_users_listing.modified,
                     organizations_users_listing.user_id,
                     organizations_users_listing.organization_id,
-                    organizations_users_listing.is_admin::boolean::int,
+                    organizations_users_listing.organization_user_role_id,
                     organizations_users_listing.role_id,
                     organizations_users_listing.username,
                     organizations_users_listing.email,
@@ -1022,7 +1022,7 @@ CREATE OR REPLACE VIEW "organizations_users_listing" AS
     organizations_users.modified,
     organizations_users.user_id,
     organizations_users.organization_id,
-    (organizations_users.is_admin)::integer AS is_admin,
+    organizations_users.organization_user_role_id,
     users.role_id,
     users.username,
     users.email,
@@ -1051,7 +1051,7 @@ CREATE OR REPLACE VIEW "organizations_users_listing" AS
            FROM ( SELECT boards_users.id,
                     boards_users.board_id,
                     boards_users.user_id,
-                    boards_users.is_admin::boolean::int,
+                    boards_users.board_user_role_id::boolean::int,
                     boards.name
                    FROM (boards_users boards_users
               JOIN boards ON ((boards.id = boards_users.board_id)))
@@ -1119,7 +1119,7 @@ CREATE OR REPLACE VIEW "simple_board_listing" AS
            FROM ( SELECT bu.id,
                     bu.board_id,
                     bu.user_id,
-                    bu.is_admin::boolean::int
+                    bu.board_user_role_id::boolean::int
                    FROM boards_users bu
                   WHERE (bu.board_id = board.id)
                   ORDER BY bu.id) l) AS users,
@@ -1181,7 +1181,7 @@ CREATE OR REPLACE VIEW "users_listing" AS
            FROM ( SELECT boards_users.id,
                     boards_users.board_id,
                     boards_users.user_id,
-                    boards_users.is_admin::boolean::int,
+                    boards_users.board_user_role_id::boolean::int,
                     boards.name,
                     boards.background_picture_url,
                     boards.background_pattern_url,
@@ -1434,7 +1434,7 @@ CREATE OR REPLACE VIEW "boards_listing" AS
                     boards_users.modified,
                     boards_users.board_id,
                     boards_users.user_id,
-                    ((boards_users.is_admin)::boolean)::integer AS is_admin,
+                    ((boards_users.board_user_role_id)::boolean)::integer AS board_user_role_id,
                     boards_users.username,
                     boards_users.email,
                     boards_users.full_name,
@@ -1498,7 +1498,7 @@ DROP VIEW "simple_board_listing" CASCADE;
 
 ALTER TABLE "boards_users" DROP "is_admin";
 
-ALTER TABLE "boards_users" ADD "board_user_role_id" boolean NOT NULL DEFAULT '1';
+ALTER TABLE "boards_users" ADD "board_user_role_id" smallint NOT NULL DEFAULT '0';
 
 CREATE OR REPLACE VIEW boards_users_listing AS
  SELECT bu.id,
@@ -1506,7 +1506,7 @@ CREATE OR REPLACE VIEW boards_users_listing AS
     bu.modified,
     bu.board_id,
     bu.user_id,
-    (bu.board_user_role_id)::integer AS board_user_role_id,
+    bu.board_user_role_id,
     u.username,
     u.email,
     u.full_name,
@@ -1637,7 +1637,7 @@ CREATE OR REPLACE VIEW boards_listing AS
                     boards_users.modified,
                     boards_users.board_id,
                     boards_users.user_id,
-                    ((boards_users.board_user_role_id)::boolean)::integer AS board_user_role_id,
+                    boards_users.board_user_role_id,
                     boards_users.username,
                     boards_users.email,
                     boards_users.full_name,
@@ -1661,7 +1661,7 @@ CREATE OR REPLACE VIEW organizations_users_listing AS
     organizations_users.modified,
     organizations_users.user_id,
     organizations_users.organization_id,
-    (organizations_users.is_admin)::integer AS is_admin,
+    organizations_users.organization_user_role_id,
     users.role_id,
     users.username,
     users.email,
@@ -1690,7 +1690,7 @@ CREATE OR REPLACE VIEW organizations_users_listing AS
            FROM ( SELECT boards_users.id,
                     boards_users.board_id,
                     boards_users.user_id,
-                    (boards_users.board_user_role_id)::integer AS board_user_role_id,
+                    boards_users.board_user_role_id,
                     boards.name
                    FROM (boards_users boards_users
               JOIN boards ON ((boards.id = boards_users.board_id)))
@@ -1756,7 +1756,7 @@ CREATE OR REPLACE VIEW organizations_listing AS
                     organizations_users_listing.modified,
                     organizations_users_listing.user_id,
                     organizations_users_listing.organization_id,
-                    ((organizations_users_listing.is_admin)::boolean)::integer AS is_admin,
+                    organizations_users_listing.organization_user_role_id,
                     organizations_users_listing.role_id,
                     organizations_users_listing.username,
                     organizations_users_listing.email,
@@ -1844,7 +1844,7 @@ CREATE OR REPLACE VIEW users_listing AS
            FROM ( SELECT boards_users.id,
                     boards_users.board_id,
                     boards_users.user_id,
-                    (boards_users.board_user_role_id)::integer AS board_user_role_id,
+                    boards_users.board_user_role_id,
                     boards.name,
                     boards.background_picture_url,
                     boards.background_pattern_url,
@@ -1937,7 +1937,7 @@ CREATE OR REPLACE VIEW simple_board_listing AS
            FROM ( SELECT bu.id,
                     bu.board_id,
                     bu.user_id,
-                    (bu.board_user_role_id)::integer AS board_user_role_id
+                    bu.board_user_role_id,
                    FROM boards_users bu
                   WHERE (bu.board_id = board.id)
                   ORDER BY bu.id) l) AS users,
