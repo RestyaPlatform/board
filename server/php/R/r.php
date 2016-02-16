@@ -1402,7 +1402,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 $file = $_FILES['attachment'];
                 $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
-                if (move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
+                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
                     $profile_picture_path = $save_path . DIRECTORY_SEPARATOR . $file['name'];
                     foreach ($thumbsizes['User'] as $key => $value) {
                         $mediadir = APP_PATH . '/client/img/' . $key . '/User/' . $r_resource_vars['users'];
@@ -1684,7 +1684,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 $file = $_FILES['attachment'];
                 $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
-                if (move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
+                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
                     $r_post['name'] = $file['name'];
                     foreach ($thumbsizes['Board'] as $key => $value) {
                         $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Board' . DIRECTORY_SEPARATOR . $r_resource_vars['boards'];
@@ -1843,7 +1843,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 mkdir($mediadir, 0777, true);
             }
             $file = $_FILES['attachment'];
-            if (move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
+            if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
                 $r_post['path'] = $save_path . '/' . $file['name'];
                 $r_post['name'] = $file['name'];
                 $r_post['mimetype'] = $file['type'];
@@ -1874,7 +1874,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (!file_exists($mediadir)) {
                     mkdir($mediadir, 0777, true);
                 }
-                if (move_uploaded_file($file['tmp_name'][$i], $mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
+                if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
                     $r_post[$i]['path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'][$i];
                     $r_post[$i]['name'] = $file['name'][$i];
                     $r_post[$i]['mimetype'] = $file['type'][$i];
@@ -2189,7 +2189,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 $file = $_FILES['attachment'];
                 $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
-                if (move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
+                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
                     $logo_url = $save_path . DIRECTORY_SEPARATOR . $file['name'];
                     foreach ($thumbsizes['Organization'] as $key => $value) {
                         $list = glob(APP_PATH . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'] . '.*');
