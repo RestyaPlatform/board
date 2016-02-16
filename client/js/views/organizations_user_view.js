@@ -51,18 +51,9 @@ App.OrganizationsUserView = Backbone.View.extend({
      */
     render: function() {
         this.model.organizations_users.showImage = this.showImage;
-        this.is_admin = false;
-        if (!_.isUndefined(authuser.user)) {
-            var admin = this.model.organizations_users.findWhere({
-                user_id: parseInt(authuser.user.id),
-                is_admin: 1
-            });
-            this.is_admin = (!_.isEmpty(admin) || (!_.isUndefined(authuser.user) && parseInt(authuser.user.role_id) === 1)) ? true : false;
-        }
         this.$el.html(this.template({
             organization: this.model,
             organizations_users: this.model.organizations_users,
-            is_admin: this.is_admin
         }));
         this.showTooltip();
         return this;
@@ -189,6 +180,7 @@ App.OrganizationsUserView = Backbone.View.extend({
 		organizationsUser.organization_user_role_id = this.model.organization_user_role_id;	
         organizationsUser.organizations_user_id = organizations_user_id;
 		organizationsUser.organization_user_roles = this.model.organization_user_roles;
+		organizationsUser.acl_links = this.model.acl_links;
         $('.js-show-organization-member-permission-form-response').html(new App.OrganizationMemberPermissionFormView({
             model: organizationsUser
         }).el);
