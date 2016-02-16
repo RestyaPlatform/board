@@ -151,10 +151,13 @@
 				case "${answer}" in
 					[Yy])
 					echo "Installing PHP..."
-					apt-get install -y php5 php5-fpm php5-common
-					service php5-fpm start
+					apt-get install -y php5 php5-common
 				esac
 			fi
+			
+			echo "Installing PHP fpm and cli extension..."
+			apt-get install -y php5-fpm php5-cli
+			service php5-fpm start
 			
 			echo "Checking PHP curl extension..."
 			php -m | grep curl
