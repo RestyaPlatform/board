@@ -54,8 +54,7 @@ App.OrganizationsView = Backbone.View.extend({
     events: {
         'click .js-close-popover': 'closePopup',
         'click .js-get-organization-member-lists': 'getOrganizationMemberLists',
-        'click .js-edit-organization-member-permission-to-admin': 'editOrganizationMemberPermissionToAdmin',
-        'click .js-edit-organization-member-permission-to-normal': 'editOrganizationMemberPermissionToNormal',
+        'click .js-edit-organization-member-permission': 'editOrganizationMemberPermission',
         'click .js-trigger-logo-upload': 'triggerLogoUpload',
         'change .js-edit-organization-logo': 'editOrganizationLogo',
         'click .js-show-confirm-delete-organization-member': 'showConfirmDeleteOrganizationMember',
@@ -141,56 +140,30 @@ App.OrganizationsView = Backbone.View.extend({
             model: this.model
         }).el);
     },
-    /**
-     * editOrganizationMemberPermissionToNormal()
-     * change organization member permission to normal
+	/**
+     * editOrganizationMemberPermission()
+     * change organization member permission
      * @param e
      * @type Object(DOM event)
      * @return false
      */
-    editOrganizationMemberPermissionToNormal: function(e) {
+    editOrganizationMemberPermission: function(e) {
         var self = this;
         var target = $(e.currentTarget);
         var organizations_user_id = target.data('organizations_user_id');
-        $('.js-change-permission-content-' + organizations_user_id).html('Normal');
+        //$('.js-change-permission-content-' + organizations_user_id).html('Normal');
         target.parents('li.dropdown').removeClass('open');
         var organizationsUser = new App.OrganizationsUser();
         organizationsUser.url = api_url + 'organizations_users/' + organizations_user_id + '.json';
         organizationsUser.set('id', organizations_user_id);
-        organizationsUser.set('is_admin', 0);
-        this.model.organizations_users.get(parseInt(organizations_user_id)).set('is_admin', 0);
+        organizationsUser.set('organization_user_role_id', target.data('organization_user_role_id'));
+        this.model.organizations_users.get(parseInt(organizations_user_id)).set('organization_user_role_id', target.data('organization_user_role_id'));
         self.getOrganizationMemberLists();
         organizationsUser.save({
-            is_admin: 0
+            organization_user_role_id: target.data('organization_user_role_id')
         });
         return false;
     },
-    /**
-     * editOrganizationMemberPermissionToAdmin()
-     * change organization member permission to admin
-     * @param e
-     * @type Object(DOM event)
-     * @return false
-     */
-    editOrganizationMemberPermissionToAdmin: function(e) {
-        var self = this;
-        var target = $(e.currentTarget);
-        var organizations_user_id = target.data('organizations_user_id');
-        $('.js-change-permission-content-' + organizations_user_id).html('Admin');
-        target.parents('li.dropdown').removeClass('open');
-        var organizationsUser = new App.OrganizationsUser();
-        organizationsUser.url = api_url + 'organizations_users/' + organizations_user_id + '.json';
-        organizationsUser.set('id', organizations_user_id);
-        organizationsUser.set('is_admin', 1);
-        this.model.organizations_users.get(parseInt(organizations_user_id)).set('is_admin', 1);
-        self.getOrganizationMemberLists();
-        organizationsUser.save({
-            is_admin: 1
-        });
-
-        return false;
-    },
-
     /**
      * getOrganizationMemberLists()
      * display organization members list
