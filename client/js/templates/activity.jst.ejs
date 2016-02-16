@@ -94,7 +94,7 @@
 							<li><a title="Edit" class="js-show-edit-activity js-edit-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"  data-activity-temp-id="<%- activity.attributes.temp_id %>"><i class="icon-edit"></i><%- i18next.t("Edit") %></a></li>
 						<% } %> 
 							<li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-repeat"></i><%- i18next.t("Reply") %></a></li>
-						<% if(!_.isEmpty(role_links.where({slug: "delete_comment"}))){ %>								
+						<% if(!_.isEmpty(board.acl_links.where({slug: "delete_comment"}))){ %>
 								<li class="dropdown">
 									<a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete" data-toggle="dropdown" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-remove"></i><%- i18next.t("Delete") %></a>
 									<ul class="dropdown-menu arrow arrow-right">

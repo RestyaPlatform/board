@@ -75,7 +75,8 @@ App.ActivityView = Backbone.View.extend({
             activity: this.model,
             type: this.type,
             converter: this.converter,
-            current_user_can_undo_it: current_user_can_undo_it
+            current_user_can_undo_it: current_user_can_undo_it,
+			board: this.board
         }));
         if (!_.isEmpty(this.model)) {
             this.$el.addClass('js-list-activity-' + this.model.attributes.id);
