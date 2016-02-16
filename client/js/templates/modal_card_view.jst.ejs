@@ -151,9 +151,7 @@
 				  </form>
 				  <% }%>
 				</div>
-				<% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "view_checklist_listing",board_user_role_id: parseInt(list.board_user_role_id)}))){ %>
-					<div id="js-card-checklists"></div>
-				<% } %>
+				<div id="js-card-checklists"></div>
 				<% if(!_.isEmpty(card.attachments)){ %>
 				<div class="list-group-item-heading clearfix">
 				  <h3 class="pull-left"> <span class="pull-left"><i class="icon-paper-clip lead"></i></span><%- i18next.t('Attachment') %></h3>
@@ -288,9 +286,7 @@
 				<li class="col-xs-12 divider"><hr></li>
 			  </ul>
 			  <div class="text-center clearfix hide" id="js-loader-img"><img src="img/select2-spinner.gif" alt="[Images:Loader]" title="<%- i18next.t('Loading...') %>" /></div>
-			  <% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "view_card_activities",board_user_role_id: parseInt(list.board_user_role_id)}))){ %>
-				<ul class="media-list col-xs-12 clearfix btn-block" id="js-card-activities-<%= card.attributes.id%>"></ul>
-			  <%  } %> 
+				<ul class="media-list col-xs-12 clearfix btn-block" id="js-card-activities-<%= card.attributes.id%>"></ul>			  
 			</div>
 			</li>
 		  </ul>
