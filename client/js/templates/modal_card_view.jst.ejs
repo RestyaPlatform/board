@@ -470,10 +470,10 @@
 			  <% } }%>
 			</li>
 		 <% } %>
-			<li> <a class="panel-heading show <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else{ %> js-card-send-to-board<% } %>" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else{ %><%- i18next.t('Send to board') %><%}%>" href="">
+			<li> <a class="panel-heading show <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)}))){ %> js-card-send-to-board<% } %>" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)}))){ %><%- i18next.t('Send to board') %><%}%>" href="">
 		      <% if(parseInt(card.attributes.is_archived) === 0){ %>
 			      <%- i18next.t('Archive') %>
-		      <% }else{ %>
+		      <% }else if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)}))){ %>
 				  <%- i18next.t('Send to board') %>
 		      <% } %>
 				</a> 
