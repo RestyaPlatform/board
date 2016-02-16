@@ -38,11 +38,10 @@ App.BoardHeaderView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
-        this.model.lists.bind('remove', this.showArchivedListLists, this);
-        this.model.cards.bind('add', this.renderCardsCollection);
+        this.model.lists.bind('change:name', this.showArchivedListLists, this);
         this.model.lists.bind('change:is_archived', this.showArchivedListLists, this);
+        this.model.lists.bind('remove', this.showArchivedListLists, this);
         this.model.cards.bind('change:name', this.showArchivedCardsList, this);
-        this.model.cards.bind('change:due_date', this.showArchivedCardsList, this);
         this.model.cards.bind('change:is_archived', this.showArchivedCardsList, this);
         this.model.cards.bind('remove', this.showArchivedCardsList, this);
         this.model.bind('change:organization_id', this.render, this);
@@ -1592,6 +1591,11 @@ App.BoardHeaderView = Backbone.View.extend({
         list.set('id', list_id);
         list.set('is_archived', 0);
         list.url = api_url + 'boards/' + this.model.attributes.id + '/lists/' + list_id + '.json';
+        self.model.attributes.lists.forEach(function(list) {
+            if (list.id === parseInt(list_id)) {
+                list.is_archived = 0;
+            }
+        });
         list.save({
             success: function(model, response) {}
         });

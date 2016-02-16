@@ -49,6 +49,7 @@ App.BoardView = Backbone.View.extend({
         this.model.bind('change:background_color change:background_picture_url change:background_pattern_url', this.setBoardBackground);
         this.model.bind('change:music_content', this.musical);
         this.model.lists.bind('add', this.renderListsCollection);
+        this.model.lists.bind('change:name', this.renderListsCollection);
         this.model.lists.bind('change:position', this.renderListsCollection);
         this.model.lists.bind('change:is_archived', this.renderListsCollection, this);
         this.model.lists.bind('change:comment_count', this.renderListsCollection, this);
@@ -802,7 +803,7 @@ App.BoardView = Backbone.View.extend({
                         model: list,
                         attributes: {
                             'data-list_id': list.attributes.id
-                        },
+                        }
                     });
                     if (view_list.length > 0) {
                         view_list.before(view.render().el);
@@ -1035,6 +1036,7 @@ App.BoardView = Backbone.View.extend({
         list.url = api_url + 'boards/' + self.model.id + '/lists.json';
         list.save(data, {
             success: function(model, response, options) {
+                self.model.attributes.lists.push(list);
                 if (!_.isUndefined(data.clone_list_id)) {
                     if (!_.isUndefined(response.list.labels) && response.list.labels.length > 0) {
                         self.model.labels.add(response.list.labels, {
