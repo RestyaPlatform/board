@@ -207,7 +207,7 @@
 						</div>
 					</li>
 				  <% } %>
-				  <%if(!_.isUndefined(authuser.user)) {%> 
+				  <%if(!_.isUndefined(authuser.user) && (!_.isEmpty(board.acl_links.where({slug: "view_board_subscribers",board_user_role_id: parseInt(board.board_user_role_id)})))) {%> 
 					  <li class="navbar-btn right-mar">
 						<form name="BoardSubscribeForm" id="BoardSubscribeForm">
 						  <input id="inputBoardSubscribe" name="is_subscribed" type="hidden" value=" <% if(!_.isUndefined(subscriber)) { %> <%- subscriber.attributes.is_subscribed %><%}else{%>0<%}%>">

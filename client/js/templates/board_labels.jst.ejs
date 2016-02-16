@@ -11,8 +11,8 @@
 	<% 
 	board.labels.each(function(label) { %>    
 		<li class="clearfix cur card-label-show h5 btn-link media">
-			<span style="background:#<%- converter.colorCode(label.attributes.name).substring(0, 6) %>;color:#ffffff" class="pull-left btn btn-xs"><i class="<%= LABEL_ICON %> icon-light"></i></span><div class="htruncate"><%-label.attributes.name %></div><div><a data-id="<%- label.attributes.label_id %>" class="js-delete-labels btn  btn-primary pull-right">
-			<%- i18next.t("Delete") %></a></div> 
+			<span style="background:#<%- converter.colorCode(label.attributes.name).substring(0, 6) %>;color:#ffffff" class="pull-left btn btn-xs"><i class="<%= LABEL_ICON %> icon-light"></i></span><div class="htruncate"><%-label.attributes.name %></div><% if (!_.isEmpty(board.acl_links.where({slug: 'delete_labels', board_user_role_id: parseInt(board.board_user_role_id)}))) {%><div><a data-id="<%- label.attributes.label_id %>" class="js-delete-labels btn  btn-primary pull-right">
+			<%- i18next.t("Delete") %></a></div><% } %> 
 		</li> 
 	<% }); %>
 	</ul>

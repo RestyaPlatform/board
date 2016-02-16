@@ -96,6 +96,12 @@ App.CardView = Backbone.View.extend({
             this.model.cards_subscribers.bind('remove', this.render);
             this.model.card_voters.bind('add', this.render);
             this.model.card_voters.bind('remove', this.render);
+			var board_user_role_id = this.model.board_users.findWhere({
+				user_id: parseInt(authuser.user.id)
+			});
+			if (!_.isEmpty(board_user_role_id)) {
+				this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+			}
         }
     },
     className: 'panel js-show-modal-card-view js-board-list-card cur',

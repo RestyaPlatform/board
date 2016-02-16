@@ -825,7 +825,8 @@ App.FooterView = Backbone.View.extend({
                         }
                         var view = new App.ActivityView({
                             model: activity,
-                            type: 'all'
+                            type: 'all',
+                            board: self.board
                         });
                         if (mode == 1) {
                             view_activity.prepend(view.render().el).find('.timeago').timeago();

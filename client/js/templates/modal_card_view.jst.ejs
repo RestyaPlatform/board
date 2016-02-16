@@ -151,7 +151,9 @@
 				  </form>
 				  <% }%>
 				</div>
-				<div id="js-card-checklists"></div>
+				<% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "view_checklist_listing",board_user_role_id: parseInt(list.board_user_role_id)}))){ %>
+					<div id="js-card-checklists"></div>
+				<% } %>
 				<% if(!_.isEmpty(card.attachments)){ %>
 				<div class="list-group-item-heading clearfix">
 				  <h3 class="pull-left"> <span class="pull-left"><i class="icon-paper-clip lead"></i></span><%- i18next.t('Attachment') %></h3>
@@ -235,23 +237,25 @@
 								<div class="clearfix dropdown js-show-emoji-list-response"> <a class="js-show-emoji-list show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Emoji') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Emoji') %></span> </a>
 								</div>
 							</li>
-							<li class="pull-left radio radio-inline">
-							  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Card') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Card') %></span> </a>
-								<ul class="dropdown-menu arrow col-xs-3 list-group">
-								  <li class="col-xs-12 clearfix text-center">
-									<div><span class="col-xs-10"><strong><%- i18next.t('Add Card') %></strong></span>
-									<a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div>
-								  </li>
-								  <li class="col-xs-12 divider"></li>
-								  <li class="col-xs-12 js_activity_card_search_response">
-									  <div class="clearfix">
-										<label class="sr-only"><%- i18next.t('Search Card') %></label>                            
-										  <input type="text" placeholder="<%- i18next.t('Search Card') %>" name="card" class="js-search-card form-control input-sm  js-no-action" title="<%- i18next.t('Search Card') %>">
-									  </div>
-								  </li>
-								</ul>
-							  </div>
-							</li>
+							<% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "search_card", board_user_role_id: parseInt(list.board_user_role_id)}))){ %>
+								<li class="pull-left radio radio-inline">
+								  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Card') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Card') %></span> </a>
+									<ul class="dropdown-menu arrow col-xs-3 list-group">
+									  <li class="col-xs-12 clearfix text-center">
+										<div><span class="col-xs-10"><strong><%- i18next.t('Add Card') %></strong></span>
+										<a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div>
+									  </li>
+									  <li class="col-xs-12 divider"></li>
+									  <li class="col-xs-12 js_activity_card_search_response">
+										  <div class="clearfix">
+											<label class="sr-only"><%- i18next.t('Search Card') %></label>                            
+											  <input type="text" placeholder="<%- i18next.t('Search Card') %>" name="card" class="js-search-card form-control input-sm  js-no-action" title="<%- i18next.t('Search Card') %>">
+										  </div>
+									  </li>
+									</ul>
+								  </div>
+								</li>
+							<% } %>
 							<li class="dropdown pull-left radio-inline radio">
 							  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block js-show-members" role="button" data-toggle="dropdown" title="<%- i18next.t('Mention a member') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Mention a member') %></span> </a>
 								<ul class="dropdown-menu arrow col-xs-3">
@@ -284,8 +288,9 @@
 				<li class="col-xs-12 divider"><hr></li>
 			  </ul>
 			  <div class="text-center clearfix hide" id="js-loader-img"><img src="img/select2-spinner.gif" alt="[Images:Loader]" title="<%- i18next.t('Loading...') %>" /></div>
-			  <ul class="media-list col-xs-12 clearfix btn-block" id="js-card-activities-<%= card.attributes.id%>">
-			  </ul>
+			  <% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "view_card_activities",board_user_role_id: parseInt(list.board_user_role_id)}))){ %>
+				<ul class="media-list col-xs-12 clearfix btn-block" id="js-card-activities-<%= card.attributes.id%>"></ul>
+			  <%  } %> 
 			</div>
 			</li>
 		  </ul>
@@ -465,10 +470,10 @@
 			  <% } }%>
 			</li>
 		 <% } %>
-			<li> <a class="panel-heading show <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else{ %> js-card-send-to-board<% } %>" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else{ %><%- i18next.t('Send to board') %><%}%>" href="">
+			<li> <a class="panel-heading show <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)}))){ %> js-card-send-to-board<% } %>" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)}))){ %><%- i18next.t('Send to board') %><%}%>" href="">
 		      <% if(parseInt(card.attributes.is_archived) === 0){ %>
 			      <%- i18next.t('Archive') %>
-		      <% }else{ %>
+		      <% }else if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)}))){ %>
 				  <%- i18next.t('Send to board') %>
 		      <% } %>
 				</a> 

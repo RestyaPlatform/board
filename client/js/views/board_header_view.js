@@ -454,6 +454,7 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showArchivedCardsList: function() {
+		var self = this;
         if (!_.isEmpty(role_links.where({
                 slug: 'view_archived_cards'
             }))) {
@@ -466,6 +467,8 @@ App.BoardHeaderView = Backbone.View.extend({
             }).el);
             if (!_.isEmpty(filtered_cards)) {
                 _.each(filtered_cards, function(card) {
+					card.acl_links = self.model.acl_links;
+					card.board_users = self.model.board_users;
                     el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                         model: card
                     }).el);
