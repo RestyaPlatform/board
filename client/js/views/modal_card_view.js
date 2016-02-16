@@ -1524,7 +1524,8 @@ App.ModalCardView = Backbone.View.extend({
                         card_attachment.set(response.card_attachments);
                         self.model.attachments.unshift(card_attachment);
                         var view = new App.CardAttachmentView({
-                            model: card_attachment
+                            model: card_attachment,
+							board: self.model.list.collection.board
                         });
                         var view_attachment = self.$('#js-card-attachments-list');
                         view_attachment.find('.timeago').timeago();
@@ -1607,11 +1608,13 @@ App.ModalCardView = Backbone.View.extend({
      * display attachments in card
      */
     renderAttachmentsCollection: function() {
+		var self = this;
         var view_attachment = this.$('#js-card-attachments-list');
         view_attachment.html('');
         this.model.attachments.each(function(attachment) {
             var view = new App.CardAttachmentView({
-                model: attachment
+                model: attachment,
+                board: self.model.list.collection.board
             });
             view_attachment.append(view.render().el).find('.timeago').timeago();
             emojify.run();
@@ -2279,7 +2282,8 @@ App.ModalCardView = Backbone.View.extend({
                     silent: true
                 });
                 var view = new App.CardAttachmentView({
-                    model: card_attachment
+                    model: card_attachment,
+					board: self.model.list.collection.board
                 });
                 var view_attachment = self.$('#js-card-attachments-list');
                 view_attachment.append(view.render().el).find('.timeago').timeago();
