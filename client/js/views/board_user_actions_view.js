@@ -22,8 +22,7 @@ App.BoardUserActionsView = Backbone.View.extend({
         'click .js-view-user-activities': 'showUserActivitiesListModal',
         'click .js-show-dropdown': 'showDropdown',
         'click .js-no-action': 'noAction',
-        'click .js-edit-board-member-permission-to-admin': 'editBoardMemberPermissionToAdmin',
-        'click .js-edit-board-member-permission-to-normal': 'editBoardMemberPermissionToNormal',
+        'click .js-edit-board-member-permission': 'editBoardMemberPermission',
         'click .js-close-popup': 'closePopup',
     },
     /**
@@ -97,42 +96,20 @@ App.BoardUserActionsView = Backbone.View.extend({
         e.preventDefault();
         return false;
     },
-    /**
-     * editBoardMemberPermissionToAdmin()
-     * change board member permission to admin
+	/**
+     * editBoardMemberPermission()
+     * change board member permission
      * @param e
      * @type Object(DOM event)
      * @return false
      */
-    editBoardMemberPermissionToAdmin: function(e) {
+    editBoardMemberPermission: function(e) {
         var self = this;
         var target = $(e.currentTarget);
         this.model.url = api_url + 'boards_users/' + this.model.attributes.id + '.json';
-        this.model.set('is_admin', 1);
+        this.model.set('board_user_role_id', target.data('board_user_role_id'));
         this.model.save({
-            is_admin: 1
-        }, {
-            success: function(model, response) {
-
-            }
-        });
-
-        return false;
-    },
-    /**
-     * editBoardMemberPermissionToNoraml()
-     * change board member permission to noraml
-     * @param e
-     * @type Object(DOM event)
-     * @return false
-     */
-    editBoardMemberPermissionToNormal: function(e) {
-        var self = this;
-        var target = $(e.currentTarget);
-        this.model.url = api_url + 'boards_users/' + this.model.attributes.id + '.json';
-        this.model.set('is_admin', 0);
-        this.model.save({
-            is_admin: 0
+            board_user_role_id: target.data('board_user_role_id')
         }, {
             success: function(model, response) {
 

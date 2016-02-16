@@ -307,6 +307,7 @@ App.ApplicationView = Backbone.View.extend({
                     } else {
                         Board.authuser = self.authuser;
                         viewed_board = Board;
+						Board.board_user_roles = response.board_user_roles;
                         $('#content').html(new App.BoardView({
                             model: Board
                         }).el);
