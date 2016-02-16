@@ -2402,7 +2402,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $r_post['user_id']
                     );
                     $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board', $foreign_id);
-                    $result = pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, is_admin) VALUES (now(), now(), $1, $2, true)', $qry_val_arr);
+                    $result = pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, 1)', $qry_val_arr);
                     if (!empty($row['board_visibility']) && $row['board_visibility'] == 1 && !empty($r_post['organization_id'])) {
                         $qry_val_arr = array(
                             $r_post['organization_id']
@@ -2415,7 +2415,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                         $row['id'],
                                         $organization_user['user_id']
                                     );
-                                    pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, is_admin) VALUES (now(), now(), $1, $2, false)', $qry_val_arr);
+                                    pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, 2)', $qry_val_arr);
                                 }
                             }
                         }
