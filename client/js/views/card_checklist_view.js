@@ -53,6 +53,12 @@ App.CardCheckListView = Backbone.View.extend({
         }
         _.bindAll(this, 'render', 'renderItemsCollection');
         this.model.checklist_items.bind('remove', this.renderItemsCollection);
+        var board_user_role_id = this.model.board_users.findWhere({
+            user_id: parseInt(authuser.user.id)
+        });
+        if (!_.isEmpty(board_user_role_id)) {
+            this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+        }
     },
     /**
      * checklistSort()
@@ -216,7 +222,7 @@ App.CardCheckListView = Backbone.View.extend({
         });
         if (!_.isEmpty(this.model.board_users.board.acl_links.where({
                 slug: 'add_checklist_item',
-				board_user_role_id: parseInt(authuser.user.role_id)				
+                board_user_role_id: parseInt(authuser.user.role_id)
             })) && is_show_link !== false) {
             view_item.after(new App.ChecklistItemAddLinkView().el);
         }

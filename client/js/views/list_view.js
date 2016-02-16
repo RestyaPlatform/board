@@ -68,6 +68,12 @@ App.ListView = Backbone.View.extend({
             this.model.collection.board.cards.bind('change:list_id', this.renderCardsCollection);
         }
         this.model.bind('remove', this.removeRender);
+        var board_user_role_id = this.model.board_users.findWhere({
+            user_id: parseInt(authuser.user.id)
+        });
+        if (!_.isEmpty(board_user_role_id)) {
+            this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+        }
     },
     template: JST['templates/list'],
     templateAdd: JST['templates/list_add'],

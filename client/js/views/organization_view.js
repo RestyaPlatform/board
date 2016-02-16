@@ -24,22 +24,22 @@ App.OrganizationsView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         this.model.organizations_users.add(this.model.attributes.organizations_users);
-		this.populateAclLinks();
-		var organization_user_role_id = this.model.organizations_users.findWhere({
+        this.populateAclLinks();
+        var organization_user_role_id = this.model.organizations_users.findWhere({
             user_id: parseInt(authuser.user.id)
         });
-		if (!_.isEmpty(organization_user_role_id)) {
-			this.model.organization_user_role_id = organization_user_role_id.attributes.organization_user_role_id;
-		}
+        if (!_.isEmpty(organization_user_role_id)) {
+            this.model.organization_user_role_id = organization_user_role_id.attributes.organization_user_role_id;
+        }
         this.render();
         if (this.type === 'users') {
             this.getOrganizationMemberLists();
         }
         this.model.boards.bind('change:organization_id remove', this.renderOrganizationCollection, this);
-		
+
 
     },
-	// Resets this boards acl_links collection
+    // Resets this boards acl_links collection
     populateAclLinks: function() {
         var acl_links = this.model.get('acl_links') || [];
         this.model.acl_links.reset(acl_links, {

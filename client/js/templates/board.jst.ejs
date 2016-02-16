@@ -37,7 +37,7 @@
 			<%
 			if(!_.isUndefined(authuser.user) && !_.isEmpty(board.acl_links.where({
 				slug: 'add_list',
-				board_user_role_id: parseInt(authuser.user.role_id)
+				board_user_role_id: parseInt(board.board_user_role_id)
 			}))){ %>
 			  <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 btn-block list" id="js-add-list-block">
 				<div class="js-list-form"><a href="#" class="js-show-add-list-form toggle-show text-muted" title="<%- i18next.t('Add a list') %>"><%- i18next.t('Add a list') %></a>
