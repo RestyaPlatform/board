@@ -1111,8 +1111,9 @@ App.BoardHeaderView = Backbone.View.extend({
 
         var self = this;
         this.model.board_users.sortBy('is_admin');
-        this.model.board_users.each(function(board_user) {
+		this.model.board_users.each(function(board_user) {
             is_admin = (parseInt(board_user.attributes.is_admin) === 1) ? 1 : 0;
+			board_user.board_user_roles = self.model.board_user_roles;
             self.$('.js-get-board-member-lists-response').append(new App.BoardUsersView({
                 model: board_user,
                 is_admin: is_admin
