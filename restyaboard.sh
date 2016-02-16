@@ -378,7 +378,7 @@
 			fi
 			
 			echo "Installing PHP fpm and cli extension..."
-			yum install -y php-fpm php-cli
+			yum install -y php-fpm php-devel php-cli
 			service php-fpm start
 			chkconfig --levels 35 php-fpm on
 
