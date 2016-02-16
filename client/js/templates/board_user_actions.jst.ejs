@@ -36,7 +36,7 @@
 				<span><%- i18next.t("View member's board activity") %></span>
 			</a>
 		</li>
-		<% if (!_.isEmpty(user.collection.board.acl_links.where({slug: 'remove_board_user', board_user_role_id: parseInt(list.board_user_role_id)}))) { %>
+		<% if (!_.isEmpty(user.collection.board.acl_links.where({slug: 'remove_board_user', board_user_role_id: parseInt(user.board_user_role_id)}))) { %>
 			<li><a href="#" title="<%if(parseInt(authuser.user.id) != user.attributes.user_id ){%><%- i18next.t('Remove from board') %><%}else{%><%- i18next.t('Leave from board') %><%}%>" class="js-show-confirm-delete-board-member"><% if(parseInt(authuser.user.id) != user.attributes.user_id ){%><%- i18next.t('Remove from board') %><%}else{%><%- i18next.t('Leave from board') %><%}%></a></li>
 		<% } %>
 		
