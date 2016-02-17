@@ -1490,6 +1490,148 @@ INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply
 INSERT INTO "oauth_clients" ("client_id", "client_secret", "redirect_uri", "grant_types", "scope", "user_id", "client_name", "client_url", "logo_url", "tos_url", "policy_url", "modified", "created")
 VALUES ('6664115227792148', 'hw3wpe2cfsxxygogwue47cwnf7', NULL, 'client_credentials refresh_token authorization_code', NULL, NULL, 'Mobile App', NULL, NULL, NULL, NULL, now(), now()),('7857596005287233', 'n0l2wlujcpkj0bd7gk8918gm6b', NULL, 'client_credentials refresh_token authorization_code', NULL, NULL, 'Zapier', NULL, NULL, NULL, NULL, now(), now());
 
+UPDATE "acl_links" SET "group_id" = 6 WHERE "name" = 'Delete board' OR "name" = 'Add organization' OR "name" = 'Add board';
+
+UPDATE "acl_links" SET "group_id" = 1 WHERE "name" = 'Board visibility' OR "name" = 'View starred boards listing' OR "name" = 'Load workflow templates' OR "name" = 'Search'  OR "name" = 'View organization'  OR "name" = 'Organization visibility'  OR "name" = 'View board'  OR "name" = 'Board search'  OR "name" = 'View user assigned boards'  OR "name" = 'add_card'  OR "name" = 'View boards listing'  OR "name" = 'View closed boards'  OR "name" = 'view_stared_boards'  OR "name" = 'view_my_boards'  OR "name" = 'View organizations listing'  OR "name" = 'View user assigned cards'  OR "name" = 'All activities'  OR "name" = 'Starred boards listing'  OR "name" = 'View closed boards'  OR "name" = 'My boards listing';
+
+CREATE SEQUENCE acl_board_links_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+	
+CREATE TABLE acl_board_links (
+    id bigint DEFAULT nextval('acl_board_links_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    url character varying(255) NOT NULL,
+    method character varying(255) NOT NULL,
+    slug character varying(255) NOT NULL,
+    group_id smallint,
+    is_allow_only_to_admin smallint DEFAULT (0)::smallint NOT NULL,
+    is_allow_only_to_user smallint DEFAULT (0)::smallint NOT NULL
+);
+
+INSERT INTO "acl_board_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") 
+(select created, modified, name, url, method, slug, group_id, is_allow_only_to_admin, is_allow_only_to_user from acl_links where group_id IN (2,3,4));
+
+
+CREATE SEQUENCE acl_organization_links_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+	
+CREATE TABLE acl_organization_links (
+    id bigint DEFAULT nextval('acl_organization_links_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    url character varying(255) NOT NULL,
+    method character varying(255) NOT NULL,
+    slug character varying(255) NOT NULL,
+    group_id smallint,
+    is_allow_only_to_admin smallint DEFAULT (0)::smallint NOT NULL,
+    is_allow_only_to_user smallint DEFAULT (0)::smallint NOT NULL
+);
+
+INSERT INTO "acl_organization_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") 
+(select created, modified, name, url, method, slug, group_id, is_allow_only_to_admin, is_allow_only_to_user from acl_links where group_id IN (5));
+
+DELETE FROM acl_links WHERE group_id IN (2,3,4,5);
+
+CREATE SEQUENCE board_user_roles_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE board_user_roles (
+    id bigint DEFAULT nextval('board_user_roles_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+	description character varying
+);
+
+CREATE SEQUENCE organization_user_roles_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE organization_user_roles (
+    id bigint DEFAULT nextval('organization_user_roles_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+	description character varying
+);
+
+INSERT INTO "board_user_roles" ("created", "modified", "name") VALUES (now(), now(), 'owner'),(now(), now(), 'editor'),(now(), now(), 'viewer');
+INSERT INTO "organization_user_roles" ("created", "modified", "name") VALUES (now(), now(), 'owner'),(now(), now(), 'editor'),(now(), now(), 'viewer');
+
+
+
+CREATE SEQUENCE acl_board_links_boards_user_roles_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE acl_board_links_boards_user_roles (
+    id bigint DEFAULT nextval('acl_board_links_boards_user_roles_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    acl_board_link_id bigint NOT NULL,
+    board_user_role_id bigint NOT NULL
+);
+
+CREATE SEQUENCE acl_organization_links_organizations_user_roles_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE acl_organization_links_organizations_user_roles (
+    id bigint DEFAULT nextval('acl_organization_links_organizations_user_roles_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    acl_organization_link_id bigint NOT NULL,
+    organization_user_role_id bigint NOT NULL
+);
+
+
+CREATE VIEW acl_board_links_listing AS
+ SELECT ablbur.board_user_role_id,
+    abl.slug,
+    abl.url,
+    abl.method
+   FROM (acl_board_links_boards_user_roles ablbur
+     JOIN acl_board_links abl ON ((abl.id = ablbur.acl_board_link_id)));
+	 
+CREATE VIEW acl_organization_links_listing AS
+ SELECT aolour.organization_user_role_id,
+    aol.slug,
+    aol.url,
+    aol.method
+   FROM (acl_organization_links_organizations_user_roles aolour
+     JOIN acl_organization_links aol ON ((aol.id = aolour.acl_organization_link_id)));
+
+
+INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") 
+(select t1.created, t1.modified, t3.id, t1.role_id from acl_links_roles t1,acl_links t2,acl_board_links t3 where t2.group_id IN (2,3,4) and t2.id=t1.acl_link_id and t3.name = t2.name);
+
+INSERT INTO "acl_organization_links_organizations_user_roles" ("created", "modified", "acl_organization_link_id", "organization_user_role_id") 
+(select t1.created, t1.modified, t3.id, t1.role_id from acl_links_roles t1,acl_links t2,acl_organization_links t3 where t2.group_id IN (5) and t2.id=t1.acl_link_id and t3.name = t2.name);
+
 DROP VIEW "boards_users_listing" CASCADE;
 
 DROP VIEW "organizations_users_listing" CASCADE;
@@ -1499,6 +1641,10 @@ DROP VIEW "simple_board_listing" CASCADE;
 ALTER TABLE "boards_users" DROP "is_admin";
 
 ALTER TABLE "boards_users" ADD "board_user_role_id" smallint NOT NULL DEFAULT '0';
+
+ALTER TABLE "organizations_users" DROP "is_admin"; 
+
+ALTER TABLE "organizations_users" ADD "organization_user_role_id" smallint NOT NULL DEFAULT '0';
 
 CREATE OR REPLACE VIEW boards_users_listing AS
  SELECT bu.id,
@@ -1947,3 +2093,113 @@ CREATE OR REPLACE VIEW simple_board_listing AS
    FROM (boards board
    LEFT JOIN organizations org ON ((org.id = board.organization_id)))
   ORDER BY board.name;
+  
+INSERT INTO "acl_board_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('141', now(), now(), 'Delete all archived lists', '/boards/?/lists', 'DELETE', 'delete_all_archived_lists', '3', '1', '0');
+
+INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") VALUES (now(), now(), '141', '1');
+
+
+INSERT INTO "acl_board_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('142', now(), now(), 'Delete all archived cards', '/boards/?/cards', 'DELETE', 'delete_all_archived_cards', '4', '1', '0');
+
+INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") VALUES (now(), now(), '142', '1');
+
+
+INSERT INTO "acl_board_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('143', now(), now(), 'Delete Labels', '/boards/?/labels/?', 'DELETE', 'delete_labels', '2', '1', '0');
+
+INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") VALUES (now(), now(), '143', '1'); 
+
+CREATE OR REPLACE FUNCTION update_organization_user_count() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+
+BEGIN
+
+	IF (TG_OP = 'DELETE') THEN
+
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
+
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = NEW."user_id";
+
+		RETURN NEW;
+
+	END IF;
+
+END;
+
+$$;
+
+CREATE OR REPLACE FUNCTION update_board_user_count() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+
+BEGIN
+
+	IF (TG_OP = 'DELETE') THEN
+
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+		UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 2) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 2) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
+	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 1) t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 2) t WHERE "id" = NEW."user_id";
+
+		RETURN NEW;
+
+	END IF;
+
+END;
+
+$$;

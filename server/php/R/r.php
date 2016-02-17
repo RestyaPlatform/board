@@ -567,13 +567,18 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/activities':
         $condition = '';
+		$i = 1;
         if (isset($r_resource_filters['last_activity_id'])) {
-            $condition = ' WHERE al.id < $1';
+            $condition = ' WHERE al.id < $' . $i;
+			array_push($pg_params, $r_resource_filters['last_activity_id']);
+			$i++;
         }
+		if (!empty($r_resource_filters['filter'])) {
+			$condition.= ' AND al.type = $' . $i;
+			array_push($pg_params, $r_resource_filters['filter']);
+			$i++;
+		}
         $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c ON  al.card_id = c.id ' . $condition . ' ORDER BY id DESC limit ' . PAGING_COUNT . ') as d ';
-        if (!empty($condition)) {
-            array_push($pg_params, $r_resource_filters['last_activity_id']);
-        }
         $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         break;
 
@@ -4472,14 +4477,14 @@ if (!empty($_GET['_url']) && $db_lnk) {
             exit;
         }
     }
-    if ($r_resource_cmd == '/users/logout' || checkAclLinks($_SERVER['REQUEST_METHOD'], $r_resource_cmd)) {
-        // /users/5/products/10 -> array('users' => 5, 'products' => 10) ...
-        $r_resource_vars = array();
-        if (preg_match_all('/([^\/]+)\/(\d+)/', $_url_parts_with_ext[0], $matches)) {
-            for ($i = 0, $len = count($matches[0]); $i < $len; ++$i) {
-                $r_resource_vars[$matches[1][$i]] = $matches[2][$i];
-            }
-        }
+	$r_resource_vars = array();
+	if (preg_match_all('/([^\/]+)\/(\d+)/', $_url_parts_with_ext[0], $matches)) {
+		for ($i = 0, $len = count($matches[0]); $i < $len; ++$i) {
+			$r_resource_vars[$matches[1][$i]] = $matches[2][$i];
+		}
+	}
+    if ($r_resource_cmd == '/users/logout' || checkAclLinks($_SERVER['REQUEST_METHOD'], $r_resource_cmd, $r_resource_vars)) {
+        // /users/5/products/10 -> array('users' => 5, 'products' => 10) ...        
         if (!empty($response['scope'])) {
             $scope = explode(" ", $response['scope']);
         }

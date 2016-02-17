@@ -501,28 +501,61 @@ function ldapAuthenticate($p_user_id, $p_password)
  *
  * @return true if links allowed false otherwise
  */
-function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users')
+function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r_resource_vars)
 {
     global $r_debug, $db_lnk, $authUser;
     $role = 3; // Guest role id
     if ($authUser) {
         $role = $authUser['role_id'];
+		if ($authUser['role_id'] == 1) {
+			return true;
+		}
     }
-    $qry_val_arr = array(
-        $role,
-        $r_request_method,
-        $r_resource_cmd
-    );
-    $allowed_link = executeQuery('SELECT * FROM acl_links_listing WHERE role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);
-    if (empty($allowed_link)) {
+	$tem_arr = array('/boards_users/?');
+	//temp fix
+	if(!empty($r_resource_vars['boards']) || in_array($r_resource_cmd, $tem_arr)) {
+		$qry_val_arr = array(
+			$r_resource_vars['boards'],
+			$authUser['id']
+		);
+		$board_user_role_id = executeQuery('SELECT board_user_role_id FROM boards_users WHERE board_id = $1 AND user_id = $2', $qry_val_arr);
+		$role = $board_user_role_id['board_user_role_id'];
+		$qry_val_arr = array(
+			$role,
+			$r_request_method,
+			$r_resource_cmd
+		);
 		$board_allowed_link = executeQuery('SELECT * FROM acl_board_links_listing WHERE board_user_role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);
-		 if (empty($board_allowed_link)) {
-			 $organization_allowed_link = executeQuery('SELECT * FROM acl_organization_links_listing WHERE organization_user_role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);
-			  if (empty($organization_allowed_link)) {
-				  return false;
-			  }
-		 }
-    }
+		if (empty($board_allowed_link)) {
+			 return false;
+		}
+	} else if (!empty($r_resource_vars['organizations'])) {
+		$qry_val_arr = array(
+			$r_resource_vars['organizations'],
+			$authUser['id']
+		);
+		$organization_user_role_id = executeQuery('SELECT organization_user_role_id FROM organizations_users WHERE organization_id = $1 AND user_id = $2', $qry_val_arr);
+		$role = $organization_user_role_id['organization_user_role_id'];
+		$qry_val_arr = array(
+			$role,
+			$r_request_method,
+			$r_resource_cmd
+		);
+		$organization_allowed_link = executeQuery('SELECT * FROM acl_organization_links_listing WHERE organization_user_role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);
+		if (empty($organization_allowed_link)) {
+			return false;
+		}
+	} else {
+		$qry_val_arr = array(
+			$role,
+			$r_request_method,
+			$r_resource_cmd
+		);
+		$allowed_link = executeQuery('SELECT * FROM acl_links_listing WHERE role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);
+		if (empty($allowed_link)) {
+			return false;
+		}
+	}
     return true;
 }
 /**
