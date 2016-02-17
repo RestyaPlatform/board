@@ -1210,7 +1210,8 @@ CREATE OR REPLACE VIEW "users_listing" AS
     users.member_board_count,
     users.owner_organization_count,
     users.member_organization_count,
-    users.language
+    users.language,
+    users.is_ldap::boolean::int
    FROM (((((((((users users
    LEFT JOIN ips i ON ((i.id = users.ip_id)))
    LEFT JOIN cities rci ON ((rci.id = i.city_id)))
@@ -2203,3 +2204,21 @@ BEGIN
 END;
 
 $$;
+
+UPDATE "settings" SET "description" = 'The DNS name or IP address of the server. For example dc.domain.local.' WHERE "name" = 'LDAP_SERVER';
+
+UPDATE "settings" SET "description" = 'Server port (e.g., 389 for LDAP and 636 for LDAP using SSL)' WHERE "name" = 'LDAP_PORT';
+
+UPDATE "settings" SET "description" = 'Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx' WHERE "name" = 'LDAP_PROTOCOL_VERSION';
+
+UPDATE "settings" SET "label" = 'Base DN', "description" = 'This is your search base for LDAP queries. This should be at least your domain root, for example dc=domain,dc=local You can define this as a Organizational Unit if you want to narrow down the search base. For example: ou=team,ou=company,dc=domain,dc=local' WHERE "name" = 'LDAP_ROOT_DN';
+
+UPDATE "settings" SET "label" = 'Account Filter', "description" = 'You can use different field from the username here. For pre-windows 2000 style login, use sAMAccountName and for a UPN style login use userPrincipalName.' WHERE "name" = 'LDAP_UID_FIELD';
+
+UPDATE "settings" SET "label" = 'Bind DN', "description" = 'Enter a valid user account/DN to pre-bind with if your LDAP server does not allow anonymous profile searches, or requires a user with specific privileges to search.' WHERE "name" = 'LDAP_BIND_DN';
+
+UPDATE "settings" SET "type" = 'password', "description" = 'Enter a password for the above Bind DN.' WHERE "name" = 'LDAP_BIND_PASSWD';
+
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('4', '2', 'ENABLE_SSL_CONNECTIVITY', NULL, 'Use encryption (SSL, ldaps:// URL) when connects to server?', 'checkbox', NULL, 'Enable SSL Connectivity', '2');
+
+

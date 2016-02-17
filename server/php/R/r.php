@@ -1321,6 +1321,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     $user = executeQuery('SELECT * FROM users_listing WHERE id = $1', $val_arr);
                 }
+            } else {
+                $ldap_error = 'ldap_error';
             }
         } else if (STANDARD_LOGIN_ENABLED && !empty($log_user) && $log_user['is_ldap'] == 0) {
             $r_post['password'] = crypt($r_post['password'], $log_user['password']);
@@ -1383,9 +1385,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $response['user'] = $user;
             $response['user']['organizations'] = json_decode($user['organizations'], true);
         } else {
-            $response = array(
-                'error' => 'Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'
-            );
+            if (!empty($ldap_error)) {
+                $response = array(
+                    'error' => 'ldap_error'
+                );
+            } else {
+                $response = array(
+                    'error' => 'Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'
+                );
+            }
         }
         break;
 
