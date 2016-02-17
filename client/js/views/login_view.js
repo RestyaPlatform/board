@@ -97,12 +97,12 @@ App.LoginView = Backbone.View.extend({
                         });
                     }
                 } else {
-					$('input#inputPassword', target).val('');
-					if(response.error === 'ldap_error'){
-						self.flash('danger', i18next.t('Email not associated for this LDAP account.'));
-					} else {
-						self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
-					}
+                    $('input#inputPassword', target).val('');
+                    if (response.error === 'ldap_error') {
+                        self.flash('danger', i18next.t('Email not associated for this LDAP account.'));
+                    } else {
+                        self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
+                    }
                 }
 
             }
