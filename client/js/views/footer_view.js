@@ -825,7 +825,7 @@ App.FooterView = Backbone.View.extend({
                             model: activity,
                             type: 'all'
                         });
-						$('.js-unread-activity').parent().addClass('bg-danger navbar-btn'); 
+                        $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         if (mode == 1) {
                             view_activity.prepend(view.render().el).find('.timeago').timeago();
                         } else {
@@ -1341,7 +1341,7 @@ App.FooterView = Backbone.View.extend({
                             model: activity,
                             board: self.board
                         });
-						$('.js-unread-activity').parent().addClass('bg-danger navbar-btn'); 
+                        $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         if ($('.js-list-activity-' + activity.id, view_activity).length === 0) {
                             view_activity.append(view.render().el).find('.timeago').timeago();
                         }
@@ -1616,8 +1616,8 @@ App.FooterView = Backbone.View.extend({
                             model: activity,
                             board: self.board,
                             type: modeType
-                        });   
-						$('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
+                        });
+                        $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         view_activity.append(view.render().el).find('.timeago').timeago();
                     });
                 } else {
