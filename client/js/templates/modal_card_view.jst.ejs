@@ -195,12 +195,16 @@
 	  <div class="inner col-xs-12">
 		<ul class="list-unstyled navbar-btn row">
 		  <li class="list-group-item list-group-item-info clearfix">
-			<div class="list-group-item-heading">
-				  <h3 class="list-group-item-heading"><%- i18next.t('Activity') %></h3>
-				  <h3 id="modal-comments" class="list-group-item-heading"><%- i18next.t('Hide Comments') %></h3>
-				  <h3 id="modal-activities" class="list-group-item-heading"><%- i18next.t('Hide Activities') %></h3>
-				  <h3 id="modal-logged-user-activities" class="list-group-item-heading"><%- i18next.t('Hide Logged User Activities') %></h3>
-				</div>
+			<div class="list-group-item-heading clearfix">
+				  <h3 class="pull-left"><%- i18next.t('Activity') %></h3>
+				  <div class="clearfix pull-right well-sm user-filter">
+                        <ul class="nav nav-pills">
+                            <li id="modal-activities"><a href="#" title="Hide activities" class="text-muted" ><i class="icon-eye-close small"></i></a></li>
+                            <li id="modal-activities"><a href="#" title="Hide comments" class="text-muted"><i class=" icon-comment-alt small"></i></a></li>
+                            <li id="modal-logged-user-activities"><a href="#" title="Hide same user activities" class="text-muted"><i class="icon-lock small"></i></a></li>
+                        </ul>
+                  </div>
+			</div> 
 			<div class="list-group-item-text">
 			  <ul class="media-list" id="js-board-activities">
 				<% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "comment_card"}))){ %>
