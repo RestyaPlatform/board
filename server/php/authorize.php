@@ -68,9 +68,28 @@ $oauth_client = executeQuery('SELECT client_name FROM oauth_clients WHERE client
 	 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	 <link rel="stylesheet" type="text/css" href="<?php
 echo $_server_domain_url . '/css/authorize.css'; ?>">
+<script src="<?php echo $_server_domain_url . '/js/libs/jquery-1.8.3.js'; ?>"></script>
+<script src="<?php echo $_server_domain_url . '/js/libs/bootstrap-alert.js'; ?>"></script>
+<script src="<?php echo $_server_domain_url . '/js/libs/jquery.bootstrap-growl.js'; ?>"></script>
  </head>
  <body style="cursor: auto">
 	 <div class="navbar-btn"></div>
+	 <script>
+	 function flashMesssage(type, message) {
+        $.bootstrapGrowl(message, {
+            type: type,
+            offset: {
+                from: 'top',
+                amount: 20
+            },
+            align: 'right',
+            width: type == 'danger' ? 250 : 400,
+            delay: type == 'danger' ? 4000 : 0,
+            allow_dismiss: true,
+            stackup_spacing: 10
+        });
+    }
+	 </script>
 <?php
 // display an authorization form
 if (empty($_POST['password']) && (empty($_POST['authorized']) || (!empty($_POST['authorized']) && $_POST['authorized'] === 'Deny'))) {
@@ -105,7 +124,7 @@ if (empty($_POST['password']) && (empty($_POST['authorized']) || (!empty($_POST[
 							  <input type="submit" class="btn btn-primary col-xs-12" value="Login" id="submitLogin" />
 							</div>
 							<?php if(!empty($error_msg)){?>
-								<div><?php echo $error_msg; ?></div>
+								<div><script>flashMesssage('danger', 'Sorry, login failed. Either your username or password are incorrect.');</script></div>
 							<?php } ?>
 						</form>
 					</div>
