@@ -737,13 +737,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/oauth/clients':
         $response['oauth_clients'] = array();
-        $condition = 'WHERE client_id != $1';
-        $condition_param = '7742632501382313';
+        $condition = '';
         if (!empty($_GET['id'])) {
             $condition = 'WHERE id = $1';
             $condition_param = $_GET['id'];
         }
-        array_push($pg_params, $condition_param);
+        if (!empty($condition_param)) {
+            array_push($pg_params, $condition_param);
+        }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM oauth_clients c ' . $condition . ') as d ';
         $c_sql = 'SELECT COUNT(*) FROM oauth_clients c';
         break;
