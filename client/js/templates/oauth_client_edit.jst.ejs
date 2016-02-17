@@ -33,7 +33,7 @@
   <div class="form-group">
 	<label class="col-sm-2 control-label col-xs-12" for="inputRedirectUris"><%- i18next.t("Redirect URI(s)") %></label>
 	<div class="col-sm-8 col-xs-12">
-		<textarea id="inputRedirectUris" class="form-control" rows="4" name="redirect_uri"><%- oauth_client.redirect_uri %></textarea>
+		<input type="text" name="redirect_uri" id="inputRedirectUris" class="form-control" placeholder="<%- i18next.t('Redirect URI (s)') %>" title="<%- i18next.t('Redirect URI (s)') %>">
 		<div><span class="help-block"><%- i18next.t('Multiple URL can provide separated by space')%></span></div>
 	</div>
   </div>
