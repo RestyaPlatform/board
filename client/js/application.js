@@ -100,6 +100,7 @@ callbackTranslator = {
                     $('#content').html(new App.Error404View().el);
                     return;
                 } else if (JSON.parse(model.responseText).error.type === 'visibility') {
+                    window.sessionStorage.setItem('redirect_link', window.location.hash);
                     changeTitle('Board not found');
                     this.headerView = new App.HeaderView({
                         model: authuser
