@@ -48,6 +48,10 @@ App.SettingView = Backbone.View.extend({
                 data.STANDARD_LOGIN_ENABLED = 'false';
             }
         }
+		data.ENABLE_SSL_CONNECTIVITY = 'false';
+		if (!_.isUndefined($("input[name='ENABLE_SSL_CONNECTIVITY']:checked").val())) {
+			data.ENABLE_SSL_CONNECTIVITY = 'true';
+		}
         var self = this;
         var settingModel = new App.SettingCategory();
         settingModel.url = api_url + 'settings.json';

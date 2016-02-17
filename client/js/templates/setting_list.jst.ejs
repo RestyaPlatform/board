@@ -104,7 +104,7 @@
 								<div class="form-group">
 								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- setting.label %></label>
 								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
-									<input type="text" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" class="form-control" value="<%- setting.value %>" />
+									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" class="form-control" value="<%- setting.value %>" />
 									<div><span class="help-block"><%= setting.description %></span></div>
 								  </div>
 								</div>

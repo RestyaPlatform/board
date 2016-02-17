@@ -66,6 +66,7 @@ App.LoginView = Backbone.View.extend({
                     auth_response.user.notify_count = response.user.notify_count;
                     auth_response.user.last_activity_id = response.user.last_activity_id;
                     auth_response.user.language = response.user.language;
+                    auth_response.user.is_ldap = response.user.is_ldap;
                     window.sessionStorage.setItem('auth', JSON.stringify(auth_response));
                     i18next.changeLanguage(response.user.language);
                     api_token = response.access_token;

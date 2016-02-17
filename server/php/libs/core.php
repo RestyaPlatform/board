@@ -412,6 +412,7 @@ function getRevisiondifference($from_text, $to_text)
  */
 function ldapAuthenticate($p_user_id, $p_password)
 {
+    $g_enable_ssl_connectivity = ENABLE_SSL_CONNECTIVITY;
     $g_ldap_protocol_version = LDAP_PROTOCOL_VERSION;
     $g_ldap_server = LDAP_SERVER;
     $g_ldap_port = LDAP_PORT;
@@ -436,8 +437,8 @@ function ldapAuthenticate($p_user_id, $p_password)
         'name',
         'mail'
     );
-    $t_ldap_server = $g_ldap_server;
-    $t_ldap_port = $g_ldap_port;
+	$t_ldap_server = ($g_enable_ssl_connectivity == 'true')?'ldaps://'.$g_ldap_server:'ldap://'.$g_ldap_server;
+	$t_ldap_port = $g_ldap_port;
     $t_ds = @ldap_connect($t_ldap_server, $t_ldap_port);
     if ($t_ds > 0) {
         $t_protocol_version = $g_ldap_protocol_version;
