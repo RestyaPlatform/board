@@ -171,7 +171,7 @@
 			<% if(model.is_show_enable_notification === true) { %>
 				<li><a title="<%- i18next.t('Enable Desktop Notification') %>" href="#" class="js-enable-desktop-notification"><%- i18next.t("Enable Desktop Notification") %></a></li>
 			<% } %>	
-			<% if(!_.isEmpty(role_links.where({slug: "user_changepassword"}))){ %>
+			<% if(!_.isEmpty(role_links.where({slug: "user_changepassword"})) && parseInt(authuser.user.is_ldap) === 0){ %>
 				<li><a title="<%- i18next.t('Change Password') %>" href="#/users/<%-model.user.id%>/changepassword"><%- i18next.t("Change Password") %></a></li>
 			<% } %>
 		    <% if(!_.isEmpty(role_links.where({slug: "view_user"}))){ %>
