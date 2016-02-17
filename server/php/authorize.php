@@ -40,6 +40,27 @@ $val_arr = array(
     $_GET['client_id'],
 );
 $oauth_client = executeQuery('SELECT client_name FROM oauth_clients WHERE client_id = $1', $val_arr);
+	$error_msg = 0;
+	if(!empty($_POST['email'])){
+		$val_arr = array(
+			$_POST['email']
+		);
+		$log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
+		$_POST['password'] = crypt($_POST['password'], $log_user['password']);
+		$val_arr = array(
+			$_POST['email'],
+			$_POST['password'],
+			1
+		);
+		$user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
+		if (!empty($user)) {
+			$_SESSION["username"] = $user['username'];
+			$error_msg = 0;
+		} else {
+			unset($_POST['password']);
+			$error_msg = "Sorry, login failed. Either your username or password are incorrect.";
+		}
+	}
 ?>
 <!DOCTYPE html>
 <html class="no-js" lang="en">
@@ -52,7 +73,7 @@ echo $_server_domain_url . '/css/authorize.css'; ?>">
 	 <div class="navbar-btn"></div>
 <?php
 // display an authorization form
-if (empty($_POST)) {
+if (empty($_POST['password']) && (empty($_POST['authorized']) || (!empty($_POST['authorized']) && $_POST['authorized'] === 'Deny'))) {
     if (LDAP_LOGIN_ENABLED) {
         $loginPlaceholder = 'LDAP Login';
     } else {
@@ -72,7 +93,7 @@ if (empty($_POST)) {
 							<div class="form-group">
 							  <label for="inputEmail" class="sr-only control-label">Email or Username</label>
 							  <input type="text" placeholder="<?php
-    echo $loginPlaceholder; ?>" class="form-control" id="inputEmail" name="email"  title="<?php
+    echo $loginPlaceholder; ?>" class="form-control" id="inputEmail" name="email"  value="<?php echo !empty($_POST['email'])?$_POST['email']:''; ?>" title="<?php
     echo $loginPlaceholder; ?>" required/>
 							</div>
 							<div class="form-group">
@@ -83,6 +104,9 @@ if (empty($_POST)) {
 							  <label for="submit2" class="sr-only control-label">Login</label>
 							  <input type="submit" class="btn btn-primary col-xs-12" value="Login" id="submitLogin" />
 							</div>
+							<?php if(!empty($error_msg)){?>
+								<div><?php echo $error_msg; ?></div>
+							<?php } ?>
 						</form>
 					</div>
 				</div>
@@ -92,19 +116,6 @@ if (empty($_POST)) {
 <?php
 } else {
     if (empty($_POST['authorized'])) {
-        $val_arr = array(
-            $_POST['email']
-        );
-        $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
-        $_POST['password'] = crypt($_POST['password'], $log_user['password']);
-        $val_arr = array(
-            $_POST['email'],
-            $_POST['password'],
-            1
-        );
-        $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
-        if (!empty($user)) {
-            $_SESSION["username"] = $user['username'];
 ?>
             <section class="clearfix">
 			  <div class="col-md-5 col-md-offset-4">
@@ -144,11 +155,6 @@ if (empty($_POST)) {
 			  </div>
 		    </section>
 <?php
-        } else {
-            $_POST = array();
-            header('Location: ' . $_SERVER['REQUEST_URI']);
-            exit;
-        }
     } else {
         // print the authorization code if the user has authorized your client
         $is_authorized = ($_POST['authorized'] === 'Allow') ? true : false;
