@@ -1,9 +1,10 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
-<% 
-if(!_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %> 
-	<span class="label label-success">Unread</span>
-<% } %>
-<div class="media">
+<% var unread = ""; %> 
+<% if(!_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %> 
+   <% var unread = "js-unread-activity"; %>
+   <span class="label label-primary col-xs-12 sr-only">&nbsp;</span>
+<% } %>  
+<div class="media <%= unread %>"> 
 	<a data-placement="bottom" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" data-toggle="tooltip" data-container="body" data-html="true" class="js-tooltip pull-left" href="#/user/<%- activity.attributes.user_id %>">
 		<% if(!_.isEmpty(activity.attributes.profile_picture_path)) {
 			var profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'small_thumb' );
@@ -120,7 +121,12 @@ if(!_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > pa
 				<% } %>
 				<span class="pull-left col-xs-12 js-activity-reply-form-response-<%- activity.attributes.id %>"></span>
 		</small>
-	</div>
+	</div> 
 </div>
-<hr class="clearfix col-xs-12 btn-block"/>
+	<% if(_.isEmpty(unread)){ %> 
+		<hr class="clearfix col-xs-12 btn-block"/>
+	<%}%>
+	<% if(!_.isEmpty(unread)){ %>
+		<div class="well-sm clearfix"></div>
+	<%}%>
 <% }else{ %><div class="media-body alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></div><% } %>
