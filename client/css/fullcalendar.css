@@ -628,6 +628,12 @@ th.fc-widget-header{
 	color:#ffffff;
 	height:35px;
 	vertical-align:middle;
-}	
-
-	
+}
+.card-archived {
+	border-color: #ADA7A7 !important;
+	background-color: #ADA7A7 !important;
+}
+.card-pastdue {
+	border-color: #C34141 !important;
+	background-color: #C34141 !important;
+}

@@ -34,7 +34,7 @@
   </h3>
   <div class="clearfix navbar-btn row">
 	  <div class="splitter-wrap editor ui-resizable" >
-		<div class="inner col-xs-12">
+		<div class="col-xs-12">
 			<ul class="list-unstyled navbar-btn row">
 			  <li class="list-group-item list-group-item-info clearfix">
 				<div class="list-group-item-heading">
@@ -122,28 +122,6 @@
 						  <li class="divider"></li>
 						  <li class="js-edit-card-due-date-form-response">
 							<form class="form-horizontal clearfix js-card-edit-form" name="cardDueDateEditForm" id="cardDueDateEditForm">
-							  <div class="form-group">
-								<div class="col-xs-6">
-								  <label><%- i18next.t('Date') %></label>
-								  <input type="text" class="form-control input-sm js-card-duedate-edit-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" required/>
-								</div>
-								<div class="col-xs-6">
-								  <label><%- i18next.t('Time') %></label>
-								  <input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm:ss" required/>
-								</div>
-							  </div>
-							  <div class="form-group">
-								<div class="col-xs-6">
-								  <label for="save" class="sr-only"><%- i18next.t('Save') %></label>
-								  <input type="submit" value="<%- i18next.t('Save') %>" id="save" class="btn btn-primary" id="submitCardDueDateEditForm">
-								</div>
-								<% if(card.attributes.due_date != null && card.attributes.due_date != '') { %>
-								<div class="col-xs-6">
-								  <label for="remove" class="sr-only"><%- i18next.t('Remove') %></label>
-								  <input type="reset" value="<%- i18next.t('Remove') %>" id="js-remove-due-date" class="btn btn-default">
-								</div>
-								<% } %>
-							  </div>
 							</form>
 						  </li>
 						</ul>
@@ -217,9 +195,16 @@
 	  <div class="inner col-xs-12">
 		<ul class="list-unstyled navbar-btn row">
 		  <li class="list-group-item list-group-item-info clearfix">
-			<div class="list-group-item-heading">
-				  <h3 class="list-group-item-heading"><%- i18next.t('Activity') %></h3>
-				</div>
+			<div class="list-group-item-heading clearfix">
+				  <h3 class="pull-left"><%- i18next.t('Activity') %></h3>
+				  <div class="clearfix pull-right well-sm user-filter">
+                        <ul class="nav nav-pills">
+                            <li id="modal-activities"><a href="#" title="Hide activities" class="text-muted" ><i class="icon-eye-close small"></i></a></li>
+                            <li id="modal-activities"><a href="#" title="Hide comments" class="text-muted"><i class=" icon-comment-alt small"></i></a></li>
+                            <li id="modal-logged-user-activities"><a href="#" title="Hide same user activities" class="text-muted"><i class="icon-lock small"></i></a></li>
+                        </ul>
+                  </div>
+			</div> 
 			<div class="list-group-item-text">
 			  <ul class="media-list" id="js-board-activities">
 				<% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "comment_card"}))){ %>
@@ -453,7 +438,17 @@
 				</li>
 			<% } %>
 			<% if(!_.isEmpty(role_links.where({slug: "subscribe_card"}))){ %>
-			    <li> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- i18next.t('Subscribe') %> " href=""><%- i18next.t('Subscribe') %>
+				<%
+					var subscribe_disabled = '';
+					var subscribed = card.list.collection.board.board_subscribers.findWhere({
+						user_id: parseInt(authuser.user.id),
+						is_subscribed: 1
+					}); 
+					if (subscribed) {
+						subscribe_disabled = 'disabled';
+					}
+				%>
+			    <li class="<%= subscribe_disabled %>"> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- i18next.t('Subscribe') %> " href=""><%- i18next.t('Subscribe') %>
 		       <% if(!_.isEmpty(cards_subscribers)){ %>
 			    <i class="icon-ok"></i>
 		      <% } %>

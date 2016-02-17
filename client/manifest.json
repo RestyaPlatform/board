@@ -1,0 +1,22 @@
+{
+	"short_name": "Restyaboard",
+	"icons": [
+		{
+			"src": "apple-touch-icon.png",
+			"sizes": "57x57",
+			"type": "image/png"
+		},
+		{
+			"src": "apple-touch-icon-72x72.png",
+			"sizes": "72x72",
+			"type": "image/png"
+		},
+		{
+			"src": "apple-touch-icon-114x114.png",
+			"sizes": "114x114",
+			"type": "image/png"
+		}
+	],
+	"start_url": "/",
+	"display": "standalone"
+}

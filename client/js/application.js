@@ -90,6 +90,27 @@ callbackTranslator = {
             $('#progress').width('101%').delay(200).fadeOut(400, function() {
                 $(this).remove();
             });
+            if (model !== null && !_.isUndefined(model.responseText) && !_.isEmpty(model.responseText)) {
+                if (JSON.parse(model.responseText).error.type === 'board') {
+                    changeTitle('404 Page not found');
+                    this.headerView = new App.HeaderView({
+                        model: authuser
+                    });
+                    $('#header').html(this.headerView.el);
+                    $('#content').html(new App.Error404View().el);
+                    return;
+                } else if (JSON.parse(model.responseText).error.type === 'visibility') {
+                    changeTitle('Board not found');
+                    this.headerView = new App.HeaderView({
+                        model: authuser
+                    });
+                    $('#header').html(this.headerView.el);
+                    $('#content').html(new App.Board404View({
+                        model: authuser
+                    }).el);
+                    return;
+                }
+            }
             if (model === null) {
                 changeTitle('404 Page not found');
                 this.headerView = new App.HeaderView({
@@ -127,7 +148,7 @@ callbackTranslator = {
                 var offline_data = new App.ListCollection();
                 offline_data.syncDirty();
             }
-            if (!_.isEmpty(model.error) && model.error.type === 'OAuth') {
+            if (model !== null && !_.isUndefined(model.responseText) && !_.isEmpty(model.responseText) && JSON.parse(model.responseText).error.type === 'OAuth') {
                 api_token = '';
                 if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null) {
                     var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
@@ -243,7 +264,8 @@ var AppRouter = Backbone.Router.extend({
         'settings/:id': 'settings_type',
         'email_templates': 'email_templates',
         'email_templates/:id': 'email_template_type',
-        'activities': 'activity_index'
+        'activities': 'activity_index',
+        'users/import': 'users_import'
     },
     initialize: function() {
         $('body').removeAttr('style');
@@ -489,6 +511,11 @@ var AppRouter = Backbone.Router.extend({
     activity_index: function() {
         new App.ApplicationView({
             model: 'activity_index'
+        });
+    },
+    users_import: function() {
+        new App.ApplicationView({
+            model: 'users_import'
         });
     }
 });

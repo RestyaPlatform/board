@@ -12,13 +12,14 @@
      } else if (!_.isEmpty(background_color) && background_color != 'NULL') { 
      	preview = '<span style="background-color:' + background_color + '" class=" background-box show well-lg"></span>'; 
      }
-%>
+%> 
 <li class="js-list-form"><a class="nav-list-item js-show-filters" href="#"><span class="icon-sm icon-filter icon-type"></span> <%- i18next.t('Filter Cards') %></a></li>
+<li><a class="nav-list-item js-show-labels" href="#"><span class="icon-sm  icon-tag icon-type"></span> <%- i18next.t('Labels') %></a></li>
 <% if(!_.isUndefined(authuser.user)) {%>
 	<% if(!_.isEmpty(role_links.where({slug: "view_archived_lists"})) || !_.isEmpty(role_links.where({slug: "view_archived_cards"}))){ %>
 	<li><a class="nav-list-item js-archived-items" href="#"><span class="icon-sm icon-archive icon-type"></span> <%- i18next.t('Archived Items') %></a></li>
 	<% } %>
-<% } %>
+<% } %> 
 <%if(!_.isUndefined(authuser.user)) {%>
 <% if(!_.isEmpty(role_links.where({slug: "view_sync_calendar"}))){ %>
 <li class="dropdown js-sync-google-dropdown inner-dropdown"><a href="#" class="js-syn-google-calendar" data-toggle="dropdown"><span class="icon-calendar"></span><%- i18next.t('iCal Feed') %></a>
@@ -40,6 +41,22 @@
 </li>
 <% } %>
 <li class="divider"></li>
+<%if(!_.isUndefined(authuser.user)) {%> 
+  <li class="navbar-btn right-mar">
+	<form name="BoardSubscribeForm" id="BoardSubscribeForm">
+	  <input id="inputBoardSubscribe" name="is_subscribed" type="hidden" value=" <% if(!_.isUndefined(subscriber)) { %> <%- subscriber.attributes.is_subscribed %><%}else{%>0<%}%>">
+	</form> 
+	<% if(!_.isUndefined(subscriber) && parseInt(subscriber.attributes.is_subscribed)) { %>
+	<% if(!_.isEmpty(role_links.where({slug: "unsubscribe_board"}))){ %>
+	<a href="#" class="js-show-unsubscribe-form navbar-btn h4 list-group-item-text" name="unsubscribe" title="<%- i18next.t('Unsubscribe') %>" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-close"></i><span class="hidden-xs"><%- i18next.t('Unsubscribe') %></span></a>
+	<% } %>
+	<% } else {%> 
+	<% if(!_.isEmpty(role_links.where({slug: "subscribe_board"}))){ %>
+	<a href="#" class="js-show-subscribe-form navbar-btn h4" name="subscribe" title="<%- i18next.t('Subscribe') %>" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-open"></i><span class="hidden-xs"><%- i18next.t('Subscribe') %></span></a>
+	<% } %>
+	<% } %>
+  </li>
+<% } %>  
 <% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
 <li><a href="#" class="nav-list-item nav-list-sub-item js-change-background"><%- i18next.t('Change Background') %></a></li>
 <li><a href="#" class="nav-list-item nav-list-sub-item js-email-to-board-settings"> <%- i18next.t('Email to board settings') %></a></li>
