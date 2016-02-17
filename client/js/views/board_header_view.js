@@ -1268,6 +1268,7 @@ App.BoardHeaderView = Backbone.View.extend({
             });
             if (!_.isEmpty(filtered_lists)) {
                 _.each(filtered_lists, function(list) {
+					list.board = self.model;
                     el.find('.js-archived-cards-container').append(new App.ArchivedListView({
                         model: list
                     }).el);
