@@ -515,7 +515,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 array_push($pg_params, $r_resource_filters['filter']);
                 $i++;
             }
-            $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ORDER BY al.id DESC LIMIT ' . PAGING_COUNT . ') as d ';
+			$limit = PAGING_COUNT;
+			if (!empty($r_resource_filters['limit'])) {
+				$limit = $r_resource_filters['limit'];
+			}
+            $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ORDER BY al.id DESC LIMIT ' . $limit . ') as d ';
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1' . $condition;
         }
         break;
@@ -578,7 +582,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 			array_push($pg_params, $r_resource_filters['filter']);
 			$i++;
 		}
-        $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c ON  al.card_id = c.id ' . $condition . ' ORDER BY id DESC limit ' . PAGING_COUNT . ') as d ';
+		$limit = PAGING_COUNT;
+		if (!empty($r_resource_filters['limit'])) {
+			$limit = $r_resource_filters['limit'];
+		}
+        $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c ON  al.card_id = c.id ' . $condition . ' ORDER BY id DESC limit ' . $limit . ') as d ';
         $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         break;
 
@@ -4412,7 +4420,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
             );
             $response = executeQuery("SELECT user_id as username, expires, scope, client_id FROM oauth_access_tokens WHERE client_id = $1 AND access_token = $2", $conditions);
             $expires = strtotime($response['expires']);
-            if ((empty($response) || !empty($response['error']) || ($expires > 0 && $expires < time())) && $response['client_id'] != 7857596005287233) {
+            if (empty($response) || !empty($response['error']) || ($expires > 0 && $expires < time() && $response['client_id'] != 7857596005287233)) {
                 $response['error']['type'] = 'OAuth';
                 echo json_encode($response);
                 header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
