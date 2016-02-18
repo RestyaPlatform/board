@@ -91,7 +91,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $board_ids = array();
         if (!empty($user['boards_users'])) {
             $boards_users = json_decode($user['boards_users'], true);
-            foreach ($boards_users as $boards_user) {
+            foreach($boards_users as $boards_user) {
                 $board_ids[] = $boards_user['board_id'];
             }
         }
@@ -590,7 +590,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/workflow_templates':
         $files = glob(APP_PATH . '/client/js/workflow_templates/*.json', GLOB_BRACE);
         $i = 0;
-        foreach ($files as $file) {
+        foreach($files as $file) {
             $file_name = basename($file, '.json');
             $data = file_get_contents($file);
             $json = json_decode($data, true);
@@ -617,7 +617,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $search_response = doGet($elasticsearch_url);
                 $response['result'] = array();
                 if (!empty($search_response['hits']['hits'])) {
-                    foreach ($search_response['hits']['hits'] as $result) {
+                    foreach($search_response['hits']['hits'] as $result) {
                         $card = array(
                             'id' => $result['_source']['id'],
                             'name' => $result['_source']['name'],
@@ -681,22 +681,22 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $response[$row['name']] = $row['value'];
         }
         $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
-        foreach ($files as $file) {
+        foreach($files as $file) {
             $content = file_get_contents($file);
             $data = json_decode($content, true);
             if ($data['enabled'] === true) {
                 if (!empty($data['settings'])) {
-                    foreach ($data['settings'] as $key => $value) {
+                    foreach($data['settings'] as $key => $value) {
                         if ($value['is_public']) {
                             $value['name'] = $key;
                             $response['apps']['settings'][] = $value;
                         }
                     }
                 }
-                foreach ($data['assets']['js'] as $jsfiles) {
+                foreach($data['assets']['js'] as $jsfiles) {
                     $response['apps']['js'][] = $jsfiles;
                 }
-                foreach ($data['assets']['css'] as $cssfiles) {
+                foreach($data['assets']['css'] as $cssfiles) {
                     $response['apps']['css'][] = $cssfiles;
                 }
             }
@@ -705,7 +705,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/apps':
         $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
-        foreach ($files as $file) {
+        foreach($files as $file) {
             $folder = explode('/', $file);
             $content = file_get_contents($file);
             $data = json_decode($content, true);
@@ -721,7 +721,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
         }
         if (!empty($data['settings'])) {
-            foreach ($data['settings'] as $key => $value) {
+            foreach($data['settings'] as $key => $value) {
                 $value['name'] = $key;
                 $value['folder'] = $r_resource_filters['app'];
                 $value['app_name'] = $data['name'];
@@ -872,7 +872,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             $revisions = unserialize($obj['board_activities'][$k]['revisions']);
                             unset($dif);
                             if (!empty($revisions['new_value'])) {
-                                foreach ($revisions['new_value'] as $key => $value) {
+                                foreach($revisions['new_value'] as $key => $value) {
                                     if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $obj['type'] != 'moved_card_checklist_item' && $obj['type'] != 'add_card_desc' && $obj['type'] != 'add_card_duedate' && $obj['type'] != 'delete_card_duedate' && $obj['type'] != 'change_visibility' && $obj['type'] != 'add_background' && $obj['type'] != 'change_background') {
                                         $old_val = ($revisions['old_value'][$key] != null && $revisions['old_value'][$key] != 'null') ? $revisions['old_value'][$key] : '';
                                         $new_val = ($revisions['new_value'][$key] != null && $revisions['new_value'][$key] != 'null') ? $revisions['new_value'][$key] : '';
@@ -901,7 +901,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $obj['revisions'] = $revisions;
                         unset($dif);
                         if (!empty($revisions['new_value'])) {
-                            foreach ($revisions['new_value'] as $key => $value) {
+                            foreach($revisions['new_value'] as $key => $value) {
                                 if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $obj['type'] != 'moved_card_checklist_item' && $obj['type'] != 'add_card_desc' && $obj['type'] != 'add_card_duedate' && $obj['type'] != 'delete_card_duedate' && $obj['type'] != 'add_background' && $obj['type'] != 'change_background' && $obj['type'] != 'change_visibility') {
                                     $old_val = (isset($revisions['old_value'][$key]) && $revisions['old_value'][$key] != null && $revisions['old_value'][$key] != 'null') ? $revisions['old_value'][$key] : '';
                                     $new_val = (isset($revisions['new_value'][$key]) && $revisions['new_value'][$key] != null && $revisions['new_value'][$key] != 'null') ? $revisions['new_value'][$key] : '';
@@ -998,7 +998,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $obj['revisions'] = $revisions;
                         unset($dif);
                         if (!empty($revisions['new_value'])) {
-                            foreach ($revisions['new_value'] as $key => $value) {
+                            foreach($revisions['new_value'] as $key => $value) {
                                 if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $obj['type'] != 'moved_card_checklist_item' && $obj['type'] != 'add_card_desc' && $obj['type'] != 'add_card_duedate' && $obj['type'] != 'delete_card_duedate' && $obj['type'] != 'add_background' && $obj['type'] != 'change_background' && $obj['type'] != 'change_visibility') {
                                     $old_val = (isset($revisions['old_value'][$key])) ? $revisions['old_value'][$key] : '';
                                     $new_val = (isset($revisions['new_value'][$key])) ? $revisions['new_value'][$key] : '';
@@ -1075,7 +1075,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         unset($post_arr['action_id']);
         $user_ids = $post_arr;
         if ($action_id == 1) {
-            foreach ($user_ids as $user_id) {
+            foreach($user_ids as $user_id) {
                 $data = array(
                     0,
                     $user_id['user_id']
@@ -1086,7 +1086,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'success' => 'Checked users are blocked successfully.'
             );
         } else if ($action_id == 2) {
-            foreach ($user_ids as $user_id) {
+            foreach($user_ids as $user_id) {
                 $data = array(
                     1,
                     $user_id['user_id']
@@ -1097,7 +1097,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'success' => 'Checked users are unblocked successfully.'
             );
         } else if ($action_id == 3) {
-            foreach ($user_ids as $user_id) {
+            foreach($user_ids as $user_id) {
                 $conditions = array(
                     $user_id['user_id']
                 );
@@ -1117,7 +1117,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         unset($post_arr['action_id']);
         $board_ids = $post_arr;
         if ($action_id == 1) {
-            foreach ($board_ids as $board_id) {
+            foreach($board_ids as $board_id) {
                 $data = array(
                     1,
                     $board_id['board_id']
@@ -1128,7 +1128,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'success' => 'Checked boards are closed successfully.'
             );
         } else if ($action_id == 2) {
-            foreach ($board_ids as $board_id) {
+            foreach($board_ids as $board_id) {
                 $data = array(
                     0,
                     $board_id['board_id']
@@ -1139,7 +1139,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'success' => 'Checked boards are reopened successfully.'
             );
         } else if ($action_id == 3) {
-            foreach ($board_ids as $board_id) {
+            foreach($board_ids as $board_id) {
                 $conditions = array(
                     $board_id['board_id']
                 );
@@ -1315,7 +1315,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $board_ids = array();
             if (!empty($user['boards_users'])) {
                 $boards_users = json_decode($user['boards_users'], true);
-                foreach ($boards_users as $boards_user) {
+                foreach($boards_users as $boards_user) {
                     $board_ids[] = $boards_user['board_id'];
                 }
             }
@@ -1404,7 +1404,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
                 if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
                     $profile_picture_path = $save_path . DIRECTORY_SEPARATOR . $file['name'];
-                    foreach ($thumbsizes['User'] as $key => $value) {
+                    foreach($thumbsizes['User'] as $key => $value) {
                         $mediadir = APP_PATH . '/client/img/' . $key . '/User/' . $r_resource_vars['users'];
                         $list = glob($mediadir . '.*');
                         @unlink($list[0]);
@@ -1454,7 +1454,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         unset($put['ip_id']);
                     }
                     $sfields = '';
-                    foreach ($put as $key => $value) {
+                    foreach($put as $key => $value) {
                         if ($key != 'id') {
                             $fields.= ', ' . $key;
                         }
@@ -1471,7 +1471,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         unset($revisions['old_value']['is_send_newsletter']);
                         unset($_POST['is_send_newsletter']);
                         $temp_revisions = array_diff($revisions['old_value'], $_POST);
-                        foreach ($temp_revisions as $key => $value) {
+                        foreach($temp_revisions as $key => $value) {
                             $revisions['new_value'][$key] = (isset($_POST[$key])) ? $_POST[$key] : '';
                         }
                         $revision = serialize($revisions);
@@ -1486,7 +1486,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         }
                         if (!empty($revisions)) {
                             if (!empty($revisions['new_value'])) {
-                                foreach ($revisions['new_value'] as $key => $value) {
+                                foreach($revisions['new_value'] as $key => $value) {
                                     $old_val = (isset($revisions['old_value'][$key])) ? $revisions['old_value'][$key] : '';
                                     $new_val = (isset($revisions['new_value'][$key])) ? $revisions['new_value'][$key] : '';
                                     $dif[] = nl2br(getRevisiondifference($old_val, $new_val));
@@ -1516,7 +1516,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         break;
 
     case '/settings': //settings update
-        foreach ($r_post as $key => $value) {
+        foreach($r_post as $key => $value) {
             $qry_val_arr = array(
                 $value,
                 trim($key)
@@ -1686,7 +1686,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
                 if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
                     $r_post['name'] = $file['name'];
-                    foreach ($thumbsizes['Board'] as $key => $value) {
+                    foreach($thumbsizes['Board'] as $key => $value) {
                         $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Board' . DIRECTORY_SEPARATOR . $r_resource_vars['boards'];
                         $list = glob($mediadir . '.*');
                         @unlink($list[0]);
@@ -1858,7 +1858,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING *', $qry_val_arr);
                 $response['card_attachments'][] = pg_fetch_assoc($s_result);
             }
-            foreach ($thumbsizes['CardAttachment'] as $key => $value) {
+            foreach($thumbsizes['CardAttachment'] as $key => $value) {
                 $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][0]['id'];
                 $list = glob($mediadir . '.*');
                 @unlink($list[0]);
@@ -1893,7 +1893,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $foreign_ids['card_id'] = $r_resource_vars['cards'];
                     $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
                     $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['card_attachments'][$i]['id']);
-                    foreach ($thumbsizes['CardAttachment'] as $key => $value) {
+                    foreach($thumbsizes['CardAttachment'] as $key => $value) {
                         $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
                         $list = glob($imgdir . '.*');
                         @unlink($list[0]);
@@ -1903,7 +1903,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         } else if (isset($r_post['image_link']) && !empty($r_post['image_link'])) {
             if (!empty($r_post['image_link']) && is_array($r_post['image_link'])) {
                 $i = 0;
-                foreach ($r_post['image_link'] as $image_link) {
+                foreach($r_post['image_link'] as $image_link) {
                     $attachment_url_host = parse_url($image_link, PHP_URL_HOST);
                     $r_post['name'] = $r_post['link'] = $image_link;
                     $qry_val_arr = array(
@@ -1960,7 +1960,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         if (!empty($r_post['name'])) {
             $label_names = explode(',', $r_post['name']);
             unset($r_post['name']);
-            foreach ($label_names as $label_name) {
+            foreach($label_names as $label_name) {
                 $qry_val_arr = array(
                     $label_name
                 );
@@ -2025,7 +2025,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         unset($r_post['list_id']);
         unset($r_post['board_id']);
         $names = explode("\n", $r_post['name']);
-        foreach ($names as $name) {
+        foreach($names as $name) {
             $r_post['name'] = trim($name);
             if (!empty($r_post['name'])) {
                 $qry_val_arr = array(
@@ -2191,11 +2191,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
                 if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
                     $logo_url = $save_path . DIRECTORY_SEPARATOR . $file['name'];
-                    foreach ($thumbsizes['Organization'] as $key => $value) {
+                    foreach($thumbsizes['Organization'] as $key => $value) {
                         $list = glob(APP_PATH . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'] . '.*');
                         @unlink($list[0]);
                     }
-                    foreach ($thumbsizes['Organization'] as $key => $value) {
+                    foreach($thumbsizes['Organization'] as $key => $value) {
                         $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $r_resource_vars['organizations'];
                         $list = glob($mediadir . '.*');
                         @unlink($list[0]);
@@ -2246,7 +2246,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         if (isset($r_post['enable'])) {
             $app['enabled'] = $r_post['enable'];
         } else {
-            foreach ($r_post as $key => $val) {
+            foreach($r_post as $key => $val) {
                 $app['settings'][$key]['value'] = $val;
             }
         }
@@ -2372,7 +2372,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $position = 1;
                         $total_list = count($lists);
                         $s_sql = 'INSERT INTO lists (created, modified, board_id, name, user_id, position) VALUES';
-                        foreach ($lists as $list) {
+                        foreach($lists as $list) {
                             $qry_val_arr = array(
                                 $response['id'],
                                 $list,
@@ -2506,7 +2506,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card', $foreign_ids);
                 if (!empty($r_post['members'])) {
                     $s_usql = '';
-                    foreach ($r_post['members'] as $member) {
+                    foreach($r_post['members'] as $member) {
                         $s_usql = 'INSERT INTO cards_users (created, modified, card_id, user_id) VALUES(now(), now(), ' . $response['id'] . ', ' . $member . ') RETURNING id';
                         $s_result = pg_query_params($db_lnk, $s_usql, array());
                         $card_user = pg_fetch_assoc($s_result);
@@ -2530,7 +2530,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 if (!empty($r_post['card_labels'])) {
                     $label_names = explode(',', $r_post['card_labels']);
-                    foreach ($label_names as $label_name) {
+                    foreach($label_names as $label_name) {
                         $qry_val_arr = array(
                             $label_name
                         );
@@ -2592,7 +2592,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     while ($boards_user = pg_fetch_object($boards_users)) {
                         $boards_user_values = array();
                         array_push($boards_user_values, 'now()', 'now()', $new_board_id);
-                        foreach ($boards_user as $key => $value) {
+                        foreach($boards_user as $key => $value) {
                             if ($key != 'id') {
                                 if ($value === false) {
                                     array_push($boards_user_values, 'false');
@@ -2622,7 +2622,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     while ($boards_subscriber = pg_fetch_object($boards_subscribers)) {
                         $boards_subscriber_values = array();
                         array_push($boards_subscriber_values, 'now()', 'now()', $new_board_id);
-                        foreach ($boards_subscriber as $key => $value) {
+                        foreach($boards_subscriber as $key => $value) {
                             if ($key != 'id') {
                                 if ($value === false) {
                                     array_push($boards_subscriber_values, 'false');
@@ -2652,7 +2652,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     while ($boards_star = pg_fetch_object($boards_stars)) {
                         $boards_star_values = array();
                         array_push($boards_star_values, 'now()', 'now()', $new_board_id);
-                        foreach ($boards_star as $key => $value) {
+                        foreach($boards_star as $key => $value) {
                             if ($key != 'id') {
                                 if ($value === false) {
                                     array_push($boards_star_values, 'false');
@@ -2689,7 +2689,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $list_fields = 'created, modified, board_id, user_id';
                         $list_values = array();
                         array_push($list_values, 'now()', 'now()', $new_board_id, $authUser['id']);
-                        foreach ($list as $key => $value) {
+                        foreach($list as $key => $value) {
                             if ($key != 'id') {
                                 $list_fields.= ', ' . $key;
                                 if ($value === false) {
@@ -2719,7 +2719,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 while ($lists_subscriber = pg_fetch_object($lists_subscribers)) {
                                     $lists_subscriber_values = array();
                                     array_push($lists_subscriber_values, 'now()', 'now()', $new_list_id);
-                                    foreach ($lists_subscriber as $key => $value) {
+                                    foreach($lists_subscriber as $key => $value) {
                                         if ($key != 'id') {
                                             if ($value === false) {
                                                 array_push($lists_subscriber_values, 'false');
@@ -2752,7 +2752,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                     $card_id = $card->id;
                                     $card_values = array();
                                     array_push($card_values, 'now()', 'now()', $new_board_id, $new_list_id);
-                                    foreach ($card as $key => $value) {
+                                    foreach($card as $key => $value) {
                                         if ($key != 'id') {
                                             if ($value === false) {
                                                 array_push($card_values, 'false');
@@ -2783,7 +2783,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                             while ($attachment = pg_fetch_object($attachments)) {
                                                 $attachment_values = array();
                                                 array_push($attachment_values, 'now()', 'now()', $new_board_id, $new_list_id, $new_card_id);
-                                                foreach ($attachment as $key => $value) {
+                                                foreach($attachment as $key => $value) {
                                                     if ($key != 'id') {
                                                         if ($value === false) {
                                                             array_push($attachment_values, 'false');
@@ -2814,7 +2814,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                                 $checklist_values = array();
                                                 array_push($checklist_values, 'now()', 'now()', $new_card_id);
                                                 $checklist_id = $checklist->id;
-                                                foreach ($checklist as $key => $value) {
+                                                foreach($checklist as $key => $value) {
                                                     if ($key != 'id') {
                                                         if ($value === false) {
                                                             array_push($checklist_values, 'false');
@@ -2845,7 +2845,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                                         while ($checklist_item = pg_fetch_object($checklist_items)) {
                                                             $checklist_item_values = array();
                                                             array_push($checklist_item_values, 'now()', 'now()', $new_card_id, $new_checklist_id);
-                                                            foreach ($checklist_item as $key => $value) {
+                                                            foreach($checklist_item as $key => $value) {
                                                                 if ($key != 'id') {
                                                                     if ($value === false) {
                                                                         array_push($checklist_item_values, 'false');
@@ -2878,7 +2878,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                             while ($card_voter = pg_fetch_object($card_voters)) {
                                                 $card_voter_values = array();
                                                 array_push($card_voter_values, 'now()', 'now()', $new_card_id);
-                                                foreach ($card_voter as $key => $value) {
+                                                foreach($card_voter as $key => $value) {
                                                     if ($key != 'id') {
                                                         if ($value === false) {
                                                             array_push($card_voter_values, 'false');
@@ -2908,7 +2908,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                             while ($cards_label = pg_fetch_object($cards_labels)) {
                                                 $cards_label_values = array();
                                                 array_push($cards_label_values, 'now()', 'now()', $new_board_id, $new_list_id, $new_card_id);
-                                                foreach ($cards_label as $key => $value) {
+                                                foreach($cards_label as $key => $value) {
                                                     if ($key != 'id') {
                                                         if ($value === false) {
                                                             array_push($cards_label_values, 'false');
@@ -2938,7 +2938,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                             while ($cards_subscriber = pg_fetch_object($cards_subscribers)) {
                                                 $cards_subscriber_values = array();
                                                 array_push($cards_subscriber_values, 'now()', 'now()', $new_card_id);
-                                                foreach ($cards_subscriber as $key => $value) {
+                                                foreach($cards_subscriber as $key => $value) {
                                                     if ($key != 'id') {
                                                         if ($value === false) {
                                                             array_push($cards_subscriber_values, 'false');
@@ -2968,7 +2968,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                             while ($cards_user = pg_fetch_object($cards_users)) {
                                                 $cards_user_values = array();
                                                 array_push($cards_user_values, 'now()', 'now()', $new_card_id);
-                                                foreach ($cards_user as $key => $value) {
+                                                foreach($cards_user as $key => $value) {
                                                     if ($key != 'id') {
                                                         if ($value === false) {
                                                             array_push($cards_user_values, 'false');
@@ -3177,7 +3177,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $foreign_ids['card_id'] = $r_post['card_id'];
                 $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['id']);
-                foreach ($thumbsizes['CardAttachment'] as $key => $value) {
+                foreach($thumbsizes['CardAttachment'] as $key => $value) {
                     $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['id'];
                     $list = glob($mediadir . '.*');
                     @unlink($list[0]);
@@ -3796,7 +3796,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $id = $r_resource_vars['organizations'];
         $foreign_ids['organization_id'] = $r_resource_vars['organizations'];
         if (isset($r_put['logo_url']) && ($r_put['logo_url'] == 'null' || $r_put['logo_url'] == 'NULL')) {
-            foreach ($thumbsizes['Organization'] as $key => $value) {
+            foreach($thumbsizes['Organization'] as $key => $value) {
                 $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $id;
                 $list = glob($mediadir . '.*');
                 @unlink($list[0]);
@@ -3850,7 +3850,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         if ($table_name == 'users') {
             unset($put['ip_id']);
         }
-        foreach ($put as $key => $value) {
+        foreach($put as $key => $value) {
             if ($key != 'id') {
                 $fields.= ', ' . $key;
                 if ($value === false) {
@@ -3892,7 +3892,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             if (!empty($revisions) && $response['activity']['type'] != 'moved_card_checklist_item') {
                 if (!empty($revisions['new_value'])) {
                     $bool = true;
-                    foreach ($revisions['new_value'] as $key => $value) {
+                    foreach($revisions['new_value'] as $key => $value) {
                         if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'add_card_desc' && $activity_type != 'add_card_duedate' && $activity_type != 'delete_card_duedate' && $activity_type != 'add_background' && $activity_type != 'change_background' && $activity_type != 'change_visibility') {
                             $old_val = (isset($revisions['old_value'][$key])) ? $revisions['old_value'][$key] : '';
                             $new_val = (isset($revisions['new_value'][$key])) ? $revisions['new_value'][$key] : '';
@@ -3927,7 +3927,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $board_ids = array();
             if (!empty($user['boards_users'])) {
                 $boards_users = json_decode($user['boards_users'], true);
-                foreach ($boards_users as $boards_user) {
+                foreach($boards_users as $boards_user) {
                     $board_ids[] = $boards_user['board_id'];
                 }
             }
@@ -4180,7 +4180,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         if (!empty($revisions) && $response['activity']['type'] != 'moved_card_checklist_item') {
             if (!empty($revisions['new_value'])) {
-                foreach ($revisions['new_value'] as $key => $value) {
+                foreach($revisions['new_value'] as $key => $value) {
                     if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'add_card_desc' && $activity_type != 'add_card_duedate' && $activity_type != 'delete_card_duedate' && $activity_type != 'add_background' && $activity_type != 'change_background' && $activity_type != 'change_visibility') {
                         $old_val = (isset($revisions['old_value'][$key])) ? $revisions['old_value'][$key] : '';
                         $new_val = (isset($revisions['new_value'][$key])) ? $revisions['new_value'][$key] : '';
@@ -4361,7 +4361,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
             $response = array_merge($response, $role_links);
             $files = glob(APP_PATH . '/client/locales/*/translation.json', GLOB_BRACE);
             $lang_iso2_codes = array();
-            foreach ($files as $file) {
+            foreach($files as $file) {
                 $folder = explode('/', $file);
                 $folder_iso2_code = $folder[count($folder) - 2];
                 array_push($lang_iso2_codes, $folder_iso2_code);
@@ -4375,12 +4375,12 @@ if (!empty($_GET['_url']) && $db_lnk) {
             }
             $response['languages'] = json_encode($languages);
             $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
-            foreach ($files as $file) {
+            foreach($files as $file) {
                 $content = file_get_contents($file);
                 $data = json_decode($content, true);
                 $folder = explode('/', $file);
                 if ($data['enabled'] === true) {
-                    foreach ($data as $key => $value) {
+                    foreach($data as $key => $value) {
                         if ($key != 'settings') {
                             $response['apps'][$folder[count($folder) - 2]][$key] = $value;
                         }
