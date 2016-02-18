@@ -502,7 +502,7 @@ function ldapAuthenticate($p_user_id, $p_password)
  *
  * @return true if links allowed false otherwise
  */
-function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r_resource_vars)
+function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r_resource_vars, $post_data)
 {
     global $r_debug, $db_lnk, $authUser;
     $role = 3; // Guest role id
@@ -517,6 +517,9 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
 	$organization_exception_arr = array('/organizations/?');
 	//temp fix
 	if((!empty($r_resource_vars['boards']) && !in_array($r_resource_cmd, $board_exception_arr))  || in_array($r_resource_cmd, $tem_arr)) {
+		if ($r_request_method == 'PUT' && in_array($r_resource_cmd, $tem_arr)) {
+			$r_resource_vars['boards'] = $post_data['board_id'];
+		}
 		$qry_val_arr = array(
 			$r_resource_vars['boards'],
 			$authUser['id']
