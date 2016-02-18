@@ -32,16 +32,12 @@ App.ArchivedCardsView = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
-        'click .js-delete-all-archived-cards': 'deleteAllArchivedCards'
+        'click .js-delete-all-archived-cards-confirm': 'deleteAllArchivedCardsConfirm'
     },
-    deleteAllArchivedCards: function(e) {
-        var self = this;
-        self.model.url = api_url + 'boards/' + self.model.id + '/cards.json';
-        self.model.destroy({
-            success: function(model, response) {
-                self.flash('success', i18next.t('Cards deleted successfully.'));
-            }
-        });
+    deleteAllArchivedCardsConfirm: function(e) {
+        $('.js-setting-response').html(new App.ArchiveCardDeleteConfirmView({
+            model: this.model,
+        }).el);
         return false;
     },
     /**

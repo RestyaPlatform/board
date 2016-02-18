@@ -13,7 +13,7 @@ if (typeof App == 'undefined') {
  * @constructor
  * @extends Backbone.View
  */
-App.ArchivedListsView = Backbone.View.extend({
+App.ArchiveListDeleteConfirmView = Backbone.View.extend({
     /**
      * Constructor
      * initialize default values and actions
@@ -24,7 +24,7 @@ App.ArchivedListsView = Backbone.View.extend({
         }
         this.render();
     },
-    template: JST['templates/archived_lists'],
+    template: JST['templates/archive_list_delete_confirm'],
     tagName: 'div',
     className: 'clearfix col-xs-12',
     /**
@@ -32,12 +32,28 @@ App.ArchivedListsView = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
-        'click .js-delete-all-archived-lists-confirm': 'deleteAllArchivedlistsConfirm'
+        'click .js-delete-all-archived-list-delete': 'deleteAllArchivedlists',
+        'click .js-close-popup': 'closePopup',
     },
-    deleteAllArchivedlistsConfirm: function(e) {
-        $('.js-setting-response').html(new App.ArchiveListDeleteConfirmView({
-            model: this.model,
-        }).el);
+    deleteAllArchivedlists: function(e) {
+        var self = this;
+        self.model.url = api_url + 'boards/' + self.model.id + '/lists.json';
+        self.model.destroy({
+            success: function(model, response) {
+                self.model.lists.each(function(list) {
+                    if (!_.isUndefined(list) && !_.isUndefined(list.attributes) && list.attributes.is_archived === 1) {
+                        list.collection.remove(list);
+                    }
+                });
+                self.flash('success', i18next.t('Lists deleted successfully.'));
+                $('.js-archived-items').trigger('click');
+            }
+        });
+        return false;
+    },
+    closePopup: function(e) {
+        var target = $(e.target);
+        target.parents('li.dropdown:first, div.dropdown:first').removeClass('open');
         return false;
     },
     /**
@@ -49,7 +65,7 @@ App.ArchivedListsView = Backbone.View.extend({
      */
     render: function() {
         this.$el.html(this.template({
-            board: this.model,
+            list: this.model,
         }));
         this.showTooltip();
         return this;
