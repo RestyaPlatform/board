@@ -4499,7 +4499,12 @@ if (!empty($_GET['_url']) && $db_lnk) {
 			$r_resource_vars[$matches[1][$i]] = $matches[2][$i];
 		}
 	}
-    if ($r_resource_cmd == '/users/logout' || checkAclLinks($_SERVER['REQUEST_METHOD'], $r_resource_cmd, $r_resource_vars)) {
+	$post_data = array();
+	if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
+		$r_put = json_decode(file_get_contents('php://input'));
+		$post_data = $r_put = (array)$r_put;		
+	}
+    if ($r_resource_cmd == '/users/logout' || checkAclLinks($_SERVER['REQUEST_METHOD'], $r_resource_cmd, $r_resource_vars, $post_data)) {
         // /users/5/products/10 -> array('users' => 5, 'products' => 10) ...        
         if (!empty($response['scope'])) {
             $scope = explode(" ", $response['scope']);
@@ -4529,9 +4534,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
                 break;
 
             case 'PUT':
-                if ((in_array('write', $scope)) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) {
-                    $r_put = json_decode(file_get_contents('php://input'));
-                    $r_put = (array)$r_put;
+                if ((in_array('write', $scope)) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) {                    
                     r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put);
                     $is_valid_req = true;
                 } else {
