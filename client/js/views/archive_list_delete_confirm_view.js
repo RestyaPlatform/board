@@ -33,22 +33,22 @@ App.ArchiveListDeleteConfirmView = Backbone.View.extend({
      */
     events: {
         'click .js-delete-all-archived-list-delete': 'deleteAllArchivedlists',
-		'click .js-close-popup': 'closePopup',
+        'click .js-close-popup': 'closePopup',
     },
     deleteAllArchivedlists: function(e) {
         var self = this;
         self.model.url = api_url + 'boards/' + self.model.id + '/lists.json';
-		self.model.attributes.lists.forEach(function(list, index) {
-			if (!_.isEmpty(list)) {
-				if (!_.isUndefined(list.is_archived) && parseInt(list.is_archived) === 1) {
-					self.model.attributes.lists.splice(index, 1);
-				}
-			}
-		});
+        self.model.attributes.lists.forEach(function(list, index) {
+            if (!_.isEmpty(list)) {
+                if (!_.isUndefined(list.is_archived) && parseInt(list.is_archived) === 1) {
+                    self.model.attributes.lists.splice(index, 1);
+                }
+            }
+        });
         self.model.destroy({
             success: function(model, response) {
                 self.flash('success', i18next.t('Lists deleted successfully.'));
-				$('.js-archived-items').trigger('click');
+                $('.js-archived-items').trigger('click');
             }
         });
         return false;

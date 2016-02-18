@@ -29,7 +29,7 @@ App.ArchiveCardDeleteConfirmView = Backbone.View.extend({
 
     events: {
         'click .js-delete-all-archived-cards-delete': 'deleteAllArchivedCards',
-		'click .js-close-popup': 'closePopup',
+        'click .js-close-popup': 'closePopup',
     },
     deleteAllArchivedCards: function(e) {
         var self = this;
@@ -37,19 +37,19 @@ App.ArchiveCardDeleteConfirmView = Backbone.View.extend({
         self.model.destroy({
             success: function(model, response) {
                 self.model.attributes.lists.forEach(function(list, index) {
-						_.each(list.cards, function(card, key) {
-							if (!_.isEmpty(card)) {
-								if (!_.isUndefined(card.is_archived) && parseInt(card.is_archived) === 1) {
-										self.model.attributes.lists[index].cards.splice(key, 1);
-								}
-							}
-						});
+                    _.each(list.cards, function(card, key) {
+                        if (!_.isEmpty(card)) {
+                            if (!_.isUndefined(card.is_archived) && parseInt(card.is_archived) === 1) {
+                                self.model.attributes.lists[index].cards.splice(key, 1);
+                            }
+                        }
+                    });
                 });
-				self.flash('success', i18next.t('Cards deleted successfully.'));
+                self.flash('success', i18next.t('Cards deleted successfully.'));
                 $('.js-archived-items').trigger('click');
-			}
+            }
         });
-		console.log(self.model);
+        console.log(self.model);
         return false;
     },
     closePopup: function(e) {

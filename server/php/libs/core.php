@@ -28,7 +28,7 @@ function getToken($post)
     $_SERVER['REQUEST_METHOD'] = 'POST';
     $_SERVER['CONTENT_TYPE'] = 'application/x-www-form-urlencoded';
     $_POST = $post;
-    OAuth2\Autoloader::register();
+    OAuth2Autoloader::register();
     $oauth_config = array(
         'user_table' => 'users'
     );
@@ -37,8 +37,8 @@ function getToken($post)
         'username' => R_DB_USER,
         'password' => R_DB_PASSWORD
     );
-    $storage = new OAuth2\Storage\Pdo($val_array, $oauth_config);
-    $server = new OAuth2\Server($storage);
+    $storage = new OAuth2StoragePdo($val_array, $oauth_config);
+    $server = new OAuth2Server($storage);
     if (isset($_POST['grant_type']) && $_POST['grant_type'] == 'password') {
         $val_array = array(
             'password' => $_POST['password']
@@ -49,15 +49,15 @@ function getToken($post)
         $user_credentials = array(
             'user_credentials' => $users
         );
-        $storage = new OAuth2\Storage\Memory($user_credentials);
-        $server->addGrantType(new OAuth2\GrantType\UserCredentials($storage));
+        $storage = new OAuth2StorageMemory($user_credentials);
+        $server->addGrantType(new OAuth2GrantTypeUserCredentials($storage));
     } elseif (isset($_POST['grant_type']) && $_POST['grant_type'] == 'refresh_token') {
         $always_issue_new_refresh_token = array(
             'always_issue_new_refresh_token' => true
         );
-        $server->addGrantType(new OAuth2\GrantType\RefreshToken($storage, $always_issue_new_refresh_token));
+        $server->addGrantType(new OAuth2GrantTypeRefreshToken($storage, $always_issue_new_refresh_token));
     } elseif (isset($_POST['grant_type']) && $_POST['grant_type'] == 'authorization_code') {
-        $server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
+        $server->addGrantType(new OAuth2GrantTypeAuthorizationCode($storage));
     } else {
         $val_array = array(
             'client_secret' => OAUTH_CLIENT_SECRET
@@ -68,10 +68,10 @@ function getToken($post)
         $credentials = array(
             'client_credentials' => $clients
         );
-        $storage = new OAuth2\Storage\Memory($credentials);
-        $server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
+        $storage = new OAuth2StorageMemory($credentials);
+        $server->addGrantType(new OAuth2GrantTypeClientCredentials($storage));
     }
-    $response = $server->handleTokenRequest(OAuth2\Request::createFromGlobals())->send('return');
+    $response = $server->handleTokenRequest(OAuth2Request::createFromGlobals())->send('return');
     $_SERVER['REQUEST_METHOD'] = $old_server_method;
     if (!empty($old_content_type)) {
         $_SERVER['CONTENT_TYPE'] = $old_content_type;
@@ -335,7 +335,7 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
         array_push($values, $foreign_id);
     }
     $all_foreign_ids = $foreign_ids;
-    foreach ($foreign_ids as $key => $value) {
+    foreach($foreign_ids as $key => $value) {
         if ($key != 'id' && $key != 'user_id') {
             array_push($fields, $key);
             if ($value === false) {
@@ -817,7 +817,7 @@ function pg_execute_insert($table_name, $r_post, $return_row = 1)
     $values = 'now(), now()';
     $val_arr = array();
     $i = 1;
-    foreach ($r_post as $key => $value) {
+    foreach($r_post as $key => $value) {
         if ($key != 'id') {
             $fields.= ', "' . $key . '"';
             $values.= ', $' . $i;
@@ -927,14 +927,14 @@ function importTrelloBoard($board = array())
         $new_board = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards (created, modified, name, background_color, background_picture_url, background_pattern_url, user_id, board_visibility) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
         $admin_user_id = array();
         if (!empty($board['members'])) {
-            foreach ($board['memberships'] as $membership) {
+            foreach($board['memberships'] as $membership) {
                 if ($membership['memberType'] == 'admin') {
                     $admin_user_id[] = $membership['idMember'];
                 }
             }
         }
         if (!empty($board['members'])) {
-            foreach ($board['members'] as $member) {
+            foreach($board['members'] as $member) {
                 $qry_val_arr = array(
                     $member['username']
                 );
@@ -972,7 +972,7 @@ function importTrelloBoard($board = array())
         if (!empty($board['lists'])) {
             $lists = array();
             $i = 0;
-            foreach ($board['lists'] as $list) {
+            foreach($board['lists'] as $list) {
                 $i+= 1;
                 $is_closed = ($list['closed']) ? 'true' : 'false';
                 $qry_val_arr = array(
@@ -988,7 +988,7 @@ function importTrelloBoard($board = array())
         }
         if (!empty($board['cards'])) {
             $cards = array();
-            foreach ($board['cards'] as $card) {
+            foreach($board['cards'] as $card) {
                 $is_closed = ($card['closed']) ? 'true' : 'false';
                 $date = null;
                 if (!empty($card['due'])) {
@@ -1007,7 +1007,7 @@ function importTrelloBoard($board = array())
                 $_card = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards (created, modified, board_id, list_id, name, description, is_archived, position, due_date, user_id) VALUES (now(), now(), $1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                 $cards[$card['id']] = $_card['id'];
                 if (!empty($card['labels'])) {
-                    foreach ($card['labels'] as $label) {
+                    foreach($card['labels'] as $label) {
                         $qry_val_arr = array(
                             $label['color']
                         );
@@ -1028,7 +1028,7 @@ function importTrelloBoard($board = array())
                     }
                 }
                 if (!empty($card['attachments'])) {
-                    foreach ($card['attachments'] as $attachment) {
+                    foreach($card['attachments'] as $attachment) {
                         $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
                         $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
                         $save_path = str_replace('\\', '/', $save_path);
@@ -1050,7 +1050,7 @@ function importTrelloBoard($board = array())
                     }
                 }
                 if (!empty($card['idMembersVoted'])) {
-                    foreach ($card['idMembersVoted'] as $votedMemberId) {
+                    foreach($card['idMembersVoted'] as $votedMemberId) {
                         $qry_val_arr = array(
                             $_card['id'],
                             $users[$votedMemberId]
@@ -1059,7 +1059,7 @@ function importTrelloBoard($board = array())
                     }
                 }
                 if (!empty($card['idMembers'])) {
-                    foreach ($card['idMembers'] as $cardMemberId) {
+                    foreach($card['idMembers'] as $cardMemberId) {
                         $qry_val_arr = array(
                             $_card['id'],
                             $users[$cardMemberId]
@@ -1071,7 +1071,7 @@ function importTrelloBoard($board = array())
         }
         if (!empty($board['checklists'])) {
             $checklists = array();
-            foreach ($board['checklists'] as $checklist) {
+            foreach($board['checklists'] as $checklist) {
                 $qry_val_arr = array(
                     $checklist['name'],
                     $checklist['pos'],
@@ -1081,7 +1081,7 @@ function importTrelloBoard($board = array())
                 $_checklist = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO checklists (created, modified, name, position, card_id, user_id) VALUES (now(), now(), $1, $2, $3, $4) RETURNING id', $qry_val_arr));
                 $checklists[$checklist['id']] = $_checklist['id'];
                 if (!empty($checklist['checkItems'])) {
-                    foreach ($checklist['checkItems'] as $checkItem) {
+                    foreach($checklist['checkItems'] as $checkItem) {
                         $is_completed = ($checkItem['state'] == 'complete') ? 'true' : 'false';
                         $qry_val_arr = array(
                             $checkItem['name'],
@@ -1097,7 +1097,7 @@ function importTrelloBoard($board = array())
             }
         }
         if (!empty($board['actions'])) {
-            foreach ($board['actions'] as $action) {
+            foreach($board['actions'] as $action) {
                 if ($action['type'] == 'commentCard') {
                     $type = 'add_comment';
                     $comment = $action['data']['text'];
@@ -1279,7 +1279,8 @@ function isClientIdAvailable()
             $client_id
         );
         $oauth_client = executeQuery('SELECT * FROM oauth_clients WHERE client_id = $1', $qry_val_arr);
-    } while (!empty($oauth_client));
+    }
+    while (!empty($oauth_client));
     return $client_id;
 }
 /**
@@ -1299,6 +1300,7 @@ function isClientSecretAvailable()
             $client_secret
         );
         $oauth_client = executeQuery('SELECT * FROM oauth_clients WHERE client_secret = $1', $qry_val_arr);
-    } while (!empty($oauth_client));
+    }
+    while (!empty($oauth_client));
     return $client_secret;
 }

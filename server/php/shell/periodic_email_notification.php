@@ -31,19 +31,19 @@ if ($db_lnk) {
         $list_arr = (!empty($user['list_ids'])) ? array_filter(json_decode($user['list_ids'], true)) : '';
         $card_arr = (!empty($user['card_ids'])) ? array_filter(json_decode($user['card_ids'], true)) : '';
         if (!empty($board_arr)) {
-            foreach ($board_arr as $boards) {
+            foreach($board_arr as $boards) {
                 $board_ids[] = $boards['board_id'];
             }
         }
         if (!empty($list_arr)) {
-            foreach ($list_arr as $lists) {
+            foreach($list_arr as $lists) {
                 if (!in_array($lists['board_id'], $board_ids)) {
                     $list_ids[] = $lists['list_id'];
                 }
             }
         }
         if (!empty($card_arr)) {
-            foreach ($card_arr as $cards) {
+            foreach($card_arr as $cards) {
                 if (!in_array($cards['board_id'], $board_ids) && !in_array($cards['list_id'], $list_ids)) {
                     $card_ids[] = $cards['card_id'];
                 }
@@ -108,7 +108,7 @@ if ($db_lnk) {
                     $activity['revisions'] = $revisions;
                     unset($dif);
                     if (!empty($revisions['new_value'])) {
-                        foreach ($revisions['new_value'] as $key => $value) {
+                        foreach($revisions['new_value'] as $key => $value) {
                             if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $activity['type'] != 'moved_card_checklist_item' && $activity['type'] != 'add_card_desc' && $activity['type'] != 'add_card_duedate' && $activity['type'] != 'delete_card_duedate' && $activity['type'] != 'add_background' && $activity['type'] != 'change_background' && $activity['type'] != 'change_visibility' && $activity['type'] != 'change_card_position') {
                                 $old_val = (isset($revisions['old_value'][$key]) && $revisions['old_value'][$key] != null && $revisions['old_value'][$key] != 'null') ? $revisions['old_value'][$key] : '';
                                 $new_val = (isset($revisions['new_value'][$key]) && $revisions['new_value'][$key] != null && $revisions['new_value'][$key] != 'null') ? $revisions['new_value'][$key] : '';
@@ -201,7 +201,7 @@ if ($db_lnk) {
                     $activity['revisions'] = $revisions;
                     unset($dif);
                     if (!empty($revisions['new_value'])) {
-                        foreach ($revisions['new_value'] as $key => $value) {
+                        foreach($revisions['new_value'] as $key => $value) {
                             if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $activity['type'] != 'moved_card_checklist_item' && $activity['type'] != 'add_card_desc' && $activity['type'] != 'add_card_duedate' && $activity['type'] != 'delete_card_duedate' && $activity['type'] != 'add_background' && $activity['type'] != 'change_background' && $activity['type'] != 'change_visibility') {
                                 $old_val = (isset($revisions['old_value'][$key]) && $revisions['old_value'][$key] != null && $revisions['old_value'][$key] != 'null') ? $revisions['old_value'][$key] : '';
                                 $new_val = (isset($revisions['new_value'][$key]) && $revisions['new_value'][$key] != null && $revisions['new_value'][$key] != 'null') ? $revisions['new_value'][$key] : '';
@@ -294,7 +294,7 @@ if ($db_lnk) {
                     $activity['revisions'] = $revisions;
                     unset($dif);
                     if (!empty($revisions['new_value'])) {
-                        foreach ($revisions['new_value'] as $key => $value) {
+                        foreach($revisions['new_value'] as $key => $value) {
                             if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $activity['type'] != 'moved_card_checklist_item' && $activity['type'] != 'add_card_desc' && $activity['type'] != 'add_card_duedate' && $activity['type'] != 'delete_card_duedate' && $activity['type'] != 'add_background' && $activity['type'] != 'change_background' && $activity['type'] != 'change_visibility') {
                                 $old_val = (isset($revisions['old_value'][$key]) && $revisions['old_value'][$key] != null && $revisions['old_value'][$key] != 'null') ? $revisions['old_value'][$key] : '';
                                 $new_val = (isset($revisions['new_value'][$key]) && $revisions['new_value'][$key] != null && $revisions['new_value'][$key] != 'null') ? $revisions['new_value'][$key] : '';
