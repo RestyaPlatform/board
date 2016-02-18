@@ -27,6 +27,7 @@
 				  <% _.each(user.board_user_roles, function(board_user_role){%>
 							<li> <a href="#" data-board_user_role_id="<%- board_user_role.id %>" class="js-edit-board-member-permission"> <span class="show text-primary">
 							<%- board_user_role.name %>
+							<% if(board_user_role.id == user.attributes.board_user_role_id){%><i class="icon-check well-sm"></i><%}%>							
 							</span> <span class="text-muted"><%- i18next.t('Can view and edit cards, remove members, and change settings for the board.') %></span> </a> </li>
 							<li class="divider"></li>
 				  <% }); %>
