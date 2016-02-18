@@ -2619,7 +2619,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             } else if ($r_resource_cmd == '/boards/?/copy') {
                 $new_board_id = $row['id'];
                 //Copy board users
-                $boards_user_fields = 'user_id, is_admin';
+                $boards_user_fields = 'user_id, board_user_role_id';
                 $qry_val_arr = array(
                     $r_resource_vars['boards']
                 );
