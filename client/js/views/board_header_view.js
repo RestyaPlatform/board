@@ -72,8 +72,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-board-visibility': 'showBoardVisibility',
         'click .js-add-board-member-dropdown': 'addBoardMemberDropdown',
         'click .js-close-popover-board-member-dropdown': 'closeBoardMemberDropdown',
-        'click .js-show-subscribe-form': 'showSubscribeForm',
-        'click .js-show-unsubscribe-form': 'showUnsubscribeForm',
+        'click .js-subscribe-board': 'subcribeBoard',
         'click .js-switch-grid-view': 'switchGridView',
         'click .js-switch-list-view': 'switchListView',
         'click .js-switch-calendar-view': 'switchCalendarView',
@@ -227,16 +226,52 @@ App.BoardHeaderView = Backbone.View.extend({
      * @return false
      *
      */
-    showSubscribeForm: function(e) {
-        $('.js-setting-response').html(new App.SubscribeBoardConfirmView({
-            model: this.model,
-        }).el);
-        return false;
-    },
-    showUnsubscribeForm: function(e) {
-        $('.js-setting-response').html(new App.UnsubscribeBoardConfirmView({
-            model: this.model,
-        }).el);
+    subcribeBoard: function(e) {
+        e.preventDefault();
+        var name = $(e.currentTarget).attr('name');
+        var value = 'unsubscribe';
+        var content = '<i class="icon-eye-close"></i>' + i18next.t('Unsubscribe');
+        if (name == 'unsubscribe') {
+            value = 'subscribe';
+            content = '<i class="icon-eye-open"></i>' + i18next.t('Subscribe');
+        }
+        $(e.currentTarget).attr('name', value);
+        $(e.currentTarget).attr('title', value);
+        $(e.currentTarget).html(content);
+        var boardSubscriber = new App.BoardSubscriber();
+        if (!_.isUndefined(this.model.board_subscriber) && this.model.board_subscriber.attributes.id) {
+            value = '';
+            if ($('#inputBoardSubscribe').val() == 'false') {
+                value = 'true';
+                $('#inputBoardSubscribe').val(value);
+            } else {
+                value = 'false';
+                $('#inputBoardSubscribe').val(value);
+            }
+            var data = $('form#BoardSubscribeForm').serializeObject();
+            boardSubscriber.url = api_url + 'boards/' + this.model.id + '/board_subscribers/' + this.model.board_subscriber.attributes.id + '.json';
+            boardSubscriber.set('id', this.model.board_subscriber.attributes.id);
+            boardSubscriber.save(data, {
+                success: function(model, response) {}
+            });
+        } else {
+            var subscribe_data = {
+                board_id: this.model.id,
+                is_subscribed: 1
+            };
+            var self = this;
+            boardSubscriber.url = api_url + 'boards/' + this.model.id + '/board_subscribers.json';
+            boardSubscriber.save(subscribe_data, {
+                success: function(model, response) {
+                    boardSubscriber.set('id', parseInt(response.id));
+                    boardSubscriber.set('user_id', parseInt(response.user_id));
+                    boardSubscriber.set('board_id', parseInt(response.board_id));
+                    self.model.board_subscriber = boardSubscriber;
+                    self.model.board_subscribers.add(boardSubscriber);
+                    self.render();
+                }
+            });
+        }
         return false;
     },
     /**
@@ -429,14 +464,14 @@ App.BoardHeaderView = Backbone.View.extend({
                 model: this.model
             }).el);
             if (!_.isEmpty(filtered_cards)) {
-                $('.js-delete-all-archived-cards-confirm').removeClass('hide');
+				$('.js-delete-all-archived-cards-confirm').removeClass('hide');
                 _.each(filtered_cards, function(card) {
                     el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                         model: card
                     }).el);
                 });
             } else {
-                $('.js-delete-all-archived-cards-confirm').addClass('hide');
+				$('.js-delete-all-archived-cards-confirm').addClass('hide');
                 el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                     model: null
                 }).el);
@@ -1265,14 +1300,14 @@ App.BoardHeaderView = Backbone.View.extend({
                 is_archived: 1
             });
             if (!_.isEmpty(filtered_lists)) {
-                $('.js-delete-all-archived-lists-confirm').removeClass('hide');
+				$('.js-delete-all-archived-lists-confirm').removeClass('hide');
                 _.each(filtered_lists, function(list) {
                     el.find('.js-archived-cards-container').append(new App.ArchivedListView({
                         model: list
                     }).el);
                 });
             } else {
-                $('.js-delete-all-archived-lists-confirm').addClass('hide');
+				$('.js-delete-all-archived-lists-confirm').addClass('hide');
                 el.find('.js-archived-cards-container').append(new App.ArchivedListView({
                     model: null
                 }).el);
