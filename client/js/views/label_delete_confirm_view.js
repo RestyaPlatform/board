@@ -22,11 +22,15 @@ App.LabelDeleteConfirmView = Backbone.View.extend({
     },
     labelConfirmDelete: function(e) {
         var self = this;
-        self.model.url = api_url + 'boards/' + self.model.id + '/labels/' + this.label_id + '.json';
+        self.model.url = api_url + 'boards/' + self.model.id + '/labels/' + self.label_id + '.json';
         self.model.destroy({
             success: function(model, response) {
                 self.flash('success', i18next.t('Labels deleted successfully.'));
                 $('.js-show-labels').trigger('click');
+                var label = self.model.labels.findWhere({
+                    label_id: self.label_id
+                });
+                label.collection.remove(label);
             }
         });
         return false;
