@@ -814,6 +814,7 @@ App.BoardView = Backbone.View.extend({
                     });
                     list.attachments = self.model.attachments;
 					list.board_user_role_id = self.model.board_user_role_id;
+					list.board = self.model;
                     view = new App.ListView({
                         model: list,
                         attributes: {
@@ -1040,6 +1041,7 @@ App.BoardView = Backbone.View.extend({
             list.set(data, {
                 silent: true
             });
+			list.board = self.model;
             view = new App.ListView({
                 model: list,
                 attributes: {
