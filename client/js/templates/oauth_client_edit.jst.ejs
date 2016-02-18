@@ -1,40 +1,24 @@
-<div class="well-sm"><h3><%- i18next.t('Edit Client') %></h3></div>
+<div class="well-sm"><h3><%- i18next.t('Edit OAuth application') %></h3></div>
 <form id="oauthClientEditForm" name="oauthClientEditForm" class="form-horizontal col-xs-12">
   <div class="form-group">
-	<label class="col-sm-2 control-label col-xs-12" for="inputClientName"><%- i18next.t("Client Name") %></label>
+	<label class="col-sm-2 control-label col-xs-12" for="inputClientName"><%- i18next.t("Application Name") %></label>
 	<div class="col-sm-8 col-xs-12">
-		<input type="text" required name="client_name" value="<%- oauth_client.client_name %>" id="inputClientName" class="form-control" placeholder="<%- i18next.t('Client Name') %>" title="<%- i18next.t('Client Name') %>">
+		<input type="text" required name="client_name" value="<%- oauth_client.client_name %>" id="inputClientName" class="form-control" placeholder="<%- i18next.t('Application Name') %>" title="<%- i18next.t('Application Name') %>">
+		<div><span class="help-block"><%- i18next.t('Something users will recognize and trust') %></span></div>
 	</div>
   </div>
   <div class="form-group">
-	<label class="col-sm-2 control-label col-xs-12" for="inputClientUrl"><%- i18next.t("Client URL") %></label>
+	<label class="col-sm-2 control-label col-xs-12" for="inputClientUrl"><%- i18next.t("Homepage URL") %></label>
 	<div class="col-sm-8 col-xs-12">
-		<input type="text" name="client_url" value="<%- oauth_client.client_url %>" id="inputClientUrl" class="form-control" placeholder="<%- i18next.t('Client URL') %>" title="<%- i18next.t('Client URL') %>">
+		<input type="text" name="client_url" value="<%- oauth_client.client_url %>" id="inputClientUrl" class="form-control" placeholder="<%- i18next.t('Homepage URL') %>" title="<%- i18next.t('Homepage URL') %>">
+		<div><span class="help-block"><%- i18next.t('The full URL to your application homepage') %></span></div>
 	</div>
   </div>
   <div class="form-group">
-	<label class="col-sm-2 control-label col-xs-12" for="inputLogoUrl"><%- i18next.t("Logo URL") %></label>
+	<label class="col-sm-2 control-label col-xs-12" for="inputRedirectUris"><%- i18next.t("Authorization callback URL") %></label>
 	<div class="col-sm-8 col-xs-12">
-		<input type="text" name="logo_url" value="<%- oauth_client.logo_url %>" id="inputLogoUrl" class="form-control" placeholder="<%- i18next.t('Logo URL') %>" title="<%- i18next.t('Logo URL') %>">
-	</div>
-  </div>
-  <div class="form-group">
-	<label class="col-sm-2 control-label col-xs-12" for="inputTosUrl"><%- i18next.t("Tos URL") %></label>
-	<div class="col-sm-8 col-xs-12">
-		<input type="text" name="tos_url" value="<%- oauth_client.tos_url %>" id="inputTosUrl" class="form-control" placeholder="<%- i18next.t('Tos URL') %>" title="<%- i18next.t('Tos URL') %>">
-	</div>
-  </div>
-  <div class="form-group">
-	<label class="col-sm-2 control-label col-xs-12" for="inputPolicyUrl"><%- i18next.t("Policy URL") %></label>
-	<div class="col-sm-8 col-xs-12">
-		<input type="text" name="policy_url" value="<%- oauth_client.policy_url %>" id="inputPolicyUrl" class="form-control" placeholder="<%- i18next.t('Policy URL') %>" title="<%- i18next.t('Policy URL') %>">
-	</div>
-  </div>
-  <div class="form-group">
-	<label class="col-sm-2 control-label col-xs-12" for="inputRedirectUris"><%- i18next.t("Redirect URI(s)") %></label>
-	<div class="col-sm-8 col-xs-12">
-		<input type="text" name="redirect_uri" id="inputRedirectUris" class="form-control" placeholder="<%- i18next.t('Redirect URI (s)') %>" title="<%- i18next.t('Redirect URI (s)') %>">
-		<div><span class="help-block"><%- i18next.t('Multiple URL can provide separated by space')%></span></div>
+		<input type="text" name="redirect_uri" id="inputRedirectUris" class="form-control" placeholder="<%- i18next.t('Authorization callback URL') %>" title="<%- i18next.t('Authorization callback URL') %>">
+		<div><span class="help-block"><%- i18next.t('Your application\'s callback URL. Multiple URL can provide separated by space')%></span></div>
 	</div>
   </div>
   <div class="form-group">
