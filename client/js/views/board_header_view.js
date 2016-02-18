@@ -1056,11 +1056,11 @@ App.BoardHeaderView = Backbone.View.extend({
     },
     renderAdminBoardUsers: function() {
         var admins = this.model.board_users.filter(function(normal_user) {
-            return parseInt(normal_user.attributes.is_admin) === 1;
+            return parseInt(normal_user.attributes.board_user_role_id) === 1;
         });
         this.model.admin_board_users = admins;
         var normal_users = this.model.board_users.filter(function(normal_user) {
-            return parseInt(normal_user.attributes.is_admin) === 0;
+            return parseInt(normal_user.attributes.board_user_role_id) != 1;
         });
         this.model.normal_board_users = normal_users;
         this.render();
