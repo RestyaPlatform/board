@@ -12,7 +12,7 @@
 			<div class="clearfix dropdown js-show-emoji-list-response"> <a class="js-show-emoji-list show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Emoji') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Emoji') %></span> </a>
 			</div>
 		</li>
-		<% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "search_card", board_user_role_id: parseInt(list.board_user_role_id)}))){ %>
+		<% if(!_.isEmpty(activity.board.acl_links.where({slug: "search_card", board_user_role_id: parseInt(activity.board_user_role_id)}))){ %>
 			<li class="pull-left radio radio-inline">
 			  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Card') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Card') %></span> </a>
 				<ul class="dropdown-menu arrow col-xs-3 list-group">

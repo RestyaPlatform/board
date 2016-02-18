@@ -26,7 +26,7 @@
 	</div>
 	<div class="list-content vertical-scrollbar vertical-scrollbar-box js-board-list-cards" id="js-card-listing-<%- list.attributes.id %>">
 	</div>
-	<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "add_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
+	<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "add_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 		<div class="list-footer clearfix">
 			<div class="pull-left"><a href="#" title="<%- i18next.t('Add a card') %>" class="js-show-add-card-form js-bottom text-muted"><%- i18next.t("Add a card") %></a></div>
 <div class="js-card-add-form-<%= list.attributes.id %>"></div>			

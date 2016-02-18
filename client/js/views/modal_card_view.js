@@ -2128,6 +2128,8 @@ App.ModalCardView = Backbone.View.extend({
         var activitiy = this.model.activities.get({
             id: activity_id
         });
+		activitiy.board_user_role_id = this.model.board_user_role_id;
+		activitiy.board = this.model.board;
         $('.js-activity-' + activity_id).html(new App.EditActivityFormView({
             model: activitiy,
             attributes: {
