@@ -25,7 +25,7 @@ if ($db_lnk) {
     while ($card = pg_fetch_assoc($result)) {
         $cards_users = json_decode($card['cards_users']);
         if (!empty($cards_users)) {
-            foreach($cards_users as $cards_user) {
+            foreach ($cards_users as $cards_user) {
                 $mail_content = '';
                 if (!empty($cards_user->profile_picture_path)) {
                     $hash = md5(SECURITYSALT . 'User' . $cards_user->user_id . 'png' . 'small_thumb' . SITE_NAME);
@@ -47,9 +47,9 @@ if ($db_lnk) {
         }
     }
     if (!empty($users)) {
-        foreach($users as $key => $val) {
+        foreach ($users as $key => $val) {
             $to_mail = $key;
-            foreach($val as $CONTENT) {
+            foreach ($val as $CONTENT) {
                 $emailFindReplace['##CONTENT##'] = $CONTENT;
                 sendMail('due_date_notification', $emailFindReplace, $to_mail);
             }
