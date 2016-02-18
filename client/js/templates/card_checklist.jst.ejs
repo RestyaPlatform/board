@@ -1,11 +1,11 @@
 <div class="list-group-item-heading clearfix js-checklist-head">
 	<h3 class="pull-left col-xs-9">
 		<span class="pull-left row"><i class="icon-list text-muted lead"></i></span>
-		<span class="<% if(!_.isUndefined(authuser.user) && !_.isEmpty(checklist.board_users.board.acl_links.where({slug: 'edit_checklist',board_user_role_id: parseInt(checklist.board_user_role_id)}))){ %>js-show-checklist-edit-form<% } %> col-sm-12">
-			<a href="#" title="<%- checklist.get('name') %>" class="<% if(_.isUndefined(authuser.user) || _.isEmpty(checklist.board_users.board.acl_links.where({slug: 'edit_checklist',board_user_role_id: parseInt(checklist.board_user_role_id)}))){%> js-no-action<%}%>"><%- checklist.get('name') %></a>
+		<span class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(checklist.board_users.board.acl_links.where({slug: 'edit_checklist',board_user_role_id: parseInt(checklist.board_user_role_id)})))){ %>js-show-checklist-edit-form<% } %> col-sm-12">
+			<a href="#" title="<%- checklist.get('name') %>" class="<% if(_.isUndefined(authuser.user) || (authuser.user.role_id == 1 || _.isEmpty(checklist.board_users.board.acl_links.where({slug: 'edit_checklist',board_user_role_id: parseInt(checklist.board_user_role_id)})))){%> js-no-action<%}%>"><%- checklist.get('name') %></a>
 		</span>
 	</h3>
-	<% if(!_.isUndefined(authuser.user) && !_.isEmpty(checklist.board_users.board.acl_links.where({slug: "delete_checklist",board_user_role_id: parseInt(checklist.board_user_role_id)}))){ %>
+	<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(checklist.board_users.board.acl_links.where({slug: "delete_checklist",board_user_role_id: parseInt(checklist.board_user_role_id)})))){ %>
 	<div class="navbar-right dropdown h4">
 		<a class="btn btn-link dropdown-toggle js-show-checklist-actions" role="button" data-toggle="dropdown" title=" <%- i18next.t('Checklist') %>" href="#"> 
 			<span><i class="icon-chevron-sign-down text-primary"></i></span>
