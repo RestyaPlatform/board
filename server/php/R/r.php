@@ -3309,7 +3309,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $comment = '##USER_NAME## updated the profile.';
         $activity_type = 'update_profile';
         if (isset($r_put['profile_picture_path'])) {
-            $comment = '##USER_NAME## delete profile image';
+            $comment = '##USER_NAME## deleted the profile image';
             $activity_type = 'delete_profile_attachment';
         } else if (isset($r_put['role_id'])) {
             $qry_val_arr = array(

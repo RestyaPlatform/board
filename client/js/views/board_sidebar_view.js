@@ -38,6 +38,7 @@ App.BoardSidebarView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             board: this.model,
+            subscriber: this.model.board_subscriber,
             is_admin: this.is_admin
         }));
         this.showTooltip();

@@ -1,31 +1,36 @@
 <div class="well-lg navbar-btn"></div>
-<% if (apps.length > 0 ) { 
-				_.each(apps, function(app) { %>
-  <div class="clearfix">
-    <div class="col-xs-10">
-      <h4><span class="c"><%- app.name %></span></h4>
-      <div class="grayc top-space"><%- app.description %></div>
-      <div class="grayc top-space"><%- i18next.t('Version') %> <%- app.version %> | <%- i18next.t('By') %> <a href="<%- app.authorUrl %>" target="_blank"><%- app.author %></a></div>
-    </div>
-	<div class="col-xs-2 pull-right">
-	  <div class="row-fluid">
-		<div class="pull-right">
-		  <div class="btn-group">
-			<button class="btn "><% if(app.enabled == true){ %><%- i18next.t('Enabled') %><% } else {%><%- i18next.t('Disabled') %><% } %></button>
-			<button class="btn dropdown-toggle js-no-pjax xltriggered" data-toggle="dropdown"><i class="icon-cog"></i><span class="caret"></span></button>
-			<ul class="dropdown-menu arrow arrow-right pull-right">
-			  <li><a class="cur js-update-app" data-current-status="<%- app.enabled %>" data-folder="<%- app.folder %>" title="<% if(app.enabled == true){ %><%- i18next.t('Disabled') %><% } else {%><%- i18next.t('Enabled') %><% } %>"><i class="<% if(app.enabled == true){ %>icon-minus-sign<% } else {%>icon-plus-sign<% } %>"></i><% if(app.enabled == true){ %><%- i18next.t('Disabled') %><% } else {%><%- i18next.t('Enabled') %><% } %></a></li>
-			  <% if(app.settings){%>
-				  <li><a title="<%- i18next.t('Settings') %>" href="#/apps/<%- app.folder %>"><i class="icon-cog"></i><%- i18next.t('Settings') %></a></li>
-			  <% } %>
-			</ul>
-		  </div>
-		</div>
-	  </div>
-	</div>
-  </div>
-
-<hr/>
 <%
-				}); 
-} %>
+	if (apps.length > 0 ) { 
+		_.each(apps, function(app) {
+%>
+	<div class="clearfix">
+		<div class="col-xs-1">
+			<div class="pull-left"><img width="80" height="80" src="<%- app.icon %>"></div>
+		</div>
+		<div class="col-xs-9">
+			<h4><span class="c"><%- app.name %></span></h4>
+			<div class="grayc top-space"><%- app.description %></div>
+			<div class="grayc top-space"><%- i18next.t('Version') %> <%- app.version %> | <%- i18next.t('By') %> <a href="<%- app.authorUrl %>" target="_blank"><%- app.author %></a></div>
+		</div>
+		<div class="col-xs-2 pull-right">
+			<div class="row-fluid">
+				<div class="pull-right">
+					<div class="btn-group">
+						<button class="btn "><% if(app.enabled == true){ %><%- i18next.t('Enabled') %><% } else {%><%- i18next.t('Disabled') %><% } %></button>
+						<button class="btn dropdown-toggle js-no-pjax xltriggered" data-toggle="dropdown"><i class="icon-cog"></i><span class="caret"></span></button>
+						<ul class="dropdown-menu arrow arrow-right pull-right">
+							<li><a class="cur js-update-app" data-current-status="<%- app.enabled %>" data-folder="<%- app.folder %>" title="<% if(app.enabled == true){ %><%- i18next.t('Disabled') %><% } else {%><%- i18next.t('Enabled') %><% } %>"><i class="<% if(app.enabled == true){ %>icon-minus-sign<% } else {%>icon-plus-sign<% } %>"></i><% if(app.enabled == true){ %><%- i18next.t('Disabled') %><% } else {%><%- i18next.t('Enabled') %><% } %></a></li>
+							<% if(app.settings){%>
+								<li><a title="<%- i18next.t('Settings') %>" href="#/apps/<%- app.folder %>"><i class="icon-cog"></i><%- i18next.t('Settings') %></a></li>
+							<% } %>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<hr/>
+<%
+		}); 
+	}
+%>

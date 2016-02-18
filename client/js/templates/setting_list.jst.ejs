@@ -78,9 +78,11 @@
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-8 checkbox-inline">
 						<% } %>
-									<div class="checkbox pull-left">
+									<div class="<% if(setting.name != 'ENABLE_SSL_CONNECTIVITY'){ %>checkbox pull-left<% } else { %>form-group<% } %>">
+									<% if(setting.name === 'ENABLE_SSL_CONNECTIVITY'){ %><div class="col-xs-3"></div><div class="col-xs-9"><% } %>
 										<input class="js-checkbox" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" type="checkbox" <% if(setting.value === 'true') { %> checked="checked" <% } %> value="<%- setting.value %>">
 										<label for="inputSetting<%- setting.id %>"><%- setting.label %> </label>
+										<% if(setting.name === 'ENABLE_SSL_CONNECTIVITY'){ %></div><% } %>
 									</div>
 					    <% if(setting.id == 3){ %>
 								</div>
@@ -104,7 +106,7 @@
 								<div class="form-group">
 								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- setting.label %></label>
 								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
-									<input type="text" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" class="form-control" value="<%- setting.value %>" />
+									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" class="form-control" value="<%- setting.value %>" />
 									<div><span class="help-block"><%= setting.description %></span></div>
 								  </div>
 								</div>

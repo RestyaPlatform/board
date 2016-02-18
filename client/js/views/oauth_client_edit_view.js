@@ -51,9 +51,9 @@ App.OauthClientEditView = Backbone.View.extend({
         oauth_client.save(data, {
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
-                    self.flash('success', i18next.t('OauthClient has been updated successfully.'));
+                    self.flash('success', i18next.t('OAuth application has been updated successfully.'));
                 } else {
-                    self.flash('danger', i18next.t('OauthClient not updated successfully.'));
+                    self.flash('danger', i18next.t('OAuth application not updated successfully.'));
                 }
             }
         });
