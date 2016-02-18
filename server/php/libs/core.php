@@ -512,7 +512,8 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
 			return true;
 		}
     }
-	$tem_arr = array('/boards_users/?');
+	$board_temp_arr = array('/boards_users/?');
+	$organization_temp_arr = array('/organizations_users/?');
 	$board_exception_arr = array('/boards/?');
 	$board_exception_method_arr = array('PUT');
 	$organization_exception_arr = array('/organizations/?');
@@ -522,8 +523,8 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
 		$board_star = false;
 	}
 	//temp fix
-	if(((!empty($r_resource_vars['boards']) && (!in_array($r_resource_cmd, $board_exception_arr) || (in_array($r_resource_cmd, $board_exception_arr) && in_array($r_request_method, $board_exception_method_arr))))  || in_array($r_resource_cmd, $tem_arr)) && $board_star) {
-		if ($r_request_method == 'PUT' && in_array($r_resource_cmd, $tem_arr)) {
+	if(((!empty($r_resource_vars['boards']) && (!in_array($r_resource_cmd, $board_exception_arr) || (in_array($r_resource_cmd, $board_exception_arr) && in_array($r_request_method, $board_exception_method_arr))))  || in_array($r_resource_cmd, $board_temp_arr)) && $board_star) {
+		if ($r_request_method == 'PUT' && in_array($r_resource_cmd, $board_temp_arr)) {
 			$r_resource_vars['boards'] = $post_data['board_id'];
 		}
 		$qry_val_arr = array(
@@ -541,7 +542,10 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
 		if (empty($board_allowed_link)) {
 			 return false;
 		}
-	} else if (!empty($r_resource_vars['organizations']) && (!in_array($r_resource_cmd, $organization_exception_arr) || (in_array($r_resource_cmd, $organization_exception_arr) && in_array($r_request_method, $organization_exception_method_arr)))) {
+	} else if (!empty($r_resource_vars['organizations']) && (!in_array($r_resource_cmd, $organization_exception_arr) || (in_array($r_resource_cmd, $organization_exception_arr) && in_array($r_request_method, $organization_exception_method_arr))) || in_array($r_resource_cmd, $organization_temp_arr)) {
+		if ($r_request_method == 'PUT' && in_array($r_resource_cmd, $organization_temp_arr)) {
+			$r_resource_vars['organizations'] = $post_data['organization_id'];
+		}
 		$qry_val_arr = array(
 			$r_resource_vars['organizations'],
 			$authUser['id']

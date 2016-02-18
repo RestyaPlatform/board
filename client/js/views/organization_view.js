@@ -151,11 +151,13 @@ App.OrganizationsView = Backbone.View.extend({
         var self = this;
         var target = $(e.currentTarget);
         var organizations_user_id = target.data('organizations_user_id');
+		var organizations_id = target.data('organizations_id');
         //$('.js-change-permission-content-' + organizations_user_id).html('Normal');
         target.parents('li.dropdown').removeClass('open');
         var organizationsUser = new App.OrganizationsUser();
         organizationsUser.url = api_url + 'organizations_users/' + organizations_user_id + '.json';
         organizationsUser.set('id', organizations_user_id);
+		organizationsUser.set('organization_id', organizations_id);
         organizationsUser.set('organization_user_role_id', target.data('organization_user_role_id'));
         this.model.organizations_users.get(parseInt(organizations_user_id)).set('organization_user_role_id', target.data('organization_user_role_id'));
         self.getOrganizationMemberLists();
