@@ -134,7 +134,7 @@
 										<li class="js-dropdown-popup dropdown-popup">
 										  <div class="col-xs-12 text-center clearfix">
 											<span class="col-xs-10"><strong><%- i18next.t('Members') %></strong></span><a class="js-close-popover-board-member-dropdown pull-right" href="#"><i class="icon-remove"></i></a>										
-										  </div>
+										  </div> 
 										  <div class="col-xs-12 divider"></div>
 										  <div class="col-xs-12">
 											<form method="post" class="text-center" id="js-add-board-member-form">
@@ -209,22 +209,7 @@
 						</div>
 					</li>
 				  <% } %>
-				  <%if(!_.isUndefined(authuser.user)) {%> 
-					  <li class="navbar-btn right-mar">
-						<form name="BoardSubscribeForm" id="BoardSubscribeForm">
-						  <input id="inputBoardSubscribe" name="is_subscribed" type="hidden" value=" <% if(!_.isUndefined(subscriber)) { %> <%- subscriber.attributes.is_subscribed %><%}else{%>0<%}%>">
-						</form> 
-						<% if(!_.isUndefined(subscriber) && parseInt(subscriber.attributes.is_subscribed)) { %>
-						<% if(!_.isEmpty(role_links.where({slug: "unsubscribe_board"}))){ %>
-						<a href="#" class="js-subscribe-board navbar-btn h4 list-group-item-text" name="unsubscribe" title="<%- i18next.t('Unsubscribe') %>" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-close"></i><span class="hidden-xs"><%- i18next.t('Unsubscribe') %></span></a>
-						<% } %>
-						<% } else {%>
-						<% if(!_.isEmpty(role_links.where({slug: "subscribe_board"}))){ %>
-						<a href="#" class="js-subscribe-board navbar-btn h4" name="subscribe" title="<%- i18next.t('Subscribe') %>" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-open"></i><span class="hidden-xs"><%- i18next.t('Subscribe') %></span></a>
-						<% } %>
-						<% } %>
-					  </li>
-				  <% } %>
+				  
 				  <li class="js-switch-view"><a href="#" class=" navbar-btn h4 js-switch-grid-view text-muted list-group-item-text" title="<%- i18next.t('Grid') %>" data-placement="bottom" data-toggle="tooltip"><i class="icon-th"></i></a></li>
 				  <li class="js-switch-view"><a href="#" class=" navbar-btn h4 js-switch-list-view text-muted list-group-item-text" title="<%- i18next.t('List') %>" data-placement="bottom" data-toggle="tooltip"><i class="icon-list-ul"></i></a></li>
 				  <li class="js-switch-view"><a href="#" class=" navbar-btn h4 js-switch-calendar-view text-muted list-group-item-text" title="<%- i18next.t('Calendar') %>" data-placement="bottom" data-toggle="tooltip"><i class="icon-calendar"></i></a></li>
@@ -242,10 +227,26 @@
 							<% } %>
 							<% if(!_.isUndefined(authuser.user)){ %>
 							<% if(!_.isEmpty(role_links.where({slug: "view_sync_calendar"}))){ %>
-							<li class="js-sync-google-dropdown inner-dropdown"><a href="#" class="js-syn-google-calendar" data-toggle="dropdown"><span class="icon-calendar"></span><%- i18next.t('iCal Feed') %></a>
+							<li class="js-sync-google-dropdown inner-dropdown"><a href="#" class="js-syn-google-calendar" data-toggle="dropdown"><span class="icon-calendar"></span> <%- i18next.t('iCal Feed') %></a>
 							</li> 
 							<% } %>
 							<li class="divider"></li>
+							<%if(!_.isUndefined(authuser.user)) {%> 
+							  <li class="navbar-btn right-mar">
+								<form name="BoardSubscribeForm" id="BoardSubscribeForm">
+								  <input id="inputBoardSubscribe" name="is_subscribed" type="hidden" value=" <% if(!_.isUndefined(subscriber)) { %> <%- subscriber.attributes.is_subscribed %><%}else{%>0<%}%>">
+								</form> 
+								<% if(!_.isUndefined(subscriber) && parseInt(subscriber.attributes.is_subscribed)) { %>
+								<% if(!_.isEmpty(role_links.where({slug: "unsubscribe_board"}))){ %>
+								<a href="#" class="js-show-unsubscribe-form navbar-btn h4 list-group-item-text" name="unsubscribe" title="<%- i18next.t('Subscribed') %>"><i class="icon-eye-close"></i><span class="hidden-xs"><%- i18next.t('Subscribed') %> <i class="icon-ok js-filter-icon cur"></i></span></a>
+								<% } %>
+								<% } else {%>  
+								<% if(!_.isEmpty(role_links.where({slug: "subscribe_board"}))){ %>
+								<a href="#" class="js-show-subscribe-form navbar-btn h4" name="subscribe" title="<%- i18next.t('Subscribe') %>"><i class="icon-eye-open"></i><span class="hidden-xs"><%- i18next.t('Subscribe') %></span></a>
+								<% } %>
+								<% } %>
+							  </li>
+						    <% }%>
 							<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
 							<% 
 								var background_color = board.attributes.background_color; 

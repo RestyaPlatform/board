@@ -737,13 +737,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/oauth/clients':
         $response['oauth_clients'] = array();
-        $condition = 'WHERE client_id != $1';
-        $condition_param = '7742632501382313';
+        $condition = '';
         if (!empty($_GET['id'])) {
             $condition = 'WHERE id = $1';
             $condition_param = $_GET['id'];
         }
-        array_push($pg_params, $condition_param);
+        if (!empty($condition_param)) {
+            array_push($pg_params, $condition_param);
+        }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM oauth_clients c ' . $condition . ') as d ';
         $c_sql = 'SELECT COUNT(*) FROM oauth_clients c';
         break;
@@ -1267,6 +1268,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     $user = executeQuery('SELECT * FROM users_listing WHERE id = $1', $val_arr);
                 }
+            } else {
+                $ldap_error = 'ldap_error';
             }
         } else if (STANDARD_LOGIN_ENABLED && !empty($log_user) && $log_user['is_ldap'] == 0) {
             $r_post['password'] = crypt($r_post['password'], $log_user['password']);
@@ -1329,9 +1332,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $response['user'] = $user;
             $response['user']['organizations'] = json_decode($user['organizations'], true);
         } else {
-            $response = array(
-                'error' => 'Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'
-            );
+            if (!empty($ldap_error)) {
+                $response = array(
+                    'error' => 'ldap_error'
+                );
+            } else {
+                $response = array(
+                    'error' => 'Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'
+                );
+            }
         }
         break;
 
@@ -2278,46 +2287,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     case '/webhooks':
         $sql = true;
         $table_name = 'webhooks';
-        break;
-
-    case '/users/import':
-        if ($_FILES['file']['error'] == 0) {
-            $filename = $_FILES['file']['name'];
-            $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
-            if ($file_ext == 'csv') {
-                //Import uploaded file to Database
-                $handle = fopen($_FILES['file']['tmp_name'], "r");
-                $i = 0;
-                while (($data = fgetcsv($handle, 1000, ",")) !== false) {
-                    if ($i > 0) {
-                        $role_id = 2;
-                        $username = $data[0];
-                        $email = $data[1];
-                        $password = getCryptHash($data[2]);
-                        $full_name = $data[3];
-                        $initials = strtoupper(substr($data[0], 0, 1));
-                        $qry_val_arr = array(
-                            'now()',
-                            'now()',
-                            $role_id,
-                            $username,
-                            $email,
-                            $password,
-                            $full_name,
-                            $initials
-                        );
-                        pg_query_params($db_lnk, 'INSERT into users(created, modified, role_id, username, email, password, full_name, initials) values($1, $2, $3, $4, $5, $6, $7, $8)', $qry_val_arr);
-                    }
-                    $i++;
-                }
-                fclose($handle);
-                $response['success'] = 'Imported successfully';
-            } else {
-                $response['error'] = 'file_format';
-            }
-        } else {
-            $response['error'] = 'not_import';
-        }
         break;
 
     default:
