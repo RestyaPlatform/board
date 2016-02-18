@@ -251,13 +251,13 @@ App.ApplicationView = Backbone.View.extend({
             changeTitle(i18next.t('Role Settings'));
         }
         if (this.model == 'oauth_clients') {
-            changeTitle(i18next.t('Oauth clients'));
+            changeTitle(i18next.t('Developer applications'));
         }
         if (this.model == 'add_oauth_client') {
-            changeTitle(i18next.t('Add Oauth Client'));
+            changeTitle(i18next.t('Register a new OAuth application'));
         }
         if (this.model == 'edit_oauth_client') {
-            changeTitle(i18next.t('Edit Oauth Client'));
+            changeTitle(i18next.t('Edit OAuth application'));
         }
         if (this.model == 'apps' || this.model == 'app_settings') {
             changeTitle(i18next.t('Apps'));
@@ -273,9 +273,6 @@ App.ApplicationView = Backbone.View.extend({
         }
         if (this.model == 'activity_index') {
             changeTitle(i18next.t('Activities'));
-        }
-        if (this.model == 'users_import') {
-            changeTitle(i18next.t('Users Import'));
         }
     },
     /**
@@ -843,7 +840,7 @@ App.ApplicationView = Backbone.View.extend({
                     }
                 });
             } else if (page.model == 'oauth_clients') {
-                changeTitle(i18next.t('Oauth Clients'));
+                changeTitle(i18next.t('Developer applications'));
                 var oauth_clients = new App.OauthClientCollection();
                 oauth_clients.url = api_url + 'oauth/clients.json';
                 oauth_clients.fetch({
@@ -857,14 +854,14 @@ App.ApplicationView = Backbone.View.extend({
                     }
                 });
             } else if (page.model == 'add_oauth_client') {
-                changeTitle(i18next.t('Add Oauth Client'));
+                changeTitle(i18next.t('Register a new OAuth application'));
                 var oauth_client = new App.OauthClient();
                 this.pageView = new App.OauthClientAddView({
                     model: oauth_client
                 });
                 $('#content').html(this.pageView.el);
             } else if (page.model == 'edit_oauth_client') {
-                changeTitle(i18next.t('Edit Oauth Client'));
+                changeTitle(i18next.t('Edit OAuth application'));
                 this.pageView = new App.OauthClientEditView({
                     id: page.page_view_id
                 });
@@ -908,12 +905,6 @@ App.ApplicationView = Backbone.View.extend({
                 changeTitle(i18next.t('Activities'));
                 $('#js-navbar-default').remove();
                 $('#content').html(new App.ActivityIndexView({
-                    id: page.page_view_id
-                }).el);
-            } else if (page.model == 'users_import') {
-                changeTitle(i18next.t('Users Import'));
-                $('#js-navbar-default').remove();
-                $('#content').html(new App.UsersImportView({
                     id: page.page_view_id
                 }).el);
             }
