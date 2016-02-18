@@ -235,11 +235,11 @@
 								  <input id="inputBoardSubscribe" name="is_subscribed" type="hidden" value=" <% if(!_.isUndefined(subscriber)) { %> <%- subscriber.attributes.is_subscribed %><%}else{%>0<%}%>">
 								</form> 
 								<% if(!_.isUndefined(subscriber) && parseInt(subscriber.attributes.is_subscribed)) { %>
-								<% if(!_.isEmpty(role_links.where({slug: "unsubscribe_board"}))){ %>
+								<% if(!_.isEmpty(board.acl_links.where({slug: "unsubscribe_board",board_user_role_id: parseInt(board.board_user_role_id)}))){ %>
 								<a href="#" class="js-show-unsubscribe-form navbar-btn h4 list-group-item-text" name="unsubscribe" title="<%- i18next.t('Subscribed') %>"><i class="icon-eye-close"></i><span class="hidden-xs"><%- i18next.t('Subscribed') %> <i class="icon-ok js-filter-icon cur"></i></span></a>
 								<% } %>
 								<% } else {%>  
-								<% if(!_.isEmpty(role_links.where({slug: "subscribe_board"}))){ %>
+								<% if(!_.isEmpty(board.acl_links.where({slug: "subscribe_board",board_user_role_id: parseInt(board.board_user_role_id)}))){ %>
 								<a href="#" class="js-show-subscribe-form navbar-btn h4" name="subscribe" title="<%- i18next.t('Subscribe') %>"><i class="icon-eye-open"></i><span class="hidden-xs"><%- i18next.t('Subscribe') %></span></a>
 								<% } %>
 								<% } %>
