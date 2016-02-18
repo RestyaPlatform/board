@@ -4095,7 +4095,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 		pg_query_params($db_lnk, 'DELETE FROM boards_users WHERE board_id IN (SELECT id FROM boards WHERE organization_id = $1) AND user_id = $2', $conditions);
         break;
 
-    case '/boards_users/?': // delete board user
+    case '/boards/?/boards_users/?': // delete board user
         $qry_val_arr = array(
             $r_resource_vars['boards_users']
         );

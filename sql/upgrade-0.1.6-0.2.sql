@@ -843,7 +843,7 @@ VALUES ('6664115227792148', 'hw3wpe2cfsxxygogwue47cwnf7', NULL, 'client_credenti
 
 UPDATE "acl_links" SET "group_id" = 6 WHERE "name" = 'Delete board' OR "name" = 'Add organization' OR "name" = 'Add board';
 
-UPDATE "acl_links" SET "group_id" = 1 WHERE "name" = 'Board visibility' OR "name" = 'View starred boards listing' OR "name" = 'Load workflow templates' OR "name" = 'Search'  OR "name" = 'View organization'  OR "name" = 'Organization visibility'  OR "name" = 'View board'  OR "name" = 'Board search'  OR "name" = 'View user assigned boards'  OR "name" = 'add_card'  OR "name" = 'View boards listing'  OR "name" = 'View closed boards'  OR "name" = 'view_stared_boards'  OR "name" = 'view_my_boards'  OR "name" = 'View organizations listing'  OR "name" = 'View user assigned cards'  OR "name" = 'All activities'  OR "name" = 'Starred boards listing'  OR "name" = 'View closed boards'  OR "name" = 'My boards listing'  OR "name" = 'Post oauth token';
+UPDATE "acl_links" SET "group_id" = 1 WHERE "name" = 'Board visibility' OR "name" = 'View starred boards listing' OR "name" = 'Load workflow templates' OR "name" = 'Search'  OR "name" = 'View organization'  OR "name" = 'Organization visibility'  OR "name" = 'View board'  OR "name" = 'Board search'  OR "name" = 'View user assigned boards'  OR "name" = 'add_card'  OR "name" = 'View boards listing'  OR "name" = 'View closed boards'  OR "name" = 'Starred boards listing'  OR "name" = 'My boards listing'  OR "name" = 'View organizations listing'  OR "name" = 'View user assigned cards'  OR "name" = 'All activities'  OR "name" = 'Starred boards listing'  OR "name" = 'View closed boards'  OR "name" = 'My boards listing'  OR "name" = 'Post oauth token';
 
 CREATE SEQUENCE acl_board_links_seq
     START WITH 1
@@ -1568,3 +1568,6 @@ UPDATE "settings" SET "type" = 'password', "description" = 'Enter a password for
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('4', '2', 'ENABLE_SSL_CONNECTIVITY', NULL, 'Use encryption (SSL, ldaps:// URL) when connects to server?', 'checkbox', NULL, 'Enable SSL Connectivity', '2');
 
 UPDATE "oauth_clients" SET "redirect_uri" = '', "client_name" = 'Web App' WHERE "client_id" = '7742632501382313';
+
+UPDATE "acl_board_links" SET "url" = '/boards/?/boards_users/?' WHERE "slug" = 'delete_board';
+
