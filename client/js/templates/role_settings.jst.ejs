@@ -8,7 +8,7 @@
 					  roles.each(function(role) {
 						if(role.attributes.name === 'user') {
 					%>
-						<th class="col-xs-1 text-center"><%- role.attributes.name %> <%- i18next.t('(Owner, Member)') %></th>
+						<th class="col-xs-1 text-center"><%- role.attributes.name %></th>
 					<%
 						} else {
 					%>
@@ -18,7 +18,7 @@
 				</thead>
 				<tbody class="js-acl-link-list-body acl-link-list">
 					<%
-						var acl_link_groups = ["Users","Master"];
+						var acl_link_groups = ["Users","","","","","Master"];
 						var group = '';
 						var old_group = '';
 						var group_id = '';
@@ -42,8 +42,22 @@
 									var is_enabled = acl_link.acl_links_roles.findWhere({
 										role_id: parseInt(role.attributes.id)
 									});
-									if(role.attributes.id === "2") {
-										if(acl_link.attributes.is_allow_only_to_edit === 0) {
+									if(role.attributes.id === "1") {
+										if(acl_link.attributes.is_allow_only_to_admin === 1) {
+									%>
+										<td class="text-center">
+											<div class="checkbox">
+											<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
+											<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
+											</div>
+										</td>
+									<% } else { %>
+											<td class="text-center">
+													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
+											</td>
+									<% }
+									} else if(role.attributes.id === "2") {
+										if(acl_link.attributes.is_allow_only_to_user === 0) {
 																					%>
 												<td class="text-center">
 													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
@@ -60,7 +74,7 @@
 											<%									
 										}
 									} else if(role.attributes.id === "3") {
-										if(acl_link.attributes.is_allow_only_to_guest === 1 && !_.contains(['User activation', 'View board', 'Card activities'], acl_link.attributes.name)) {
+										if((acl_link.attributes.is_allow_only_to_admin === 1 || acl_link.attributes.is_allow_only_to_user === 1) && !_.contains(['User activation', 'View board', 'Card activities'], acl_link.attributes.name)) {
 											%>
 												<td class="text-center">
 													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
@@ -101,8 +115,8 @@
 						var old_group = '';
 						var group_id = '';
 						acl_board_links.each(function(acl_board_link) {
-							acl_board_link.acl_board_links_boards_user_roles.add(acl_board_link.attributes.acl_board_links_boards_user_roles);		
-							group_id = acl_board_link.attributes.group_id - 1;
+							acl_board_link.acl_board_links_boards_user_roles.add(acl_board_link.attributes.acl_board_links_boards_user_roles);
+							group_id = acl_board_link.attributes.group_id - 2;
 							group = acl_board_links_groups[group_id];
 							if( group != old_group){
 					%>
@@ -180,7 +194,7 @@
 						var group_id = '';
 						acl_organization_links.each(function(acl_organization_link) {
 							acl_organization_link.acl_organization_links_organizations_user_roles.add(acl_organization_link.attributes.acl_organization_links_organizations_user_roles);
-							group_id = acl_organization_link.attributes.group_id - 1;
+							group_id = acl_organization_link.attributes.group_id - 5;
 							group = acl_organization_links_groups[group_id];
 							if( group != old_group){
 					%>
