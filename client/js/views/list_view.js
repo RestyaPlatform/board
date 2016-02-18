@@ -939,6 +939,7 @@ App.ListView = Backbone.View.extend({
                     card.attachments.add(filter_attachments, {
                         silent: true
                     });
+					card.board = self.model.board;
                     var view = new App.CardView({
                         tagName: 'div',
                         model: card,
