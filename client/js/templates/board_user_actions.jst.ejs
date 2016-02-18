@@ -16,6 +16,7 @@
 <div class="col-xs-12 divider"></div>
 <div class="col-xs-12">
 	<ul class="list-unstyled dropdown-menu dropdown-list show">
+		<% if (!_.isEmpty(user.collection.board.acl_links.where({slug: 'edit_board_user', board_user_role_id: parseInt(user.collection.board.board_user_role_id)}))) { %>
 		<li class="dropdown"> 
 			<a href="#" data-toggle="dropdown" class="dropdown-toggle js-show-dropdown"> <%- i18next.t('Change permissions') %> (<%- i18next.t('Member') %>)</a>
 			<ul class="dropdown-menu dropdown-menu-right arrow arrow-right js-list-actions-response">
@@ -24,17 +25,16 @@
 				<div class="col-xs-12">
 				  <ul class="list-unstyled">
 				  <% _.each(user.board_user_roles, function(board_user_role){%>
-						<% if (!_.isEmpty(user.collection.board.acl_links.where({slug: 'edit_board_user', board_user_role_id: parseInt(user.attributes.board_user_role_id)}))) { %>
 							<li> <a href="#" data-board_user_role_id="<%- board_user_role.id %>" class="js-edit-board-member-permission"> <span class="show text-primary">
 							<%- board_user_role.name %>
 							</span> <span class="text-muted"><%- i18next.t('Can view and edit cards, remove members, and change settings for the board.') %></span> </a> </li>
 							<li class="divider"></li>
-						<% } %>
 				  <% }); %>
 				  </ul>
 				</div>
 			</ul>
 		</li>
+		<% } %>
 		<li>
 			<% var title = i18next.t("View member's board activity"); %>
 			<a href="#" title="<%- title %>" data-user-id="<%- user.attributes.user_id %>" class="js-view-user-activities">
