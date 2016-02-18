@@ -464,12 +464,14 @@ App.BoardHeaderView = Backbone.View.extend({
                 model: this.model
             }).el);
             if (!_.isEmpty(filtered_cards)) {
+                $('.js-delete-all-archived-cards-confirm').removeClass('hide');
                 _.each(filtered_cards, function(card) {
                     el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                         model: card
                     }).el);
                 });
             } else {
+                $('.js-delete-all-archived-cards-confirm').addClass('hide');
                 el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                     model: null
                 }).el);
@@ -1298,12 +1300,14 @@ App.BoardHeaderView = Backbone.View.extend({
                 is_archived: 1
             });
             if (!_.isEmpty(filtered_lists)) {
+                $('.js-delete-all-archived-lists-confirm').removeClass('hide');
                 _.each(filtered_lists, function(list) {
                     el.find('.js-archived-cards-container').append(new App.ArchivedListView({
                         model: list
                     }).el);
                 });
             } else {
+                $('.js-delete-all-archived-lists-confirm').addClass('hide');
                 el.find('.js-archived-cards-container').append(new App.ArchivedListView({
                     model: null
                 }).el);
