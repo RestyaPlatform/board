@@ -843,7 +843,7 @@ VALUES ('6664115227792148', 'hw3wpe2cfsxxygogwue47cwnf7', NULL, 'client_credenti
 
 UPDATE "acl_links" SET "group_id" = 6 WHERE "name" = 'Delete board' OR "name" = 'Add organization' OR "name" = 'Add board';
 
-UPDATE "acl_links" SET "group_id" = 1 WHERE "name" = 'Board visibility' OR "name" = 'View starred boards listing' OR "name" = 'Load workflow templates' OR "name" = 'Search'  OR "name" = 'View organization'  OR "name" = 'Organization visibility'  OR "name" = 'View board'  OR "name" = 'Board search'  OR "name" = 'View user assigned boards'  OR "name" = 'add_card'  OR "name" = 'View boards listing'  OR "name" = 'View closed boards'  OR "name" = 'view_stared_boards'  OR "name" = 'view_my_boards'  OR "name" = 'View organizations listing'  OR "name" = 'View user assigned cards'  OR "name" = 'All activities'  OR "name" = 'Starred boards listing'  OR "name" = 'View closed boards'  OR "name" = 'My boards listing';
+UPDATE "acl_links" SET "group_id" = 1 WHERE "name" = 'Board visibility' OR "name" = 'View starred boards listing' OR "name" = 'Load workflow templates' OR "name" = 'Search'  OR "name" = 'View organization'  OR "name" = 'Organization visibility'  OR "name" = 'View board'  OR "name" = 'Board search'  OR "name" = 'View user assigned boards'  OR "name" = 'add_card'  OR "name" = 'View boards listing'  OR "name" = 'View closed boards'  OR "name" = 'view_stared_boards'  OR "name" = 'view_my_boards'  OR "name" = 'View organizations listing'  OR "name" = 'View user assigned cards'  OR "name" = 'All activities'  OR "name" = 'Starred boards listing'  OR "name" = 'View closed boards'  OR "name" = 'My boards listing'  OR "name" = 'Post oauth token';
 
 CREATE SEQUENCE acl_board_links_seq
     START WITH 1
@@ -920,8 +920,8 @@ CREATE TABLE organization_user_roles (
 	description character varying
 );
 
-INSERT INTO "board_user_roles" ("created", "modified", "name") VALUES (now(), now(), 'Owner'),(now(), now(), 'Editor'),(now(), now(), 'Viewer');
-INSERT INTO "organization_user_roles" ("created", "modified", "name") VALUES (now(), now(), 'Owner'),(now(), now(), 'Editor'),(now(), now(), 'Viewer');
+INSERT INTO "board_user_roles" ("created", "modified", "name", "description") VALUES (now(), now(), 'Owner', 'Can view and edit cards, remove members, and change settings for the board.'),(now(), now(), 'Editor', 'Can view and edit cards, remove members, but not change settings.'),(now(), now(), 'Viewer', 'Can view only.');
+INSERT INTO "organization_user_roles" ("created", "modified", "name", "description") VALUES (now(), now(), 'Owner', 'Can view, create and edit org boards, and change settings for the organization.'),(now(), now(), 'Editor', 'Can view, create, and edit org boards, but not change settings.'),(now(), now(), 'Viewer', 'Can view only.');
 
 
 
