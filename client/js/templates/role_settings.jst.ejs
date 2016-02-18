@@ -1,158 +1,6 @@
 <div class="col-xs-12 js-container-div-role">
 	<form id="js-save-role-settings">
-		<div class="table-responsive navbar-btn">
-			<div class="well-sm">
-				<div class="alert alert-info list-group-item-text"><%- i18next.t('Currently, board owner, board member, organization owner and organization member roles are static with below permissions:') %></div>
-			</div>
-			<div class="col-xs-12">
-			<div class="col-xs-6">
-			<h3><%- i18next.t('Organization') %></h3>
-			<table class="table">
-				<thead>
-					<th class="col-xs-1"></th>
-					<th class="col-xs-1 text-center"><%- i18next.t('Owner') %></th>
-					<th class="col-xs-1 text-center"><%- i18next.t('Member') %></th>
-				</thead>
-				<tbody class="acl-link-list">
-					<tr>
-						<td><%- i18next.t('Add Member') %></td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" checked="checked"/>
-								<label></label>
-							</div>
-						</td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" />
-								<label></label>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td><%- i18next.t('Remove Member') %></td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" checked="checked"/>
-								<label></label>
-							</div>
-						</td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" />
-								<label></label>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td><%- i18next.t('Change Permission') %></td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" checked="checked"/>
-								<label></label>
-							</div>
-						</td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" />
-								<label></label>
-							</div>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			</div>
-			<div class="col-xs-6">
-			<h3><%- i18next.t('Board') %></h3>
-			<table class="table">
-				<thead>
-					<th class="col-xs-1"></th>
-					<th class="col-xs-1 text-center"><%- i18next.t('Owner') %></th>
-					<th class="col-xs-1 text-center"><%- i18next.t('Member') %></th>
-				</thead>
-				<tbody class="acl-link-list">
-					<tr>
-						<td><%- i18next.t('Archived list send back to board') %></td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" checked="checked"/>
-								<label></label>
-							</div>
-						</td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" />
-								<label></label>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td><%- i18next.t('Change background to board') %></td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" checked="checked"/>
-								<label></label>
-							</div>
-						</td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" />
-								<label></label>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td><%- i18next.t('Copy board') %></td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" checked="checked"/>
-								<label></label>
-							</div>
-						</td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" />
-								<label></label>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td><%- i18next.t('Set cover image to card') %></td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" checked="checked"/>
-								<label></label>
-							</div>
-						</td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" />
-								<label></label>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td><%- i18next.t('Close board') %></td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" checked="checked"/>
-								<label></label>
-							</div>
-						</td>
-						<td class="text-center">
-							<div class="checkbox">
-								<input type="checkbox" class="cur" />
-								<label></label>
-							</div>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			</div>
-			</div>
-			<div class="well-sm col-xs-12">
-				<div class="alert alert-info list-group-item-text"><%- i18next.t('Below permissions can be changed:') %></div>
-			</div>
+		<div class="table-responsive navbar-btn">			
 			<table class="table js-acl-link-list acl-link-list">
 				<thead>
 					<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
@@ -194,22 +42,8 @@
 									var is_enabled = acl_link.acl_links_roles.findWhere({
 										role_id: parseInt(role.attributes.id)
 									});
-									if(role.attributes.id === "1") {
-										if(acl_link.attributes.is_allow_only_to_admin === 1) {
-									%>
-										<td class="text-center">
-											<div class="checkbox">
-											<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
-											<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
-											</div>
-										</td>
-									<% } else { %>
-											<td class="text-center">
-													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
-											</td>
-									<% }
-									} else if(role.attributes.id === "2") {
-										if(acl_link.attributes.is_allow_only_to_user === 0) {
+									if(role.attributes.id === "2") {
+										if(acl_link.attributes.is_allow_only_to_edit === 0) {
 																					%>
 												<td class="text-center">
 													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
@@ -226,7 +60,7 @@
 											<%									
 										}
 									} else if(role.attributes.id === "3") {
-										if((acl_link.attributes.is_allow_only_to_admin === 1 || acl_link.attributes.is_allow_only_to_user === 1) && !_.contains(['User activation', 'View board', 'Card activities'], acl_link.attributes.name)) {
+										if(acl_link.attributes.is_allow_only_to_guest === 1 && !_.contains(['User activation', 'View board', 'Card activities'], acl_link.attributes.name)) {
 											%>
 												<td class="text-center">
 													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>

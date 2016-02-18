@@ -513,8 +513,10 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
 		}
     }
 	$tem_arr = array('/boards_users/?');
+	$board_exception_arr = array('/boards/?');
+	$organization_exception_arr = array('/organizations/?');
 	//temp fix
-	if(!empty($r_resource_vars['boards']) || in_array($r_resource_cmd, $tem_arr)) {
+	if((!empty($r_resource_vars['boards']) && !in_array($r_resource_cmd, $board_exception_arr))  || in_array($r_resource_cmd, $tem_arr)) {
 		if ($r_request_method == 'PUT' && in_array($r_resource_cmd, $tem_arr)) {
 			$r_resource_vars['boards'] = $post_data['board_id'];
 		}
@@ -533,7 +535,7 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
 		if (empty($board_allowed_link)) {
 			 return false;
 		}
-	} else if (!empty($r_resource_vars['organizations'])) {
+	} else if (!empty($r_resource_vars['organizations']) && !in_array($r_resource_cmd, $organization_exception_arr)) {
 		$qry_val_arr = array(
 			$r_resource_vars['organizations'],
 			$authUser['id']

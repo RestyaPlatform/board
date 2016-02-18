@@ -225,7 +225,7 @@
 							<% } %>
 							<% if(!_.isUndefined(authuser.user)){ %>
 							<% if(!_.isEmpty(board.acl_links.where({slug: "view_sync_calendar",board_user_role_id: parseInt(board.board_user_role_id)}))){ %>
-							<li class="js-sync-google-dropdown inner-dropdown"><a href="#" class="js-syn-google-calendar" data-toggle="dropdown"><span class="icon-calendar"></span><%- i18next.t('iCal Feed') %></a>
+							<li class="js-sync-google-dropdown inner-dropdown"><a href="#" class="js-syn-google-calendar" data-toggle="dropdown"><span class="icon-calendar"></span> <%- i18next.t('iCal Feed') %></a>
 							</li> 
 							<% } %>
 							<li class="divider"></li>
@@ -236,11 +236,11 @@
 								</form> 
 								<% if(!_.isUndefined(subscriber) && parseInt(subscriber.attributes.is_subscribed)) { %>
 								<% if(!_.isEmpty(role_links.where({slug: "unsubscribe_board"}))){ %>
-								<a href="#" class="js-show-unsubscribe-form navbar-btn h4 list-group-item-text" name="unsubscribe" title="<%- i18next.t('Unsubscribe') %>" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-close"></i><span class="hidden-xs"><%- i18next.t('Unsubscribe') %></span></a>
+								<a href="#" class="js-show-unsubscribe-form navbar-btn h4 list-group-item-text" name="unsubscribe" title="<%- i18next.t('Subscribed') %>"><i class="icon-eye-close"></i><span class="hidden-xs"><%- i18next.t('Subscribed') %> <i class="icon-ok js-filter-icon cur"></i></span></a>
 								<% } %>
 								<% } else {%>  
 								<% if(!_.isEmpty(role_links.where({slug: "subscribe_board"}))){ %>
-								<a href="#" class="js-show-subscribe-form navbar-btn h4" name="subscribe" title="<%- i18next.t('Subscribe') %>" data-placement="bottom" data-toggle="tooltip"><i class="icon-eye-open"></i><span class="hidden-xs"><%- i18next.t('Subscribe') %></span></a>
+								<a href="#" class="js-show-subscribe-form navbar-btn h4" name="subscribe" title="<%- i18next.t('Subscribe') %>"><i class="icon-eye-open"></i><span class="hidden-xs"><%- i18next.t('Subscribe') %></span></a>
 								<% } %>
 								<% } %>
 							  </li>

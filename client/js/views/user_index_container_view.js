@@ -223,7 +223,13 @@ App.UserIndexContainerView = Backbone.View.extend({
                 users.save({
                     'success': function(response) {
                         if (!_.isEmpty(response.success)) {
-                            self.flash('success', i18next.t('Checked users are blocked successfully.'));
+                            if ($("#js-more-action option:selected").val() == 1) {
+                                self.flash('success', i18next.t('Checked users are blocked successfully.'));
+                            } else if ($("#js-more-action option:selected").val() == 2) {
+                                self.flash('success', i18next.t('Checked users are unblocked successfully.'));
+                            } else {
+                                self.flash('success', i18next.t('Checked users are deleted successfully.'));
+                            }
                             app.navigate('#/users', {
                                 trigger: true,
                             });
