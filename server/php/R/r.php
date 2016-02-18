@@ -2469,9 +2469,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             } else if ($r_resource_cmd == '/organizations') {
                 $qry_val_arr = array(
                     $row['id'],
-                    $r_post['user_id']
+                    $r_post['user_id'],
+					2
                 );
-                $result = pg_query_params($db_lnk, 'INSERT INTO organizations_users (created, modified, organization_id , user_id, is_admin) VALUES (now(), now(), $1, $2, true)', $qry_val_arr);
+                $result = pg_query_params($db_lnk, 'INSERT INTO organizations_users (created, modified, organization_id , user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
                 $foreign_id['organization_id'] = $row['id'];
                 $comment = '##USER_NAME## created organization "##ORGANIZATION_LINK##"';
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_organization', $foreign_id);
