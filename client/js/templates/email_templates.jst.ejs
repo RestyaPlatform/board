@@ -10,7 +10,7 @@
 				_.each(list.models, function(email_tempalte) {				
 					var settings = email_tempalte.get('template');
 		%>
-				<li <% if (!_.isUndefined(id) && id == email_tempalte.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && email_tempalte.get('id') == 1) { %>class="active" <%}%> ><a href="#/email_templates/<%-email_tempalte.get('id')%>"><%- email_tempalte.get('display_name') %></a></li>
+				<li <% if (!_.isUndefined(id) && id == email_tempalte.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && email_tempalte.get('id') == 1) { %>class="active" <%}%> ><a href="#/email_templates/<%-email_tempalte.get('id')%>"><%- i18next.t(email_tempalte.get('display_name')) %></a></li>
 		<% 
 					i++;
 				});
@@ -28,7 +28,7 @@
 		%>		
 				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == email_tempalte.get('id')) { %> active <%} else if (_.isUndefined(id) && email_tempalte.get('id') == 1) { %> active <%}%>" id="settingTab<%- email_tempalte.get('id') %>">
 					<% if(!_.isEmpty(template)){ %>
-					<p class="alert alert-info "><%- template.description %></p>
+					<p class="alert alert-info "><%- i18next.t(template.description) %></p>
 					<form class="form-horizontal js-email-templates-form" role="form" id="js-email-templates-form">
 					  <div class="form-group">
 						 <label for="inputFromEmail" class="col-md-2 col-sm-3 control-label"><%- i18next.t("From") %></label>

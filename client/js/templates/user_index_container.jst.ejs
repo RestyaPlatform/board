@@ -10,7 +10,7 @@
 		<% if(!_.isEmpty(roles)){ 
 			_.each(roles, function(role) {
 		%>
-			<li><a class="js-filter cur" data-filter="<%- role.id %>" title="<%- role.name %>"><span class="show"><strong><%- role.count %></strong></span><%- role.name %></a></li>
+			<li><a class="js-filter cur" data-filter="<%- role.id %>" title="<%- role.name %>"><span class="show"><strong><%- role.count %></strong></span><%- i18next.t(role.name) %></a></li>
 		<% });
 		} %>
 		<% var all = parseInt(filter_count.active) + parseInt(filter_count.inactive); %>
