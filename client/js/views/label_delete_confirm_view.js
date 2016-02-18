@@ -22,27 +22,17 @@ App.LabelDeleteConfirmView = Backbone.View.extend({
     },
     labelConfirmDelete: function(e) {
         var self = this;
-        self.model.url = api_url + 'boards/' + self.model.id + '/labels/' + this.label_id + '.json';
-        self.model.attributes.lists.forEach(function(list, index) {
-            if (!_.isEmpty(list)) {
-                _.each(list.cards, function(card, index1) {
-                    _.each(card.cards_labels, function(labels, key) {
-                        if (!_.isEmpty(labels)) {
-                            if (!_.isUndefined(labels.label_id) && labels.label_id === self.label_id) {
-                                self.model.attributes.lists[index].cards[index1].cards_labels.splice(key, 1);
-                            }
-                        }
-                    });
-                });
-            }
-        });
+        self.model.url = api_url + 'boards/' + self.model.id + '/labels/' + self.label_id + '.json';
         self.model.destroy({
             success: function(model, response) {
                 self.flash('success', i18next.t('Labels deleted successfully.'));
                 $('.js-show-labels').trigger('click');
+                var label = self.model.labels.findWhere({
+                    label_id: self.label_id
+                });
+                label.collection.remove(label);
             }
         });
-        this.renderCardsCollection();
         return false;
     },
     closePopup: function(e) {
@@ -63,5 +53,5 @@ App.LabelDeleteConfirmView = Backbone.View.extend({
         }));
         this.showTooltip();
         return this;
-    },
+    }
 });
