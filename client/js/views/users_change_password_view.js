@@ -58,10 +58,11 @@ App.ChangepasswordView = Backbone.View.extend({
                         self.flash('danger', i18next.t('New and confirm password field must match, please try again.'));
                     }
                 } else {
-                    var i = 0;
-                    for (; sKey = sessionStorage.key(i); i++) {
-                        if (sKey.search(/.*_access_token$/i) !== -1) {
-                            sessionStorage.removeItem(sKey);
+                    if (sessionStorage.length > 0) {
+                        for (i = 0; i < sessionStorage.length; i++) {
+                            if (sessionStorage.key(i).search(/.*_access_token$/i) !== -1) {
+                                sessionStorage.removeItem(sessionStorage.key(i));
+                            }
                         }
                     }
                     self.flash('success', i18next.t('Password has been changed successfully.'));
