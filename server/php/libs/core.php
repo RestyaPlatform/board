@@ -514,10 +514,11 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
     }
 	$tem_arr = array('/boards_users/?');
 	$board_exception_arr = array('/boards/?');
+	$board_exception_method_arr = array('PUT');
 	$organization_exception_arr = array('/organizations/?');
 	$organization_exception_method_arr = array('DELETE', 'PUT');
 	//temp fix
-	if((!empty($r_resource_vars['boards']) && !in_array($r_resource_cmd, $board_exception_arr))  || in_array($r_resource_cmd, $tem_arr)) {
+	if((!empty($r_resource_vars['boards']) && (!in_array($r_resource_cmd, $board_exception_arr) || (in_array($r_resource_cmd, $board_exception_arr) && in_array($r_request_method, $board_exception_method_arr))))  || in_array($r_resource_cmd, $tem_arr)) {
 		if ($r_request_method == 'PUT' && in_array($r_resource_cmd, $tem_arr)) {
 			$r_resource_vars['boards'] = $post_data['board_id'];
 		}
