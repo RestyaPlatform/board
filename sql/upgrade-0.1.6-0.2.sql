@@ -860,13 +860,11 @@ CREATE TABLE acl_board_links (
     url character varying(255) NOT NULL,
     method character varying(255) NOT NULL,
     slug character varying(255) NOT NULL,
-    group_id smallint,
-    is_allow_only_to_admin smallint DEFAULT (0)::smallint NOT NULL,
-    is_allow_only_to_user smallint DEFAULT (0)::smallint NOT NULL
+    group_id smallint
 );
 
-INSERT INTO "acl_board_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") 
-(select created, modified, name, url, method, slug, group_id, is_allow_only_to_admin, is_allow_only_to_user from acl_links where group_id IN (2,3,4));
+INSERT INTO "acl_board_links" ("created", "modified", "name", "url", "method", "slug", "group_id") 
+(select created, modified, name, url, method, slug, group_id from acl_links where group_id IN (2,3,4));
 
 
 CREATE SEQUENCE acl_organization_links_seq
@@ -884,13 +882,11 @@ CREATE TABLE acl_organization_links (
     url character varying(255) NOT NULL,
     method character varying(255) NOT NULL,
     slug character varying(255) NOT NULL,
-    group_id smallint,
-    is_allow_only_to_admin smallint DEFAULT (0)::smallint NOT NULL,
-    is_allow_only_to_user smallint DEFAULT (0)::smallint NOT NULL
+    group_id smallint
 );
 
-INSERT INTO "acl_organization_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") 
-(select created, modified, name, url, method, slug, group_id, is_allow_only_to_admin, is_allow_only_to_user from acl_links where group_id IN (5));
+INSERT INTO "acl_organization_links" ("created", "modified", "name", "url", "method", "slug", "group_id")
+(select created, modified, name, url, method, slug, group_id from acl_links where group_id IN (5));
 
 DELETE FROM acl_links WHERE group_id IN (2,3,4,5);
 
@@ -924,8 +920,8 @@ CREATE TABLE organization_user_roles (
 	description character varying
 );
 
-INSERT INTO "board_user_roles" ("created", "modified", "name") VALUES (now(), now(), 'owner'),(now(), now(), 'editor'),(now(), now(), 'viewer');
-INSERT INTO "organization_user_roles" ("created", "modified", "name") VALUES (now(), now(), 'owner'),(now(), now(), 'editor'),(now(), now(), 'viewer');
+INSERT INTO "board_user_roles" ("created", "modified", "name") VALUES (now(), now(), 'Owner'),(now(), now(), 'Editor'),(now(), now(), 'Viewer');
+INSERT INTO "organization_user_roles" ("created", "modified", "name") VALUES (now(), now(), 'Owner'),(now(), now(), 'Editor'),(now(), now(), 'Viewer');
 
 
 
