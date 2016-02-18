@@ -158,7 +158,7 @@
 				</ul>
 				<% } %>
 				<ul class="nav nav-pills pull-left">
-					<% if (is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+					<% if(!_.isEmpty(board.acl_links.where({slug: "edit_board", board_user_role_id: parseInt(board.board_user_role_id)}))){ %> 
 					<li>
 						<div class="btn-group navbar-btn js-visibility-list-dropdown dropdown">
 							<% 	var board_visibility = '';
