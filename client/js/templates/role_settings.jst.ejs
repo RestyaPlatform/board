@@ -102,7 +102,10 @@
 						var group = '';
 						var old_group = '';
 						var group_id = '';
-						acl_board_links.each(function(acl_board_link) {		
+						acl_board_links.each(function(acl_board_link) {
+							if (acl_board_link.attributes.is_hide === 1) {
+								return;
+							}
 							acl_board_link.acl_board_links_boards_user_roles.add(acl_board_link.attributes.acl_board_links_boards_user_roles);
 							group_id = acl_board_link.attributes.group_id - 2;
 							group = acl_board_links_groups[group_id];

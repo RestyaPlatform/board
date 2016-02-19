@@ -685,7 +685,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($roles_result)) {
             $response['roles'][] = $row;
         }
-		$acl_board_links_sql = 'SELECT row_to_json(d) FROM (SELECT acl_board_links.id,  acl_board_links.name, acl_board_links.group_id, ( SELECT array_to_json(array_agg(row_to_json(alr.*))) AS array_to_json FROM ( SELECT acl_board_links_boards_user_roles.board_user_role_id FROM acl_board_links_boards_user_roles acl_board_links_boards_user_roles WHERE acl_board_links_boards_user_roles.acl_board_link_id = acl_board_links.id ORDER BY acl_board_links_boards_user_roles.board_user_role_id) alr) AS acl_board_links_boards_user_roles FROM acl_board_links acl_board_links ORDER BY group_id ASC, id ASC) as d';
+		$acl_board_links_sql = 'SELECT row_to_json(d) FROM (SELECT acl_board_links.id,  acl_board_links.name, acl_board_links.group_id, ( SELECT array_to_json(array_agg(row_to_json(alr.*))) AS array_to_json FROM ( SELECT acl_board_links_boards_user_roles.board_user_role_id FROM acl_board_links_boards_user_roles acl_board_links_boards_user_roles WHERE acl_board_links_boards_user_roles.acl_board_link_id = acl_board_links.id ORDER BY acl_board_links_boards_user_roles.board_user_role_id) alr) AS acl_board_links_boards_user_roles, acl_board_links.is_hide FROM acl_board_links acl_board_links ORDER BY group_id ASC, id ASC) as d';
         $acl_board_links_result = pg_query_params($db_lnk, $acl_board_links_sql, array());
         $response['acl_board_links'] = array();
         while ($row = pg_fetch_assoc($acl_board_links_result)) {
