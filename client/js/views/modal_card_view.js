@@ -91,9 +91,8 @@ App.ModalCardView = Backbone.View.extend({
         'keypress input[type=text]': 'onEnter',
         'click .js-show-emoji-list': 'showEmojiList',
         'click .js-comment-add-emoji': 'addEmoji',
-        'click #modal-comments': 'hideActivity',
-        'click #modal-activities': 'hideActivity',
-        'click #modal-logged-user-activities': 'hideActivity',
+        'click #modal-comments': 'showActivity',
+        'click #modal-activities': 'showActivity',
     },
     /**
      * Constructor
@@ -226,7 +225,7 @@ App.ModalCardView = Backbone.View.extend({
      * @param e
      * @type Object(DOM event)
      */
-    hideActivity: function(e) {
+    showActivity: function(e) {   
         e.preventDefault();
         var i = 0;
         var hide_class = '';

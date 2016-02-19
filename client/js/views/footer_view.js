@@ -90,7 +90,6 @@ App.FooterView = Backbone.View.extend({
         'click .js-my-boards-listing': 'renderMyBoards',
         'click #modal-activities': 'showActivity',
         'click #modal-comments': 'showActivity',
-        'click #modal-logged-user-activities': 'showActivity',
     },
     /** 
      * Constructor
