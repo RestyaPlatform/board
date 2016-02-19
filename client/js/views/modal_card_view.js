@@ -225,7 +225,7 @@ App.ModalCardView = Backbone.View.extend({
      * @param e
      * @type Object(DOM event)
      */
-    showActivity: function(e) {   
+    showActivity: function(e) {
         e.preventDefault();
         var i = 0;
         var hide_class = '';
