@@ -91,9 +91,8 @@ App.ModalCardView = Backbone.View.extend({
         'keypress input[type=text]': 'onEnter',
         'click .js-show-emoji-list': 'showEmojiList',
         'click .js-comment-add-emoji': 'addEmoji',
-        'click #modal-comments': 'hideActivity',
-        'click #modal-activities': 'hideActivity',
-        'click #modal-logged-user-activities': 'hideActivity',
+        'click #modal-comments': 'showActivity',
+        'click #modal-activities': 'showActivity',
     },
     /**
      * Constructor
@@ -226,15 +225,32 @@ App.ModalCardView = Backbone.View.extend({
      * @param e
      * @type Object(DOM event)
      */
-    hideActivity: function(e) {
+    showActivity: function(e) {
         e.preventDefault();
+        var i = 0;
+        var hide_class = '';
         var target = $(e.currentTarget);
-        $('.' + target.attr('id')).closest('ul').find('li').removeClass('hide');
-        $('.' + target.attr('id')).closest('li').addClass('hide');
+        $('#' + target.attr('id')).toggleClass('active');
+        if (!$('#modal-comments').hasClass('active')) {
+            i++;
+            hide_class = hide_class + '.modal-comments, ';
+        }
+        if (!$('#modal-activities').hasClass('active')) {
+            i++;
+            hide_class = hide_class + '.modal-activities, ';
+        }
+        hide_class = hide_class.substring(0, hide_class.lastIndexOf(', '));
+        if (i === 2 || i === 0) {
+            $('.modal-comments, .modal-activities').parent('li').removeClass('hide');
+        }
+        if (i !== 2) {
+            $(hide_class).parent('li').addClass('hide');
+        }
+        return false;
     },
-    /**
-     * addCardLabel()
-     * save card labels
+    /** 
+     * addCardLabel()  
+     * save card labels 
      * @param e
      * @type Object(DOM event)
      * @return false
@@ -1515,10 +1531,9 @@ App.ModalCardView = Backbone.View.extend({
         var attachmentUrl = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/attachments.json?token=' + api_token;
         var options = {
             success: function(files) {
-                var image_link = '';
+                var image_link = [];
                 _.map(files, function(file) {
-                    var thumbnails = _(file.thumbnails).toArray();
-                    image_link = thumbnails;
+                    image_link.push(file.link);
                 });
                 $.ajax({
                     type: 'POST',
@@ -1532,8 +1547,10 @@ App.ModalCardView = Backbone.View.extend({
                     success: function(response) {
                         self.closePopup(e);
                         var card_attachment = new App.CardAttachment();
-                        card_attachment.set(response.card_attachments);
-                        self.model.attachments.unshift(card_attachment);
+                        _.each(response.card_attachments, function(_card_attachment) {
+                            card_attachment.set(_card_attachment);
+                            self.model.attachments.unshift(card_attachment);
+                        });
                         var view = new App.CardAttachmentView({
                             model: card_attachment,
 							board: self.model.list.collection.board
@@ -2751,7 +2768,7 @@ App.ModalCardView = Backbone.View.extend({
             $.ajax({
                 cache: true,
                 dataType: 'script',
-                url: 'https://www.dropbox.com/static/api/1/dropins.js',
+                url: 'https://www.dropbox.com/static/api/2/dropins.js',
                 success: function() {}
             });
         }

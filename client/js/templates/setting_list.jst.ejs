@@ -9,7 +9,7 @@
 				_.each(list.models, function(settingCategory) {				
 					var settings = settingCategory.get('settings');
 		%>
-				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>"><%- settingCategory.get('name') %></a></li>
+				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>"><%- i18next.t(settingCategory.get('name')) %></a></li>
 		<% 
 					i++;
 				});
@@ -79,11 +79,11 @@
 								<div class="col-sm-offset-2 col-sm-8 checkbox-inline">
 						<% } %>
 									<div class="<% if(setting.name != 'ENABLE_SSL_CONNECTIVITY'){ %>checkbox pull-left<% } else { %>form-group<% } %>">
-									<% if(setting.name === 'ENABLE_SSL_CONNECTIVITY'){ %><div class="col-xs-3"></div><div class="col-xs-9"><% } %>
-										<input class="js-checkbox" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" type="checkbox" <% if(setting.value === 'true') { %> checked="checked" <% } %> value="<%- setting.value %>">
-										<label for="inputSetting<%- setting.id %>"><%- setting.label %> </label>
-										<% if(setting.name === 'ENABLE_SSL_CONNECTIVITY'){ %></div><% } %>
-									</div>
+									<% if(setting.name === 'ENABLE_SSL_CONNECTIVITY'){ %><div class="col-xs-3"></div><div		class="col-xs-9"><% } %>
+ 										<input class="js-checkbox" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" type="checkbox" <% if(setting.value === 'true') { %> checked="checked" <% } %> value="<%- setting.value %>">
+ 										<label for="inputSetting<%- setting.id %>"><%- setting.label %> </label>
+									<% if(setting.name === 'ENABLE_SSL_CONNECTIVITY'){ %></div><% } %>
+ 									</div>
 					    <% if(setting.id == 3){ %>
 								</div>
 							</div>
@@ -99,7 +99,7 @@
 											<option <% if(lang[0].replace(/[^a-z\d\s]+/gi, '') === setting.value){ %>selected <% }%> value="<%- lang[0].replace(/[^a-z\d\s]+/gi, '') %>"><%- lang[1].replace(/[^a-z\d\s]+/gi, '') %></option>
 									 <% }); %>
 									</select>
-									<div><span class="help-block"><%= setting.description %></span></div>
+									<div><span class="help-block"><%= i18next.t(setting.description) %></span></div>
 								  </div>
 								</div>
 							<% } else {%>
@@ -131,11 +131,25 @@
 					</form>
 					<% } %>
 				</div>
-		<% 
-					j++;
-				});
+		<% j++; %>
+		<% if(settingCategory.id == 2 && id == 2){ %>
+			<div class="form-group">
+				<div class="col-xs-3"></div><div class="col-xs-9">
+					<input type="checkbox" value="" name="enableImportUsers" id="enableImportUsers" class="js-enable-import-user">
+					<label for="enableImportUsers"><%- i18next.t('Import Groups from LDAP into Organizations and put users under organization') %> </label>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="enableImportUsersSubmit" class="sr-only col-sm-4 control-label col-xs-12"><%- i18next.t('Import users') %></label>
+				<div class="col-sm-8">
+				<button type="button" id="importUsersSubmit" class="js-import-users btn btn-primary" disabled="disabled"><%- i18next.t('Import users') %></button>
+				<span class="clearfix hide" id="js-loader-img"><span class="cssloader"></span></span>
+				</div>
+		    </div>
+		<% } %>
+		<% });
 			} 
-		%>				
+		%>	
 		</div>
 	</div>
   </div>

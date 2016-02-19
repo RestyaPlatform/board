@@ -1,13 +1,13 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
-<div class="media">
-	<a data-placement="bottom" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" data-toggle="tooltip" data-container="body" data-html="true" class="js-tooltip pull-left" href="#/user/<%- activity.attributes.user_id %>">
+<div class="media modal-<% if((activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment')) {%>comments<%} else { %>activities<%}%> <% if(activity.attributes.user_id == authuser.user.id) {%>modal-logged-user-activities<%}%>">
+	<a data-placement="bottom" title="<%-activity.attributes.full_name %>  (<%-activity.attributes.username %>)" data-toggle="tooltip" data-container="body" data-html="true" class="js-tooltip pull-left" href="#/user/<%- activity.attributes.user_id %>">
 		<% if(!_.isEmpty(activity.attributes.profile_picture_path)) {
 			var profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'small_thumb' );
-		%>
+	 	%>      
 			<img src="<%=profile_picture_path %>" alt="[Image: <%-activity.attributes.full_name %>]" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" class="img-rounded img-responsive">
 		<% } else {%> 
 			<i class="avatar avatar-color-194 img-rounded"><%- activity.attributes.initials %></i>
-		<% } %>
+		<% } %>     
 	</a>
 	<div class="media-body">
     	<% if(activity.attributes.type == 'add_comment' && activity.attributes.type == 'edit_comment' ) { %>
@@ -42,13 +42,13 @@
 					if(_.contains(_username, authuser.user.username)){
 						comment = activity.attributes.full_name + ' has mentioned you in card ' + cardLink;
 					}
-				}
+				} 
 			}
 		%>             
-		<div class="col-xs-12 btn-block">
+		<div class="col-xs-12 btn-block">  
 			<div class="<% if(_.isUndefined(activity.from_footer)) { %>panel<%}%>">
 				<div class="panel-body">
-					<span class="js-activity-<%- activity.attributes.id %> modal-<% if((activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment')) {%>comments<%} else { %>activities<%}%> <% if(activity.attributes.user_id == authuser.user.id) {%>modal-logged-user-activities<%}%>">
+					<span class="js-activity-<%- activity.attributes.id %> >
 					<% if((activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment')) { %>
 						<%if(!_.isUndefined(activity.from_footer)) { %>
 							<span><%= comment %></span>

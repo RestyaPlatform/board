@@ -26,6 +26,47 @@ App.SettingView = Backbone.View.extend({
      */
     events: {
         'submit form#js-setting-list-form': 'updateSetting',
+        'change .js-enable-import-user': 'enableImportUser',
+        'click .js-import-users': 'importUsers',
+    },
+    /**
+     * importUsers()
+     * @return false
+     */
+    importUsers: function(e) {
+        var importUsersUrl = api_url + 'users/import.json?token=' + api_token;
+        $('#js-loader-img').removeClass('hide');
+        $('#importUsersSubmit').attr("disabled", "disabled");
+        $.ajax({
+            type: 'POST',
+            url: importUsersUrl,
+            success: function(response) {
+                if (response.success) {
+                    self.flash('success', i18next.t('Users and organizations imported successfully.'));
+                } else {
+                    if (response.error === 'user_not_found') {
+                        self.flash('danger', i18next.t('User records not available.'));
+                    } else {
+                        self.flash('danger', i18next.t('LDAP connection failed.'));
+                    }
+                }
+                $('#importUsersSubmit').removeAttr("disabled");
+                $('#js-loader-img').addClass('hide');
+            },
+            dataType: 'json'
+        });
+    },
+    /**
+     * enableImportUser()
+     * @return false
+     */
+    enableImportUser: function(e) {
+        if (!_.isUndefined($('#importUsersSubmit').attr('disabled'))) {
+            $('#importUsersSubmit').removeAttr("disabled");
+        } else {
+            $('#importUsersSubmit').attr("disabled", "disabled");
+        }
+        return false;
     },
     /**
      * updateSetting()
