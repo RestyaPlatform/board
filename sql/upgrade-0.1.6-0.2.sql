@@ -1609,10 +1609,6 @@ CREATE OR REPLACE VIEW "boards_listing" AS
 
 INSERT INTO "oauth_scopes" ("scope", "is_default") VALUES ('read', 't'),('write', 'f');
 
-INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('141', now(), now(), 'Users import', '/users/import', 'POST', 'users_import', '6', '1', '0');
-
-INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES (now(), now(), '141', '1');
-
 INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply_to_email", "name", "description", "subject", "email_text_content", "email_variables", "display_name") VALUES
 (7,	'2016-01-10 06:15:49.891',	'2016-01-10 06:15:49.891',	'##SITE_NAME## Restyaboard <##FROM_EMAIL##>',	'##REPLY_TO_EMAIL##',	'due_date_notification',	'We will send this mail, One day before when the card due date end.',	'Restyaboard / Due date notification',	'<html>
 <head></head>
@@ -1660,3 +1656,4 @@ UPDATE "settings" SET "type" = 'password', "description" = 'Enter a password for
 
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('4', '2', 'ENABLE_SSL_CONNECTIVITY', NULL, 'Use encryption (SSL, ldaps:// URL) when connects to server?', 'checkbox', NULL, 'Enable SSL Connectivity', '2');
 
+UPDATE "oauth_clients" SET "redirect_uri" = '', "client_name" = 'Web App' WHERE "client_id" = '7742632501382313';

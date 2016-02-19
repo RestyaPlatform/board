@@ -11,7 +11,7 @@
 					<li <% if (!_.isUndefined(type) && type == 'settings') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/settings" ><%- i18next.t("Settings") %></a></li>
 				<% } %>
 				<% if(!_.isEmpty(role_links.where({slug: "view_connected_applications"}))){ %>
-					<li <% if (!_.isUndefined(type) && type == 'oauth_applications') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/oauth_applications" ><%- i18next.t("Connected Applications") %></a></li>
+					<li <% if (!_.isUndefined(type) && type == 'oauth_applications') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/oauth_applications" ><%- i18next.t("Authorized OAuth Applications") %></a></li>
 				<% } %>
 			</ul>
 		</div>

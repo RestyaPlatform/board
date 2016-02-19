@@ -100,6 +100,7 @@ callbackTranslator = {
                     $('#content').html(new App.Error404View().el);
                     return;
                 } else if (JSON.parse(model.responseText).error.type === 'visibility') {
+                    window.sessionStorage.setItem('redirect_link', window.location.hash);
                     changeTitle('Board not found');
                     this.headerView = new App.HeaderView({
                         model: authuser
@@ -264,8 +265,7 @@ var AppRouter = Backbone.Router.extend({
         'settings/:id': 'settings_type',
         'email_templates': 'email_templates',
         'email_templates/:id': 'email_template_type',
-        'activities': 'activity_index',
-        'users/import': 'users_import'
+        'activities': 'activity_index'
     },
     initialize: function() {
         $('body').removeAttr('style');
@@ -511,11 +511,6 @@ var AppRouter = Backbone.Router.extend({
     activity_index: function() {
         new App.ApplicationView({
             model: 'activity_index'
-        });
-    },
-    users_import: function() {
-        new App.ApplicationView({
-            model: 'users_import'
         });
     }
 });

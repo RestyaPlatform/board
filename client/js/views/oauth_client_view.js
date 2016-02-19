@@ -33,7 +33,7 @@ App.OauthClientView = Backbone.View.extend({
         var oauth_client = new App.OauthClient();
         oauth_client.url = api_url + 'oauth/clients/' + target.data('id') + '.json';
         oauth_client.set('id', target.data('id'));
-        this.flash('success', i18next.t('Oauth client deleted successfully.'));
+        this.flash('success', i18next.t('OAuth application deleted successfully.'));
         oauth_client.destroy({
             success: function(model, response) {
                 app.navigate('#/oauth_clients', {
