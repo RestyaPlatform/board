@@ -228,13 +228,30 @@ App.ModalCardView = Backbone.View.extend({
      */
     hideActivity: function(e) {
         e.preventDefault();
+        var i = 0;
+        var hide_class = '';
         var target = $(e.currentTarget);
-        $('.' + target.attr('id')).closest('ul').find('li').removeClass('hide');
-        $('.' + target.attr('id')).closest('li').addClass('hide');
+        $('#' + target.attr('id')).toggleClass('active');
+        if (!$('#modal-comments').hasClass('active')) {
+            i++;
+            hide_class = hide_class + '.modal-comments, ';
+        }
+        if (!$('#modal-activities').hasClass('active')) {
+            i++;
+            hide_class = hide_class + '.modal-activities, ';
+        }
+        hide_class = hide_class.substring(0, hide_class.lastIndexOf(', '));
+        if (i === 2 || i === 0) {
+            $('.modal-comments, .modal-activities').parent('li').removeClass('hide');
+        }
+        if (i !== 2) {
+            $(hide_class).parent('li').addClass('hide');
+        }
+        return false;
     },
-    /**
-     * addCardLabel()
-     * save card labels
+    /** 
+     * addCardLabel()  
+     * save card labels 
      * @param e
      * @type Object(DOM event)
      * @return false
