@@ -199,21 +199,21 @@
 		<div class="tabbable tabs-below dropdown-menu pull-right js-dropdown-popup" role="menu">
 		  <div class="tab-content bg-info clearfix">
 		    <div class="col-xs-12 user-filter navbar-btn">
-				<span class="pull-left"><strong>Activity</strong></span>
+				<span class="pull-left"><strong><%- i18next.t('Activity') %></strong></span>
 				<ul class="nav nav-pills pull-right">
-					<li id="modal-activities"><a href="#" title="Show activities" class="text-muted"><i class="icon-eye-close small"></i></a></li>
-					<li id="modal-comments"><a href="#" title="Show comments" class="text-muted"><i class=" icon-comment-alt small"></i></a></li>
+					<li id="modal-activities"><a href="#" title="<%- i18next.t('Show activities') %>" class="text-muted"><i class="icon-eye-close small"></i></a></li>
+					<li id="modal-comments"><a href="#" title="<%- i18next.t('Show comments') %>" class="text-muted"><i class=" icon-comment-alt small"></i></a></li>
 				</ul>   
 			  </div> 
 			  <div class="tab-pane js-all-activity-list notification-list vertical-scrollbar col-xs-12 border-top" id="all_">
-			  <ul id="js-all-activities" class="list-unstyled"></ul>
-			  </div>
+			  <ul id="js-all-activities" class="list-unstyled"></ul> 
+			  </div>    
 			  <% if(!_.isEmpty(board_id)){ %> 
                   <div class="col-xs-12 user-filter navbar-btn">
-					<span class="pull-left"><strong>Activity</strong></span>
-					<ul class="nav nav-pills pull-right">
-						<li id="modal-activities"><a href="#" title="Show activities" class="text-muted"><i class="icon-eye-close small"></i></a></li>
-						<li id="modal-comments"><a href="#" title="Show comments" class="text-muted"><i class=" icon-comment-alt small"></i></a></li>
+					<span class="pull-left"><strong><%- i18next.t('Activity') %></strong></strong></span>
+					<ul class="nav nav-pills pull-right"> 
+						<li id="modal-activities"><a href="#" title="<%- i18next.t('Show activities') %>" class="text-muted"><i class="icon-eye-close small"></i></a></li>
+						<li id="modal-comments"><a href="#" title="<%- i18next.t('Show comments') %>" class="text-muted"><i class=" icon-comment-alt small"></i></a></li>
 					</ul>  
                  </div> 			  
 				  <div class="tab-pane js-boards-activity-list active notification-list vertical-scrollbar col-xs-12 border-top" id="board_">
