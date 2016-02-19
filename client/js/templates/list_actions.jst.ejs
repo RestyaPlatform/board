@@ -44,7 +44,7 @@
 <% } %>
 <li class="divider"></li>
 <li><a href="#" title="<%- i18next.t('Show Attachments') %>" class="js-show-list-modal"><%- i18next.t("Show Attachments") %></a></li>
-<% if(!_.isEmpty(list.collection.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)}))){ %>
+<% if(!_.isEmpty(list.collection.board.acl_links.where({slug: "archive_list",board_user_role_id: parseInt(list.board_user_role_id)}))){ %>
 	<li><a href="#" title="<%- i18next.t('Archive This List') %>" class="js-show-confirm-archive-list" data-list-id="<%- list.id %>"><%- i18next.t("Archive This List") %></a></li>
 <% } %>
 <% if(!_.isEmpty(list.collection.board.acl_links.where({slug: "delete_list",board_user_role_id: parseInt(list.board_user_role_id)}))){ %>
