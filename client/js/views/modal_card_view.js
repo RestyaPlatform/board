@@ -93,6 +93,8 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-comment-add-emoji': 'addEmoji',
         'click #modal-comments': 'showActivity',
         'click #modal-activities': 'showActivity',
+        'keyup[c] .dockmodal': 'keyboardArchiveCard',
+        'keyup[d] .dockmodal': 'keyboardShowCardDueDateForm',
     },
     /**
      * Constructor
@@ -2785,5 +2787,15 @@ App.ModalCardView = Backbone.View.extend({
                 return false;
             }
         }
+    },
+    keyboardArchiveCard: function(e) {
+        $('.js-archive-card', e.target).trigger('click');
+        return false;
+    },
+    keyboardShowCardDueDateForm: function(e) {
+        $('.docmodal-submenu').addClass('open');
+        $('.dropdown-menu li:first-child').addClass('open');
+        $('.js-show-card-due-date-form', e.target).trigger('click');
+        return false;
     }
 });

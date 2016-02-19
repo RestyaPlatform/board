@@ -125,7 +125,11 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-no-action': 'noAction',
         'click .js-back-to-board-visibility': 'showBoardVisibility',
         'click .js-select': 'selectBoardVisibility',
-        'click .js-clear-all': 'clearAll'
+        'click .js-clear-all': 'clearAll',
+        'keyup[f] .js-setting-response': 'keyboardShowFilters',
+        'keyup[l] .js-setting-response': 'keyboardShowLabels',
+        'keyup[s] .js-setting-response': 'keyboardShowSubscribeForm',
+        'keyup[w] .js-setting-response': 'keyboardOpenDropdown',
     },
     /**
      * openDropdown()
@@ -1967,5 +1971,25 @@ App.BoardHeaderView = Backbone.View.extend({
         $('#js-board-add-organization').html(new App.BoardAddOrganizationFormView({
             model: auth_user_organizations
         }).el);
-    }
+    },
+    keyboardShowFilters: function(e) {
+        $('.js-open-dropdown', e.target).trigger('click');
+        $('.js-show-filters', e.target).trigger('click');
+        return true;
+    },
+    keyboardShowLabels: function(e) {
+        $('.js-open-dropdown', e.target).trigger('click');
+        $('.js-show-labels', e.target).trigger('click');
+        return false;
+    },
+    keyboardShowSubscribeForm: function(e) {
+        $('.js-open-dropdown', e.target).trigger('click');
+        $('.js-show-subscribe-form', e.target).trigger('click');
+        return false;
+    },
+    keyboardOpenDropdown: function(e) {
+        $('.js-open-dropdown', e.target).trigger('click');
+        return false;
+    },
+
 });
