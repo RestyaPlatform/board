@@ -402,6 +402,7 @@
 	  </li>
 	  <li class="dropdown-submenu dropdown"> <a href="#" title="<%- i18next.t('Actions') %>" class="dropdown-toggle js-open-popover" data-toggle="dropdown"><%- i18next.t('Actions') %></a>
 		  <ul class="dropdown-menu">
+			<% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)}))){ %>
 			<li class="dropdown"> <a class="dropdown-toggle js-show-move-card-form js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><%- i18next.t('Move') %></a>
 			  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 				<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
@@ -417,6 +418,7 @@
 				</li>
 			  </ul>
 			</li>
+			<% } %>
 			<% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "copy_card",board_user_role_id: parseInt(list.board_user_role_id)}))  && !is_offline_data){ %>
 				<li class="dropdown js-hide-on-offline"> <a class="dropdown-toggle js-show-copy-card-form" role="button" data-toggle="dropdown" title="<%- i18next.t('Copy') %>" href="#"><%- i18next.t('Copy') %></a>
 				  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 pre-scrollable vertical-scrollbar">
