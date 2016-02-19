@@ -2274,43 +2274,111 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         break;
 
     case '/users/import':
-        if ($_FILES['file']['error'] == 0) {
-            $filename = $_FILES['file']['name'];
-            $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
-            if ($file_ext == 'csv') {
-                //Import uploaded file to Database
-                $handle = fopen($_FILES['file']['tmp_name'], "r");
-                $i = 0;
-                while (($data = fgetcsv($handle, 1000, ",")) !== false) {
-                    if ($i > 0) {
-                        $role_id = 2;
-                        $username = $data[0];
-                        $email = $data[1];
-                        $password = getCryptHash($data[2]);
-                        $full_name = $data[3];
-                        $initials = strtoupper(substr($data[0], 0, 1));
-                        $qry_val_arr = array(
-                            'now()',
-                            'now()',
-                            $role_id,
-                            $username,
-                            $email,
-                            $password,
-                            $full_name,
-                            $initials
-                        );
-                        pg_query_params($db_lnk, 'INSERT into users(created, modified, role_id, username, email, password, full_name, initials) values($1, $2, $3, $4, $5, $6, $7, $8)', $qry_val_arr);
-                    }
-                    $i++;
-                }
-                fclose($handle);
-                $response['success'] = 'Imported successfully';
-            } else {
-                $response['error'] = 'file_format';
-            }
-        } else {
-            $response['error'] = 'not_import';
-        }
+		$t_ldap_server = (LDAP_IS_SSL == 'true') ? 'ldaps://' : 'ldap://';
+		$t_ds = $ldap_connection = ldap_connect($t_ldap_server . LDAP_SERVER, LDAP_PORT);
+		if ($t_ds > 0) {
+			ldap_set_option($ldap_connection, LDAP_OPT_PROTOCOL_VERSION, LDAP_PROTOCOL_VERSION) or die('Unable to set LDAP protocol version');
+			ldap_set_option($ldap_connection, LDAP_OPT_REFERRALS, 0);
+			if (true === ldap_bind($ldap_connection, LDAP_BIND_DN, LDAP_BIND_PASSWD)) {
+				$search_filter = '(&(objectCategory=person)(' . LDAP_UID_FIELD . '=*))';
+				$attributes = array(
+					'samaccountname',
+					'mail',
+					'name',
+					'memberof',
+					'admincount',
+				);
+				$result = ldap_search($ldap_connection, LDAP_ROOT_DN, $search_filter, $attributes);
+				if (FALSE !== $result) {
+					$entries = ldap_get_entries($ldap_connection, $result);
+					for ($x=0; $x<$entries['count']; $x++) {
+						if (!empty($entries[$x]['memberof'][0])) {
+							$users[trim($entries[$x]['memberof'][0])][] = array(
+								'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
+								'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
+								'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
+								'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
+							);
+						} else {
+							$no_organization_users[] = array(
+								'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
+								'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
+								'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
+								'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
+							);
+						}
+					}
+				}
+				ldap_unbind($ldap_connection);
+			}
+			if (!empty($users)) {
+				foreach ($users as $key => $value) {
+					$org = explode(",", $key);
+					$organization_name = substr($org[0], 3);
+					$condition = array(
+						$organization_name
+					);
+					$is_organization_exist = executeQuery('SELECT id FROM organizations WHERE name = $1', $condition);
+					if (empty($is_organization_exist)) {
+						$data = array(
+							1, // @TODO: auth.user.id replace
+							$organization_name,
+							1 // @TODO: Set organization as private
+						);
+						$result = pg_query_params($db_lnk, 'INSERT INTO organizations(created, modified, user_id, name, organization_visibility) VALUES (now(), now(), $1, $2, $3) RETURNING id', $data);
+						$organization = pg_fetch_assoc($result);
+						$organization_id = $organization['id'];
+					} else {
+						$organization_id = $is_organization_exist['id'];
+					}
+					foreach ($value as $keys => $values) {
+						$condition = array(
+							$values['username']
+						);
+						$is_user_exist = executeQuery('SELECT id FROM users WHERE username = $1', $condition);
+						if (empty($is_user_exist)) {
+							$password = getCryptHash($values['username']);
+							preg_match_all('/\b\w/', $values['name'], $match);
+							$data = array(
+								$values['username'],
+								$values['email'],
+								$password,
+								$values['name'],
+								strtoupper(implode($match[0]))
+							);
+							$result1 = pg_query_params($db_lnk, 'INSERT INTO users(created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5,  true, true, true) RETURNING id ', $data);
+							$user = pg_fetch_assoc($result1);
+							$user_id = $user['id'];
+						} else {
+							$user_id = $is_user_exist['id'];
+						}
+						if (empty($is_organization_exist)) {
+							$is_admin = 'false';
+							if (!empty($values['admincount'])) {
+								$is_admin = 'true';
+							}
+							$data = array(
+								$organization_id,
+								$user_id,
+								$is_admin
+							);
+							$condition = array(
+								$user_id
+							);
+							$is_organization_user_exist = executeQuery('SELECT id FROM organizations_users WHERE user_id = $1', $condition);
+							if (empty($is_organization_user_exist)) {
+								pg_query_params($db_lnk, 'INSERT INTO organizations_users (created, modified, organization_id, user_id, is_admin) VALUES (now(), now(), $1, $2, $3)', $data);
+							}
+						}
+					}
+				}
+				$response['success'] = 'import_success';
+			} else {
+				$response['error'] = 'user_not_found';
+			}
+		} else {
+			$response['error'] = 'connection_failed';
+		}
         break;
 
     default:
