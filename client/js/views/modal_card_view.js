@@ -1506,7 +1506,7 @@ App.ModalCardView = Backbone.View.extend({
             success: function(files) {
                 var image_link = [];
                 _.map(files, function(file) {
-					image_link.push(file.link);
+                    image_link.push(file.link);
                 });
                 $.ajax({
                     type: 'POST',
@@ -1520,10 +1520,10 @@ App.ModalCardView = Backbone.View.extend({
                     success: function(response) {
                         self.closePopup(e);
                         var card_attachment = new App.CardAttachment();
-						_.each(response.card_attachments, function(_card_attachment) {
-							card_attachment.set(_card_attachment);
-							self.model.attachments.unshift(card_attachment);
-						});
+                        _.each(response.card_attachments, function(_card_attachment) {
+                            card_attachment.set(_card_attachment);
+                            self.model.attachments.unshift(card_attachment);
+                        });
                         var view = new App.CardAttachmentView({
                             model: card_attachment
                         });
