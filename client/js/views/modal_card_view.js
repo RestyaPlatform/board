@@ -376,7 +376,8 @@ App.ModalCardView = Backbone.View.extend({
         });
         labels = labels.substr(0, labels.length - 1);
         $('.js-show-card-label-form-response').html(new App.CardLabelFormView({
-            model: labels
+            model: labels,
+			card: this.model
         }).el);
         $('.inputCardLabel', doc).select2({
             tags: _.uniq(self.model.list.collection.board.labels.pluck('name')),
