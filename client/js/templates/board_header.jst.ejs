@@ -245,7 +245,7 @@
 								<% } %>
 							  </li>
 						    <% }%>
-							<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
 							<% 
 								var background_color = board.attributes.background_color; 
 								var background_picture_url = board.attributes.background_picture_url; 
@@ -271,7 +271,7 @@
 							<% }%>
 							<% }%>
 							<li><a href="#" class="js-show-board-modal" data-toggle="modal" data-target="#modalListView"><%- i18next.t('Show Attachments') %></a></li>
-							<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
 							<li><a href="#" class="js-additional-settings"><%- i18next.t('Additional Settings') %></a></li>
 							<li class="divider"></li>
 							<li class="dropdown js-open-dropdown inner-dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-sm icon-warning-sign icon-type text-primary"></i><%- i18next.t('Close board') %></a>
