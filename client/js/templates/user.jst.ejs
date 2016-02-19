@@ -18,8 +18,12 @@
 			  <%  } %> 
     </a>
    <a class="col-xs-7 htruncate" href="#/user/<%- user.attributes.id%>"><%- user.attributes.full_name%></a><a><% if(!user.attributes.is_email_confirmed){ %>
-			<span class="label label-warning navbar-right">Unconfirmed</span>
-		<% } %> </a>
+			<span class="label label-warning navbar-right"><%- i18next.t('Unconfirmed') %></span>
+		<% } %> 
+	<% if(user.attributes.is_ldap){ %>
+			<span class="label label-success navbar-right">LDAP</span>
+		<% } %>
+		</a>
 		
 </div>
 <div class="clearfix navbar-btn">

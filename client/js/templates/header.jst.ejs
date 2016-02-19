@@ -57,7 +57,7 @@
 	} else if(!_.isEmpty(current_param) && (current_param === 'admin_boards_list')){ 
 		current_title = i18next.t('Boards');
 	} else if(!_.isEmpty(current_param) && (current_param === 'oauth_clients')){ 
-		current_title = i18next.t('Clients');
+		current_title = i18next.t('Developer applications');
 	} 
 %>
 
@@ -123,12 +123,11 @@
 					if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") { %>
 					<div class="pull-left well-sm"><a class="label" href="#/users/admin_user_add" title="<%- i18next.t('Add User') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("Add User") %></span></a></div>
 				<% } %>
-					<div class="pull-left well-sm"><a class="label" href="#/users/import" title="<%- i18next.t('Users Import') %>"><i class="icon-share h3"></i><span class="h4"><%- i18next.t("Users Import") %></span></a></div>
 			<% } %>
 			<% } %>
 			<% if(!_.isEmpty(current_param) && (current_param === 'oauth_clients')){ %>
 				<% if(!_.isEmpty(role_links.where({slug: "view_client_listing"}))) { %>
-						<div class="pull-left well-sm"><a class="label" href="#/oauth_clients/add" title="<%- i18next.t('Add Client') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("Add Client") %></span></a></div>
+						<div class="pull-left well-sm"><a class="label" href="#/oauth_clients/add" title="<%- i18next.t('New application') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("New application") %></span></a></div>
 				<% } %>
 			<% } %>
 	</div>
@@ -152,7 +151,7 @@
 				<li class="js-admin-app-menu navbar-btn"><a title="<%- i18next.t('Apps') %>" href="#/apps"><%- i18next.t("Apps") %></a></li>
 			<% } %>
 			<% if(!_.isEmpty(role_links.where({slug: "view_client_listing"}))){ %>
-				<li class="js-admin-client-menu navbar-btn"><a title="<%- i18next.t('Oauth clients') %>" href="#/oauth_clients"><%- i18next.t("Oauth clients") %></a></li>
+				<li class="js-admin-client-menu navbar-btn"><a title="<%- i18next.t('Developer applications') %>" href="#/oauth_clients"><%- i18next.t("Developer applications") %></a></li>
 			<% } %>
 			<% if(!_.isEmpty(role_links.where({slug: "setting_list"}))){ %>
 				<li class="js-admin-setting-menu navbar-btn"><a title="<%- i18next.t('Settings') %>" href="#/settings"><%- i18next.t("Settings") %></a></li>

@@ -88,8 +88,10 @@ App.FooterView = Backbone.View.extend({
         'click .js-closed-boards': 'renderClosedBoards',
         'click .js-starred-boards': 'renderStarredBoards',
         'click .js-my-boards-listing': 'renderMyBoards',
+        'click #modal-activities': 'showActivity',
+        'click #modal-comments': 'showActivity',
     },
-    /**
+    /** 
      * Constructor
      * initialize default values and actions
      */
@@ -1699,5 +1701,30 @@ App.FooterView = Backbone.View.extend({
                 }
             }
         });
+    },
+    showActivity: function(e) {
+        e.preventDefault();
+        var i = 0;
+        var hide_class = '';
+        var target = $(e.currentTarget);
+        $('#' + target.attr('id')).toggleClass('active');
+        if (!$('#modal-comments').hasClass('active')) {
+            i++;
+            hide_class = hide_class + '.modal-comments, ';
+        }
+        if (!$('#modal-activities').hasClass('active')) {
+            i++;
+            hide_class = hide_class + '.modal-activities, ';
+        }
+        hide_class = hide_class.substring(0, hide_class.lastIndexOf(', '));
+        if (i === 2 || i === 0) {
+            $('.modal-comments, .modal-activities').parent('li').removeClass('hide');
+        }
+        if (i !== 2) {
+            $(hide_class).parent('li').addClass('hide');
+        }
+        return false;
+
+
     }
 });

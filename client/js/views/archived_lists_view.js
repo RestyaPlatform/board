@@ -28,6 +28,19 @@ App.ArchivedListsView = Backbone.View.extend({
     tagName: 'div',
     className: 'clearfix col-xs-12',
     /**
+     * Events
+     * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
+     */
+    events: {
+        'click .js-delete-all-archived-lists-confirm': 'deleteAllArchivedlistsConfirm'
+    },
+    deleteAllArchivedlistsConfirm: function(e) {
+        $('.js-setting-response').html(new App.ArchiveListDeleteConfirmView({
+            model: this.model,
+        }).el);
+        return false;
+    },
+    /**
      * render()
      * populate the html to the dom
      * @param NULL
@@ -41,4 +54,5 @@ App.ArchivedListsView = Backbone.View.extend({
         this.showTooltip();
         return this;
     }
+
 });

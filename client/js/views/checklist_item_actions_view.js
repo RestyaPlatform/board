@@ -25,7 +25,7 @@ App.ChecklistItemActionsView = Backbone.View.extend({
         this.render();
     },
     template: JST['templates/checklist_item_actions'],
-    tagName: 'div',
+    tagName: 'li',
     /**
      * render()
      * populate the html to the dom

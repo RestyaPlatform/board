@@ -866,7 +866,19 @@ CREATE OR REPLACE VIEW "boards_listing" AS
    LEFT JOIN users users ON ((users.id = board.user_id)))
    LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
 
-
+CREATE OR REPLACE VIEW "cards_users_listing" AS
+ SELECT u.username,
+    u.profile_picture_path,
+    cu.id,
+    cu.created,
+    cu.modified,
+    cu.card_id,
+    cu.user_id,
+    u.initials,
+    u.full_name,
+    u.email
+   FROM (cards_users cu
+   LEFT JOIN users u ON ((u.id = cu.user_id)));
 
 CREATE OR REPLACE VIEW "cards_listing" AS
  SELECT cards.id,
@@ -916,7 +928,8 @@ CREATE OR REPLACE VIEW "cards_listing" AS
                     cards_users_listing.card_id,
                     cards_users_listing.user_id,
                     cards_users_listing.initials,
-                    cards_users_listing.full_name
+                    cards_users_listing.full_name,
+		    cards_users_listing.email
                    FROM cards_users_listing cards_users_listing
                   WHERE (cards_users_listing.card_id = cards.id)
                   ORDER BY cards_users_listing.id) cc) AS cards_users,
@@ -1350,7 +1363,8 @@ CREATE OR REPLACE VIEW "users_listing" AS
     users.member_board_count,
     users.owner_organization_count,
     users.member_organization_count,
-    users.language
+    users.language,
+    users.is_ldap::boolean::int
    FROM (((((((((users users
    LEFT JOIN ips i ON ((i.id = users.ip_id)))
    LEFT JOIN cities rci ON ((rci.id = i.city_id)))
@@ -1595,6 +1609,51 @@ CREATE OR REPLACE VIEW "boards_listing" AS
 
 INSERT INTO "oauth_scopes" ("scope", "is_default") VALUES ('read', 't'),('write', 'f');
 
-INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('141', now(), now(), 'Users import', '/users/import', 'POST', 'users_import', '6', '1', '0');
+INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply_to_email", "name", "description", "subject", "email_text_content", "email_variables", "display_name") VALUES
+(7,	'2016-01-10 06:15:49.891',	'2016-01-10 06:15:49.891',	'##SITE_NAME## Restyaboard <##FROM_EMAIL##>',	'##REPLY_TO_EMAIL##',	'due_date_notification',	'We will send this mail, One day before when the card due date end.',	'Restyaboard / Due date notification',	'<html>
+<head></head>
+<body style="margin:0">
+<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">
+<div style="border: 1px solid #EEEEEE;">
+<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>
+</div>
+</header>
+<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">
+<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
+<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
+<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;">
+<h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Due soon…</h2>
+<p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</p>
+</pre>
+</div>
+</div>
+</main>
+<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
+<h6 style="text-align:center;margin:5px 15px;"> 
+<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>
+</h6>
+</footer>
+</body>
+</html>', 'SITE_URL, SITE_NAME, CONTENT', 'Due Date Notification');
 
-INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES (now(), now(), '141', '1');
+
+INSERT INTO "oauth_clients" ("client_id", "client_secret", "redirect_uri", "grant_types", "scope", "user_id", "client_name", "client_url", "logo_url", "tos_url", "policy_url", "modified", "created")
+VALUES ('6664115227792148', 'hw3wpe2cfsxxygogwue47cwnf7', NULL, 'client_credentials refresh_token authorization_code', NULL, NULL, 'Mobile App', NULL, NULL, NULL, NULL, now(), now()),('7857596005287233', 'n0l2wlujcpkj0bd7gk8918gm6b', NULL, 'client_credentials refresh_token authorization_code', NULL, NULL, 'Zapier', NULL, NULL, NULL, NULL, now(), now());
+
+UPDATE "settings" SET "description" = 'The DNS name or IP address of the server. For example dc.domain.local.' WHERE "name" = 'LDAP_SERVER';
+
+UPDATE "settings" SET "description" = 'Server port (e.g., 389 for LDAP and 636 for LDAP using SSL)' WHERE "name" = 'LDAP_PORT';
+
+UPDATE "settings" SET "description" = 'Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx' WHERE "name" = 'LDAP_PROTOCOL_VERSION';
+
+UPDATE "settings" SET "label" = 'Base DN', "description" = 'This is your search base for LDAP queries. This should be at least your domain root, for example dc=domain,dc=local You can define this as a Organizational Unit if you want to narrow down the search base. For example: ou=team,ou=company,dc=domain,dc=local' WHERE "name" = 'LDAP_ROOT_DN';
+
+UPDATE "settings" SET "label" = 'Account Filter', "description" = 'You can use different field from the username here. For pre-windows 2000 style login, use sAMAccountName and for a UPN style login use userPrincipalName.' WHERE "name" = 'LDAP_UID_FIELD';
+
+UPDATE "settings" SET "label" = 'Bind DN', "description" = 'Enter a valid user account/DN to pre-bind with if your LDAP server does not allow anonymous profile searches, or requires a user with specific privileges to search.' WHERE "name" = 'LDAP_BIND_DN';
+
+UPDATE "settings" SET "type" = 'password', "description" = 'Enter a password for the above Bind DN.' WHERE "name" = 'LDAP_BIND_PASSWD';
+
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('4', '2', 'ENABLE_SSL_CONNECTIVITY', NULL, 'Use encryption (SSL, ldaps:// URL) when connects to server?', 'checkbox', NULL, 'Enable SSL Connectivity', '2');
+
+UPDATE "oauth_clients" SET "redirect_uri" = '', "client_name" = 'Web App' WHERE "client_id" = '7742632501382313';

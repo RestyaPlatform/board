@@ -9,7 +9,7 @@
 				_.each(list.models, function(settingCategory) {				
 					var settings = settingCategory.get('settings');
 		%>
-				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>"><%- settingCategory.get('name') %></a></li>
+				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>"><%- i18next.t(settingCategory.get('name')) %></a></li>
 		<% 
 					i++;
 				});
@@ -99,14 +99,14 @@
 											<option <% if(lang[0].replace(/[^a-z\d\s]+/gi, '') === setting.value){ %>selected <% }%> value="<%- lang[0].replace(/[^a-z\d\s]+/gi, '') %>"><%- lang[1].replace(/[^a-z\d\s]+/gi, '') %></option>
 									 <% }); %>
 									</select>
-									<div><span class="help-block"><%= setting.description %></span></div>
+									<div><span class="help-block"><%= i18next.t(setting.description) %></span></div>
 								  </div>
 								</div>
 							<% } else {%>
 								<div class="form-group">
 								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- setting.label %></label>
 								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
-									<input type="text" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" class="form-control" value="<%- setting.value %>" />
+									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" class="form-control" value="<%- setting.value %>" />
 									<div><span class="help-block"><%= setting.description %></span></div>
 								  </div>
 								</div>

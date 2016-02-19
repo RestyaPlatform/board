@@ -18,7 +18,9 @@
 			<button class="btn dropdown-toggle js-no-pjax xltriggered" data-toggle="dropdown"><i class="icon-cog"></i><span class="caret"></span></button>
 			<ul class="dropdown-menu arrow arrow-right pull-right">
 				<li><a title="<%- i18next.t('Edit') %>" href="#/oauth_clients/edit/<%- oauth_client.id %>"><i class="icon-edit"></i><%- i18next.t('Edit') %></a></li>
-				<li><a class="js-delete" data-id="<%- oauth_client.id %>" title="<%- i18next.t('Delete') %>" href=""><i class="icon-remove"></i><%- i18next.t('Delete') %></a></li>
+				<% if (oauth_client.id == 7742632501382313 || oauth_client.id == 7857596005287233 || oauth_client.id == 6664115227792148) { %>
+					<li><a class="js-delete" data-id="<%- oauth_client.id %>" title="<%- i18next.t('Delete') %>" href=""><i class="icon-remove"></i><%- i18next.t('Delete') %></a></li>
+				<% } %>
 			</ul>
 		  </div>
 		</div>
@@ -30,5 +32,5 @@
 <%
 				}); 
 } else { %>
-	<div class="col-xs-12 text-center alert alert-info"><%- i18next.t('No %s available', { postProcess: 'sprintf', sprintf: ['oauth client']}) %></div>
+	<div class="col-xs-12 text-center alert alert-info"><%- i18next.t('No %s available', { postProcess: 'sprintf', sprintf: ['OAuth application']}) %></div>
 <% } %>

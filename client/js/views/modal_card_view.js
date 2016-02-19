@@ -91,12 +91,15 @@ App.ModalCardView = Backbone.View.extend({
         'keypress input[type=text]': 'onEnter',
         'click .js-show-emoji-list': 'showEmojiList',
         'click .js-comment-add-emoji': 'addEmoji',
+        'click #modal-comments': 'showActivity',
+        'click #modal-activities': 'showActivity',
     },
     /**
      * Constructor
      * initialize default values and actions
      */
-    initialize: function() {
+    initialize: function(options) {
+        this.initialState = options.initialState;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
@@ -217,8 +220,37 @@ App.ModalCardView = Backbone.View.extend({
         this.$el.find('.js-comment').val(this.$el.find('.js-comment').val() + ':' + target.text() + ': ');
     },
     /**
-     * addCardLabel()
-     * save card labels
+     * hideActivity()
+     * Hide activity and comment
+     * @param e
+     * @type Object(DOM event)
+     */
+    showActivity: function(e) {
+        e.preventDefault();
+        var i = 0;
+        var hide_class = '';
+        var target = $(e.currentTarget);
+        $('#' + target.attr('id')).toggleClass('active');
+        if (!$('#modal-comments').hasClass('active')) {
+            i++;
+            hide_class = hide_class + '.modal-comments, ';
+        }
+        if (!$('#modal-activities').hasClass('active')) {
+            i++;
+            hide_class = hide_class + '.modal-activities, ';
+        }
+        hide_class = hide_class.substring(0, hide_class.lastIndexOf(', '));
+        if (i === 2 || i === 0) {
+            $('.modal-comments, .modal-activities').parent('li').removeClass('hide');
+        }
+        if (i !== 2) {
+            $(hide_class).parent('li').addClass('hide');
+        }
+        return false;
+    },
+    /** 
+     * addCardLabel()  
+     * save card labels 
      * @param e
      * @type Object(DOM event)
      * @return false
@@ -362,13 +394,10 @@ App.ModalCardView = Backbone.View.extend({
      * @type Object(DOM event)
      */
     editCardDueDateForm: function(e) {
-        var date_time = this.model.attributes.due_date.split('T');
-        date_time = date_time[0].split(' ');
         $('.js-edit-card-due-date-form-response').html(new App.CardDuedateFromView({
             model: this.model
         }).el);
         $('.js-card-duedate-edit-' + this.model.id).datetimepicker({
-            defaultDate: date_time[0],
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayBtn: true,
@@ -380,7 +409,7 @@ App.ModalCardView = Backbone.View.extend({
             pickTime: false
         });
         $('.js-card-duetime-edit-' + this.model.id).datetimepicker({
-            format: 'hh:ii',
+            format: 'hh:ii:ss',
             autoclose: true,
             showMeridian: false,
             startView: 1,
@@ -396,20 +425,10 @@ App.ModalCardView = Backbone.View.extend({
      * @type Object(DOM event)
      */
     showCardDueDateForm: function(e) {
-        var date = '';
-        var time = '';
-        if (!_.isUndefined(this.model.attributes.due_date) && this.model.attributes.due_date !== null && this.model.attributes.due_date !== 'NULL') {
-            var date_time = this.model.attributes.due_date.split('T');
-            date_time = date_time[0].split(' ');
-            date = date_time[0];
-            time = date_time[1];
-        }
-
         $('.js-show-card-due-date-form-response').html('').html(new App.CardDuedateFromView({
             model: this.model
         }).el);
         $('.js-card-duedate-edit-' + this.model.id).datetimepicker({
-            defaultDate: date,
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayBtn: true,
@@ -424,7 +443,7 @@ App.ModalCardView = Backbone.View.extend({
             $(this).blur();
         });
         $('.js-card-duetime-edit-' + this.model.id).datetimepicker({
-            format: 'hh:ii',
+            format: 'hh:ii:ss',
             autoclose: true,
             showMeridian: false,
             startView: 1,
@@ -563,6 +582,19 @@ App.ModalCardView = Backbone.View.extend({
                             emojify.run();
                         }
                         self.model.cards.add(self.model);
+                    }
+                    if (!_.isEmpty(data.due_date)) {
+                        self.model.list.collection.board.lists.each(function(list) {
+                            var cards = list.get('cards') || [];
+                            if (!_.isEmpty(cards)) {
+                                _.each(cards, function(card) {
+                                    if (card.id === self.model.id) {
+                                        card.due_date = data.due_date;
+                                    }
+                                });
+                            }
+                        });
+                        self.model.set('due_date', data.start);
                     }
                 }
             });
@@ -728,8 +760,9 @@ App.ModalCardView = Backbone.View.extend({
                 subscribed = ' <span class="icon-eye-open"></span>';
             }
         }
-        var initialState = 'docked';
-        if (trigger_dockmodal) {
+        if (this.initialState) {
+            initialState = this.initialState;
+        } else if (trigger_dockmodal) {
             initialState = 'minimized';
         }
         var doc = $('#js-card-modal-' + this.model.id);
@@ -1487,10 +1520,9 @@ App.ModalCardView = Backbone.View.extend({
         var attachmentUrl = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/attachments.json?token=' + api_token;
         var options = {
             success: function(files) {
-                var image_link = '';
+                var image_link = [];
                 _.map(files, function(file) {
-                    var thumbnails = _(file.thumbnails).toArray();
-                    image_link = thumbnails;
+                    image_link.push(file.link);
                 });
                 $.ajax({
                     type: 'POST',
@@ -1504,8 +1536,10 @@ App.ModalCardView = Backbone.View.extend({
                     success: function(response) {
                         self.closePopup(e);
                         var card_attachment = new App.CardAttachment();
-                        card_attachment.set(response.card_attachments);
-                        self.model.attachments.unshift(card_attachment);
+                        _.each(response.card_attachments, function(_card_attachment) {
+                            card_attachment.set(_card_attachment);
+                            self.model.attachments.unshift(card_attachment);
+                        });
                         var view = new App.CardAttachmentView({
                             model: card_attachment
                         });
@@ -2705,7 +2739,7 @@ App.ModalCardView = Backbone.View.extend({
             $.ajax({
                 cache: true,
                 dataType: 'script',
-                url: 'https://www.dropbox.com/static/api/1/dropins.js',
+                url: 'https://www.dropbox.com/static/api/2/dropins.js',
                 success: function() {}
             });
         }
