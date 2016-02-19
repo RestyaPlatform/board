@@ -512,6 +512,15 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
 			return true;
 		}
     }
+	if (!empty($r_resource_vars['boards'])) {
+		$qry_val_arr = array(
+			$r_resource_vars['boards']
+		);
+		$board = executeQuery('SELECT board_visibility FROM boards WHERE id = $1', $qry_val_arr);
+		if ($board['board_visibility'] == 2 && $r_request_method == 'GET') {
+			return true;
+		}
+	}
 	$board_temp_arr = array('/boards_users/?');
 	$organization_temp_arr = array('/organizations_users/?');
 	$board_exception_arr = array('/boards/?');
