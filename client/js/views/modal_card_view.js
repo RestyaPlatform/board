@@ -1504,10 +1504,9 @@ App.ModalCardView = Backbone.View.extend({
         var attachmentUrl = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/attachments.json?token=' + api_token;
         var options = {
             success: function(files) {
-                var image_link = '';
+                var image_link = [];
                 _.map(files, function(file) {
-                    var thumbnails = _(file.thumbnails).toArray();
-                    image_link = thumbnails;
+					image_link.push(file.link);
                 });
                 $.ajax({
                     type: 'POST',
@@ -1521,8 +1520,10 @@ App.ModalCardView = Backbone.View.extend({
                     success: function(response) {
                         self.closePopup(e);
                         var card_attachment = new App.CardAttachment();
-                        card_attachment.set(response.card_attachments);
-                        self.model.attachments.unshift(card_attachment);
+						_.each(response.card_attachments, function(_card_attachment) {
+							card_attachment.set(_card_attachment);
+							self.model.attachments.unshift(card_attachment);
+						});
                         var view = new App.CardAttachmentView({
                             model: card_attachment
                         });
@@ -2722,7 +2723,7 @@ App.ModalCardView = Backbone.View.extend({
             $.ajax({
                 cache: true,
                 dataType: 'script',
-                url: 'https://www.dropbox.com/static/api/1/dropins.js',
+                url: 'https://www.dropbox.com/static/api/2/dropins.js',
                 success: function() {}
             });
         }
