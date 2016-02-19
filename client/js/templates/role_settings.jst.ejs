@@ -123,8 +123,8 @@
 								%>
 										<td class="text-center">
 											<div class="checkbox">
-												<input type="checkbox" class="cur" name="acl_link_id[<%- board_user_role.attributes.id %>][<%- acl_board_link.attributes.id %>]" value="<%- acl_board_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"/>
-												<label class="js-update-role" data-table="acl_board_links_boards_user_roles" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" for="acl_link_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"></label>
+												<input type="checkbox" class="cur" name="acl_link_id[<%- board_user_role.attributes.id %>][<%- acl_board_link.attributes.id %>]" value="<%- acl_board_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_board_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"/>
+												<label class="js-update-role" data-table="acl_board_links_boards_user_roles" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" for="acl_link_board_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"></label>
 											</div>
 										</td>
 								<% }); %>
@@ -170,8 +170,8 @@
 							%>
 									<td class="text-center">
 										<div class="checkbox">
-											<input type="checkbox" class="cur" name="acl_link_id[<%- organization_user_role.attributes.id %>][<%- acl_organization_link.attributes.id %>]" value="<%- acl_organization_link.attributes.id%>" <% if (!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"/>
-											<label class="js-update-role" data-table="acl_organization_links_organizations_user_roles" data-acl_link_id="<%- acl_organization_link.attributes.id %>"  data-role_id="<%- organization_user_role.attributes.id %>" for="acl_link_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"></label>
+											<input type="checkbox" class="cur" name="acl_link_id[<%- organization_user_role.attributes.id %>][<%- acl_organization_link.attributes.id %>]" value="<%- acl_organization_link.attributes.id%>" <% if (!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_org_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"/>
+											<label class="js-update-role" data-table="acl_organization_links_organizations_user_roles" data-acl_link_id="<%- acl_organization_link.attributes.id %>"  data-role_id="<%- organization_user_role.attributes.id %>" for="acl_link_org_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"></label>
 										</div>
 									</td>
 							<% }); %>
