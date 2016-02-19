@@ -60,7 +60,10 @@
 					<ul class="list-inline clearfix" id="js-card-users-list-<%- card.attributes.id %>">
 					<% if(!_.isUndefined(authuser.user)){ %>
 					  <li id="js-card-user-add-container">
-						<div class="dropdown js-member-dropdown"> <a class="dropdown-toggle js-show-add-member-form btn btn-default" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Member') %>" href="#"> <i class="icon-plus"></i> </a>
+						<div class="dropdown js-member-dropdown"> 
+						<% if(!_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_card_user",board_user_role_id: parseInt(list.board_user_role_id)}))){ %>
+						<a class="dropdown-toggle js-show-add-member-form btn btn-default" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Member') %>" href="#"> <i class="icon-plus"></i> </a>
+						<% } %>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 							<li> <div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong><%- i18next.t('Members') %></strong></span><i class="icon-remove cur"></i></div></li>
 							<li class="col-xs-12 divider"></li>
