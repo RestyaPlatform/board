@@ -159,7 +159,7 @@ App.OrganizationsUserView = Backbone.View.extend({
         self.flash('success', i18next.t('User removed from this organization'));
         self.render();
         var organizationsUser = new App.OrganizationsUser();
-        organizationsUser.url = api_url + 'organizations_users/' + organizations_user_id + '.json';
+        organizationsUser.url = api_url + 'organizations/' + self.model.id +  '/organizations_users/' + organizations_user_id + '.json';
         organizationsUser.set('id', organizations_user_id);
         organizationsUser.destroy();
         return false;
