@@ -22,7 +22,7 @@
 <% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 	<li><a href="#" title="<%- i18next.t('Move List') %>" class="js-show-move-list-form" data-list-id="<%- list.id %>"><%- i18next.t("Move List") %></a></li>
 <% } %>
-<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "subscribe_list",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || (!_.isEmpty(list.collection.board.acl_links.where({slug: "subscribe_list",board_user_role_id: parseInt(list.board_user_role_id)})) && _.isEmpty(subscribe)) || (!_.isEmpty(list.collection.board.acl_links.where({slug: "unsubscribe_list",board_user_role_id: parseInt(list.board_user_role_id)})) && !_.isEmpty(subscribe)))) { %>
 	<%
 		var subscribe_disabled = '';
 		var subscribed = list.collection.board.board_subscribers.findWhere({
