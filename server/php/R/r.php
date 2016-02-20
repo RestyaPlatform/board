@@ -2404,11 +2404,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $is_organization_exist = executeQuery('SELECT id FROM organizations WHERE name = $1', $condition);
                     if (empty($is_organization_exist)) {
                         $data = array(
-                            1, // @TODO: auth.user.id replace
+                            $authUser['id'], 
                             $organization_name,
-                            1
-                            // @TODO: Set organization as private
-                            
+                            0
                         );
                         $result = pg_query_params($db_lnk, 'INSERT INTO organizations(created, modified, user_id, name, organization_visibility) VALUES (now(), now(), $1, $2, $3) RETURNING id', $data);
                         $organization = pg_fetch_assoc($result);
@@ -2452,7 +2450,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             );
                             $is_organization_user_exist = executeQuery('SELECT id FROM organizations_users WHERE user_id = $1', $condition);
                             if (empty($is_organization_user_exist)) {
-                                pg_query_params($db_lnk, 'INSERT INTO organizations_users (created, modified, organization_id, user_id, is_admin) VALUES (now(), now(), $1, $2, $3)', $data);
+                                pg_query_params($db_lnk, 'INSERT INTO organizations_users (created, modified, organization_id, user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, $3)', $data);
                             }
                         }
                     }
