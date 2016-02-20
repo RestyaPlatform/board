@@ -50,13 +50,14 @@
 	  <a title="<%- i18next.t('Dashboard') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-boards-list"><span><%- i18next.t("Boards") %> </span><span><i class="icon-collapse"></i></span> </a>
 	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12 js-show-add-boards-list">
 	  	 <li class="js-show-boards-list-response"></li>
-		 <li class="clearfix js-qsearch-container js-boards-list-container">
-			<div class="clearfix h6 col-xs-12">
-				<input type="text" placeholder="<%- i18next.t('Find boards by name...') %>" class="js-search-boards form-control" id="inputBoardSearch" title="Find boards by name...">
-			</div>
-		 </li>
-		 
-		 <li class="divider"></li>
+		 <% if(!_.isEmpty(role_links.where({slug: "view_board_search"}))){ %>
+			 <li class="clearfix js-qsearch-container js-boards-list-container">
+				<div class="clearfix h6 col-xs-12">
+					<input type="text" placeholder="<%- i18next.t('Find boards by name...') %>" class="js-search-boards form-control" id="inputBoardSearch" title="Find boards by name...">
+				</div>
+			 </li>
+			 <li class="divider"></li>
+		 <% } %>
 		 <%
 
 			if (!_.isEmpty(role_links.where({
