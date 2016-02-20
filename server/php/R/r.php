@@ -4187,7 +4187,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         array_push($pg_params, $r_resource_vars['users']);
         break;
 
-    case '/organizations_users/?': // delete organization user
+    case '/organizations/?/organizations_users/?': // delete organization user
         $qry_val_arr = array(
             $r_resource_vars['organizations_users']
         );
