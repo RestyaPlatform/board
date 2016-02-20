@@ -418,9 +418,9 @@ App.BoardHeaderView = Backbone.View.extend({
      */
     showArchivedCardsList: function() {
 		var self = this;
-        if (!_.isEmpty(this.model.acl_links.where({
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(this.model.acl_links.where({
                 slug: 'view_archived_cards', board_user_role_id: parseInt(this.model.board_user_role_id)
-            }))) {
+            })))) {
             var el = this.$el;
             var filtered_cards = this.model.cards.where({
                 is_archived: 1
@@ -453,9 +453,9 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showFilteredArchivedCardsList: function(e) {
-        if (!_.isEmpty(this.model.acl_links.where({
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(this.model.acl_links.where({
                 slug: 'view_archived_cards', board_user_role_id: parseInt(this.model.board_user_role_id)
-            }))) {
+            })))) {
             var el = this.$el;
             var search_q = $(e.currentTarget).val();
             var filtered_cards = '';
@@ -1256,9 +1256,9 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showArchivedListLists: function() {
-        if (!_.isEmpty(this.model.acl_links.where({
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(this.model.acl_links.where({
                 slug: 'view_archived_lists', board_user_role_id: parseInt(this.model.board_user_role_id)
-            }))) {
+            })))) {
             var el = this.$el;
 
             el.find('.js-archived-items-container').html(new App.ArchivedListsView({
@@ -1291,9 +1291,9 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showFilteredArchivedListLists: function(e) {
-		if (!_.isEmpty(this.model.acl_links.where({
+		if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(this.model.acl_links.where({
                 slug: 'view_archived_lists', board_user_role_id: parseInt(this.model.board_user_role_id)
-            }))) {
+            })))) {
             var el = this.$el;
             var search_q = $(e.currentTarget).val();
             var filtered_lists = '';

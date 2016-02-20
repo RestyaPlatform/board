@@ -1,4 +1,4 @@
-<% if (!_.isEmpty(organization_user.acl_links.where({slug: 'edit_organization_user', organization_user_role_id: parseInt(organization_user.organization_user_role_id)}))) {%>
+<% if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization_user.acl_links.where({slug: 'edit_organization_user', organization_user_role_id: parseInt(organization_user.organization_user_role_id)})))) {%>
 <li class="col-xs-12 text-center clearfix">
 	<div class="clearfix">
 		<span class="col-xs-10"><strong><%- i18next.t('Change permissions') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>

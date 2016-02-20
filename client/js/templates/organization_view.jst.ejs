@@ -4,7 +4,7 @@
 	<ul class="nav nav-tabs">
 		<li <% if(_.isUndefined(type) || type == 'boards'){ %>class="active" <%}%>><a href="#/organization/<%-organization.attributes.id%>/boards" class=""><%- i18next.t('Boards') %></a></li>
 		<%		
-		if(!_.isEmpty(organization.acl_links.where({slug: "view_organization_user_listing",organization_user_role_id: parseInt(organization.organization_user_role_id)})) || !_.isEmpty(organization.acl_links.where({slug: "add_organization_user",organization_user_role_id: parseInt(organization.organization_user_role_id)}))){ %>
+		if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "view_organization_user_listing",organization_user_role_id: parseInt(organization.organization_user_role_id)})) || !_.isEmpty(organization.acl_links.where({slug: "add_organization_user",organization_user_role_id: parseInt(organization.organization_user_role_id)})))) { %>
 			<li <% if(!_.isUndefined(type) && type == 'users'){ %>class="active" <%}%>><a href="#/organization/<%-organization.attributes.id%>/users" class=""><%- i18next.t('Members') %></a></li>
 		<% } %>
 	</ul>
@@ -31,7 +31,7 @@
 			logo_path = organization.showImage('Organization', organization.attributes.id, 'medium_thumb' ) +'?'+ new Date().getTime();
 		}
 	%>
-	  <div <% if(!_.isUndefined(authuser.user)){%> id="" <%}%>class="navbar-btn btn-xs"><% if(!_.isUndefined(authuser.user) && is_logo_added){ %><span class="profile-block show"><i class="js-remove-image icon icon-remove close-block cur"></i><span><%}%><img src="<%= logo_path %>" alt="[Image: <%= organization.attributes.name%>]" title="<%= organization.attributes.name%>" class="<% if(!_.isEmpty(organization.acl_links.where({slug: "upload_organization_logo",organization_user_role_id: parseInt(organization.organization_user_role_id)}))){%>js-org-image-uploaded <%}%>img-responsive img-thumbnail <% if(!_.isEmpty(role_links.where({slug: 'starred_board'}))){ %>drag-box<% } %>" id="js-organization-logo-<%-organization.attributes.id %>">
+	  <div <% if(!_.isUndefined(authuser.user)){%> id="" <%}%>class="navbar-btn btn-xs"><% if(!_.isUndefined(authuser.user) && is_logo_added){ %><span class="profile-block show"><i class="js-remove-image icon icon-remove close-block cur"></i><span><%}%><img src="<%= logo_path %>" alt="[Image: <%= organization.attributes.name%>]" title="<%= organization.attributes.name%>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "upload_organization_logo",organization_user_role_id: parseInt(organization.organization_user_role_id)})))) {%>js-org-image-uploaded <%}%>img-responsive img-thumbnail <% if(!_.isEmpty(role_links.where({slug: 'starred_board'}))){ %>drag-box<% } %>" id="js-organization-logo-<%-organization.attributes.id %>">
 		<div id="manager-area">
 			
 		</div>

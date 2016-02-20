@@ -16,7 +16,7 @@
 <div class="col-xs-12 divider"></div>
 <div class="col-xs-12">
 	<ul class="list-unstyled dropdown-menu dropdown-list show">
-		<% if (!_.isEmpty(user.collection.board.acl_links.where({slug: 'edit_board_user', board_user_role_id: parseInt(user.collection.board.board_user_role_id)}))) { %>
+		<% if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(user.collection.board.acl_links.where({slug: 'edit_board_user', board_user_role_id: parseInt(user.collection.board.board_user_role_id)})))) { %>
 		<li class="dropdown"> 
 			<a href="#" data-toggle="dropdown" class="dropdown-toggle js-show-dropdown"> <%- i18next.t('Change permissions') %> (<%- i18next.t('Member') %>)</a>
 			<ul class="dropdown-menu dropdown-menu-right arrow arrow-right js-list-actions-response">
@@ -42,7 +42,7 @@
 				<span><%- i18next.t("View member's board activity") %></span>
 			</a>
 		</li>
-		<% if (!_.isEmpty(user.collection.board.acl_links.where({slug: 'remove_board_user', board_user_role_id: parseInt(user.collection.board.board_user_role_id)}))) { %>
+		<% if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(user.collection.board.acl_links.where({slug: 'remove_board_user', board_user_role_id: parseInt(user.collection.board.board_user_role_id)})))) { %>
 			<li><a href="#" title="<%if(parseInt(authuser.user.id) != user.attributes.user_id ){%><%- i18next.t('Remove from board') %><%}else{%><%- i18next.t('Leave from board') %><%}%>" class="js-show-confirm-delete-board-member"><% if(parseInt(authuser.user.id) != user.attributes.user_id ){%><%- i18next.t('Remove from board') %><%}else{%><%- i18next.t('Leave from board') %><%}%></a></li>
 		<% } %>
 		

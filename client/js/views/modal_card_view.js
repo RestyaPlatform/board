@@ -1677,7 +1677,7 @@ App.ModalCardView = Backbone.View.extend({
      * display card activities
      */
     renderActivitiesCollection: function() {
-        if(!_.isEmpty(this.model.list.collection.board.acl_links.where({slug: "view_card_activities",board_user_role_id: parseInt(this.model.board_user_role_id)}))){
+        if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({slug: "view_card_activities",board_user_role_id: parseInt(this.model.board_user_role_id)})))) {
             var self = this;
             var view_activity = this.$('#js-card-activities-' + self.model.id);
             view_activity.html('');
@@ -1704,7 +1704,7 @@ App.ModalCardView = Backbone.View.extend({
      * display card checklists
      */
     renderChecklistsCollection: function() {
-        if(!_.isEmpty(this.model.list.collection.board.acl_links.where({slug: "view_checklist_listing",board_user_role_id: parseInt(this.model.board_user_role_id)}))){
+        if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({slug: "view_checklist_listing",board_user_role_id: parseInt(this.model.board_user_role_id)})))) {
             var self = this;
             var view_checklist = this.$('#js-card-checklists');
             view_checklist.html('');
