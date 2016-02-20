@@ -90,6 +90,7 @@ App.FooterView = Backbone.View.extend({
         'click .js-my-boards-listing': 'renderMyBoards',
         'click #modal-activities': 'showActivity',
         'click #modal-comments': 'showActivity',
+        'keyup[/] .search-container': 'keyboardShowSearchMsg',
     },
     /** 
      * Constructor
@@ -1724,7 +1725,9 @@ App.FooterView = Backbone.View.extend({
             $(hide_class).parent('li').addClass('hide');
         }
         return false;
-
-
-    }
+    },
+    keyboardShowSearchMsg: function(e) {
+        $('.js-search', e.target).trigger('click');
+        return false;
+    },
 });

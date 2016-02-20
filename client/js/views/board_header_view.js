@@ -130,6 +130,12 @@ App.BoardHeaderView = Backbone.View.extend({
         'keyup[l] .js-setting-response': 'keyboardShowLabels',
         'keyup[s] .js-setting-response': 'keyboardShowSubscribeForm',
         'keyup[w] .js-setting-response': 'keyboardOpenDropdown',
+        'keyup[x] .js-setting-response': 'keyboardClearAll',
+        'keyup[q] .js-setting-response': 'keyboardToggleCardFilter',
+        'keyup[up] body': 'keyboardUpNavigateCards',
+        'keyup[down] body': 'keyboardDownNavigateCards',
+        'keyup[left] body': 'keyboardLeftNavigateCards',
+        'keyup[right] body': 'keyboardRightNavigateCards',
     },
     /**
      * openDropdown()
@@ -1973,23 +1979,82 @@ App.BoardHeaderView = Backbone.View.extend({
         }).el);
     },
     keyboardShowFilters: function(e) {
-        $('.js-open-dropdown', e.target).trigger('click');
-        $('.js-show-filters', e.target).trigger('click');
+        $('.js-open-dropdown').trigger('click');
+        $('.js-show-filters').trigger('click');
         return true;
     },
     keyboardShowLabels: function(e) {
-        $('.js-open-dropdown', e.target).trigger('click');
-        $('.js-show-labels', e.target).trigger('click');
+        $('.js-open-dropdown').trigger('click');
+        $('.js-show-labels').trigger('click');
         return false;
     },
     keyboardShowSubscribeForm: function(e) {
-        $('.js-open-dropdown', e.target).trigger('click');
-        $('.js-show-subscribe-form', e.target).trigger('click');
+        $('.js-open-dropdown').trigger('click');
+        $('.js-show-subscribe-form').trigger('click');
         return false;
     },
     keyboardOpenDropdown: function(e) {
-        $('.js-open-dropdown', e.target).trigger('click');
+        $('.js-open-dropdown').trigger('click');
         return false;
     },
-
+    keyboardClearAll: function(e) {
+        $('.js-clear-all').trigger('click');
+        return false;
+    },
+    keyboardToggleCardFilter: function(e) {
+        $('.js-open-dropdown').trigger('click');
+        $('.js-show-filters').trigger('click');
+        $('.js-board-users').find(".js-user").each(function() {
+            if ($(this).text() == 'user-filter-' + authuser.user.id) {
+                $(this).parents('li.js-toggle-member-filter').trigger('click');
+            }
+        });
+        return false;
+    },
+    keyboardUpNavigateCards: function(e) {
+        console.log('up');
+        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active-card')) {
+            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active-card');
+            return;
+        }
+        var active_card = $('.js-board-list .js-board-list-cards .active-card');
+        if ($(active_card).prev().length) {
+            $(active_card).removeClass('active-card').prev().addClass('active-card');
+        }
+    },
+    keyboardDownNavigateCards: function(e) {
+        console.log('down');
+        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active-card')) {
+            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active-card');
+            return;
+        }
+        var active_card = $('.js-board-list .js-board-list-cards .active-card');
+        if ($(active_card).next().length) {
+            $(active_card).removeClass('active-card').next().addClass('active-card');
+        }
+    },
+    keyboardLeftNavigateCards: function(e) {
+        console.log('left');
+        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active-card')) {
+            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active-card');
+            return;
+        }
+        var active_card = $('.js-board-list .js-board-list-cards .active-card');
+        if ($(active_card).parents('.js-board-list').prev().length) {
+            card_length = $(active_card).parents('.js-board-list').prev().find('.js-board-list-card').length;
+            console.log(card_length);
+        }
+    },
+    keyboardRightNavigateCards: function(e) {
+        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active-card')) {
+            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active-card');
+            return;
+        }
+        var active_card = $('.js-board-list .js-board-list-cards .active-card');
+        if ($(active_card).parents('.js-board-list').next().length) {
+            card_length = $(active_card).parents('.js-board-list').next().find('.js-board-list-card').length;
+            if (card_length) {}
+            $(active_card).removeClass('active-card').parents('.js-board-list').next().find('.js-board-list-card').eq(0).addClass('active-card');
+        }
+    },
 });
