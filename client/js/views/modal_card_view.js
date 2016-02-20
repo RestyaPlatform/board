@@ -484,7 +484,7 @@ App.ModalCardView = Backbone.View.extend({
     showMemberSearch: function(e) {
         var q = $(e.target).val();
         var keyCode = e.which || e.keyCode;
-        if (keyCode === 50) {
+		if (keyCode === 50) {
             this.autoMentionSelectionStart = e.target.selectionStart;
             $('.js-show-members').parents('.dropdown:first').addClass('open');
         } else if (this.autoMentionSelectionStart) {
