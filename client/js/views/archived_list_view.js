@@ -44,7 +44,7 @@ App.ArchivedListView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             list: this.model,
-        }));		
+        }));
         this.showTooltip();
         return this;
     },

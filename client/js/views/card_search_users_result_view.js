@@ -40,7 +40,7 @@ App.CardSearchUsersResultView = Backbone.View.extend({
             user: this.model,
             is_added_user: this.is_added_user,
             added_user: this.added_user,
-			board: this.board
+            board: this.board
         });
         this.showTooltip();
         return this;

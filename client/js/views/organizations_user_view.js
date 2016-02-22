@@ -159,7 +159,7 @@ App.OrganizationsUserView = Backbone.View.extend({
         self.flash('success', i18next.t('User removed from this organization'));
         self.render();
         var organizationsUser = new App.OrganizationsUser();
-        organizationsUser.url = api_url + 'organizations/' + self.model.id +  '/organizations_users/' + organizations_user_id + '.json';
+        organizationsUser.url = api_url + 'organizations/' + self.model.id + '/organizations_users/' + organizations_user_id + '.json';
         organizationsUser.set('id', organizations_user_id);
         organizationsUser.destroy();
         return false;
@@ -177,10 +177,10 @@ App.OrganizationsUserView = Backbone.View.extend({
         var organizationsUser = this.model.organizations_users.findWhere({
             id: parseInt(organizations_user_id)
         });
-		organizationsUser.organization_user_role_id = this.model.organization_user_role_id;	
+        organizationsUser.organization_user_role_id = this.model.organization_user_role_id;
         organizationsUser.organizations_user_id = organizations_user_id;
-		organizationsUser.organization_user_roles = this.model.organization_user_roles;
-		organizationsUser.acl_links = this.model.acl_links;
+        organizationsUser.organization_user_roles = this.model.organization_user_roles;
+        organizationsUser.acl_links = this.model.acl_links;
         $('.js-show-organization-member-permission-form-response').html(new App.OrganizationMemberPermissionFormView({
             model: organizationsUser
         }).el);

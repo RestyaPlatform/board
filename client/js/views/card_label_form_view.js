@@ -24,7 +24,7 @@ App.CardLabelFormView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
-		this.card = options.card;
+        this.card = options.card;
         this.render();
     },
     /**
@@ -37,7 +37,7 @@ App.CardLabelFormView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             labels: this.model,
-			card: this.card
+            card: this.card
         }));
         this.showTooltip();
         return this;

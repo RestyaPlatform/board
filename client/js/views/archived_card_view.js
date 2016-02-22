@@ -21,13 +21,13 @@ App.ArchivedCardView = Backbone.View.extend({
     initialize: function() {
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
-			var board_user_role_id = this.model.board_users.findWhere({
-				user_id: parseInt(authuser.user.id)
-			});
-			if (!_.isEmpty(board_user_role_id)) {
-				this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
-			}
-		}
+            var board_user_role_id = this.model.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(board_user_role_id)) {
+                this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+            }
+        }
         this.render();
     },
     template: JST['templates/archived_card'],
@@ -50,8 +50,8 @@ App.ArchivedCardView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             card: this.model
-			//board: this.model.list.collection.board
-        }));		
+                //board: this.model.list.collection.board
+        }));
         this.showTooltip();
         return this;
     },

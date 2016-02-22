@@ -8,7 +8,7 @@ if (typeof App == 'undefined') {
  * @extends Backbone.Model
  */
 App.AclBoardLinks = Backbone.Model.extend({
-	initialize: function() {
+    initialize: function() {
         this.acl_board_links_boards_user_roles = new App.AclBoardLinksCollection();
     }
 });

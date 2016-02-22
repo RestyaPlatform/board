@@ -96,7 +96,7 @@ App.BoardUserActionsView = Backbone.View.extend({
         e.preventDefault();
         return false;
     },
-	/**
+    /**
      * editBoardMemberPermission()
      * change board member permission
      * @param e

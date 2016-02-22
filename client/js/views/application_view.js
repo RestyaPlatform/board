@@ -304,7 +304,7 @@ App.ApplicationView = Backbone.View.extend({
                     } else {
                         Board.authuser = self.authuser;
                         viewed_board = Board;
-						Board.board_user_roles = response.board_user_roles;
+                        Board.board_user_roles = response.board_user_roles;
                         $('#content').html(new App.BoardView({
                             model: Board
                         }).el);
@@ -403,7 +403,7 @@ App.ApplicationView = Backbone.View.extend({
                     });
                 } else {
                     Organization.boards.add(Organization.attributes.boards_listing);
-					Organization.organization_user_roles = response.organization_user_roles;
+                    Organization.organization_user_roles = response.organization_user_roles;
                     $('#content').html(new App.OrganizationsView({
                         model: Organization,
                         type: self.page_view_type

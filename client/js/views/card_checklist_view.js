@@ -220,7 +220,7 @@ App.CardCheckListView = Backbone.View.extend({
             });
             view_item.append(view.render().el);
         });
-        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(this.model.board_users.board.acl_links.where({
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.board_users.board.acl_links.where({
                 slug: 'add_checklist_item',
                 board_user_role_id: parseInt(this.model.board_user_role_id)
             }))) && is_show_link !== false) {

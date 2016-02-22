@@ -78,14 +78,14 @@ App.BoardView = Backbone.View.extend({
         this.populateSubscribers();
         this.populateStars();
         this.populateAclLinks();
-		if(!_.isUndefined(authuser.user)){
-			var board_user_role_id = this.model.board_users.findWhere({
-				user_id: parseInt(authuser.user.id)
-			});
-			if (!_.isEmpty(board_user_role_id)) {
-				this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
-			}
-		}
+        if (!_.isUndefined(authuser.user)) {
+            var board_user_role_id = this.model.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(board_user_role_id)) {
+                this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+            }
+        }
         this.render();
     },
     // Resets this boards acl_links collection
@@ -816,8 +816,8 @@ App.BoardView = Backbone.View.extend({
                         silent: true
                     });
                     list.attachments = self.model.attachments;
-					list.board_user_role_id = self.model.board_user_role_id;
-					list.board = self.model;
+                    list.board_user_role_id = self.model.board_user_role_id;
+                    list.board = self.model;
                     view = new App.ListView({
                         model: list,
                         attributes: {
@@ -1044,7 +1044,7 @@ App.BoardView = Backbone.View.extend({
             list.set(data, {
                 silent: true
             });
-			list.board = self.model;
+            list.board = self.model;
             view = new App.ListView({
                 model: list,
                 attributes: {
@@ -1056,9 +1056,9 @@ App.BoardView = Backbone.View.extend({
         list.url = api_url + 'boards/' + self.model.id + '/lists.json';
         list.save(data, {
             success: function(model, response, options) {
-				if(self.model.attributes.lists !== null){
-					self.model.attributes.lists.push(list);
-				}
+                if (self.model.attributes.lists !== null) {
+                    self.model.attributes.lists.push(list);
+                }
                 if (!_.isUndefined(data.clone_list_id)) {
                     if (!_.isUndefined(response.list.labels) && response.list.labels.length > 0) {
                         self.model.labels.add(response.list.labels, {
@@ -1163,7 +1163,7 @@ App.BoardView = Backbone.View.extend({
                 if (!_.isUndefined(data.clone_list_id)) {
                     $(view.render().el).insertAfter($(e.target).parents('.js-board-list'));
                 } else {
-					list.board = self.model;
+                    list.board = self.model;
                     view = new App.ListView({
                         model: list,
                         attributes: {
