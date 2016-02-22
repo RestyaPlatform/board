@@ -1581,3 +1581,147 @@ UPDATE "settings" SET "order" = '8' WHERE "name" = 'LDAP_ORGANISATION';
 UPDATE "settings" SET "order" = '9' WHERE "name" = 'LDAP_UID_FIELD';
 UPDATE "settings" SET "order" = '10' WHERE "name" = 'LDAP_BIND_DN';
 UPDATE "settings" SET "order" = '11' WHERE "name" = 'LDAP_BIND_PASSWD';
+
+
+DROP VIEW "acl_links_listing";
+
+DROP TABLE "acl_links";
+
+DROP TABLE "acl_links_roles";
+
+CREATE TABLE acl_links (
+    id bigint DEFAULT nextval('acl_links_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    url character varying(255) NOT NULL,
+    method character varying(255) NOT NULL,
+    slug character varying(255) NOT NULL,
+    group_id smallint,
+    is_user_action smallint DEFAULT (0)::smallint NOT NULL,
+    is_guest_action smallint DEFAULT (0)::smallint NOT NULL,
+    is_admin_action smallint DEFAULT (0)::smallint NOT NULL,
+    is_hide smallint DEFAULT (0)::smallint NOT NULL
+);
+
+INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide") VALUES
+(1,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Forgot password',	'/users/forgotpassword',	'POST',	'users_forgotpassword',	1,	0,	1,	0,	0),
+(2,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Register',	'/users/register',	'POST',	'users_register',	1,	0,	1,	0,	0),
+(3,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Login',	'/users/login',	'POST',	'users_login',	1,	0,	1,	0,	1),
+(5,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Add organization',	'/organizations',	'POST',	'add_organization',	2,	1,	0,	0,	0),
+(6,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Add board',	'/boards',	'POST',	'add_board',	2,	1,	0,	0,	0),
+(10,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Change password',	'/users/?/changepassword',	'POST',	'user_changepassword',	2,	1,	0,	0,	0),
+(23,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Upload profile picture',	'/users/?',	'POST',	'add_user_profile_picture',	2,	1,	0,	0,	0),
+(27,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'User activation',	'/users/?/activation',	'PUT',	'user_activation',	1,	0,	1,	0,	0),
+(42,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Edit user details',	'/users/?',	'PUT',	'edit_user_details',	2,	1,	0,	0,	0),
+(55,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Delete user',	'/users/?',	'DELETE',	'delete_user',	3,	0,	0,	1,	1),
+(56,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View boards listing',	'/boards',	'GET',	'view_board_listing',	2,	1,	0,	0,	0),
+(57,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Users management',	'/users',	'GET',	'view_user_listing',	3,	0,	0,	1,	1),
+(61,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View organization',	'/organizations/?',	'GET',	'view_organization',	2,	1,	0,	0,	0),
+(64,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View user activities',	'/users/?/activities',	'GET',	'view_user_activities',	2,	1,	0,	0,	0),
+(70,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Board search',	'/boards/search',	'GET',	'view_board_search',	2,	1,	0,	0,	0),
+(76,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View user search',	'/users/search',	'GET',	'view_user_search',	2,	1,	0,	0,	0),
+(77,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Board visibility',	'/boards/?/visibility',	'GET',	'view_board_visibility',	2,	1,	0,	0,	0),
+(78,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Organization visibility',	'/organizations/?/visibility',	'GET',	'view_organization_visibility',	2,	1,	0,	0,	0),
+(79,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Load workflow templates',	'/workflow_templates',	'GET',	'view_workflow_templates',	2,	1,	0,	0,	0),
+(80,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Search',	'/search',	'GET',	'view_search',	2,	1,	0,	0,	0),
+(81,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View user',	'/users/?',	'GET',	'view_user',	2,	1,	0,	0,	0),
+(85,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View user assigned cards',	'/users/?/cards',	'GET',	'view_user_cards',	2,	1,	0,	0,	0),
+(86,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View user assigned boards',	'/users/?/boards',	'GET',	'view_user_board',	2,	1,	0,	0,	0),
+(94,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Roles listing',	'/acl_links',	'GET',	'roles',	3,	0,	0,	1,	1),
+(99,	'2014-11-21 02:52:08.822706',	'2014-11-21 02:52:08.822706',	'Setting update',	'/settings',	'POST',	'setting_update',	3,	0,	0,	1,	1),
+(101,	'2014-11-21 06:46:53.094432',	'2014-11-21 06:46:53.094432',	'Setting view',	'/settings/?',	'GET',	'setting_list',	3,	0,	0,	1,	1),
+(103,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View starred boards listing',	'/boards/?/boards_stars',	'GET',	'view_board_star',	2,	1,	0,	0,	0),
+(106,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View closed boards',	'/boards/closed_boards',	'GET',	'view_closed_boards',	2,	1,	0,	0,	0),
+(108,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View organizations listing',	'/organizations',	'GET',	'view_organization_listing',	2,	1,	0,	0,	0),
+(109,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Email templates management',	'/email_templates/?',	'GET',	'view_email_template_listing',	3,	0,	0,	1,	1),
+(110,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Edit email template',	'/email_templates/?',	'PUT',	'edit_email_template',	3,	0,	0,	1,	1),
+(111,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Settings management',	'/settings',	'GET',	'load_settings',	3,	0,	0,	1,	1),
+(115,	'2014-08-25 13:14:18.2',	'2014-08-25 13:14:18.2',	'All activities',	'/activities',	'GET',	'activities_listing',	2,	1,	0,	0,	0),
+(117,	'2015-05-09 13:14:18.2',	'2015-05-09 13:14:18.2',	'Create user',	'/users',	'POST',	'users',	3,	0,	0,	1,	1),
+(118,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Roles Update',	'/acl_links',	'POST',	'roles',	3,	0,	0,	1,	1),
+(120,	'2015-12-23 10:07:34.979',	'2015-12-23 10:07:34.979',	'Users Bulk Action',	'/users/bulk_action',	'POST',	'users_bulk_action',	3,	0,	0,	1,	1),
+(121,	'2015-12-23 10:07:34.988',	'2015-12-23 10:07:34.988',	'Boards management',	'/boards/list',	'GET',	'view_board_listing',	3,	0,	0,	1,	1),
+(122,	'2015-12-23 10:07:34.991',	'2015-12-23 10:07:34.991',	'Boards Bulk Action',	'/boards/bulk_action',	'POST',	'boards_bulk_action',	3,	0,	0,	1,	1),
+(123,	'2016-02-16 20:04:41.092',	'2016-02-16 20:04:41.092',	'My boards listing',	'/boards/my_boards',	'GET',	'view_my_boards',	2,	1,	0,	0,	0),
+(124,	'2016-02-16 20:06:48.576',	'2016-02-16 20:06:48.576',	'Starred boards listing',	'/boards/starred',	'GET',	'view_stared_boards',	2,	1,	0,	0,	0),
+(126,	'2016-02-18 17:24:25.733',	'2016-02-18 17:24:25.733',	'Unstar board',	'/boards/?/boards_stars/?',	'PUT',	'board_star',	2,	1,	0,	0,	0),
+(127,	'2016-01-12 16:39:35.031',	'2016-01-12 16:39:35.031',	'App',	'/apps',	'GET',	'app',	3,	0,	0,	1,	1),
+(128,	'2016-01-12 16:39:35.069',	'2016-01-12 16:39:35.069',	'App Settings',	'/apps/settings',	'GET',	'app_settings',	3,	0,	0,	1,	1),
+(129,	'2016-01-12 16:39:35.074',	'2016-01-12 16:39:35.074',	'App Settings',	'/apps/settings',	'POST',	'app_settings',	3,	0,	0,	1,	1),
+(130,	'2016-02-09 16:51:25.17',	'2016-02-09 16:51:25.17',	'View client listing',	'/oauth/clients',	'GET',	'view_client_listing',	3,	0,	0,	1,	1),
+(131,	'2016-02-09 16:51:25.17',	'2016-02-09 16:51:25.17',	'Add client',	'/oauth/clients',	'POST',	'add_client',	3,	0,	0,	1,	1),
+(132,	'2016-02-09 16:51:25.17',	'2016-02-09 16:51:25.17',	'Edit client',	'/oauth/clients/?',	'PUT',	'edit_client',	3,	0,	0,	1,	1),
+(133,	'2016-02-09 16:51:25.17',	'2016-02-09 16:51:25.17',	'Delete client',	'/oauth/clients/?',	'DELETE',	'delete_client',	3,	0,	0,	1,	1),
+(134,	'2016-02-09 16:51:25.217',	'2016-02-09 16:51:25.217',	'View OAuth authorized applications',	'/oauth/applications',	'GET',	'view_connected_applications',	2,	1,	0,	0,	0),
+(135,	'2016-02-09 16:51:25.217',	'2016-02-09 16:51:25.217',	'Revoke OAuth authorized applications',	'/oauth/applications/?',	'DELETE',	'delete_connected_applications',	2,	1,	0,	0,	0),
+(136,	'2016-02-09 16:51:25.779',	'2016-02-09 16:51:25.779',	'View webhooks',	'/webhooks',	'GET',	'view_webhooks',	2,	1,	0,	0,	0),
+(137,	'2016-02-09 16:51:25.779',	'2016-02-09 16:51:25.779',	'Add webhooks',	'/webhooks',	'POST',	'add_webhook',	2,	1,	0,	0,	0),
+(138,	'2016-02-09 16:51:25.779',	'2016-02-09 16:51:25.779',	'Edit webhooks',	'/webhooks/?',	'PUT',	'edit_webhook',	2,	1,	0,	0,	0),
+(139,	'2016-02-09 16:51:25.779',	'2016-02-09 16:51:25.779',	'Delete webhooks',	'/webhooks/?',	'DELETE',	'delete_webhook',	2,	1,	0,	0,	0),
+(140,	'2016-02-09 16:51:26.139',	'2016-02-09 16:51:26.139',	'Post oauth token',	'/oauth/token',	'POST',	'post_oauth_token',	1,	0,	1,	0,	0),
+(141,	'2016-02-18 17:42:32.045',	'2016-02-18 17:42:32.045',	'Starred board',	'/boards/?/boards_stars',	'POST',	'starred_board',	2,	1,	0,	0,	0),
+(142,	'2016-02-18 17:45:14.983',	'2016-02-18 17:45:14.983',	'Unstar board',	'/boards/?/boards_stars/?',	'PUT',	'unstarred_board',	2,	1,	0,	0,	0),
+(143,	'2016-02-18 20:11:14.482',	'2016-02-18 20:11:14.482',	'View board',	'/boards/?',	'GET',	'view_board',	2,	1,	1,	0,	0),
+(144,	'2016-02-19 15:21:14.439',	'2016-02-19 15:21:14.439',	'Users import',	'/users/import',	'POST',	'users_import',	3,	0,	0,	1,	0);
+
+
+CREATE TABLE acl_links_roles (
+    id bigint DEFAULT nextval('acl_links_roles_roles_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    acl_link_id bigint NOT NULL,
+    role_id bigint NOT NULL
+);
+
+INSERT INTO "acl_links_roles" ("id", "created", "modified", "acl_link_id", "role_id") VALUES
+(1305,	'2016-02-20 19:07:25.664',	'2016-02-20 19:07:25.664',	1,	3),
+(1306,	'2016-02-20 19:07:26.404',	'2016-02-20 19:07:26.404',	2,	3),
+(1307,	'2016-02-20 19:07:27.124',	'2016-02-20 19:07:27.124',	27,	3),
+(1308,	'2016-02-20 19:07:27.772',	'2016-02-20 19:07:27.772',	140,	3),
+(1309,	'2016-02-20 19:07:29.324',	'2016-02-20 19:07:29.324',	5,	2),
+(1310,	'2016-02-20 19:07:29.971',	'2016-02-20 19:07:29.971',	6,	2),
+(1311,	'2016-02-20 19:07:30.541',	'2016-02-20 19:07:30.541',	10,	2),
+(1312,	'2016-02-20 19:07:31.102',	'2016-02-20 19:07:31.102',	23,	2),
+(1313,	'2016-02-20 19:07:31.771',	'2016-02-20 19:07:31.771',	42,	2),
+(1314,	'2016-02-20 19:07:32.362',	'2016-02-20 19:07:32.362',	56,	2),
+(1315,	'2016-02-20 19:07:34.351',	'2016-02-20 19:07:34.351',	61,	2),
+(1316,	'2016-02-20 19:07:35.269',	'2016-02-20 19:07:35.269',	64,	2),
+(1317,	'2016-02-20 19:07:36.217',	'2016-02-20 19:07:36.217',	70,	2),
+(1318,	'2016-02-20 19:07:37.681',	'2016-02-20 19:07:37.681',	76,	2),
+(1319,	'2016-02-20 19:07:38.318',	'2016-02-20 19:07:38.318',	77,	2),
+(1320,	'2016-02-20 19:07:39.029',	'2016-02-20 19:07:39.029',	78,	2),
+(1321,	'2016-02-20 19:07:39.589',	'2016-02-20 19:07:39.589',	79,	2),
+(1322,	'2016-02-20 19:07:41.054',	'2016-02-20 19:07:41.054',	80,	2),
+(1323,	'2016-02-20 19:07:41.755',	'2016-02-20 19:07:41.755',	81,	2),
+(1324,	'2016-02-20 19:07:42.416',	'2016-02-20 19:07:42.416',	85,	2),
+(1325,	'2016-02-20 19:07:43.227',	'2016-02-20 19:07:43.227',	86,	2),
+(1326,	'2016-02-20 19:07:43.927',	'2016-02-20 19:07:43.927',	103,	2),
+(1327,	'2016-02-20 19:07:45.001',	'2016-02-20 19:07:45.001',	106,	2),
+(1328,	'2016-02-20 19:07:45.749',	'2016-02-20 19:07:45.749',	108,	2),
+(1329,	'2016-02-20 19:07:47.43',	'2016-02-20 19:07:47.43',	115,	2),
+(1330,	'2016-02-20 19:07:48.396',	'2016-02-20 19:07:48.396',	123,	2),
+(1331,	'2016-02-20 19:07:50.147',	'2016-02-20 19:07:50.147',	124,	2),
+(1332,	'2016-02-20 19:07:50.849',	'2016-02-20 19:07:50.849',	126,	2),
+(1333,	'2016-02-20 19:07:52.525',	'2016-02-20 19:07:52.525',	134,	2),
+(1334,	'2016-02-20 19:07:57.006',	'2016-02-20 19:07:57.006',	135,	2),
+(1335,	'2016-02-20 19:07:57.812',	'2016-02-20 19:07:57.812',	136,	2),
+(1336,	'2016-02-20 19:07:58.59',	'2016-02-20 19:07:58.59',	137,	2),
+(1337,	'2016-02-20 19:08:16.346',	'2016-02-20 19:08:16.346',	138,	2),
+(1338,	'2016-02-20 19:08:17.963',	'2016-02-20 19:08:17.963',	139,	2),
+(1339,	'2016-02-20 19:08:18.616',	'2016-02-20 19:08:18.616',	141,	2),
+(1340,	'2016-02-20 19:08:19.584',	'2016-02-20 19:08:19.584',	142,	2),
+(1341,	'2016-02-20 19:08:20.385',	'2016-02-20 19:08:20.385',	143,	2),
+(1342,	'2016-02-20 19:08:21.237',	'2016-02-20 19:08:21.237',	143,	3),
+(1343,	'2016-02-22 10:58:31.89',	'2016-02-22 10:58:31.89',	111,	3),
+(1344,	'2016-02-22 10:59:06.81',	'2016-02-22 10:59:06.81',	3,	3),
+(1345,	'2016-02-22 11:00:11.023',	'2016-02-22 11:00:11.023',	101,	1);
+
+
+CREATE OR REPLACE VIEW acl_links_listing AS
+ SELECT aclr.role_id,
+    acl.slug,
+    acl.url,
+    acl.method
+   FROM (acl_links_roles aclr
+   JOIN acl_links acl ON ((acl.id = aclr.acl_link_id)));
