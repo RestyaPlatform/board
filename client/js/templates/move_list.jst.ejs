@@ -9,10 +9,10 @@ if(current_position == 0){
 }
 boards.each(function(board) {
 	if (list.attributes.board_id == board.id) {
-		var list_count = board.lists.where({is_archived: 0, is_deleted: 0}).length;
-		content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) + ' '+ i18next.t('(current)')+'</option>';
-		for(var i = 1; i <= list_count; i++) {
-			if (i == list.attributes.position) {
+		var list_count = board.lists.where({is_archived: 0}).length;
+		content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) + ' '+ i18next.t('(current)')+'</option>';  
+		 for(var i = 1; i <= list_count; i++) { 
+			if (i == list.attributes.position) {  
 				content_position += '<option value="' + i + '" selected="selected">' + i + ' '+i18next.t('(current)')+'</option>';
 			} else {
 				content_position += '<option value="' + i + '">' + i+ '</option>';
