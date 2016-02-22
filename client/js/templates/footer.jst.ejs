@@ -203,23 +203,16 @@
 				<ul class="nav nav-pills pull-right">
 					<li id="modal-activities"><a href="#" title="<%- i18next.t('Show activities') %>" class="text-muted"><i class="icon-eye-close small"></i></a></li>
 					<li id="modal-comments"><a href="#" title="<%- i18next.t('Show comments') %>" class="text-muted"><i class=" icon-comment-alt small"></i></a></li>
-				</ul>   
-			  </div> 
-			  <div class="tab-pane js-all-activity-list notification-list vertical-scrollbar col-xs-12 border-top" id="all_">
-			  <ul id="js-all-activities" class="list-unstyled"></ul> 
-			  </div>    
-			  <% if(!_.isEmpty(board_id)){ %> 
-                  <div class="col-xs-12 user-filter navbar-btn">
-					<span class="pull-left"><strong><%- i18next.t('Activity') %></strong></strong></span>
-					<ul class="nav nav-pills pull-right"> 
-						<li id="modal-activities"><a href="#" title="<%- i18next.t('Show activities') %>" class="text-muted"><i class="icon-eye-close small"></i></a></li>
-						<li id="modal-comments"><a href="#" title="<%- i18next.t('Show comments') %>" class="text-muted"><i class=" icon-comment-alt small"></i></a></li>
-					</ul>  
-                 </div> 			  
-				  <div class="tab-pane js-boards-activity-list active notification-list vertical-scrollbar col-xs-12 border-top" id="board_">
-				  <ul id="js-board-activities"  class="list-unstyled"></ul>
-				  </div>
-			  <% } %>
+				</ul>    
+			</div> 
+			<div class="tab-pane js-all-activity-list notification-list vertical-scrollbar col-xs-12 border-top" id="all_">
+				<ul id="js-all-activities" class="list-unstyled clearfix navbar-btn"></ul> 
+			</div>
+			<% if(!_.isEmpty(board_id)) { %>           
+				<div class="tab-pane js-boards-activity-list active notification-list vertical-scrollbar col-xs-12 border-top" id="board_">
+					<ul id="js-board-activities"  class="list-unstyled clearfix navbar-btn"></ul>
+				</div>        
+			<% } %> 
 				<% if(!_.isEmpty(board_id) && board_id !== 0 && board_id !== '0') { %>
 					<div class="col-xs-12 border-top text-center js-load-link" id="js-load-link1">
 						<a href="#" title="View all activity" id="js-notification-load-more" class="js-board-load-more btn btn-link"><%- i18next.t("Load more activities") %></a>
@@ -227,7 +220,7 @@
 					<div class="col-xs-12 border-top text-center js-load-link hide" id="js-load-link2">
 						<a href="#" title="<%- i18next.t('View all activity') %>" id="js-notification-load-more-all" class="js-board-load-more-all btn btn-link"><%- i18next.t("Load more activities") %></a>
 					</div>
-				<%} else { %>
+				<%} else { %>  
 				<div class="col-xs-12 border-top text-center js-load-link" id="js-load-link">
 					<a href="#" title="<%- i18next.t('View all activity') %>" id="js-notification-load-more-all" class="js-all-load-more-all btn btn-link"><%- i18next.t("Load more activities") %></a>
 				</div>  

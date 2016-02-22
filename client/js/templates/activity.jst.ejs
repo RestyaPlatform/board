@@ -1,10 +1,12 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
-<% var unread = ""; %> 
-<% if(!_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %> 
-   <% var unread = "js-unread-activity"; %>
-   <span class="label label-primary col-xs-12 sr-only">&nbsp;</span>
-<% } %>  
-<div class="media <%= unread %>  modal-<% if((activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment')) {%>comments<%} else { %>activities<%}%> <% if(activity.attributes.user_id == authuser.user.id) {%>modal-logged-user-activities<%}%>">
+<% var unread = ""; %>
+<% if(!_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ 
+	 <%if(parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)){%> 
+	 <% var unread = "js-unread-activity"; %> 
+	 <span class="label label-primary col-xs-12 sr-only">&nbsp;</span>   
+	<%}%>    
+<% } %>                   
+<div class="media <%= unread %>  modal-<% if((activity.attributes.type == 'add_comment' ||  activity.attributes.type == 'edit_comment')) {%>comments<%} else { %>activities<%}%> <% if(activity.attributes.user_id == authuser.user.id) {%>modal-logged-user-activities<%}%>">
 <a data-placement="bottom" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" data-toggle="tooltip" data-container="body" data-html="true" class="js-tooltip pull-left" href="#/user/<%- activity.attributes.user_id %>">
 		<% if(!_.isEmpty(activity.attributes.profile_picture_path)) {
 			var profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'small_thumb' );
@@ -12,9 +14,9 @@
 			<img src="<%=profile_picture_path %>" alt="[Image: <%-activity.attributes.full_name %>]" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" class="img-rounded img-responsive">
 		<% } else {%> 
 			<i class="avatar avatar-color-194 img-rounded"><%- activity.attributes.initials %></i>
-		<% } %>     
+		<% } %>       
 	</a>
-	<div class="media-body">
+	<div class="media-body">   
     	<% if(activity.attributes.type == 'add_comment' && activity.attributes.type == 'edit_comment' ) { %>
 		<div class="media-heading">			
 			
