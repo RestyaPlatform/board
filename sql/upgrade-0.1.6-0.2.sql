@@ -1571,3 +1571,13 @@ UPDATE "oauth_clients" SET "redirect_uri" = '', "client_name" = 'Web App' WHERE 
 
 UPDATE "acl_board_links" SET "url" = '/boards/?/boards_users/?' WHERE "slug" = 'delete_board';
 
+
+UPDATE "settings" SET "order" = '3' WHERE "name" = 'ENABLE_SSL_CONNECTIVITY';
+UPDATE "settings" SET "order" = '4' WHERE "name" = 'LDAP_SERVER';
+UPDATE "settings" SET "order" = '5' WHERE "name" = 'LDAP_PORT';
+UPDATE "settings" SET "order" = '6' WHERE "name" = 'LDAP_PROTOCOL_VERSION';
+UPDATE "settings" SET "order" = '7' WHERE "name" = 'LDAP_ROOT_DN';
+UPDATE "settings" SET "order" = '8' WHERE "name" = 'LDAP_ORGANISATION';
+UPDATE "settings" SET "order" = '9' WHERE "name" = 'LDAP_UID_FIELD';
+UPDATE "settings" SET "order" = '10' WHERE "name" = 'LDAP_BIND_DN';
+UPDATE "settings" SET "order" = '11' WHERE "name" = 'LDAP_BIND_PASSWD';
