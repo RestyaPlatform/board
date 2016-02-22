@@ -68,12 +68,11 @@ if (!empty($_POST['email'])) {
 	 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	 <link rel="stylesheet" type="text/css" href="<?php
 echo $_server_domain_url . '/css/authorize.css'; ?>">
-<script src="<?php
-echo $_server_domain_url . '/js/libs/jquery-1.8.3.js'; ?>"></script>
-<script src="<?php
-echo $_server_domain_url . '/js/libs/bootstrap-alert.js'; ?>"></script>
-<script src="<?php
-echo $_server_domain_url . '/js/libs/jquery.bootstrap-growl.js'; ?>"></script>
+	<!-- build:js js/authorize.cache.js -->
+	<script src="js/libs/jquery-1.8.3.js"></script>
+	<script src="/js/libs/bootstrap-alert.js"></script>
+	<script src="js/libs/jquery.bootstrap-growl.js"></script>
+	<!-- endbuild -->
  </head>
  <body style="cursor: auto">
 	 <div class="navbar-btn"></div>
