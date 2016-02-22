@@ -141,7 +141,7 @@
   <% } %>  
  
   
- 
+<% if(authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "add_custom_background", board_user_role_id: parseInt(board.board_user_role_id)}))){ %> 
   <h4><%- i18next.t("Custom") %><span class="clearfix navbar-btn col-xs-7 pull-right"><span id="custom-dropzone-cssloader"></span></span></h4>
   <ul class="js-board-background-custom-lists list-inline">
     <% board.custom_attachments.each(function(custom_attachment) { %>
@@ -149,7 +149,7 @@
     <% }); %>
   </ul>
 
-<% if(!_.isEmpty(role_links.where({slug: "add_custom_background"}))){ %>
+
 <div class="clearfix col-xs-12" id="custom-background-dropzone">
 	<form id="js-board-custom-background-form" class="form-horizontal clearfix  js-cusotm-background-add" role="form" enctype="multipart/form-data">
 		<div id="manager-area" class="js-cusotm-background-dropzone empty-block js-computer-open-board-background">

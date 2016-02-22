@@ -55,6 +55,14 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.labels.bind('change', this.showFilters, this);
         this.authuser = authuser.user;
         this.renderAdminBoardUsers();
+        if (!_.isUndefined(authuser.user)) {
+            var board_user_role_id = this.model.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(board_user_role_id)) {
+                this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+            }
+        }
     },
     /**
      * Events
