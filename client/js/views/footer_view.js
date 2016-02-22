@@ -1294,14 +1294,16 @@ App.FooterView = Backbone.View.extend({
                                 }, 800);
                             });
                         }
-                    });     
-					var unread_activity_id = _.max(activities.models, function(activity) {
-                       return activity.id; 
                     });
-                    var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
-                    Auth.user.unread_activity_id = unread_activity_id.id;  
-					authuser.user.unread_activity_id = unread_activity_id.id;
-                    window.sessionStorage.setItem('auth', JSON.stringify(Auth));  
+					if(mode === 2){
+						var unread_activity_id = _.max(activities.models, function(activity) {
+						   return activity.id; 
+						});
+						var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+						Auth.user.unread_activity_id = unread_activity_id.id;  
+						authuser.user.unread_activity_id = unread_activity_id.id;
+						window.sessionStorage.setItem('auth', JSON.stringify(Auth));   
+					}
                 } else {
                     if (parseInt(authuser.user.last_activity_id) === 0 || authuser.user.last_activity_id === null) {
                         $('#js-all-activities').parent('div').addClass('notification-empty');
