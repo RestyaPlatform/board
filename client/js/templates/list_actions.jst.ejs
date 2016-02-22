@@ -2,7 +2,8 @@
 	var is_subscribed = '<i class="icon-ok hide"></i>';
     var subscribe_class = 'js-list-subscribe';
 	var subscribe = subscribers.findWhere({
-		 user_id: parseInt(authuser.id)
+		 user_id: parseInt(authuser.id),
+		 is_subscribed: 1
 	 });
 	 var subscribe_id = '';
 	 if (!_.isEmpty(subscribe) && parseInt(subscribe.attributes.is_subscribed) === 1) {
