@@ -1078,6 +1078,7 @@ App.BoardHeaderView = Backbone.View.extend({
             is_admin: this.is_admin
         }).el);
         this.renderBoardUsers();
+        this.clearAll();
         return false;
     },
     renderBoardUsers: function() {
@@ -1902,8 +1903,7 @@ App.BoardHeaderView = Backbone.View.extend({
      * @return false
      *
      */
-    clearAll: function(e) {
-        e.preventDefault();
+    clearAll: function() {
         $('.js-board-dues, .js-board-users, .js-board-labels').find('.js-filter-icon').remove();
         $('.js-board-dues, .js-board-users, .js-board-labels').children().removeClass('selected');
         $('.js-clear-all').addClass('text-muted');
