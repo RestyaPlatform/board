@@ -757,8 +757,14 @@ CREATE TABLE acl_board_links (
     url character varying(255) NOT NULL,
     method character varying(255) NOT NULL,
     slug character varying(255) NOT NULL,
-    group_id smallint
+    group_id smallint,
+    is_hide smallint DEFAULT (0)::smallint NOT NULL
 );
+
+ALTER TABLE "acl_board_links" ADD CONSTRAINT "acl_board_links_id" PRIMARY KEY ("id");
+CREATE INDEX "acl_board_links_slug" ON "acl_board_links" ("slug");
+CREATE INDEX "acl_board_links_group_id" ON "acl_board_links" ("group_id");
+CREATE INDEX "acl_board_links_url" ON "acl_board_links" ("url");
 
 CREATE SEQUENCE acl_organization_links_seq
     START WITH 1
@@ -775,8 +781,14 @@ CREATE TABLE acl_organization_links (
     url character varying(255) NOT NULL,
     method character varying(255) NOT NULL,
     slug character varying(255) NOT NULL,
-    group_id smallint
+    group_id smallint,
+    is_hide smallint DEFAULT (0)::smallint NOT NULL
 );
+
+ALTER TABLE "acl_organization_links" ADD CONSTRAINT "acl_organization_links_id" PRIMARY KEY ("id");
+CREATE INDEX "acl_organization_links_slug" ON "acl_organization_links" ("slug");
+CREATE INDEX "acl_organization_links_group_id" ON "acl_organization_links" ("group_id");
+CREATE INDEX "acl_organization_links_url" ON "acl_organization_links" ("url");
 
 CREATE SEQUENCE board_user_roles_seq
     START WITH 1
@@ -790,7 +802,7 @@ CREATE TABLE board_user_roles (
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
-	description character varying
+    description character varying
 );
 
 CREATE SEQUENCE organization_user_roles_seq
@@ -805,7 +817,7 @@ CREATE TABLE organization_user_roles (
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
-	description character varying
+    description character varying
 );
 
 CREATE SEQUENCE acl_board_links_boards_user_roles_seq
@@ -862,6 +874,79 @@ ALTER TABLE "boards_users" DROP "is_admin";
 ALTER TABLE "boards_users" ADD "board_user_role_id" smallint NOT NULL DEFAULT '0';
 ALTER TABLE "organizations_users" DROP "is_admin"; 
 ALTER TABLE "organizations_users" ADD "organization_user_role_id" smallint NOT NULL DEFAULT '0';
+
+INSERT INTO "acl_organization_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id") VALUES
+(1,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Add organization member',	'/organizations/?/users/?',	'POST',	'add_organization_user',	5),
+(2,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Delete organization',	'/organizations/?',	'DELETE',	'delete_organization',	5),
+(3,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Edit organization',	'/organizations/?',	'PUT',	'edit_organization',	5),
+(4,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Organization members listing',	'/organizations_users/?',	'GET',	'view_organization_user_listing',	5),
+(5,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Organization visibility',	'/organizations/?/visibility',	'GET',	'view_organization_visibility',	5),
+(6,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Remove organization member',	'/organizations/?/organizations_users/?',	'DELETE',	'remove_organization_user',	5),
+(7,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Update organization member permission',	'/organizations_users/?',	'PUT',	'edit_organization_user',	5),
+(8,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Upload organization logo',	'/organizations/?/upload_logo',	'POST',	'upload_organization_logo',	5);
+
+INSERT INTO "acl_board_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_hide") VALUES
+(1,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Add board member',	'/boards/?/users',	'POST',	'add_board_users',	2,	0),
+(2,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Add card',	'/boards/?/lists/?/cards',	'POST',	'add_card',	4,	0),
+(3,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Add checklist to card',	'/boards/?/lists/?/cards/?/checklists',	'POST',	'add_checklists',	4,	0),
+(4,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Add item to checklist',	'/boards/?/lists/?/cards/?/checklists/?/items',	'POST',	'add_checklist_item',	4,	0),
+(5,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Add list',	'/boards/?/lists',	'POST',	'add_list',	3,	0),
+(6,	'2014-08-25 13:14:18.2',	'2014-08-25 13:14:18.2',	'All activities',	'/activities',	'GET',	'activities_listing',	2,	0),
+(7,	'2016-02-19 16:21:04.718',	'2016-02-19 16:21:04.718',	'Archive card',	'',	'',	'archive_card',	4,	0),
+(8,	'2016-02-19 16:21:04.687',	'2016-02-19 16:21:04.687',	'Archive list',	'',	'',	'archive_list',	3,	0),
+(9,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Archived card send back to board',	'/boards/?/lists/?/cards',	'POST',	'send_back_to_archived_card',	4,	0),
+(10,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Archived list send back to board',	'/lists/?',	'PUT',	'send_back_to_archived_list',	2,	0),
+(11,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Assign labels to card',	'/boards/?/lists/?/cards/?/labels',	'POST',	'add_labels',	4,	0),
+(12,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Assign member to card',	'/boards/?/lists/?/cards/?/users/?',	'POST',	'add_card_user',	4,	0),
+(13,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Board members listing',	'/board_users/?',	'GET',	'view_board_listing',	2,	0),
+(14,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Board subscribers',	'/boards/?/board_subscribers',	'GET',	'view_board_subscribers',	2,	1),
+(15,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Board sync Google calendar URL',	'/boards/?/sync_calendar',	'GET',	'view_sync_calendar',	2,	0),
+(16,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Card activities',	'/boards/?/lists/?/cards/?/activities',	'GET',	'view_card_activities',	4,	0),
+(17,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Cards listing',	'/boards/?/lists/?/cards/?',	'GET',	'view_card_isting',	4,	1),
+(18,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Checklist listing',	'/boards/?/lists/?/cards/?/checklists',	'GET',	'view_checklist_listing',	4,	0),
+(19,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Convert item to card',	'/boards/?/lists/?/cards/?/checklists/?/items/?/convert_to_card',	'POST',	'convert_item_to_card',	4,	0),
+(20,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Copy board',	'/boards/?/copy',	'POST',	'copy_board',	2,	0),
+(21,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Copy card',	'/boards/?/lists/?/cards/?/copy',	'POST',	'copy_card',	4,	0),
+(22,	'2016-02-16 16:57:48.45',	'2016-02-16 16:57:48.45',	'Delete all archived cards',	'/boards/?/cards',	'DELETE',	'delete_all_archived_cards',	2,	0),
+(23,	'2016-02-16 16:57:48.372',	'2016-02-16 16:57:48.372',	'Delete all archived lists',	'/boards/?/lists',	'DELETE',	'delete_all_archived_lists',	2,	0),
+(24,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Delete board',	'/boards/?/boards_users/?',	'DELETE',	'delete_board',	2,	0),
+(25,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Delete card',	'/boards/?/lists/?/cards/?',	'DELETE',	'delete_card',	4,	0),
+(26,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Delete checklist',	'/boards/?/lists/?/cards/?/checklists/?',	'DELETE',	'delete_checklist',	4,	0),
+(27,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Delete comment',	'/boards/?/lists/?/cards/?/comments/?',	'DELETE',	'delete_comment',	4,	0),
+(28,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Delete item in checklist',	'/boards/?/lists/?/cards/?/checklists/?/items/?',	'DELETE',	'delete_checklist_item',	4,	0),
+(29,	'2016-02-16 16:57:48.45',	'2016-02-16 16:57:48.45',	'Delete Labels',	'/boards/?/labels/?',	'DELETE',	'delete_labels',	2,	0),
+(30,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Delete list',	'/boards/?/lists/?',	'DELETE',	'delete_list',	3,	0),
+(31,	'2014-08-25 13:14:18.2',	'2014-08-25 13:14:18.2',	'Download attachment from card',	'/download/?',	'GET',	'download_attachment_card',	4,	0),
+(32,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Edit board',	'/boards/?',	'PUT',	'edit_board',	2,	0),
+(33,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Edit card',	'/boards/?/lists/?/cards/?',	'PUT',	'edit_card',	4,	0),
+(34,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Edit checklist',	'/boards/?/lists/?/cards/?/checklists/?',	'PUT',	'edit_checklist',	4,	0),
+(35,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Edit comment',	'/boards/?/lists/?/cards/?/comments/?',	'PUT',	'edit_comment',	4,	0),
+(36,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Edit item in checklist',	'/boards/?/lists/?/cards/?/checklists/?/items/?',	'PUT',	'edit_checklist_item',	4,	0),
+(37,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Edit list',	'/boards/?/lists/?',	'PUT',	'edit_list',	3,	0),
+(38,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Move list cards',	'/boards/?/lists/?/cards',	'PUT',	'move_list_cards',	4,	0),
+(39,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Post comment to card',	'/boards/?/lists/?/cards/?/comments',	'POST',	'comment_card',	4,	0),
+(40,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Remove attachment from card',	'/boards/?/lists/?/cards/?/attachments/?',	'DELETE',	'remove_card_attachment',	4,	0),
+(41,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Remove board member',	'/boards_users/?',	'DELETE',	'remove_board_user',	2,	0),
+(42,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Remove card member',	'/boards/?/lists/?/cards/?/users/?',	'DELETE',	'delete_card_user',	4,	0),
+(43,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Search card',	'/cards/search',	'GET',	'search_card',	4,	0),
+(44,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Search card to add in comment',	'/boards/?/lists/?/cards/?/search',	'GET',	'view_card_search',	4,	0),
+(45,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Subscribe board',	'/boards/?/board_subscribers',	'POST',	'subscribe_board',	2,	0),
+(46,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Subscribe card',	'/boards/?/lists/?/cards/?/card_subscribers',	'POST',	'subscribe_card',	4,	0),
+(47,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Subscribe list',	'/boards/?/lists/?/list_subscribers',	'POST',	'subscribe_list',	3,	0),
+(48,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Undo activity',	'/activities/undo/?',	'PUT',	'undo_activity',	4,	0),
+(49,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Unsubscribe board',	'/boards/?/board_subscribers/?',	'PUT',	'board_subscriber',	2,	0),
+(50,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Unsubscribe card',	'/boards/?/lists/?/cards/?/card_subscribers/?',	'PUT',	'unsubscribe_card',	4,	0),
+(51,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Unsubscribe list',	'/boards/?/lists/?/list_subscribers/?',	'PUT',	'unsubscribe_list',	3,	0),
+(52,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Unvote card',	'/boards/?/lists/?/cards/?/card_voters/?',	'DELETE',	'unvote_card',	4,	0),
+(53,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Update board member permission',	'/boards_users/?',	'PUT',	'edit_board_user',	2,	0),
+(54,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Upload attachment to card',	'/boards/?/lists/?/cards/?/attachments',	'POST',	'add_card_attachment',	4,	0),
+(55,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Upload custom background to board',	'/boards/?/custom_backgrounds',	'POST',	'add_custom_background',	2,	0),
+(56,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View Archived card',	'/boards/?/archived_cards',	'GET',	'view_archived_cards',	4,	0),
+(57,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View archived list',	'/boards/?/archived_lists',	'GET',	'view_archived_lists',	3,	0),
+(58,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View board activities',	'/boards/?/activities',	'GET',	'view_board_activities',	2,	0),
+(59,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View card labels',	'/boards/?/lists/?/cards/?/labels',	'GET',	'view_card_labels',	4,	0),
+(60,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View user assigned cards',	'/users/?/cards',	'GET',	'view_user_cards',	4,	0),
+(61,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Vote card',	'/boards/?/lists/?/cards/?/card_voters',	'POST',	'vote_card',	4,	0);
 
 CREATE OR REPLACE VIEW boards_users_listing AS
  SELECT bu.id,
