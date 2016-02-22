@@ -1813,3 +1813,5 @@ CREATE OR REPLACE VIEW role_links_listing AS
 UPDATE "roles" SET "name" = 'Admin' WHERE "id" = '1';
 UPDATE "roles" SET "name" = 'User' WHERE "id" = '2';
 UPDATE "roles" SET "name" = 'Guest' WHERE "id" = '3';
+
+UPDATE "acl_board_links" SET "name" = 'Add / Delete Labels' WHERE "id" = '29';
