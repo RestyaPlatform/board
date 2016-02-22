@@ -792,11 +792,11 @@ App.FooterView = Backbone.View.extend({
                             favicon.badge(0);
                             $('.js-notification-count').addClass('hide');
                             window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+
                         }
                     }
                     activities.each(function(activity) {
                         activity.from_footer = true;
-
                         if (mode == 1 && parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id) && Notification.permission === 'granted') {
                             var icon = window.location.pathname + 'img/logo-icon.png';
                             if (activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
@@ -830,6 +830,7 @@ App.FooterView = Backbone.View.extend({
                             type: 'all',
                             board: self.board
                         });
+                        $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         if (mode == 1) {
                             view_activity.prepend(view.render().el).find('.timeago').timeago();
                         } else {
@@ -1293,6 +1294,15 @@ App.FooterView = Backbone.View.extend({
                             });
                         }
                     });
+                    if (mode === 2) {
+                        var unread_activity_id = _.max(activities.models, function(activity) {
+                            return activity.id;
+                        });
+                        Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                        Auth.user.unread_activity_id = unread_activity_id.id;
+                        authuser.user.unread_activity_id = unread_activity_id.id;
+                        window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                    }
                 } else {
                     if (parseInt(authuser.user.last_activity_id) === 0 || authuser.user.last_activity_id === null) {
                         $('#js-all-activities').parent('div').addClass('notification-empty');
@@ -1330,7 +1340,7 @@ App.FooterView = Backbone.View.extend({
         activities.url = api_url + 'boards/' + authuser.board_id + '/activities.json';
         activities.storeName = 'activity';
         $('#js-activity-loader').remove();
-        view_activity.append('<li class="col-xs-12" id="js-activity-loader"><span class="cssloader"></span></li>');
+        view_activity.append('<li class="col-xs-12" id="js-activity-loader" style="min-height: 200px;"><span class="cssloader"></span></li>');
         if (!_.isUndefined(authuser.user) && _.isUndefined(authuser.user.last_activity_id)) {
             authuser.user.last_activity_id = 0;
         }
@@ -1345,10 +1355,18 @@ App.FooterView = Backbone.View.extend({
                             model: activity,
                             board: self.board
                         });
+                        $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         if ($('.js-list-activity-' + activity.id, view_activity).length === 0) {
                             view_activity.append(view.render().el).find('.timeago').timeago();
                         }
                     });
+                    var unread_activity_id = _.max(activities.models, function(activity) {
+                        return activity.id;
+                    });
+                    Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                    Auth.user.unread_activity_id = unread_activity_id.id;
+                    authuser.user.unread_activity_id = unread_activity_id.id;
+                    window.sessionStorage.setItem('auth', JSON.stringify(Auth));
                     var last_board_activity = _.min(activities.models, function(activity) {
                         return activity.id;
                     });
@@ -1369,6 +1387,7 @@ App.FooterView = Backbone.View.extend({
                         $('.js-notification-count').addClass('hide');
                         window.sessionStorage.setItem('auth', JSON.stringify(Auth));
                     }
+
                 }
                 var headerH = $('header').height();
                 var windowH = $(window).height();
@@ -1620,6 +1639,7 @@ App.FooterView = Backbone.View.extend({
                             board: self.board,
                             type: modeType
                         });
+                        $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         view_activity.append(view.render().el).find('.timeago').timeago();
                     });
                 } else {
