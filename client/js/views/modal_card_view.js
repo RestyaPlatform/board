@@ -645,13 +645,18 @@ App.ModalCardView = Backbone.View.extend({
         $('#js-card-' + this.model.id).addClass('active');
         this.render();
         var self = this;
-        self.model.activities = new App.ActivityCollection();
-        self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json';
-        self.model.activities.fetch({
-            success: function(model, response) {
-                self.renderActivitiesCollection();
-            }
-        });
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
+                slug: "view_card_activities",
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })))) {
+            self.model.activities = new App.ActivityCollection();
+            self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json';
+            self.model.activities.fetch({
+                success: function(model, response) {
+                    self.renderActivitiesCollection();
+                }
+            });
+        }
     },
     /**
      * refreshdock()
