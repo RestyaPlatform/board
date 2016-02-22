@@ -16,7 +16,7 @@
 <li class="js-list-form"><a class="nav-list-item js-show-filters" href="#"><span class="icon-sm icon-filter icon-type"></span> <%- i18next.t('Filter Cards') %></a></li>
 <li><a class="nav-list-item js-show-labels" href="#"><span class="icon-sm  icon-tag icon-type"></span> <%- i18next.t('Labels') %></a></li>
 <% if(!_.isUndefined(authuser.user)) {%>
-	<% if(!_.isEmpty(role_links.where({slug: "view_archived_lists"})) || !_.isEmpty(role_links.where({slug: "view_archived_cards"}))){ %>
+	<% if(!_.isEmpty(role_links.where({slug: "view_archived_lists", board_user_role_id: parseInt(board.board_user_role_id)})) || !_.isEmpty(role_links.where({slug: "view_archived_cards", board_user_role_id: parseInt(board.board_user_role_id)}))){ %>
 	<li><a class="nav-list-item js-archived-items" href="#"><span class="icon-sm icon-archive icon-type"></span> <%- i18next.t('Archived Items') %></a></li>
 	<% } %>
 <% } %> 
@@ -45,10 +45,10 @@
 <li><a href="#" class="nav-list-item nav-list-sub-item js-change-background"><%- i18next.t('Change Background') %></a></li>
 <li><a href="#" class="nav-list-item nav-list-sub-item js-email-to-board-settings"> <%- i18next.t('Email to board settings') %></a></li>
 <% }%>
-<%if(!_.isUndefined(authuser.user) && !is_offline_data) {%>
-	<li class="js-sync-google-dropdown inner-dropdown"><a data-toggle="dropdown" href="#" class="js-show-copy-board"><%- i18next.t('Copy board') %></a>
-	</li>
-<% }} %>
+<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "copy_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
+	<li class="js-sync-google-dropdown inner-dropdown"><a data-toggle="dropdown" href="#" class="js-show-copy-board"><%- i18next.t('Copy board') %></a></li>
+<% }%>
+<% } %>
 <li class="divider"></li>
 <li><a href="#" class="js-show-board-modal" data-toggle="modal" data-target="#modalListView"><%- i18next.t('Show Attachments') %></a></li>
 <% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>

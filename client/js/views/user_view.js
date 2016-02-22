@@ -208,7 +208,7 @@ App.UserView = Backbone.View.extend({
                 } else {
                     self.flash('danger', i18next.t('User Profile could not be updated. Please, try again.'));
                 }
-                if (!_.isUndefined(response.activity.profile_picture_path)) {
+                if (!_.isUndefined(response.activity.profile_picture_path) && response.activity.profile_picture_path !== null) {
                     self.model.set('profile_picture_path', response.activity.profile_picture_path);
                     var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
                     Auth.user.profile_picture_path = response.activity.profile_picture_path;

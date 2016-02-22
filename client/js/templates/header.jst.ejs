@@ -118,47 +118,26 @@
 				</li>
               </ul>
             </div></div>
-				<% 
-				if(!_.isEmpty(role_links.where({slug: "users"}))) {
-					if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") { %>
+				<% if (!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") { %>
 					<div class="pull-left well-sm"><a class="label" href="#/users/admin_user_add" title="<%- i18next.t('Add User') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("Add User") %></span></a></div>
 				<% } %>
 			<% } %>
-			<% } %>
 			<% if(!_.isEmpty(current_param) && (current_param === 'oauth_clients')){ %>
-				<% if(!_.isEmpty(role_links.where({slug: "view_client_listing"}))) { %>
-						<div class="pull-left well-sm"><a class="label" href="#/oauth_clients/add" title="<%- i18next.t('New application') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("New application") %></span></a></div>
-				<% } %>
+				<div class="pull-left well-sm"><a class="label" href="#/oauth_clients/add" title="<%- i18next.t('New application') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("New application") %></span></a></div>
 			<% } %>
 	</div>
 	</div>
 	<nav class="navbar-collapse collapse"> 
 	<div class="navbar-right clearfix">
 		<ul class="nav nav-pills navbar-left navbar-btn">
-			<% if(!_.isEmpty(role_links.where({slug: "activities_listing"}))){ %>
-				<li class="js-admin-activity-menu navbar-btn"><a title="<%- i18next.t('Activities') %>" href="#/activities"><%- i18next.t("Activities") %></a></li>
-			<% } %>		
-			<% if(!_.isEmpty(role_links.where({slug: "view_user_listing"}))){ %>
-				<li class="js-admin-user-menu navbar-btn"><a title="<%- i18next.t('Users') %>" href="#/users"><%- i18next.t("Users") %></a></li>
-			<% } %>	
-            <% if(!_.isEmpty(role_links.where({slug: "view_board_listing"}))){ %>
-				<li class="js-admin-board-menu navbar-btn"><a title="<%- i18next.t('Boards') %>" href="#/boards/list"><%- i18next.t("Boards") %></a></li>
-			<% } %>				
-			<% if(!_.isEmpty(role_links.where({slug: "roles"}))){ %>
-				<li class="js-admin-role-menu navbar-btn"><a title="<%- i18next.t('Roles') %>" href="#/roles"><%- i18next.t("Roles") %></a></li>
-			<% } %>
-			<% if(!_.isEmpty(role_links.where({slug: "app"}))){ %>
-				<li class="js-admin-app-menu navbar-btn"><a title="<%- i18next.t('Apps') %>" href="#/apps"><%- i18next.t("Apps") %></a></li>
-			<% } %>
-			<% if(!_.isEmpty(role_links.where({slug: "view_client_listing"}))){ %>
-				<li class="js-admin-client-menu navbar-btn"><a title="<%- i18next.t('Developer applications') %>" href="#/oauth_clients"><%- i18next.t("Developer applications") %></a></li>
-			<% } %>
-			<% if(!_.isEmpty(role_links.where({slug: "setting_list"}))){ %>
-				<li class="js-admin-setting-menu navbar-btn"><a title="<%- i18next.t('Settings') %>" href="#/settings"><%- i18next.t("Settings") %></a></li>
-			<% } %>
-			<% if(!_.isEmpty(role_links.where({slug: "view_email_template_listing"}))){ %>
-				<li class="js-admin-email-menu navbar-btn"><a title="<%- i18next.t('Email Templates') %>" href="#/email_templates"><%- i18next.t("Email Templates") %></a></li>
-			<% } %>
+			<li class="js-admin-activity-menu navbar-btn"><a title="<%- i18next.t('Activities') %>" href="#/activities"><%- i18next.t("Activities") %></a></li>
+			<li class="js-admin-user-menu navbar-btn"><a title="<%- i18next.t('Users') %>" href="#/users"><%- i18next.t("Users") %></a></li>
+			<li class="js-admin-board-menu navbar-btn"><a title="<%- i18next.t('Boards') %>" href="#/boards/list"><%- i18next.t("Boards") %></a></li>
+			<li class="js-admin-role-menu navbar-btn"><a title="<%- i18next.t('Roles') %>" href="#/roles"><%- i18next.t("Roles") %></a></li>
+			<li class="js-admin-app-menu navbar-btn"><a title="<%- i18next.t('Apps') %>" href="#/apps"><%- i18next.t("Apps") %></a></li>
+			<li class="js-admin-client-menu navbar-btn"><a title="<%- i18next.t('Developer applications') %>" href="#/oauth_clients"><%- i18next.t("Developer applications") %></a></li>
+			<li class="js-admin-setting-menu navbar-btn"><a title="<%- i18next.t('Settings') %>" href="#/settings"><%- i18next.t("Settings") %></a></li>
+			<li class="js-admin-email-menu navbar-btn"><a title="<%- i18next.t('Email Templates') %>" href="#/email_templates"><%- i18next.t("Email Templates") %></a></li>
 		</ul>
 	</div>
 	</nav>

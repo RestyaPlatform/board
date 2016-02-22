@@ -68,6 +68,14 @@ App.ListView = Backbone.View.extend({
             this.model.collection.board.cards.bind('change:list_id', this.renderCardsCollection);
         }
         this.model.bind('remove', this.removeRender);
+        if (!_.isUndefined(authuser.user)) {
+            var board_user_role_id = this.model.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(board_user_role_id)) {
+                this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+            }
+        }
     },
     template: JST['templates/list'],
     templateAdd: JST['templates/list_add'],
@@ -228,17 +236,22 @@ App.ListView = Backbone.View.extend({
         var list_id = self.model.id;
         var bool = $('.js-list-subscribed-' + list_id).hasClass('hide');
         var data = $(e.target).serializeObject();
-        self.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '.json';
-        self.model.save(data, {
-            patch: true,
-            success: function(model, response) {
-                self.model.collection.board.attributes.lists.forEach(function(list) {
-                    if (list.id === parseInt(list_id)) {
-                        list.name = data.name;
-                    }
-                });
-            }
-        });
+        if (data.name === self.model.attributes.name) {
+            $(e.target).addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
+            $('#js-show-list-actions-' + self.model.id).removeClass('hide');
+        } else {
+            self.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '.json';
+            self.model.save(data, {
+                patch: true,
+                success: function(model, response) {
+                    self.model.collection.board.attributes.lists.forEach(function(list) {
+                        if (list.id === parseInt(list_id)) {
+                            list.name = data.name;
+                        }
+                    });
+                }
+            });
+        }
         if (bool) {
             $('.js-list-subscribed-' + list_id).addClass('hide');
         } else {
@@ -934,6 +947,7 @@ App.ListView = Backbone.View.extend({
                     card.attachments.add(filter_attachments, {
                         silent: true
                     });
+                    card.board = self.model.board;
                     var view = new App.CardView({
                         tagName: 'div',
                         model: card,

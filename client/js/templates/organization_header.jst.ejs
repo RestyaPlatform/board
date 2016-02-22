@@ -12,7 +12,7 @@
 	<% if(!_.isUndefined(authuser.user)){%>
   <div class="navbar-right navbar-btn">
 	<ul class="nav nav-pills navbar-left">
-	<% if(!_.isEmpty(role_links.where({slug: "delete_organization"}))){ %>
+	<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "delete_organization",organization_user_role_id: parseInt(organization.organization_user_role_id)})))) { %>
 	  <li class="dropdown">
 			<a href="#" title="Delete" class="text-muted list-group-item-text navbar-btn h4 dropdown-toggle" data-toggle="dropdown"><i class="icon-trash"></i></a>
 			<ul class="dropdown-menu arrow arrow-right list-unstyled">
@@ -29,7 +29,7 @@
 			</ul>
 		</li>
 	<% } %>		  
-	  <% if(!_.isEmpty(role_links.where({slug: "edit_organization"}))){ %>
+	  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "edit_organization",organization_user_role_id: parseInt(organization.organization_user_role_id)})))) { %>
 		  <li class="dropdown navbar-btn">
 			<a href="#" title="Edit" class="text-muted dropdown-toggle" data-toggle="dropdown"><span class="icon-pencil"></span></a>
 			<ul class="dropdown-menu arrow arrow-right list-unstyled list-inline clearfix pull-right">
@@ -58,10 +58,11 @@
 			</ul>	
 		  </li>
 	  <% } %>
+	  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "view_organization_visibility",organization_user_role_id: parseInt(organization.organization_user_role_id)})))) { %>
 	  <li class="dropdown navbar-btn">
 		<a href="" title="<% if(organization.attributes.organization_visibility == 1){ %><%- i18next.t('Public') %><% } else { %><%- i18next.t('Private') %><% } %>" class="js-org-visibility-name js-show-organization-visibility-form text-muted dropdown-toggle" data-toggle="dropdown"><span class="js-org-visibility-icon <% if(organization.attributes.organization_visibility == 1){ %>icon-circle <% } else { %>icon-lock<% } %> text-muted"></span><span class="h4 js-org-visibility-type"><% if(organization.attributes.organization_visibility == 1){ %><%- i18next.t('Public') %><% } else { %><%- i18next.t('Private') %><% } %></span></a>
 		<ul class="dropdown-menu arrow arrow-right list-unstyled clearfix pull-left js-organization-visibility">
-			
+		<% } %>	
 		</ul>
 	  </li>
 	</ul>
