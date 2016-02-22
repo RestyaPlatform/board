@@ -1813,3 +1813,6 @@ CREATE OR REPLACE VIEW role_links_listing AS
 UPDATE "roles" SET "name" = 'Admin' WHERE "id" = '1';
 UPDATE "roles" SET "name" = 'User' WHERE "id" = '2';
 UPDATE "roles" SET "name" = 'Guest' WHERE "id" = '3';
+
+DELETE from acl_board_links WHERE id = 24;
+DELETE from acl_board_links_boards_user_roles WHERE acl_board_link_id = 24;
