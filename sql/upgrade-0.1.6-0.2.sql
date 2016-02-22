@@ -1,15 +1,3 @@
-INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('127', now(), now(), 'Plugin', '/plugins', 'GET', 'plugin', '6', '1', '0');
-
-INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES (now(), now(), '127', '1');
-
-INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('128', now(), now(), 'Plugin Settings', '/plugins/settings', 'GET', 'plugin_settings', '6', '1', '0');
-
-INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES (now(), now(), '128', '1');
-
-INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('129', now(), now(), 'Plugin Settings', '/plugins/settings', 'POST', 'plugin_settings', '6', '1', '0');
-
-INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES (now(), now(), '129', '1');
-
 INSERT INTO "settings" ("id", "setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
 VALUES ('31', '3', '0', 'DEFAULT_LANGUAGE', 'en', NULL, 'text', NULL, 'Default Language', '6');
 
@@ -221,6 +209,7 @@ INSERT INTO "languages" ("id", "created", "modified", "name", "iso2", "iso3", "i
 
 ALTER TABLE "boards" ADD "default_email_list_id" bigint NOT NULL DEFAULT '0';
 ALTER TABLE "boards" ADD "is_default_email_position_as_bottom" boolean NOT NULL DEFAULT 'false';
+UPDATE boards bd SET default_email_list_id = (SELECT l.id FROM boards b LEFT JOIN lists l ON l.board_id = bd.id WHERE default_email_list_id = 0 ORDER BY id DESC OFFSET 0 LIMIT 1) WHERE default_email_list_id = 0;
 
 INSERT INTO "setting_categories" ("id", "created", "modified", "name", "order")
 VALUES (10, now(), now(), 'IMAP', '5');
@@ -404,8 +393,6 @@ UPDATE "email_templates" SET
 </html>'
 WHERE "id" = '6';
 
-UPDATE boards bd SET default_email_list_id = (SELECT l.id FROM boards b LEFT JOIN lists l ON l.board_id = bd.id WHERE default_email_list_id = 0 ORDER BY id DESC OFFSET 0 LIMIT 1) WHERE default_email_list_id = 0;
-
 CREATE OR REPLACE FUNCTION update_card_count() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
 	IF (TG_OP = 'DELETE') THEN
@@ -430,21 +417,6 @@ BEGIN
 	END IF;
 END;
 $$;
-
-
-UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '1';
-UPDATE "acl_links" SET "is_allow_only_to_admin" = '0', "is_allow_only_to_user" = '0' WHERE "name" = 'Forgot password';
-UPDATE "acl_links" SET "is_allow_only_to_admin" = '0', "is_allow_only_to_user" = '0' WHERE "name" = 'Register';
-UPDATE "acl_links" SET "is_allow_only_to_admin" = '0', "is_allow_only_to_user" = '0' WHERE "name" = 'Login';
-UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '0' WHERE "name" = 'Users management';
-UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '0' WHERE "name" = 'Create user';
-UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '0' WHERE "name" = 'Boards management';
-UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '0' WHERE "name" = 'All activities';
-UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '0' WHERE "name" = 'Download attachment from card';
-UPDATE "acl_links" SET "is_allow_only_to_admin" = '1', "is_allow_only_to_user" = '0' WHERE "group_id" = 6;
-
-UPDATE "acl_links" SET "name" = 'App', "url" = '/apps', "slug" = 'app' WHERE "slug" = 'plugin';
-UPDATE "acl_links" SET "name" = 'App Settings', "url" = '/apps/settings', "slug" = 'app_settings' WHERE "slug" = 'plugin_settings';
 
 CREATE OR REPLACE VIEW activities_listing AS
  SELECT activity.id, 
@@ -489,7 +461,6 @@ CREATE OR REPLACE VIEW activities_listing AS
    LEFT JOIN checklists checklist1 ON ((checklist1.id = activity.foreign_id)))
    LEFT JOIN users users ON ((users.id = activity.user_id)))
    LEFT JOIN organizations organizations ON ((organizations.id = activity.organization_id)));
-
 
 CREATE OR REPLACE VIEW "cards_users_listing" AS
  SELECT u.username,
@@ -648,7 +619,6 @@ CREATE OR REPLACE VIEW "gadget_users_listing" AS
                   ORDER BY checklist_items.id) ci) AS checklist_items
    FROM checklists checklists;
 
-
 CREATE OR REPLACE VIEW "lists_listing" AS
  SELECT lists.id,
     lists.created,
@@ -705,10 +675,6 @@ CREATE OR REPLACE VIEW "lists_listing" AS
                   ORDER BY lists_subscribers.id) ls) AS lists_subscribers
    FROM lists lists;
 
-
-UPDATE "oauth_clients" SET "grant_types" = 'client_credentials password refresh_token authorization_code' WHERE "client_id" = '7742632501382313';
-
-
 CREATE SEQUENCE OAUTH_clients_id_seq
     START WITH 1
     INCREMENT BY 1
@@ -716,44 +682,15 @@ CREATE SEQUENCE OAUTH_clients_id_seq
     NO MAXVALUE
     CACHE 1;
 
-ALTER TABLE "oauth_clients" 
-ADD "client_name" character varying(255) NULL, 
-ADD "client_url" character varying(255) NULL, 
-ADD "logo_url" character varying(255) NULL, 
-ADD "tos_url" character varying(255) NULL, 
-ADD "policy_url" character varying(2000) NULL,
-ADD "modified" timestamp NULL,
-ADD "created" timestamp NULL;
+ALTER TABLE "oauth_clients" ADD "client_name" character varying(255) NULL, ADD "client_url" character varying(255) NULL, ADD "logo_url" character varying(255) NULL, ADD "tos_url" character varying(255) NULL, ADD "policy_url" character varying(2000) NULL, ADD "modified" timestamp NULL, ADD "created" timestamp NULL;
 
 ALTER TABLE oauth_clients ADD COLUMN id SERIAL;
 UPDATE oauth_clients SET id = nextval(pg_get_serial_sequence('oauth_clients','id'));
 
+UPDATE "oauth_clients" SET "redirect_uri" = '', "client_name" = 'Web App', "grant_types" = 'client_credentials password refresh_token authorization_code' WHERE "client_id" = '7742632501382313';
 
-INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user")
-VALUES ('130', now(), now(), 'View client listing', '/oauth/clients', 'GET', 'view_client_listing', '6', '1', '0'),
-('131', now(), now(), 'Add client', '/oauth/clients', 'POST', 'add_client', '6', '1', '0'),
-('132', now(), now(), 'Edit client', '/oauth/clients/?', 'PUT', 'edit_client', '6', '1', '0'),
-('133', now(), now(), 'Delete client', '/oauth/clients/?', 'DELETE', 'delete_client', '6', '1', '0');
-
-
-INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
-VALUES (now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/clients' AND method = 'GET'), 1),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/clients' AND method = 'POST'), 1),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/clients/?' AND method = 'PUT'), 1),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/clients/?' AND method = 'DELETE'), 1);
-
-
-INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user")
-VALUES ('134', now(), now(), 'View connected applications', '/oauth/applications', 'GET', 'view_connected_applications', '6', '1', '1'),
-('135', now(), now(), 'Delete connected applications', '/oauth/applications/?', 'DELETE', 'delete_connected_applications', '6', '1', '1');
-
-
-INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
-VALUES (now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/applications' AND method = 'GET'), 1),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/applications' AND method = 'GET'), 2),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/applications/?' AND method = 'DELETE'), 1),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/applications/?' AND method = 'DELETE'), 2);
-
+INSERT INTO "oauth_clients" ("client_id", "client_secret", "redirect_uri", "grant_types", "scope", "user_id", "client_name", "client_url", "logo_url", "tos_url", "policy_url", "modified", "created")
+VALUES ('6664115227792148', 'hw3wpe2cfsxxygogwue47cwnf7', NULL, 'client_credentials refresh_token authorization_code', NULL, NULL, 'Mobile App', NULL, NULL, NULL, NULL, now(), now()),('7857596005287233', 'n0l2wlujcpkj0bd7gk8918gm6b', NULL, 'client_credentials refresh_token authorization_code', NULL, NULL, 'Zapier', NULL, NULL, NULL, NULL, now(), now());
 
 CREATE SEQUENCE webhooks_id_seq
     START WITH 1
@@ -773,42 +710,10 @@ CREATE TABLE webhooks (
     is_active boolean NOT NULL DEFAULT 'false'
 );
 
-
-INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user")
-VALUES ('136', now(), now(), 'View webhooks', '/webhooks', 'GET', 'view_webhooks', '6', '1', '1'),
-('137', now(), now(), 'Add webhooks', '/webhooks', 'POST', 'add_webhook', '6', '1', '1'),
-('138', now(), now(), 'Edit webhooks', '/webhooks/?', 'PUT', 'edit_webhook', '6', '1', '1'),
-('139', now(), now(), 'Delete webhooks', '/webhooks/?', 'DELETE', 'delete_webhook', '6', '1', '1');
-
-
-INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
-VALUES (now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks' AND method = 'GET'), 1),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks' AND method = 'POST'), 1),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks/?' AND method = 'PUT'), 1),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks/?' AND method = 'DELETE'), 1),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks' AND method = 'GET'), 2),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks' AND method = 'POST'), 2),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks/?' AND method = 'PUT'), 2),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/webhooks/?' AND method = 'DELETE'), 2);
-
-
 INSERT INTO "settings" ("id", "setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
 VALUES ('36', '0', '0', 'webhooks.last_processed_activtiy_id', 0, NULL, 'hidden', NULL, 'Webhook Activity ID', '0');
 
-INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user")
-VALUES ('140', now(), now(), 'Post oauth token', '/oauth/token', 'POST', 'post_oauth_token', '0', '0', '0');
-
-INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
-VALUES (now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/token' AND method = 'POST'), 1),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/token' AND method = 'POST'), 2),
-(now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/token' AND method = 'POST'), 3);
-
-
 INSERT INTO "oauth_scopes" ("scope", "is_default") VALUES ('read', 't'),('write', 'f');
-
-INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('141', now(), now(), 'Users import', '/users/import', 'POST', 'users_import', '6', '1', '0');
-
-INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES (now(), now(), '141', '1');
 
 INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply_to_email", "name", "description", "subject", "email_text_content", "email_variables", "display_name") VALUES
 (7,	'2016-01-10 06:15:49.891',	'2016-01-10 06:15:49.891',	'##SITE_NAME## Restyaboard <##FROM_EMAIL##>',	'##REPLY_TO_EMAIL##',	'due_date_notification',	'We will send this mail, One day before when the card due date end.',	'Restyaboard / Due date notification',	'<html>
@@ -837,14 +742,6 @@ INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply
 </body>
 </html>', 'SITE_URL, SITE_NAME, CONTENT', 'Due Date Notification');
 
-
-INSERT INTO "oauth_clients" ("client_id", "client_secret", "redirect_uri", "grant_types", "scope", "user_id", "client_name", "client_url", "logo_url", "tos_url", "policy_url", "modified", "created")
-VALUES ('6664115227792148', 'hw3wpe2cfsxxygogwue47cwnf7', NULL, 'client_credentials refresh_token authorization_code', NULL, NULL, 'Mobile App', NULL, NULL, NULL, NULL, now(), now()),('7857596005287233', 'n0l2wlujcpkj0bd7gk8918gm6b', NULL, 'client_credentials refresh_token authorization_code', NULL, NULL, 'Zapier', NULL, NULL, NULL, NULL, now(), now());
-
-UPDATE "acl_links" SET "group_id" = 6 WHERE "name" = 'Delete board' OR "name" = 'Add organization' OR "name" = 'Add board';
-
-UPDATE "acl_links" SET "group_id" = 1 WHERE "name" = 'Board visibility' OR "name" = 'View starred boards listing' OR "name" = 'Load workflow templates' OR "name" = 'Search'  OR "name" = 'View organization'  OR "name" = 'Organization visibility'  OR "name" = 'View board'  OR "name" = 'Board search'  OR "name" = 'View user assigned boards'  OR "name" = 'add_card'  OR "name" = 'View boards listing'  OR "name" = 'View closed boards'  OR "name" = 'Starred boards listing'  OR "name" = 'My boards listing'  OR "name" = 'View organizations listing'  OR "name" = 'View user assigned cards'  OR "name" = 'All activities'  OR "name" = 'Starred boards listing'  OR "name" = 'View closed boards'  OR "name" = 'My boards listing'  OR "name" = 'Post oauth token';
-
 CREATE SEQUENCE acl_board_links_seq
     START WITH 1
     INCREMENT BY 1
@@ -863,10 +760,6 @@ CREATE TABLE acl_board_links (
     group_id smallint
 );
 
-INSERT INTO "acl_board_links" ("created", "modified", "name", "url", "method", "slug", "group_id") 
-(select created, modified, name, url, method, slug, group_id from acl_links where group_id IN (2,3,4));
-
-
 CREATE SEQUENCE acl_organization_links_seq
     START WITH 1
     INCREMENT BY 1
@@ -884,11 +777,6 @@ CREATE TABLE acl_organization_links (
     slug character varying(255) NOT NULL,
     group_id smallint
 );
-
-INSERT INTO "acl_organization_links" ("created", "modified", "name", "url", "method", "slug", "group_id")
-(select created, modified, name, url, method, slug, group_id from acl_links where group_id IN (5));
-
-DELETE FROM acl_links WHERE group_id IN (2,3,4,5);
 
 CREATE SEQUENCE board_user_roles_seq
     START WITH 1
@@ -920,11 +808,6 @@ CREATE TABLE organization_user_roles (
 	description character varying
 );
 
-INSERT INTO "board_user_roles" ("created", "modified", "name", "description") VALUES (now(), now(), 'Owner', 'Can view and edit cards, remove members, and change settings for the board.'),(now(), now(), 'Editor', 'Can view and edit cards, remove members, but not change settings.'),(now(), now(), 'Viewer', 'Can view only.');
-INSERT INTO "organization_user_roles" ("created", "modified", "name", "description") VALUES (now(), now(), 'Owner', 'Can view, create and edit org boards, and change settings for the organization.'),(now(), now(), 'Editor', 'Can view, create, and edit org boards, but not change settings.'),(now(), now(), 'Viewer', 'Can view only.');
-
-
-
 CREATE SEQUENCE acl_board_links_boards_user_roles_seq
     START WITH 1
     INCREMENT BY 1
@@ -955,7 +838,6 @@ CREATE TABLE acl_organization_links_organizations_user_roles (
     organization_user_role_id bigint NOT NULL
 );
 
-
 CREATE VIEW acl_board_links_listing AS
  SELECT ablbur.board_user_role_id,
     abl.slug,
@@ -972,25 +854,13 @@ CREATE VIEW acl_organization_links_listing AS
    FROM (acl_organization_links_organizations_user_roles aolour
      JOIN acl_organization_links aol ON ((aol.id = aolour.acl_organization_link_id)));
 
-
-INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") 
-(select t1.created, t1.modified, t3.id, t1.role_id from acl_links_roles t1,acl_links t2,acl_board_links t3 where t2.group_id IN (2,3,4) and t2.id=t1.acl_link_id and t3.name = t2.name);
-
-INSERT INTO "acl_organization_links_organizations_user_roles" ("created", "modified", "acl_organization_link_id", "organization_user_role_id") 
-(select t1.created, t1.modified, t3.id, t1.role_id from acl_links_roles t1,acl_links t2,acl_organization_links t3 where t2.group_id IN (5) and t2.id=t1.acl_link_id and t3.name = t2.name);
-
 DROP VIEW "boards_users_listing" CASCADE;
-
 DROP VIEW "organizations_users_listing" CASCADE;
-
 DROP VIEW "simple_board_listing" CASCADE;
 
 ALTER TABLE "boards_users" DROP "is_admin";
-
 ALTER TABLE "boards_users" ADD "board_user_role_id" smallint NOT NULL DEFAULT '0';
-
 ALTER TABLE "organizations_users" DROP "is_admin"; 
-
 ALTER TABLE "organizations_users" ADD "organization_user_role_id" smallint NOT NULL DEFAULT '0';
 
 CREATE OR REPLACE VIEW boards_users_listing AS
@@ -1013,7 +883,6 @@ CREATE OR REPLACE VIEW boards_users_listing AS
    FROM ((boards_users bu
    JOIN users u ON ((u.id = bu.user_id)))
    JOIN boards b ON ((b.id = bu.board_id)));
-
 
 CREATE OR REPLACE VIEW boards_listing AS
  SELECT board.id,
@@ -1286,7 +1155,6 @@ CREATE OR REPLACE VIEW organizations_listing AS
    FROM (organizations organizations
    LEFT JOIN users u ON ((u.id = organizations.user_id)));
 
-
 CREATE OR REPLACE VIEW users_listing AS
  SELECT users.id,
     users.role_id,
@@ -1378,7 +1246,6 @@ CREATE OR REPLACE VIEW users_listing AS
    LEFT JOIN countries lco ON ((lco.id = li.country_id)))
    LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
 
-
 CREATE OR REPLACE VIEW simple_board_listing AS
  SELECT board.id,
     board.name,
@@ -1430,7 +1297,7 @@ CREATE OR REPLACE VIEW simple_board_listing AS
            FROM ( SELECT bu.id,
                     bu.board_id,
                     bu.user_id,
-                    bu.board_user_role_id,
+                    bu.board_user_role_id
                    FROM boards_users bu
                   WHERE (bu.board_id = board.id)
                   ORDER BY bu.id) l) AS users,
@@ -1440,67 +1307,32 @@ CREATE OR REPLACE VIEW simple_board_listing AS
    FROM (boards board
    LEFT JOIN organizations org ON ((org.id = board.organization_id)))
   ORDER BY board.name;
-  
-INSERT INTO "acl_board_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('141', now(), now(), 'Delete all archived lists', '/boards/?/lists', 'DELETE', 'delete_all_archived_lists', '3', '1', '0');
-
-INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") VALUES (now(), now(), '141', '1');
-
-
-INSERT INTO "acl_board_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('142', now(), now(), 'Delete all archived cards', '/boards/?/cards', 'DELETE', 'delete_all_archived_cards', '4', '1', '0');
-
-INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") VALUES (now(), now(), '142', '1');
-
-
-INSERT INTO "acl_board_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('143', now(), now(), 'Delete Labels', '/boards/?/labels/?', 'DELETE', 'delete_labels', '2', '1', '0');
-
-INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") VALUES (now(), now(), '143', '1'); 
 
 CREATE OR REPLACE FUNCTION update_organization_user_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
 BEGIN
-
 	IF (TG_OP = 'DELETE') THEN
-
 		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
-
 	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-
 		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
-
 	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = OLD."user_id";
-
 		RETURN OLD;
-
 	ELSIF (TG_OP = 'UPDATE') THEN
-
 		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
-
 	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-
 		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
-
 	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = OLD."user_id";
-
 		RETURN OLD;
-
 	ELSIF (TG_OP = 'INSERT') THEN
-
 		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
-
 	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-
 	        UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = NEW."user_id";
-
 	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = NEW."user_id";
-
 		RETURN NEW;
-
 	END IF;
-
 END;
-
 $$;
 
 CREATE OR REPLACE FUNCTION update_board_user_count() RETURNS trigger
@@ -1508,69 +1340,63 @@ CREATE OR REPLACE FUNCTION update_board_user_count() RETURNS trigger
     AS $$
 
 BEGIN
-
 	IF (TG_OP = 'DELETE') THEN
-
 		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-
 		UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-
 		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
-
 	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 2) t WHERE "id" = OLD."user_id";
-
 		RETURN OLD;
-
 	ELSIF (TG_OP = 'UPDATE') THEN
-
 		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-
 	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-
 		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
-
 	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 2) t WHERE "id" = OLD."user_id";
-
 		RETURN OLD;
-
 	ELSIF (TG_OP = 'INSERT') THEN
-
 		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
-
 	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-
 	        UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 1) t WHERE "id" = NEW."user_id";
-
 	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 2) t WHERE "id" = NEW."user_id";
-
 		RETURN NEW;
-
 	END IF;
-
 END;
-
 $$;
 
+DROP VIEW settings_listing;
+
+ALTER TABLE "settings" ALTER "label" TYPE character varying(255), ALTER "label" DROP DEFAULT, ALTER "label" DROP NOT NULL;
+
+CREATE OR REPLACE VIEW settings_listing AS
+ SELECT setting_categories.id,
+    setting_categories.created,
+    setting_categories.modified,
+    setting_categories.parent_id,
+    setting_categories.name,
+    setting_categories.description,
+    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
+           FROM ( SELECT settings.id,
+                    settings.name,
+                    settings.setting_category_id,
+                    settings.setting_category_parent_id,
+                    settings.value,
+                    settings.type,
+                    settings.options,
+                    settings.label,
+                    settings."order"
+                   FROM settings settings
+                  WHERE (settings.setting_category_id = setting_categories.id)
+                  ORDER BY settings."order") o) AS settings
+   FROM setting_categories setting_categories;
+
 UPDATE "settings" SET "description" = 'The DNS name or IP address of the server. For example dc.domain.local.' WHERE "name" = 'LDAP_SERVER';
-
 UPDATE "settings" SET "description" = 'Server port (e.g., 389 for LDAP and 636 for LDAP using SSL)' WHERE "name" = 'LDAP_PORT';
-
 UPDATE "settings" SET "description" = 'Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx' WHERE "name" = 'LDAP_PROTOCOL_VERSION';
-
 UPDATE "settings" SET "label" = 'Base DN', "description" = 'This is your search base for LDAP queries. This should be at least your domain root, for example dc=domain,dc=local You can define this as a Organizational Unit if you want to narrow down the search base. For example: ou=team,ou=company,dc=domain,dc=local' WHERE "name" = 'LDAP_ROOT_DN';
-
 UPDATE "settings" SET "label" = 'Account Filter', "description" = 'You can use different field from the username here. For pre-windows 2000 style login, use sAMAccountName and for a UPN style login use userPrincipalName.' WHERE "name" = 'LDAP_UID_FIELD';
-
 UPDATE "settings" SET "label" = 'Bind DN', "description" = 'Enter a valid user account/DN to pre-bind with if your LDAP server does not allow anonymous profile searches, or requires a user with specific privileges to search.' WHERE "name" = 'LDAP_BIND_DN';
-
 UPDATE "settings" SET "type" = 'password', "description" = 'Enter a password for the above Bind DN.' WHERE "name" = 'LDAP_BIND_PASSWD';
 
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('4', '2', 'ENABLE_SSL_CONNECTIVITY', NULL, 'Use encryption (SSL, ldaps:// URL) when connects to server?', 'checkbox', NULL, 'Enable SSL Connectivity', '2');
-
-UPDATE "oauth_clients" SET "redirect_uri" = '', "client_name" = 'Web App' WHERE "client_id" = '7742632501382313';
-
-UPDATE "acl_board_links" SET "url" = '/boards/?/boards_users/?' WHERE "slug" = 'delete_board';
-
 
 UPDATE "settings" SET "order" = '3' WHERE "name" = 'ENABLE_SSL_CONNECTIVITY';
 UPDATE "settings" SET "order" = '4' WHERE "name" = 'LDAP_SERVER';
@@ -1582,11 +1408,9 @@ UPDATE "settings" SET "order" = '9' WHERE "name" = 'LDAP_UID_FIELD';
 UPDATE "settings" SET "order" = '10' WHERE "name" = 'LDAP_BIND_DN';
 UPDATE "settings" SET "order" = '11' WHERE "name" = 'LDAP_BIND_PASSWD';
 
-
+DROP VIEW "role_links_listing";
 DROP VIEW "acl_links_listing";
-
 DROP TABLE "acl_links";
-
 DROP TABLE "acl_links_roles";
 
 CREATE TABLE acl_links (
@@ -1717,7 +1541,6 @@ INSERT INTO "acl_links_roles" ("id", "created", "modified", "acl_link_id", "role
 (1344,	'2016-02-22 10:59:06.81',	'2016-02-22 10:59:06.81',	3,	3),
 (1345,	'2016-02-22 11:00:11.023',	'2016-02-22 11:00:11.023',	101,	1);
 
-
 CREATE OR REPLACE VIEW acl_links_listing AS
  SELECT aclr.role_id,
     acl.slug,
@@ -1725,3 +1548,11 @@ CREATE OR REPLACE VIEW acl_links_listing AS
     acl.method
    FROM (acl_links_roles aclr
    JOIN acl_links acl ON ((acl.id = aclr.acl_link_id)));
+
+CREATE OR REPLACE VIEW role_links_listing AS
+ SELECT role.id,
+    ( SELECT array_to_json(array_agg(link.*)) AS array_to_json
+           FROM ( SELECT alls.slug
+                   FROM acl_links_listing alls
+                  WHERE (alls.role_id = role.id)) link) AS links
+   FROM roles role;
