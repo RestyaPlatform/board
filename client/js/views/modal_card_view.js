@@ -95,6 +95,10 @@ App.ModalCardView = Backbone.View.extend({
         'click #modal-activities': 'showActivity',
         'keyup[c] .dockmodal': 'keyboardArchiveCard',
         'keyup[d] .dockmodal': 'keyboardShowCardDueDateForm',
+        'keyup[t] .dockmodal': 'keyboardShowCardTitleEditForm',
+        'keyup[v] .dockmodal': 'keyboardAddCardVote',
+        'keyup[m] .dockmodal': 'keyboardShowAddMemberForm',
+        'keyup[space] .dockmodal': 'keyboardAddCardMember',
     },
     /**
      * Constructor
@@ -2797,5 +2801,26 @@ App.ModalCardView = Backbone.View.extend({
         $('.dropdown-menu li:first-child').addClass('open');
         $('.js-show-card-due-date-form', e.target).trigger('click');
         return false;
-    }
+    },
+    keyboardShowCardTitleEditForm: function(e) {
+        $('.js-show-card-title-edit-form', e.target).trigger('click');
+        return false;
+    },
+    keyboardAddCardVote: function(e) {
+        $('.js-add-card-vote', e.target).trigger('click');
+        return false;
+    },
+    keyboardShowAddMemberForm: function(e) {
+        $('.js-show-add-member-form', e.target).trigger('click');
+        return false;
+    },
+    keyboardAddCardMember: function(e) {
+        $('.js-show-add-member-form', e.target).trigger('click');
+        $('.dropdown-menu-left .js-organization-member-search-response', e.target).find("a").each(function(index, value) {
+            if ($(value).data('user-id') == authuser.user.id) {
+                $(this).trigger('click');
+            }
+        });
+        return false;
+    },
 });

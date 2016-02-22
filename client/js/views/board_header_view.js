@@ -2040,9 +2040,15 @@ App.BoardHeaderView = Backbone.View.extend({
             return;
         }
         var active_card = $('.js-board-list .js-board-list-cards .active-card');
+        var active_card_position = $('.js-board-list .js-board-list-cards .active-card').index();
+        console.log(active_card_position);
         if ($(active_card).parents('.js-board-list').prev().length) {
             card_length = $(active_card).parents('.js-board-list').prev().find('.js-board-list-card').length;
-            console.log(card_length);
+            if (active_card_position > card_length) {
+                $(active_card).removeClass('active-card').parents('.js-board-list').prev().find('.js-board-list-card').eq(0).addClass('active-card');
+            } else {
+                $(active_card).removeClass('active-card').parents('.js-board-list').prev().find('.js-board-list-card').eq(active_card_position).addClass('active-card');
+            }
         }
     },
     keyboardRightNavigateCards: function(e) {
@@ -2051,10 +2057,22 @@ App.BoardHeaderView = Backbone.View.extend({
             return;
         }
         var active_card = $('.js-board-list .js-board-list-cards .active-card');
-        if ($(active_card).parents('.js-board-list').next().length) {
-            card_length = $(active_card).parents('.js-board-list').next().find('.js-board-list-card').length;
-            if (card_length) {}
-            $(active_card).removeClass('active-card').parents('.js-board-list').next().find('.js-board-list-card').eq(0).addClass('active-card');
-        }
+        var active_card_position = $('.js-board-list .js-board-list-cards .active-card').index();
+
+        var next_list_card = 0;
+        next_list = $(active_card).parents('.js-board-list').next();
+        do {
+            next_list_card = next_list.find('.js-board-list-card').length;
+            if (next_list_card === 0) {
+                next_list = next_list.next();
+            } else {
+                if (active_card_position > (next_list_card - 1)) {
+                    $(active_card).removeClass('active-card').parents('.js-board-list').next().find('.js-board-list-card').eq(0).addClass('active-card');
+                } else {
+                    $(active_card).removeClass('active-card').parents('.js-board-list').next().find('.js-board-list-card').eq(active_card_position).addClass('active-card');
+                }
+                break;
+            }
+        } while (next_list_card === 0);
     },
 });

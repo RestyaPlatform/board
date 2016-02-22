@@ -108,7 +108,8 @@ App.ListView = Backbone.View.extend({
         'change .js-change-position': 'changePosition',
         'click .js-copy-existing-card': 'copyExistingCard',
         'click .js-hide-edit-list-form': 'hideListEditForm',
-        'listSort': 'listSort'
+        'listSort': 'listSort',
+        'keyup[n] .js-board-list': 'keyboardShowAddCardForm',
     },
     /**
      * listSort()
@@ -956,6 +957,7 @@ App.ListView = Backbone.View.extend({
         e.preventDefault();
         $('.js-cancel-card-add').trigger('click');
         var target = $(e.target);
+        console.log(target);
         var el = this.$el;
         var view_card = this.$('.js-card-add-form-' + this.model.id);
         el.find('.js-show-add-card-form').addClass('hide');
@@ -1429,5 +1431,13 @@ App.ListView = Backbone.View.extend({
                 return false;
             }
         }
-    }
+    },
+    keyboardShowAddCardForm: function(e) {
+        var active_card = $('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active-card');
+        if (active_card === true) {
+            $('.active-card').parents('.js-board-list').find('.js-show-add-card-form').each(function() {
+                $(this).parents('a.js-show-add-card-form').trigger('click');
+            });
+        }
+    },
 });
