@@ -1719,6 +1719,7 @@ App.FooterView = Backbone.View.extend({
                         trigger: true,
                         replace: true
                     });
+                    self.flash('success', i18next.t('Imported successfully.'));
                 } else {
                     self.flash('danger', i18next.t('Unable to import. please try again.'));
                 }
