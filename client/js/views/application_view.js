@@ -375,7 +375,8 @@ App.ApplicationView = Backbone.View.extend({
             } else if (view_type === 'attachments') {
                 $('.js-show-board-modal').trigger('click');
                 view_type = null;
-            } else if (view_type === null || view_type === '') {
+            } else if (_.isUndefined(view_type) || view_type === null || view_type === '') {
+                $('.js-switch-grid-view').trigger('click');
                 view_type = null;
             }
         }
