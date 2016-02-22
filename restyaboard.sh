@@ -63,18 +63,35 @@
 			sed -i "s/server\/php\/R\/ical.php/server\/php\/ical.php/" /etc/nginx/conf.d/restyaboard.conf
 			sed -i "s/server\/php\/R\/image.php/server\/php\/image.php/" /etc/nginx/conf.d/restyaboard.conf
 			
-			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ])
 			then
+				echo "Changing files path for existing cron..."
 				sed -i "s/server\/php\/R\/cron.sh/server\/php\/cron.sh/" /var/spool/cron/crontabs/root
 				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/instant_email_notification.sh/" /var/spool/cron/crontabs/root
 				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/periodic_email_notification.sh/" /var/spool/cron/crontabs/root
-				echo "*/5 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/crontabs/root
+			
+				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
+				echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/crontabs/root
+				
+				echo "Setting up cron for every 5 minutes to send activities to webhook..."
+				echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/crontabs/root
+				
+				echo "Setting up cron for every 5 minutes to send email notification to past due..."
+				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
 			else
+				echo "Changing files path for existing cron..."
 				sed -i "s/server\/php\/R\/cron.sh/server\/php\/cron.sh/" /var/spool/cron/root
 				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/instant_email_notification.sh/" /var/spool/cron/root
 				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/periodic_email_notification.sh/" /var/spool/cron/root
-				echo "*/5 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/root
+			
+				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
+				echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/root
+				
+				echo "Setting up cron for every 5 minutes to send activities to webhook..."
+				echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/root
+				
+				echo "Setting up cron for every 5 minutes to send email notification to past due..."
+				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
 			fi
 			
 			echo "Updating SQL..."
@@ -330,6 +347,12 @@
 			
 			echo "Setting up cron for every 30 minutes to fetch IMAP email..."
 			echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/crontabs/root
+			
+			echo "Setting up cron for every 5 minutes to send activities to webhook..."
+			echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/crontabs/root
+			
+			echo "Setting up cron for every 5 minutes to send email notification to past due..."
+			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
 
 			echo "Starting services..."
 			service cron restart
@@ -588,6 +611,12 @@
 			
 			echo "Setting up cron for every 30 minutes to fetch IMAP email..."
 			echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 5 minutes to send activities to webhook..."
+			echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 5 minutes to send email notification to past due..."
+			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
 			
 			echo "Reset php-fpm (use unix socket mode)..."
 			sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf
