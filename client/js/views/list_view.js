@@ -235,17 +235,22 @@ App.ListView = Backbone.View.extend({
         var list_id = self.model.id;
         var bool = $('.js-list-subscribed-' + list_id).hasClass('hide');
         var data = $(e.target).serializeObject();
-        self.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '.json';
-        self.model.save(data, {
-            patch: true,
-            success: function(model, response) {
-                self.model.collection.board.attributes.lists.forEach(function(list) {
-                    if (list.id === parseInt(list_id)) {
-                        list.name = data.name;
-                    }
-                });
-            }
-        });
+        if (data.name === self.model.attributes.name) {
+            $(e.target).addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
+            $('#js-show-list-actions-' + self.model.id).removeClass('hide');
+        } else {
+            self.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '.json';
+            self.model.save(data, {
+                patch: true,
+                success: function(model, response) {
+                    self.model.collection.board.attributes.lists.forEach(function(list) {
+                        if (list.id === parseInt(list_id)) {
+                            list.name = data.name;
+                        }
+                    });
+                }
+            });
+        }
         if (bool) {
             $('.js-list-subscribed-' + list_id).addClass('hide');
         } else {
