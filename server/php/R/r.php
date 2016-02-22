@@ -1862,6 +1862,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         $r_post['freshness_ts'] = date('Y-m-d h:i:s');
         $r_post['type'] = 'add_comment';
+		if (empty($r_post['user_id'])) {
+			$r_post['user_id'] = $authUser['id'];
+		}
         break;
 
     case '/boards/?/lists/?/cards/?/card_subscribers':
