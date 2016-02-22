@@ -1242,7 +1242,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $val_arr = array(
             $r_post['email']
         );
-        $log_user = executeQuery('SELECT id, role_id, password, last_activity_id, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
+        $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);  
         if (LDAP_LOGIN_ENABLED && (empty($log_user) || (!empty($log_user) && $log_user['is_ldap'] == 1))) {
             $check_user = ldapAuthenticate($r_post['email'], $r_post['password']);
             if (!empty($check_user['User']) && $check_user['User']['is_username_exits'] && $check_user['User']['is_password_matched'] && isset($check_user['User']['email']) && !empty($check_user['User']['email'])) {
@@ -1322,22 +1322,21 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $board_ids[] = $boards_user['board_id'];
                 }
             }
-            $notify_val_arr = array(
+            $notify_val_arr = array( 
                 $user['last_activity_id'],
                 '{' . implode(',', $board_ids) . '}'
             );
             $notify_count = executeQuery('SELECT max(id) AS last_activity_id, count(a.*) AS notify_count FROM activities a  WHERE a.id > $1 AND board_id = ANY ($2) ', $notify_val_arr);
             $notify_count['last_activity_id'] = (!empty($notify_count['last_activity_id'])) ? $notify_count['last_activity_id'] : $user['last_activity_id'];
-            $user['unread_activity_id'] = $log_user['last_activity_id'];
-            $user = array_merge($user, $notify_count);
-            $response['user'] = $user;
+            $user = array_merge($user, $notify_count);  
+            $response['user'] = $user;  
             $response['user']['organizations'] = json_decode($user['organizations'], true);
         } else {
             if (!empty($ldap_error)) {
-                $response = array(
+                $response = array(  
                     'error' => 'ldap_error'
                 );
-            } else {
+            } else {  
                 $response = array(
                     'error' => 'Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'
                 );
