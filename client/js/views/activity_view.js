@@ -26,7 +26,17 @@ App.ActivityView = Backbone.View.extend({
         }
         _.bindAll(this, 'render', 'undo', 'undo_all');
         this.type = options.type;
-        this.board = options.board;
+        if (!_.isUndefined(options.board)) {
+            this.board = options.board;
+        }
+        if (!_.isUndefined(this.model.board_users)) {
+            var board_user_role_id = this.model.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(board_user_role_id)) {
+                this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+            }
+        }
         emojify.run();
     },
     converter: new Showdown.converter(),
@@ -75,7 +85,8 @@ App.ActivityView = Backbone.View.extend({
             activity: this.model,
             type: this.type,
             converter: this.converter,
-            current_user_can_undo_it: current_user_can_undo_it
+            current_user_can_undo_it: current_user_can_undo_it,
+            board: this.board
         }));
         if (!_.isEmpty(this.model)) {
             this.$el.addClass('js-list-activity-' + this.model.attributes.id);

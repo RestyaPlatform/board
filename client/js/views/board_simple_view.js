@@ -58,13 +58,6 @@ App.BoardSimpleView = Backbone.View.extend({
      *
      */
     render: function() {
-        if (this.model !== null && this.model.attributes.users !== null) {
-            for (i = 0; i < this.model.attributes.users.length; i++) {
-                if (authuser.user.id == this.model.attributes.users[i].user_id) {
-                    this.model.attributes.is_admin = (parseInt(this.model.attributes.users[i].is_admin) === 1) ? 1 : 0;
-                }
-            }
-        }
         this.$el.html(this.template({
             board: this.model,
             message: this.message,

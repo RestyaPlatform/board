@@ -50,7 +50,7 @@ App.BoardMemberAddSearchResultView = Backbone.View.extend({
         var self = this;
         board_user.set('board_id', this.board.attributes.id);
         board_user.set('user_id', this.model.attributes.id);
-        board_user.set('is_admin', 0);
+        board_user.set('board_user_role_id', 2);
         board_user.set(this.model.toJSON());
         delete board_user.attributes.id;
         this.$el.remove();
@@ -58,10 +58,10 @@ App.BoardMemberAddSearchResultView = Backbone.View.extend({
         board_user.save({
             user_id: this.model.attributes.id,
             board_id: this.board.attributes.id,
-            is_admin: 0
+            board_user_role_id: 2
         }, {
             success: function(model, response) {
-                response.boards_users.is_admin = 0;
+                response.boards_users.board_user_role_id = 2;
                 response.boards_users.user_id = parseInt(response.boards_users.user_id);
                 board_user.set(response.boards_users);
                 self.board.board_users.add(board_user);

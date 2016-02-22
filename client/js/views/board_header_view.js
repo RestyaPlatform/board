@@ -417,9 +417,11 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showArchivedCardsList: function() {
-        if (!_.isEmpty(role_links.where({
-                slug: 'view_archived_cards'
-            }))) {
+        var self = this;
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
+                slug: 'view_archived_cards',
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })))) {
             var el = this.$el;
             var filtered_cards = this.model.cards.where({
                 is_archived: 1
@@ -430,6 +432,8 @@ App.BoardHeaderView = Backbone.View.extend({
             if (!_.isEmpty(filtered_cards)) {
                 $('.js-delete-all-archived-cards-confirm').removeClass('hide');
                 _.each(filtered_cards, function(card) {
+                    card.acl_links = self.model.acl_links;
+                    card.board_users = self.model.board_users;
                     el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                         model: card
                     }).el);
@@ -450,9 +454,10 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showFilteredArchivedCardsList: function(e) {
-        if (!_.isEmpty(role_links.where({
-                slug: 'view_archived_cards'
-            }))) {
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
+                slug: 'view_archived_cards',
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })))) {
             var el = this.$el;
             var search_q = $(e.currentTarget).val();
             var filtered_cards = '';
@@ -1054,11 +1059,11 @@ App.BoardHeaderView = Backbone.View.extend({
     },
     renderAdminBoardUsers: function() {
         var admins = this.model.board_users.filter(function(normal_user) {
-            return parseInt(normal_user.attributes.is_admin) === 1;
+            return parseInt(normal_user.attributes.board_user_role_id) === 1;
         });
         this.model.admin_board_users = admins;
         var normal_users = this.model.board_users.filter(function(normal_user) {
-            return parseInt(normal_user.attributes.is_admin) === 0;
+            return parseInt(normal_user.attributes.board_user_role_id) != 1;
         });
         this.model.normal_board_users = normal_users;
         this.render();
@@ -1089,6 +1094,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.board_users.sortBy('is_admin');
         this.model.board_users.each(function(board_user) {
             is_admin = (parseInt(board_user.attributes.is_admin) === 1) ? 1 : 0;
+            board_user.board_user_roles = self.model.board_user_roles;
             self.$('.js-get-board-member-lists-response').append(new App.BoardUsersView({
                 model: board_user,
                 is_admin: is_admin
@@ -1252,9 +1258,10 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showArchivedListLists: function() {
-        if (!_.isEmpty(role_links.where({
-                slug: 'view_archived_lists'
-            }))) {
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
+                slug: 'view_archived_lists',
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })))) {
             var el = this.$el;
 
             el.find('.js-archived-items-container').html(new App.ArchivedListsView({
@@ -1266,6 +1273,7 @@ App.BoardHeaderView = Backbone.View.extend({
             if (!_.isEmpty(filtered_lists)) {
                 $('.js-delete-all-archived-lists-confirm').removeClass('hide');
                 _.each(filtered_lists, function(list) {
+                    list.board = self.model;
                     el.find('.js-archived-cards-container').append(new App.ArchivedListView({
                         model: list
                     }).el);
@@ -1286,9 +1294,10 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showFilteredArchivedListLists: function(e) {
-        if (!_.isEmpty(role_links.where({
-                slug: 'view_archived_lists'
-            }))) {
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
+                slug: 'view_archived_lists',
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })))) {
             var el = this.$el;
             var search_q = $(e.currentTarget).val();
             var filtered_lists = '';

@@ -1,5 +1,5 @@
 <div class="panel-body">
-  <% if(!_.isEmpty(role_links.where({slug: "view_card_labels"}))){  %>
+  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.board.acl_links.where({slug: "view_card_labels", board_user_role_id: parseInt(card.board_user_role_id)})))) {  %>
   <div class="clearfix js-card-label-section-<%- card.attributes.id %>">
   <%
   	card.labels.each(function(label) {

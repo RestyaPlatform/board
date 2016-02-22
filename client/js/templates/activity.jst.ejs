@@ -90,11 +90,11 @@
 				<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all" && (_.isUndefined(activity.from_footer))) { %>
 					<div class="js-acticity-action-<%- activity.attributes.id %>">
 						<ul class="list-inline col-xs-offset-0">
-						<% if(!_.isEmpty(role_links.where({slug: "edit_comment"}))){ %>
+						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_comment", board_user_role_id: parseInt(activity.board_user_role_id)})))){ %>
 							<li><a title="Edit" class="js-show-edit-activity js-edit-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"  data-activity-temp-id="<%- activity.attributes.temp_id %>"><i class="icon-edit"></i><%- i18next.t("Edit") %></a></li>
 						<% } %> 
 							<li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-repeat"></i><%- i18next.t("Reply") %></a></li>
-						<% if(!_.isEmpty(role_links.where({slug: "delete_comment"}))){ %>								
+						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "delete_comment", board_user_role_id: parseInt(activity.board_user_role_id)})))){ %>
 								<li class="dropdown">
 									<a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete" data-toggle="dropdown" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-remove"></i><%- i18next.t("Delete") %></a>
 									<ul class="dropdown-menu arrow arrow-right">
@@ -106,7 +106,7 @@
 						</ul>
 					</div>
 				<% } else if(activity.attributes.revisions != null && activity.attributes.revisions != "" && (!_.isUndefined(authuser.user) && parseInt(authuser.user.id) == 1 || current_user_can_undo_it == true )){ %>
-					<% if(!_.isEmpty(role_links.where({slug: "undo_activity"}))){ %>
+					<% if(!_.isUndefined(board) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "undo_activity", board_user_role_id: parseInt(activity.board_user_role_id)})))){ %>
 						<% if(!_.isUndefined(activity.from_footer)) { %>
 							<div class="js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline col-xs-offset-0"><li><a title="Undo" class="js-undo2 pull-left" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>							
 						<% } else { %>	

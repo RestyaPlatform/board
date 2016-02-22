@@ -49,5 +49,6 @@ App.Board = Backbone.Model.extend({
         this.checklists = new App.CardCheckListCollection();
         this.checklist_items = new App.CheckListItemCollection();
         this.boards_stars = new App.BoardStarCollection();
+        this.acl_links = new App.AclBoardLinksCollection();
     }
 });
