@@ -89,6 +89,9 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.filterField = (!_.isUndefined(e)) ? $(e.currentTarget).data('filter') : _this.filterField;
         var boards = new App.BoardCollection();
+        if (!_.isUndefined(e)) {
+            _this.current_page = 1;
+        }
         boards.url = api_url + 'boards.json?page=' + _this.current_page + '&filter=' + _this.filterField;
         app.navigate('#/' + 'boards/list?page=' + _this.current_page + '&filter=' + _this.filterField, {
             trigger: false,
@@ -109,7 +112,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
                     $('.js-my-boards').html('<tr><td class="text-center" colspan="12">No record found</td></tr>');
                 }
                 $('.js-filter-list').children().removeClass('active');
-                $(e.currentTarget).parent().addClass('active');
+                $("[data-filter=" + _this.filterField + "]").parent().addClass('active');
                 $('.js-my-boards').find('.timeago').timeago();
                 $('.pagination-boxes').unbind();
                 $('.pagination-boxes').pagination({
@@ -120,7 +123,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
                         event.preventDefault();
                         if (page) {
                             _this.current_page = page;
-                            _this.sortBoard();
+                            _this.filterBoard();
                         }
                     }
                 });
@@ -139,12 +142,20 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         _this.sortField = (!_.isUndefined(e)) ? $(e.currentTarget).data('field') : _this.sortField;
         _this.sortDirection = (!_.isUndefined(e)) ? $(e.currentTarget).data('direction') : _this.sortDirection;
         var boards = new App.BoardCollection();
-        boards.setSortField(_this.sortField, _this.sortDirection);
-        boards.url = api_url + 'boards.json?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection;
-        app.navigate('#/' + 'boards/list?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection, {
-            trigger: false,
-            trigger_function: false,
-        });
+        if (!_.isUndefined(_this.sortDirection) && !_.isUndefined(_this.sortField)) {
+            boards.setSortField(_this.sortField, _this.sortDirection);
+            boards.url = api_url + 'boards.json?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection;
+            app.navigate('#/' + 'boards/list?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection, {
+                trigger: false,
+                trigger_function: false,
+            });
+        } else {
+            boards.url = api_url + 'boards.json?page=' + _this.current_page;
+            app.navigate('#/' + 'boards/list?page=' + _this.current_page, {
+                trigger: false,
+                trigger_function: false,
+            });
+        }
         if (!_.isUndefined(e)) {
             if ($(e.currentTarget).data('direction') == 'desc') {
                 $(e.currentTarget).data('direction', 'asc');
