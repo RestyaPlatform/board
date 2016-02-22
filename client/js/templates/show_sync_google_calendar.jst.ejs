@@ -12,7 +12,7 @@
 			<label><%- i18next.t('iCal Feed URL') %></label>
 			<input type="text" readonly="readonly" value="" class="form-control input-sm js-syn-calendar-response" id="js-select-google-sync-url">
 			<p>
-				<%= i18next.t('Sync with Google Calendar: To add iCal feed URL in Google calendar please refer, %s', { postProcess: 'sprintf', sprintf: ['<a href="https://support.google.com/calendar/answer/37100" target="_blank">https://support.google.com/calendar/answer/37100</a>']}) %>
+				<%= i18next.t('Sync with Google Calendar: To add iCal feed URL in Google calendar please refer, %s', { postProcess: 'sprintf', sprintf: ['<a class="text-wrap" href="https://support.google.com/calendar/answer/37100" target="_blank">https://support.google.com/calendar/answer/37100</a>']}) %>
 			</p>
 			<p>
 				<%- i18next.t("NOTE: Changes made in Restyaboard won't instantly update to Google Calendar. We estimate that Google Calendar update their external feeds approximately once per day, but that is dependent on Google Calendar.") %>

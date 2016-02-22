@@ -1,11 +1,9 @@
 <div class="clearfix">
-<% if(!_.isEmpty(role_links.where({slug: "add_organization_user"}))){ %>
+<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(organization.acl_links.where({slug: "add_organization_user",organization_user_role_id: parseInt(organization.organization_user_role_id)})))) { %>
 <div>
 	<ul class="list-inline clearfix">
 		<li class="dropdown pull-right">
-			<% if(!_.isUndefined(authuser.user) && is_admin){%>
-				<a class="btn btn-primary dropdown-toggle js-add-member-dropdown" data-toggle="dropdown" href="#"><span><i class="icon-plus"></i></span><span><%- i18next.t('Add Member') %></span></a>
-			<% } %>
+			<a class="btn btn-primary dropdown-toggle js-add-member-dropdown" data-toggle="dropdown" href="#"><span><i class="icon-plus"></i></span><span><%- i18next.t('Add Member') %></span></a>
 			<ul class="dropdown-menu arrow arrow-right">
 				<li class="js-add-member-dropdown-load js-dropdown-popup dropdown-popup js-organization-member-search-response">
 					<div>
@@ -35,28 +33,26 @@
 	<ul>
 </div>
 <% } %>
-<% if(!_.isEmpty(role_links.where({slug: "view_organization_user_listing"}))){ %>
+<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "view_organization_user_listing",organization_user_role_id: parseInt(organization.organization_user_role_id)})))) { %>
 <div>
 	<table class="table table-striped table-hover">
 		<tbody>
-			<%  if(!_.isEmpty(organizations_users)){ %>
+			<%  if(!_.isEmpty(organizations_users)){
+			var organization_user_roles = ["OWNER","EDITOR","VIEWER"];
+			%>
 				<% _.each(organizations_users.models, function(organizations_user){ %>
 				<tr>
 					<td>
 						<div class="clearfix">
-						<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
-								<a href="#/user/<%-organizations_user.attributes.user_id %>" >
-						<% } %><span class="pull-left navbar-btn">
-									<% if(!_.isEmpty(organizations_user.attributes.profile_picture_path)) {
-										 var profile_picture_path = organizations_users.showImage('User', organizations_user.attributes.user_id, 'small_thumb' );
-									%>
-										<img src="<%=profile_picture_path%>" alt="[Image: <%-organizations_user.attributes.username %>]" data-toggle="tooltip" data-placement="bottom" data-original-title="<%- organizations_user.attributes.username %>" class="img-rounded img-responsive">
-									<% } else {%>
-										<i data-toggle="tooltip" data-placement="bottom" data-original-title="<%- organizations_user.attributes.username %>" class="avatar avatar-color-194 img-rounded"><%- organizations_user.attributes.initials %></i>									
-									<% } %></span>
-							<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
-								</a>							
+						<span class="pull-left navbar-btn">
+							<% if(!_.isEmpty(organizations_user.attributes.profile_picture_path)) {
+								 var profile_picture_path = organizations_users.showImage('User', organizations_user.attributes.user_id, 'small_thumb' );
+							%>
+								<img src="<%=profile_picture_path%>" alt="[Image: <%-organizations_user.attributes.username %>]" data-toggle="tooltip" data-placement="bottom" data-original-title="<%- organizations_user.attributes.username %>" class="img-rounded img-responsive">
+							<% } else {%>
+								<i data-toggle="tooltip" data-placement="bottom" data-original-title="<%- organizations_user.attributes.username %>" class="avatar avatar-color-194 img-rounded"><%- organizations_user.attributes.initials %></i>									
 							<% } %>
+						</span>
 							<div class="pull-left col-xs-5">
 								<h4 class="list-group-item-text list-group-item-heading"><%- organizations_user.attributes.full_name %> (<%- organizations_user.attributes.username %>)</h4>
 								<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
@@ -90,29 +86,30 @@
 										<li class="navbar-btn">											
 										<a title="<%- i18next.t('Activities') %>" class="btn btn-default js-all-user-activities" href="#" data-user_id="<%- organizations_user.attributes.user_id %>"><%- i18next.t('Activities') %></a>
 										</li>
-										<% if(!_.isEmpty(role_links.where({slug: "edit_organization_user"}))){ %>
+										<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "edit_organization_user",organization_user_role_id: parseInt(organization.organization_user_role_id)})))) { %>
 										<% if(!_.isUndefined(authuser.user)){%>
 										<li class="navbar-btn">
 											<div class="btn-group text-left navbar-btn dropdown">
-												<button type="button" class="btn btn-default dropdown-toggle js-show-organization-member-permission-form js-change-permission-content-<%- organizations_user.attributes.id %>" data-toggle="dropdown" aria-expanded="false" data-organizations_user_id="<%- organizations_user.attributes.id %>"><% if(organizations_user.attributes.is_admin) {%><%- i18next.t('Owner') %><% } else { %><%- i18next.t('Member') %><% }%></button>											 
+												<button type="button" class="btn btn-default dropdown-toggle js-show-organization-member-permission-form js-change-permission-content-<%- organizations_user.attributes.id %>" data-toggle="dropdown" aria-expanded="false" data-organizations_user_id="<%- organizations_user.attributes.id %>"><%- organization_user_roles[organizations_user.attributes.organization_user_role_id - 1]	%></button>
 												<button type="button" class="btn btn-default dropdown-toggle js-show-organization-member-permission-form" data-toggle="dropdown" aria-expanded="false" data-organizations_user_id="<%- organizations_user.attributes.id %>">
 													<span class="caret"></span>
 													<span class="sr-only"><%- i18next.t('Toggle Dropdown') %></span>
 												</button>
-												<% if(is_admin) { %>
-													<ul class="dropdown-menu arrow arrow-right js-show-organization-member-permission-form-response">
-													</ul>
-												<% } %>
+												<ul class="dropdown-menu arrow arrow-right js-show-organization-member-permission-form-response">
+												</ul>
 											</div>
 										</li>
 										<li class="dropdown navbar-btn text-left js-show-confirm-delete-organization-member-dropdown">
 											<% 
-											if(!_.isEmpty(role_links.where({slug: "remove_organization_user"}))){
-											if(!_.isUndefined(authuser.user) && organizations_user.attributes.user_id == authuser.user.id) {%>
-													<%  if((organizations_user.attributes.is_admin && organizations_users.where( {is_admin : 1}).length == 1) || organizations_users.length == 1) {%>
-												<div class="btn btn-primary" disabled="disabled"><span><i class="icon-remove"></i></span><span><%- i18next.t('Leave') %></span></div>
-													<% } else if((organizations_user.attributes.is_admin && organizations_users.where( {is_admin : 1}).length > 1) || (!organizations_user.attributes.is_admin && organizations_users.length > 1)){ %>
-													<a class="btn btn-primary dropdown-toggle js-show-confirm-delete-organization-member" data-organizations_user_id="<%- organizations_user.attributes.id %>" data-toggle="dropdown" href="#"><span><i class="icon-remove"></i></span><span><%- i18next.t('Leave') %></span></a>
+											if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "remove_organization_user",organization_user_role_id: parseInt(organization.organization_user_role_id)})))){%>
+													<a class="btn btn-primary dropdown-toggle js-show-confirm-delete-organization-member" data-organizations_user_id="<%- organizations_user.attributes.id %>" data-toggle="dropdown" href="#"><span><i class="icon-remove"></i></span>
+													<span>
+													<% if(!_.isUndefined(authuser.user) && organizations_user.attributes.user_id == authuser.user.id) { %>
+														<%- i18next.t('Leave') %>
+													<% } else { %>
+														<%- i18next.t('Remove') %>
+													<% } %>
+													</span></a>
 													<ul class="dropdown-menu js-dropdown-popup arrow arrow-right">
 														<li class="clearfix">
 															<div class="col-xs-12 text-center clearfix">	
@@ -121,30 +118,10 @@
 														</li>
 														<li class="js-show-confirm-delete-organization-member-response divider"></li>
 													</ul>
-													<% } %>
-											<% } else if(!_.isUndefined(authuser.user) && organizations_user.attributes.user_id != authuser.user.id) {%>
-													<%  if((organizations_user.attributes.is_admin && organizations_users.where( {is_admin : 1}).length == 1) || organizations_users.length == 1) {%>
-														<div class="btn btn-primary" disabled="disabled"><span><i class="icon-remove"></i></span><span><%- i18next.t('Remove') %></span></div>
-													<% } else if((organizations_user.attributes.is_admin && organizations_users.where( {is_admin : 1}).length > 1) || organizations_users.length > 1) {%>
-														<a class="btn btn-primary dropdown-toggle js-show-confirm-delete-organization-member" data-organizations_user_id="<%- organizations_user.attributes.id %>" data-toggle="dropdown" href="#"><span><i class="icon-remove"></i></span><span><%- i18next.t('Remove') %></span></a>
-													<ul class="dropdown-menu js-dropdown-popup arrow arrow-right">
-														<li class="clearfix">
-															<div class="col-xs-12 text-center clearfix">	
-																<span class="col-xs-10"><strong><%- i18next.t('Remove Member') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
-															</div>
-														</li>
-														<li class="js-show-confirm-delete-organization-member-response divider"></li>
-													</ul>
-
-													<% } %>
-
-											<% }} %>
+											<% } %>
 										</li>
-										<% } else{ %>
-											<li class="navbar-btn">											
-											<a title="<% if(organizations_user.attributes.is_admin) {%><%- i18next.t('Owner') %><% } else { %><%- i18next.t('Member') %><% }%>" class="btn btn-default js-no-action" href="#"><% if(organizations_user.attributes.is_admin) {%><%- i18next.t('Owner') %><% } else { %><%- i18next.t('Member') %><% }%></a>
-											</li>
-										<%} }%>
+										<% } %>
+										<%}%>
 									</ul>
 								</div>
 						</div>

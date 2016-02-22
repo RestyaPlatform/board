@@ -6,7 +6,8 @@
   <meta name="description" content="Restyaboard powered kanban board. Download open source from http://restya.com/board/">
   <meta name="keywords" content="Restyaboard, http://restya.com/board/">
   <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.1/html5shiv.js"></script><![endif]-->
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
+  <link rel="manifest" href="manifest.json">
   <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
   <!-- build:css css/default.cache.css -->
   <link rel="stylesheet" type="text/css" href="css/fullcalendar.css">
@@ -31,7 +32,7 @@
     <main id="content" class="container-fluid">
      <div id="life"></div>
     </main>
-    <div class="text-center"><a class="company hide" href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator">Powered by Restyaboard</a></div>
+    <div class="text-center"><a target="_blank" class="company hide" href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator">Powered by Restyaboard</a></div>
    </div>
    <footer id="footer" class="navbar-fixed-bottom container-fluid footer"></footer>
   </div>
@@ -125,6 +126,10 @@
   <script src="js/models/app.js"></script>
   <script src="js/models/oauth_client.js"></script>
   <script src="js/models/oauth_application.js"></script>
+  <script src="js/models/acl_board_links.js"></script>
+  <script src="js/models/board_user_roles.js"></script>
+  <script src="js/models/acl_organization_links.js"></script>
+  <script src="js/models/organization_user_roles.js"></script>
   <script src="js/collections/user_collection.js"></script>
   <script src="js/collections/attachment_collection.js"></script>
   <script src="js/collections/list_collection.js"></script>
@@ -156,6 +161,10 @@
   <script src="js/collections/app_collection.js"></script>
   <script src="js/collections/oauth_client_collection.js"></script>
   <script src="js/collections/oauth_application_collection.js"></script>
+  <script src="js/collections/acl_board_links_collection.js"></script>
+  <script src="js/collections/organization_user_roles_collection.js"></script>
+  <script src="js/collections/acl_organization_links_collection.js"></script>
+  <script src="js/collections/board_user_roles_collection.js"></script>
   <script src="js/templates/templates.js"></script>
   <script src="js/views/application_view.js"></script>
   <script src="js/views/admin_user_add_view.js"></script>
@@ -205,6 +214,7 @@
   <script src="js/views/archived_items_view.js"></script>
   <script src="js/views/board_background_view.js"></script>
   <script src="js/views/board_filter_view.js"></script>
+  <script src="js/views/board_labels_view.js"></script>
   <script src="js/views/board_user_activity_view.js"></script>
   <script src="js/views/board_user_remove_confirm_view.js"></script>
   <script src="js/views/card_copy_view.js"></script>
@@ -214,6 +224,7 @@
   <script src="js/views/move_list_view.js"></script>
   <script src="js/views/copy_list_view.js"></script>
   <script src="js/views/list_delete_confirm_view.js"></script>
+  <script src="js/views/label_delete_confirm_view.js"></script>
   <script src="js/views/list_actions_view.js"></script>
   <script src="js/views/card_labels_form_view.js"></script>
   <script src="js/views/card_positions_form_view.js"></script>
@@ -322,6 +333,12 @@
   <script src="js/views/app_setting_view.js"></script>
   <script src="js/views/email_to_board_setting_view.js"></script>
   <script src="js/views/qr_code_view.js"></script>
+  <script src="js/views/board_labels_view.js"></script>
+  <script src="js/views/label_delete_confirm_view.js"></script>
+  <script src="js/views/subscribe_board_confirm_view.js"></script>
+  <script src="js/views/unsubscribe_board_confirm_view.js"></script>
+  <script src="js/views/archive_card_delete_confirm_view.js"></script>
+  <script src="js/views/archive_list_delete_confirm_view.js"></script>
   <script src="js/common.js"></script>
   <script src="js/application.js"></script>
   <!-- endbuild -->

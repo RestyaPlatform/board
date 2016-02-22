@@ -251,13 +251,13 @@ App.ApplicationView = Backbone.View.extend({
             changeTitle(i18next.t('Role Settings'));
         }
         if (this.model == 'oauth_clients') {
-            changeTitle(i18next.t('Oauth clients'));
+            changeTitle(i18next.t('Developer applications'));
         }
         if (this.model == 'add_oauth_client') {
-            changeTitle(i18next.t('Add Oauth Client'));
+            changeTitle(i18next.t('Register a new OAuth application'));
         }
         if (this.model == 'edit_oauth_client') {
-            changeTitle(i18next.t('Edit Oauth Client'));
+            changeTitle(i18next.t('Edit OAuth application'));
         }
         if (this.model == 'apps' || this.model == 'app_settings') {
             changeTitle(i18next.t('Apps'));
@@ -304,6 +304,7 @@ App.ApplicationView = Backbone.View.extend({
                     } else {
                         Board.authuser = self.authuser;
                         viewed_board = Board;
+                        Board.board_user_roles = response.board_user_roles;
                         $('#content').html(new App.BoardView({
                             model: Board
                         }).el);
@@ -402,10 +403,7 @@ App.ApplicationView = Backbone.View.extend({
                     });
                 } else {
                     Organization.boards.add(Organization.attributes.boards_listing);
-                    $('#header').html(new App.OrganizationHeaderView({
-                        model: Organization,
-                        type: self.page_view_type
-                    }).el);
+                    Organization.organization_user_roles = response.organization_user_roles;
                     $('#content').html(new App.OrganizationsView({
                         model: Organization,
                         type: self.page_view_type
@@ -809,10 +807,22 @@ App.ApplicationView = Backbone.View.extend({
                         acl_links.reset(response.acl_links);
                         var roles = new App.RoleCollection();
                         roles.reset(response.roles);
+                        var acl_board_links = new App.AclBoardLinksCollection();
+                        acl_board_links.reset(response.acl_board_links);
+                        var acl_organization_links = new App.AclOrganizationLinksCollection();
+                        acl_organization_links.reset(response.acl_organization_links);
+                        var organization_user_roles = new App.OrganizationUserRolesCollection();
+                        organization_user_roles.reset(response.organization_user_roles);
+                        var board_user_roles = new App.BoardUserRolesCollection();
+                        board_user_roles.reset(response.board_user_roles);
                         $('#js-navbar-default').remove();
                         $('#content').html(new App.RoleSettingsView({
                             model: acl_links,
-                            roles: roles
+                            roles: roles,
+                            acl_board_links: acl_board_links,
+                            board_user_roles: board_user_roles,
+                            acl_organization_links: acl_organization_links,
+                            organization_user_roles: organization_user_roles
                         }).el);
                     }
                 });
@@ -830,7 +840,7 @@ App.ApplicationView = Backbone.View.extend({
                     }
                 });
             } else if (page.model == 'oauth_clients') {
-                changeTitle(i18next.t('Oauth Clients'));
+                changeTitle(i18next.t('Developer applications'));
                 var oauth_clients = new App.OauthClientCollection();
                 oauth_clients.url = api_url + 'oauth/clients.json';
                 oauth_clients.fetch({
@@ -844,14 +854,14 @@ App.ApplicationView = Backbone.View.extend({
                     }
                 });
             } else if (page.model == 'add_oauth_client') {
-                changeTitle(i18next.t('Add Oauth Client'));
+                changeTitle(i18next.t('Register a new OAuth application'));
                 var oauth_client = new App.OauthClient();
                 this.pageView = new App.OauthClientAddView({
                     model: oauth_client
                 });
                 $('#content').html(this.pageView.el);
             } else if (page.model == 'edit_oauth_client') {
-                changeTitle(i18next.t('Edit Oauth Client'));
+                changeTitle(i18next.t('Edit OAuth application'));
                 this.pageView = new App.OauthClientEditView({
                     id: page.page_view_id
                 });

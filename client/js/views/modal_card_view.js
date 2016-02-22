@@ -91,12 +91,15 @@ App.ModalCardView = Backbone.View.extend({
         'keypress input[type=text]': 'onEnter',
         'click .js-show-emoji-list': 'showEmojiList',
         'click .js-comment-add-emoji': 'addEmoji',
+        'click #modal-comments': 'showActivity',
+        'click #modal-activities': 'showActivity',
     },
     /**
      * Constructor
      * initialize default values and actions
      */
-    initialize: function() {
+    initialize: function(options) {
+        this.initialState = options.initialState;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
@@ -217,8 +220,37 @@ App.ModalCardView = Backbone.View.extend({
         this.$el.find('.js-comment').val(this.$el.find('.js-comment').val() + ':' + target.text() + ': ');
     },
     /**
-     * addCardLabel()
-     * save card labels
+     * hideActivity()
+     * Hide activity and comment
+     * @param e
+     * @type Object(DOM event)
+     */
+    showActivity: function(e) {
+        e.preventDefault();
+        var i = 0;
+        var hide_class = '';
+        var target = $(e.currentTarget);
+        $('#' + target.attr('id')).toggleClass('active');
+        if (!$('#modal-comments').hasClass('active')) {
+            i++;
+            hide_class = hide_class + '.modal-comments, ';
+        }
+        if (!$('#modal-activities').hasClass('active')) {
+            i++;
+            hide_class = hide_class + '.modal-activities, ';
+        }
+        hide_class = hide_class.substring(0, hide_class.lastIndexOf(', '));
+        if (i === 2 || i === 0) {
+            $('.modal-comments, .modal-activities').parent('li').removeClass('hide');
+        }
+        if (i !== 2) {
+            $(hide_class).parent('li').addClass('hide');
+        }
+        return false;
+    },
+    /** 
+     * addCardLabel()  
+     * save card labels 
      * @param e
      * @type Object(DOM event)
      * @return false
@@ -305,8 +337,10 @@ App.ModalCardView = Backbone.View.extend({
                     if (!_.isUndefined(response.activity) && response.activity !== false) {
                         var activity = new App.Activity();
                         activity.set(response.activity);
+                        activity.board_users = self.model.board_users;
                         var view = new App.ActivityView({
-                            model: activity
+                            model: activity,
+                            board: self.model.list.collection.board
                         });
                         self.model.activities.unshift(activity);
                         var view_activity = $('#js-card-activities-' + self.model.id);
@@ -342,7 +376,8 @@ App.ModalCardView = Backbone.View.extend({
         });
         labels = labels.substr(0, labels.length - 1);
         $('.js-show-card-label-form-response').html(new App.CardLabelFormView({
-            model: labels
+            model: labels,
+            card: this.model
         }).el);
         $('.inputCardLabel', doc).select2({
             tags: _.uniq(self.model.list.collection.board.labels.pluck('name')),
@@ -362,13 +397,10 @@ App.ModalCardView = Backbone.View.extend({
      * @type Object(DOM event)
      */
     editCardDueDateForm: function(e) {
-        var date_time = this.model.attributes.due_date.split('T');
-        date_time = date_time[0].split(' ');
         $('.js-edit-card-due-date-form-response').html(new App.CardDuedateFromView({
             model: this.model
         }).el);
         $('.js-card-duedate-edit-' + this.model.id).datetimepicker({
-            defaultDate: date_time[0],
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayBtn: true,
@@ -380,7 +412,7 @@ App.ModalCardView = Backbone.View.extend({
             pickTime: false
         });
         $('.js-card-duetime-edit-' + this.model.id).datetimepicker({
-            format: 'hh:ii',
+            format: 'hh:ii:ss',
             autoclose: true,
             showMeridian: false,
             startView: 1,
@@ -396,20 +428,10 @@ App.ModalCardView = Backbone.View.extend({
      * @type Object(DOM event)
      */
     showCardDueDateForm: function(e) {
-        var date = '';
-        var time = '';
-        if (!_.isUndefined(this.model.attributes.due_date) && this.model.attributes.due_date !== null && this.model.attributes.due_date !== 'NULL') {
-            var date_time = this.model.attributes.due_date.split('T');
-            date_time = date_time[0].split(' ');
-            date = date_time[0];
-            time = date_time[1];
-        }
-
         $('.js-show-card-due-date-form-response').html('').html(new App.CardDuedateFromView({
             model: this.model
         }).el);
         $('.js-card-duedate-edit-' + this.model.id).datetimepicker({
-            defaultDate: date,
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayBtn: true,
@@ -424,7 +446,7 @@ App.ModalCardView = Backbone.View.extend({
             $(this).blur();
         });
         $('.js-card-duetime-edit-' + this.model.id).datetimepicker({
-            format: 'hh:ii',
+            format: 'hh:ii:ss',
             autoclose: true,
             showMeridian: false,
             startView: 1,
@@ -462,7 +484,7 @@ App.ModalCardView = Backbone.View.extend({
     showMemberSearch: function(e) {
         var q = $(e.target).val();
         var keyCode = e.which || e.keyCode;
-        if (keyCode === 50) {
+        if (keyCode === 50 && (e.shiftKey || e.metaKey)) {
             this.autoMentionSelectionStart = e.target.selectionStart;
             $('.js-show-members').parents('.dropdown:first').addClass('open');
         } else if (this.autoMentionSelectionStart) {
@@ -551,6 +573,7 @@ App.ModalCardView = Backbone.View.extend({
                         if (!_.isUndefined(response.activity)) {
                             var activity = new App.Activity();
                             activity.set(response.activity);
+                            activity.board_users = self.model.board_users;
                             var view = new App.ActivityView({
                                 model: activity,
                                 board: self.model.list.collection.board
@@ -563,6 +586,19 @@ App.ModalCardView = Backbone.View.extend({
                             emojify.run();
                         }
                         self.model.cards.add(self.model);
+                    }
+                    if (!_.isEmpty(data.due_date)) {
+                        self.model.list.collection.board.lists.each(function(list) {
+                            var cards = list.get('cards') || [];
+                            if (!_.isEmpty(cards)) {
+                                _.each(cards, function(card) {
+                                    if (card.id === self.model.id) {
+                                        card.due_date = data.due_date;
+                                    }
+                                });
+                            }
+                        });
+                        self.model.set('due_date', data.start);
                     }
                 }
             });
@@ -728,8 +764,9 @@ App.ModalCardView = Backbone.View.extend({
                 subscribed = ' <span class="icon-eye-open"></span>';
             }
         }
-        var initialState = 'docked';
-        if (trigger_dockmodal) {
+        if (this.initialState) {
+            initialState = this.initialState;
+        } else if (trigger_dockmodal) {
             initialState = 'minimized';
         }
         var doc = $('#js-card-modal-' + this.model.id);
@@ -1017,8 +1054,10 @@ App.ModalCardView = Backbone.View.extend({
                 if (!_.isUndefined(response.activity)) {
                     var activity = new App.Activity();
                     activity.set(response.activity);
+                    activity.board_users = self.model.board_users;
                     var view = new App.ActivityView({
-                        model: activity
+                        model: activity,
+                        board: self.model.list.collection.board
                     });
                     self.model.activities.unshift(activity);
                     var view_activity = $('#js-card-activities-' + self.model.id);
@@ -1061,8 +1100,10 @@ App.ModalCardView = Backbone.View.extend({
                 if (!_.isUndefined(response.activity)) {
                     var activity = new App.Activity();
                     activity.set(response.activity);
+                    activity.board_users = self.model.board_users;
                     var view = new App.ActivityView({
-                        model: activity
+                        model: activity,
+                        board: self.model.list.collection.board
                     });
                     self.model.activities.unshift(activity);
                     var view_activity = $('#js-card-activities-' + self.model.id);
@@ -1374,8 +1415,10 @@ App.ModalCardView = Backbone.View.extend({
                 }
                 var activity = new App.Activity();
                 activity.set(response.activity);
+                activity.board_users = self.model.board_users;
                 var view = new App.ActivityView({
-                    model: activity
+                    model: activity,
+                    board: self.model.list.collection.board
                 });
                 model.set('activities', activity);
                 var view_activity = $('#js-card-activities-' + self.model.id);
@@ -1420,8 +1463,10 @@ App.ModalCardView = Backbone.View.extend({
                 }
                 var activity = new App.Activity();
                 activity.set(response.activity);
+                activity.board_users = self.model.board_users;
                 var view = new App.ActivityView({
-                    model: activity
+                    model: activity,
+                    board: self.model.list.collection.board
                 });
                 model.set('activities', activity);
                 var view_activity = $('#js-card-activities-' + self.model.id);
@@ -1487,10 +1532,9 @@ App.ModalCardView = Backbone.View.extend({
         var attachmentUrl = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/attachments.json?token=' + api_token;
         var options = {
             success: function(files) {
-                var image_link = '';
+                var image_link = [];
                 _.map(files, function(file) {
-                    var thumbnails = _(file.thumbnails).toArray();
-                    image_link = thumbnails;
+                    image_link.push(file.link);
                 });
                 $.ajax({
                     type: 'POST',
@@ -1504,10 +1548,13 @@ App.ModalCardView = Backbone.View.extend({
                     success: function(response) {
                         self.closePopup(e);
                         var card_attachment = new App.CardAttachment();
-                        card_attachment.set(response.card_attachments);
-                        self.model.attachments.unshift(card_attachment);
+                        _.each(response.card_attachments, function(_card_attachment) {
+                            card_attachment.set(_card_attachment);
+                            self.model.attachments.unshift(card_attachment);
+                        });
                         var view = new App.CardAttachmentView({
-                            model: card_attachment
+                            model: card_attachment,
+                            board: self.model.list.collection.board
                         });
                         var view_attachment = self.$('#js-card-attachments-list');
                         view_attachment.find('.timeago').timeago();
@@ -1575,8 +1622,10 @@ App.ModalCardView = Backbone.View.extend({
                 var view_attachment = this.$('#js-card-attachments-list');
                 var activity = new App.Activity();
                 activity.set(response.activity);
+                activity.board_users = self.model.board_users;
                 var view_act = new App.ActivityView({
-                    model: activity
+                    model: activity,
+                    board: self.model.list.collection.board
                 });
                 self.model.activities.unshift(activity);
                 var view_activity = $('#js-card-activities-' + self.model.id);
@@ -1590,11 +1639,13 @@ App.ModalCardView = Backbone.View.extend({
      * display attachments in card
      */
     renderAttachmentsCollection: function() {
+        var self = this;
         var view_attachment = this.$('#js-card-attachments-list');
         view_attachment.html('');
         this.model.attachments.each(function(attachment) {
             var view = new App.CardAttachmentView({
-                model: attachment
+                model: attachment,
+                board: self.model.list.collection.board
             });
             view_attachment.append(view.render().el).find('.timeago').timeago();
             emojify.run();
@@ -1626,9 +1677,10 @@ App.ModalCardView = Backbone.View.extend({
      * display card activities
      */
     renderActivitiesCollection: function() {
-        if (!_.isEmpty(role_links.where({
-                slug: 'view_card_activities'
-            }))) {
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
+                slug: "view_card_activities",
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })))) {
             var self = this;
             var view_activity = this.$('#js-card-activities-' + self.model.id);
             view_activity.html('');
@@ -1638,6 +1690,7 @@ App.ModalCardView = Backbone.View.extend({
                     if (!_.isEmpty(self.model.collection)) {
                         activity.cards.add(self.model.collection.models);
                     }
+                    activity.board_users = self.model.board_users;
                     var view = new App.ActivityView({
                         model: activity,
                         board: self.model.list.collection.board
@@ -1654,9 +1707,10 @@ App.ModalCardView = Backbone.View.extend({
      * display card checklists
      */
     renderChecklistsCollection: function() {
-        if (!_.isEmpty(role_links.where({
-                slug: 'view_checklist_listing'
-            }))) {
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
+                slug: "view_checklist_listing",
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })))) {
             var self = this;
             var view_checklist = this.$('#js-card-checklists');
             view_checklist.html('');
@@ -1828,8 +1882,10 @@ App.ModalCardView = Backbone.View.extend({
                 if (!_.isUndefined(response.activity)) {
                     var activity = new App.Activity();
                     activity.set(response.activity);
+                    activity.board_users = self.model.board_users;
                     var view_act = new App.ActivityView({
-                        model: activity
+                        model: activity,
+                        board: self.model.list.collection.board
                     });
                     self.model.activities.unshift(activity);
                     var view_activity = $('#js-card-activities-' + self.model.id);
@@ -1926,8 +1982,10 @@ App.ModalCardView = Backbone.View.extend({
                 if (!_.isUndefined(response.activity)) {
                     var activity = new App.Activity();
                     activity.set(response.activity);
+                    activity.board_users = self.model.board_users;
                     var view = new App.ActivityView({
-                        model: activity
+                        model: activity,
+                        board: self.model.list.collection.board
                     });
                     self.model.activities.unshift(activity);
                     var view_activity = $('#js-card-activities-' + self.model.id);
@@ -2058,8 +2116,10 @@ App.ModalCardView = Backbone.View.extend({
                     activity.set('initials', authuser.user.initials);
                     self.model.activities.unshift(activity);
                     self.model.list.collection.board.activities.add(activity);
+                    model.board_users = self.model.board_users;
                     var view = new App.ActivityView({
-                        model: model
+                        model: model,
+                        board: self.model.list.collection.board
                     });
                     self.model.activities.unshift(activity);
                     var current_card = self.model.list.collection.board.cards.get(self.model.id);
@@ -2092,6 +2152,8 @@ App.ModalCardView = Backbone.View.extend({
         var activitiy = this.model.activities.get({
             id: activity_id
         });
+        activitiy.board_user_role_id = this.model.board_user_role_id;
+        activitiy.board = this.model.board;
         $('.js-activity-' + activity_id).html(new App.EditActivityFormView({
             model: activitiy,
             attributes: {
@@ -2137,6 +2199,7 @@ App.ModalCardView = Backbone.View.extend({
                 success: function(model, response) {
                     var activity = new App.Activity();
                     activity.set(response.activity);
+                    activity.board_users = self.model.board_users;
                     var view = new App.ActivityView({
                         model: activity,
                         board: self.model.list.collection.board
@@ -2219,6 +2282,7 @@ App.ModalCardView = Backbone.View.extend({
             success: function(model, response) {
                 var activity = new App.Activity();
                 activity.set(response.activity);
+                activity.board_users = self.model.board_users;
                 var view = new App.ActivityView({
                     model: activity,
                     board: self.model.list.collection.board
@@ -2262,7 +2326,8 @@ App.ModalCardView = Backbone.View.extend({
                     silent: true
                 });
                 var view = new App.CardAttachmentView({
-                    model: card_attachment
+                    model: card_attachment,
+                    board: self.model.list.collection.board
                 });
                 var view_attachment = self.$('#js-card-attachments-list');
                 view_attachment.append(view.render().el).find('.timeago').timeago();
@@ -2302,6 +2367,7 @@ App.ModalCardView = Backbone.View.extend({
                 success: function(model, response) {
                     var activity = new App.Activity();
                     activity.set(response.activity);
+                    activity.board_users = self.model.board_users;
                     var view = new App.ActivityView({
                         model: activity,
                         board: self.model.list.collection.board
@@ -2338,7 +2404,8 @@ App.ModalCardView = Backbone.View.extend({
                     $('.js-organization-member-search-response').append(new App.CardSearchUsersResultView({
                         model: user,
                         is_added_user: is_added_user,
-                        added_user: added_user
+                        added_user: added_user,
+                        board: self.model.list.collection.board
                     }).el);
                 });
             } else {
@@ -2611,8 +2678,10 @@ App.ModalCardView = Backbone.View.extend({
                 }
                 var activity = new App.Activity();
                 activity.set(response.activity);
+                activity.board_users = self.model.board_users;
                 var view = new App.ActivityView({
-                    model: activity
+                    model: activity,
+                    board: self.model.list.collection.board
                 });
                 self.model.activities.unshift(activity);
                 var view_activity = $('#js-card-activities-' + self.model.id);
@@ -2665,7 +2734,12 @@ App.ModalCardView = Backbone.View.extend({
      */
     AddCommentMember: function(e) {
         e.preventDefault();
-        this.$el.find('.js-comment').val(this.$el.find('.js-comment').val().replace('@' + $('.js-search-member').val(), '@' + $(e.currentTarget).data('user-name'))).focus();
+        if (_.isEmpty($('.js-search-member').val())) {
+            var space = _.isEmpty(this.$el.find('.js-comment').val()) ? '' : ' ';
+            this.$el.find('.js-comment').val(this.$el.find('.js-comment').val() + space + '@' + $(e.currentTarget).data('user-name')).focus();
+        } else {
+            this.$el.find('.js-comment').val(this.$el.find('.js-comment').val().replace('@' + $('.js-search-member').val(), '@' + $(e.currentTarget).data('user-name'))).focus();
+        }
         this.autoMentionSelectionStart = 0;
         $('.js-search-member').val('').trigger('keyup');
     },
@@ -2681,7 +2755,8 @@ App.ModalCardView = Backbone.View.extend({
             view.append(new App.CardSearchUsersResultView({
                 model: board_user,
                 is_added_user: is_added_user,
-                added_user: added_user
+                added_user: added_user,
+                board: self.model.list.collection.board
             }).el);
         });
     },
@@ -2700,7 +2775,7 @@ App.ModalCardView = Backbone.View.extend({
             $.ajax({
                 cache: true,
                 dataType: 'script',
-                url: 'https://www.dropbox.com/static/api/1/dropins.js',
+                url: 'https://www.dropbox.com/static/api/2/dropins.js',
                 success: function() {}
             });
         }

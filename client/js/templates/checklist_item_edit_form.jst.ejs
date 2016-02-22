@@ -16,7 +16,7 @@
 			</li>
 			<li class="pull-right">
 				<ul class="list-unstyled">
-					<% if (!_.isEmpty(role_links.where({slug: "delete_checklist_item"}))) { %>
+					<% if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(checklist_item.board_users.board.acl_links.where({slug: "delete_checklist_item",board_user_role_id: parseInt(checklist_item.board_user_role_id)})))) { %>
 					<li class="pull-right dropdown">
 						<a title="<%- i18next.t('Delete') %>" class="dropdown-toggle js-show-confirm-item-delete btn btn-link btn-sm" data-toggle="dropdown" href="#"><strong><%- i18next.t('Delete') %></strong></a>
 						<ul class="dropdown-menu arrow arrow-right">
@@ -25,18 +25,16 @@
 					</li>
 					<%  } %>
 					<%
-					if (!_.isEmpty(role_links.where({
-						slug: "convert_item_to_card"
-					}))) { %>
+					if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(checklist_item.board_users.board.acl_links.where({
+						slug: "convert_item_to_card",board_user_role_id: parseInt(checklist_item.board_user_role_id)
+					})))) { %>
 						<li class="pull-right">
 							<a class="btn btn-link btn-sm pull-right js-convert-to-card" href="#" title="<%- i18next.t('Convert to Card') %>"><strong><%- i18next.t('Convert to Card') %></strong></a>
 						</li>
 				  <%  } %>
 					<li class="dropdown pull-right">
 						<a title="<%- i18next.t('Item Options') %>" class="dropdown-toggle js-show-item-options btn btn-link btn-sm" data-toggle="dropdown" href="#"><i class="icon-chevron-sign-down"></i></a>
-						<ul class="dropdown-menu arrow arrow-right">
-							<li class="js-dropdown-popup dropdown-popup" id="js-item-option-response-<%-checklist_item.id %>"></li>
-						</ul>
+						<ul class="dropdown-menu arrow arrow-right" id="js-item-option-response-<%-checklist_item.id %>"></ul>
 					</li>
 				</ul>
 			</li>

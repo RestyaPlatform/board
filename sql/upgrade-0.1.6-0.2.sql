@@ -15,97 +15,6 @@ VALUES ('31', '3', '0', 'DEFAULT_LANGUAGE', 'en', NULL, 'text', NULL, 'Default L
 
 ALTER TABLE "users" ADD "language" character varying(10) NULL;
 
-CREATE OR REPLACE VIEW "users_listing" AS
- SELECT users.id,
-    users.role_id,
-    users.username,
-    users.password,
-    users.email,
-    users.full_name,
-    users.initials,
-    users.about_me,
-    users.profile_picture_path,
-    users.notification_frequency,
-    (users.is_allow_desktop_notification)::integer AS is_allow_desktop_notification,
-    (users.is_active)::integer AS is_active,
-    (users.is_email_confirmed)::integer AS is_email_confirmed,
-    users.created_organization_count,
-    users.created_board_count,
-    users.joined_organization_count,
-    users.list_count,
-    users.joined_card_count,
-    users.created_card_count,
-    users.joined_board_count,
-    users.checklist_count,
-    users.checklist_item_completed_count,
-    users.checklist_item_count,
-    users.activity_count,
-    users.card_voter_count,
-    (users.is_productivity_beats)::integer AS is_productivity_beats,
-    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
-           FROM ( SELECT organizations_users_listing.organization_id AS id,
-                    organizations_users_listing.name,
-                    organizations_users_listing.description,
-                    organizations_users_listing.website_url,
-                    organizations_users_listing.logo_url,
-                    organizations_users_listing.organization_visibility
-                   FROM organizations_users_listing organizations_users_listing
-                  WHERE (organizations_users_listing.user_id = users.id)
-                  ORDER BY organizations_users_listing.id) o) AS organizations,
-    users.last_activity_id,
-    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
-           FROM ( SELECT boards_stars.id,
-                    boards_stars.board_id,
-                    boards_stars.user_id,
-                    boards_stars.is_starred
-                   FROM board_stars boards_stars
-                  WHERE (boards_stars.user_id = users.id)
-                  ORDER BY boards_stars.id) o) AS boards_stars,
-    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
-           FROM ( SELECT boards_users.id,
-                    boards_users.board_id,
-                    boards_users.user_id,
-                    boards_users.is_admin,
-                    boards.name,
-                    boards.background_picture_url,
-                    boards.background_pattern_url,
-                    boards.background_color
-                   FROM (boards_users boards_users
-              JOIN boards ON ((boards.id = boards_users.board_id)))
-             WHERE (boards_users.user_id = users.id)
-             ORDER BY boards_users.id) o) AS boards_users,
-    users.last_login_date,
-    li.ip AS last_login_ip,
-    lci.name AS login_city_name,
-    lst.name AS login_state_name,
-    lco.name AS login_country_name,
-    lower((lco.iso_alpha2)::text) AS login_country_iso2,
-    i.ip AS registered_ip,
-    rci.name AS register_city_name,
-    rst.name AS register_state_name,
-    rco.name AS register_country_name,
-    lower((rco.iso_alpha2)::text) AS register_country_iso2,
-    lt.name AS login_type,
-    users.created,
-    users.user_login_count,
-    users.is_send_newsletter,
-    users.last_email_notified_activity_id,
-    users.owner_board_count,
-    users.member_board_count,
-    users.owner_organization_count,
-    users.member_organization_count,
-    users.language
-   FROM (((((((((users users
-   LEFT JOIN ips i ON ((i.id = users.ip_id)))
-   LEFT JOIN cities rci ON ((rci.id = i.city_id)))
-   LEFT JOIN states rst ON ((rst.id = i.state_id)))
-   LEFT JOIN countries rco ON ((rco.id = i.country_id)))
-   LEFT JOIN ips li ON ((li.id = users.last_login_ip_id)))
-   LEFT JOIN cities lci ON ((lci.id = li.city_id)))
-   LEFT JOIN states lst ON ((lst.id = li.state_id)))
-   LEFT JOIN countries lco ON ((lco.id = li.country_id)))
-   LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
-
 CREATE SEQUENCE languages_id_seq
     START WITH 1
     INCREMENT BY 1
@@ -313,27 +222,6 @@ INSERT INTO "languages" ("id", "created", "modified", "name", "iso2", "iso3", "i
 ALTER TABLE "boards" ADD "default_email_list_id" bigint NOT NULL DEFAULT '0';
 ALTER TABLE "boards" ADD "is_default_email_position_as_bottom" boolean NOT NULL DEFAULT 'false';
 
-CREATE OR REPLACE VIEW boards_users_listing AS
- SELECT bu.id, 
-    bu.created, 
-    bu.modified, 
-    bu.board_id, 
-    bu.user_id, 
-    (bu.is_admin)::integer AS is_admin, 
-    u.username, 
-    u.email, 
-    u.full_name, 
-    (u.is_active)::integer AS is_active, 
-    (u.is_email_confirmed)::integer AS is_email_confirmed, 
-    b.name AS board_name, 
-    u.profile_picture_path, 
-    u.initials, 
-    b.default_email_list_id, 
-    (b.is_default_email_position_as_bottom)::integer AS is_default_email_position_as_bottom
-   FROM ((boards_users bu
-   JOIN users u ON ((u.id = bu.user_id)))
-   JOIN boards b ON ((b.id = bu.board_id)));
-   
 INSERT INTO "setting_categories" ("id", "created", "modified", "name", "order")
 VALUES (10, now(), now(), 'IMAP', '5');
    
@@ -348,138 +236,6 @@ VALUES ('34', '10', '0', 'IMAP_EMAIL', '', NULL, 'text', NULL, 'IMAP Email', '3'
 
 INSERT INTO "settings" ("id", "setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
 VALUES ('35', '10', '0', 'IMAP_EMAIL_PASSWORD', '', NULL, 'text', NULL, 'IMAP Email Password', '4');
-
-CREATE OR REPLACE VIEW boards_listing AS
- SELECT board.id, 
-    board.name,
-    board.created,
-    board.modified,
-    users.username,
-    users.full_name,
-    users.profile_picture_path,
-    users.initials,    
-    board.user_id, 
-    board.organization_id, 
-    board.board_visibility, 
-    board.background_color, 
-    board.background_picture_url, 
-    board.commenting_permissions, 
-    board.voting_permissions,
-    board.is_closed::boolean::int,
-    board.is_allow_organization_members_to_join::boolean::int,
-    board.boards_user_count, 
-    board.list_count, 
-    board.card_count, 
-    board.archived_list_count,
-    board.archived_card_count,
-    board.boards_subscriber_count, 
-    board.background_pattern_url, 
-    board.is_show_image_front_of_card::boolean::int,
-    board.music_name, 
-    board.music_content, 
-    organizations.name AS organization_name, 
-    organizations.website_url AS organization_website_url, 
-    organizations.description AS organization_description, 
-    organizations.logo_url AS organization_logo_url, 
-    organizations.organization_visibility, 
-    ( SELECT array_to_json(array_agg(row_to_json(ba.*))) AS array_to_json
-           FROM ( SELECT activities.id, 
-                    activities.created, 
-                    activities.modified, 
-                    activities.board_id, 
-                    activities.list_id, 
-                    activities.card_id, 
-                    activities.user_id, 
-                    activities.foreign_id AS attachment_id, 
-                    activities.type, 
-                    activities.comment, 
-                    activities.revisions, 
-                    activities.root, 
-                    activities.freshness_ts, 
-                    activities.depth, 
-                    activities.path, 
-                    activities.materialized_path, 
-                    users.username, 
-                    users.role_id, 
-                    users.profile_picture_path, 
-                    users.initials
-                   FROM (activities activities
-              LEFT JOIN users users ON ((users.id = activities.user_id)))
-             WHERE (activities.board_id = board.id)
-             ORDER BY activities.freshness_ts DESC, activities.materialized_path
-            OFFSET 0
-            LIMIT 20) ba) AS activities, 
-    ( SELECT array_to_json(array_agg(row_to_json(bs.*))) AS array_to_json
-           FROM ( SELECT boards_subscribers.id, 
-                    boards_subscribers.created, 
-                    boards_subscribers.modified, 
-                    boards_subscribers.board_id, 
-                    boards_subscribers.user_id, 
-                    boards_subscribers.is_subscribed
-                   FROM board_subscribers boards_subscribers
-                  WHERE (boards_subscribers.board_id = board.id)
-                  ORDER BY boards_subscribers.id) bs) AS boards_subscribers, 
-    ( SELECT array_to_json(array_agg(row_to_json(bs.*))) AS array_to_json
-           FROM ( SELECT boards_stars.id, 
-                    boards_stars.created, 
-                    boards_stars.modified, 
-                    boards_stars.board_id, 
-                    boards_stars.user_id, 
-                    boards_stars.is_starred
-                   FROM board_stars boards_stars
-                  WHERE (boards_stars.board_id = board.id)
-                  ORDER BY boards_stars.id) bs) AS boards_stars, 
-    ( SELECT array_to_json(array_agg(row_to_json(batt.*))) AS array_to_json
-           FROM ( SELECT card_attachments.id, 
-                    card_attachments.created, 
-                    card_attachments.modified, 
-                    card_attachments.card_id, 
-                    card_attachments.name, 
-                    card_attachments.path, 
-                    card_attachments.mimetype, 
-                    card_attachments.list_id, 
-                    card_attachments.board_id
-                   FROM card_attachments card_attachments
-                  WHERE (card_attachments.board_id = board.id)
-                  ORDER BY card_attachments.id DESC) batt) AS attachments, 
-    ( SELECT array_to_json(array_agg(row_to_json(bl.*))) AS array_to_json
-           FROM ( SELECT lists_listing.id, 
-                    lists_listing.created, 
-                    lists_listing.modified, 
-                    lists_listing.board_id, 
-                    lists_listing.name, 
-                    lists_listing."position", 
-                    lists_listing.is_archived,
-                    lists_listing.card_count, 
-                    lists_listing.lists_subscriber_count, 
-                    lists_listing.cards, 
-                    lists_listing.lists_subscribers
-                   FROM lists_listing lists_listing
-                  WHERE (lists_listing.board_id = board.id)
-                  ORDER BY lists_listing."position") bl) AS lists, 
-    ( SELECT array_to_json(array_agg(row_to_json(bu.*))) AS array_to_json
-           FROM ( SELECT boards_users.id, 
-                    boards_users.created, 
-                    boards_users.modified, 
-                    boards_users.board_id, 
-                    boards_users.user_id, 
-                    boards_users.is_admin, 
-                    boards_users.username, 
-                    boards_users.email, 
-                    boards_users.full_name, 
-                    boards_users.is_active, 
-                    boards_users.is_email_confirmed, 
-                    boards_users.board_name, 
-                    boards_users.profile_picture_path, 
-                    boards_users.initials
-                   FROM boards_users_listing boards_users
-                  WHERE (boards_users.board_id = board.id)
-                  ORDER BY boards_users.id) bu) AS boards_users,
-    board.default_email_list_id,
-    board.is_default_email_position_as_bottom
-   FROM ((boards board
-   LEFT JOIN users users ON ((users.id = board.user_id)))
-   LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
 
 UPDATE "email_templates" SET
 "email_text_content" = '<html>
@@ -734,139 +490,20 @@ CREATE OR REPLACE VIEW activities_listing AS
    LEFT JOIN users users ON ((users.id = activity.user_id)))
    LEFT JOIN organizations organizations ON ((organizations.id = activity.organization_id)));
 
-CREATE OR REPLACE VIEW "boards_listing" AS
- SELECT board.id,
-    board.name,
-    board.created,
-    board.modified,
-    users.username,
-    users.full_name,
-    users.profile_picture_path,
-    users.initials,
-    board.user_id,
-    board.organization_id,
-    board.board_visibility,
-    board.background_color,
-    board.background_picture_url,
-    board.commenting_permissions,
-    board.voting_permissions,
-    (board.is_closed)::integer AS is_closed,
-    (board.is_allow_organization_members_to_join)::integer AS is_allow_organization_members_to_join,
-    board.boards_user_count,
-    board.list_count,
-    board.card_count,
-    board.archived_list_count,
-    board.archived_card_count,
-    board.boards_subscriber_count,
-    board.background_pattern_url,
-    (board.is_show_image_front_of_card)::integer AS is_show_image_front_of_card,
-    board.music_name,
-    board.music_content,
-    organizations.name AS organization_name,
-    organizations.website_url AS organization_website_url,
-    organizations.description AS organization_description,
-    organizations.logo_url AS organization_logo_url,
-    organizations.organization_visibility,
-    ( SELECT array_to_json(array_agg(row_to_json(ba.*))) AS array_to_json
-           FROM ( SELECT activities.id,
-                    activities.created,
-                    activities.modified,
-                    activities.board_id,
-                    activities.list_id,
-                    activities.card_id,
-                    activities.user_id,
-                    activities.foreign_id AS attachment_id,
-                    activities.type,
-                    activities.comment,
-                    activities.revisions,
-                    activities.root,
-                    activities.freshness_ts,
-                    activities.depth,
-                    activities.path,
-                    activities.materialized_path,
-                    users_1.username,
-                    users_1.role_id,
-                    users_1.profile_picture_path,
-                    users_1.initials
-                   FROM (activities activities
-              LEFT JOIN users users_1 ON ((users_1.id = activities.user_id)))
-             WHERE (activities.board_id = board.id)
-             ORDER BY activities.freshness_ts DESC, activities.materialized_path
-            OFFSET 0
-            LIMIT 20) ba) AS activities,
-    ( SELECT array_to_json(array_agg(row_to_json(bs.*))) AS array_to_json
-           FROM ( SELECT boards_subscribers.id,
-                    boards_subscribers.created,
-                    boards_subscribers.modified,
-                    boards_subscribers.board_id,
-                    boards_subscribers.user_id,
-                    boards_subscribers.is_subscribed::boolean::int
-                   FROM board_subscribers boards_subscribers
-                  WHERE (boards_subscribers.board_id = board.id)
-                  ORDER BY boards_subscribers.id) bs) AS boards_subscribers,
-    ( SELECT array_to_json(array_agg(row_to_json(bs.*))) AS array_to_json
-           FROM ( SELECT boards_stars.id,
-                    boards_stars.created,
-                    boards_stars.modified,
-                    boards_stars.board_id,
-                    boards_stars.user_id,
-                    boards_stars.is_starred::boolean::int
-                   FROM board_stars boards_stars
-                  WHERE (boards_stars.board_id = board.id)
-                  ORDER BY boards_stars.id) bs) AS boards_stars,
-    ( SELECT array_to_json(array_agg(row_to_json(batt.*))) AS array_to_json
-           FROM ( SELECT card_attachments.id,
-                    card_attachments.created,
-                    card_attachments.modified,
-                    card_attachments.card_id,
-                    card_attachments.name,
-                    card_attachments.path,
-                    card_attachments.mimetype,
-                    card_attachments.list_id,
-                    card_attachments.board_id
-                   FROM card_attachments card_attachments
-                  WHERE (card_attachments.board_id = board.id)
-                  ORDER BY card_attachments.id DESC) batt) AS attachments,
-    ( SELECT array_to_json(array_agg(row_to_json(bl.*))) AS array_to_json
-           FROM ( SELECT lists_listing.id,
-                    lists_listing.created,
-                    lists_listing.modified,
-                    lists_listing.board_id,
-                    lists_listing.name,
-                    lists_listing."position",
-                    ((lists_listing.is_archived)::boolean)::integer AS is_archived,
-                    lists_listing.card_count,
-                    lists_listing.lists_subscriber_count,
-                    lists_listing.cards,
-                    lists_listing.lists_subscribers
-                   FROM lists_listing lists_listing
-                  WHERE (lists_listing.board_id = board.id)
-                  ORDER BY lists_listing."position") bl) AS lists,
-    ( SELECT array_to_json(array_agg(row_to_json(bu.*))) AS array_to_json
-           FROM ( SELECT boards_users.id,
-                    boards_users.created,
-                    boards_users.modified,
-                    boards_users.board_id,
-                    boards_users.user_id,
-                    boards_users.is_admin::boolean::int,
-                    boards_users.username,
-                    boards_users.email,
-                    boards_users.full_name,
-                    boards_users.is_active::boolean::int,
-                    boards_users.is_email_confirmed::boolean::int,
-                    boards_users.board_name,
-                    boards_users.profile_picture_path,
-                    boards_users.initials
-                   FROM boards_users_listing boards_users
-                  WHERE (boards_users.board_id = board.id)
-                  ORDER BY boards_users.id) bu) AS boards_users,
-    board.default_email_list_id,
-    board.is_default_email_position_as_bottom::boolean::int
-   FROM ((boards board
-   LEFT JOIN users users ON ((users.id = board.user_id)))
-   LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
 
-
+CREATE OR REPLACE VIEW "cards_users_listing" AS
+ SELECT u.username,
+    u.profile_picture_path,
+    cu.id,
+    cu.created,
+    cu.modified,
+    cu.card_id,
+    cu.user_id,
+    u.initials,
+    u.full_name,
+    u.email
+   FROM (cards_users cu
+   LEFT JOIN users u ON ((u.id = cu.user_id)));
 
 CREATE OR REPLACE VIEW "cards_listing" AS
  SELECT cards.id,
@@ -916,7 +553,8 @@ CREATE OR REPLACE VIEW "cards_listing" AS
                     cards_users_listing.card_id,
                     cards_users_listing.user_id,
                     cards_users_listing.initials,
-                    cards_users_listing.full_name
+                    cards_users_listing.full_name,
+		    cards_users_listing.email
                    FROM cards_users_listing cards_users_listing
                   WHERE (cards_users_listing.card_id = cards.id)
                   ORDER BY cards_users_listing.id) cc) AS cards_users,
@@ -1068,300 +706,6 @@ CREATE OR REPLACE VIEW "lists_listing" AS
    FROM lists lists;
 
 
-CREATE OR REPLACE VIEW "organizations_listing" AS
- SELECT organizations.id,
-    organizations.created,
-    organizations.modified,
-    organizations.user_id,
-    organizations.name,
-    organizations.website_url,
-    organizations.description,
-    organizations.logo_url,
-    organizations.organization_visibility,
-    organizations.organizations_user_count,
-    organizations.board_count,
-    ( SELECT array_to_json(array_agg(row_to_json(b.*))) AS array_to_json
-           FROM ( SELECT boards_listing.id,
-                    boards_listing.name,
-                    boards_listing.user_id,
-                    boards_listing.organization_id,
-                    boards_listing.board_visibility,
-                    boards_listing.background_color,
-                    boards_listing.background_picture_url,
-                    boards_listing.commenting_permissions,
-                    boards_listing.voting_permissions,
-                    boards_listing.is_closed::boolean::int,
-                    boards_listing.is_allow_organization_members_to_join::boolean::int,
-                    boards_listing.boards_user_count,
-                    boards_listing.list_count,
-                    boards_listing.card_count,
-                    boards_listing.boards_subscriber_count,
-                    boards_listing.background_pattern_url,
-                    boards_listing.is_show_image_front_of_card::boolean::int,
-                    boards_listing.organization_name,
-                    boards_listing.organization_website_url,
-                    boards_listing.organization_description,
-                    boards_listing.organization_logo_url,
-                    boards_listing.organization_visibility,
-                    boards_listing.activities,
-                    boards_listing.boards_subscribers,
-                    boards_listing.boards_stars,
-                    boards_listing.attachments,
-                    boards_listing.lists,
-                    boards_listing.boards_users
-                   FROM boards_listing boards_listing
-                  WHERE (boards_listing.organization_id = organizations.id)
-                  ORDER BY boards_listing.id) b) AS boards_listing,
-    ( SELECT array_to_json(array_agg(row_to_json(c.*))) AS array_to_json
-           FROM ( SELECT organizations_users_listing.id,
-                    organizations_users_listing.created,
-                    organizations_users_listing.modified,
-                    organizations_users_listing.user_id,
-                    organizations_users_listing.organization_id,
-                    organizations_users_listing.is_admin::boolean::int,
-                    organizations_users_listing.role_id,
-                    organizations_users_listing.username,
-                    organizations_users_listing.email,
-                    organizations_users_listing.full_name,
-                    organizations_users_listing.initials,
-                    organizations_users_listing.about_me,
-                    organizations_users_listing.created_organization_count,
-                    organizations_users_listing.created_board_count,
-                    organizations_users_listing.joined_organization_count,
-                    organizations_users_listing.list_count,
-                    organizations_users_listing.joined_card_count,
-                    organizations_users_listing.created_card_count,
-                    organizations_users_listing.joined_board_count,
-                    organizations_users_listing.checklist_count,
-                    organizations_users_listing.checklist_item_completed_count,
-                    organizations_users_listing.checklist_item_count,
-                    organizations_users_listing.activity_count,
-                    organizations_users_listing.card_voter_count,
-                    organizations_users_listing.name,
-                    organizations_users_listing.website_url,
-                    organizations_users_listing.description,
-                    organizations_users_listing.logo_url,
-                    organizations_users_listing.organization_visibility,
-                    organizations_users_listing.profile_picture_path,
-                    organizations_users_listing.boards_users,
-                    organizations_users_listing.user_board_count
-                   FROM organizations_users_listing organizations_users_listing
-                  WHERE (organizations_users_listing.organization_id = organizations.id)
-                  ORDER BY organizations_users_listing.id) c) AS organizations_users,
-    u.username,
-    u.full_name,
-    u.initials,
-    u.profile_picture_path
-   FROM (organizations organizations
-   LEFT JOIN users u ON ((u.id = organizations.user_id)));
-
-
-CREATE OR REPLACE VIEW "organizations_users_listing" AS
- SELECT organizations_users.id,
-    organizations_users.created,
-    organizations_users.modified,
-    organizations_users.user_id,
-    organizations_users.organization_id,
-    (organizations_users.is_admin)::integer AS is_admin,
-    users.role_id,
-    users.username,
-    users.email,
-    users.full_name,
-    users.initials,
-    users.about_me,
-    users.created_organization_count,
-    users.created_board_count,
-    users.joined_organization_count,
-    users.list_count,
-    users.joined_card_count,
-    users.created_card_count,
-    users.joined_board_count,
-    users.checklist_count,
-    users.checklist_item_completed_count,
-    users.checklist_item_count,
-    users.activity_count,
-    users.card_voter_count,
-    organizations.name,
-    organizations.website_url,
-    organizations.description,
-    organizations.logo_url,
-    organizations.organization_visibility,
-    users.profile_picture_path,
-    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
-           FROM ( SELECT boards_users.id,
-                    boards_users.board_id,
-                    boards_users.user_id,
-                    boards_users.is_admin::boolean::int,
-                    boards.name
-                   FROM (boards_users boards_users
-              JOIN boards ON ((boards.id = boards_users.board_id)))
-             WHERE ((boards_users.user_id = organizations_users.user_id) AND (boards_users.board_id IN ( SELECT boards_1.id
-                      FROM boards boards_1
-                     WHERE (boards_1.organization_id = organizations_users.organization_id))))
-             ORDER BY boards_users.id) o) AS boards_users,
-    ( SELECT count(boards.id) AS count
-           FROM (boards
-      JOIN boards_users bu ON ((bu.board_id = boards.id)))
-     WHERE ((boards.organization_id = organizations_users.organization_id) AND (bu.user_id = organizations_users.user_id))) AS user_board_count
-   FROM ((organizations_users organizations_users
-   LEFT JOIN users users ON ((users.id = organizations_users.user_id)))
-   LEFT JOIN organizations organizations ON ((organizations.id = organizations_users.organization_id)));
-
-
-CREATE OR REPLACE VIEW "simple_board_listing" AS
- SELECT board.id,
-    board.name,
-    board.user_id,
-    board.organization_id,
-    board.board_visibility,
-    board.background_color,
-    board.background_picture_url,
-    board.commenting_permissions,
-    board.voting_permissions,
-    (board.is_closed)::integer AS is_closed,
-    (board.is_allow_organization_members_to_join)::integer AS is_allow_organization_members_to_join,
-    board.boards_user_count,
-    board.list_count,
-    board.card_count,
-    board.boards_subscriber_count,
-    board.background_pattern_url,
-    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
-           FROM ( SELECT lists.id,
-                    lists.created,
-                    lists.modified,
-                    lists.board_id,
-                    lists.user_id,
-                    lists.name,
-                    lists."position",
-                    (lists.is_archived)::integer AS is_archived,
-                    lists.card_count,
-                    lists.lists_subscriber_count,
-                    (lists.is_deleted)::integer AS is_deleted
-                   FROM lists lists
-                  WHERE (lists.board_id = board.id)
-                  ORDER BY lists."position") l) AS lists,
-    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
-           FROM ( SELECT cll.label_id,
-                    cll.name
-                   FROM cards_labels_listing cll
-                  WHERE (cll.board_id = board.id)
-                  ORDER BY cll.name) l) AS labels,
-    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
-           FROM ( SELECT bs.id,
-                    bs.board_id,
-                    bs.user_id,
-                    bs.is_starred::boolean::int
-                   FROM board_stars bs
-                  WHERE (bs.board_id = board.id)
-                  ORDER BY bs.id) l) AS stars,
-    org.name AS organization_name,
-    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
-           FROM ( SELECT bu.id,
-                    bu.board_id,
-                    bu.user_id,
-                    bu.is_admin::boolean::int
-                   FROM boards_users bu
-                  WHERE (bu.board_id = board.id)
-                  ORDER BY bu.id) l) AS users,
-    org.logo_url AS organization_logo_url,
-    board.music_content,
-    board.music_name
-   FROM (boards board
-   LEFT JOIN organizations org ON ((org.id = board.organization_id)))
-  ORDER BY board.name;
-
-
-CREATE OR REPLACE VIEW "users_listing" AS
- SELECT users.id,
-    users.role_id,
-    users.username,
-    users.password,
-    users.email,
-    users.full_name,
-    users.initials,
-    users.about_me,
-    users.profile_picture_path,
-    users.notification_frequency,
-    (users.is_allow_desktop_notification)::integer AS is_allow_desktop_notification,
-    (users.is_active)::integer AS is_active,
-    (users.is_email_confirmed)::integer AS is_email_confirmed,
-    users.created_organization_count,
-    users.created_board_count,
-    users.joined_organization_count,
-    users.list_count,
-    users.joined_card_count,
-    users.created_card_count,
-    users.joined_board_count,
-    users.checklist_count,
-    users.checklist_item_completed_count,
-    users.checklist_item_count,
-    users.activity_count,
-    users.card_voter_count,
-    (users.is_productivity_beats)::integer AS is_productivity_beats,
-    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
-           FROM ( SELECT organizations_users_listing.organization_id AS id,
-                    organizations_users_listing.name,
-                    organizations_users_listing.description,
-                    organizations_users_listing.website_url,
-                    organizations_users_listing.logo_url,
-                    organizations_users_listing.organization_visibility
-                   FROM organizations_users_listing organizations_users_listing
-                  WHERE (organizations_users_listing.user_id = users.id)
-                  ORDER BY organizations_users_listing.id) o) AS organizations,
-    users.last_activity_id,
-    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
-           FROM ( SELECT boards_stars.id,
-                    boards_stars.board_id,
-                    boards_stars.user_id,
-                    boards_stars.is_starred::boolean::int
-                   FROM board_stars boards_stars
-                  WHERE (boards_stars.user_id = users.id)
-                  ORDER BY boards_stars.id) o) AS boards_stars,
-    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
-           FROM ( SELECT boards_users.id,
-                    boards_users.board_id,
-                    boards_users.user_id,
-                    boards_users.is_admin::boolean::int,
-                    boards.name,
-                    boards.background_picture_url,
-                    boards.background_pattern_url,
-                    boards.background_color
-                   FROM (boards_users boards_users
-              JOIN boards ON ((boards.id = boards_users.board_id)))
-             WHERE (boards_users.user_id = users.id)
-             ORDER BY boards_users.id) o) AS boards_users,
-    users.last_login_date,
-    li.ip AS last_login_ip,
-    lci.name AS login_city_name,
-    lst.name AS login_state_name,
-    lco.name AS login_country_name,
-    lower((lco.iso_alpha2)::text) AS login_country_iso2,
-    i.ip AS registered_ip,
-    rci.name AS register_city_name,
-    rst.name AS register_state_name,
-    rco.name AS register_country_name,
-    lower((rco.iso_alpha2)::text) AS register_country_iso2,
-    lt.name AS login_type,
-    users.created,
-    users.user_login_count,
-    users.is_send_newsletter,
-    users.last_email_notified_activity_id,
-    users.owner_board_count,
-    users.member_board_count,
-    users.owner_organization_count,
-    users.member_organization_count,
-    users.language
-   FROM (((((((((users users
-   LEFT JOIN ips i ON ((i.id = users.ip_id)))
-   LEFT JOIN cities rci ON ((rci.id = i.city_id)))
-   LEFT JOIN states rst ON ((rst.id = i.state_id)))
-   LEFT JOIN countries rco ON ((rco.id = i.country_id)))
-   LEFT JOIN ips li ON ((li.id = users.last_login_ip_id)))
-   LEFT JOIN cities lci ON ((lci.id = li.city_id)))
-   LEFT JOIN states lst ON ((lst.id = li.state_id)))
-   LEFT JOIN countries lco ON ((lco.id = li.country_id)))
-   LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
-
 UPDATE "oauth_clients" SET "grant_types" = 'client_credentials password refresh_token authorization_code' WHERE "client_id" = '7742632501382313';
 
 
@@ -1459,7 +803,219 @@ VALUES (now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/token' AND m
 (now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/token' AND method = 'POST'), 2),
 (now(), now(), (SELECT id FROM acl_links WHERE url = '/oauth/token' AND method = 'POST'), 3);
 
-CREATE OR REPLACE VIEW "boards_listing" AS
+
+INSERT INTO "oauth_scopes" ("scope", "is_default") VALUES ('read', 't'),('write', 'f');
+
+INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('141', now(), now(), 'Users import', '/users/import', 'POST', 'users_import', '6', '1', '0');
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES (now(), now(), '141', '1');
+
+INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply_to_email", "name", "description", "subject", "email_text_content", "email_variables", "display_name") VALUES
+(7,	'2016-01-10 06:15:49.891',	'2016-01-10 06:15:49.891',	'##SITE_NAME## Restyaboard <##FROM_EMAIL##>',	'##REPLY_TO_EMAIL##',	'due_date_notification',	'We will send this mail, One day before when the card due date end.',	'Restyaboard / Due date notification',	'<html>
+<head></head>
+<body style="margin:0">
+<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">
+<div style="border: 1px solid #EEEEEE;">
+<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>
+</div>
+</header>
+<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">
+<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
+<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
+<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;">
+<h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Due soon…</h2>
+<p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</p>
+</pre>
+</div>
+</div>
+</main>
+<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
+<h6 style="text-align:center;margin:5px 15px;"> 
+<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>
+</h6>
+</footer>
+</body>
+</html>', 'SITE_URL, SITE_NAME, CONTENT', 'Due Date Notification');
+
+
+INSERT INTO "oauth_clients" ("client_id", "client_secret", "redirect_uri", "grant_types", "scope", "user_id", "client_name", "client_url", "logo_url", "tos_url", "policy_url", "modified", "created")
+VALUES ('6664115227792148', 'hw3wpe2cfsxxygogwue47cwnf7', NULL, 'client_credentials refresh_token authorization_code', NULL, NULL, 'Mobile App', NULL, NULL, NULL, NULL, now(), now()),('7857596005287233', 'n0l2wlujcpkj0bd7gk8918gm6b', NULL, 'client_credentials refresh_token authorization_code', NULL, NULL, 'Zapier', NULL, NULL, NULL, NULL, now(), now());
+
+UPDATE "acl_links" SET "group_id" = 6 WHERE "name" = 'Delete board' OR "name" = 'Add organization' OR "name" = 'Add board';
+
+UPDATE "acl_links" SET "group_id" = 1 WHERE "name" = 'Board visibility' OR "name" = 'View starred boards listing' OR "name" = 'Load workflow templates' OR "name" = 'Search'  OR "name" = 'View organization'  OR "name" = 'Organization visibility'  OR "name" = 'View board'  OR "name" = 'Board search'  OR "name" = 'View user assigned boards'  OR "name" = 'add_card'  OR "name" = 'View boards listing'  OR "name" = 'View closed boards'  OR "name" = 'Starred boards listing'  OR "name" = 'My boards listing'  OR "name" = 'View organizations listing'  OR "name" = 'View user assigned cards'  OR "name" = 'All activities'  OR "name" = 'Starred boards listing'  OR "name" = 'View closed boards'  OR "name" = 'My boards listing'  OR "name" = 'Post oauth token';
+
+CREATE SEQUENCE acl_board_links_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+	
+CREATE TABLE acl_board_links (
+    id bigint DEFAULT nextval('acl_board_links_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    url character varying(255) NOT NULL,
+    method character varying(255) NOT NULL,
+    slug character varying(255) NOT NULL,
+    group_id smallint
+);
+
+INSERT INTO "acl_board_links" ("created", "modified", "name", "url", "method", "slug", "group_id") 
+(select created, modified, name, url, method, slug, group_id from acl_links where group_id IN (2,3,4));
+
+
+CREATE SEQUENCE acl_organization_links_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+	
+CREATE TABLE acl_organization_links (
+    id bigint DEFAULT nextval('acl_organization_links_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    url character varying(255) NOT NULL,
+    method character varying(255) NOT NULL,
+    slug character varying(255) NOT NULL,
+    group_id smallint
+);
+
+INSERT INTO "acl_organization_links" ("created", "modified", "name", "url", "method", "slug", "group_id")
+(select created, modified, name, url, method, slug, group_id from acl_links where group_id IN (5));
+
+DELETE FROM acl_links WHERE group_id IN (2,3,4,5);
+
+CREATE SEQUENCE board_user_roles_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE board_user_roles (
+    id bigint DEFAULT nextval('board_user_roles_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+	description character varying
+);
+
+CREATE SEQUENCE organization_user_roles_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE organization_user_roles (
+    id bigint DEFAULT nextval('organization_user_roles_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+	description character varying
+);
+
+INSERT INTO "board_user_roles" ("created", "modified", "name", "description") VALUES (now(), now(), 'Owner', 'Can view and edit cards, remove members, and change settings for the board.'),(now(), now(), 'Editor', 'Can view and edit cards, remove members, but not change settings.'),(now(), now(), 'Viewer', 'Can view only.');
+INSERT INTO "organization_user_roles" ("created", "modified", "name", "description") VALUES (now(), now(), 'Owner', 'Can view, create and edit org boards, and change settings for the organization.'),(now(), now(), 'Editor', 'Can view, create, and edit org boards, but not change settings.'),(now(), now(), 'Viewer', 'Can view only.');
+
+
+
+CREATE SEQUENCE acl_board_links_boards_user_roles_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE acl_board_links_boards_user_roles (
+    id bigint DEFAULT nextval('acl_board_links_boards_user_roles_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    acl_board_link_id bigint NOT NULL,
+    board_user_role_id bigint NOT NULL
+);
+
+CREATE SEQUENCE acl_organization_links_organizations_user_roles_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE acl_organization_links_organizations_user_roles (
+    id bigint DEFAULT nextval('acl_organization_links_organizations_user_roles_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    acl_organization_link_id bigint NOT NULL,
+    organization_user_role_id bigint NOT NULL
+);
+
+
+CREATE VIEW acl_board_links_listing AS
+ SELECT ablbur.board_user_role_id,
+    abl.slug,
+    abl.url,
+    abl.method
+   FROM (acl_board_links_boards_user_roles ablbur
+     JOIN acl_board_links abl ON ((abl.id = ablbur.acl_board_link_id)));
+	 
+CREATE VIEW acl_organization_links_listing AS
+ SELECT aolour.organization_user_role_id,
+    aol.slug,
+    aol.url,
+    aol.method
+   FROM (acl_organization_links_organizations_user_roles aolour
+     JOIN acl_organization_links aol ON ((aol.id = aolour.acl_organization_link_id)));
+
+
+INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") 
+(select t1.created, t1.modified, t3.id, t1.role_id from acl_links_roles t1,acl_links t2,acl_board_links t3 where t2.group_id IN (2,3,4) and t2.id=t1.acl_link_id and t3.name = t2.name);
+
+INSERT INTO "acl_organization_links_organizations_user_roles" ("created", "modified", "acl_organization_link_id", "organization_user_role_id") 
+(select t1.created, t1.modified, t3.id, t1.role_id from acl_links_roles t1,acl_links t2,acl_organization_links t3 where t2.group_id IN (5) and t2.id=t1.acl_link_id and t3.name = t2.name);
+
+DROP VIEW "boards_users_listing" CASCADE;
+
+DROP VIEW "organizations_users_listing" CASCADE;
+
+DROP VIEW "simple_board_listing" CASCADE;
+
+ALTER TABLE "boards_users" DROP "is_admin";
+
+ALTER TABLE "boards_users" ADD "board_user_role_id" smallint NOT NULL DEFAULT '0';
+
+ALTER TABLE "organizations_users" DROP "is_admin"; 
+
+ALTER TABLE "organizations_users" ADD "organization_user_role_id" smallint NOT NULL DEFAULT '0';
+
+CREATE OR REPLACE VIEW boards_users_listing AS
+ SELECT bu.id,
+    bu.created,
+    bu.modified,
+    bu.board_id,
+    bu.user_id,
+    bu.board_user_role_id,
+    u.username,
+    u.email,
+    u.full_name,
+    (u.is_active)::integer AS is_active,
+    (u.is_email_confirmed)::integer AS is_email_confirmed,
+    b.name AS board_name,
+    u.profile_picture_path,
+    u.initials,
+    b.default_email_list_id,
+    (b.is_default_email_position_as_bottom)::integer AS is_default_email_position_as_bottom
+   FROM ((boards_users bu
+   JOIN users u ON ((u.id = bu.user_id)))
+   JOIN boards b ON ((b.id = bu.board_id)));
+
+
+CREATE OR REPLACE VIEW boards_listing AS
  SELECT board.id,
     board.name,
     board.created,
@@ -1574,7 +1130,7 @@ CREATE OR REPLACE VIEW "boards_listing" AS
                     boards_users.modified,
                     boards_users.board_id,
                     boards_users.user_id,
-                    ((boards_users.is_admin)::boolean)::integer AS is_admin,
+                    boards_users.board_user_role_id,
                     boards_users.username,
                     boards_users.email,
                     boards_users.full_name,
@@ -1592,5 +1148,580 @@ CREATE OR REPLACE VIEW "boards_listing" AS
    LEFT JOIN users users ON ((users.id = board.user_id)))
    LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
 
+CREATE OR REPLACE VIEW organizations_users_listing AS
+ SELECT organizations_users.id,
+    organizations_users.created,
+    organizations_users.modified,
+    organizations_users.user_id,
+    organizations_users.organization_id,
+    organizations_users.organization_user_role_id,
+    users.role_id,
+    users.username,
+    users.email,
+    users.full_name,
+    users.initials,
+    users.about_me,
+    users.created_organization_count,
+    users.created_board_count,
+    users.joined_organization_count,
+    users.list_count,
+    users.joined_card_count,
+    users.created_card_count,
+    users.joined_board_count,
+    users.checklist_count,
+    users.checklist_item_completed_count,
+    users.checklist_item_count,
+    users.activity_count,
+    users.card_voter_count,
+    organizations.name,
+    organizations.website_url,
+    organizations.description,
+    organizations.logo_url,
+    organizations.organization_visibility,
+    users.profile_picture_path,
+    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
+           FROM ( SELECT boards_users.id,
+                    boards_users.board_id,
+                    boards_users.user_id,
+                    boards_users.board_user_role_id,
+                    boards.name
+                   FROM (boards_users boards_users
+              JOIN boards ON ((boards.id = boards_users.board_id)))
+             WHERE ((boards_users.user_id = organizations_users.user_id) AND (boards_users.board_id IN ( SELECT boards_1.id
+                      FROM boards boards_1
+                     WHERE (boards_1.organization_id = organizations_users.organization_id))))
+             ORDER BY boards_users.id) o) AS boards_users,
+    ( SELECT count(boards.id) AS count
+           FROM (boards
+      JOIN boards_users bu ON ((bu.board_id = boards.id)))
+     WHERE ((boards.organization_id = organizations_users.organization_id) AND (bu.user_id = organizations_users.user_id))) AS user_board_count
+   FROM ((organizations_users organizations_users
+   LEFT JOIN users users ON ((users.id = organizations_users.user_id)))
+   LEFT JOIN organizations organizations ON ((organizations.id = organizations_users.organization_id)));
 
-INSERT INTO "oauth_scopes" ("scope", "is_default") VALUES ('read', 't'),('write', 'f');
+CREATE OR REPLACE VIEW organizations_listing AS
+ SELECT organizations.id,
+    organizations.created,
+    organizations.modified,
+    organizations.user_id,
+    organizations.name,
+    organizations.website_url,
+    organizations.description,
+    organizations.logo_url,
+    organizations.organization_visibility,
+    organizations.organizations_user_count,
+    organizations.board_count,
+    ( SELECT array_to_json(array_agg(row_to_json(b.*))) AS array_to_json
+           FROM ( SELECT boards_listing.id,
+                    boards_listing.name,
+                    boards_listing.user_id,
+                    boards_listing.organization_id,
+                    boards_listing.board_visibility,
+                    boards_listing.background_color,
+                    boards_listing.background_picture_url,
+                    boards_listing.commenting_permissions,
+                    boards_listing.voting_permissions,
+                    ((boards_listing.is_closed)::boolean)::integer AS is_closed,
+                    ((boards_listing.is_allow_organization_members_to_join)::boolean)::integer AS is_allow_organization_members_to_join,
+                    boards_listing.boards_user_count,
+                    boards_listing.list_count,
+                    boards_listing.card_count,
+                    boards_listing.boards_subscriber_count,
+                    boards_listing.background_pattern_url,
+                    ((boards_listing.is_show_image_front_of_card)::boolean)::integer AS is_show_image_front_of_card,
+                    boards_listing.organization_name,
+                    boards_listing.organization_website_url,
+                    boards_listing.organization_description,
+                    boards_listing.organization_logo_url,
+                    boards_listing.organization_visibility,
+                    boards_listing.activities,
+                    boards_listing.boards_subscribers,
+                    boards_listing.boards_stars,
+                    boards_listing.attachments,
+                    boards_listing.lists,
+                    boards_listing.boards_users
+                   FROM boards_listing boards_listing
+                  WHERE (boards_listing.organization_id = organizations.id)
+                  ORDER BY boards_listing.id) b) AS boards_listing,
+    ( SELECT array_to_json(array_agg(row_to_json(c.*))) AS array_to_json
+           FROM ( SELECT organizations_users_listing.id,
+                    organizations_users_listing.created,
+                    organizations_users_listing.modified,
+                    organizations_users_listing.user_id,
+                    organizations_users_listing.organization_id,
+                    organizations_users_listing.organization_user_role_id,
+                    organizations_users_listing.role_id,
+                    organizations_users_listing.username,
+                    organizations_users_listing.email,
+                    organizations_users_listing.full_name,
+                    organizations_users_listing.initials,
+                    organizations_users_listing.about_me,
+                    organizations_users_listing.created_organization_count,
+                    organizations_users_listing.created_board_count,
+                    organizations_users_listing.joined_organization_count,
+                    organizations_users_listing.list_count,
+                    organizations_users_listing.joined_card_count,
+                    organizations_users_listing.created_card_count,
+                    organizations_users_listing.joined_board_count,
+                    organizations_users_listing.checklist_count,
+                    organizations_users_listing.checklist_item_completed_count,
+                    organizations_users_listing.checklist_item_count,
+                    organizations_users_listing.activity_count,
+                    organizations_users_listing.card_voter_count,
+                    organizations_users_listing.name,
+                    organizations_users_listing.website_url,
+                    organizations_users_listing.description,
+                    organizations_users_listing.logo_url,
+                    organizations_users_listing.organization_visibility,
+                    organizations_users_listing.profile_picture_path,
+                    organizations_users_listing.boards_users,
+                    organizations_users_listing.user_board_count
+                   FROM organizations_users_listing organizations_users_listing
+                  WHERE (organizations_users_listing.organization_id = organizations.id)
+                  ORDER BY organizations_users_listing.id) c) AS organizations_users,
+    u.username,
+    u.full_name,
+    u.initials,
+    u.profile_picture_path
+   FROM (organizations organizations
+   LEFT JOIN users u ON ((u.id = organizations.user_id)));
+
+
+CREATE OR REPLACE VIEW users_listing AS
+ SELECT users.id,
+    users.role_id,
+    users.username,
+    users.password,
+    users.email,
+    users.full_name,
+    users.initials,
+    users.about_me,
+    users.profile_picture_path,
+    users.notification_frequency,
+    (users.is_allow_desktop_notification)::integer AS is_allow_desktop_notification,
+    (users.is_active)::integer AS is_active,
+    (users.is_email_confirmed)::integer AS is_email_confirmed,
+    users.created_organization_count,
+    users.created_board_count,
+    users.joined_organization_count,
+    users.list_count,
+    users.joined_card_count,
+    users.created_card_count,
+    users.joined_board_count,
+    users.checklist_count,
+    users.checklist_item_completed_count,
+    users.checklist_item_count,
+    users.activity_count,
+    users.card_voter_count,
+    (users.is_productivity_beats)::integer AS is_productivity_beats,
+    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
+           FROM ( SELECT organizations_users_listing.organization_id AS id,
+                    organizations_users_listing.name,
+                    organizations_users_listing.description,
+                    organizations_users_listing.website_url,
+                    organizations_users_listing.logo_url,
+                    organizations_users_listing.organization_visibility
+                   FROM organizations_users_listing organizations_users_listing
+                  WHERE (organizations_users_listing.user_id = users.id)
+                  ORDER BY organizations_users_listing.id) o) AS organizations,
+    users.last_activity_id,
+    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
+           FROM ( SELECT boards_stars.id,
+                    boards_stars.board_id,
+                    boards_stars.user_id,
+                    (boards_stars.is_starred)::integer AS is_starred
+                   FROM board_stars boards_stars
+                  WHERE (boards_stars.user_id = users.id)
+                  ORDER BY boards_stars.id) o) AS boards_stars,
+    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
+           FROM ( SELECT boards_users.id,
+                    boards_users.board_id,
+                    boards_users.user_id,
+                    boards_users.board_user_role_id,
+                    boards.name,
+                    boards.background_picture_url,
+                    boards.background_pattern_url,
+                    boards.background_color
+                   FROM (boards_users boards_users
+              JOIN boards ON ((boards.id = boards_users.board_id)))
+             WHERE (boards_users.user_id = users.id)
+             ORDER BY boards_users.id) o) AS boards_users,
+    users.last_login_date,
+    li.ip AS last_login_ip,
+    lci.name AS login_city_name,
+    lst.name AS login_state_name,
+    lco.name AS login_country_name,
+    lower((lco.iso_alpha2)::text) AS login_country_iso2,
+    i.ip AS registered_ip,
+    rci.name AS register_city_name,
+    rst.name AS register_state_name,
+    rco.name AS register_country_name,
+    lower((rco.iso_alpha2)::text) AS register_country_iso2,
+    lt.name AS login_type,
+    users.created,
+    users.user_login_count,
+    users.is_send_newsletter,
+    users.last_email_notified_activity_id,
+    users.owner_board_count,
+    users.member_board_count,
+    users.owner_organization_count,
+    users.member_organization_count,
+    users.language
+   FROM (((((((((users users
+   LEFT JOIN ips i ON ((i.id = users.ip_id)))
+   LEFT JOIN cities rci ON ((rci.id = i.city_id)))
+   LEFT JOIN states rst ON ((rst.id = i.state_id)))
+   LEFT JOIN countries rco ON ((rco.id = i.country_id)))
+   LEFT JOIN ips li ON ((li.id = users.last_login_ip_id)))
+   LEFT JOIN cities lci ON ((lci.id = li.city_id)))
+   LEFT JOIN states lst ON ((lst.id = li.state_id)))
+   LEFT JOIN countries lco ON ((lco.id = li.country_id)))
+   LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
+
+
+CREATE OR REPLACE VIEW simple_board_listing AS
+ SELECT board.id,
+    board.name,
+    board.user_id,
+    board.organization_id,
+    board.board_visibility,
+    board.background_color,
+    board.background_picture_url,
+    board.commenting_permissions,
+    board.voting_permissions,
+    (board.is_closed)::integer AS is_closed,
+    (board.is_allow_organization_members_to_join)::integer AS is_allow_organization_members_to_join,
+    board.boards_user_count,
+    board.list_count,
+    board.card_count,
+    board.boards_subscriber_count,
+    board.background_pattern_url,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT lists.id,
+                    lists.created,
+                    lists.modified,
+                    lists.board_id,
+                    lists.user_id,
+                    lists.name,
+                    lists."position",
+                    (lists.is_archived)::integer AS is_archived,
+                    lists.card_count,
+                    lists.lists_subscriber_count,
+                    (lists.is_deleted)::integer AS is_deleted
+                   FROM lists lists
+                  WHERE (lists.board_id = board.id)
+                  ORDER BY lists."position") l) AS lists,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT cll.label_id,
+                    cll.name
+                   FROM cards_labels_listing cll
+                  WHERE (cll.board_id = board.id)
+                  ORDER BY cll.name) l) AS labels,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT bs.id,
+                    bs.board_id,
+                    bs.user_id,
+                    (bs.is_starred)::integer AS is_starred
+                   FROM board_stars bs
+                  WHERE (bs.board_id = board.id)
+                  ORDER BY bs.id) l) AS stars,
+    org.name AS organization_name,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT bu.id,
+                    bu.board_id,
+                    bu.user_id,
+                    bu.board_user_role_id,
+                   FROM boards_users bu
+                  WHERE (bu.board_id = board.id)
+                  ORDER BY bu.id) l) AS users,
+    org.logo_url AS organization_logo_url,
+    board.music_content,
+    board.music_name
+   FROM (boards board
+   LEFT JOIN organizations org ON ((org.id = board.organization_id)))
+  ORDER BY board.name;
+  
+INSERT INTO "acl_board_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('141', now(), now(), 'Delete all archived lists', '/boards/?/lists', 'DELETE', 'delete_all_archived_lists', '3', '1', '0');
+
+INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") VALUES (now(), now(), '141', '1');
+
+
+INSERT INTO "acl_board_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('142', now(), now(), 'Delete all archived cards', '/boards/?/cards', 'DELETE', 'delete_all_archived_cards', '4', '1', '0');
+
+INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") VALUES (now(), now(), '142', '1');
+
+
+INSERT INTO "acl_board_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_allow_only_to_admin", "is_allow_only_to_user") VALUES ('143', now(), now(), 'Delete Labels', '/boards/?/labels/?', 'DELETE', 'delete_labels', '2', '1', '0');
+
+INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") VALUES (now(), now(), '143', '1'); 
+
+CREATE OR REPLACE FUNCTION update_organization_user_count() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+
+BEGIN
+
+	IF (TG_OP = 'DELETE') THEN
+
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
+
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = NEW."user_id";
+
+		RETURN NEW;
+
+	END IF;
+
+END;
+
+$$;
+
+CREATE OR REPLACE FUNCTION update_board_user_count() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+
+BEGIN
+
+	IF (TG_OP = 'DELETE') THEN
+
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+		UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 2) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 2) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
+	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 1) t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 2) t WHERE "id" = NEW."user_id";
+
+		RETURN NEW;
+
+	END IF;
+
+END;
+
+$$;
+
+UPDATE "settings" SET "description" = 'The DNS name or IP address of the server. For example dc.domain.local.' WHERE "name" = 'LDAP_SERVER';
+
+UPDATE "settings" SET "description" = 'Server port (e.g., 389 for LDAP and 636 for LDAP using SSL)' WHERE "name" = 'LDAP_PORT';
+
+UPDATE "settings" SET "description" = 'Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx' WHERE "name" = 'LDAP_PROTOCOL_VERSION';
+
+UPDATE "settings" SET "label" = 'Base DN', "description" = 'This is your search base for LDAP queries. This should be at least your domain root, for example dc=domain,dc=local You can define this as a Organizational Unit if you want to narrow down the search base. For example: ou=team,ou=company,dc=domain,dc=local' WHERE "name" = 'LDAP_ROOT_DN';
+
+UPDATE "settings" SET "label" = 'Account Filter', "description" = 'You can use different field from the username here. For pre-windows 2000 style login, use sAMAccountName and for a UPN style login use userPrincipalName.' WHERE "name" = 'LDAP_UID_FIELD';
+
+UPDATE "settings" SET "label" = 'Bind DN', "description" = 'Enter a valid user account/DN to pre-bind with if your LDAP server does not allow anonymous profile searches, or requires a user with specific privileges to search.' WHERE "name" = 'LDAP_BIND_DN';
+
+UPDATE "settings" SET "type" = 'password', "description" = 'Enter a password for the above Bind DN.' WHERE "name" = 'LDAP_BIND_PASSWD';
+
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('4', '2', 'ENABLE_SSL_CONNECTIVITY', NULL, 'Use encryption (SSL, ldaps:// URL) when connects to server?', 'checkbox', NULL, 'Enable SSL Connectivity', '2');
+
+UPDATE "oauth_clients" SET "redirect_uri" = '', "client_name" = 'Web App' WHERE "client_id" = '7742632501382313';
+
+UPDATE "acl_board_links" SET "url" = '/boards/?/boards_users/?' WHERE "slug" = 'delete_board';
+
+
+UPDATE "settings" SET "order" = '3' WHERE "name" = 'ENABLE_SSL_CONNECTIVITY';
+UPDATE "settings" SET "order" = '4' WHERE "name" = 'LDAP_SERVER';
+UPDATE "settings" SET "order" = '5' WHERE "name" = 'LDAP_PORT';
+UPDATE "settings" SET "order" = '6' WHERE "name" = 'LDAP_PROTOCOL_VERSION';
+UPDATE "settings" SET "order" = '7' WHERE "name" = 'LDAP_ROOT_DN';
+UPDATE "settings" SET "order" = '8' WHERE "name" = 'LDAP_ORGANISATION';
+UPDATE "settings" SET "order" = '9' WHERE "name" = 'LDAP_UID_FIELD';
+UPDATE "settings" SET "order" = '10' WHERE "name" = 'LDAP_BIND_DN';
+UPDATE "settings" SET "order" = '11' WHERE "name" = 'LDAP_BIND_PASSWD';
+
+
+DROP VIEW "acl_links_listing";
+
+DROP TABLE "acl_links";
+
+DROP TABLE "acl_links_roles";
+
+CREATE TABLE acl_links (
+    id bigint DEFAULT nextval('acl_links_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    url character varying(255) NOT NULL,
+    method character varying(255) NOT NULL,
+    slug character varying(255) NOT NULL,
+    group_id smallint,
+    is_user_action smallint DEFAULT (0)::smallint NOT NULL,
+    is_guest_action smallint DEFAULT (0)::smallint NOT NULL,
+    is_admin_action smallint DEFAULT (0)::smallint NOT NULL,
+    is_hide smallint DEFAULT (0)::smallint NOT NULL
+);
+
+INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide") VALUES
+(1,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Forgot password',	'/users/forgotpassword',	'POST',	'users_forgotpassword',	1,	0,	1,	0,	0),
+(2,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Register',	'/users/register',	'POST',	'users_register',	1,	0,	1,	0,	0),
+(3,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Login',	'/users/login',	'POST',	'users_login',	1,	0,	1,	0,	1),
+(5,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Add organization',	'/organizations',	'POST',	'add_organization',	2,	1,	0,	0,	0),
+(6,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Add board',	'/boards',	'POST',	'add_board',	2,	1,	0,	0,	0),
+(10,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Change password',	'/users/?/changepassword',	'POST',	'user_changepassword',	2,	1,	0,	0,	0),
+(23,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Upload profile picture',	'/users/?',	'POST',	'add_user_profile_picture',	2,	1,	0,	0,	0),
+(27,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'User activation',	'/users/?/activation',	'PUT',	'user_activation',	1,	0,	1,	0,	0),
+(42,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Edit user details',	'/users/?',	'PUT',	'edit_user_details',	2,	1,	0,	0,	0),
+(55,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Delete user',	'/users/?',	'DELETE',	'delete_user',	3,	0,	0,	1,	1),
+(56,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View boards listing',	'/boards',	'GET',	'view_board_listing',	2,	1,	0,	0,	0),
+(57,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Users management',	'/users',	'GET',	'view_user_listing',	3,	0,	0,	1,	1),
+(61,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View organization',	'/organizations/?',	'GET',	'view_organization',	2,	1,	0,	0,	0),
+(64,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View user activities',	'/users/?/activities',	'GET',	'view_user_activities',	2,	1,	0,	0,	0),
+(70,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Board search',	'/boards/search',	'GET',	'view_board_search',	2,	1,	0,	0,	0),
+(76,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View user search',	'/users/search',	'GET',	'view_user_search',	2,	1,	0,	0,	0),
+(77,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Board visibility',	'/boards/?/visibility',	'GET',	'view_board_visibility',	2,	1,	0,	0,	0),
+(78,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Organization visibility',	'/organizations/?/visibility',	'GET',	'view_organization_visibility',	2,	1,	0,	0,	0),
+(79,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Load workflow templates',	'/workflow_templates',	'GET',	'view_workflow_templates',	2,	1,	0,	0,	0),
+(80,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Search',	'/search',	'GET',	'view_search',	2,	1,	0,	0,	0),
+(81,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View user',	'/users/?',	'GET',	'view_user',	2,	1,	0,	0,	0),
+(85,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View user assigned cards',	'/users/?/cards',	'GET',	'view_user_cards',	2,	1,	0,	0,	0),
+(86,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View user assigned boards',	'/users/?/boards',	'GET',	'view_user_board',	2,	1,	0,	0,	0),
+(94,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Roles listing',	'/acl_links',	'GET',	'roles',	3,	0,	0,	1,	1),
+(99,	'2014-11-21 02:52:08.822706',	'2014-11-21 02:52:08.822706',	'Setting update',	'/settings',	'POST',	'setting_update',	3,	0,	0,	1,	1),
+(101,	'2014-11-21 06:46:53.094432',	'2014-11-21 06:46:53.094432',	'Setting view',	'/settings/?',	'GET',	'setting_list',	3,	0,	0,	1,	1),
+(103,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View starred boards listing',	'/boards/?/boards_stars',	'GET',	'view_board_star',	2,	1,	0,	0,	0),
+(106,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View closed boards',	'/boards/closed_boards',	'GET',	'view_closed_boards',	2,	1,	0,	0,	0),
+(108,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'View organizations listing',	'/organizations',	'GET',	'view_organization_listing',	2,	1,	0,	0,	0),
+(109,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Email templates management',	'/email_templates/?',	'GET',	'view_email_template_listing',	3,	0,	0,	1,	1),
+(110,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Edit email template',	'/email_templates/?',	'PUT',	'edit_email_template',	3,	0,	0,	1,	1),
+(111,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Settings management',	'/settings',	'GET',	'load_settings',	3,	0,	0,	1,	1),
+(115,	'2014-08-25 13:14:18.2',	'2014-08-25 13:14:18.2',	'All activities',	'/activities',	'GET',	'activities_listing',	2,	1,	0,	0,	0),
+(117,	'2015-05-09 13:14:18.2',	'2015-05-09 13:14:18.2',	'Create user',	'/users',	'POST',	'users',	3,	0,	0,	1,	1),
+(118,	'2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Roles Update',	'/acl_links',	'POST',	'roles',	3,	0,	0,	1,	1),
+(120,	'2015-12-23 10:07:34.979',	'2015-12-23 10:07:34.979',	'Users Bulk Action',	'/users/bulk_action',	'POST',	'users_bulk_action',	3,	0,	0,	1,	1),
+(121,	'2015-12-23 10:07:34.988',	'2015-12-23 10:07:34.988',	'Boards management',	'/boards/list',	'GET',	'view_board_listing',	3,	0,	0,	1,	1),
+(122,	'2015-12-23 10:07:34.991',	'2015-12-23 10:07:34.991',	'Boards Bulk Action',	'/boards/bulk_action',	'POST',	'boards_bulk_action',	3,	0,	0,	1,	1),
+(123,	'2016-02-16 20:04:41.092',	'2016-02-16 20:04:41.092',	'My boards listing',	'/boards/my_boards',	'GET',	'view_my_boards',	2,	1,	0,	0,	0),
+(124,	'2016-02-16 20:06:48.576',	'2016-02-16 20:06:48.576',	'Starred boards listing',	'/boards/starred',	'GET',	'view_stared_boards',	2,	1,	0,	0,	0),
+(126,	'2016-02-18 17:24:25.733',	'2016-02-18 17:24:25.733',	'Unstar board',	'/boards/?/boards_stars/?',	'PUT',	'board_star',	2,	1,	0,	0,	0),
+(127,	'2016-01-12 16:39:35.031',	'2016-01-12 16:39:35.031',	'App',	'/apps',	'GET',	'app',	3,	0,	0,	1,	1),
+(128,	'2016-01-12 16:39:35.069',	'2016-01-12 16:39:35.069',	'App Settings',	'/apps/settings',	'GET',	'app_settings',	3,	0,	0,	1,	1),
+(129,	'2016-01-12 16:39:35.074',	'2016-01-12 16:39:35.074',	'App Settings',	'/apps/settings',	'POST',	'app_settings',	3,	0,	0,	1,	1),
+(130,	'2016-02-09 16:51:25.17',	'2016-02-09 16:51:25.17',	'View client listing',	'/oauth/clients',	'GET',	'view_client_listing',	3,	0,	0,	1,	1),
+(131,	'2016-02-09 16:51:25.17',	'2016-02-09 16:51:25.17',	'Add client',	'/oauth/clients',	'POST',	'add_client',	3,	0,	0,	1,	1),
+(132,	'2016-02-09 16:51:25.17',	'2016-02-09 16:51:25.17',	'Edit client',	'/oauth/clients/?',	'PUT',	'edit_client',	3,	0,	0,	1,	1),
+(133,	'2016-02-09 16:51:25.17',	'2016-02-09 16:51:25.17',	'Delete client',	'/oauth/clients/?',	'DELETE',	'delete_client',	3,	0,	0,	1,	1),
+(134,	'2016-02-09 16:51:25.217',	'2016-02-09 16:51:25.217',	'View OAuth authorized applications',	'/oauth/applications',	'GET',	'view_connected_applications',	2,	1,	0,	0,	0),
+(135,	'2016-02-09 16:51:25.217',	'2016-02-09 16:51:25.217',	'Revoke OAuth authorized applications',	'/oauth/applications/?',	'DELETE',	'delete_connected_applications',	2,	1,	0,	0,	0),
+(136,	'2016-02-09 16:51:25.779',	'2016-02-09 16:51:25.779',	'View webhooks',	'/webhooks',	'GET',	'view_webhooks',	2,	1,	0,	0,	0),
+(137,	'2016-02-09 16:51:25.779',	'2016-02-09 16:51:25.779',	'Add webhooks',	'/webhooks',	'POST',	'add_webhook',	2,	1,	0,	0,	0),
+(138,	'2016-02-09 16:51:25.779',	'2016-02-09 16:51:25.779',	'Edit webhooks',	'/webhooks/?',	'PUT',	'edit_webhook',	2,	1,	0,	0,	0),
+(139,	'2016-02-09 16:51:25.779',	'2016-02-09 16:51:25.779',	'Delete webhooks',	'/webhooks/?',	'DELETE',	'delete_webhook',	2,	1,	0,	0,	0),
+(140,	'2016-02-09 16:51:26.139',	'2016-02-09 16:51:26.139',	'Post oauth token',	'/oauth/token',	'POST',	'post_oauth_token',	1,	0,	1,	0,	0),
+(141,	'2016-02-18 17:42:32.045',	'2016-02-18 17:42:32.045',	'Starred board',	'/boards/?/boards_stars',	'POST',	'starred_board',	2,	1,	0,	0,	0),
+(142,	'2016-02-18 17:45:14.983',	'2016-02-18 17:45:14.983',	'Unstar board',	'/boards/?/boards_stars/?',	'PUT',	'unstarred_board',	2,	1,	0,	0,	0),
+(143,	'2016-02-18 20:11:14.482',	'2016-02-18 20:11:14.482',	'View board',	'/boards/?',	'GET',	'view_board',	2,	1,	1,	0,	0),
+(144,	'2016-02-19 15:21:14.439',	'2016-02-19 15:21:14.439',	'Users import',	'/users/import',	'POST',	'users_import',	3,	0,	0,	1,	0);
+
+
+CREATE TABLE acl_links_roles (
+    id bigint DEFAULT nextval('acl_links_roles_roles_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    acl_link_id bigint NOT NULL,
+    role_id bigint NOT NULL
+);
+
+INSERT INTO "acl_links_roles" ("id", "created", "modified", "acl_link_id", "role_id") VALUES
+(1305,	'2016-02-20 19:07:25.664',	'2016-02-20 19:07:25.664',	1,	3),
+(1306,	'2016-02-20 19:07:26.404',	'2016-02-20 19:07:26.404',	2,	3),
+(1307,	'2016-02-20 19:07:27.124',	'2016-02-20 19:07:27.124',	27,	3),
+(1308,	'2016-02-20 19:07:27.772',	'2016-02-20 19:07:27.772',	140,	3),
+(1309,	'2016-02-20 19:07:29.324',	'2016-02-20 19:07:29.324',	5,	2),
+(1310,	'2016-02-20 19:07:29.971',	'2016-02-20 19:07:29.971',	6,	2),
+(1311,	'2016-02-20 19:07:30.541',	'2016-02-20 19:07:30.541',	10,	2),
+(1312,	'2016-02-20 19:07:31.102',	'2016-02-20 19:07:31.102',	23,	2),
+(1313,	'2016-02-20 19:07:31.771',	'2016-02-20 19:07:31.771',	42,	2),
+(1314,	'2016-02-20 19:07:32.362',	'2016-02-20 19:07:32.362',	56,	2),
+(1315,	'2016-02-20 19:07:34.351',	'2016-02-20 19:07:34.351',	61,	2),
+(1316,	'2016-02-20 19:07:35.269',	'2016-02-20 19:07:35.269',	64,	2),
+(1317,	'2016-02-20 19:07:36.217',	'2016-02-20 19:07:36.217',	70,	2),
+(1318,	'2016-02-20 19:07:37.681',	'2016-02-20 19:07:37.681',	76,	2),
+(1319,	'2016-02-20 19:07:38.318',	'2016-02-20 19:07:38.318',	77,	2),
+(1320,	'2016-02-20 19:07:39.029',	'2016-02-20 19:07:39.029',	78,	2),
+(1321,	'2016-02-20 19:07:39.589',	'2016-02-20 19:07:39.589',	79,	2),
+(1322,	'2016-02-20 19:07:41.054',	'2016-02-20 19:07:41.054',	80,	2),
+(1323,	'2016-02-20 19:07:41.755',	'2016-02-20 19:07:41.755',	81,	2),
+(1324,	'2016-02-20 19:07:42.416',	'2016-02-20 19:07:42.416',	85,	2),
+(1325,	'2016-02-20 19:07:43.227',	'2016-02-20 19:07:43.227',	86,	2),
+(1326,	'2016-02-20 19:07:43.927',	'2016-02-20 19:07:43.927',	103,	2),
+(1327,	'2016-02-20 19:07:45.001',	'2016-02-20 19:07:45.001',	106,	2),
+(1328,	'2016-02-20 19:07:45.749',	'2016-02-20 19:07:45.749',	108,	2),
+(1329,	'2016-02-20 19:07:47.43',	'2016-02-20 19:07:47.43',	115,	2),
+(1330,	'2016-02-20 19:07:48.396',	'2016-02-20 19:07:48.396',	123,	2),
+(1331,	'2016-02-20 19:07:50.147',	'2016-02-20 19:07:50.147',	124,	2),
+(1332,	'2016-02-20 19:07:50.849',	'2016-02-20 19:07:50.849',	126,	2),
+(1333,	'2016-02-20 19:07:52.525',	'2016-02-20 19:07:52.525',	134,	2),
+(1334,	'2016-02-20 19:07:57.006',	'2016-02-20 19:07:57.006',	135,	2),
+(1335,	'2016-02-20 19:07:57.812',	'2016-02-20 19:07:57.812',	136,	2),
+(1336,	'2016-02-20 19:07:58.59',	'2016-02-20 19:07:58.59',	137,	2),
+(1337,	'2016-02-20 19:08:16.346',	'2016-02-20 19:08:16.346',	138,	2),
+(1338,	'2016-02-20 19:08:17.963',	'2016-02-20 19:08:17.963',	139,	2),
+(1339,	'2016-02-20 19:08:18.616',	'2016-02-20 19:08:18.616',	141,	2),
+(1340,	'2016-02-20 19:08:19.584',	'2016-02-20 19:08:19.584',	142,	2),
+(1341,	'2016-02-20 19:08:20.385',	'2016-02-20 19:08:20.385',	143,	2),
+(1342,	'2016-02-20 19:08:21.237',	'2016-02-20 19:08:21.237',	143,	3),
+(1343,	'2016-02-22 10:58:31.89',	'2016-02-22 10:58:31.89',	111,	3),
+(1344,	'2016-02-22 10:59:06.81',	'2016-02-22 10:59:06.81',	3,	3),
+(1345,	'2016-02-22 11:00:11.023',	'2016-02-22 11:00:11.023',	101,	1);
+
+
+CREATE OR REPLACE VIEW acl_links_listing AS
+ SELECT aclr.role_id,
+    acl.slug,
+    acl.url,
+    acl.method
+   FROM (acl_links_roles aclr
+   JOIN acl_links acl ON ((acl.id = aclr.acl_link_id)));

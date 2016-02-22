@@ -15,7 +15,7 @@
 	</a>
    </li>   
   <% if(!_.isUndefined(authuser.user)){%>
-	<li class="hidden-xs music-btn pa">
+	<li class="hidden-xs music-btn pa"> 
 		<% if(board_id !== undefined && board_id !== null && board_id !== "" && !_.isEmpty(this.music_content) && this.music_content !== ''){ %>
 			<% if(parseInt(authuser.user.is_productivity_beats) === 1) { %>
 				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" class="animation btn btn-default js-product-beat-action" data-type='on'>
@@ -50,14 +50,16 @@
 	  <a title="<%- i18next.t('Dashboard') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-boards-list"><span><%- i18next.t("Boards") %> </span><span><i class="icon-collapse"></i></span> </a>
 	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12 js-show-add-boards-list">
 	  	 <li class="js-show-boards-list-response"></li>
-		 <li class="clearfix js-qsearch-container js-boards-list-container">
-			<div class="clearfix h6 col-xs-12">
-				<input type="text" placeholder="Find boards by name..." class="js-search-boards form-control" id="inputBoardSearch" title="Find boards by name...">
-			</div>
-		 </li>
-		 
-		 <li class="divider"></li>
+		 <% if(!_.isEmpty(role_links.where({slug: "view_board_search"}))){ %>
+			 <li class="clearfix js-qsearch-container js-boards-list-container">
+				<div class="clearfix h6 col-xs-12">
+					<input type="text" placeholder="<%- i18next.t('Find boards by name...') %>" class="js-search-boards form-control" id="inputBoardSearch" title="Find boards by name...">
+				</div>
+			 </li>
+			 <li class="divider"></li>
+		 <% } %>
 		 <%
+
 			if (!_.isEmpty(role_links.where({
 				slug: "view_closed_boards"
 			}))) {
@@ -171,22 +173,24 @@
 			<% if(model.is_show_enable_notification === true) { %>
 				<li><a title="<%- i18next.t('Enable Desktop Notification') %>" href="#" class="js-enable-desktop-notification"><%- i18next.t("Enable Desktop Notification") %></a></li>
 			<% } %>	
-			<% if(!_.isEmpty(role_links.where({slug: "user_changepassword"}))){ %>
+			<% if(!_.isEmpty(role_links.where({slug: "user_changepassword"})) && parseInt(authuser.user.is_ldap) === 0){ %>
 				<li><a title="<%- i18next.t('Change Password') %>" href="#/users/<%-model.user.id%>/changepassword"><%- i18next.t("Change Password") %></a></li>
 			<% } %>
 		    <% if(!_.isEmpty(role_links.where({slug: "view_user"}))){ %>
 				<li><a title="<%- i18next.t('Profile') %>" href="#/user/<%-model.user.id%>"><%- i18next.t("Profile") %></a></li>
 			<% } %>
-		</ul>
-	  </li>
-	  <li class="dropdown">
-	   <a href="#" data-toggle="dropdown" class="dropdown-toggle btn btn-default pull-right" title="<%- i18next.t('Change Language') %>"><i class="icon-globe"></i>
-	   </a>
-	   <ul class="dropdown-menu text-left js-change-language-form-response">
-		   <% _.each(languages, function(language) { %>
-			    <% var lang = language.split(':'); %>
-				<li> <a class="cur <% if(lang[0].replace(/[^a-z\d\s]+/gi, '') !== authuser.user.language){ %>js-change-language<%}%>" data-lang="<%- lang[0].replace(/[^a-z\d\s]+/gi, '') %>"><%- lang[1].replace(/[^a-z\d\s]+/gi, '') %><% if((!_.isEmpty(authuser.user.language) && lang[0].replace(/[^a-z\d\s]+/gi, '') === authuser.user.language) || (_.isEmpty(authuser.user.language) && lang[0].replace(/[^a-z\d\s]+/gi, '') === DEFAULT_LANGUAGE)){ %><i class="icon-ok"></i><% } %></a> </li>			
-		   <% }); %>
+			<li class="dropdown-submenu dropdown language-dropdown">
+				<a href="#" data-toggle="dropdown" class="dropdown-toggle js-open-popover" title="<%- i18next.t('Change Language') %>"><span><i class="icon-caret-left"></i></span><%- i18next.t('Change Language') %></a>
+				<ul class="dropdown-menu text-left js-change-language-form-response">
+				   <% _.each(languages, function(language) { %>
+						<% var lang = language.split(':'); %>
+						<li> <a class="cur <% if(lang[0].replace(/[^a-z\d\s]+/gi, '') !== authuser.user.language){ %>js-change-language<%}%>" data-lang="<%- lang[0].replace(/[^a-z\d\s]+/gi, '') %>"><%- lang[1].replace(/[^a-z\d\s]+/gi, '') %><% if((!_.isEmpty(authuser.user.language) && lang[0].replace(/[^a-z\d\s]+/gi, '') === authuser.user.language) || (_.isEmpty(authuser.user.language) && lang[0].replace(/[^a-z\d\s]+/gi, '') === DEFAULT_LANGUAGE)){ %><i class="icon-ok"></i><% } %></a> </li>			
+				   <% }); %>
+				   <li class="divider"></li>
+				   <li> <a href="http://transifex.com/restya/restyaboard/" target="_blank" title="<%- i18next.t('Contribute to Translation') %>"><span class="pull-left"><i class="icon-plus"></i></span>&nbsp;  <%- i18next.t('Contribute to Translation') %></a>
+				   </li>
+				</ul>
+			</li>
 		</ul>
 	  </li>
 	  <li class="hidden-xs"><a data-toggle="tooltip" data-placement="top" title="<%- i18next.t('Chat') %>" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-chat<% }%>" data-original-title="<%- i18next.t('Chat') %>"><i class="icon-comment lead"></i></a></li> 
@@ -196,31 +200,45 @@
 	  <li class="dropdown notifications pull-right hidden-xs"><a data-toggle="dropdown" href="#" class="btn btn-default pull-right js-show-notification" title="Notifications"><sup class="badge notification-count hide js-notification-count"></sup><i class="icon-bell lead"></i></a>
 		<div class="tabbable tabs-below dropdown-menu pull-right js-dropdown-popup" role="menu">
 		  <div class="tab-content bg-info clearfix">
-			  <div class="tab-pane js-all-activity-list notification-list vertical-scrollbar col-xs-12" id="all_">
-				<ul id="js-all-activities" class="list-unstyled"></ul>
-			  </div>
-			  <% if(!_.isEmpty(board_id)){ %>
-				  <div class="tab-pane js-boards-activity-list active notification-list vertical-scrollbar col-xs-12" id="board_">
-					<ul id="js-board-activities"  class="list-unstyled"></ul>
+		    <div class="col-xs-12 user-filter navbar-btn">
+				<span class="pull-left"><strong><%- i18next.t('Activity') %></strong></span>
+				<ul class="nav nav-pills pull-right">
+					<li id="modal-activities"><a href="#" title="<%- i18next.t('Show activities') %>" class="text-muted"><i class="icon-eye-close small"></i></a></li>
+					<li id="modal-comments"><a href="#" title="<%- i18next.t('Show comments') %>" class="text-muted"><i class=" icon-comment-alt small"></i></a></li>
+				</ul>   
+			  </div> 
+			  <div class="tab-pane js-all-activity-list notification-list vertical-scrollbar col-xs-12 border-top" id="all_">
+			  <ul id="js-all-activities" class="list-unstyled"></ul> 
+			  </div>    
+			  <% if(!_.isEmpty(board_id)){ %> 
+                  <div class="col-xs-12 user-filter navbar-btn">
+					<span class="pull-left"><strong><%- i18next.t('Activity') %></strong></strong></span>
+					<ul class="nav nav-pills pull-right"> 
+						<li id="modal-activities"><a href="#" title="<%- i18next.t('Show activities') %>" class="text-muted"><i class="icon-eye-close small"></i></a></li>
+						<li id="modal-comments"><a href="#" title="<%- i18next.t('Show comments') %>" class="text-muted"><i class=" icon-comment-alt small"></i></a></li>
+					</ul>  
+                 </div> 			  
+				  <div class="tab-pane js-boards-activity-list active notification-list vertical-scrollbar col-xs-12 border-top" id="board_">
+				  <ul id="js-board-activities"  class="list-unstyled"></ul>
 				  </div>
 			  <% } %>
 				<% if(!_.isEmpty(board_id) && board_id !== 0 && board_id !== '0') { %>
-					<div class="text-center js-load-link" id="js-load-link1">
+					<div class="col-xs-12 border-top text-center js-load-link" id="js-load-link1">
 						<a href="#" title="View all activity" id="js-notification-load-more" class="js-board-load-more btn btn-link"><%- i18next.t("Load more activities") %></a>
 					</div>
-					<div class="text-center js-load-link hide" id="js-load-link2">
+					<div class="col-xs-12 border-top text-center js-load-link hide" id="js-load-link2">
 						<a href="#" title="<%- i18next.t('View all activity') %>" id="js-notification-load-more-all" class="js-board-load-more-all btn btn-link"><%- i18next.t("Load more activities") %></a>
 					</div>
 				<%} else { %>
-				<div class="text-center js-load-link" id="js-load-link">
+				<div class="col-xs-12 border-top text-center js-load-link" id="js-load-link">
 					<a href="#" title="<%- i18next.t('View all activity') %>" id="js-notification-load-more-all" class="js-all-load-more-all btn btn-link"><%- i18next.t("Load more activities") %></a>
-				</div>
+				</div>  
 				<% } %>
 			 </div>
 			<ul class="nav nav-tabs <% if(_.isEmpty(board_id)){ %>hide<% } %>">
 				<li><a href="#all_" data-toggle="tab" class="js-all-activities">All</a></li>
 				
-				<% if(!_.isEmpty(board_id) && board_id !== 0 && board_id !== '0'){ %>
+				<% if(!_.isEmpty(board_id) && board_id !== 0 && board_id !== '0' && (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "view_board_activities", board_user_role_id: parseInt(board.board_user_role_id)}))))) { %>
 					<li class="active"><a href="#board_" data-toggle="tab" class="js-board-activities"><%- i18next.t("In this board") %></a></li>
 				<% } %>
 			</ul>

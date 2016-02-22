@@ -28,6 +28,12 @@ App.CardCheckListItemView = Backbone.View.extend({
         this.model.checklist.card.list.collection.board.checklist_items.bind('change', this.render);
         this.model.checklist.card.list.collection.board.checklist_items.bind('change', this.renderProgress);
         this.model.checklist.card.list.collection.board.checklist_items.bind('remove', this.renderProgress);
+        var board_user_role_id = this.model.board_users.findWhere({
+            user_id: parseInt(authuser.user.id)
+        });
+        if (!_.isEmpty(board_user_role_id)) {
+            this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+        }
     },
     template: JST['templates/card_checklist_item'],
     className: function() {

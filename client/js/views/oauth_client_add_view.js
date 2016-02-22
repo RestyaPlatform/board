@@ -49,13 +49,13 @@ App.OauthClientAddView = Backbone.View.extend({
         oauth_client.save(data, {
             success: function(model, response) {
                 if (!_.isEmpty(response.id)) {
-                    self.flash('success', i18next.t('Oauth client has been added successfully.'));
+                    self.flash('success', i18next.t('OAuth application has been added successfully.'));
                     app.navigate('#/oauth_clients', {
                         trigger: true,
                         replace: true
                     });
                 } else {
-                    self.flash('danger', i18next.t('Oauth client not added successfully.'));
+                    self.flash('danger', i18next.t('OAuth application not added successfully.'));
                 }
             }
         });

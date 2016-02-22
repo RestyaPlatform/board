@@ -21,12 +21,31 @@ App.ArchivedListsView = Backbone.View.extend({
     initialize: function() {
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
+            var board_user_role_id = this.model.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(board_user_role_id)) {
+                this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+            }
         }
         this.render();
     },
     template: JST['templates/archived_lists'],
     tagName: 'div',
     className: 'clearfix col-xs-12',
+    /**
+     * Events
+     * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
+     */
+    events: {
+        'click .js-delete-all-archived-lists-confirm': 'deleteAllArchivedlistsConfirm'
+    },
+    deleteAllArchivedlistsConfirm: function(e) {
+        $('.js-setting-response').html(new App.ArchiveListDeleteConfirmView({
+            model: this.model,
+        }).el);
+        return false;
+    },
     /**
      * render()
      * populate the html to the dom
@@ -41,4 +60,5 @@ App.ArchivedListsView = Backbone.View.extend({
         this.showTooltip();
         return this;
     }
+
 });

@@ -96,6 +96,14 @@ App.CardView = Backbone.View.extend({
             this.model.cards_subscribers.bind('remove', this.render);
             this.model.card_voters.bind('add', this.render);
             this.model.card_voters.bind('remove', this.render);
+            if (!_.isUndefined(authuser.user)) {
+                var board_user_role_id = this.model.board_users.findWhere({
+                    user_id: parseInt(authuser.user.id)
+                });
+                if (!_.isEmpty(board_user_role_id)) {
+                    this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+                }
+            }
         }
     },
     className: 'panel js-show-modal-card-view js-board-list-card cur',
@@ -360,7 +368,7 @@ App.CardView = Backbone.View.extend({
      * @return false
      *
      */
-    showCardModal: function() {
+    showCardModal: function(e) {
         $('ul.dropdown-menu').parent().removeClass('open');
         if (this.model === null || _.isEmpty(this.model)) {
             return false;
@@ -388,9 +396,14 @@ App.CardView = Backbone.View.extend({
                 trigger_function: false,
             });
         }
+        var initialState = 'docked';
+        if (e.ctrlKey || e.metaKey) {
+            initialState = 'modal';
+        }
         if (!_.isUndefined(this.model.id)) {
             var modalView = new App.ModalCardView({
-                model: this.model
+                model: this.model,
+                initialState: initialState
             });
             var view_card = this.$('#js-card-listing-' + this.model.id);
             view_card.html('&nbsp;');
