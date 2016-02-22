@@ -344,7 +344,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
         }
         if (isset($r_resource_filters['page'])) {
-            $c_sql = 'SELECT COUNT(*) FROM boards_listing bl';
+            $c_sql = 'SELECT COUNT(*) FROM boards_listing bl ' . $filter_condition;
         }
         break;
 
