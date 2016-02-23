@@ -504,7 +504,7 @@ function ldapAuthenticate($p_user_id, $p_password)
  *
  * @return true if links allowed false otherwise
  */
-function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r_resource_vars, $post_data)
+function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r_resource_vars = array(), $post_data = array())
 {
     global $r_debug, $db_lnk, $authUser;
     $role = 3; // Guest role id
