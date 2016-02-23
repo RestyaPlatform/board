@@ -56,7 +56,7 @@ App.AdminBoardsListView = Backbone.View.extend({
                 boards.each(function(board) {
                     $('.js-my-boards').append(new App.AdminBoardView({
                         model: board,
-						board_user_roles: response.board_user_roles
+                        board_user_roles: response.board_user_roles
                     }).el);
                 });
                 $('.js-my-boards').find('.timeago').timeago();
