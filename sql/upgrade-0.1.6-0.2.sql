@@ -1817,3 +1817,6 @@ UPDATE "roles" SET "name" = 'Guest' WHERE "id" = '3';
 UPDATE "acl_board_links" SET "name" = 'Add / Delete Labels' WHERE "id" = '29';
 DELETE from acl_board_links WHERE id = 24;
 DELETE from acl_board_links_boards_user_roles WHERE acl_board_link_id = 24;
+
+DELETE from acl_board_links WHERE id = 60;
+DELETE from acl_board_links_boards_user_roles WHERE acl_board_link_id = 60;
