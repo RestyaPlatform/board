@@ -40,6 +40,7 @@ App.UserView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         this.type = 'profile';
+		this.page = options.page;
         if (!_.isUndefined(options.type)) {
             this.type = options.type;
         }
@@ -68,7 +69,8 @@ App.UserView = Backbone.View.extend({
                 success: function(user, response) {
                     self.$el.html(self.template({
                         user: self.model,
-                        type: self.type
+                        type: self.type,
+						page: self.page,
                     }));
                     if (!_.isEmpty(activities.models)) {
                         var last_activity = _.min(activities.models, function(activity) {
@@ -107,7 +109,8 @@ App.UserView = Backbone.View.extend({
         var is_send_newsletter_val = this.model.attributes.is_send_newsletter;
         this.$el.html(this.template({
             user: this.model,
-            type: this.type
+            type: this.type,
+			page: this.page
         }));
         if (this.type == 'cards') {
             this.userCards();
