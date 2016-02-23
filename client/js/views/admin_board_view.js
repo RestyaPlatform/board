@@ -36,7 +36,6 @@ App.AdminBoardView = Backbone.View.extend({
             this.model.collection.bind('remove', this.render);
         }
         App.boards.bind('change', this.render);
-        this.renderAdminBoardUsers();
         this.render();
     },
     template: JST['templates/admin_board_view'],
@@ -96,18 +95,6 @@ App.AdminBoardView = Backbone.View.extend({
         }
         this.showTooltip();
         return this;
-    },
-    renderAdminBoardUsers: function() {
-        if (this.model.attributes.boards_users !== null) {
-            var admins = this.model.attributes.boards_users.filter(function(normal_user) {
-                return parseInt(normal_user.is_admin) === 1;
-            });
-            this.model.admin_board_users = admins;
-            var normal_users = this.model.attributes.boards_users.filter(function(normal_user) {
-                return parseInt(normal_user.is_admin) === 0;
-            });
-            this.model.normal_board_users = normal_users;
-        }
     },
     /**
      * closeSpanPopover()

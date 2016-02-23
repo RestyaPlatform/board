@@ -22,7 +22,6 @@ App.BoardSidebarView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
-        this.is_admin = options.is_admin;
         this.render();
     },
     template: JST['templates/board_sidebar'],
@@ -39,7 +38,6 @@ App.BoardSidebarView = Backbone.View.extend({
         this.$el.html(this.template({
             board: this.model,
             subscriber: this.model.board_subscriber,
-            is_admin: this.is_admin
         }));
         this.showTooltip();
         return this;

@@ -88,10 +88,6 @@
 						<% } else {%>
 							<i class="avatar avatar-sm avatar-color-194 img-rounded"><%= (admin_board_user.attributes.initials) %></i>
 						<% } %>
-						<% if(admin_board_user.attributes.is_admin) { %>
-							<span class="name-block htruncate col-xs-12 label btn-xs col-xs-push-0">
-<%- i18next.t('Owner') %></span>
-						<% } %>
 					</span>
 				</span>
 			  <% i++; }}); %>

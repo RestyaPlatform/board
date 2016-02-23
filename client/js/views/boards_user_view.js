@@ -21,8 +21,6 @@ App.BoardUsersView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
-        this.is_admin = options.is_admin;
-        this.model.bind('change:is_admin', this.showBoardUserActions, this);
         this.render();
     },
     tagName: 'li',
@@ -47,7 +45,6 @@ App.BoardUsersView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             user: this.model,
-            is_admin: this.is_admin
         }));
         this.showTooltip();
         return this;
@@ -55,7 +52,6 @@ App.BoardUsersView = Backbone.View.extend({
     showBoardUserActions: function() {
         this.$el.find('.js-show-board-user-action-response').html(new App.BoardUserActionsView({
             model: this.model,
-            is_admin: this.is_admin
         }).el);
         $('.js-add-board-member-dropdown').removeClass('open');
     },
