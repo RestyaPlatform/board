@@ -546,7 +546,6 @@ App.BoardView = Backbone.View.extend({
         var boardUser = new App.BoardUsers();
         boardUser.url = api_url + 'boards_users/' + board_user_id + '.json';
         boardUser.set('id', board_user_id);
-        boardUser.set('is_admin', 1);
         boardUser.save();
         return false;
     },
@@ -569,7 +568,6 @@ App.BoardView = Backbone.View.extend({
         var boardUser = new App.BoardUsers();
         boardUser.url = api_url + 'boards_users/' + board_user_id + '.json';
         boardUser.set('id', board_user_id);
-        boardUser.set('is_admin', 0);
         boardUser.save();
         return false;
     },

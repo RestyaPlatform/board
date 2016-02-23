@@ -41,17 +41,17 @@
 	<% } %>
   </li>
 <% } %>  
-<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
 <li><a href="#" class="nav-list-item nav-list-sub-item js-change-background"><%- i18next.t('Change Background') %></a></li>
 <li><a href="#" class="nav-list-item nav-list-sub-item js-email-to-board-settings"> <%- i18next.t('Email to board settings') %></a></li>
-<% }%>
+<% } %>
 <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "copy_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
 	<li class="js-sync-google-dropdown inner-dropdown"><a data-toggle="dropdown" href="#" class="js-show-copy-board"><%- i18next.t('Copy board') %></a></li>
 <% }%>
 <% } %>
 <li class="divider"></li>
 <li><a href="#" class="js-show-board-modal" data-toggle="modal" data-target="#modalListView"><%- i18next.t('Show Attachments') %></a></li>
-<% if(is_admin || (!_.isUndefined(authuser.user) && authuser.user.role_id == 1)) {%>
+<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
 <li><a href="#" class="js-additional-settings"><%- i18next.t('Additional Settings') %></a></li>
 <li class="divider"></li>
 <li class="dropdown js-open-dropdown inner-dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-sm icon-warning-sign icon-type text-primary"></i><%- i18next.t('Close board') %></a>

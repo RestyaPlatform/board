@@ -88,7 +88,7 @@
 						<% } else {%>
 							<i class="avatar avatar-sm avatar-color-194 img-rounded"><%= (admin_board_user.attributes.initials) %></i>
 						<% } %>
-						<% if(admin_board_user.attributes.is_admin) { %>
+						<% if(board.board_user_roles[admin_board_user.attributes.board_user_role_id - 1].id === 1){ %>
 							<span class="name-block htruncate col-xs-12 label btn-xs col-xs-push-0">
 <%- i18next.t('Owner') %></span>
 						<% } %>

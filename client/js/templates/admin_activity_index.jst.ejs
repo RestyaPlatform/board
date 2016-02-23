@@ -104,7 +104,7 @@
 							<% } %>
 							</ul>
 						</div>
-					<% } else if(activity.attributes.revisions != null && activity.attributes.revisions != "" && (parseInt(authuser.user.id) == 1 || current_user_can_undo_it == true )){ %>
+					<% } else if(activity.attributes.revisions != null && activity.attributes.revisions != "" && (parseInt(authuser.user.role_id) == 1)){ %>
 						<% if(!_.isEmpty(role_links.where({slug: "undo_activity"}))){ %>
 							<% if(_.isUndefined(activity.from_footer)) { %>
 								<div class="pull-left js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline col-xs-offset-0"><li><a title="<%- i18next.t('Undo') %>" class="js-undo2 pull-left" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>

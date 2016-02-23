@@ -925,6 +925,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             );
             $organization_count = executeQuery('SELECT count(*) FROM boards WHERE board_visibility = $1', $val_array);
             $filter_count['organization'] = $organization_count['count'];
+            $board_user_roles_result = pg_query_params($db_lnk, 'SELECT id, name FROM board_user_roles', array());
+            $board_user_roles = array();
+            while ($board_user = pg_fetch_assoc($board_user_roles_result)) {
+                $board_user_roles[] = $board_user;
+            }
         }
         $arrayResponse = array(
             '/users/?/cards',
@@ -1135,6 +1140,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             if (!empty($_metadata) && !empty($filter_count)) {
                 $data['filter_count'] = $filter_count;
+            }
+            if (!empty($_metadata) && !empty($board_user_roles)) {
+                $data['board_user_roles'] = $board_user_roles;
             }
             if (!empty($roles)) {
                 $data['roles'] = $roles;
@@ -2492,14 +2500,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $user_id = $is_user_exist['id'];
                         }
                         if (empty($is_organization_exist)) {
-                            $is_admin = 'false';
+                            $organization_user_role_id = 2;
                             if (!empty($values['admincount'])) {
-                                $is_admin = 'true';
+                                $organization_user_role_id = 1;
                             }
                             $data = array(
                                 $organization_id,
                                 $user_id,
-                                $is_admin
+                                $organization_user_role_id
                             );
                             $condition = array(
                                 $user_id
@@ -3447,9 +3455,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         if (empty($boards_users)) {
                             $qry_val_arr = array(
                                 $board['id'],
-                                $r_post['user_id']
+                                $r_post['user_id'],
+                                2
                             );
-                            pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, is_admin) VALUES (now(), now(), $1, $2, false)', $qry_val_arr);
+                            pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
                         }
                     }
                 }
@@ -3646,9 +3655,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 if (empty($boards_users)) {
                     $qry_val_arr = array(
                         $r_resource_vars['boards'],
-                        $organizations_user['user_id']
+                        $organizations_user['user_id'],
+                        2
                     );
-                    pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, is_admin) VALUES (now(), now(), $1, $2, false)', $qry_val_arr);
+                    pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
                 }
             }
         }
