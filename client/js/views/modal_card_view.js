@@ -2440,7 +2440,7 @@ App.ModalCardView = Backbone.View.extend({
         var self = this;
         var q = this.$el.find('.js-search-card').val();
         var cards = new App.CardCollection();
-        cards.url = api_url + 'cards/search.json';
+        cards.url = api_url + 'boards/' + this.model.attributes.board_id + '/cards/search.json';
         cards.fetch({
             data: {
                 q: q

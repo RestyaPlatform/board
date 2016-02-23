@@ -1817,3 +1817,10 @@ UPDATE "roles" SET "name" = 'Guest' WHERE "id" = '3';
 UPDATE "acl_board_links" SET "name" = 'Add / Delete Labels' WHERE "id" = '29';
 DELETE from acl_board_links WHERE id = 24;
 DELETE from acl_board_links_boards_user_roles WHERE acl_board_link_id = 24;
+
+DELETE FROM "acl_board_links_boards_user_roles" WHERE acl_board_link_id = (select id from "acl_board_links" WHERE "name" = 'All activities');
+DELETE FROM "acl_board_links" WHERE "name" = 'All activities';
+DELETE FROM "acl_board_links_boards_user_roles" WHERE acl_board_link_id = (select id from "acl_board_links" WHERE "name" = 'Board members listing');
+DELETE FROM "acl_board_links" WHERE "name" = 'Board members listing';
+
+UPDATE "acl_board_links" SET "url" = '/boards/?/cards/search' WHERE "slug" = 'view_card_search';
