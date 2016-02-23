@@ -35,6 +35,7 @@ App.UserView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function(options) {
+        $('.action-close', $('.dockmodal.active')).trigger('click');
         var last_activity_id = 0;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
