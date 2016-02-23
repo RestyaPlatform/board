@@ -207,7 +207,11 @@ App.FooterView = Backbone.View.extend({
             user.save({
                 'is_productivity_beats': volume
             });
-            authuser.user.is_productivity_beats = volume;
+            if (volume === true) {
+                authuser.user.is_productivity_beats = 1;
+            } else {
+                authuser.user.is_productivity_beats = 0;
+            }
             var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
             Auth.user.is_productivity_beats = volume;
             window.sessionStorage.setItem('auth', JSON.stringify(Auth));
