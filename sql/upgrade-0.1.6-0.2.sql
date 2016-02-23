@@ -1831,4 +1831,10 @@ DELETE FROM "acl_board_links" WHERE "slug" = 'search_card';
 
 UPDATE "acl_board_links" SET "url" = '/boards/?/cards/search' WHERE "slug" = 'view_card_search';
 
-UPDATE "acl_board_links" SET "url" = '/boards/?/lists/?/cards/?/cards_users/?' WHERE "id" = '42';
+DELETE from acl_links WHERE id = 126;
+DELETE from acl_links_roles WHERE acl_link_id = 126;
+DELETE from acl_links WHERE id = 142;
+DELETE from acl_links_roles WHERE acl_link_id = 142;
+UPDATE "acl_links" SET "name" = 'Star / Unstar board' WHERE "id" = '141';
+
+
