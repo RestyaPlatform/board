@@ -1830,3 +1830,5 @@ DELETE FROM "acl_board_links_boards_user_roles" WHERE acl_board_link_id = (selec
 DELETE FROM "acl_board_links" WHERE "slug" = 'search_card';
 
 UPDATE "acl_board_links" SET "url" = '/boards/?/cards/search' WHERE "slug" = 'view_card_search';
+
+UPDATE "acl_board_links" SET "url" = '/boards/?/lists/?/cards/?/cards_users/?' WHERE "id" = '42';
