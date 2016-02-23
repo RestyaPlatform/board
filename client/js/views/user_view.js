@@ -40,7 +40,7 @@ App.UserView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         this.type = 'profile';
-		this.page = options.page;
+        this.page = options.page;
         if (!_.isUndefined(options.type)) {
             this.type = options.type;
         }
@@ -70,7 +70,7 @@ App.UserView = Backbone.View.extend({
                     self.$el.html(self.template({
                         user: self.model,
                         type: self.type,
-						page: self.page,
+                        page: self.page,
                     }));
                     if (!_.isEmpty(activities.models)) {
                         var last_activity = _.min(activities.models, function(activity) {
@@ -110,7 +110,7 @@ App.UserView = Backbone.View.extend({
         this.$el.html(this.template({
             user: this.model,
             type: this.type,
-			page: this.page
+            page: this.page
         }));
         if (this.type == 'cards') {
             this.userCards();

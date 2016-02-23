@@ -84,20 +84,20 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $condition1 = ' AND al.id < $3';
             }
         }
-		if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users']) {
-			$val_array = array(
-				$authUser['id']
-			);
-			$logged_user = executeQuery('SELECT boards_users FROM users_listing WHERE id = $1', $val_array);
-			$logged_user_board_ids = array();
-			if (!empty($logged_user['boards_users'])) {
-				$logged_boards_users = json_decode($logged_user['boards_users'], true);
-				foreach ($logged_boards_users as $logged_boards_user) {
-					$logged_user_board_ids[] = $logged_boards_user['board_id'];
-				}
-			}
-		}
-		$val_array = array(
+        if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users']) {
+            $val_array = array(
+                $authUser['id']
+            );
+            $logged_user = executeQuery('SELECT boards_users FROM users_listing WHERE id = $1', $val_array);
+            $logged_user_board_ids = array();
+            if (!empty($logged_user['boards_users'])) {
+                $logged_boards_users = json_decode($logged_user['boards_users'], true);
+                foreach ($logged_boards_users as $logged_boards_user) {
+                    $logged_user_board_ids[] = $logged_boards_user['board_id'];
+                }
+            }
+        }
+        $val_array = array(
             $r_resource_vars['users']
         );
         $user = executeQuery('SELECT boards_users FROM users_listing WHERE id = $1', $val_array);
@@ -108,9 +108,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $board_ids[] = $boards_user['board_id'];
             }
         }
-		if (!empty($logged_user_board_ids)) {
-			$board_ids = array_intersect($logged_user_board_ids, $board_ids);
-		}
+        if (!empty($logged_user_board_ids)) {
+            $board_ids = array_intersect($logged_user_board_ids, $board_ids);
+        }
         $org_users = pg_query_params($db_lnk, 'SELECT organization_id FROM organizations_users WHERE user_id = $1', $val_array);
         $org_ids = array();
         while ($row = pg_fetch_assoc($org_users)) {
@@ -126,13 +126,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         } else {
             if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
-				$str = '';
-				$i = 1;
-				if (!empty($logged_user_board_ids)) {
-					$str .= 'board_id = ANY ( $' . $i . ' ) AND';
-					$i++;
-					array_push($pg_params, '{' . implode(',', $board_ids) . '}');
-				}
+                $str = '';
+                $i = 1;
+                if (!empty($logged_user_board_ids)) {
+                    $str.= 'board_id = ANY ( $' . $i . ' ) AND';
+                    $i++;
+                    array_push($pg_params, '{' . implode(',', $board_ids) . '}');
+                }
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ' . $str . ' user_id = $' . $i . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str . ' user_id = $' . $i . $condition;
                 array_push($pg_params, $r_resource_vars['users']);
@@ -218,26 +218,26 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/users/?/cards':
-		if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users']) {
-			$val_array = array(
-				$authUser['id']
-			);
-			$logged_user = executeQuery('SELECT boards_users FROM users_listing WHERE id = $1', $val_array);
-			$logged_user_board_ids = array();
-			if (!empty($logged_user['boards_users'])) {
-				$logged_boards_users = json_decode($logged_user['boards_users'], true);
-				foreach ($logged_boards_users as $logged_boards_user) {
-					$logged_user_board_ids[] = $logged_boards_user['board_id'];
-				}
-			}
-		}
-		$str = '';
-		$i = 1;
-		if (!empty($logged_user_board_ids)) {
-			$str .= 'board_id = ANY ( $' . $i . ' ) AND';
-			$i++;
-			array_push($pg_params, '{' . implode(',', $board_ids) . '}');
-		}
+        if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users']) {
+            $val_array = array(
+                $authUser['id']
+            );
+            $logged_user = executeQuery('SELECT boards_users FROM users_listing WHERE id = $1', $val_array);
+            $logged_user_board_ids = array();
+            if (!empty($logged_user['boards_users'])) {
+                $logged_boards_users = json_decode($logged_user['boards_users'], true);
+                foreach ($logged_boards_users as $logged_boards_user) {
+                    $logged_user_board_ids[] = $logged_boards_user['board_id'];
+                }
+            }
+        }
+        $str = '';
+        $i = 1;
+        if (!empty($logged_user_board_ids)) {
+            $str.= 'board_id = ANY ( $' . $i . ' ) AND';
+            $i++;
+            array_push($pg_params, '{' . implode(',', $board_ids) . '}');
+        }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_cards_listing ucl WHERE ' . $str . ' user_id = $' . $i . ' ORDER BY board_id ASC) as d ';
         array_push($pg_params, $r_resource_vars['users']);
         break;

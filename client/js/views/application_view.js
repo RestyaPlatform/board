@@ -769,24 +769,24 @@ App.ApplicationView = Backbone.View.extend({
                     id: page.page_view_id
                 }).el);
             } else if (page.model == 'user_view') {
-				var user = new App.User();
-				user.url = api_url + 'users/' + page.id + '.json';
-				user.fetch({
-					cache: false,
-					abortPending: true,
-					success: function(user, response) {
-						$('#header').html(new App.UserViewHeaderView({
-							model: user,
-							type: page.page_view_type,
-							page: page,
-						}).el);
-						$('#content').html(new App.UserView({
-							model: user,
-							type: page.page_view_type,
-							page: page,
-						}).el);
-					}
-				});
+                var user = new App.User();
+                user.url = api_url + 'users/' + page.id + '.json';
+                user.fetch({
+                    cache: false,
+                    abortPending: true,
+                    success: function(user, response) {
+                        $('#header').html(new App.UserViewHeaderView({
+                            model: user,
+                            type: page.page_view_type,
+                            page: page,
+                        }).el);
+                        $('#content').html(new App.UserView({
+                            model: user,
+                            type: page.page_view_type,
+                            page: page,
+                        }).el);
+                    }
+                });
             } else if (page.model == 'role_settings') {
                 changeTitle(i18next.t('Role Settings'));
                 // User View
