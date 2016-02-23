@@ -23,7 +23,7 @@
 					var i = {};
 					i.checklist_id = checklist_list.attributes.id;
 					i.checklist_name = checklist_list.attributes.name;
-					i.checklist_item_count = checklist_list.attributes.checklist_item_count;
+					i.checklist_item_count = !isNaN(checklist_list.attributes.checklist_item_count)?checklist_list.attributes.checklist_item_count:checklist_list.checklist_items.length;
 					if (_.isUndefined(checklist_options[card_id])) {
 						var c = {};
 						c.card_id = card_id;
