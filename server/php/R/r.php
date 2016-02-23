@@ -1301,6 +1301,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['role_id'] = 2; // user
             $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
+            $r_post['full_name'] = email2name($r_post['email']);
         } else {
             $msg = '';
             if ($user['email'] == $r_post['email']) {
