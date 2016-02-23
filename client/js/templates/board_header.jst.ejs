@@ -24,13 +24,11 @@
 						<input id="inputBoardStar" name="is_starred" type="hidden" value="<%if(!_.isUndefined(star)) {%><%- star.attributes.is_starred %><%}else{%>0<%}%>"> 
 					  </form>
 					<div class="col-xs-12 pull-left navbar-btn list-group-item-text <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(board.acl_links.where({slug: 'edit_board',board_user_role_id: parseInt(board.board_user_role_id)})))) { %>dropdown<% } %>">
+					  <% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
 					  <% if(!_.isUndefined(star) && (parseInt(star.attributes.is_starred) === 1)) { %>
-					  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(board.acl_links.where({slug: "starred_board",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>
 					  <a href="#" class="js-star-board pull-left" name="unstar" title="
 <%- i18next.t('Unstar') %>"><i class="icon-star text-primary"></i></a>
-					  <% } %>
-					  <% } else {%>
-					  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "unstarred_board",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>
+					  <% } else { %>
 					  <a href="#" class="js-star-board pull-left" name="star" title="
 <%- i18next.t('Star') %>"><i class="icon-star-empty"></i></a>
 					  <% } %>
