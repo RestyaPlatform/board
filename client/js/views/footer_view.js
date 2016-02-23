@@ -1287,19 +1287,19 @@ App.FooterView = Backbone.View.extend({
                                     } else if (activity.attributes.type === 'add_board_user') {
                                         board.board_users.add(activity.attributes.board_user);
                                     }
+                                } else if (activity.attributes.type === 'add_board') {
+                                    var new_board = new App.Board();
+                                    new_board.set('id', parseInt(activity.attributes.board_id));
+                                    new_board.set('name', activity.attributes.board_name);
+                                    new_board.set('board_visibility', activity.attributes.board_visibility);
+                                    $('.js-my-boards').append(new App.BoardSimpleView({
+                                        model: new_board,
+                                        id: 'js-my-board-' + activity.attributes.board_id,
+                                        className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + activity.attributes.board_id
+                                    }).el);
+                                    App.boards.add(new_board);
                                 }
                             }
-							if (activity.attributes.type === 'add_board') {
-								var new_board = new App.BoardCollection();
-								new_board.set('id', parseInt(activity.attributes.board_id));
-								new_board.set('name', parseInt(activity.attributes.board_name));
-								$('.js-my-boards').append(new App.BoardSimpleView({
-									model: new_board.models[0],
-									id: 'js-my-board-' + activity.attributes.board_id,
-									className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + activity.attributes.board_id
-								}).el);
-								App.boards.add(new_board);
-							}
                         }
                         if (parseInt(activity.attributes.card_id) !== 0 && parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
                             $('#js-card-' + activity.attributes.card_id).stop().animate({
