@@ -1288,16 +1288,16 @@ App.FooterView = Backbone.View.extend({
                                         board.board_users.add(activity.attributes.board_user);
                                     }
                                 } else if (activity.attributes.type === 'add_board') {
-                                    var new_board = new App.Board();
-                                    new_board.set('id', parseInt(activity.attributes.board_id));
-                                    new_board.set('name', activity.attributes.board_name);
-                                    new_board.set('board_visibility', activity.attributes.board_visibility);
+                                    var _new_board = new App.Board();
+                                    _new_board.set('id', parseInt(activity.attributes.board_id));
+                                    _new_board.set('name', activity.attributes.board_name);
+                                    _new_board.set('board_visibility', activity.attributes.board_visibility);
                                     $('.js-my-boards').append(new App.BoardSimpleView({
-                                        model: new_board,
+                                        model: _new_board,
                                         id: 'js-my-board-' + activity.attributes.board_id,
                                         className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + activity.attributes.board_id
                                     }).el);
-                                    App.boards.add(new_board);
+                                    App.boards.add(_new_board);
                                 }
                             }
                         }
