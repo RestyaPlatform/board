@@ -499,6 +499,8 @@ function ldapAuthenticate($p_user_id, $p_password)
  *
  * @param string $r_request_method Optional default value : 'GET'
  * @param string $r_resource_cmd   Optional default value : '/users'
+ * @param string $r_resource_vars  Resource variable
+ * @param string $post_data        Post data
  *
  * @return true if links allowed false otherwise
  */
@@ -541,10 +543,11 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
         'PUT'
     );
     $board_star = true;
-    if (in_array($r_resource_cmd, array(
+    $board_star_url = array(
         '/boards/?/boards_stars/?',
         '/boards/?/boards_stars'
-    ))) {
+    );
+    if (in_array($r_resource_cmd, $board_star_url)) {
         $board_star = false;
     }
     //temp fix
