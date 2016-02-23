@@ -1820,3 +1820,13 @@ DELETE from acl_board_links_boards_user_roles WHERE acl_board_link_id = 24;
 
 DELETE from acl_board_links WHERE id = 60;
 DELETE from acl_board_links_boards_user_roles WHERE acl_board_link_id = 60;
+DELETE FROM "acl_board_links_boards_user_roles" WHERE acl_board_link_id = (select id from "acl_board_links" WHERE "name" = 'All activities');
+DELETE FROM "acl_board_links" WHERE "name" = 'All activities';
+
+DELETE FROM "acl_board_links_boards_user_roles" WHERE acl_board_link_id = (select id from "acl_board_links" WHERE "name" = 'Board members listing');
+DELETE FROM "acl_board_links" WHERE "name" = 'Board members listing';
+
+DELETE FROM "acl_board_links_boards_user_roles" WHERE acl_board_link_id = (select id from "acl_board_links" WHERE "slug" = 'search_card');
+DELETE FROM "acl_board_links" WHERE "slug" = 'search_card';
+
+UPDATE "acl_board_links" SET "url" = '/boards/?/cards/search' WHERE "slug" = 'view_card_search';

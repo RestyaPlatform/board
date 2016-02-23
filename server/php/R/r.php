@@ -703,7 +703,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $table = 'users';
         break;
 
-    case '/cards/search':
+    case '/boards/?/cards/search':
         $user_id = (!empty($authUser['id'])) ? $authUser['id'] : 0;
         $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT c.id, c.name, bu.board_id FROM boards_users bu join cards c on c.board_id = bu.board_id WHERE bu.board_id IN (SELECT board_id FROM boards_users WHERE user_id = $1) AND c.name  LIKE $2 ORDER BY id ASC) as d';
         array_push($pg_params, $user_id, '%' . $r_resource_filters['q'] . '%');
