@@ -64,8 +64,10 @@ App.LoginView = Backbone.View.extend({
                     auth_response.user.full_name = response.user.full_name;
                     auth_response.board_id = response.board_id;
                     auth_response.user.notify_count = response.user.notify_count;
+                    auth_response.user.unread_activity_id = response.user.unread_activity_id;
                     auth_response.user.last_activity_id = response.user.last_activity_id;
                     auth_response.user.language = response.user.language;
+                    auth_response.user.is_ldap = response.user.is_ldap;
                     window.sessionStorage.setItem('auth', JSON.stringify(auth_response));
                     i18next.changeLanguage(response.user.language);
                     api_token = response.access_token;
@@ -97,7 +99,11 @@ App.LoginView = Backbone.View.extend({
                     }
                 } else {
                     $('input#inputPassword', target).val('');
-                    self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
+                    if (response.error === 'ldap_error') {
+                        self.flash('danger', i18next.t('Email not associated for this LDAP account.'));
+                    } else {
+                        self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
+                    }
                 }
 
             }

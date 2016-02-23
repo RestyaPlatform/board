@@ -1,7 +1,7 @@
 <section class="row js-card-dock-modal-<%- card.attributes.id %> js-card-container" id="dropzone<%- card.attributes.id %>">
   <div class="pull-right js-attachment-loader"></div>
   <div class="clearfix col-xs-12">
-  <h3 class="navbar-btn"> <span class="icon-credit-card text-muted"></span> <a href="" title="<%- card.attributes.name %>" class="<% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "edit_card"}))){ %>js-show-card-title-edit-form<% }else{ %> js-no-action<%}%>"><%- card.attributes.name %></a><small><%- i18next.t('in list') %></small> <span class="dropdown"><a class="dropdown-toggle <% if(!_.isUndefined(authuser.user)){ %>js-show-move-card-form<%}else{%>js-no-action<%}%>" data-toggle="dropdown" title="<%- list.attributes.name %>" href="#"><%- list.attributes.name %></a>
+  <h3 class="navbar-btn"> <span class="icon-credit-card text-muted"></span> <a href="" title="<%- card.attributes.name %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-card-title-edit-form<% }else{ %> js-no-action<%}%>"><%- card.attributes.name %></a><small><%- i18next.t('in list') %></small> <span class="dropdown"><a class="dropdown-toggle <% if(!_.isUndefined(authuser.user)){ %>js-show-move-card-form<%}else{%>js-no-action<%}%>" data-toggle="dropdown" title="<%- list.attributes.name %>" href="#"><%- list.attributes.name %></a>
   <% if(!_.isUndefined(authuser.user)){ %>
 	<ul class="dropdown-menu arrow col-xs-12 panel-body">
 		<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
@@ -39,7 +39,7 @@
 			  <li class="list-group-item list-group-item-info clearfix">
 				<div class="list-group-item-heading">
 				  
-				  <% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "edit_card"}))){ %>
+				  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 				  <form role="form" class="form-horizontal hide js-card-edit-form" name="cardTitleEditForm" id="cardTitleEditForm">
 					<div class="form-group">
 					  <div class="col-sm-11">
@@ -60,7 +60,10 @@
 					<ul class="list-inline clearfix" id="js-card-users-list-<%- card.attributes.id %>">
 					<% if(!_.isUndefined(authuser.user)){ %>
 					  <li id="js-card-user-add-container">
-						<div class="dropdown js-member-dropdown"> <a class="dropdown-toggle js-show-add-member-form btn btn-default" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Member') %>" href="#"> <i class="icon-plus"></i> </a>
+						<div class="dropdown js-member-dropdown"> 
+						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_card_user",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+						<a class="dropdown-toggle js-show-add-member-form btn btn-default" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Member') %>" href="#"> <i class="icon-plus"></i> </a>
+						<% } %>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 							<li> <div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong><%- i18next.t('Members') %></strong></span><i class="icon-remove cur"></i></div></li>
 							<li class="col-xs-12 divider"></li>
@@ -79,7 +82,7 @@
 					  <%}%>
 					</ul>
 				  </li>
-				  <% if(!_.isEmpty(role_links.where({slug: "view_card_labels"}))){ %>
+				  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "view_card_labels",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 				  <li class="mar-bottom">
 					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Labels') %></h4>
 					<ul class="list-inline clearfix js-card-labels-list">
@@ -158,7 +161,7 @@
 				</div>
 				<div class="list-group-item-text clearfix">
 				  <ul class="list-unstyled clearfix attachment-list" id="js-card-attachments-list"></ul>
-				  <% if(!_.isEmpty(role_links.where({slug: "add_card_attachment"}))){ %>
+				  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_card_attachment",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 				  <div class="clearfix dropdown"> 
 				  <% if(!_.isUndefined(authuser.user)){%>
 				  <a class="dropdown-toggle btn-link h4 js-load-dropbox" role="button" data-toggle="dropdown" title="<%- i18next.t('Add an attachment') %>" href="#"> <span class="text-muted panel-title" ><%- i18next.t('Add an attachment') %></span> </a>
@@ -191,19 +194,22 @@
 			</ul>
 		</div>
 	  </div>
-	  <div class="splitter-wrap ui-resizable">
-	  <div class="inner col-xs-12">
+	  <div class="splitter-wrap ui-resizable"> 
+	  <div class="inner col-xs-12">   
 		<ul class="list-unstyled navbar-btn row">
 		  <li class="list-group-item list-group-item-info clearfix">
-			<div class="list-group-item-heading">
-				  <h3 class="list-group-item-heading"><%- i18next.t('Activity') %></h3>
-				  <h3 id="modal-comments" class="list-group-item-heading"><%- i18next.t('Hide Comments') %></h3>
-				  <h3 id="modal-activities" class="list-group-item-heading"><%- i18next.t('Hide Activities') %></h3>
-				  <h3 id="modal-logged-user-activities" class="list-group-item-heading"><%- i18next.t('Hide Logged User Activities') %></h3>
-				</div>
+			<div class="list-group-item-heading clearfix">
+				  <h3 class="pull-left"><%- i18next.t('Activity') %></h3>
+				  <div class="clearfix pull-right well-sm user-filter">
+                        <ul class="nav nav-pills">
+                            <li id="modal-activities"><a href="#" title="<%- i18next.t('Show activities') %>" class="text-muted" ><i class="icon-heart-empty small"></i></a></li>
+                            <li id="modal-comments"><a href="#" title="<%- i18next.t('Show Comments') %>" class="text-muted"><i class="icon-comment-alt small"></i></a></li>
+                        </ul>      
+                  </div>   
+			</div>
 			<div class="list-group-item-text">
 			  <ul class="media-list" id="js-board-activities">
-				<% if(!_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "comment_card"}))){ %>
+				<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "comment_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 				<li class="media comment-block"> 
 				  <form method="post" class="form-horizontal js-add-comment">
 				  <ul class="media-list">
@@ -235,23 +241,25 @@
 								<div class="clearfix dropdown js-show-emoji-list-response"> <a class="js-show-emoji-list show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Emoji') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Emoji') %></span> </a>
 								</div>
 							</li>
-							<li class="pull-left radio radio-inline">
-							  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Card') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Card') %></span> </a>
-								<ul class="dropdown-menu arrow col-xs-3 list-group">
-								  <li class="col-xs-12 clearfix text-center">
-									<div><span class="col-xs-10"><strong><%- i18next.t('Add Card') %></strong></span>
-									<a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div>
-								  </li>
-								  <li class="col-xs-12 divider"></li>
-								  <li class="col-xs-12 js_activity_card_search_response">
-									  <div class="clearfix">
-										<label class="sr-only"><%- i18next.t('Search Card') %></label>                            
-										  <input type="text" placeholder="<%- i18next.t('Search Card') %>" name="card" class="js-search-card form-control input-sm  js-no-action" title="<%- i18next.t('Search Card') %>">
-									  </div>
-								  </li>
-								</ul>
-							  </div>
-							</li>
+							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "view_card_search", board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+								<li class="pull-left radio radio-inline">
+								  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Card') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Card') %></span> </a>
+									<ul class="dropdown-menu arrow col-xs-3 list-group">
+									  <li class="col-xs-12 clearfix text-center">
+										<div><span class="col-xs-10"><strong><%- i18next.t('Add Card') %></strong></span>
+										<a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div>
+									  </li>
+									  <li class="col-xs-12 divider"></li>
+									  <li class="col-xs-12 js_activity_card_search_response">
+										  <div class="clearfix">
+											<label class="sr-only"><%- i18next.t('Search Card') %></label>                            
+											  <input type="text" placeholder="<%- i18next.t('Search Card') %>" name="card" class="js-search-card form-control input-sm  js-no-action" title="<%- i18next.t('Search Card') %>">
+										  </div>
+									  </li>
+									</ul>
+								  </div>
+								</li>
+							<% } %>
 							<li class="dropdown pull-left radio-inline radio">
 							  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block js-show-members" role="button" data-toggle="dropdown" title="<%- i18next.t('Mention a member') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Mention a member') %></span> </a>
 								<ul class="dropdown-menu arrow col-xs-3">
@@ -284,8 +292,7 @@
 				<li class="col-xs-12 divider"><hr></li>
 			  </ul>
 			  <div class="text-center clearfix hide" id="js-loader-img"><img src="img/select2-spinner.gif" alt="[Images:Loader]" title="<%- i18next.t('Loading...') %>" /></div>
-			  <ul class="media-list col-xs-12 clearfix btn-block" id="js-card-activities-<%= card.attributes.id%>">
-			  </ul>
+				<ul class="media-list col-xs-12 clearfix btn-block" id="js-card-activities-<%= card.attributes.id%>"></ul>			  
 			</div>
 			</li>
 		  </ul>
@@ -310,7 +317,7 @@
 			<li class="js-show-card-due-date-form-response col-xs-12"> </li>
 		  </ul>
 		</li>
-		<% if(!_.isEmpty(role_links.where({slug: "add_card_user"}))){ %>
+		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_card_user",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			<li class="dropdown"><a data-toggle="dropdown" class="dropdown-toggle js-show-add-member-form js-card-header-action" title="<%- i18next.t('Members') %>" href="#"><%- i18next.t('Members') %></a>
 				  <ul class="dropdown-menu arrow">
 					<li class="col-xs-12 text-center clearfix">
@@ -329,13 +336,13 @@
 				  </ul>
 			</li>
 		<% } %>
-		<% if(!_.isEmpty(role_links.where({slug: "add_labels"}))){ %>
+		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_labels",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			<li class="dropdown"> <a class="dropdown-toggle js-show-card-label-form js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Labels') %>" href="#"><%- i18next.t('Labels') %></a>
 				<ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 js-show-card-label-form-response">
 				</ul>
 			</li>
 		<% } %>
-		<% if(!_.isEmpty(role_links.where({slug: "add_checklists"}))){ %>
+		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_checklists",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 		    <li class="dropdown"> <a class="dropdown-toggle js-show-checklist-add-form" role="button" data-toggle="dropdown" title="<%- i18next.t('Checklist') %>" href="#"><%- i18next.t('Checklist') %></a>
 		      <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 				<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Add Checklist') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
@@ -344,7 +351,7 @@
 		      </ul>
 		    </li>
 	    <% } %>
-		<% if(!_.isEmpty(role_links.where({slug: "edit_card"}))){ %>
+		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			<li class="dropdown"> <a class="js-show-side-card-title-edit-form" role="button" data-toggle="dropdown" title="<%- i18next.t('Checklist') %>" href="#"><%- i18next.t('Info') %></a>
 			  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 				<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Edit Card Info') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
@@ -370,7 +377,7 @@
 			  </ul>
 			</li>
 			<% } %>
-			<% if(!_.isEmpty(role_links.where({slug: "add_card_attachment"}))){ %>
+			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_card_attachment",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			<li class="dropdown"> <a class="dropdown-toggle js-load-dropbox js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Attachment') %>" href="#"><%- i18next.t('Attachment') %></a>
 			  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 			   <li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Attach From...') %> </strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
@@ -397,6 +404,7 @@
 	  </li>
 	  <li class="dropdown-submenu dropdown"> <a href="#" title="<%- i18next.t('Actions') %>" class="dropdown-toggle js-open-popover" data-toggle="dropdown"><%- i18next.t('Actions') %></a>
 		  <ul class="dropdown-menu">
+			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			<li class="dropdown"> <a class="dropdown-toggle js-show-move-card-form js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><%- i18next.t('Move') %></a>
 			  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 				<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
@@ -412,7 +420,8 @@
 				</li>
 			  </ul>
 			</li>
-			<% if(!_.isEmpty(role_links.where({slug: "copy_card"}))  && !is_offline_data){ %>
+			<% } %>
+			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "copy_card",board_user_role_id: parseInt(list.board_user_role_id)})))  && !is_offline_data){ %>
 				<li class="dropdown js-hide-on-offline"> <a class="dropdown-toggle js-show-copy-card-form" role="button" data-toggle="dropdown" title="<%- i18next.t('Copy') %>" href="#"><%- i18next.t('Copy') %></a>
 				  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 pre-scrollable vertical-scrollbar">
 					<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Copy Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
@@ -433,15 +442,25 @@
 				  </ul>
 				</li>
 			<% } %>
-			<% if(!_.isEmpty(role_links.where({slug: "subscribe_card"}))){ %>
-			    <li> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- i18next.t('Subscribe') %> " href=""><%- i18next.t('Subscribe') %>
+			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && _.isEmpty(cards_subscribers)) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && !_.isEmpty(cards_subscribers)))) { %>
+				<%
+					var subscribe_disabled = '';
+					var subscribed = card.list.collection.board.board_subscribers.findWhere({
+						user_id: parseInt(authuser.user.id),
+						is_subscribed: 1
+					}); 
+					if (subscribed) {
+						subscribe_disabled = 'disabled';
+					}
+				%>
+			    <li class="<%= subscribe_disabled %>"> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- i18next.t('Subscribe') %> " href=""><%- i18next.t('Subscribe') %>
 		       <% if(!_.isEmpty(cards_subscribers)){ %>
 			    <i class="icon-ok"></i>
 		      <% } %>
 		      </a> 
 			  </li>
 		   <% } %>
-		   <% if(!_.isEmpty(role_links.where({slug: "vote_card"})) || !_.isEmpty(role_links.where({slug: "unvote_card"}))){ %>
+		   <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})) || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 		    <li>
 		      <% if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
 					var voted_user = card.card_voters.findWhere({
@@ -450,25 +469,27 @@
 				
 			%>
 		      <% if(_.isEmpty(voted_user)){  %>
-		      <% if(!_.isEmpty(role_links.where({slug: "vote_card"}))){ %>
+		      <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 		      <a class="panel-heading show js-add-card-vote" title="<%- i18next.t('Vote') %>" href="#"><%- i18next.t('Vote') %></a>
 			  <% } %>
 			  <% } else{ %>
-			  <% if(!_.isEmpty(role_links.where({slug: "unvote_card"}))){ %>
+			  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			  <a class="panel-heading show js-delete-card-vote"" title="<%- i18next.t('Unvote') %>" href="#" data-id="<%- voted_user.id %>"> <span class="text-muted show panel-title" ><i class="icon-thumbs-up-alt"></i><%- i18next.t('Unvote') %></span> </a>
 			  <% } %>
 			  <% } }%>
 			</li>
 		 <% } %>
-			<li> <a class="panel-heading show <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else{ %> js-card-send-to-board<% } %>" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else{ %><%- i18next.t('Send to board') %><%}%>" href="">
+		 <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+			<li> <a class="panel-heading show <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)})))) { %> js-card-send-to-board<% } %>" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><%}%>" href="">
 		      <% if(parseInt(card.attributes.is_archived) === 0){ %>
 			      <%- i18next.t('Archive') %>
-		      <% }else{ %>
+		      <% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 				  <%- i18next.t('Send to board') %>
 		      <% } %>
 				</a> 
 			</li>
-		    <% if(parseInt(card.attributes.is_archived) === 1 && !_.isEmpty(role_links.where({slug: "delete_card"}))){ %>
+			<% } %>
+		    <% if(parseInt(card.attributes.is_archived) === 1 && (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_card",board_user_role_id: parseInt(list.board_user_role_id)}))))){ %>
 			<li >
 			  <ul class="list-unstyled panel-body">
 				<li class="dropdown"> <a class="col-xs-12 btn btn-primary whitec dropdown-toggle js-open-dropdown" href="#" data-toggle="dropdown"> <span><i class="icon-archive"></i></span> <span><%- i18next.t('Delete') %></span> </a>

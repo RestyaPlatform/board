@@ -21,6 +21,12 @@ App.ArchivedCardsView = Backbone.View.extend({
     initialize: function() {
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
+            var board_user_role_id = this.model.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(board_user_role_id)) {
+                this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+            }
         }
         this.render();
     },
@@ -32,16 +38,12 @@ App.ArchivedCardsView = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
-        'click .js-delete-all-archived-cards': 'deleteAllArchivedCards'
+        'click .js-delete-all-archived-cards-confirm': 'deleteAllArchivedCardsConfirm'
     },
-    deleteAllArchivedCards: function(e) {
-        var self = this;
-        self.model.url = api_url + 'boards/' + self.model.id + '/cards.json';
-        self.model.destroy({
-            success: function(model, response) {
-                self.flash('success', i18next.t('Cards deleted successfully.'));
-            }
-        });
+    deleteAllArchivedCardsConfirm: function(e) {
+        $('.js-setting-response').html(new App.ArchiveCardDeleteConfirmView({
+            model: this.model,
+        }).el);
         return false;
     },
     /**

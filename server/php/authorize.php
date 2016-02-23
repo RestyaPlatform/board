@@ -40,19 +40,60 @@ $val_arr = array(
     $_GET['client_id'],
 );
 $oauth_client = executeQuery('SELECT client_name FROM oauth_clients WHERE client_id = $1', $val_arr);
+$error_msg = 0;
+if (!empty($_POST['email'])) {
+    $val_arr = array(
+        $_POST['email']
+    );
+    $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
+    $_POST['password'] = crypt($_POST['password'], $log_user['password']);
+    $val_arr = array(
+        $_POST['email'],
+        $_POST['password'],
+        1
+    );
+    $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
+    if (!empty($user)) {
+        $_SESSION["username"] = $user['username'];
+        $error_msg = 0;
+    } else {
+        unset($_POST['password']);
+        $error_msg = "Sorry, login failed. Either your username or password are incorrect.";
+    }
+}
 ?>
 <!DOCTYPE html>
 <html class="no-js" lang="en">
  <head>
 	 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	 <link rel="stylesheet" type="text/css" href="<?php
-echo $_server_domain_url . '/css/authorize.css'; ?>">
+	 <link rel="stylesheet" type="text/css" href="css/authorize.css">
+	<!-- build:js js/authorize.cache.js -->
+	<script src="js/libs/jquery-1.8.3.js"></script>
+	<script src="js/libs/bootstrap-alert.js"></script>
+	<script src="js/libs/jquery.bootstrap-growl.js"></script>
+	<!-- endbuild -->
  </head>
  <body style="cursor: auto">
 	 <div class="navbar-btn"></div>
+	 <script>
+	 function flashMesssage(type, message) {
+        $.bootstrapGrowl(message, {
+            type: type,
+            offset: {
+                from: 'top',
+                amount: 20
+            },
+            align: 'right',
+            width: type == 'danger' ? 250 : 400,
+            delay: type == 'danger' ? 4000 : 0,
+            allow_dismiss: true,
+            stackup_spacing: 10
+        });
+    }
+	 </script>
 <?php
 // display an authorization form
-if (empty($_POST)) {
+if (empty($_POST['password']) && (empty($_POST['authorized']) || (!empty($_POST['authorized']) && $_POST['authorized'] === 'Deny'))) {
     if (LDAP_LOGIN_ENABLED) {
         $loginPlaceholder = 'LDAP Login';
     } else {
@@ -72,7 +113,8 @@ if (empty($_POST)) {
 							<div class="form-group">
 							  <label for="inputEmail" class="sr-only control-label">Email or Username</label>
 							  <input type="text" placeholder="<?php
-    echo $loginPlaceholder; ?>" class="form-control" id="inputEmail" name="email"  title="<?php
+    echo $loginPlaceholder; ?>" class="form-control" id="inputEmail" name="email"  value="<?php
+    echo !empty($_POST['email']) ? $_POST['email'] : ''; ?>" title="<?php
     echo $loginPlaceholder; ?>" required/>
 							</div>
 							<div class="form-group">
@@ -83,6 +125,11 @@ if (empty($_POST)) {
 							  <label for="submit2" class="sr-only control-label">Login</label>
 							  <input type="submit" class="btn btn-primary col-xs-12" value="Login" id="submitLogin" />
 							</div>
+							<?php
+    if (!empty($error_msg)) { ?>
+								<div><script>flashMesssage('danger', 'Sorry, login failed. Either your username or password are incorrect.');</script></div>
+							<?php
+    } ?>
 						</form>
 					</div>
 				</div>
@@ -92,30 +139,17 @@ if (empty($_POST)) {
 <?php
 } else {
     if (empty($_POST['authorized'])) {
-        $val_arr = array(
-            $_POST['email']
-        );
-        $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
-        $_POST['password'] = crypt($_POST['password'], $log_user['password']);
-        $val_arr = array(
-            $_POST['email'],
-            $_POST['password'],
-            1
-        );
-        $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
-        if (!empty($user)) {
-            $_SESSION["username"] = $user['username'];
 ?>
             <section class="clearfix">
 			  <div class="col-md-5 col-md-offset-4">
 				<div class="text-center navbar-btn"><a title="Restya" href="#/"><img title="<?php
-            echo SITE_NAME; ?>" alt="[Image: <?php
-            echo SITE_NAME; ?>]" src="<?php
-            echo $_server_domain_url . '/img/logo.png'; ?>"></a></div>
+        echo SITE_NAME; ?>" alt="[Image: <?php
+        echo SITE_NAME; ?>]" src="<?php
+        echo $_server_domain_url . '/img/logo.png'; ?>"></a></div>
 				<div class="well">
 				  <div class="text-center">
 					<div class="h2 list-group-item-heading"> Let <strong><?php
-            echo $oauth_client['client_name']; ?> application </strong> use your account?</div>
+        echo $oauth_client['client_name']; ?> application </strong> use your account?</div>
 					<form method="post">
 					<ul class="list-inline h2">
 					  <li><input type="submit" value="Allow" name="authorized" class="btn btn-primary btn-lg" title="Allow" /></li>
@@ -125,7 +159,7 @@ if (empty($_POST)) {
 				  </div>
 				  <hr>
 				  <p>You are logged in as <strong><?php
-            echo $user['full_name'] . ' (' . $user['username'] . ')'; ?></strong> The app will be able to use your account <strong> until you disable it.</strong></p>
+        echo $user['full_name'] . ' (' . $user['username'] . ')'; ?></strong> The app will be able to use your account <strong> until you disable it.</strong></p>
 				  <hr>
 				  <div class="clearfix"> <strong>The app will be able to:</strong>
 					<ul>
@@ -137,18 +171,13 @@ if (empty($_POST)) {
 					<strong>It won't be able to:</strong>
 					<ul>
 					  <li>See your <?php
-            echo SITE_NAME; ?> password </li>
+        echo SITE_NAME; ?> password </li>
 					</ul>
 				  </div>
 				</div>
 			  </div>
 		    </section>
 <?php
-        } else {
-            $_POST = array();
-            header('Location: ' . $_SERVER['REQUEST_URI']);
-            exit;
-        }
     } else {
         // print the authorization code if the user has authorized your client
         $is_authorized = ($_POST['authorized'] === 'Allow') ? true : false;

@@ -68,6 +68,14 @@ App.ListView = Backbone.View.extend({
             this.model.collection.board.cards.bind('change:list_id', this.renderCardsCollection);
         }
         this.model.bind('remove', this.removeRender);
+        if (!_.isUndefined(authuser.user)) {
+            var board_user_role_id = this.model.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(board_user_role_id)) {
+                this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+            }
+        }
     },
     template: JST['templates/list'],
     templateAdd: JST['templates/list_add'],
@@ -138,10 +146,19 @@ App.ListView = Backbone.View.extend({
         }
         App.boards.get(this.model.attributes.board_id).lists.get(this.model.attributes.id).set('position', this.model.attributes.position);
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.id + '.json';
+        var list_id = this.model.attributes.id;
+        var list_position = this.model.attributes.position;
         this.model.save({
             position: this.model.attributes.position
         }, {
-            patch: true
+            patch: true,
+            success: function(model, response) {
+                self.model.attributes.lists.forEach(function(list) {
+                    if (list.id === parseInt(list_id)) {
+                        list.position = list_position;
+                    }
+                });
+            }
         });
     },
     /**
@@ -214,17 +231,26 @@ App.ListView = Backbone.View.extend({
      *
      */
     editList: function(e) {
-        e.preventDefault();
-        var temp_data = {};
-        var list_id = this.model.id;
+        var self = this;
+        var list_id = self.model.id;
         var bool = $('.js-list-subscribed-' + list_id).hasClass('hide');
         var data = $(e.target).serializeObject();
-        temp_data.name = data.name + 0;
-        this.model.set(temp_data);
-        this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '.json';
-        this.model.save(data, {
-            patch: true
-        });
+        if (data.name === self.model.attributes.name) {
+            $(e.target).addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
+            $('#js-show-list-actions-' + self.model.id).removeClass('hide');
+        } else {
+            self.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '.json';
+            self.model.save(data, {
+                patch: true,
+                success: function(model, response) {
+                    self.model.collection.board.attributes.lists.forEach(function(list) {
+                        if (list.id === parseInt(list_id)) {
+                            list.name = data.name;
+                        }
+                    });
+                }
+            });
+        }
         if (bool) {
             $('.js-list-subscribed-' + list_id).addClass('hide');
         } else {
@@ -315,6 +341,11 @@ App.ListView = Backbone.View.extend({
         }, {
             patch: true,
             success: function(model, response) {
+                self.board.attributes.lists.forEach(function(list, index) {
+                    if (list.id === parseInt(list_id)) {
+                        list.is_archived = 1;
+                    }
+                });
                 self.board.activities.unshift(response.activity);
             }
         });
@@ -361,6 +392,11 @@ App.ListView = Backbone.View.extend({
         this.model.url = api_url + 'boards/' + self.board.id + '/lists/' + list_id + '.json';
         this.model.destroy({
             success: function(model, response) {
+                self.board.attributes.lists.forEach(function(list, index) {
+                    if (list.id === parseInt(list_id)) {
+                        self.board.attributes.lists.splice(index, 1);
+                    }
+                });
                 self.board.activities.unshift(response.activity);
             }
         });
@@ -495,7 +531,14 @@ App.ListView = Backbone.View.extend({
         data.board_id = board_id;
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '.json';
         this.model.save(data, {
-            patch: true
+            patch: true,
+            success: function(model, response) {
+                self.model.attributes.lists.forEach(function(list) {
+                    if (list.id === parseInt(list_id)) {
+                        list.position = data.position;
+                    }
+                });
+            }
         });
         this.closePopup(e);
         return false;
@@ -529,6 +572,13 @@ App.ListView = Backbone.View.extend({
             list_subscribe.save({
                 is_subscribed: 1
             });
+            if (!_.isUndefined(this.model.attributes.lists_subscribers)) {
+                this.model.attributes.lists_subscribers.forEach(function(list) {
+                    if (list.user_id === parseInt(authuser.user.id)) {
+                        list.is_subscribed = 1;
+                    }
+                });
+            }
         } else {
             list_subscribe.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '/list_subscribers/' + subscribe_id + '.json';
             list_subscribe.save({
@@ -563,7 +613,19 @@ App.ListView = Backbone.View.extend({
             list_subscribe.save({
                 is_subscribed: 0
             });
+            if (!_.isUndefined(this.model.attributes.lists_subscribers)) {
+                this.model.attributes.lists_subscribers.forEach(function(list) {
+                    if (list.user_id === parseInt(authuser.user.id)) {
+                        list.is_subscribed = 0;
+                    }
+                });
+            }
         } else {
+            this.model.attributes.lists_subscribers.forEach(function(list) {
+                if (list.user_id === parseInt(authuser.user.id)) {
+                    list.is_subscribed = 0;
+                }
+            });
             list_subscribe.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '/list_subscribers/' + subscribe_id + '.json';
             list_subscribe.save({
                 id: parseInt(subscribe_id),
@@ -888,6 +950,7 @@ App.ListView = Backbone.View.extend({
                     card.attachments.add(filter_attachments, {
                         silent: true
                     });
+                    card.board = self.model.board;
                     var view = new App.CardView({
                         tagName: 'div',
                         model: card,
@@ -1030,6 +1093,7 @@ App.ListView = Backbone.View.extend({
             }, {
                 silent: true
             });
+            card.board_users = self.model.board_users;
             card.list = self.model;
             var view = new App.CardView({
                 tagName: 'div',

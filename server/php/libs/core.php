@@ -412,6 +412,7 @@ function getRevisiondifference($from_text, $to_text)
  */
 function ldapAuthenticate($p_user_id, $p_password)
 {
+    $g_enable_ssl_connectivity = ENABLE_SSL_CONNECTIVITY;
     $g_ldap_protocol_version = LDAP_PROTOCOL_VERSION;
     $g_ldap_server = LDAP_SERVER;
     $g_ldap_port = LDAP_PORT;
@@ -436,7 +437,7 @@ function ldapAuthenticate($p_user_id, $p_password)
         'name',
         'mail'
     );
-    $t_ldap_server = $g_ldap_server;
+    $t_ldap_server = ($g_enable_ssl_connectivity == 'true') ? 'ldaps://' . $g_ldap_server : 'ldap://' . $g_ldap_server;
     $t_ldap_port = $g_ldap_port;
     $t_ds = @ldap_connect($t_ldap_server, $t_ldap_port);
     if ($t_ds > 0) {
@@ -498,26 +499,108 @@ function ldapAuthenticate($p_user_id, $p_password)
  *
  * @param string $r_request_method Optional default value : 'GET'
  * @param string $r_resource_cmd   Optional default value : '/users'
+ * @param string $r_resource_vars  Resource variable
+ * @param string $post_data        Post data
  *
  * @return true if links allowed false otherwise
  */
-function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users')
+function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r_resource_vars = array(), $post_data = array())
 {
     global $r_debug, $db_lnk, $authUser;
     $role = 3; // Guest role id
     if ($authUser) {
         $role = $authUser['role_id'];
+        if ($authUser['role_id'] == 1) {
+            return true;
+        }
     }
-    $qry_val_arr = array(
-        $role,
-        $r_request_method,
-        $r_resource_cmd
+    if (!empty($r_resource_vars['boards'])) {
+        $qry_val_arr = array(
+            $r_resource_vars['boards']
+        );
+        $board = executeQuery('SELECT board_visibility FROM boards WHERE id = $1', $qry_val_arr);
+        if ($board['board_visibility'] == 2 && $r_request_method == 'GET') {
+            return true;
+        }
+    }
+    $board_temp_arr = array(
+        '/boards_users/?'
     );
-    $allowed_link = executeQuery('SELECT * FROM acl_links_listing WHERE role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);
-    if (!empty($allowed_link)) {
-        return true;
+    $organization_temp_arr = array(
+        '/organizations_users/?'
+    );
+    $board_exception_arr = array(
+        '/boards/?'
+    );
+    $board_exception_method_arr = array(
+        'PUT'
+    );
+    $organization_exception_arr = array(
+        '/organizations/?'
+    );
+    $organization_exception_method_arr = array(
+        'DELETE',
+        'PUT'
+    );
+    $board_star = true;
+    $board_star_url = array(
+        '/boards/?/boards_stars/?',
+        '/boards/?/boards_stars'
+    );
+    if (in_array($r_resource_cmd, $board_star_url)) {
+        $board_star = false;
     }
-    return false;
+    //temp fix
+    if (((!empty($r_resource_vars['boards']) && (!in_array($r_resource_cmd, $board_exception_arr) || (in_array($r_resource_cmd, $board_exception_arr) && in_array($r_request_method, $board_exception_method_arr)))) || in_array($r_resource_cmd, $board_temp_arr)) && $board_star) {
+        if ($r_request_method == 'PUT' && in_array($r_resource_cmd, $board_temp_arr)) {
+            $r_resource_vars['boards'] = $post_data['board_id'];
+        }
+        $qry_val_arr = array(
+            $r_resource_vars['boards'],
+            $authUser['id']
+        );
+        $board_user_role_id = executeQuery('SELECT board_user_role_id FROM boards_users WHERE board_id = $1 AND user_id = $2', $qry_val_arr);
+        $role = $board_user_role_id['board_user_role_id'];
+        $qry_val_arr = array(
+            $role,
+            $r_request_method,
+            $r_resource_cmd
+        );
+        $board_allowed_link = executeQuery('SELECT * FROM acl_board_links_listing WHERE board_user_role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);
+        if (empty($board_allowed_link)) {
+            return false;
+        }
+    } else if (!empty($r_resource_vars['organizations']) && (!in_array($r_resource_cmd, $organization_exception_arr) || (in_array($r_resource_cmd, $organization_exception_arr) && in_array($r_request_method, $organization_exception_method_arr))) || in_array($r_resource_cmd, $organization_temp_arr)) {
+        if ($r_request_method == 'PUT' && in_array($r_resource_cmd, $organization_temp_arr)) {
+            $r_resource_vars['organizations'] = $post_data['organization_id'];
+        }
+        $qry_val_arr = array(
+            $r_resource_vars['organizations'],
+            $authUser['id']
+        );
+        $organization_user_role_id = executeQuery('SELECT organization_user_role_id FROM organizations_users WHERE organization_id = $1 AND user_id = $2', $qry_val_arr);
+        $role = $organization_user_role_id['organization_user_role_id'];
+        $qry_val_arr = array(
+            $role,
+            $r_request_method,
+            $r_resource_cmd
+        );
+        $organization_allowed_link = executeQuery('SELECT * FROM acl_organization_links_listing WHERE organization_user_role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);
+        if (empty($organization_allowed_link)) {
+            return false;
+        }
+    } else {
+        $qry_val_arr = array(
+            $role,
+            $r_request_method,
+            $r_resource_cmd
+        );
+        $allowed_link = executeQuery('SELECT * FROM acl_links_listing WHERE role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);
+        if (empty($allowed_link)) {
+            return false;
+        }
+    }
+    return true;
 }
 /**
  * To execute the query
@@ -950,24 +1033,24 @@ function importTrelloBoard($board = array())
                 } else {
                     $users[$member['id']] = $userExist['id'];
                 }
-                $is_admin = 'false';
+                $board_user_role_id = 2;
                 if (in_array($member['id'], $admin_user_id)) {
-                    $is_admin = 'true';
+                    $board_user_role_id = 1;
                 }
                 $qry_val_arr = array(
                     $users[$member['id']],
                     $new_board['id'],
-                    $is_admin
+                    $board_user_role_id
                 );
-                pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, is_admin) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
+                pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
             }
         }
         $qry_val_arr = array(
             $authUser['id'],
             $new_board['id'],
-            'true'
+            1
         );
-        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, is_admin) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
+        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
         if (!empty($board['lists'])) {
             $lists = array();
             $i = 0;

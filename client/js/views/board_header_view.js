@@ -38,11 +38,10 @@ App.BoardHeaderView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
-        this.model.lists.bind('remove', this.showArchivedListLists, this);
-        this.model.cards.bind('add', this.renderCardsCollection);
+        this.model.lists.bind('change:name', this.showArchivedListLists, this);
         this.model.lists.bind('change:is_archived', this.showArchivedListLists, this);
+        this.model.lists.bind('remove', this.showArchivedListLists, this);
         this.model.cards.bind('change:name', this.showArchivedCardsList, this);
-        this.model.cards.bind('change:due_date', this.showArchivedCardsList, this);
         this.model.cards.bind('change:is_archived', this.showArchivedCardsList, this);
         this.model.cards.bind('remove', this.showArchivedCardsList, this);
         this.model.bind('change:organization_id', this.render, this);
@@ -54,9 +53,16 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.board_users.bind('remove', this.showFilters, this);
         this.model.labels.bind('add', this.showFilters, this);
         this.model.labels.bind('change', this.showFilters, this);
-        this.model.labels.bind('remove', this.showFilters, this);
         this.authuser = authuser.user;
         this.renderAdminBoardUsers();
+        if (!_.isUndefined(authuser.user)) {
+            var board_user_role_id = this.model.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(board_user_role_id)) {
+                this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+            }
+        }
     },
     /**
      * Events
@@ -73,12 +79,14 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-board-visibility': 'showBoardVisibility',
         'click .js-add-board-member-dropdown': 'addBoardMemberDropdown',
         'click .js-close-popover-board-member-dropdown': 'closeBoardMemberDropdown',
-        'click .js-subscribe-board': 'subcribeBoard',
+        'click .js-show-subscribe-form': 'showSubscribeForm',
+        'click .js-show-unsubscribe-form': 'showUnsubscribeForm',
         'click .js-switch-grid-view': 'switchGridView',
         'click .js-switch-list-view': 'switchListView',
         'click .js-switch-calendar-view': 'switchCalendarView',
         'click .js-switch-timeline-view': 'switchTimelineView',
         'click .js-show-filters': 'showFilters',
+        'click .js-show-labels': 'showLabels',
         'click .js-archived-items': 'showArchivedItems',
         'click .js-sync-google-dropdown': 'syncGoogleDropdown',
         'click .js-show-copy-board': 'showCopyBoard',
@@ -226,52 +234,16 @@ App.BoardHeaderView = Backbone.View.extend({
      * @return false
      *
      */
-    subcribeBoard: function(e) {
-        e.preventDefault();
-        var name = $(e.currentTarget).attr('name');
-        var value = 'unsubscribe';
-        var content = '<i class="icon-eye-close"></i>' + i18next.t('Unsubscribe');
-        if (name == 'unsubscribe') {
-            value = 'subscribe';
-            content = '<i class="icon-eye-open"></i>' + i18next.t('Subscribe');
-        }
-        $(e.currentTarget).attr('name', value);
-        $(e.currentTarget).attr('title', value);
-        $(e.currentTarget).html(content);
-        var boardSubscriber = new App.BoardSubscriber();
-        if (!_.isUndefined(this.model.board_subscriber) && this.model.board_subscriber.attributes.id) {
-            value = '';
-            if ($('#inputBoardSubscribe').val() == 'false') {
-                value = 'true';
-                $('#inputBoardSubscribe').val(value);
-            } else {
-                value = 'false';
-                $('#inputBoardSubscribe').val(value);
-            }
-            var data = $('form#BoardSubscribeForm').serializeObject();
-            boardSubscriber.url = api_url + 'boards/' + this.model.id + '/board_subscribers/' + this.model.board_subscriber.attributes.id + '.json';
-            boardSubscriber.set('id', this.model.board_subscriber.attributes.id);
-            boardSubscriber.save(data, {
-                success: function(model, response) {}
-            });
-        } else {
-            var subscribe_data = {
-                board_id: this.model.id,
-                is_subscribed: 1
-            };
-            var self = this;
-            boardSubscriber.url = api_url + 'boards/' + this.model.id + '/board_subscribers.json';
-            boardSubscriber.save(subscribe_data, {
-                success: function(model, response) {
-                    boardSubscriber.set('id', parseInt(response.id));
-                    boardSubscriber.set('user_id', parseInt(response.user_id));
-                    boardSubscriber.set('board_id', parseInt(response.board_id));
-                    self.model.board_subscriber = boardSubscriber;
-                    self.model.board_subscribers.add(boardSubscriber);
-                    self.render();
-                }
-            });
-        }
+    showSubscribeForm: function(e) {
+        $('.js-setting-response').html(new App.SubscribeBoardConfirmView({
+            model: this.model,
+        }).el);
+        return false;
+    },
+    showUnsubscribeForm: function(e) {
+        $('.js-setting-response').html(new App.UnsubscribeBoardConfirmView({
+            model: this.model,
+        }).el);
         return false;
     },
     /**
@@ -453,9 +425,11 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showArchivedCardsList: function() {
-        if (!_.isEmpty(role_links.where({
-                slug: 'view_archived_cards'
-            }))) {
+        var self = this;
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
+                slug: 'view_archived_cards',
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })))) {
             var el = this.$el;
             var filtered_cards = this.model.cards.where({
                 is_archived: 1
@@ -464,12 +438,16 @@ App.BoardHeaderView = Backbone.View.extend({
                 model: this.model
             }).el);
             if (!_.isEmpty(filtered_cards)) {
+                $('.js-delete-all-archived-cards-confirm').removeClass('hide');
                 _.each(filtered_cards, function(card) {
+                    card.acl_links = self.model.acl_links;
+                    card.board_users = self.model.board_users;
                     el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                         model: card
                     }).el);
                 });
             } else {
+                $('.js-delete-all-archived-cards-confirm').addClass('hide');
                 el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                     model: null
                 }).el);
@@ -484,9 +462,10 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showFilteredArchivedCardsList: function(e) {
-        if (!_.isEmpty(role_links.where({
-                slug: 'view_archived_cards'
-            }))) {
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
+                slug: 'view_archived_cards',
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })))) {
             var el = this.$el;
             var search_q = $(e.currentTarget).val();
             var filtered_cards = '';
@@ -587,6 +566,23 @@ App.BoardHeaderView = Backbone.View.extend({
         $('.js-side-bar-' + this.model.id).addClass('side-bar-large');
         var el = this.$el;
         el.find('.js-setting-response').html(new App.BoardFilterView({
+            model: this.model,
+            labels: this.model.labels
+        }).el);
+        var headerH = $('header').height();
+        var windowH = $(window).height();
+        var footerH = $('footer').height();
+        var boardH = windowH - headerH - footerH - 14;
+        $('.member-modal.js-pre-scrollable').css({
+            'max-height': boardH - 50,
+            'overflow-y': 'auto'
+        });
+        return false;
+    },
+    showLabels: function() {
+        $('.js-side-bar-' + this.model.id).addClass('side-bar-large');
+        var el = this.$el;
+        el.find('.js-setting-response').html(new App.BoardLabelsView({
             model: this.model,
             labels: this.model.labels
         }).el);
@@ -916,9 +912,23 @@ App.BoardHeaderView = Backbone.View.extend({
                 var card = self.model.cards.findWhere({
                     id: event.id
                 });
-                content += '<ul class="unstyled  hide js-card-labels">';
-                var filtered_labels = card.list.collection.board.labels.where({
-                    card_id: self.model.id
+                if (card.get('is_archived') === 1) {
+                    element.addClass('card-archived');
+                    element.find('.fc-event-skin').addClass('card-archived');
+                }
+                if (card.get('due_date') !== null) {
+                    var today = new Date();
+                    card_due_date = card.get('due_date').split('T');
+                    var due_date = new Date(card_due_date[0]);
+                    var days = Math.floor(Math.floor(due_date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    if (days < 0) {
+                        element.addClass('card-pastdue');
+                        element.find('.fc-event-skin').addClass('card-pastdue');
+                    }
+                }
+                content += '<ul class="unstyled hide js-card-labels">';
+                var filtered_labels = card.labels.where({
+                    card_id: event.id
                 });
                 var labels = new App.CardLabelCollection();
                 labels.add(filtered_labels);
@@ -928,12 +938,12 @@ App.BoardHeaderView = Backbone.View.extend({
                     }
                 });
                 content += '</ul>';
-                content += '<ul class="unstyled  js-card-users hide">';
+                content += '<ul class="unstyled js-card-users hide">';
                 card.users.each(function(user) {
                     content += '<li>user-filter-' + user.get('user_id') + '</li>';
                 });
                 content += '</ul>';
-                content += '<ul class="unstyled  js-card-due hide">';
+                content += '<ul class="unstyled js-card-due hide">';
                 content += self.getDue(card.get('due_date'));
                 content += '</ul>';
                 element.append(content);
@@ -1057,11 +1067,11 @@ App.BoardHeaderView = Backbone.View.extend({
     },
     renderAdminBoardUsers: function() {
         var admins = this.model.board_users.filter(function(normal_user) {
-            return parseInt(normal_user.attributes.is_admin) === 1;
+            return parseInt(normal_user.attributes.board_user_role_id) === 1;
         });
         this.model.admin_board_users = admins;
         var normal_users = this.model.board_users.filter(function(normal_user) {
-            return parseInt(normal_user.attributes.is_admin) === 0;
+            return parseInt(normal_user.attributes.board_user_role_id) != 1;
         });
         this.model.normal_board_users = normal_users;
         this.render();
@@ -1076,6 +1086,7 @@ App.BoardHeaderView = Backbone.View.extend({
             is_admin: this.is_admin
         }).el);
         this.renderBoardUsers();
+        this.clearAll();
         return false;
     },
     renderBoardUsers: function() {
@@ -1092,6 +1103,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.board_users.sortBy('is_admin');
         this.model.board_users.each(function(board_user) {
             is_admin = (parseInt(board_user.attributes.is_admin) === 1) ? 1 : 0;
+            board_user.board_user_roles = self.model.board_user_roles;
             self.$('.js-get-board-member-lists-response').append(new App.BoardUsersView({
                 model: board_user,
                 is_admin: is_admin
@@ -1255,9 +1267,10 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showArchivedListLists: function() {
-        if (!_.isEmpty(role_links.where({
-                slug: 'view_archived_lists'
-            }))) {
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
+                slug: 'view_archived_lists',
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })))) {
             var el = this.$el;
 
             el.find('.js-archived-items-container').html(new App.ArchivedListsView({
@@ -1267,12 +1280,15 @@ App.BoardHeaderView = Backbone.View.extend({
                 is_archived: 1
             });
             if (!_.isEmpty(filtered_lists)) {
+                $('.js-delete-all-archived-lists-confirm').removeClass('hide');
                 _.each(filtered_lists, function(list) {
+                    list.board = self.model;
                     el.find('.js-archived-cards-container').append(new App.ArchivedListView({
                         model: list
                     }).el);
                 });
             } else {
+                $('.js-delete-all-archived-lists-confirm').addClass('hide');
                 el.find('.js-archived-cards-container').append(new App.ArchivedListView({
                     model: null
                 }).el);
@@ -1287,9 +1303,10 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showFilteredArchivedListLists: function(e) {
-        if (!_.isEmpty(role_links.where({
-                slug: 'view_archived_lists'
-            }))) {
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
+                slug: 'view_archived_lists',
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })))) {
             var el = this.$el;
             var search_q = $(e.currentTarget).val();
             var filtered_lists = '';
@@ -1560,6 +1577,11 @@ App.BoardHeaderView = Backbone.View.extend({
         list.set('id', list_id);
         list.set('is_archived', 0);
         list.url = api_url + 'boards/' + this.model.attributes.id + '/lists/' + list_id + '.json';
+        self.model.attributes.lists.forEach(function(list) {
+            if (list.id === parseInt(list_id)) {
+                list.is_archived = 0;
+            }
+        });
         list.save({
             success: function(model, response) {}
         });
@@ -1889,8 +1911,7 @@ App.BoardHeaderView = Backbone.View.extend({
      * @return false
      *
      */
-    clearAll: function(e) {
-        e.preventDefault();
+    clearAll: function() {
         $('.js-board-dues, .js-board-users, .js-board-labels').find('.js-filter-icon').remove();
         $('.js-board-dues, .js-board-users, .js-board-labels').children().removeClass('selected');
         $('.js-clear-all').addClass('text-muted');

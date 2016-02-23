@@ -63,18 +63,35 @@
 			sed -i "s/server\/php\/R\/ical.php/server\/php\/ical.php/" /etc/nginx/conf.d/restyaboard.conf
 			sed -i "s/server\/php\/R\/image.php/server\/php\/image.php/" /etc/nginx/conf.d/restyaboard.conf
 			
-			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ])
 			then
+				echo "Changing files path for existing cron..."
 				sed -i "s/server\/php\/R\/cron.sh/server\/php\/cron.sh/" /var/spool/cron/crontabs/root
 				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/instant_email_notification.sh/" /var/spool/cron/crontabs/root
 				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/periodic_email_notification.sh/" /var/spool/cron/crontabs/root
-				echo "*/5 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/crontabs/root
+			
+				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
+				echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/crontabs/root
+				
+				echo "Setting up cron for every 5 minutes to send activities to webhook..."
+				echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/crontabs/root
+				
+				echo "Setting up cron for every 5 minutes to send email notification to past due..."
+				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
 			else
+				echo "Changing files path for existing cron..."
 				sed -i "s/server\/php\/R\/cron.sh/server\/php\/cron.sh/" /var/spool/cron/root
 				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/instant_email_notification.sh/" /var/spool/cron/root
 				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/periodic_email_notification.sh/" /var/spool/cron/root
-				echo "*/5 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/root
+			
+				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
+				echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/root
+				
+				echo "Setting up cron for every 5 minutes to send activities to webhook..."
+				echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/root
+				
+				echo "Setting up cron for every 5 minutes to send email notification to past due..."
+				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
 			fi
 			
 			echo "Updating SQL..."
@@ -151,10 +168,13 @@
 				case "${answer}" in
 					[Yy])
 					echo "Installing PHP..."
-					apt-get install -y php5 php5-fpm php5-common
-					service php5-fpm start
+					apt-get install -y php5 php5-common
 				esac
 			fi
+			
+			echo "Installing PHP fpm and cli extension..."
+			apt-get install -y php5-fpm php5-cli
+			service php5-fpm start
 			
 			echo "Checking PHP curl extension..."
 			php -m | grep curl
@@ -188,7 +208,9 @@
 			php -m | grep imagick
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-imagick..."
-				apt-get install -y php5-imagick
+				apt-get install gcc
+				apt-get install imagemagick
+				apt-get install php5-imagick
 			fi
 			
 			echo "Checking PHP imap extension..."
@@ -299,6 +321,8 @@
 			echo "Creating PostgreSQL user and database..."
 			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
 			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;"
+			psql -U postgres -c "COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';"
 			if [ "$?" = 0 ];
 			then
 				echo "Importing empty SQL..."
@@ -323,6 +347,12 @@
 			
 			echo "Setting up cron for every 30 minutes to fetch IMAP email..."
 			echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/crontabs/root
+			
+			echo "Setting up cron for every 5 minutes to send activities to webhook..."
+			echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/crontabs/root
+			
+			echo "Setting up cron for every 5 minutes to send email notification to past due..."
+			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
 
 			echo "Starting services..."
 			service cron restart
@@ -369,11 +399,14 @@
 					[Yy])
 					echo "Installing PHP..."
 					yum install -y epel-release
-					yum install -y php-fpm php-cli
-					service php-fpm start
-					chkconfig --levels 35 php-fpm on
+					yum install -y php
 				esac
 			fi
+			
+			echo "Installing PHP fpm and cli extension..."
+			yum install -y php-fpm php-devel php-cli
+			service php-fpm start
+			chkconfig --levels 35 php-fpm on
 
 			echo "Checking PHP curl extension..."
 			php -m | grep curl
@@ -412,7 +445,17 @@
 			if [ "$?" -gt 0 ];
 			then
 				echo "Installing php-imagick..."
-				yum install -y php-imagick
+				yum install ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
+				cd /usr/local/src
+				wget http://pecl.php.net/get/imagick-2.2.2.tgz
+				tar zxvf ./imagick-2.2.2.tgz
+				cd imagick-2.2.2
+				phpize
+				./configure
+				make
+				make test
+				make install
+				echo "extension=imagick.so" >> /etc/php.ini
 			fi
 			
 			echo "Checking PHP imap extension..."
@@ -542,6 +585,8 @@
 			echo "Creating PostgreSQL user and database..."
 			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
 			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;"
+			psql -U postgres -c "COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';"
 			if [ "$?" = 0 ];
 			then
 				echo "Importing empty SQL..."
@@ -566,6 +611,12 @@
 			
 			echo "Setting up cron for every 30 minutes to fetch IMAP email..."
 			echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 5 minutes to send activities to webhook..."
+			echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 5 minutes to send email notification to past due..."
+			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
 			
 			echo "Reset php-fpm (use unix socket mode)..."
 			sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf

@@ -2,7 +2,8 @@
 	var is_subscribed = '<i class="icon-ok hide"></i>';
     var subscribe_class = 'js-list-subscribe';
 	var subscribe = subscribers.findWhere({
-		 user_id: parseInt(authuser.id)
+		 user_id: parseInt(authuser.id),
+		 is_subscribed: 1
 	 });
 	 var subscribe_id = '';
 	 if (!_.isEmpty(subscribe) && parseInt(subscribe.attributes.is_subscribed) === 1) {
@@ -13,30 +14,40 @@
 %>
 <li class="text-center"><strong><%- i18next.t("List Actions") %></strong><a class="pull-right"><i class=" icon-remove"></i></a></li>
 <li class="divider"></li>
-<% if(!_.isEmpty(role_links.where({slug: "add_card"}))){ %>
+<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "add_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 	<li><a href="#" title="<%- i18next.t('Add Card') %>" class="js-show-add-card-form"><%- i18next.t("Add Card") %></a></li>
 <% } %>	
-<% if(!_.isEmpty(role_links.where({slug: "add_list"})) && !is_offline_data){ %>
+<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "add_list",board_user_role_id: parseInt(list.board_user_role_id)}))) && !is_offline_data){ %>
 	<li class="js-hide-on-offline"><a href="#" title="<%- i18next.t('Copy List') %>" class="js-show-copy-list-form"><%- i18next.t("Copy List") %></a></li>
 <% } %>	
-<% if(!_.isEmpty(role_links.where({slug: "edit_list"}))){ %>
+<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 	<li><a href="#" title="<%- i18next.t('Move List') %>" class="js-show-move-list-form" data-list-id="<%- list.id %>"><%- i18next.t("Move List") %></a></li>
-<% } %>		
-<% if(!_.isEmpty(role_links.where({slug: "subscribe_list"}))){ %>
-	<li><a href="#" title="<%- i18next.t('Subscribe') %>" class="highlight-icon <%= subscribe_class %>" data-list-id="<%- list.id %>" data-subscribe-id="<%- subscribe_id %>"><span class="js-subscribe-text"><%- i18next.t("Subscribe") %><%if (!_.isEmpty(subscribe) && parseInt(subscribe.attributes.is_subscribed) === 1) {%>d<%}%></span> <%= is_subscribed %></a></li>
+<% } %>
+<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || (!_.isEmpty(list.collection.board.acl_links.where({slug: "subscribe_list",board_user_role_id: parseInt(list.board_user_role_id)})) && _.isEmpty(subscribe)) || (!_.isEmpty(list.collection.board.acl_links.where({slug: "unsubscribe_list",board_user_role_id: parseInt(list.board_user_role_id)})) && !_.isEmpty(subscribe)))) { %>
+	<%
+		var subscribe_disabled = '';
+		var subscribed = list.collection.board.board_subscribers.findWhere({
+			user_id: parseInt(authuser.id),
+			is_subscribed: 1
+		});
+		if (subscribed) {
+			subscribe_disabled = 'disabled';
+		}
+	%>
+	<li class="<%= subscribe_disabled %>"><a href="#" title="<%- i18next.t('Subscribe') %>" class="highlight-icon <%= subscribe_class %>" data-list-id="<%- list.id %>" data-subscribe-id="<%- subscribe_id %>"><span class="js-subscribe-text"><%- i18next.t("Subscribe") %><%if (!_.isEmpty(subscribe) && parseInt(subscribe.attributes.is_subscribed) === 1) {%>d<%}%></span> <%= is_subscribed %></a></li>
 <% } %>	
 <li class="divider"></li>
-<% if(!_.isEmpty(role_links.where({slug: "move_list_cards"}))){ %>
+<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 	<li><a href="#" title="<%- i18next.t('Move All Cards in This List') %>" class="js-show-move-card-list-form" data-list-id="<%- list.id %>"><%- i18next.t("Move All Cards in This List") %></a></li>
 <% } %>
-<% if(!_.isEmpty(role_links.where({slug: "edit_list"}))){ %>
+<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 ||  !_.isEmpty(list.collection.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 	<li><a href="#" title="<%- i18next.t('Archive All Cards in this List') %>" class="js-show-confirm-archive-cards" data-list-id="<%- list.id %>"><%- i18next.t("Archive All Cards in this List") %></a></li>
 <% } %>
 <li class="divider"></li>
 <li><a href="#" title="<%- i18next.t('Show Attachments') %>" class="js-show-list-modal"><%- i18next.t("Show Attachments") %></a></li>
-<% if(!_.isEmpty(role_links.where({slug: "edit_list"}))){ %>
+<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "archive_list",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 	<li><a href="#" title="<%- i18next.t('Archive This List') %>" class="js-show-confirm-archive-list" data-list-id="<%- list.id %>"><%- i18next.t("Archive This List") %></a></li>
 <% } %>
-<% if(!_.isEmpty(role_links.where({slug: "delete_list"}))){ %>
+<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 ||  !_.isEmpty(list.collection.board.acl_links.where({slug: "delete_list",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 <li><a href="#" title="<%- i18next.t('Delete this List') %>" class="js-show-confirm-list-delete" data-list-id="<%- list.id %>"><i class="icon-sm icon-warning-sign icon-type text-primary"></i><%- i18next.t("Delete this List") %></a></li>
 <% } %>

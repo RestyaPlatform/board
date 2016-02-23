@@ -26,7 +26,17 @@ App.ActivityView = Backbone.View.extend({
         }
         _.bindAll(this, 'render', 'undo', 'undo_all');
         this.type = options.type;
-        this.board = options.board;
+        if (!_.isUndefined(options.board)) {
+            this.board = options.board;
+        }
+        if (!_.isUndefined(this.model.board_users)) {
+            var board_user_role_id = this.model.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(board_user_role_id)) {
+                this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+            }
+        }
         emojify.run();
     },
     converter: new Showdown.converter(),
@@ -62,20 +72,11 @@ App.ActivityView = Backbone.View.extend({
      *
      */
     render: function() {
-        var current_user_can_undo_it = false;
-        if (!_.isUndefined(App.boards) && !_.isEmpty(this.model) && !_.isUndefined(this.model.attributes.board_id) && !_.isUndefined(App.boards.get(this.model.attributes.board_id))) {
-            var board_users = App.boards.get(this.model.attributes.board_id).attributes.users;
-            _.each(board_users, function(board_user) {
-                if (parseInt(board_user.user_id) === parseInt(authuser.user.id) && parseInt(board_user.is_admin) === 1) {
-                    current_user_can_undo_it = true;
-                }
-            });
-        }
         this.$el.html(this.template({
             activity: this.model,
             type: this.type,
             converter: this.converter,
-            current_user_can_undo_it: current_user_can_undo_it
+            board: this.board
         }));
         if (!_.isEmpty(this.model)) {
             this.$el.addClass('js-list-activity-' + this.model.attributes.id);
