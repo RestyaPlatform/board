@@ -10,11 +10,11 @@
 				</thead>
 				<tbody class="js-acl-link-list-body acl-link-list">
 					<%
-						var acl_link_groups = ["Guest", "Users"];
+						var acl_link_groups = ["Guest", "Users"];     
 						var group = '';
 						var old_group = '';
 						var group_id = '';
-						acl_links.each(function(acl_link) {
+						acl_links.each(function(acl_link) {    
 							if (acl_link.attributes.is_hide === 1) {
 								return;
 							}
@@ -36,11 +36,18 @@
 											role_id: parseInt(role.attributes.id)
 										});
 								%>
-								<% if (role.attributes.id === "1") { %>
+								<% if (role.attributes.id === "1") { %>      
 									<td class="text-center">
-										<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
-									</td>
-								<% } else if (role.attributes.id === "2") { %>
+									    <% if (acl_link.attributes.is_user_action === 1) { %>  
+										    <div class="checkbox">
+												 <input type="checkbox" class="cur" checked="checked">
+												 <label></label>
+                                            </div> 
+										<% } else { %>          
+											<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
+										<% } %>   
+									</td>     
+								<% } else if (role.attributes.id === "2") { %>    
 									<% if (acl_link.attributes.is_user_action === 1) { %>
 										<td class="text-center">
 											<div class="checkbox">
