@@ -30,7 +30,7 @@ App.LabelDeleteConfirmView = Backbone.View.extend({
                 var label = self.model.labels.findWhere({
                     label_id: self.label_id
                 });
-                label.collection.remove(label);
+                self.model.labels.remove(label);
             }
         });
         return false;
