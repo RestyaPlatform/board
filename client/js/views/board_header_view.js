@@ -523,7 +523,6 @@ App.BoardHeaderView = Backbone.View.extend({
      */
     render: function() {
         var self = this;
-        this.is_admin = false;
         changeTitle('Board - ' + _.escape(this.model.attributes.name));
         if (!_.isUndefined(this.authuser)) {
             this.model.board_subscriber = this.model.board_subscribers.findWhere({
@@ -532,17 +531,11 @@ App.BoardHeaderView = Backbone.View.extend({
             this.model.board_star = this.model.board_stars.findWhere({
                 user_id: parseInt(this.authuser.id)
             });
-            var admin = this.model.board_users.findWhere({
-                user_id: parseInt(authuser.user.id),
-                is_admin: 1
-            });
-            this.is_admin = (!_.isEmpty(admin) || (!_.isUndefined(authuser.user) && authuser.user.role_id === 1)) ? true : false;
         }
         this.$el.html(this.template({
             board: this.model,
             subscriber: this.model.board_subscriber,
             star: this.model.board_star,
-            is_admin: this.is_admin
         }));
         $('a.js-switch-grid-view').parent().addClass('active');
         this.showTooltip();
@@ -1094,7 +1087,6 @@ App.BoardHeaderView = Backbone.View.extend({
         el.find('.js-back-setting-response').next().remove();
         el.find('.js-back-setting-response').after(new App.BoardSidebarView({
             model: this.model,
-            is_admin: this.is_admin
         }).el);
         this.renderBoardUsers();
         this.clearAll();
@@ -1102,22 +1094,12 @@ App.BoardHeaderView = Backbone.View.extend({
     },
     renderBoardUsers: function() {
         $('.js-get-board-member-lists-response').html('');
-        var is_admin = 0;
-        if (!_.isUndefined(this.authuser)) {
-            var admin = this.model.board_users.find(function(normal_user) {
-                return parseInt(normal_user.attributes.user_id) === parseInt(authuser.user.id) && parseInt(normal_user.attributes.is_admin === 1);
-            });
-            is_admin = (!_.isEmpty(admin) || authuser.user.role_id === 1) ? 1 : 0;
-        }
-
         var self = this;
-        this.model.board_users.sortBy('is_admin');
+        this.model.board_users.sortBy('board_user_role_id');
         this.model.board_users.each(function(board_user) {
-            is_admin = (parseInt(board_user.attributes.is_admin) === 1) ? 1 : 0;
             board_user.board_user_roles = self.model.board_user_roles;
             self.$('.js-get-board-member-lists-response').append(new App.BoardUsersView({
                 model: board_user,
-                is_admin: is_admin
             }).el);
         });
     },

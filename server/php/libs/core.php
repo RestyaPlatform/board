@@ -499,10 +499,12 @@ function ldapAuthenticate($p_user_id, $p_password)
  *
  * @param string $r_request_method Optional default value : 'GET'
  * @param string $r_resource_cmd   Optional default value : '/users'
+ * @param string $r_resource_vars  Resource variable
+ * @param string $post_data        Post data
  *
  * @return true if links allowed false otherwise
  */
-function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r_resource_vars, $post_data)
+function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r_resource_vars = array() , $post_data = array())
 {
     global $r_debug, $db_lnk, $authUser;
     $role = 3; // Guest role id
@@ -541,10 +543,11 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
         'PUT'
     );
     $board_star = true;
-    if (in_array($r_resource_cmd, array(
+    $board_star_url = array(
         '/boards/?/boards_stars/?',
         '/boards/?/boards_stars'
-    ))) {
+    );
+    if (in_array($r_resource_cmd, $board_star_url)) {
         $board_star = false;
     }
     //temp fix
@@ -1030,24 +1033,24 @@ function importTrelloBoard($board = array())
                 } else {
                     $users[$member['id']] = $userExist['id'];
                 }
-                $is_admin = 'false';
+                $board_user_role_id = 2;
                 if (in_array($member['id'], $admin_user_id)) {
-                    $is_admin = 'true';
+                    $board_user_role_id = 1;
                 }
                 $qry_val_arr = array(
                     $users[$member['id']],
                     $new_board['id'],
-                    $is_admin
+                    $board_user_role_id
                 );
-                pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, is_admin) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
+                pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
             }
         }
         $qry_val_arr = array(
             $authUser['id'],
             $new_board['id'],
-            'true'
+            1
         );
-        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, is_admin) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
+        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
         if (!empty($board['lists'])) {
             $lists = array();
             $i = 0;

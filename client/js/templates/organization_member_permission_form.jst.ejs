@@ -9,7 +9,7 @@
 	<li class="col-xs-12 btn-block">
 		<a class="h6 navbar-btn js-edit-organization-member-permission" data-organizations_user_id="<%- organization_user.organizations_user_id %>" 
 		data-organizations_id="<%- organization_user.attributes.organization_id %>" data-organization_user_role_id="<%- organization_user_role.id %>" href="#">
-			<span class="show text-primary navbar-btn h5"><%- organization_user_role.name.toUpperCase() %>
+			<span class="show text-primary navbar-btn h5"><%- organization_user_role.name %>  
 			<% if(organization_user_role.id == organization_user.attributes.organization_user_role_id){%><i class="icon-check well-sm"></i><%}%>	
 			</span>
 			<span class="show"><%- i18next.t('Can view, create and edit org boards, and change settings for the organization.') %></span>

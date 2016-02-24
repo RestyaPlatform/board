@@ -29,6 +29,7 @@ App.AdminBoardView = Backbone.View.extend({
         }
         this.message = options.message;
         this.starred_boards = options.starred_boards;
+        this.model.board_user_roles = options.board_user_roles;
         _.bindAll(this, 'render');
         if (this.model !== null) {
             this.model.collection.bind('change', this.render);
@@ -98,15 +99,16 @@ App.AdminBoardView = Backbone.View.extend({
         return this;
     },
     renderAdminBoardUsers: function() {
-        if (this.model.attributes.boards_users !== null) {
+        if (this.model.attributes.boards_users !== null && !_.isUndefined(this.model.attributes.boards_users)) {
             var admins = this.model.attributes.boards_users.filter(function(normal_user) {
-                return parseInt(normal_user.is_admin) === 1;
+                return parseInt(normal_user.board_user_role_id) === 1;
             });
             this.model.admin_board_users = admins;
             var normal_users = this.model.attributes.boards_users.filter(function(normal_user) {
-                return parseInt(normal_user.is_admin) === 0;
+                return parseInt(normal_user.board_user_role_id) != 1;
             });
             this.model.normal_board_users = normal_users;
+            this.render();
         }
     },
     /**

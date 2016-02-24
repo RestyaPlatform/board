@@ -33,7 +33,6 @@ App.BoardUserActionsView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
-        this.is_admin = options.is_admin;
         this.render();
     },
     template: JST['templates/board_user_actions'],
@@ -47,17 +46,8 @@ App.BoardUserActionsView = Backbone.View.extend({
      *
      */
     render: function() {
-        var is_admin;
-        if (this.model !== null && this.model.collection !== null && this.model.collection.models !== null) {
-            for (i = 0; i < this.model.collection.models.length; i++) {
-                if (this.model.collection.models[i].attributes.user_id == authuser.user.id) {
-                    is_admin = (parseInt(this.model.collection.models[i].attributes.is_admin) === 1) ? 1 : 0;
-                }
-            }
-        }
         this.$el.html(this.template({
             user: this.model,
-            is_admin: is_admin
         }));
         this.showTooltip();
         return this;
