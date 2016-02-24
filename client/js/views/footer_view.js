@@ -90,7 +90,9 @@ App.FooterView = Backbone.View.extend({
         'click .js-my-boards-listing': 'renderMyBoards',
         'click #modal-activities': 'showActivity',
         'click #modal-comments': 'showActivity',
+        'click .js-show-shortcuts-modal': 'showShortcutModal',
         'keyup[/] .search-container': 'keyboardShowSearchMsg',
+        'keyup[shift+/] body': 'keyboardShowShortcutModal',
     },
     /** 
      * Constructor
@@ -1428,6 +1430,7 @@ App.FooterView = Backbone.View.extend({
      *
      */
     qSearch: function(e) {
+        console.log('here');
         e.preventDefault();
         $('.search-container').addClass('search-tab');
         $("#res, #nres").addClass('hide');
@@ -1750,8 +1753,26 @@ App.FooterView = Backbone.View.extend({
         }
         return false;
     },
+    /**
+     * showShortcutModal()
+     * display the Shortcuts Key
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showShortcutModal: function(e) {
+        var modalView = new App.ModalShortcutView({});
+        modalView.show();
+        return false;
+    },
     keyboardShowSearchMsg: function(e) {
-        $('.js-search', e.target).trigger('click');
+        $('.js-search').trigger('click');
+        return false;
+    },
+    keyboardShowShortcutModal: function(e) {
+        console.log('short');
+        $('.js-show-shortcuts-modal').trigger('click');
         return false;
     },
 });

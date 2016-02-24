@@ -97,7 +97,9 @@ App.ModalCardView = Backbone.View.extend({
         'keyup[d] .dockmodal': 'keyboardShowCardDueDateForm',
         'keyup[t] .dockmodal': 'keyboardShowCardTitleEditForm',
         'keyup[v] .dockmodal': 'keyboardAddCardVote',
+        'keyup[s] .dockmodal': 'keyboardCardSubscribe',
         'keyup[m] .dockmodal': 'keyboardShowAddMemberForm',
+        'keyup[l] .dockmodal': 'keyboardShowCardLabelForm',
         'keyup[space] .dockmodal': 'keyboardAddCardMember',
     },
     /**
@@ -2852,8 +2854,16 @@ App.ModalCardView = Backbone.View.extend({
         $('.js-add-card-vote', e.target).trigger('click');
         return false;
     },
+    keyboardCardSubscribe: function(e) {
+        $('.js-card-subscribe', e.target).trigger('click');
+        return false;
+    },
     keyboardShowAddMemberForm: function(e) {
         $('.js-show-add-member-form', e.target).trigger('click');
+        return false;
+    },
+    keyboardShowCardLabelForm: function(e) {
+        $('.js-show-card-label-form', e.target).trigger('click');
         return false;
     },
     keyboardAddCardMember: function(e) {

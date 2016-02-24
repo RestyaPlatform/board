@@ -1,0 +1,162 @@
+<div class="modal fade" id="ModalShortcutView" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			  <a href="#" title="<%- i18next.t("Keyboard Shortcuts") %>" class="">
+			  <h2 id="myModalLabel" class="modal-title htruncate"><strong><%- i18next.t("Keyboard Shortcuts") %></strong></h2></a>
+			</div>			
+			<div class="modal-body clearfix">	
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Navigate Cards") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">&#8592;</li>
+					<li class="avatar avatar-color-194">&#8593;/J</li>
+					<li class="avatar avatar-color-194">&#8595;/K</li>
+					<li class="avatar avatar-color-194">&#8594;</li>	
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing the arrow keys will select adjacent cards on a board. Pressing "j" will select the card below the current card. Pressing "k" will select the card above the current card.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Focus Search Box") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">/</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing "/" puts the cursor in the search box in the footer.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Archive Card") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">C</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing "c" will archive a card.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Due Date") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">D</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing "d" will open the due date picker for a card.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Open Card") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194 avatar-block">enter</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing "enter" will open the currently selected card.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Open Card Filter Menu") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">F</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Use "f" to open the card filter menu.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Label") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">L</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing "l" opens a pop-over of the available labels. Clicking a label will add or remove it from the card.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Add / Remove Members") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">M</li>
+				</ul>
+				</div>
+				<p><%- i18next.t("Pressing 'm' opens the add / remove members menu. Clicking a member's avatar will assign or unassign that person.") %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Insert New Card") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">N</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing "n" opens a pop-over that allows you to add a card after the currently selected card.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Move Card to Adjacent List") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">&#60;</li>
+					<li class="avatar avatar-color-194">&#62;</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing the left or right angle brackets (< and >) will move a card to the adjacent left or right list.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("My Cards Filter") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">Q</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing the "q" key toggles the "cards assigned to me" filter.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Subscribe") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">S</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing "s" will subscribe you to, or unsubscribe you from, a card. Subscribing to a card will give you notifications for most actions to that card.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Assign Self") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194 avatar-block">space</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing "space" will assign (or unassign) yourself to a card.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Edit Title") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">T</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('If viewing a card, pressing "t" will edit the title. If hovering over a card, pressing "t" will open the card and edit the title.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Vote") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">V</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing "v" will add (or remove) your vote on a card if the Voting Power-Up is enabled.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Toggle Board Menu") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">W</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing "w" will collapse or expand the board menu, the sidebar on the right.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Clear All Filters") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">X</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Use "x" to clear all active card filters.') %></p>
+				<hr/>
+				<div class="clearfix">
+				<span class="h3 pull-left"><%- i18next.t("Open Shortcuts Page") %></span>
+				<ul class="pull-right list-inline">
+					<li class="avatar avatar-color-194">?</li>
+				</ul>
+				</div>
+				<p><%- i18next.t('Pressing "?" will open the shortcuts page.') %></p>
+				<hr/>
+			</div>
+		  </div><!-- /.modal-content -->
+    </div>
+</div>
+

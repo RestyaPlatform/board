@@ -1447,11 +1447,8 @@ App.ListView = Backbone.View.extend({
         }
     },
     keyboardShowAddCardForm: function(e) {
-        var active_card = $('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active-card');
-        if (active_card === true) {
-            $('.active-card').parents('.js-board-list').find('.js-show-add-card-form').each(function() {
-                $(this).parents('a.js-show-add-card-form').trigger('click');
-            });
+        if ($('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
+            $('.active').parents('.js-board-list').find('.js-show-add-card-form').trigger('click');
         }
-    },
+    }
 });

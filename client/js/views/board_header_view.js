@@ -135,8 +135,6 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-select': 'selectBoardVisibility',
         'click .js-clear-all': 'clearAll',
         'keyup[f] .js-setting-response': 'keyboardShowFilters',
-        'keyup[l] .js-setting-response': 'keyboardShowLabels',
-        'keyup[s] .js-setting-response': 'keyboardShowSubscribeForm',
         'keyup[w] .js-setting-response': 'keyboardOpenDropdown',
         'keyup[x] .js-setting-response': 'keyboardClearAll',
         'keyup[q] .js-setting-response': 'keyboardToggleCardFilter',
@@ -144,6 +142,9 @@ App.BoardHeaderView = Backbone.View.extend({
         'keyup[down] body': 'keyboardDownNavigateCards',
         'keyup[left] body': 'keyboardLeftNavigateCards',
         'keyup[right] body': 'keyboardRightNavigateCards',
+        'keyup[return] body': 'keyboardShowCardModal',
+        'keyup[j] body': 'keyboardShowPrevCardModal',
+        'keyup[k] body': 'keyboardShowNextCardModal',
     },
     /**
      * openDropdown()
@@ -2000,16 +2001,6 @@ App.BoardHeaderView = Backbone.View.extend({
         $('.js-show-filters').trigger('click');
         return true;
     },
-    keyboardShowLabels: function(e) {
-        $('.js-open-dropdown').trigger('click');
-        $('.js-show-labels').trigger('click');
-        return false;
-    },
-    keyboardShowSubscribeForm: function(e) {
-        $('.js-open-dropdown').trigger('click');
-        $('.js-show-subscribe-form').trigger('click');
-        return false;
-    },
     keyboardOpenDropdown: function(e) {
         $('.js-open-dropdown').trigger('click');
         return false;
@@ -2029,67 +2020,103 @@ App.BoardHeaderView = Backbone.View.extend({
         return false;
     },
     keyboardUpNavigateCards: function(e) {
-        console.log('up');
-        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active-card')) {
-            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active-card');
+        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
+            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active');
             return;
         }
-        var active_card = $('.js-board-list .js-board-list-cards .active-card');
+        var active_card = $('.js-board-list .js-board-list-cards .active');
         if ($(active_card).prev().length) {
-            $(active_card).removeClass('active-card').prev().addClass('active-card');
+            $(active_card).removeClass('active').prev().addClass('active');
         }
     },
     keyboardDownNavigateCards: function(e) {
-        console.log('down');
-        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active-card')) {
-            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active-card');
+        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
+            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active');
             return;
         }
-        var active_card = $('.js-board-list .js-board-list-cards .active-card');
+        var active_card = $('.js-board-list .js-board-list-cards .active');
         if ($(active_card).next().length) {
-            $(active_card).removeClass('active-card').next().addClass('active-card');
+            $(active_card).removeClass('active').next().addClass('active');
         }
     },
     keyboardLeftNavigateCards: function(e) {
-        console.log('left');
-        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active-card')) {
-            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active-card');
+        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
+            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active');
             return;
         }
-        var active_card = $('.js-board-list .js-board-list-cards .active-card');
-        var active_card_position = $('.js-board-list .js-board-list-cards .active-card').index();
-        console.log(active_card_position);
-        if ($(active_card).parents('.js-board-list').prev().length) {
-            card_length = $(active_card).parents('.js-board-list').prev().find('.js-board-list-card').length;
-            if (active_card_position > card_length) {
-                $(active_card).removeClass('active-card').parents('.js-board-list').prev().find('.js-board-list-card').eq(0).addClass('active-card');
-            } else {
-                $(active_card).removeClass('active-card').parents('.js-board-list').prev().find('.js-board-list-card').eq(active_card_position).addClass('active-card');
-            }
-        }
-    },
-    keyboardRightNavigateCards: function(e) {
-        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active-card')) {
-            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active-card');
-            return;
-        }
-        var active_card = $('.js-board-list .js-board-list-cards .active-card');
-        var active_card_position = $('.js-board-list .js-board-list-cards .active-card').index();
-
+        var active_card = $('.js-board-list .js-board-list-cards .active');
+        var active_card_position = $('.js-board-list .js-board-list-cards .active').index();
         var next_list_card = 0;
-        next_list = $(active_card).parents('.js-board-list').next();
+        var prev_list = $(active_card).parents('.js-board-list').prev();
         do {
-            next_list_card = next_list.find('.js-board-list-card').length;
-            if (next_list_card === 0) {
-                next_list = next_list.next();
+            prev_list_card = prev_list.find('.js-board-list-card').length;
+            if (prev_list_card === 0) {
+                prev_list = prev_list.prev();
+                if (!$(prev_list).length) {
+                    break;
+                }
             } else {
-                if (active_card_position > (next_list_card - 1)) {
-                    $(active_card).removeClass('active-card').parents('.js-board-list').next().find('.js-board-list-card').eq(0).addClass('active-card');
+                console.log('left else');
+                if (active_card_position > (prev_list_card - 1)) {
+                    $(active_card).removeClass('active');
+                    $(prev_list).find('.js-board-list-card').eq(0).addClass('active');
                 } else {
-                    $(active_card).removeClass('active-card').parents('.js-board-list').next().find('.js-board-list-card').eq(active_card_position).addClass('active-card');
+                    $(active_card).removeClass('active');
+                    $(prev_list).find('.js-board-list-card').eq(active_card_position).addClass('active');
                 }
                 break;
             }
         } while (next_list_card === 0);
+    },
+    keyboardRightNavigateCards: function(e) {
+        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
+            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active');
+            return;
+        }
+        var active_card = $('.js-board-list .js-board-list-cards .active');
+        var active_card_position = $('.js-board-list .js-board-list-cards .active').index();
+        var next_list_card = 0;
+        var next_list = $(active_card).parents('.js-board-list').next();
+        do {
+            next_list_card = next_list.find('.js-board-list-card').length;
+            if (next_list_card === 0) {
+                next_list = next_list.next();
+                if (!$(next_list).length) {
+                    break;
+                }
+            } else {
+                if (active_card_position > (next_list_card - 1)) {
+                    $(active_card).removeClass('active');
+                    $(next_list).find('.js-board-list-card').eq(0).addClass('active');
+                } else {
+                    $(active_card).removeClass('active');
+                    $(next_list).find('.js-board-list-card').eq(active_card_position).addClass('active');
+                }
+            }
+        } while (next_list_card === 0);
+    },
+    keyboardShowCardModal: function(e) {
+        if ($('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
+            var active_card = $('.js-board-list-card.active').attr('id');
+            $('#' + active_card).trigger('click');
+        }
+    },
+    keyboardShowPrevCardModal: function(e) {
+        var active_card = $('.js-board-list .js-board-list-cards .active');
+        if ($(active_card).prev().length) {
+            $('.action-close', $('.dockmodal.active')).trigger('click');
+            $(active_card).removeClass('active').prev().addClass('active');
+            var active_card_id = $('.js-board-list-card.active').attr('id');
+            $('#' + active_card_id).trigger('click');
+        }
+    },
+    keyboardShowNextCardModal: function(e) {
+        var active_card = $('.js-board-list .js-board-list-cards .active');
+        if ($(active_card).next().length) {
+            $('.action-close', $('.dockmodal.active')).trigger('click');
+            $(active_card).removeClass('active').next().addClass('active');
+            var active_card_id = $('.js-board-list-card.active').attr('id');
+            $('#' + active_card_id).trigger('click');
+        }
     },
 });

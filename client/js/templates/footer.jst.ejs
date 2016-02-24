@@ -168,6 +168,7 @@
 		<ul class="dropdown-menu text-left js-change-avatar-form-response">
 			<li> <a title="<%- i18next.t('Logout') %>" href="#/users/logout"><%- i18next.t("Logout") %></a> </li>			
 			<li class="divider"></li>
+			<li><a href="#" class="js-show-shortcuts-modal" data-toggle="modal" data-target="#ModalShortcutView"><%- i18next.t('Shortcuts') %></a></li>
 			<% if(model.is_show_enable_notification === true) { %>
 				<li><a title="<%- i18next.t('Enable Desktop Notification') %>" href="#" class="js-enable-desktop-notification"><%- i18next.t("Enable Desktop Notification") %></a></li>
 			<% } %>	
