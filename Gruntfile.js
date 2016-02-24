@@ -92,12 +92,11 @@ module.exports = function(grunt) {
         },
         filerev: {
             live: {
-                src: ['client/js/default.cache.js', 'client/css/default.cache.css', 'client/js/authorize.cache.js']
+                src: ['client/js/default.cache.js', 'client/css/default.cache.css']
             }
         },
         usemin: {
-            html: 'client/index.html',
-            php: 'server/php/authorize.php'
+            html: 'client/index.html'
         },
         htmlmin: {
             main: {
@@ -185,7 +184,7 @@ module.exports = function(grunt) {
         },
         zip: {
             'using-cwd': {
-                src: ['manifest.xml', 'api_explorer/**/*.*', 'server/php/**/*.*', 'media/**/*.*', 'client/*.*', 'client/css/authorize.css', 'client/css/default.cache.*.css', 'client/js/default.cache.*.js', 'client/js/authorize.cache.*.js', 'client/js/workflow_templates/*.*', 'client/font/**/*.*', 'client/img/**/*.*'],
+                src: ['manifest.xml', 'api_explorer/**/*.*', 'server/php/**/*.*', 'media/**/*.*', 'client/*.*', 'client/css/authorize.css', 'client/css/default.cache.*.css', 'client/js/default.cache.*.js', 'client/js/authorize.cache.js', 'client/js/workflow_templates/*.*', 'client/font/**/*.*', 'client/img/**/*.*'],
                 dest: 'restyaboard.zip'
             }
         },
