@@ -96,11 +96,30 @@
 					  <%}%>
 					</ul>
 				  </li>
-				  <% } %>
+				  <% } %> 
 				  <% if (!_.isEmpty(card.card_voters)) { %>
-				  <li class="mar-bottom">
-					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Votes') %></h4>
-					<ul class="list-inline clearfix">
+					  <li class="mar-bottom">
+						<h4 class="text-muted list-group-item-heading"><%- i18next.t('Votes') %></h4>
+						<ul class="list-inline clearfix">
+						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})) || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+						<li>
+							  <% if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
+									var voted_user = card.card_voters.findWhere({
+									 user_id: parseInt(authuser.user.id)
+								}); 
+							%>
+							<% if(_.isEmpty(voted_user)){  %>
+							  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+							  <button type="button" class="btn btn-primary js-add-card-vote"><i class=" icon-thumbs-up"></i></button> 
+							  <% } %>  
+							  <% } else{ %>
+							  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+							  <button type="button" class="btn btn-default active js-delete-card-vote"><i class="  icon-thumbs-up"></i></button>  
+							  <% } %>
+							  <% } }%>         
+					   </li>
+		          <% } %>
+					  
 					  <li class="dropdown"><a href="#" title="<%- i18next.t('Add Vote') %>" class="btn btn-default js-show-card-voters-list dropdown-toggle" data-toggle="dropdown"><%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %></a>
 						<ul class="dropdown-menu dropdown-menu-left arrow js-show-card-voters-list-response">
 						</ul>
@@ -391,7 +410,7 @@
 					<div class="form-group row">
 					  <input type="url" class="form-control input-sm"   id="" name="image_link" placeHolder="<%- i18next.t('Paste any link here') %>" title="<%- i18next.t('Whitespace alone not allowed') %>" required pattern=".*\S+.*">
 					</div>
-					<div class="form-group row">
+					<div class="form-group row">    
 					  <input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary btn-sm">
 					</div>
 					<span class="help-block row small"><%- i18next.t('Tip: You can drag and drop files and links onto cards to upload them.') %></span>
@@ -472,7 +491,7 @@
 		      <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 		      <a class="panel-heading show js-add-card-vote" title="<%- i18next.t('Vote') %>" href="#"><%- i18next.t('Vote') %></a>
 			  <% } %>
-			  <% } else{ %>
+			  <% } else{ %> 
 			  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			  <a class="panel-heading show js-delete-card-vote"" title="<%- i18next.t('Unvote') %>" href="#" data-id="<%- voted_user.id %>"> <span class="text-muted show panel-title" ><i class="icon-thumbs-up-alt"></i><%- i18next.t('Unvote') %></span> </a>
 			  <% } %>
