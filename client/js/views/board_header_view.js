@@ -133,8 +133,22 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-no-action': 'noAction',
         'click .js-back-to-board-visibility': 'showBoardVisibility',
         'click .js-select': 'selectBoardVisibility',
-        'click .js-clear-all': 'clearAll'
+        'click .js-clear-all': 'clearAll',
+        'click .js-rename-board': 'loadBoardName'
     },
+    /**
+     * loadBoardName()
+     * load the board name
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    loadBoardName: function(e) {
+        e.preventDefault();
+        $('#inputBoardName').val(this.model.attributes.name);
+    },
+
     /**
      * openDropdown()
      * copy the existing card
