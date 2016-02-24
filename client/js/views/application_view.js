@@ -375,7 +375,8 @@ App.ApplicationView = Backbone.View.extend({
             } else if (view_type === 'attachments') {
                 $('.js-show-board-modal').trigger('click');
                 view_type = null;
-            } else if (view_type === null || view_type === '') {
+            } else if (_.isUndefined(view_type) || view_type === null || view_type === '') {
+                $('.js-switch-grid-view').trigger('click');
                 view_type = null;
             }
         }
@@ -768,33 +769,24 @@ App.ApplicationView = Backbone.View.extend({
                     id: page.page_view_id
                 }).el);
             } else if (page.model == 'user_view') {
-                if (!_.isUndefined(authuser.user) && (authuser.user.id === page.id || authuser.user.id === '1')) {
-                    // User View
-                    var user = new App.User();
-                    user.url = api_url + 'users/' + page.id + '.json';
-                    user.fetch({
-                        cache: false,
-                        abortPending: true,
-                        success: function(user, response) {
-                            $('#header').html(new App.UserViewHeaderView({
-                                model: user,
-                                type: page.page_view_type
-                            }).el);
-                            $('#content').html(new App.UserView({
-                                model: user,
-                                type: page.page_view_type
-                            }).el);
-                        }
-                    });
-                } else {
-                    app.navigate('#/boards', {
-                        trigger: true,
-                        replace: true,
-                        trigger_function: false,
-                    });
-                    Backbone.history.loadUrl('#/boards');
-                    page.flash('danger', i18next.t('Permission denied'));
-                }
+                var user = new App.User();
+                user.url = api_url + 'users/' + page.id + '.json';
+                user.fetch({
+                    cache: false,
+                    abortPending: true,
+                    success: function(user, response) {
+                        $('#header').html(new App.UserViewHeaderView({
+                            model: user,
+                            type: page.page_view_type,
+                            page: page,
+                        }).el);
+                        $('#content').html(new App.UserView({
+                            model: user,
+                            type: page.page_view_type,
+                            page: page,
+                        }).el);
+                    }
+                });
             } else if (page.model == 'role_settings') {
                 changeTitle(i18next.t('Role Settings'));
                 // User View

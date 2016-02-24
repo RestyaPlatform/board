@@ -25,7 +25,7 @@ App.BoardSimpleView = Backbone.View.extend({
         this.message = options.message;
         this.starred_boards = options.starred_boards;
         _.bindAll(this, 'render');
-        if (this.model !== null) {
+        if (this.model !== null && !_.isUndefined(this.model.collection)) {
             this.model.collection.bind('change', this.render);
             this.model.collection.bind('add', this.render);
             this.model.collection.bind('remove', this.render);

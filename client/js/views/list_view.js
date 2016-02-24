@@ -572,11 +572,13 @@ App.ListView = Backbone.View.extend({
             list_subscribe.save({
                 is_subscribed: 1
             });
-            this.model.attributes.lists_subscribers.forEach(function(list) {
-                if (list.user_id === parseInt(authuser.user.id)) {
-                    list.is_subscribed = 1;
-                }
-            });
+            if (!_.isUndefined(this.model.attributes.lists_subscribers)) {
+                this.model.attributes.lists_subscribers.forEach(function(list) {
+                    if (list.user_id === parseInt(authuser.user.id)) {
+                        list.is_subscribed = 1;
+                    }
+                });
+            }
         } else {
             list_subscribe.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '/list_subscribers/' + subscribe_id + '.json';
             list_subscribe.save({
@@ -611,11 +613,13 @@ App.ListView = Backbone.View.extend({
             list_subscribe.save({
                 is_subscribed: 0
             });
-            this.model.attributes.lists_subscribers.forEach(function(list) {
-                if (list.user_id === parseInt(authuser.user.id)) {
-                    list.is_subscribed = 0;
-                }
-            });
+            if (!_.isUndefined(this.model.attributes.lists_subscribers)) {
+                this.model.attributes.lists_subscribers.forEach(function(list) {
+                    if (list.user_id === parseInt(authuser.user.id)) {
+                        list.is_subscribed = 0;
+                    }
+                });
+            }
         } else {
             this.model.attributes.lists_subscribers.forEach(function(list) {
                 if (list.user_id === parseInt(authuser.user.id)) {
@@ -1089,6 +1093,7 @@ App.ListView = Backbone.View.extend({
             }, {
                 silent: true
             });
+            card.board_users = self.model.board_users;
             card.list = self.model;
             var view = new App.CardView({
                 tagName: 'div',

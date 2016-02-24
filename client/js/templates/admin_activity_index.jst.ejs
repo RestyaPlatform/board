@@ -86,15 +86,15 @@
 			<% } else if((type == 'all' && activity.attributes.type != 'update_profile' && activity.attributes.type != 'edit_organization' && activity.attributes.type != 'add_organization') && (!_.isEmpty(activity.attributes.board_name))) { %>
 				<a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;<%- i18next.t('on') %>&nbsp;<%- activity.attributes.board_name %></a>
 			<% } %>
-					<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all") { %>
-						<div class="js-acticity-action-<%- activity.attributes.id %>">
+					<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all") { %>    
+						<div class="js-acticity-action-<%- activity.attributes.id %> pull-left">
 							<ul class="list-inline col-xs-offset-0">
 							<% if(!_.isEmpty(role_links.where({slug: "edit_comment"}))){ %>
 								<li><a title="<%- i18next.t('Edit') %>" class="js-show-edit-activity js-edit-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-edit"></i><%- i18next.t("Edit") %></a></li>
 							<% } %> 
 								<li><a title="<%- i18next.t('Reply') %>" class="js-show-reply-activity-form js-reply-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-repeat"></i><%- i18next.t("Reply") %></a></li>
 							<% if(!_.isEmpty(role_links.where({slug: "delete_comment"}))){ %>								
-									<li class="dropdown">
+									<li class="dropdown">   
 										<a title="<%- i18next.t('Delete') %>" class="dropdown-toggle js-show-confirm-comment-delete" data-toggle="dropdown" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-remove"></i><%- i18next.t("Delete") %></a>
 										<ul class="dropdown-menu arrow arrow-right">
 											<li id="js-acticity-actions-response-<%- activity.attributes.id %>" class="js-dropdown-popup dropdown-popup"></li>

@@ -49,11 +49,11 @@
 							<div class="clearfix col-xs-12">
 								<small class="col-xs-12 pull-left">
 									<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all") { %>
-										<div class="js-acticity-action-<%- activity.attributes.id %>">
+										<div class="js-acticity-action-<%- activity.attributes.id %> pull-left">  
 											<ul class="list-inline col-xs-offset-0">
 											<% if(!_.isEmpty(role_links.where({slug: "edit_comment"}))){ %>
 												<li><a title="<%- i18next.t('Edit') %>" class="js-show-edit-activity js-edit-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-edit"></i><%- i18next.t("Edit") %></a></li>
-											<% } %> 
+											<% } %>         
 												<li><a title="<%- i18next.t('Reply') %>" class="js-show-reply-activity-form js-reply-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-repeat"></i><%- i18next.t("Reply") %></a></li>
 											<% if(!_.isEmpty(role_links.where({slug: "delete_comment"}))){ %>
 												<li class="dropdown">

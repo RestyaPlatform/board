@@ -84,6 +84,19 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $condition1 = ' AND al.id < $3';
             }
         }
+        if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users']) {
+            $val_array = array(
+                $authUser['id']
+            );
+            $logged_user = executeQuery('SELECT boards_users FROM users_listing WHERE id = $1', $val_array);
+            $logged_user_board_ids = array();
+            if (!empty($logged_user['boards_users'])) {
+                $logged_boards_users = json_decode($logged_user['boards_users'], true);
+                foreach ($logged_boards_users as $logged_boards_user) {
+                    $logged_user_board_ids[] = $logged_boards_user['board_id'];
+                }
+            }
+        }
         $val_array = array(
             $r_resource_vars['users']
         );
@@ -94,6 +107,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             foreach ($boards_users as $boards_user) {
                 $board_ids[] = $boards_user['board_id'];
             }
+        }
+        if (!empty($logged_user_board_ids)) {
+            $board_ids = array_intersect($logged_user_board_ids, $board_ids);
         }
         $org_users = pg_query_params($db_lnk, 'SELECT organization_id FROM organizations_users WHERE user_id = $1', $val_array);
         $org_ids = array();
@@ -110,8 +126,15 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         } else {
             if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE user_id = $1 ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE user_id = $1 ' . $condition;
+                $str = '';
+                $i = 1;
+                if (!empty($logged_user_board_ids)) {
+                    $str.= 'board_id = ANY ( $' . $i . ' ) AND';
+                    $i++;
+                    array_push($pg_params, '{' . implode(',', $board_ids) . '}');
+                }
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ' . $str . ' user_id = $' . $i . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str . ' user_id = $' . $i . $condition;
                 array_push($pg_params, $r_resource_vars['users']);
             } else if (!empty($r_resource_filters['organization_id'])) {
                 if (isset($r_resource_filters['last_activity_id']) && $r_resource_filters['last_activity_id'] > 0) {
@@ -195,7 +218,27 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/users/?/cards':
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_cards_listing ucl WHERE user_id = $1 ORDER BY board_id ASC) as d ';
+        if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users']) {
+            $val_array = array(
+                $authUser['id']
+            );
+            $logged_user = executeQuery('SELECT boards_users FROM users_listing WHERE id = $1', $val_array);
+            $logged_user_board_ids = array();
+            if (!empty($logged_user['boards_users'])) {
+                $logged_boards_users = json_decode($logged_user['boards_users'], true);
+                foreach ($logged_boards_users as $logged_boards_user) {
+                    $logged_user_board_ids[] = $logged_boards_user['board_id'];
+                }
+            }
+        }
+        $str = '';
+        $i = 1;
+        if (!empty($logged_user_board_ids)) {
+            $str.= 'board_id = ANY ( $' . $i . ' ) AND';
+            $i++;
+            array_push($pg_params, '{' . implode(',', $board_ids) . '}');
+        }
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_cards_listing ucl WHERE ' . $str . ' user_id = $' . $i . ' ORDER BY board_id ASC) as d ';
         array_push($pg_params, $r_resource_vars['users']);
         break;
 
@@ -660,7 +703,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $table = 'users';
         break;
 
-    case '/cards/search':
+    case '/boards/?/cards/search':
         $user_id = (!empty($authUser['id'])) ? $authUser['id'] : 0;
         $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT c.id, c.name, bu.board_id FROM boards_users bu join cards c on c.board_id = bu.board_id WHERE bu.board_id IN (SELECT board_id FROM boards_users WHERE user_id = $1) AND c.name  LIKE $2 ORDER BY id ASC) as d';
         array_push($pg_params, $user_id, '%' . $r_resource_filters['q'] . '%');
@@ -882,6 +925,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             );
             $organization_count = executeQuery('SELECT count(*) FROM boards WHERE board_visibility = $1', $val_array);
             $filter_count['organization'] = $organization_count['count'];
+            $board_user_roles_result = pg_query_params($db_lnk, 'SELECT id, name FROM board_user_roles', array());
+            $board_user_roles = array();
+            while ($board_user = pg_fetch_assoc($board_user_roles_result)) {
+                $board_user_roles[] = $board_user;
+            }
         }
         $arrayResponse = array(
             '/users/?/cards',
@@ -1093,6 +1141,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (!empty($_metadata) && !empty($filter_count)) {
                 $data['filter_count'] = $filter_count;
             }
+            if (!empty($_metadata) && !empty($board_user_roles)) {
+                $data['board_user_roles'] = $board_user_roles;
+            }
             if (!empty($roles)) {
                 $data['roles'] = $roles;
             }
@@ -1258,6 +1309,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['role_id'] = 2; // user
             $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
+            $r_post['full_name'] = email2name($r_post['email']);
         } else {
             $msg = '';
             if ($user['email'] == $r_post['email']) {
@@ -2448,14 +2500,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $user_id = $is_user_exist['id'];
                         }
                         if (empty($is_organization_exist)) {
-                            $is_admin = 'false';
+                            $organization_user_role_id = 2;
                             if (!empty($values['admincount'])) {
-                                $is_admin = 'true';
+                                $organization_user_role_id = 1;
                             }
                             $data = array(
                                 $organization_id,
                                 $user_id,
-                                $is_admin
+                                $organization_user_role_id
                             );
                             $condition = array(
                                 $user_id
@@ -3403,9 +3455,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         if (empty($boards_users)) {
                             $qry_val_arr = array(
                                 $board['id'],
-                                $r_post['user_id']
+                                $r_post['user_id'],
+                                2
                             );
-                            pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, is_admin) VALUES (now(), now(), $1, $2, false)', $qry_val_arr);
+                            pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
                         }
                     }
                 }
@@ -3602,9 +3655,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 if (empty($boards_users)) {
                     $qry_val_arr = array(
                         $r_resource_vars['boards'],
-                        $organizations_user['user_id']
+                        $organizations_user['user_id'],
+                        2
                     );
-                    pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, is_admin) VALUES (now(), now(), $1, $2, false)', $qry_val_arr);
+                    pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
                 }
             }
         }
