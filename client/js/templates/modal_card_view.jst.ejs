@@ -88,7 +88,9 @@
 					<ul class="list-inline clearfix js-card-labels-list">
 					<% if(!_.isUndefined(authuser.user)){ %>
 					  <li>
-						<div class="dropdown js-label-dropdown"> <a class="dropdown-toggle js-show-card-label-form btn btn-default" role="button" data-toggle="dropdown" title="<%- i18next.t('Add new Labels') %>" href="#"> <i class="icon-plus"></i></a>
+						<div class="dropdown js-label-dropdown">
+						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_labels",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+							<a class="dropdown-toggle js-show-card-label-form btn btn-default" role="button" data-toggle="dropdown" title="<%- i18next.t('Add new Labels') %>" href="#"> <i class="icon-plus"></i></a><% } %>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 js-show-card-label-form-response">
 						  </ul>
 						</div>
@@ -355,7 +357,7 @@
 				  </ul>
 			</li>
 		<% } %>
-		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_labels",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_labels",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			<li class="dropdown"> <a class="dropdown-toggle js-show-card-label-form js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Labels') %>" href="#"><%- i18next.t('Labels') %></a>
 				<ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 js-show-card-label-form-response">
 				</ul>

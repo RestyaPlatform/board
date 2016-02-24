@@ -1837,4 +1837,4 @@ DELETE from acl_links WHERE id = 142;
 DELETE from acl_links_roles WHERE acl_link_id = 142;
 UPDATE "acl_links" SET "name" = 'Star / Unstar board' WHERE "id" = '141';
 
-
+UPDATE "acl_board_links" SET "is_hide" = '1' WHERE "id" = '11';
