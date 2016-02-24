@@ -523,6 +523,15 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
             return true;
         }
     }
+    if (!empty($r_resource_vars['organizations'])) {
+        $qry_val_arr = array(
+            $r_resource_vars['organizations']
+        );
+        $organizations = executeQuery('SELECT organization_visibility FROM organizations WHERE id = $1', $qry_val_arr);
+        if ($organizations['organization_visibility'] == 1 && $r_request_method == 'GET') {
+            return true;
+        }
+    }
     $board_temp_arr = array(
         '/boards_users/?'
     );
