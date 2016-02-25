@@ -636,7 +636,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $limit = $r_resource_filters['limit'];
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c ON  al.card_id = c.id ' . $condition . ' ORDER BY id DESC limit ' . $limit . ') as d ';
-        $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
+        if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
+            $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
+        }
         break;
 
     case '/boards/?/lists/?/cards/?/checklists':
