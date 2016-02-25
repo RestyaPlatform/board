@@ -35,11 +35,11 @@ App.SettingView = Backbone.View.extend({
     importUsers: function(e) {
         var importUsersUrl = api_url + 'users/import.json?token=' + api_token;
         $('#js-loader-img').removeClass('hide');
-        var getAllUsers = ($('#enableImportUsers').is(":checked")) ? true : false;
+        var is_import_organization_User = ($('#enableImportUsers').is(":checked")) ? true : false;
         $.ajax({
             type: 'POST',
             data: {
-                'getAllUsers': getAllUsers
+                'is_import_organization_User': is_import_organization_User
             },
             url: importUsersUrl,
             success: function(response) {
