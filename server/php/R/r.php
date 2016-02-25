@@ -2439,7 +2439,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (false !== $result) {
                     $entries = ldap_get_entries($ldap_connection, $result);
                     for ($x = 0; $x < $entries['count']; $x++) {
-                        if ($_POST['is_import_organization_User'] != 'true') {
+                        if ($_POST['is_import_organizations'] != 'true') {
                             $users[] = array(
                                 'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
                                 'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
@@ -2468,7 +2468,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 ldap_unbind($ldap_connection);
             }
             if (!empty($users)) {
-                if ($_POST['is_import_organization_User'] != 'true') {
+                if ($_POST['is_import_organizations'] != 'true') {
                     foreach ($users as $keys => $values) {
                         $condition = array(
                             $values['username']
