@@ -1532,6 +1532,8 @@ App.ModalCardView = Backbone.View.extend({
         var attachmentUrl = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/attachments.json?token=' + api_token;
         var options = {
             success: function(files) {
+                $('.js-attachment-loader', $('#js-card-modal-' + self.model.id)).html('<div class="navbar-btn dockheader-loader"><span class="cssloader"></span></div>');
+                self.$('.js_card_image_upload').addClass('cssloader');
                 var image_link = [];
                 _.map(files, function(file) {
                     image_link.push(file.link);
@@ -1547,15 +1549,25 @@ App.ModalCardView = Backbone.View.extend({
                     }),
                     success: function(response) {
                         self.closePopup(e);
-                        var card_attachment = new App.CardAttachment();
-                        _.each(response.card_attachments, function(_card_attachment) {
-                            card_attachment.set(_card_attachment);
-                            self.model.attachments.unshift(card_attachment);
+                        var card_attachments = new App.CardAttachmentCollection();
+                        var i = 1;
+                        card_attachments.add(response.card_attachments);
+                        card_attachments.each(function(attachment) {
+                            var options = {
+                                silent: true
+                            };
+                            if (i === card_attachments.models.length) {
+                                options.silent = false;
+                            }
+                            attachment.set('id', parseInt(attachment.attributes.id));
+                            attachment.set('board_id', parseInt(attachment.attributes.board_id));
+                            attachment.set('list_id', parseInt(attachment.attributes.list_id));
+                            attachment.set('card_id', parseInt(attachment.attributes.card_id));
+                            self.model.attachments.unshift(attachment, options);
+                            self.model.list.collection.board.attachments.unshift(attachment, options);
+                            i++;
                         });
-                        var view = new App.CardAttachmentView({
-                            model: card_attachment,
-                            board: self.model.list.collection.board
-                        });
+
                         var view_attachment = self.$('#js-card-attachments-list');
                         view_attachment.find('.timeago').timeago();
                         emojify.run();
