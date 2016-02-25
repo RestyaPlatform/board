@@ -2439,49 +2439,41 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (false !== $result) {
                     $entries = ldap_get_entries($ldap_connection, $result);
                     for ($x = 0; $x < $entries['count']; $x++) {
-                        if (!empty($entries[$x]['memberof'][0])) {
-                            $users[trim($entries[$x]['memberof'][0]) ][] = array(
+                        if ($_POST['getAllUsers'] != 'true') {
+                            $users[] = array(
                                 'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
                                 'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
                                 'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
                                 'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
                             );
                         } else {
-                            $no_organization_users[] = array(
-                                'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
-                                'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
-                                'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
-                                'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
-                            );
+                            if (!empty($entries[$x]['memberof'][0])) {
+                                $users[trim($entries[$x]['memberof'][0]) ][] = array(
+                                    'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
+                                    'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
+                                    'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
+                                    'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
+                                );
+                            } else {
+                                $no_organization_users[] = array(
+                                    'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
+                                    'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
+                                    'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
+                                    'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
+                                );
+                            }
                         }
                     }
                 }
                 ldap_unbind($ldap_connection);
             }
             if (!empty($users)) {
-                foreach ($users as $key => $value) {
-                    $org = explode(",", $key);
-                    $organization_name = substr($org[0], 3);
-                    $condition = array(
-                        $organization_name
-                    );
-                    $is_organization_exist = executeQuery('SELECT id FROM organizations WHERE name = $1', $condition);
-                    if (empty($is_organization_exist)) {
-                        $data = array(
-                            $authUser['id'],
-                            $organization_name,
-                            0
-                        );
-                        $result = pg_query_params($db_lnk, 'INSERT INTO organizations(created, modified, user_id, name, organization_visibility) VALUES (now(), now(), $1, $2, $3) RETURNING id', $data);
-                        $organization = pg_fetch_assoc($result);
-                        $organization_id = $organization['id'];
-                    } else {
-                        $organization_id = $is_organization_exist['id'];
-                    }
-                    foreach ($value as $keys => $values) {
+                if ($_POST['getAllUsers'] != 'true') {
+                    foreach ($users as $keys => $values) {
                         $condition = array(
                             $values['username']
                         );
+                        print_r($values);
                         $is_user_exist = executeQuery('SELECT id FROM users WHERE username = $1', $condition);
                         if (empty($is_user_exist)) {
                             $password = getCryptHash($values['username']);
@@ -2493,28 +2485,67 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $values['name'],
                                 strtoupper(implode($match[0]))
                             );
-                            $result1 = pg_query_params($db_lnk, 'INSERT INTO users(created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5,  true, true, true) RETURNING id ', $data);
-                            $user = pg_fetch_assoc($result1);
-                            $user_id = $user['id'];
-                        } else {
-                            $user_id = $is_user_exist['id'];
+                            pg_query_params($db_lnk, 'INSERT INTO users(created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5,  true, true, true) RETURNING id ', $data);
                         }
+                    }
+                } else {
+                    foreach ($users as $key => $value) {
+                        $org = explode(",", $key);
+                        $organization_name = substr($org[0], 3);
+                        $condition = array(
+                            $organization_name
+                        );
+                        $is_organization_exist = executeQuery('SELECT id FROM organizations WHERE name = $1', $condition);
                         if (empty($is_organization_exist)) {
-                            $organization_user_role_id = 2;
-                            if (!empty($values['admincount'])) {
-                                $organization_user_role_id = 1;
-                            }
                             $data = array(
-                                $organization_id,
-                                $user_id,
-                                $organization_user_role_id
+                                $authUser['id'],
+                                $organization_name,
+                                0
                             );
+                            $result = pg_query_params($db_lnk, 'INSERT INTO organizations(created, modified, user_id, name, organization_visibility) VALUES (now(), now(), $1, $2, $3) RETURNING id', $data);
+                            $organization = pg_fetch_assoc($result);
+                            $organization_id = $organization['id'];
+                        } else {
+                            $organization_id = $is_organization_exist['id'];
+                        }
+                        foreach ($value as $keys => $values) {
                             $condition = array(
-                                $user_id
+                                $values['username']
                             );
-                            $is_organization_user_exist = executeQuery('SELECT id FROM organizations_users WHERE user_id = $1', $condition);
-                            if (empty($is_organization_user_exist)) {
-                                pg_query_params($db_lnk, 'INSERT INTO organizations_users (created, modified, organization_id, user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, $3)', $data);
+                            $is_user_exist = executeQuery('SELECT id FROM users WHERE username = $1', $condition);
+                            if (empty($is_user_exist)) {
+                                $password = getCryptHash($values['username']);
+                                preg_match_all('/\b\w/', $values['name'], $match);
+                                $data = array(
+                                    $values['username'],
+                                    $values['email'],
+                                    $password,
+                                    $values['name'],
+                                    strtoupper(implode($match[0]))
+                                );
+                                $result1 = pg_query_params($db_lnk, 'INSERT INTO users(created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5,  true, true, true) RETURNING id ', $data);
+                                $user = pg_fetch_assoc($result1);
+                                $user_id = $user['id'];
+                            } else {
+                                $user_id = $is_user_exist['id'];
+                            }
+                            if (empty($is_organization_exist)) {
+                                $organization_user_role_id = 2;
+                                if (!empty($values['admincount'])) {
+                                    $organization_user_role_id = 1;
+                                }
+                                $data = array(
+                                    $organization_id,
+                                    $user_id,
+                                    $organization_user_role_id
+                                );
+                                $condition = array(
+                                    $user_id
+                                );
+                                $is_organization_user_exist = executeQuery('SELECT id FROM organizations_users WHERE user_id = $1', $condition);
+                                if (empty($is_organization_user_exist)) {
+                                    pg_query_params($db_lnk, 'INSERT INTO organizations_users (created, modified, organization_id, user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, $3)', $data);
+                                }
                             }
                         }
                     }
