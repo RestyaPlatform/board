@@ -2473,7 +2473,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $condition = array(
                             $values['username']
                         );
-                        print_r($values);
                         $is_user_exist = executeQuery('SELECT id FROM users WHERE username = $1', $condition);
                         if (empty($is_user_exist)) {
                             $password = getCryptHash($values['username']);
