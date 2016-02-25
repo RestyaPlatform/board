@@ -1788,8 +1788,10 @@ App.FooterView = Backbone.View.extend({
         return false;
     },
     keyboardShowShortcutModal: function(e) {
-        console.log('short');
-        $('.js-show-shortcuts-modal').trigger('click');
+        if (!$('#ModalShortcutView').hasClass('ModalShortcutView')) {
+            $('.js-show-shortcuts-modal').trigger('click');
+            $('#ModalShortcutView').addClass('ModalShortcutView');
+        }
         return false;
     },
 });
