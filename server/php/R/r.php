@@ -563,7 +563,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $limit = $r_resource_filters['limit'];
             }
             $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ORDER BY al.id DESC LIMIT ' . $limit . ') as d ';
-            $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1' . $condition;
+            if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1' . $condition;
+            }
         }
         break;
 
@@ -601,7 +603,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $fields = !empty($r_resource_filters['fields']) ? $r_resource_filters['fields'] : '*';
         $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM lists_listing cll WHERE board_id = $1) as d ';
         array_push($pg_params, $r_resource_vars['boards']);
-        $c_sql = 'SELECT COUNT(*) FROM lists_listing cll';
+        if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
+            $c_sql = 'SELECT COUNT(*) FROM lists_listing cll';
+        }
         break;
 
     case '/boards/?/lists/?/cards':
@@ -609,7 +613,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
         array_push($pg_params, $r_resource_vars['boards']);
         array_push($pg_params, $r_resource_vars['lists']);
-        $c_sql = 'SELECT COUNT(*) FROM cards_listing cll';
+        if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
+            $c_sql = 'SELECT COUNT(*) FROM cards_listing cll';
+        }
         break;
 
     case '/activities':
@@ -630,7 +636,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $limit = $r_resource_filters['limit'];
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c ON  al.card_id = c.id ' . $condition . ' ORDER BY id DESC limit ' . $limit . ') as d ';
-        $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
+        if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
+            $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
+        }
         break;
 
     case '/boards/?/lists/?/cards/?/checklists':
@@ -936,8 +944,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/users/?/activities',
             '/users/search',
             '/boards',
+            '/boards/?/lists',
+            '/boards/?/lists/?/cards',
             '/boards/?/activities',
-            '/boards/?/activities',
+            '/boards/?/lists/?/activities',
             '/boards/?/lists/?/cards/?/activities',
             '/boards/?/lists/?/cards/?/search',
             '/cards/search',
