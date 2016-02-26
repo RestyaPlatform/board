@@ -104,7 +104,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                 if (isset($structure->parts) && count($structure->parts)) {
                     $i = 0;
                     $file_attachments = false;
-                    foreach($structure->parts as $partno0 => $p) {
+                    foreach ($structure->parts as $partno0 => $p) {
                         $attachments[$i] = array(
                             'is_attachment' => false,
                             'filename' => '',
@@ -116,7 +116,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                         }
                         //### Tmobile & metropcs
                         if (preg_match('/</i', $structure->parts[$i]->id) && preg_match('/>/i', $structure->parts[$i]->id)) {
-                            foreach($structure->parts[$i]->parameters as $param) {
+                            foreach ($structure->parts[$i]->parameters as $param) {
                                 if (strtolower($param->attribute) == 'name') {
                                     $attachments[$i]['is_attachment'] = true;
                                     $attachments[$i]['name'] = $param->value;
@@ -126,7 +126,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                         }
                         // Setting attachment filename
                         if ($structure->parts[$i]->ifdparameters) {
-                            foreach($structure->parts[$i]->dparameters as $object) {
+                            foreach ($structure->parts[$i]->dparameters as $object) {
                                 if (strtolower($object->attribute) == 'filename') {
                                     if (!preg_match('/tmobile/i', strtolower($object->value)) && !preg_match('/dottedline/i', strtolower($object->value))) {
                                         $attachments[$i]['is_attachment'] = true;
@@ -137,7 +137,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                         }
                         // Setting attachment name
                         if ($structure->parts[$i]->ifparameters) {
-                            foreach($structure->parts[$i]->parameters as $object) {
+                            foreach ($structure->parts[$i]->parameters as $object) {
                                 if (strtolower($object->attribute) == 'name') {
                                     $attachments[$i]['is_attachment'] = true;
                                     $attachments[$i]['name'] = $object->value;
