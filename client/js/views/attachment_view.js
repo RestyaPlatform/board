@@ -17,7 +17,8 @@ App.AttachmentView = Backbone.View.extend({
     template: JST['templates/attachment'],
     tagName: 'li',
     className: 'clearfix col-md-4 col-sm-6 col-xs-12 navbar-btn',
-    initialize: function() {
+    initialize: function(options) {
+        this.board = options.board;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
             this.model.downloadLink = this.downloadLink;
@@ -41,7 +42,8 @@ App.AttachmentView = Backbone.View.extend({
      */
     render: function() {
         this.$el.html(this.template({
-            attachment: this.model
+            attachment: this.model,
+            board: this.board
         }));
         this.showTooltip();
         return this;
