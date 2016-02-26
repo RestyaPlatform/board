@@ -66,7 +66,7 @@
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ])
 			then
 				echo "Changing files path for existing cron..."
-				sed -i "s/server\/php\/R\/cron.sh/server\/php\/cron.sh/" /var/spool/cron/crontabs/root
+				sed -i "s/server\/php\/R\/cron.sh/server\/php\/indexing_to_elasticsearch.sh/" /var/spool/cron/crontabs/root
 				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/instant_email_notification.sh/" /var/spool/cron/crontabs/root
 				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/periodic_email_notification.sh/" /var/spool/cron/crontabs/root
 			
@@ -80,7 +80,7 @@
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
 			else
 				echo "Changing files path for existing cron..."
-				sed -i "s/server\/php\/R\/cron.sh/server\/php\/cron.sh/" /var/spool/cron/root
+				sed -i "s/server\/php\/R\/cron.sh/server\/php\/indexing_to_elasticsearch.sh/" /var/spool/cron/root
 				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/instant_email_notification.sh/" /var/spool/cron/root
 				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/periodic_email_notification.sh/" /var/spool/cron/root
 			
@@ -337,7 +337,7 @@
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
 			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo "*/5 * * * * $dir/server/php/shell/cron.sh" >> /var/spool/cron/crontabs/root
+			echo "*/5 * * * * $dir/server/php/shell/indexing_to_elasticsearch.sh" >> /var/spool/cron/crontabs/root
 			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
 			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/crontabs/root
@@ -601,7 +601,7 @@
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
 			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo "*/5 * * * * $dir/server/php/shell/cron.sh" >> /var/spool/cron/root
+			echo "*/5 * * * * $dir/server/php/shell/indexing_to_elasticsearch.sh" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
 			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/root
