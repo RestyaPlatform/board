@@ -1393,7 +1393,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $user = executeQuery('SELECT * FROM users_listing WHERE id = $1', $val_arr);
                 }
             } else {
-                $ldap_error = 'ldap_error';
+                if (!empty($check_user) && $check_user == 'ERROR_LDAP_AUTH_FAILED' || $check_user == 'ERROR_LDAP_SERVER_CONNECT_FAILED') {
+                    $ldap_error = $check_user;
+                } else {
+                    $ldap_error = 'ldap_error';
+                }
             }
         } else if (STANDARD_LOGIN_ENABLED && !empty($log_user) && $log_user['is_ldap'] == 0) {
             $r_post['password'] = crypt($r_post['password'], $log_user['password']);
@@ -1458,10 +1462,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         } else {
             if (!empty($ldap_error)) {
                 $response = array(
-                    'error' => 'ldap_error'
+                    'code' => 'LDAP',
+                    'error' => $ldap_error
                 );
             } else {
                 $response = array(
+                    'code' => 'email',
                     'error' => 'Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'
                 );
             }
