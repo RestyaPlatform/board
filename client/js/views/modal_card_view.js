@@ -93,6 +93,14 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-comment-add-emoji': 'addEmoji',
         'click #modal-comments': 'showActivity',
         'click #modal-activities': 'showActivity',
+        'keyup[c] .dockmodal': 'keyboardArchiveCard',
+        'keyup[d] .dockmodal': 'keyboardShowCardDueDateForm',
+        'keyup[t] .dockmodal': 'keyboardShowCardTitleEditForm',
+        'keyup[v] .dockmodal': 'keyboardAddCardVote',
+        'keyup[s] .dockmodal': 'keyboardCardSubscribe',
+        'keyup[m] .dockmodal': 'keyboardShowAddMemberForm',
+        'keyup[l] .dockmodal': 'keyboardShowCardLabelForm',
+        'keyup[space] .dockmodal': 'keyboardAddCardMember',
     },
     /**
      * Constructor
@@ -2845,5 +2853,44 @@ App.ModalCardView = Backbone.View.extend({
                 return false;
             }
         }
-    }
+    },
+    keyboardArchiveCard: function(e) {
+        $('.js-archive-card', e.target).trigger('click');
+        return false;
+    },
+    keyboardShowCardDueDateForm: function(e) {
+        $('.docmodal-submenu').addClass('open');
+        $('.dropdown-menu li:first-child').addClass('open');
+        $('.js-show-card-due-date-form', e.target).trigger('click');
+        return false;
+    },
+    keyboardShowCardTitleEditForm: function(e) {
+        $('.js-show-card-title-edit-form', e.target).trigger('click');
+        return false;
+    },
+    keyboardAddCardVote: function(e) {
+        $('.js-add-card-vote', e.target).trigger('click');
+        return false;
+    },
+    keyboardCardSubscribe: function(e) {
+        $('.js-card-subscribe', e.target).trigger('click');
+        return false;
+    },
+    keyboardShowAddMemberForm: function(e) {
+        $('.js-show-add-member-form', e.target).trigger('click');
+        return false;
+    },
+    keyboardShowCardLabelForm: function(e) {
+        $('.js-show-card-label-form', e.target).trigger('click');
+        return false;
+    },
+    keyboardAddCardMember: function(e) {
+        $('.js-show-add-member-form', e.target).trigger('click');
+        $('.dropdown-menu-left .js-organization-member-search-response', e.target).find("a").each(function(index, value) {
+            if ($(value).data('user-id') == authuser.user.id) {
+                $(this).trigger('click');
+            }
+        });
+        return false;
+    },
 });
