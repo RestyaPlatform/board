@@ -134,6 +134,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-back-to-board-visibility': 'showBoardVisibility',
         'click .js-select': 'selectBoardVisibility',
         'click .js-clear-all': 'clearAll',
+		'click .js-rename-board': 'loadBoardName',
         'keyup[f] .js-setting-response': 'keyboardShowFilters',
         'keyup[w] .js-setting-response': 'keyboardOpenDropdown',
         'keyup[x] .js-setting-response': 'keyboardClearAll',
@@ -146,6 +147,19 @@ App.BoardHeaderView = Backbone.View.extend({
         'keyup[j] body': 'keyboardShowPrevCardModal',
         'keyup[k] body': 'keyboardShowNextCardModal',
     },
+    /**
+     * loadBoardName()
+     * load the board name
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    loadBoardName: function(e) {
+        e.preventDefault();
+        $('#inputBoardName').val(this.model.attributes.name);
+    },
+
     /**
      * openDropdown()
      * copy the existing card

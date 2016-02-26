@@ -563,7 +563,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $limit = $r_resource_filters['limit'];
             }
             $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ORDER BY al.id DESC LIMIT ' . $limit . ') as d ';
-            $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1' . $condition;
+            if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1' . $condition;
+            }
         }
         break;
 
@@ -601,7 +603,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $fields = !empty($r_resource_filters['fields']) ? $r_resource_filters['fields'] : '*';
         $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM lists_listing cll WHERE board_id = $1) as d ';
         array_push($pg_params, $r_resource_vars['boards']);
-        $c_sql = 'SELECT COUNT(*) FROM lists_listing cll';
+        if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
+            $c_sql = 'SELECT COUNT(*) FROM lists_listing cll';
+        }
         break;
 
     case '/boards/?/lists/?/cards':
@@ -609,7 +613,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
         array_push($pg_params, $r_resource_vars['boards']);
         array_push($pg_params, $r_resource_vars['lists']);
-        $c_sql = 'SELECT COUNT(*) FROM cards_listing cll';
+        if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
+            $c_sql = 'SELECT COUNT(*) FROM cards_listing cll';
+        }
         break;
 
     case '/activities':
@@ -630,7 +636,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $limit = $r_resource_filters['limit'];
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c ON  al.card_id = c.id ' . $condition . ' ORDER BY id DESC limit ' . $limit . ') as d ';
-        $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
+        if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
+            $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
+        }
         break;
 
     case '/boards/?/lists/?/cards/?/checklists':
@@ -936,8 +944,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/users/?/activities',
             '/users/search',
             '/boards',
+            '/boards/?/lists',
+            '/boards/?/lists/?/cards',
             '/boards/?/activities',
-            '/boards/?/activities',
+            '/boards/?/lists/?/activities',
             '/boards/?/lists/?/cards/?/activities',
             '/boards/?/lists/?/cards/?/search',
             '/cards/search',
@@ -1383,7 +1393,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $user = executeQuery('SELECT * FROM users_listing WHERE id = $1', $val_arr);
                 }
             } else {
-                $ldap_error = 'ldap_error';
+                if (!empty($check_user) && $check_user == 'ERROR_LDAP_AUTH_FAILED' || $check_user == 'ERROR_LDAP_SERVER_CONNECT_FAILED') {
+                    $ldap_error = $check_user;
+                } else {
+                    $ldap_error = 'ldap_error';
+                }
             }
         } else if (STANDARD_LOGIN_ENABLED && !empty($log_user) && $log_user['is_ldap'] == 0) {
             $r_post['password'] = crypt($r_post['password'], $log_user['password']);
@@ -1448,10 +1462,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         } else {
             if (!empty($ldap_error)) {
                 $response = array(
-                    'error' => 'ldap_error'
+                    'code' => 'LDAP',
+                    'error' => $ldap_error
                 );
             } else {
                 $response = array(
+                    'code' => 'email',
                     'error' => 'Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'
                 );
             }
@@ -2439,46 +2455,37 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (false !== $result) {
                     $entries = ldap_get_entries($ldap_connection, $result);
                     for ($x = 0; $x < $entries['count']; $x++) {
-                        if (!empty($entries[$x]['memberof'][0])) {
-                            $users[trim($entries[$x]['memberof'][0]) ][] = array(
+                        if ($_POST['is_import_organizations'] != 'true') {
+                            $users[] = array(
                                 'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
                                 'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
                                 'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
                                 'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
                             );
                         } else {
-                            $no_organization_users[] = array(
-                                'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
-                                'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
-                                'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
-                                'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
-                            );
+                            if (!empty($entries[$x]['memberof'][0])) {
+                                $users[trim($entries[$x]['memberof'][0]) ][] = array(
+                                    'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
+                                    'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
+                                    'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
+                                    'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
+                                );
+                            } else {
+                                $no_organization_users[] = array(
+                                    'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
+                                    'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
+                                    'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
+                                    'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
+                                );
+                            }
                         }
                     }
                 }
                 ldap_unbind($ldap_connection);
             }
             if (!empty($users)) {
-                foreach ($users as $key => $value) {
-                    $org = explode(",", $key);
-                    $organization_name = substr($org[0], 3);
-                    $condition = array(
-                        $organization_name
-                    );
-                    $is_organization_exist = executeQuery('SELECT id FROM organizations WHERE name = $1', $condition);
-                    if (empty($is_organization_exist)) {
-                        $data = array(
-                            $authUser['id'],
-                            $organization_name,
-                            0
-                        );
-                        $result = pg_query_params($db_lnk, 'INSERT INTO organizations(created, modified, user_id, name, organization_visibility) VALUES (now(), now(), $1, $2, $3) RETURNING id', $data);
-                        $organization = pg_fetch_assoc($result);
-                        $organization_id = $organization['id'];
-                    } else {
-                        $organization_id = $is_organization_exist['id'];
-                    }
-                    foreach ($value as $keys => $values) {
+                if ($_POST['is_import_organizations'] != 'true') {
+                    foreach ($users as $keys => $values) {
                         $condition = array(
                             $values['username']
                         );
@@ -2493,28 +2500,67 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $values['name'],
                                 strtoupper(implode($match[0]))
                             );
-                            $result1 = pg_query_params($db_lnk, 'INSERT INTO users(created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5,  true, true, true) RETURNING id ', $data);
-                            $user = pg_fetch_assoc($result1);
-                            $user_id = $user['id'];
-                        } else {
-                            $user_id = $is_user_exist['id'];
+                            pg_query_params($db_lnk, 'INSERT INTO users(created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5,  true, true, true) RETURNING id ', $data);
                         }
+                    }
+                } else {
+                    foreach ($users as $key => $value) {
+                        $org = explode(",", $key);
+                        $organization_name = substr($org[0], 3);
+                        $condition = array(
+                            $organization_name
+                        );
+                        $is_organization_exist = executeQuery('SELECT id FROM organizations WHERE name = $1', $condition);
                         if (empty($is_organization_exist)) {
-                            $organization_user_role_id = 2;
-                            if (!empty($values['admincount'])) {
-                                $organization_user_role_id = 1;
-                            }
                             $data = array(
-                                $organization_id,
-                                $user_id,
-                                $organization_user_role_id
+                                $authUser['id'],
+                                $organization_name,
+                                0
                             );
+                            $result = pg_query_params($db_lnk, 'INSERT INTO organizations(created, modified, user_id, name, organization_visibility) VALUES (now(), now(), $1, $2, $3) RETURNING id', $data);
+                            $organization = pg_fetch_assoc($result);
+                            $organization_id = $organization['id'];
+                        } else {
+                            $organization_id = $is_organization_exist['id'];
+                        }
+                        foreach ($value as $keys => $values) {
                             $condition = array(
-                                $user_id
+                                $values['username']
                             );
-                            $is_organization_user_exist = executeQuery('SELECT id FROM organizations_users WHERE user_id = $1', $condition);
-                            if (empty($is_organization_user_exist)) {
-                                pg_query_params($db_lnk, 'INSERT INTO organizations_users (created, modified, organization_id, user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, $3)', $data);
+                            $is_user_exist = executeQuery('SELECT id FROM users WHERE username = $1', $condition);
+                            if (empty($is_user_exist)) {
+                                $password = getCryptHash($values['username']);
+                                preg_match_all('/\b\w/', $values['name'], $match);
+                                $data = array(
+                                    $values['username'],
+                                    $values['email'],
+                                    $password,
+                                    $values['name'],
+                                    strtoupper(implode($match[0]))
+                                );
+                                $result1 = pg_query_params($db_lnk, 'INSERT INTO users(created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5,  true, true, true) RETURNING id ', $data);
+                                $user = pg_fetch_assoc($result1);
+                                $user_id = $user['id'];
+                            } else {
+                                $user_id = $is_user_exist['id'];
+                            }
+                            if (empty($is_organization_exist)) {
+                                $organization_user_role_id = 2;
+                                if (!empty($values['admincount'])) {
+                                    $organization_user_role_id = 1;
+                                }
+                                $data = array(
+                                    $organization_id,
+                                    $user_id,
+                                    $organization_user_role_id
+                                );
+                                $condition = array(
+                                    $user_id
+                                );
+                                $is_organization_user_exist = executeQuery('SELECT id FROM organizations_users WHERE user_id = $1', $condition);
+                                if (empty($is_organization_user_exist)) {
+                                    pg_query_params($db_lnk, 'INSERT INTO organizations_users (created, modified, organization_id, user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, $3)', $data);
+                                }
                             }
                         }
                     }

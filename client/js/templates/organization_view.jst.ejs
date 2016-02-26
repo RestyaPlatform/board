@@ -9,7 +9,7 @@
 		<% } %>
 	</ul>
 </div>
-  <div class="col-xs-12"> <div class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "upload_organization_logo",organization_user_role_id: parseInt(organization.organization_user_role_id)})))) { %>col-lg-10<%} else {%>col-lg-12<%}%> col-md-9 col-sm-9 col-xs-12">
+  <div class="col-xs-12"> <div class="col-lg-10 col-md-9 col-sm-9 col-xs-12">
 	<!-- Tab panes -->
 		<div class="tab-content">
 			<div class="tab-pane <% if(_.isUndefined(type) || type == 'boards'){ %>active<%}%>" id="board">
@@ -21,7 +21,6 @@
 			<div class="tab-pane js-get-organization-member-lists-response  <% if(!_.isUndefined(type) && type == 'users'){ %>active<%}%>" id="member"></div>
 		</div>
   </div>
-<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "upload_organization_logo",organization_user_role_id: parseInt(organization.organization_user_role_id)})))) { %>
   <form class="col-lg-2 col-md-3 col-sm-3 col-xs-12 js-org-drag" role="form" enctype="multipart/form-data" id="js-org-drag">
 	<div class="well well-sm clearfix text-center">
 	<%
@@ -41,7 +40,6 @@
 		<div class="drag-drop drag-drop-sm"><%- i18next.t('Drop Files Here') %></div>
 	</form>
 	<span id="org-loader"></span>
-<% } %>	
   </div>
   
   </div>

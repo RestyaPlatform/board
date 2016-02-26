@@ -19,7 +19,7 @@ require_once 'libs/vendors/OAuth2/Autoloader.php';
 if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
     include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
 }
-OAuth2\Autoloader::register();
+OAuth2Autoloader::register();
 $oauth_config = array(
     'user_table' => 'users'
 );
@@ -28,10 +28,10 @@ $val_array = array(
     'username' => R_DB_USER,
     'password' => R_DB_PASSWORD
 );
-$storage = new OAuth2\Storage\Pdo($val_array, $oauth_config);
-$server = new OAuth2\Server($storage);
-$request = OAuth2\Request::createFromGlobals();
-$response = new OAuth2\Response();
+$storage = new OAuth2StoragePdo($val_array, $oauth_config);
+$server = new OAuth2Server($storage);
+$request = OAuth2Request::createFromGlobals();
+$response = new OAuth2Response();
 if (!$server->validateAuthorizeRequest($request, $response)) {
     $response->send();
     die;

@@ -1837,4 +1837,12 @@ DELETE from acl_links WHERE id = 142;
 DELETE from acl_links_roles WHERE acl_link_id = 142;
 UPDATE "acl_links" SET "name" = 'Star / Unstar board' WHERE "id" = '141';
 
+UPDATE "acl_board_links" SET "is_hide" = '1' WHERE "id" = '11';
 
+DELETE from acl_board_links WHERE id = 48;
+DELETE from acl_board_links_boards_user_roles WHERE acl_board_link_id = 48;
+
+INSERT INTO "acl_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide") VALUES
+('2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Undo activity',	'/activities/undo/?',	'PUT',	'undo_activity',	2,	1,	0,	0,	0);
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849',	'2016-02-20 19:07:50.849',	id,	1 FROM acl_links WHERE slug = 'undo_activity';
