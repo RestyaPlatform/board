@@ -91,7 +91,6 @@ App.FooterView = Backbone.View.extend({
         'click #modal-activities': 'showActivity',
         'click #modal-comments': 'showActivity',
         'click .js-show-shortcuts-modal': 'showShortcutModal',
-        'keyup[/] .search-container': 'keyboardShowSearchMsg',
         'keyup[shift+/] body': 'keyboardShowShortcutModal',
     },
     /** 
@@ -1447,7 +1446,6 @@ App.FooterView = Backbone.View.extend({
      *
      */
     qSearch: function(e) {
-        console.log('here');
         e.preventDefault();
         $('.search-container').addClass('search-tab');
         $("#res, #nres").addClass('hide');
@@ -1783,15 +1781,16 @@ App.FooterView = Backbone.View.extend({
         modalView.show();
         return false;
     },
-    keyboardShowSearchMsg: function(e) {
-        $('.js-search').trigger('click');
-        return false;
-    },
     keyboardShowShortcutModal: function(e) {
-        if (!$('#ModalShortcutView').hasClass('ModalShortcutView')) {
+        var self = this;
+        if (_.isUndefined(self.is_show_keyboard) || self.is_show_keyboard) {
+            self.is_show_keyboard = false;
             $('.js-show-shortcuts-modal').trigger('click');
-            $('#ModalShortcutView').addClass('ModalShortcutView');
+            $('#ModalShortcutView').on('hidden.bs.modal', function() {
+                $('#ModalShortcutView').remove();
+                self.is_show_keyboard = true;
+            });
         }
         return false;
-    },
+    }
 });

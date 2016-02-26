@@ -2038,7 +2038,6 @@ App.BoardHeaderView = Backbone.View.extend({
                     break;
                 }
             } else {
-                console.log('left else');
                 if (active_card_position > (prev_list_card - 1)) {
                     $(active_card).removeClass('active');
                     $(prev_list).find('.js-board-list-card').eq(0).addClass('active');
