@@ -462,9 +462,11 @@ function ldapAuthenticate($p_user_id, $p_password)
         }
         if (!$t_br) {
             trigger_error(ERROR_LDAP_AUTH_FAILED, ERROR);
+            return ERROR_LDAP_AUTH_FAILED;
         }
     } else {
         trigger_error(ERROR_LDAP_SERVER_CONNECT_FAILED, ERROR);
+        return ERROR_LDAP_SERVER_CONNECT_FAILED;
     }
     // Search for the user id
     $t_sr = ldap_search($t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs);
