@@ -108,7 +108,11 @@ App.LoginView = Backbone.View.extend({
                             self.flash('danger', i18next.t('Email not associated for this LDAP account.'));
                         }
                     } else {
-                        self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
+                        if (is_offline_data) {
+                            self.flash('danger', i18next.t('Sorry, login failed. Internet connection not available.'));
+                        } else {
+                            self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
+                        }
                     }
                 }
 
