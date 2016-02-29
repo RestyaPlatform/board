@@ -87,15 +87,9 @@ App.LoginView = Backbone.View.extend({
                     if (!_.isEmpty(window.sessionStorage.getItem('redirect_link'))) {
                         var redirect_link = window.sessionStorage.getItem('redirect_link');
                         sessionStorage.removeItem('redirect_link');
-                        app.navigate(redirect_link, {
-                            trigger: true,
-                            replace: true
-                        });
+                        window.location = redirect_link;
                     } else {
-                        app.navigate('#/boards', {
-                            trigger: true,
-                            replace: true
-                        });
+                        window.location = '#/boards';
                     }
                 } else {
                     $('input#inputPassword', target).val('');

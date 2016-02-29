@@ -227,8 +227,8 @@
 				</div>  
 				<% } %>
 			 </div>
-			<ul class="nav nav-tabs <% if(_.isEmpty(board_id)){ %>hide<% } %>">
-				<li><a href="#all_" data-toggle="tab" class="js-all-activities">All</a></li>
+			<ul class="nav nav-tabs <% if(_.isEmpty(board_id)){ %>hide<% } %>"> 
+				<li><a href="#all_" data-toggle="tab" class="js-all-activities"><%- i18next.t('All') %></a></li>
 				
 				<% if(!_.isEmpty(board_id) && board_id !== 0 && board_id !== '0' && (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "view_board_activities", board_user_role_id: parseInt(board.board_user_role_id)}))))) { %>
 					<li class="active"><a href="#board_" data-toggle="tab" class="js-board-activities"><%- i18next.t("In this board") %></a></li>
