@@ -113,7 +113,7 @@
 						</ul>
 					</div>
 				<% } else if(activity.attributes.revisions != null && activity.attributes.revisions != "" && !_.isUndefined(authuser.user)){ %>
-					<% if(!_.isUndefined(board) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "undo_activity", board_user_role_id: parseInt(activity.board_user_role_id)})))){ %>
+					<% if(!_.isEmpty(role_links.where({slug: "undo_activity"}))){ %>
 						<% if(!_.isUndefined(activity.from_footer)) { %>
 							<div class="js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline col-xs-offset-0"><li><a title="Undo" class="js-undo2 pull-left" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>							
 						<% } else { %>	

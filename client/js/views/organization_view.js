@@ -327,7 +327,7 @@ App.OrganizationsView = Backbone.View.extend({
                 var stared;
                 if (!_.isUndefined(authuser.user)) {
                     stared = board.board_stars.findWhere({
-                        user_id: parseInt(authuser.user.id)
+                        is_starred: 1
                     });
                 }
                 var view = new App.OrganizationBoardView({

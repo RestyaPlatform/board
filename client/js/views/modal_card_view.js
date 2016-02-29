@@ -93,6 +93,14 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-comment-add-emoji': 'addEmoji',
         'click #modal-comments': 'showActivity',
         'click #modal-activities': 'showActivity',
+        'keyup[c] .dockmodal': 'keyboardArchiveCard',
+        'keyup[d] .dockmodal': 'keyboardShowCardDueDateForm',
+        'keyup[t] .dockmodal': 'keyboardShowCardTitleEditForm',
+        'keyup[v] .dockmodal': 'keyboardAddCardVote',
+        'keyup[s] .dockmodal': 'keyboardCardSubscribe',
+        'keyup[m] .dockmodal': 'keyboardShowAddMemberForm',
+        'keyup[l] .dockmodal': 'keyboardShowCardLabelForm',
+        'keyup[space] .dockmodal': 'keyboardAddCardMember',
     },
     /**
      * Constructor
@@ -1531,6 +1539,8 @@ App.ModalCardView = Backbone.View.extend({
         var attachmentUrl = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/attachments.json?token=' + api_token;
         var options = {
             success: function(files) {
+                $('.js-attachment-loader', $('#js-card-modal-' + self.model.id)).html('<div class="navbar-btn dockheader-loader"><span class="cssloader"></span></div>');
+                self.$('.js_card_image_upload').addClass('cssloader');
                 var image_link = [];
                 _.map(files, function(file) {
                     image_link.push(file.link);
@@ -1545,19 +1555,33 @@ App.ModalCardView = Backbone.View.extend({
                         image_link: image_link
                     }),
                     success: function(response) {
-                        self.closePopup(e);
-                        var card_attachment = new App.CardAttachment();
-                        _.each(response.card_attachments, function(_card_attachment) {
-                            card_attachment.set(_card_attachment);
-                            self.model.attachments.unshift(card_attachment);
-                        });
-                        var view = new App.CardAttachmentView({
-                            model: card_attachment,
-                            board: self.model.list.collection.board
-                        });
-                        var view_attachment = self.$('#js-card-attachments-list');
-                        view_attachment.find('.timeago').timeago();
-                        emojify.run();
+                        if (is_offline_data) {
+                            self.flash('danger', i18next.t('Sorry, attachment not added. Internet connection not available.'));
+                        } else {
+                            self.closePopup(e);
+                            var card_attachments = new App.CardAttachmentCollection();
+                            var i = 1;
+                            card_attachments.add(response.card_attachments);
+                            card_attachments.each(function(attachment) {
+                                var options = {
+                                    silent: true
+                                };
+                                if (i === card_attachments.models.length) {
+                                    options.silent = false;
+                                }
+                                attachment.set('id', parseInt(attachment.attributes.id));
+                                attachment.set('board_id', parseInt(attachment.attributes.board_id));
+                                attachment.set('list_id', parseInt(attachment.attributes.list_id));
+                                attachment.set('card_id', parseInt(attachment.attributes.card_id));
+                                self.model.attachments.unshift(attachment, options);
+                                self.model.list.collection.board.attachments.unshift(attachment, options);
+                                i++;
+                            });
+
+                            var view_attachment = self.$('#js-card-attachments-list');
+                            view_attachment.find('.timeago').timeago();
+                            emojify.run();
+                        }
                     },
                     contentType: 'application/json',
                     dataType: 'json'
@@ -1598,38 +1622,42 @@ App.ModalCardView = Backbone.View.extend({
             cache: false,
             contentType: false,
             success: function(model, response) {
-                $('#js-card-modal-' + self.model.id).parent('.dockmodal-body').prev('.dockmodal-header').find('.cssloader').remove();
-                $('.js-attachment-loader', $('#js-card-modal-' + self.model.id)).html('');
-                var card_attachments = new App.CardAttachmentCollection();
-                var i = 1;
-                card_attachments.add(response.card_attachments);
-                card_attachments.each(function(attachment) {
-                    var options = {
-                        silent: true
-                    };
-                    if (i === card_attachments.models.length) {
-                        options.silent = false;
-                    }
-                    attachment.set('id', parseInt(attachment.attributes.id));
-                    attachment.set('board_id', parseInt(attachment.attributes.board_id));
-                    attachment.set('list_id', parseInt(attachment.attributes.list_id));
-                    attachment.set('card_id', parseInt(attachment.attributes.card_id));
-                    self.model.attachments.unshift(attachment, options);
-                    self.model.list.collection.board.attachments.unshift(attachment, options);
-                    i++;
-                });
-                var view_attachment = this.$('#js-card-attachments-list');
-                var activity = new App.Activity();
-                activity.set(response.activity);
-                activity.board_users = self.model.board_users;
-                var view_act = new App.ActivityView({
-                    model: activity,
-                    board: self.model.list.collection.board
-                });
-                self.model.activities.unshift(activity);
-                var view_activity = $('#js-card-activities-' + self.model.id);
-                view_activity.prepend(view_act.render().el).find('.timeago').timeago();
-                emojify.run();
+                if (is_offline_data) {
+                    self.flash('danger', i18next.t('Sorry, attachment not added. Internet connection not available.'));
+                } else {
+                    $('#js-card-modal-' + self.model.id).parent('.dockmodal-body').prev('.dockmodal-header').find('.cssloader').remove();
+                    $('.js-attachment-loader', $('#js-card-modal-' + self.model.id)).html('');
+                    var card_attachments = new App.CardAttachmentCollection();
+                    var i = 1;
+                    card_attachments.add(response.card_attachments);
+                    card_attachments.each(function(attachment) {
+                        var options = {
+                            silent: true
+                        };
+                        if (i === card_attachments.models.length) {
+                            options.silent = false;
+                        }
+                        attachment.set('id', parseInt(attachment.attributes.id));
+                        attachment.set('board_id', parseInt(attachment.attributes.board_id));
+                        attachment.set('list_id', parseInt(attachment.attributes.list_id));
+                        attachment.set('card_id', parseInt(attachment.attributes.card_id));
+                        self.model.attachments.unshift(attachment, options);
+                        self.model.list.collection.board.attachments.unshift(attachment, options);
+                        i++;
+                    });
+                    var view_attachment = this.$('#js-card-attachments-list');
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    activity.board_users = self.model.board_users;
+                    var view_act = new App.ActivityView({
+                        model: activity,
+                        board: self.model.list.collection.board
+                    });
+                    self.model.activities.unshift(activity);
+                    var view_activity = $('#js-card-activities-' + self.model.id);
+                    view_activity.prepend(view_act.render().el).find('.timeago').timeago();
+                    emojify.run();
+                }
             }
         });
     },
@@ -2312,24 +2340,28 @@ App.ModalCardView = Backbone.View.extend({
         card_attachment.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/attachments.json';
         card_attachment.save(data, {
             success: function(model, response) {
-                self.closePopup(e);
-                card_attachment.set(response.card_attachments);
-                card_attachment.set('id', parseInt(response.card_attachments.id));
-                card_attachment.set('board_id', parseInt(response.card_attachments.board_id));
-                card_attachment.set('list_id', parseInt(response.card_attachments.list_id));
-                card_attachment.set('card_id', parseInt(response.card_attachments.card_id));
-                self.model.list.collection.board.attachments.unshift(card_attachment, {
-                    silent: true
-                });
-                self.model.attachments.unshift(card_attachment, {
-                    silent: true
-                });
-                var view = new App.CardAttachmentView({
-                    model: card_attachment,
-                    board: self.model.list.collection.board
-                });
-                var view_attachment = self.$('#js-card-attachments-list');
-                view_attachment.append(view.render().el).find('.timeago').timeago();
+                if (is_offline_data) {
+                    self.flash('danger', i18next.t('Sorry, attachment not added. Internet connection not available.'));
+                } else {
+                    self.closePopup(e);
+                    card_attachment.set(response.card_attachments);
+                    card_attachment.set('id', parseInt(response.card_attachments.id));
+                    card_attachment.set('board_id', parseInt(response.card_attachments.board_id));
+                    card_attachment.set('list_id', parseInt(response.card_attachments.list_id));
+                    card_attachment.set('card_id', parseInt(response.card_attachments.card_id));
+                    self.model.list.collection.board.attachments.unshift(card_attachment, {
+                        silent: true
+                    });
+                    self.model.attachments.unshift(card_attachment, {
+                        silent: true
+                    });
+                    var view = new App.CardAttachmentView({
+                        model: card_attachment,
+                        board: self.model.list.collection.board
+                    });
+                    var view_attachment = self.$('#js-card-attachments-list');
+                    view_attachment.append(view.render().el).find('.timeago').timeago();
+                }
             }
         });
     },
@@ -2820,5 +2852,44 @@ App.ModalCardView = Backbone.View.extend({
                 return false;
             }
         }
-    }
+    },
+    keyboardArchiveCard: function(e) {
+        $('.js-archive-card', e.target).trigger('click');
+        return false;
+    },
+    keyboardShowCardDueDateForm: function(e) {
+        $('.docmodal-submenu').addClass('open');
+        $('.dropdown-menu li:first-child').addClass('open');
+        $('.js-show-card-due-date-form', e.target).trigger('click');
+        return false;
+    },
+    keyboardShowCardTitleEditForm: function(e) {
+        $('.js-show-card-title-edit-form', e.target).trigger('click');
+        return false;
+    },
+    keyboardAddCardVote: function(e) {
+        $('.js-add-card-vote', e.target).trigger('click');
+        return false;
+    },
+    keyboardCardSubscribe: function(e) {
+        $('.js-card-subscribe', e.target).trigger('click');
+        return false;
+    },
+    keyboardShowAddMemberForm: function(e) {
+        $('.js-show-add-member-form', e.target).trigger('click');
+        return false;
+    },
+    keyboardShowCardLabelForm: function(e) {
+        $('.js-show-card-label-form', e.target).trigger('click');
+        return false;
+    },
+    keyboardAddCardMember: function(e) {
+        $('.js-show-add-member-form', e.target).trigger('click');
+        $('.dropdown-menu-left .js-organization-member-search-response', e.target).find("a").each(function(index, value) {
+            if ($(value).data('user-id') == authuser.user.id) {
+                $(this).trigger('click');
+            }
+        });
+        return false;
+    },
 });
