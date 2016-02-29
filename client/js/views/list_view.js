@@ -30,7 +30,7 @@ App.ListView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
-		this.sort_by = null;
+        this.sort_by = null;
         this.authuser = authuser.user;
         this.mov_boards = new App.BoardCollection();
         if (this.model.has('lists_subscribers')) {
@@ -103,7 +103,7 @@ App.ListView = Backbone.View.extend({
         'click .js-show-confirm-archive-cards': 'showConfirmArchiveCards',
         'click .js-archive-card': 'archiveCard',
         'click .js-show-add-card-form': 'showAddCardForm',
-		'click .js-sort-by': 'sortBy',
+        'click .js-sort-by': 'sortBy',
         'click .js-show-list-modal': 'showListModal',
         'click .js-no-action': 'noAction',
         'click .js-show-edit-list-form': 'showListEditForm',
@@ -1457,7 +1457,7 @@ App.ListView = Backbone.View.extend({
             $('.active').parents('.js-board-list').find('.js-show-add-card-form').trigger('click');
         }
     },
-	/**
+    /**
      * sortBy()
      * toggle thr label filter list
      * @param e
@@ -1479,15 +1479,14 @@ App.ListView = Backbone.View.extend({
                 card.set('list_name', _.escape(self.model.attributes.name));
             });
             var cards = new App.CardCollection();
-			console.log(this.sort_by);
-			if (this.sort_by === sort_by) {
+            if (this.sort_by === sort_by) {
                 cards.sortDirection = 'asc';
                 this.sort_by = '-' + sort_by;
             } else {
                 cards.sortDirection = 'desc';
                 this.sort_by = sort_by;
             }
-			cards.comparator = function(item) {
+            cards.comparator = function(item) {
                 var str = '' + item.get(sort_by);
                 if (sort_by === 'name' || sort_by === 'list_name') {
                     str = str.toLowerCase();
