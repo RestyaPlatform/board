@@ -240,7 +240,7 @@ App.ListView = Backbone.View.extend({
         var data = $(e.target).serializeObject();
         if (data.name === self.model.attributes.name) {
             $(e.target).addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
-            $('#js-show-list-actions-' + self.model.id).removeClass('hide');
+            $('#js-show-list-actions-' + self.model.id + ', #js-show-sort-form-' + self.model.id).removeClass('hide');
         } else {
             self.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '.json';
             self.model.save(data, {
@@ -1029,7 +1029,7 @@ App.ListView = Backbone.View.extend({
         e.preventDefault();
         this.closePopup(e);
         $(e.currentTarget).addClass('hide').next('form').removeClass('hide');
-        this.$('#js-show-list-actions-' + this.model.attributes.id).addClass('hide');
+        this.$('#js-show-list-actions-' + this.model.attributes.id + ', #js-show-sort-form-' + this.model.attributes.id).addClass('hide');
         return false;
     },
     /**
@@ -1044,7 +1044,7 @@ App.ListView = Backbone.View.extend({
         e.preventDefault();
         var toggle = $(e.currentTarget);
         toggle.parents('form').addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
-        this.$('#js-show-list-actions-' + this.model.attributes.id).removeClass('hide');
+        this.$('#js-show-list-actions-' + this.model.attributes.id + ', #js-show-sort-form-' + this.model.attributes.id).removeClass('hide');
         return false;
     },
     /**
