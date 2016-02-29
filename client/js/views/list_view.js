@@ -102,6 +102,7 @@ App.ListView = Backbone.View.extend({
         'click .js-show-confirm-archive-cards': 'showConfirmArchiveCards',
         'click .js-archive-card': 'archiveCard',
         'click .js-show-add-card-form': 'showAddCardForm',
+        'click .js-show-sort-form': 'showSortForm',
         'click .js-show-list-modal': 'showListModal',
         'click .js-no-action': 'noAction',
         'click .js-show-edit-list-form': 'showListEditForm',
@@ -997,6 +998,21 @@ App.ListView = Backbone.View.extend({
             view_card.prepend(view.renderAdd().el).find('textarea').focus();
         }
         $('#js-card-listing-' + this.model.id).scrollTop($('#js-card-listing-' + this.model.id)[0].scrollHeight);
+        return false;
+    },
+	/**
+     * showSortForm()
+     * display copy list form
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showSortForm: function(e) {
+		console.log(this.model);
+        $('.js-list-actions-response').html(new App.SortListView({
+            model: this.model,
+        }).el);
         return false;
     },
     /**
