@@ -86,7 +86,8 @@ $database_translation_arr = array(
 	'Enter a valid user account/DN to pre-bind with if your LDAP server does not allow anonymous profile searches, or requires a user with specific privileges to search.' => 'Enter a valid user account/DN to pre-bind with if your LDAP server does not allow anonymous profile searches, or requires a user with specific privileges to search.',
 	'Enter a password for the above Bind DN.' => 'Enter a password for the above Bind DN.',
 	'Use encryption (SSL, ldaps:// URL) when connects to server?' => 'Use encryption (SSL, ldaps:// URL) when connects to server?',
-	'Enable SSL Connectivity' => 'Enable SSL Connectivity'
+	'Enable SSL Connectivity' => 'Enable SSL Connectivity',
+	'LDAP' => 'LDAP'
 );
 $t = $t + $database_translation_arr;
 ksort($t);
