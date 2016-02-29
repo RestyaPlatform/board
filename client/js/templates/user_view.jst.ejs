@@ -3,7 +3,7 @@
 	<div class="col-xs-12">
 		<div class="clearfix">
 			<ul class="nav nav-tabs no-bor h3">
-				<li <% if (_.isUndefined(type) || type == 'profile') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/profile"  >Profile</a></li>
+				<li <% if (_.isUndefined(type) || type == 'profile') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/profile"  ><%- i18next.t("Profile") %></a></li>
 				<% if(!_.isEmpty(role_links.where({slug: "view_user_cards"}))){ %>
 					<li  <% if (!_.isUndefined(type) && type == 'cards') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/cards" ><%- i18next.t("Cards") %></a></li>
 				<% } %>
@@ -12,7 +12,7 @@
 				<% } %>
 				<% if(!_.isEmpty(role_links.where({slug: "view_connected_applications"}))){ %>
 					<li <% if (!_.isUndefined(type) && type == 'oauth_applications') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/oauth_applications" ><%- i18next.t("Authorized OAuth Applications") %></a></li>
-				<% } } %>
+				<% } } %>  
 			</ul>
 		</div>
 		<div class="row">

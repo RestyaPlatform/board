@@ -34,7 +34,7 @@
 			subscribe_disabled = 'disabled';
 		}
 	%>
-	<li class="<%= subscribe_disabled %>"><a href="#" title="<%- i18next.t('Subscribe') %>" class="highlight-icon <%= subscribe_class %>" data-list-id="<%- list.id %>" data-subscribe-id="<%- subscribe_id %>"><span class="js-subscribe-text"><%- i18next.t("Subscribe") %><%if (!_.isEmpty(subscribe) && parseInt(subscribe.attributes.is_subscribed) === 1) {%>d<%}%></span> <%= is_subscribed %></a></li>
+	<li class="<%= subscribe_disabled %>"><a href="#" title="<%- i18next.t('Subscribe') %>" class="highlight-icon <%= subscribe_class %>" data-list-id="<%- list.id %>" data-subscribe-id="<%- subscribe_id %>"><span class="js-subscribe-text"><%- i18next.t("Subscribe") %><%if (!_.isEmpty(subscribe) && parseInt(subscribe.attributes.is_subscribed) === 1) {%><%}%></span> <%= is_subscribed %></a></li>
 <% } %>	
 <li class="divider"></li>
 <% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>

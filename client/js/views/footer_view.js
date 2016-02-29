@@ -1626,7 +1626,7 @@ App.FooterView = Backbone.View.extend({
         activities.fetch({
             success: function() {
                 $('.js-cssloader, #js-activity-loader').remove();
-                $('#js-notification-load-more-all, #js-notification-load-more').text('Load more activities');
+                $('#js-notification-load-more-all, #js-notification-load-more').text(i18next.t('Load more activities'));
                 var last_activity_id = _.min(activities.models, function(activity) {
                     return activity.id;
                 });
