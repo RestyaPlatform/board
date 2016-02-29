@@ -1001,7 +1001,7 @@ App.ListView = Backbone.View.extend({
         $('#js-card-listing-' + this.model.id).scrollTop($('#js-card-listing-' + this.model.id)[0].scrollHeight);
         return false;
     },
-	/**
+    /**
      * showSortForm()
      * display copy list form
      * @param e
@@ -1010,7 +1010,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     showSortForm: function(e) {
-		$('.js-list-actions-response').html(new App.SortListView({
+        $('.js-list-actions-response').html(new App.SortListView({
             model: this.model,
         }).el);
         return false;

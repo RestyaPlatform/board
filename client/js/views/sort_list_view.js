@@ -22,7 +22,7 @@ App.SortListView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
-		this.sort_by = null;
+        this.sort_by = null;
         this.render();
     },
     template: JST['templates/sort_list'],
@@ -48,7 +48,7 @@ App.SortListView = Backbone.View.extend({
         this.showTooltip();
         return this;
     },
-	/**
+    /**
      * sortBy()
      * toggle thr label filter list
      * @param e
@@ -59,18 +59,18 @@ App.SortListView = Backbone.View.extend({
         e.preventDefault();
         var self = this;
         var sort_by = $(e.target).data('sort-by');
-		var filtered_cards = self.model.cards.filter(function(card) {
+        var filtered_cards = self.model.cards.filter(function(card) {
             return parseInt(card.attributes.is_archived) === 0;
         });
-		var is_card_empty = true;
+        var is_card_empty = true;
         var view = '';
-		$('#js-card-listing-' + self.model.attributes.id).html('');
-		if (!_.isEmpty(filtered_cards)) {
-			_.each(filtered_cards, function(card) {
+        $('#js-card-listing-' + self.model.attributes.id).html('');
+        if (!_.isEmpty(filtered_cards)) {
+            _.each(filtered_cards, function(card) {
                 card.set('list_name', _.escape(self.model.attributes.name));
             });
             var cards = new App.CardCollection();
-			if (this.sort_by === sort_by) {
+            if (this.sort_by === sort_by) {
                 cards.sortDirection = 'asc';
                 this.sort_by = '-' + sort_by;
             } else {
@@ -78,7 +78,7 @@ App.SortListView = Backbone.View.extend({
                 this.sort_by = sort_by;
             }
             cards.comparator = function(item) {
-				var str = '' + item.get(sort_by);
+                var str = '' + item.get(sort_by);
                 if (sort_by === 'name' || sort_by === 'list_name') {
                     str = str.toLowerCase();
                     str = str.split('');
@@ -99,37 +99,37 @@ App.SortListView = Backbone.View.extend({
                 }
             };
             cards.reset(filtered_cards);
-			for (var i = 0; i < cards.models.length; i++) {
-				var card = cards.models[i];
-				is_card_empty = false;
-				card.list_name = _.escape(self.model.attributes.name);
-				card.list_id = self.model.attributes.id;
-				card.board_users = self.model.board_users;
-				card.labels.add(card.attributes.card_labels, {
-					silent: true
-				});
-				card.cards.add(self.model.cards, {
-					silent: true
-				});
-				card.list = self.model;
-				card.board_activities.add(self.model.activities, {
-					silent: true
-				});
-				view = new App.CardView({
-					tagName: 'div',
-					model: card,
-					converter: self.converter
-				});
-				$('#js-card-listing-' + self.model.attributes.id).append(view.render().el);
+            for (var i = 0; i < cards.models.length; i++) {
+                var card = cards.models[i];
+                is_card_empty = false;
+                card.list_name = _.escape(self.model.attributes.name);
+                card.list_id = self.model.attributes.id;
+                card.board_users = self.model.board_users;
+                card.labels.add(card.attributes.card_labels, {
+                    silent: true
+                });
+                card.cards.add(self.model.cards, {
+                    silent: true
+                });
+                card.list = self.model;
+                card.board_activities.add(self.model.activities, {
+                    silent: true
+                });
+                view = new App.CardView({
+                    tagName: 'div',
+                    model: card,
+                    converter: self.converter
+                });
+                $('#js-card-listing-' + self.model.attributes.id).append(view.render().el);
             }
         }
-		if (is_card_empty) {
-			view = new App.CardView({
-				tagName: 'div',
-				className: '',
-				model: null,
-				converter: self.converter
-			});
+        if (is_card_empty) {
+            view = new App.CardView({
+                tagName: 'div',
+                className: '',
+                model: null,
+                converter: self.converter
+            });
             view.render();
         }
     }
