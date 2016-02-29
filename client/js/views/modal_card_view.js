@@ -309,7 +309,6 @@ App.ModalCardView = Backbone.View.extend({
                     card_label.set('card_name', self.model.get('name'));
                     var labels = data.name.split(',');
                     var view_label = self.$el.find('.js-card-labels-list');
-                    $('li.js-card-label-show').remove();
                     self.model.labels.reset();
                     if (!_.isUndefined(response.cards_labels)) {
                         labels = response.cards_labels;

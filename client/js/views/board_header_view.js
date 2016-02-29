@@ -53,6 +53,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.board_users.bind('remove', this.showFilters, this);
         this.model.labels.bind('add', this.showFilters, this);
         this.model.labels.bind('change', this.showFilters, this);
+        this.model.labels.bind('remove', this.showLabels, this);
         this.authuser = authuser.user;
         this.renderAdminBoardUsers();
         if (!_.isUndefined(authuser.user)) {
