@@ -21,12 +21,12 @@
 		<% } %>
 		<%if(!_.isUndefined(authuser.user)) {%>
 		<div class="pull-right col-xs-4 clearfix">
-			<div class="dropdown cols-xs-2">
+			<div class="dropdown">
 			<a href="#" class="dropdown-toggle pull-right js-show-list-actions" id="js-show-list-actions-<%- list.attributes.id %>" data-toggle="dropdown" title="<%- i18next.t('List Actions') %>" data-list-id="<%- list.attributes.id %>"><i class="icon-cog text-danger"></i></a>
 			</div>
-			<div class="dropdown cols-xs-2">
-			<a href="#" class="dropdown-toggle pull-right js-show-sort-form" id="js-show-sort-form-<%- list.attributes.id %>" data-toggle="dropdown" title="<%- i18next.t('Sort') %>" data-list-id="<%- list.attributes.id %>"><i class="icon-sort text-danger"></i></a>
-			<ul class="dropdown-menu dropdown-menu-right arrow arrow-right js-sort-list-response">
+			<div class="dropdown right-mar">
+			<a href="#" class="dropdown-toggle pull-right js-show-sort-form right-mar" id="js-show-sort-form-<%- list.attributes.id %>" data-toggle="dropdown" title="<%- i18next.t('Sort') %>" data-list-id="<%- list.attributes.id %>"><i class="icon-sort text-danger"></i></a>
+			<ul class="dropdown-menu dropdown-menu-right arrow arrow-right js-sort-list-response right-mar">
 				 <li class="text-center"><strong><%- i18next.t("Sort") %></strong></li>
 				 <li class="divider"></li>
 				 <li><a title="<%- i18next.t('Voters') %>" href="#" class="js-sort-by" data-sort-by="card_voter_count"><%- i18next.t("Voters") %></a></li>
