@@ -1009,8 +1009,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     showSortForm: function(e) {
-		console.log(this.model);
-        $('.js-list-actions-response').html(new App.SortListView({
+		$('.js-list-actions-response').html(new App.SortListView({
             model: this.model,
         }).el);
         return false;
