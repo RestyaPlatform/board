@@ -1514,6 +1514,12 @@ App.ListView = Backbone.View.extend({
                 card.list_name = _.escape(self.model.attributes.name);
                 card.list_id = self.model.attributes.id;
                 card.board_users = self.model.board_users;
+                filter_attachments = self.model.attachments.where({
+                    card_id: card.id
+                });
+                card.attachments.add(filter_attachments, {
+                    silent: true
+                });
                 card.labels.add(card.attributes.card_labels, {
                     silent: true
                 });
