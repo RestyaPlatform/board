@@ -53,6 +53,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.board_users.bind('remove', this.showFilters, this);
         this.model.labels.bind('add', this.showFilters, this);
         this.model.labels.bind('change', this.showFilters, this);
+        this.model.labels.bind('remove', this.showLabels, this);
         this.authuser = authuser.user;
         this.renderAdminBoardUsers();
         if (!_.isUndefined(authuser.user)) {
@@ -134,7 +135,18 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-back-to-board-visibility': 'showBoardVisibility',
         'click .js-select': 'selectBoardVisibility',
         'click .js-clear-all': 'clearAll',
-        'click .js-rename-board': 'loadBoardName'
+        'click .js-rename-board': 'loadBoardName',
+        'keyup[f] .js-setting-response': 'keyboardShowFilters',
+        'keyup[w] .js-setting-response': 'keyboardOpenDropdown',
+        'keyup[x] .js-setting-response': 'keyboardClearAll',
+        'keyup[q] .js-setting-response': 'keyboardToggleCardFilter',
+        'keyup[up] body': 'keyboardUpNavigateCards',
+        'keyup[down] body': 'keyboardDownNavigateCards',
+        'keyup[left] body': 'keyboardLeftNavigateCards',
+        'keyup[right] body': 'keyboardRightNavigateCards',
+        'keyup[return] body': 'keyboardShowCardModal',
+        'keyup[j] body': 'keyboardShowPrevCardModal',
+        'keyup[k] body': 'keyboardShowNextCardModal',
     },
     /**
      * loadBoardName()
@@ -1980,5 +1992,127 @@ App.BoardHeaderView = Backbone.View.extend({
         $('#js-board-add-organization').html(new App.BoardAddOrganizationFormView({
             model: auth_user_organizations
         }).el);
-    }
+    },
+    keyboardShowFilters: function(e) {
+        $('.js-open-dropdown').trigger('click');
+        $('.js-show-filters').trigger('click');
+        return true;
+    },
+    keyboardOpenDropdown: function(e) {
+        $('.js-open-dropdown').trigger('click');
+        return false;
+    },
+    keyboardClearAll: function(e) {
+        $('.js-clear-all').trigger('click');
+        return false;
+    },
+    keyboardToggleCardFilter: function(e) {
+        $('.js-open-dropdown').trigger('click');
+        $('.js-show-filters').trigger('click');
+        $('.js-board-users').find(".js-user").each(function() {
+            if ($(this).text() == 'user-filter-' + authuser.user.id) {
+                $(this).parents('li.js-toggle-member-filter').trigger('click');
+            }
+        });
+        return false;
+    },
+    keyboardUpNavigateCards: function(e) {
+        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
+            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active');
+            return;
+        }
+        var active_card = $('.js-board-list .js-board-list-cards .active');
+        if ($(active_card).prev().length) {
+            $(active_card).removeClass('active').prev().addClass('active');
+        }
+    },
+    keyboardDownNavigateCards: function(e) {
+        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
+            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active');
+            return;
+        }
+        var active_card = $('.js-board-list .js-board-list-cards .active');
+        if ($(active_card).next().length) {
+            $(active_card).removeClass('active').next().addClass('active');
+        }
+    },
+    keyboardLeftNavigateCards: function(e) {
+        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
+            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active');
+            return;
+        }
+        var active_card = $('.js-board-list .js-board-list-cards .active');
+        var active_card_position = $('.js-board-list .js-board-list-cards .active').index();
+        var next_list_card = 0;
+        var prev_list = $(active_card).parents('.js-board-list').prev();
+        do {
+            prev_list_card = prev_list.find('.js-board-list-card').length;
+            if (prev_list_card === 0) {
+                prev_list = prev_list.prev();
+                if (!$(prev_list).length) {
+                    break;
+                }
+            } else {
+                if (active_card_position > (prev_list_card - 1)) {
+                    $(active_card).removeClass('active');
+                    $(prev_list).find('.js-board-list-card').eq(0).addClass('active');
+                } else {
+                    $(active_card).removeClass('active');
+                    $(prev_list).find('.js-board-list-card').eq(active_card_position).addClass('active');
+                }
+                break;
+            }
+        } while (next_list_card === 0);
+    },
+    keyboardRightNavigateCards: function(e) {
+        if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
+            $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active');
+            return;
+        }
+        var active_card = $('.js-board-list .js-board-list-cards .active');
+        var active_card_position = $('.js-board-list .js-board-list-cards .active').index();
+        var next_list_card = 0;
+        var next_list = $(active_card).parents('.js-board-list').next();
+        do {
+            next_list_card = next_list.find('.js-board-list-card').length;
+            if (next_list_card === 0) {
+                next_list = next_list.next();
+                if (!$(next_list).length) {
+                    break;
+                }
+            } else {
+                if (active_card_position > (next_list_card - 1)) {
+                    $(active_card).removeClass('active');
+                    $(next_list).find('.js-board-list-card').eq(0).addClass('active');
+                } else {
+                    $(active_card).removeClass('active');
+                    $(next_list).find('.js-board-list-card').eq(active_card_position).addClass('active');
+                }
+            }
+        } while (next_list_card === 0);
+    },
+    keyboardShowCardModal: function(e) {
+        if ($('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
+            var active_card = $('.js-board-list-card.active').attr('id');
+            $('#' + active_card).trigger('click');
+        }
+    },
+    keyboardShowPrevCardModal: function(e) {
+        var active_card = $('.js-board-list .js-board-list-cards .active');
+        if ($(active_card).prev().length) {
+            $('.action-close', $('.dockmodal.active')).trigger('click');
+            $(active_card).removeClass('active').prev().addClass('active');
+            var active_card_id = $('.js-board-list-card.active').attr('id');
+            $('#' + active_card_id).trigger('click');
+        }
+    },
+    keyboardShowNextCardModal: function(e) {
+        var active_card = $('.js-board-list .js-board-list-cards .active');
+        if ($(active_card).next().length) {
+            $('.action-close', $('.dockmodal.active')).trigger('click');
+            $(active_card).removeClass('active').next().addClass('active');
+            var active_card_id = $('.js-board-list-card.active').attr('id');
+            $('#' + active_card_id).trigger('click');
+        }
+    },
 });

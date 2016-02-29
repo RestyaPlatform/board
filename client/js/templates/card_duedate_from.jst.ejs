@@ -3,8 +3,8 @@
 	var date = currentdate.getFullYear() + '-' + (((currentdate.getMonth()+1)<10)? '0'+ (currentdate.getMonth()+1) : (currentdate.getMonth()+1)) + '-' + ((currentdate.getDate()<10)? '0' + currentdate.getDate() : currentdate.getDate());
 	var time = currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds();
 	if (!_.isUndefined(this.model.attributes.due_date) && this.model.attributes.due_date !== null && this.model.attributes.due_date !== 'NULL') {
-		var date_time = this.model.attributes.due_date.split('T');
-		//date_time = date_time[0].split(' ');
+		var date_time = this.model.attributes.due_date.replace('T',' ');
+		date_time = date_time.split(' ');
 		date = date_time[0];
 		time = date_time[1];
 	}

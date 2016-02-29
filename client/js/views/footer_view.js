@@ -90,6 +90,8 @@ App.FooterView = Backbone.View.extend({
         'click .js-my-boards-listing': 'renderMyBoards',
         'click #modal-activities': 'showActivity',
         'click #modal-comments': 'showActivity',
+        'click .js-show-shortcuts-modal': 'showShortcutModal',
+        'keyup[shift+/] body': 'keyboardShowShortcutModal',
     },
     /** 
      * Constructor
@@ -1626,7 +1628,7 @@ App.FooterView = Backbone.View.extend({
         activities.fetch({
             success: function() {
                 $('.js-cssloader, #js-activity-loader').remove();
-                $('#js-notification-load-more-all, #js-notification-load-more').text('Load more activities');
+                $('#js-notification-load-more-all, #js-notification-load-more').text(i18next.t('Load more activities'));
                 var last_activity_id = _.min(activities.models, function(activity) {
                     return activity.id;
                 });
@@ -1765,7 +1767,30 @@ App.FooterView = Backbone.View.extend({
             $(hide_class).parent('li').addClass('hide');
         }
         return false;
-
-
+    },
+    /**
+     * showShortcutModal()
+     * display the Shortcuts Key
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showShortcutModal: function(e) {
+        var modalView = new App.ModalShortcutView({});
+        modalView.show();
+        return false;
+    },
+    keyboardShowShortcutModal: function(e) {
+        var self = this;
+        if (_.isUndefined(self.is_show_keyboard) || self.is_show_keyboard) {
+            self.is_show_keyboard = false;
+            $('.js-show-shortcuts-modal').trigger('click');
+            $('#ModalShortcutView').on('hidden.bs.modal', function() {
+                $('#ModalShortcutView').remove();
+                self.is_show_keyboard = true;
+            });
+        }
+        return false;
     }
 });

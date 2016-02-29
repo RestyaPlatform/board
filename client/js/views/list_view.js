@@ -117,7 +117,8 @@ App.ListView = Backbone.View.extend({
         'change .js-change-position': 'changePosition',
         'click .js-copy-existing-card': 'copyExistingCard',
         'click .js-hide-edit-list-form': 'hideListEditForm',
-        'listSort': 'listSort'
+        'listSort': 'listSort',
+        'keyup[n] .js-board-list': 'keyboardShowAddCardForm',
     },
     /**
      * listSort()
@@ -1462,6 +1463,11 @@ App.ListView = Backbone.View.extend({
             } else {
                 return false;
             }
+        }
+    },
+    keyboardShowAddCardForm: function(e) {
+        if ($('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
+            $('.active').parents('.js-board-list').find('.js-show-add-card-form').trigger('click');
         }
     }
 });

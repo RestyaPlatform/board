@@ -23,7 +23,7 @@
 						<i class="icon-arrow-down cur icon-light"></i>
 					</a>
 				</div>
-				<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(attachment.board.acl_links.where({slug: "remove_card_attachment", board_user_role_id: parseInt(attachment.board.board_user_role_id)})))) { %> 
+				<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "remove_card_attachment", board_user_role_id: parseInt(board.board_user_role_id)})))) { %> 
 					<div class="dropdown dropdown pull-left">
 						<a href="#" title="Delete" class="js-show-confirm-delete-attachment dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown"><i class="icon-remove cur"></i></a>
 						<ul class="dropdown-menu arrow list-unstyled">
