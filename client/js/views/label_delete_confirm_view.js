@@ -27,10 +27,10 @@ App.LabelDeleteConfirmView = Backbone.View.extend({
             success: function(model, response) {
                 self.flash('success', i18next.t('Labels deleted successfully.'));
                 $('.js-show-labels').trigger('click');
-                var label = self.model.labels.findWhere({
-                    label_id: self.label_id
+                var filter_labels = self.model.labels.filter(function(model) {
+                    return parseInt(model.get('label_id')) === parseInt(self.label_id);
                 });
-                self.model.labels.remove(label);
+                self.model.labels.remove(filter_labels);
             }
         });
         return false;
