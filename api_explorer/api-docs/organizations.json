@@ -241,13 +241,6 @@
                             "required": true,
                             "type": "string",
                             "paramType": "path"
-                        },
-                        {
-                            "name": "body",
-                            "description": "Created Member object",
-                            "required": true,
-                            "type": "addMember",
-                            "paramType": "body"
                         }
                     ],
                     "responseMessages": [
@@ -348,14 +341,6 @@
             "id": "editOrganization",
             "properties": {
                 "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "addMember": {
-            "id": "addMember",
-            "properties": {
-                "email": {
                     "type": "string"
                 }
             }
