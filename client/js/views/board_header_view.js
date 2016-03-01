@@ -815,13 +815,15 @@ App.BoardHeaderView = Backbone.View.extend({
                         }
                         card_created_date = card.created.split(' ');
                         var created_date = new Date(card_created_date[0]);
-                        var form_date = card.created;
+                        var form_date = card_created_date[0] + 'T' + card_created_date[1];
                         if (created_date.getTime() > due_date.getTime()) {
                             form_date = card.due_date;
                         }
+                        var _card_due_date = card.due_date.split(' ');
+                        var to_date = _card_due_date[0] + 'T' + _card_due_date[1];
                         d = new Date(form_date);
                         n.from = '/Date(' + d.getTime() + ')/';
-                        d = new Date(card.due_date);
+                        d = new Date(card.to_date);
                         n.to = '/Date(' + d.getTime() + ')/';
                         n.label = card.name;
                         n.customClass = customClass;
