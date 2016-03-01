@@ -58,7 +58,7 @@ App.ShowCopyBoardView = Backbone.View.extend({
      */
     copyNewBoard: function(e) {
         e.preventDefault();
-        $('#submitBoardCopy', $(e.target)).attr('disabled', true);
+        var self = this;
         var data = $(e.target).serializeObject();
         data.user_id = authuser.user.id;
         var board = new App.Board();
@@ -70,6 +70,7 @@ App.ShowCopyBoardView = Backbone.View.extend({
                         trigger: true,
                         replace: true,
                     });
+                    self.flash('success', i18next.t('Board copied successfully.'));
                 } else {
                     self.flash('danger', i18next.t('Unable to copy the board.'));
                 }
