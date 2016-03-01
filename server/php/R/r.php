@@ -2013,32 +2013,34 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         } else if (!empty($_FILES['attachment']) && is_array($_FILES['attachment']['name']) && $_FILES['attachment']['error'][0] == 0) {
             $file = $_FILES['attachment'];
             for ($i = 0; $i < count($file['name']); $i++) {
-                if (!file_exists($mediadir)) {
-                    mkdir($mediadir, 0777, true);
-                }
-                if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
-                    $r_post[$i]['path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'][$i];
-                    $r_post[$i]['name'] = $file['name'][$i];
-                    $r_post[$i]['mimetype'] = $file['type'][$i];
-                    $qry_val_arr = array(
-                        $r_post['card_id'],
-                        $r_post[$i]['name'],
-                        $r_post[$i]['path'],
-                        $r_post['list_id'],
-                        $r_post['board_id'],
-                        $r_post[$i]['mimetype']
-                    );
-                    $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING *', $qry_val_arr);
-                    $response['card_attachments'][] = pg_fetch_assoc($s_result);
-                    $foreign_ids['board_id'] = $r_resource_vars['boards'];
-                    $foreign_ids['list_id'] = $r_resource_vars['lists'];
-                    $foreign_ids['card_id'] = $r_resource_vars['cards'];
-                    $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
-                    $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['card_attachments'][$i]['id']);
-                    foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                        $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
-                        $list = glob($imgdir . '.*');
-                        @unlink($list[0]);
+                if ($file['name'][$i] != 'undefined') {
+                    if (!file_exists($mediadir)) {
+                        mkdir($mediadir, 0777, true);
+                    }
+                    if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
+                        $r_post[$i]['path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'][$i];
+                        $r_post[$i]['name'] = $file['name'][$i];
+                        $r_post[$i]['mimetype'] = $file['type'][$i];
+                        $qry_val_arr = array(
+                            $r_post['card_id'],
+                            $r_post[$i]['name'],
+                            $r_post[$i]['path'],
+                            $r_post['list_id'],
+                            $r_post['board_id'],
+                            $r_post[$i]['mimetype']
+                        );
+                        $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING *', $qry_val_arr);
+                        $response['card_attachments'][] = pg_fetch_assoc($s_result);
+                        $foreign_ids['board_id'] = $r_resource_vars['boards'];
+                        $foreign_ids['list_id'] = $r_resource_vars['lists'];
+                        $foreign_ids['card_id'] = $r_resource_vars['cards'];
+                        $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
+                        $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['card_attachments'][$i]['id']);
+                        foreach ($thumbsizes['CardAttachment'] as $key => $value) {
+                            $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
+                            $list = glob($imgdir . '.*');
+                            @unlink($list[0]);
+                        }
                     }
                 }
             }
