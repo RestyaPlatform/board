@@ -1851,7 +1851,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     case '/boards/?/users':
         $is_return_vlaue = true;
         $table_name = 'boards_users';
-		$r_post['board_id'] = $r_resource_vars['boards'];
+        $r_post['board_id'] = $r_resource_vars['boards'];
         $qry_val_arr = array(
             $r_resource_vars['boards'],
             $r_post['user_id']
@@ -2300,8 +2300,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $table_name = 'organizations_users';
         $sql = true;
         $is_return_vlaue = true;
-		$r_post['organization_id'] = $r_resource_vars['organizations'];
-		$r_post['user_id'] = $r_resource_vars['users'];
+        $r_post['organization_id'] = $r_resource_vars['organizations'];
+        $r_post['user_id'] = $r_resource_vars['users'];
         break;
 
     case '/organizations': //organizations add
