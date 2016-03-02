@@ -1846,3 +1846,11 @@ INSERT INTO "acl_links" ("created", "modified", "name", "url", "method", "slug",
 ('2014-08-25 13:14:18.247',	'2014-08-25 13:14:18.247',	'Undo activity',	'/activities/undo/?',	'PUT',	'undo_activity',	2,	1,	0,	0,	0);
 
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849',	'2016-02-20 19:07:50.849',	id,	1 FROM acl_links WHERE slug = 'undo_activity';
+
+DELETE FROM "settings" WHERE "name" = 'LDAP_ORGANISATION';
+
+UPDATE "settings" SET "description" = 'The DNS name or IP address of the server (e.g., dc.domain.local)' WHERE "name" = 'LDAP_SERVER';
+
+UPDATE "settings" SET "description" = 'Difference between LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)' WHERE "name" = 'LDAP_PROTOCOL_VERSION';
+
+UPDATE "settings" SET "description" = 'This is your search base for LDAP queries. This should be at least your domain root, (e.g., dc=domain,dc=local) You can define this as a Organizational Unit if you want to narrow down the search base (e.g., ou=team,ou=company,dc=domain,dc=local)' WHERE "name" = 'LDAP_ROOT_DN';

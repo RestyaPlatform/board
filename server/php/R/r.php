@@ -1672,7 +1672,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         if (!empty($_FILES['board_import'])) {
             if ($_FILES['board_import']['error'] == 0) {
                 $get_files = file_get_contents($_FILES['board_import']['tmp_name']);
-                $imported_board = json_decode($get_files, true);
+                $imported_board = json_decode(utf8_encode($get_files) , true);
                 if (!empty($imported_board) && !empty($imported_board['prefs'])) {
                     $board = importTrelloBoard($imported_board);
                     $response['id'] = $board['id'];
@@ -1851,6 +1851,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     case '/boards/?/users':
         $is_return_vlaue = true;
         $table_name = 'boards_users';
+        $r_post['board_id'] = $r_resource_vars['boards'];
         $qry_val_arr = array(
             $r_resource_vars['boards'],
             $r_post['user_id']
@@ -2299,6 +2300,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $table_name = 'organizations_users';
         $sql = true;
         $is_return_vlaue = true;
+        $r_post['organization_id'] = $r_resource_vars['organizations'];
+        $r_post['user_id'] = $r_resource_vars['users'];
         break;
 
     case '/organizations': //organizations add
@@ -2503,6 +2506,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 strtoupper(implode($match[0]))
                             );
                             pg_query_params($db_lnk, 'INSERT INTO users(created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5,  true, true, true) RETURNING id ', $data);
+                            if ($_POST['is_send_welcome_mail'] == 'true') {
+                                $emailFindReplace = array(
+                                    '##NAME##' => $values['name'],
+                                );
+                                sendMail('welcome', $emailFindReplace, $values['email']);
+                            }
                         }
                     }
                 } else {
@@ -2543,6 +2552,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $result1 = pg_query_params($db_lnk, 'INSERT INTO users(created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5,  true, true, true) RETURNING id ', $data);
                                 $user = pg_fetch_assoc($result1);
                                 $user_id = $user['id'];
+                                if ($_POST['is_send_welcome_mail'] == 'true') {
+                                    $emailFindReplace = array(
+                                        '##NAME##' => $values['name'],
+                                    );
+                                    sendMail('welcome', $emailFindReplace, $values['email']);
+                                }
                             } else {
                                 $user_id = $is_user_exist['id'];
                             }

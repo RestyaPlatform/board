@@ -809,10 +809,14 @@
         "addBoardMember": {
             "id": "addBoardMember",
             "required": [
-                "user_id"
+                "user_id",
+		"board_user_role_id"
             ],
             "properties": {
                 "user_id": {
+                    "type": "integer"
+                },
+		"board_user_role_id": {
                     "type": "integer"
                 }
             }
