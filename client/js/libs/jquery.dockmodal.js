@@ -338,7 +338,7 @@
 
                 $("." + dClass + "-overlay").hide();
                 $dockModal.find(".action-minimize").attr("title", "Minimize");
-                $dockModal.find(".action-popout").attr("title", "Pop-out");
+                $dockModal.find(".action-popout").attr("title", "Pop-out (ctrl+click)");
 
                 setTimeout(function () {
                     // raise restore event

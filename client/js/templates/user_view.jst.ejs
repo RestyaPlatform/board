@@ -7,7 +7,7 @@
 				<% if(!_.isEmpty(role_links.where({slug: "view_user_cards"}))){ %>
 					<li  <% if (!_.isUndefined(type) && type == 'cards') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/cards" ><%- i18next.t("Cards") %></a></li>
 				<% } %>
-				<% if(authuser.user.id === page.id || authuser.user.role_id === 1) { if(!_.isEmpty(role_links.where({slug: "edit_user_details"}))){ %>
+				<% if(authuser.user.id === page.id || authuser.user.role_id == 1) { if(!_.isEmpty(role_links.where({slug: "edit_user_details"}))){ %>
 					<li <% if (!_.isUndefined(type) && type == 'settings') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/settings" ><%- i18next.t("Settings") %></a></li>
 				<% } %>
 				<% if(!_.isEmpty(role_links.where({slug: "view_connected_applications"}))){ %>
