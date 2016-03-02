@@ -2506,7 +2506,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 strtoupper(implode($match[0]))
                             );
                             pg_query_params($db_lnk, 'INSERT INTO users(created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5,  true, true, true) RETURNING id ', $data);
-                            if ($_POST['is_send_welcome_mail'] == 'true') {
+                            if ($_POST['is_send_welcome_mail'] != 'true') {
                                 $emailFindReplace = array(
                                     '##NAME##' => $values['name'],
                                 );
@@ -2552,7 +2552,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $result1 = pg_query_params($db_lnk, 'INSERT INTO users(created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5,  true, true, true) RETURNING id ', $data);
                                 $user = pg_fetch_assoc($result1);
                                 $user_id = $user['id'];
-                                if ($_POST['is_send_welcome_mail'] == 'true') {
+                                if ($_POST['is_send_welcome_mail'] != 'true') {
                                     $emailFindReplace = array(
                                         '##NAME##' => $values['name'],
                                     );
