@@ -136,7 +136,13 @@
 			<div class="form-group">
 				<div class="col-xs-3"></div><div class="col-xs-9">
 					<input type="checkbox" value="" name="enableImportUsers" id="enableImportUsers" class="js-enable-import-user">
-					<label for="enableImportUsers"><%- i18next.t('Import Groups from LDAP into Organizations and put users under organization') %> </label>
+					<label for="enableImportUsers"><%- i18next.t('Import Groups from LDAP into Organizations and put users under organization. If this option is unchecked, only the users will be imported (not organization)') %> </label>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-xs-3"></div><div class="col-xs-9">
+					<input type="checkbox" value="" name="dontSendWelcomeMail" id="dontSendWelcomeMail">
+					<label for="dontSendWelcomeMail"><%- i18next.t("Don't send welcome email") %> </label>
 				</div>
 			</div>
 			<div class="form-group">
