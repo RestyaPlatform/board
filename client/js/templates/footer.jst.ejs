@@ -1,3 +1,13 @@
+<%
+if (_.isEmpty(role_links.where({
+	slug: "add_board"
+}))) {
+	var delete_github_obj = apps;
+	if (delete_github_obj.hasOwnProperty('r_import_github')) {
+		delete delete_github_obj['r_import_github'];
+	}
+}
+%>
 <section class="action-block action-content">
 <div class="row navbar navbar-default list-group-item-text">
 <ul class="nav nav-pills navbar-left"> 
