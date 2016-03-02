@@ -37,7 +37,7 @@ App.SettingView = Backbone.View.extend({
         $('.js-import-users').attr('disabled', true);
         $('#js-loader-img').removeClass('hide');
         var is_import_organizations = ($('#enableImportUsers').is(":checked")) ? true : false;
-        var is_send_welcome_mail = ($('#sendWelcomeMail').is(":checked")) ? true : false;
+        var is_send_welcome_mail = ($('#dontSendWelcomeMail').is(":checked")) ? false : true;
         $.ajax({
             type: 'POST',
             data: {
