@@ -242,16 +242,7 @@ App.ActivityView = Backbone.View.extend({
                     });
                     checklist_item.set(response.undo.checklist_item);
                 }
-                if (!_.isUndefined(response.activity)) {
-                    var activity = new App.Activity();
-                    activity.set(response.activity);
-                    var view = new App.ActivityView({
-                        model: activity
-                    });
-                    var view_activity = $('#js-list-user-activities-list');
-                    view_activity.prepend(view.render().el).find('.timeago').timeago();
-                    emojify.run();
-                }
+                return false;
             }
         });
         return false;
