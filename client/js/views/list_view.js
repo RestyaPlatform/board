@@ -918,7 +918,7 @@ App.ListView = Backbone.View.extend({
         this.model.cards.sortByColumn('position');
         if (!_.isUndefined(this.model.collection)) {
             var filtered_cards = this.model.collection.board.cards.where({
-                list_id: this.model.id
+                list_id: parseInt(this.model.id)
             });
             var cards = new App.CardCollection();
             cards.reset(filtered_cards);

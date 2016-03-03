@@ -4156,7 +4156,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     array_push($values, $value);
                 }
             }
-            if ($key != 'id' && $key != 'position') {
+            if ($key != 'id') {
                 $sfields.= (empty($sfields)) ? $key : ", " . $key;
             }
         }
