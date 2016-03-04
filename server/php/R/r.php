@@ -1701,7 +1701,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         if (!empty($_FILES['board_import'])) {
             if ($_FILES['board_import']['error'] == 0) {
                 $get_files = file_get_contents($_FILES['board_import']['tmp_name']);
-                $imported_board = json_decode(utf8_encode($get_files) , true);
+                $utf8_encoded_content = utf8_encode($get_files);
+                $imported_board = json_decode($utf8_encoded_content, true);
                 if (!empty($imported_board) && !empty($imported_board['prefs'])) {
                     $board = importTrelloBoard($imported_board);
                     $response['id'] = $board['id'];
