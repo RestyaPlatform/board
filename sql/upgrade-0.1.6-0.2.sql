@@ -716,7 +716,7 @@ VALUES ('36', '0', '0', 'webhooks.last_processed_activtiy_id', 0, NULL, 'hidden'
 INSERT INTO "oauth_scopes" ("scope", "is_default") VALUES ('read', 't'),('write', 'f');
 
 INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply_to_email", "name", "description", "subject", "email_text_content", "email_variables", "display_name") VALUES
-(7,	'2016-01-10 06:15:49.891',	'2016-01-10 06:15:49.891',	'##SITE_NAME## Restyaboard <##FROM_EMAIL##>',	'##REPLY_TO_EMAIL##',	'due_date_notification',	'We will send this mail, One day before when the card due date end.',	'Restyaboard / Due date notification',	'<html>
+(7,	'2016-01-10 06:15:49.891',	'2016-01-10 06:15:49.891',	'##SITE_NAME## Restyaboard <##FROM_EMAIL##>',	'##REPLY_TO_EMAIL##',	'due_date_notification',	'We will send this mail, One day before when the card due date end.',	'##SUBJECT##',	'<html>
 <head></head>
 <body style="margin:0">
 <header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">
@@ -740,7 +740,7 @@ INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply
 </h6>
 </footer>
 </body>
-</html>', 'SITE_URL, SITE_NAME, CONTENT', 'Due Date Notification');
+</html>', 'SITE_URL, SITE_NAME, SUBJECT, CONTENT', 'Due Date Notification');
 
 CREATE SEQUENCE acl_board_links_seq
     START WITH 1
