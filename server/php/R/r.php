@@ -41,6 +41,35 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     $response = array();
     $pg_params = array();
     switch ($r_resource_cmd) {
+    case '/users/me':
+        $role_val_arr = array(
+            $authUser['role_id']
+        );
+        $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $role_val_arr);
+        $val_arr = array(
+            $authUser['id']
+        );
+        $user = executeQuery('SELECT * FROM users_listing WHERE id = $1', $val_arr);
+        $response = array_merge($role_links, $response);
+        $board_ids = array();
+        if (!empty($user['boards_users'])) {
+            $boards_users = json_decode($user['boards_users'], true);
+            foreach ($boards_users as $boards_user) {
+                $board_ids[] = $boards_user['board_id'];
+            }
+        }
+        $notify_val_arr = array(
+            $user['last_activity_id'],
+            '{' . implode(',', $board_ids) . '}'
+        );
+        $notify_count = executeQuery('SELECT max(id) AS last_activity_id, count(a.*) AS notify_count FROM activities a  WHERE a.id > $1 AND board_id = ANY ($2) ', $notify_val_arr);
+        $notify_count['last_activity_id'] = (!empty($notify_count['last_activity_id'])) ? $notify_count['last_activity_id'] : $user['last_activity_id'];
+        $user = array_merge($user, $notify_count);
+        unset($user['user']['password']);
+        $response['user'] = $user;
+        $response['user']['organizations'] = json_decode($user['organizations'], true);
+        break;
+
     case '/users':
         $response['users'] = array();
         $order_by = 'id';

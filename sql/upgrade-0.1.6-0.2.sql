@@ -1854,3 +1854,8 @@ UPDATE "settings" SET "description" = 'The DNS name or IP address of the server 
 UPDATE "settings" SET "description" = 'Difference between LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)' WHERE "name" = 'LDAP_PROTOCOL_VERSION';
 
 UPDATE "settings" SET "description" = 'This is your search base for LDAP queries. This should be at least your domain root, (e.g., dc=domain,dc=local) You can define this as a Organizational Unit if you want to narrow down the search base (e.g., ou=team,ou=company,dc=domain,dc=local)' WHERE "name" = 'LDAP_ROOT_DN';
+
+INSERT INTO "acl_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
+VALUES (now(), now(), 'User detail', '/users/me', 'GET', 'user_detail', '0', '1', '0', '1', '1');
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849',	'2016-02-20 19:07:50.849', id, 2 FROM acl_links WHERE slug = 'user_detail';
