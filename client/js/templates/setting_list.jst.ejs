@@ -25,10 +25,10 @@
 					var settings = settingCategory.get('settings');
 		%>		
 				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%}%>" id="settingTab<%- settingCategory.get('id') %>">
+					<% if(!_.isEmpty(settings)){ %>
 					<% if(settingCategory.get('id') == 10){ %>
 					<p class="alert alert-info ">To add/reply cards via email you must set up a secret email account with IMAP access.</p>
 					<% } %>
-					<% if(!_.isEmpty(settings)){ %>
 					<form class="form-horizontal clearfix <% if(settingCategory.get('id') == 2){ %>col-lg-8<% } else { %>col-lg-6<% } %> col-md-8 col-sm-12 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
 					<%
 					 var server_detail_fields_count = 0;
