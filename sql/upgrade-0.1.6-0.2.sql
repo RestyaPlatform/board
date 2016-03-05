@@ -1859,3 +1859,17 @@ INSERT INTO "acl_links" ("created", "modified", "name", "url", "method", "slug",
 VALUES (now(), now(), 'User detail', '/users/me', 'GET', 'user_detail', '0', '1', '0', '1', '1');
 
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849',	'2016-02-20 19:07:50.849', id, 2 FROM acl_links WHERE slug = 'user_detail';
+
+UPDATE "settings" SET "type" = 'password' WHERE "name" = 'IMAP_EMAIL_PASSWORD';
+
+UPDATE "settings" SET "label" = 'Server URL', "description" = 'e.g., http://localhost:9200/' WHERE "name" = 'ELASTICSEARCH_URL';
+
+UPDATE "settings" SET "label" = 'Index Name', "description" = 'Used to prefix index names to avoid potential collisions. e.g., restya' WHERE "name" = 'ELASTICSEARCH_INDEX';
+
+UPDATE "settings" SET "label" = 'Incoming Mail Server' WHERE "name" = 'IMAP_HOST';
+
+UPDATE "settings" SET "description" = 'e.g., 993', "label" = 'Port' WHERE "name" = 'IMAP_PORT';
+
+UPDATE "settings" SET "label" = 'Email address' WHERE "name" = 'IMAP_EMAIL';
+
+UPDATE "settings" SET "label" = 'Password' WHERE "name" = 'IMAP_EMAIL_PASSWORD';

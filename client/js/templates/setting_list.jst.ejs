@@ -25,6 +25,9 @@
 					var settings = settingCategory.get('settings');
 		%>		
 				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%}%>" id="settingTab<%- settingCategory.get('id') %>">
+					<% if(settingCategory.get('id') == 10){ %>
+					<p class="alert alert-info ">To add/reply cards via email you must set up a secret email account with IMAP access.</p>
+					<% } %>
 					<% if(!_.isEmpty(settings)){ %>
 					<form class="form-horizontal clearfix <% if(settingCategory.get('id') == 2){ %>col-lg-8<% } else { %>col-lg-6<% } %> col-md-8 col-sm-12 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
 					<%
@@ -133,6 +136,9 @@
 				</div>
 		<% j++; %>
 		<% if(settingCategory.id == 2 && id == 2){ %>
+			<legend>
+				<span class="show h4">Import LDAP users</span>
+			</legend>
 			<div class="form-group">
 				<div class="col-xs-3"></div><div class="col-xs-9">
 					<input type="checkbox" value="" name="enableImportUsers" id="enableImportUsers" class="js-enable-import-user">
