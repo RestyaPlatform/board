@@ -4644,12 +4644,11 @@ if (!empty($_GET['_url']) && $db_lnk) {
         );
         if (!empty($_GET['token'])) {
             $conditions = array(
-                'client_id' => OAUTH_CLIENTID,
                 'access_token' => $_GET['token']
             );
-            $response = executeQuery("SELECT user_id as username, expires, scope, client_id FROM oauth_access_tokens WHERE client_id = $1 AND access_token = $2", $conditions);
+            $response = executeQuery("SELECT user_id as username, expires, scope, client_id FROM oauth_access_tokens WHERE access_token = $1", $conditions);
             $expires = strtotime($response['expires']);
-            if (empty($response) || !empty($response['error']) || ($expires > 0 && $expires < time() && $response['client_id'] != 7857596005287233)) {
+            if (empty($response) || !empty($response['error']) || ($response['client_id'] != 6664115227792148 && $response['client_id'] != OAUTH_CLIENTID) || ($expires > 0 && $expires < time() && $response['client_id'] != 7857596005287233)) {
                 $response['error']['type'] = 'OAuth';
                 echo json_encode($response);
                 header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
@@ -4668,11 +4667,21 @@ if (!empty($_GET['_url']) && $db_lnk) {
             }
             $authUser = array_merge($role_links, $user);
         } else if (!empty($_GET['refresh_token'])) {
+            $oauth_clientid = OAUTH_CLIENTID;
+            $oauth_client_secret = OAUTH_CLIENT_SECRET;
+            $conditions = array(
+                'access_token' => $_GET['refresh_token']
+            );
+            $response = executeQuery("SELECT user_id as username, expires, scope, client_id FROM oauth_refresh_tokens WHERE refresh_token = $1", $conditions);
+            if ($response['client_id'] == 6664115227792148 && OAUTH_CLIENTID == 7742632501382313) {
+                $oauth_clientid = 6664115227792148;
+                $oauth_client_secret = 'hw3wpe2cfsxxygogwue47cwnf7';
+            }
             $post_val = array(
                 'grant_type' => 'refresh_token',
                 'refresh_token' => $_GET['refresh_token'],
-                'client_id' => OAUTH_CLIENTID,
-                'client_secret' => OAUTH_CLIENT_SECRET
+                'client_id' => $oauth_clientid,
+                'client_secret' => $oauth_client_secret
             );
             $response = getToken($post_val);
             echo json_encode($response);
