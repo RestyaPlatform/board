@@ -2885,7 +2885,6 @@ App.ModalCardView = Backbone.View.extend({
         return false;
     },
     keyboardAddCardMember: function(e) {
-        $('.js-show-add-member-form', e.target).trigger('click');
         $('.dropdown-menu-left .js-organization-member-search-response', e.target).find("a").each(function(index, value) {
             if ($(value).data('user-id') == authuser.user.id) {
                 $(this).trigger('click');
