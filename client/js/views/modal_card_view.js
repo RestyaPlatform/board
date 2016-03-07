@@ -2873,8 +2873,11 @@ App.ModalCardView = Backbone.View.extend({
         return false;
     },
     keyboardCardSubscribe: function(e) {
-        $('.js-card-subscribe', e.target).trigger('click');
-        return false;
+        if ($('.js-card-container .icon-eye-open', e.target).length) {
+            $('.js-card-unsubscribe', e.target).trigger('click');
+        } else {
+            $('.js-card-subscribe', e.target).trigger('click');
+        }
     },
     keyboardShowAddMemberForm: function(e) {
         $('.js-show-add-member-form', e.target).trigger('click');
@@ -2885,7 +2888,6 @@ App.ModalCardView = Backbone.View.extend({
         return false;
     },
     keyboardAddCardMember: function(e) {
-        $('.js-show-add-member-form', e.target).trigger('click');
         $('.dropdown-menu-left .js-organization-member-search-response', e.target).find("a").each(function(index, value) {
             if ($(value).data('user-id') == authuser.user.id) {
                 $(this).trigger('click');

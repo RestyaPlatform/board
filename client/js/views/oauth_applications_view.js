@@ -29,20 +29,23 @@ App.OauthApplicationsView = Backbone.View.extend({
      */
     deleteApplication: function(e) {
         e.preventDefault();
-        var target = $(e.currentTarget);
-        var self = this;
-        var oauth_application = new App.OauthApplication();
-        oauth_application.url = api_url + 'oauth/applications/' + target.data('client_id') + '.json';
-        oauth_application.set('client_id', target.data('client_id'));
-        oauth_application.destroy({
-            success: function(model, response) {
-                self.flash('success', i18next.t('Application deleted successfully.'));
-                app.navigate('#/user/' + authuser.user.id + '/oauth_applications', {
-                    trigger: true,
-                    replace: true
-                });
-            }
-        });
+        var retVal = confirm("Are you sure you want to revoke this application");
+        if (retVal === true) {
+            var target = $(e.currentTarget);
+            var self = this;
+            var oauth_application = new App.OauthApplication();
+            oauth_application.url = api_url + 'oauth/applications/' + target.data('client_id') + '.json';
+            oauth_application.set('client_id', target.data('client_id'));
+            oauth_application.destroy({
+                success: function(model, response) {
+                    self.flash('success', i18next.t('Application deleted successfully.'));
+                    app.navigate('#/user/' + authuser.user.id + '/oauth_applications', {
+                        trigger: true,
+                        replace: true
+                    });
+                }
+            });
+        }
         return false;
     },
     /**

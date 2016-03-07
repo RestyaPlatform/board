@@ -145,8 +145,8 @@ App.BoardHeaderView = Backbone.View.extend({
         'keyup[left] body': 'keyboardLeftNavigateCards',
         'keyup[right] body': 'keyboardRightNavigateCards',
         'keyup[return] body': 'keyboardShowCardModal',
-        'keyup[j] body': 'keyboardShowPrevCardModal',
-        'keyup[k] body': 'keyboardShowNextCardModal',
+        'keyup[k] body': 'keyboardShowPrevCardModal',
+        'keyup[j] body': 'keyboardShowNextCardModal',
     },
     /**
      * loadBoardName()
@@ -2001,7 +2001,11 @@ App.BoardHeaderView = Backbone.View.extend({
         return true;
     },
     keyboardOpenDropdown: function(e) {
-        $('.js-open-dropdown').trigger('click');
+        if ($('.js-setting-response').parents().hasClass("open")) {
+            $('.js-setting-response').parents().removeClass("open");
+        } else {
+            $('.js-open-dropdown').trigger('click');
+        }
         return false;
     },
     keyboardClearAll: function(e) {

@@ -4586,8 +4586,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         pg_query_params($db_lnk, 'DELETE FROM oauth_access_tokens WHERE client_id = $1', $conditions);
         pg_query_params($db_lnk, 'DELETE FROM oauth_refresh_tokens WHERE client_id = $1', $conditions);
-        $sql = 'DELETE FROM oauth_clients WHERE client_id= $1';
-        array_push($pg_params, $r_resource_vars['applications']);
+        $sql = false;
         break;
 
     case '/webhooks/?':
