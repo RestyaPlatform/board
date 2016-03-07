@@ -248,7 +248,7 @@ Restyaboard<br>
 </main>
 <footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
 <h6 style="text-align:center;margin:5px 15px;"> 
-<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
+<a href="http://restya.com/board/?utm_source=Restyaboard ##SITE_NAME##&utm_medium=email&utm_campaign=activation_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
 </footer>
 </body>
 </html>'
@@ -275,7 +275,7 @@ Restyaboard<br>
 </main>
 <footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
 <h6 style="text-align:center;margin:5px 15px;"> 
-<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
+<a href="http://restya.com/board/?utm_source=Restyaboard ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
 </footer>
 </body>
 </html>'
@@ -302,7 +302,7 @@ Restyaboard<br>
 </main>
 <footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
 <h6 style="text-align:center;margin:5px 15px;"> 
-<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
+<a href="http://restya.com/board/?utm_source=Restyaboard ##SITE_NAME##&utm_medium=email&utm_campaign=forgetpassword_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
 </footer>
 </body>
 </html>'
@@ -329,7 +329,7 @@ Restyaboard<br>
 </main>
 <footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
 <h6 style="text-align:center;margin:5px 15px;"> 
-<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
+<a href="http://restya.com/board/?utm_source=Restyaboard ##SITE_NAME##&utm_medium=email&utm_campaign=changepassword_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
 </footer>
 </body>
 </html>'
@@ -357,7 +357,7 @@ Restyaboard<br>
 </main>
 <footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
 <h6 style="text-align:center;margin:5px 15px;"> 
-<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
+<a href="http://restya.com/board/?utm_source=Restyaboard ##SITE_NAME##&utm_medium=email&utm_campaign=newprojectuser_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
 </footer>
 </body>
 </html>'
@@ -386,7 +386,7 @@ UPDATE "email_templates" SET
 </main>
 <footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
 <h6 style="text-align:center;margin:5px 15px;"> 
-<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>
+<a href="http://restya.com/board/?utm_source=Restyaboard ##SITE_NAME##&utm_medium=email&utm_campaign=email_notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>
 </h6>
 </footer>
 </body>
@@ -736,7 +736,7 @@ INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply
 </main>
 <footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
 <h6 style="text-align:center;margin:5px 15px;"> 
-<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>
+<a href="http://restya.com/board/?utm_source=Restyaboard ##SITE_NAME##&utm_medium=email&utm_campaign=due_date_notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>
 </h6>
 </footer>
 </body>
@@ -1873,3 +1873,173 @@ UPDATE "settings" SET "description" = 'e.g., 993', "label" = 'Port' WHERE "name"
 UPDATE "settings" SET "label" = 'Email address' WHERE "name" = 'IMAP_EMAIL';
 
 UPDATE "settings" SET "label" = 'Password' WHERE "name" = 'IMAP_EMAIL_PASSWORD';
+
+UPDATE "email_templates" SET
+"email_text_content" = '<html>
+<head></head>
+<body style="margin:0">
+<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">
+<div style="border: 1px solid #EEEEEE;">
+<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>
+</div>
+</header>
+<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">
+<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
+<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
+<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,
+</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">You are one step ahead. Please click the below URL to activate your account.<br>##ACTIVATION_URL##<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>
+Restyaboard<br>
+##SITE_URL##</p>
+</pre>
+</div>
+</div>
+</main>
+<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
+<h6 style="text-align:center;margin:5px 15px;"> 
+<a href="http://restya.com/board/?utm_source=Restyaboard ##SITE_NAME##&utm_medium=email&utm_campaign=activation_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
+</footer>
+</body>
+</html>'
+WHERE "id" = 1;
+
+
+UPDATE "email_templates" SET
+"email_text_content" = '<html>
+<head></head>
+<body style="margin:0">
+<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">
+<div style="border: 1px solid #EEEEEE;">
+<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>
+</div>
+</header>
+<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">
+<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
+<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
+<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We wish to say a quick hello and thanks for registering at ##SITE_NAME##.<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>
+Restyaboard<br>
+##SITE_URL##</p>
+</pre>
+</div>
+</div>
+</main>
+<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
+<h6 style="text-align:center;margin:5px 15px;"> 
+<a href="http://restya.com/board/?utm_source=Restyaboard ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
+</footer>
+</body>
+</html>'
+WHERE "id" = 2;
+
+UPDATE "email_templates" SET
+"email_text_content" = '<html>
+<head></head>
+<body style="margin:0">
+<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">
+<div style="border: 1px solid #EEEEEE;">
+<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>
+</div>
+</header>
+<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">
+<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
+<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
+<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We have received a password reset request for your account at ##SITE_NAME##.<br>New password: ##PASSWORD##<br>If you didn't requested this action and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>
+Restyaboard<br>
+##SITE_URL##</p>
+</pre>
+</div>
+</div>
+</main>
+<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
+<h6 style="text-align:center;margin:5px 15px;"> 
+<a href="http://restya.com/board/?utm_source=Restyaboard ##SITE_NAME##&utm_medium=email&utm_campaign=forgetpassword_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
+</footer>
+</body>
+</html>'
+WHERE "id" = 3;
+
+
+UPDATE "email_templates" SET
+"email_text_content" = '<html>
+<head></head>
+<body style="margin:0">
+<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">
+<div style="border: 1px solid #EEEEEE;">
+<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>
+</div>
+</header>
+<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">
+<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
+<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
+<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">Admin reset your password for your ##SITE_NAME## account.<br>Your new password: ##PASSWORD##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>
+Restyaboard<br>
+##SITE_URL##</p>
+</pre>
+</div>
+</div>
+</main>
+<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
+<h6 style="text-align:center;margin:5px 15px;"> 
+<a href="http://restya.com/board/?utm_source=Restyaboard ##SITE_NAME##&utm_medium=email&utm_campaign=changepassword_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
+</footer>
+</body>
+</html>'
+WHERE "id" = 4;
+
+
+UPDATE "email_templates" SET
+"email_text_content" = '<html>
+<head></head>
+<body style="margin:0">
+<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">
+<div style="border: 1px solid #EEEEEE;">
+<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>
+</div>
+</header>
+<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">
+<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
+<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
+<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2>
+<p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CURRENT_USER## has added you to the board ##BOARD_NAME## ##BOARD_URL##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>
+Restyaboard<br>
+##SITE_URL##</p>
+</pre>
+</div>
+</div>
+</main>
+<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
+<h6 style="text-align:center;margin:5px 15px;"> 
+<a href="http://restya.com/board/?utm_source=Restyaboard ##SITE_NAME##&utm_medium=email&utm_campaign=newprojectuser_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
+</footer>
+</body>
+</html>'
+WHERE "id" = 5;
+
+UPDATE "email_templates" SET
+"email_text_content" = '<html>
+<head></head>
+<body style="margin:0">
+<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">
+<div style="border: 1px solid #EEEEEE;">
+<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="Restyaboard"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="Restyaboard"></a> </h1>
+</div>
+</header>
+<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">
+<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
+<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;margin-top:30px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Here's what you missed…</h2>
+<div style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</div>
+</div>
+</div>
+</div>
+<div style="text-align:center;margin:5px 15px;padding:10px 0px;">
+<a href="##SITE_URL##/#/user/##USER_ID##/settings">Change email preferences</a>
+</div>
+</main>
+<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
+<h6 style="text-align:center;margin:5px 15px;"> 
+<a href="http://restya.com/board/?utm_source=Restyaboard ##SITE_NAME##&utm_medium=email&utm_campaign=email_notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>
+</h6>
+</footer>
+</body>
+</html>'
+WHERE "id" = 6;
