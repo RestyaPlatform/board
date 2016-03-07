@@ -2001,11 +2001,11 @@ App.BoardHeaderView = Backbone.View.extend({
         return true;
     },
     keyboardOpenDropdown: function(e) {
-		if ($('.js-setting-response').parents().hasClass("open")) {
-			$('.js-setting-response').parents().removeClass("open");
-		} else {
-			$('.js-open-dropdown').trigger('click');
-		}
+        if ($('.js-setting-response').parents().hasClass("open")) {
+            $('.js-setting-response').parents().removeClass("open");
+        } else {
+            $('.js-open-dropdown').trigger('click');
+        }
         return false;
     },
     keyboardClearAll: function(e) {

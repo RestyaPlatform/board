@@ -2874,10 +2874,10 @@ App.ModalCardView = Backbone.View.extend({
     },
     keyboardCardSubscribe: function(e) {
         if ($('.js-card-container .icon-eye-open', e.target).length) {
-			$('.js-card-unsubscribe', e.target).trigger('click');
-		} else {
-			$('.js-card-subscribe', e.target).trigger('click');
-		} 
+            $('.js-card-unsubscribe', e.target).trigger('click');
+        } else {
+            $('.js-card-subscribe', e.target).trigger('click');
+        }
     },
     keyboardShowAddMemberForm: function(e) {
         $('.js-show-add-member-form', e.target).trigger('click');
