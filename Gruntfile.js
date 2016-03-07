@@ -96,7 +96,7 @@ module.exports = function(grunt) {
             }
         },
         usemin: {
-            html: 'client/index.html'
+            html: ['client/index.html', 'server/php/authorize.php']
         },
         htmlmin: {
             main: {
