@@ -30,7 +30,7 @@ App.OauthApplicationsView = Backbone.View.extend({
     deleteApplication: function(e) {
         e.preventDefault();
         var retVal = confirm("Are you sure you want to revoke this application");
-        if (retVal == true) {
+        if (retVal === true) {
             var target = $(e.currentTarget);
             var self = this;
             var oauth_application = new App.OauthApplication();
