@@ -145,8 +145,8 @@ App.BoardHeaderView = Backbone.View.extend({
         'keyup[left] body': 'keyboardLeftNavigateCards',
         'keyup[right] body': 'keyboardRightNavigateCards',
         'keyup[return] body': 'keyboardShowCardModal',
-        'keyup[j] body': 'keyboardShowPrevCardModal',
-        'keyup[k] body': 'keyboardShowNextCardModal',
+        'keyup[k] body': 'keyboardShowPrevCardModal',
+        'keyup[j] body': 'keyboardShowNextCardModal',
     },
     /**
      * loadBoardName()
