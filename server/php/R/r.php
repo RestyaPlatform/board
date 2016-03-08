@@ -4634,6 +4634,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
     header('Content-Type: application/json');
     $scope_exception_url = array(
         '/users/login',
+        '/users/register',
         '/oauth/token'
     );
     if ($r_resource_cmd != '/users/login') {
