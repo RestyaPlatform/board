@@ -2025,21 +2025,33 @@ App.BoardHeaderView = Backbone.View.extend({
     keyboardUpNavigateCards: function(e) {
         if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
             $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active');
+            $('.js-board-list .js-board-list-cards .active').parent().animate({
+                scrollTop: $('.js-board-list .js-board-list-cards .active').parent().scrollTop() - 100
+            }, 'slow');
             return;
         }
         var active_card = $('.js-board-list .js-board-list-cards .active');
         if ($(active_card).prev().length) {
             $(active_card).removeClass('active').prev().addClass('active');
+            $('.js-board-list .js-board-list-cards .active').parent().animate({
+                scrollTop: $('.js-board-list .js-board-list-cards .active').parent().scrollTop() - 100
+            }, 'slow');
         }
     },
     keyboardDownNavigateCards: function(e) {
         if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
             $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active');
+            $('.js-board-list .js-board-list-cards .active').parent().animate({
+                scrollTop: $('.js-board-list .js-board-list-cards .active').parent().scrollTop() + 100
+            }, 'slow');
             return;
         }
         var active_card = $('.js-board-list .js-board-list-cards .active');
         if ($(active_card).next().length) {
             $(active_card).removeClass('active').next().addClass('active');
+            $('.js-board-list .js-board-list-cards .active').parent().animate({
+                scrollTop: $('.js-board-list .js-board-list-cards .active').parent().scrollTop() + 100
+            }, 'slow');
         }
     },
     keyboardLeftNavigateCards: function(e) {
@@ -2066,6 +2078,9 @@ App.BoardHeaderView = Backbone.View.extend({
                     $(active_card).removeClass('active');
                     $(prev_list).find('.js-board-list-card').eq(active_card_position).addClass('active');
                 }
+                $('.js-board-list .js-board-list-cards .active').parent().animate({
+                    scrollTop: 0
+                }, 'slow');
                 break;
             }
         } while (next_list_card === 0);
@@ -2094,6 +2109,9 @@ App.BoardHeaderView = Backbone.View.extend({
                     $(active_card).removeClass('active');
                     $(next_list).find('.js-board-list-card').eq(active_card_position).addClass('active');
                 }
+                $('.js-board-list .js-board-list-cards .active').parent().animate({
+                    scrollTop: 0
+                }, 'slow');
             }
         } while (next_list_card === 0);
     },
