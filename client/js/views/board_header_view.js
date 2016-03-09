@@ -2025,21 +2025,33 @@ App.BoardHeaderView = Backbone.View.extend({
     keyboardUpNavigateCards: function(e) {
         if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
             $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active');
+            $('.js-board-list .js-board-list-cards .active').parent().animate({
+                scrollTop: $('.js-board-list .js-board-list-cards .active').parent().scrollTop() - 100
+            }, 50);
             return;
         }
         var active_card = $('.js-board-list .js-board-list-cards .active');
         if ($(active_card).prev().length) {
             $(active_card).removeClass('active').prev().addClass('active');
+            $('.js-board-list .js-board-list-cards .active').parent().animate({
+                scrollTop: $('.js-board-list .js-board-list-cards .active').parent().scrollTop() - 100
+            }, 50);
         }
     },
     keyboardDownNavigateCards: function(e) {
         if (!$('.js-board-list .js-board-list-cards .js-board-list-card').hasClass('active')) {
             $('.js-board-list .js-board-list-cards .js-board-list-card:eq(0)').addClass('active');
+            $('.js-board-list .js-board-list-cards .active').parent().animate({
+                scrollTop: $('.js-board-list .js-board-list-cards .active').parent().scrollTop() + 100
+            }, 50);
             return;
         }
         var active_card = $('.js-board-list .js-board-list-cards .active');
         if ($(active_card).next().length) {
             $(active_card).removeClass('active').next().addClass('active');
+            $('.js-board-list .js-board-list-cards .active').parent().animate({
+                scrollTop: $('.js-board-list .js-board-list-cards .active').parent().scrollTop() + 100
+            }, 50);
         }
     },
     keyboardLeftNavigateCards: function(e) {
@@ -2059,6 +2071,9 @@ App.BoardHeaderView = Backbone.View.extend({
                     break;
                 }
             } else {
+                $('#js-board-lists').animate({
+                    scrollLeft: prev_list.find('.js-board-list-card').parent().parent().offset().left + $('#js-board-lists').scrollLeft()
+                }, 'slow');
                 if (active_card_position > (prev_list_card - 1)) {
                     $(active_card).removeClass('active');
                     $(prev_list).find('.js-board-list-card').eq(0).addClass('active');
@@ -2066,6 +2081,9 @@ App.BoardHeaderView = Backbone.View.extend({
                     $(active_card).removeClass('active');
                     $(prev_list).find('.js-board-list-card').eq(active_card_position).addClass('active');
                 }
+                $('.js-board-list .js-board-list-cards .active').parent().animate({
+                    scrollTop: 0
+                }, 'slow');
                 break;
             }
         } while (next_list_card === 0);
@@ -2087,6 +2105,9 @@ App.BoardHeaderView = Backbone.View.extend({
                     break;
                 }
             } else {
+                $('#js-board-lists').animate({
+                    scrollLeft: next_list.find('.js-board-list-card').parent().parent().offset().left + $('#js-board-lists').scrollLeft()
+                }, 'slow');
                 if (active_card_position > (next_list_card - 1)) {
                     $(active_card).removeClass('active');
                     $(next_list).find('.js-board-list-card').eq(0).addClass('active');
@@ -2094,6 +2115,9 @@ App.BoardHeaderView = Backbone.View.extend({
                     $(active_card).removeClass('active');
                     $(next_list).find('.js-board-list-card').eq(active_card_position).addClass('active');
                 }
+                $('.js-board-list .js-board-list-cards .active').parent().animate({
+                    scrollTop: 0
+                }, 'slow');
             }
         } while (next_list_card === 0);
     },
