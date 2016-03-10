@@ -1878,8 +1878,5 @@ UPDATE "settings" SET "label" = 'Email address' WHERE "name" = 'IMAP_EMAIL';
 
 UPDATE "settings" SET "label" = 'Password' WHERE "name" = 'IMAP_EMAIL_PASSWORD';
 
-INSERT INTO "oauth_access_tokens" ("access_token", "client_id", "user_id", "expires", "scope") VALUES
-('zhxzlbts63ecvs2ybwb2m26vew',	'1193674816623028',	'Echo App',	'2016-04-02 13:55:24',	NULL);
-
 INSERT INTO "oauth_clients" ("client_id", "client_secret", "redirect_uri", "grant_types", "scope", "user_id", "client_name", "client_url", "logo_url", "tos_url", "policy_url", "modified", "created") VALUES
-('1193674816623028',	'zhxzlbts63ecvs2ybwb2m26vew',	'https://pitangui.amazon.com/api/skill/link/M2095MF9IZAQG2',	'client_credentials refresh_token authorization_code',	NULL,	NULL,	'Echo App',	'http://amazon.com',	NULL,	NULL,	NULL,	'2016-03-09 07:14:29.165491',	'2016-03-09 07:13:57.717503');
+('1193674816623028',	'zhxzlbts63ecvs2ybwb2m26vew',	'https://pitangui.amazon.com/api/skill/link/M2095MF9IZAQG2',	'client_credentials refresh_token authorization_code',	NULL,	NULL,	'Amazon Echo App',	'http://amazon.com',	NULL,	NULL,	NULL,	'2016-03-09 07:14:29.165491',	'2016-03-09 07:13:57.717503');
