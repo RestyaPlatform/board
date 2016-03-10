@@ -1,4 +1,5 @@
 <?php 
+header("Content-Type: application/json");
 echo '{
     "apiVersion": "1.0.0",
     "swaggerVersion": "1.2",

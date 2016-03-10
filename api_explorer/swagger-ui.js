@@ -1261,7 +1261,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       var _this = this;
       this.showMessage('Finished Loading Resource Information. Rendering Swagger UI...');
 	  // todo: quick fix
-	  this.api.basePath = this.api.basePath.replace('/api_explorer', '');
       this.mainView = new MainView({
         model: this.api,
         el: $('#' + this.dom_id)
