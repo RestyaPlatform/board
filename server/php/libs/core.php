@@ -668,7 +668,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0\r\n";
         $headers.= "Content-Type: text/html; charset=ISO-8859-1\r\n";
-        $headers.= "X-Mailer: Restyaboard (0.1.6; +http://restya.com/board)\r\n";
+        $headers.= "X-Mailer: Restyaboard (0.2; +http://restya.com/board)\r\n";
         $headers.= "X-Auto-Response-Suppress: All\r\n";
         mail($to, $subject, $message, $headers);
     }
