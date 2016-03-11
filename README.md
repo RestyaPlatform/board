@@ -6,13 +6,13 @@ Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [R
 
 ### Demo
 
-[Demo](http://restya.com/board/demo.html)
+[Demo](http://restya.com/board/demo)
 
 ### Install
 
-* [Install](http://restya.com/board/install.html)
-* [Configure](http://restya.com/board/install.html#configure)
-* [Importing from trello](http://restya.com/board/install.html#import-trello)
+* [Install](http://restya.com/board/install)
+* [Configure](http://restya.com/board/install#configure)
+* [Importing from trello](http://restya.com/board/install#import-trello)
 
 ### Upgrade
 
@@ -23,14 +23,11 @@ To upgrade, overwrite application files and apply respective DB script:
 *  v0.1.3 to v0.1.4 - `/sql/upgrade-0.1.3-0.1.4.sql`
 *  v0.1.4 to v0.1.5 - `/sql/upgrade-0.1.4-0.1.5.sql`
 *  v0.1.5 to v0.1.6 - `/sql/upgrade-0.1.5-0.1.6.sql`
+*  v0.1.6 to v0.2 - `/sql/upgrade-0.1.6-0.2.sql`
 
 ### Forum
 
 * [Restya Google Group](https://groups.google.com/d/forum/restya)
-
-### Known Issues
-
-[Known Issues](http://restya.com/board/issues.html)
 
 ------------
 
@@ -41,10 +38,6 @@ To give you some idea about of our plans:
 #### Immediate (cooking)
 
 * Chat
-* App
-  * Simple app architecture
-  * "Import from GitHub" sample app
-* Address some [known issues](http://restya.com/board/issues.html)
 * Notifier iOS App (Possibly, Free and non-open source)
 
 
@@ -62,7 +55,7 @@ To give you some idea about of our plans:
 
 ### Contributing
 
-Our approach is similar to Magento. If anything is not clear, please [contact us](http://restya.com/contact.html?category=contributing).
+Our approach is similar to Magento. If anything is not clear, please [contact us](http://restya.com/contact?category=contributing).
 
 All Submissions you make to Restya through GitHub are subject to the following terms and conditions:
 
@@ -89,4 +82,4 @@ Required sofware: nginx, php-fpm (with mbstring), PostgreSQL, ElasticSearch, Gru
 
 Copyright (c) 2014-2016 [Restya](http://restya.com/).
 
-Dual License ([OSL 3.0](LICENSE.txt) & [Commercial License](http://restya.com/contact.html))
+Dual License ([OSL 3.0](LICENSE.txt) & [Commercial License](http://restya.com/contact))
