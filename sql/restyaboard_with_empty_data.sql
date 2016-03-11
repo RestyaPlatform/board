@@ -11,7 +11,7 @@ SET client_min_messages = warning;
 SET search_path = public, pg_catalog;
 
 --
--- Name: label_card_count_update(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: label_card_count_update(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION label_card_count_update() RETURNS trigger
@@ -55,10 +55,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.label_card_count_update() OWNER TO postgres;
-
 --
--- Name: update_board_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_board_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_board_count() RETURNS trigger
@@ -102,10 +100,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_board_count() OWNER TO postgres;
-
 --
--- Name: update_board_star_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_board_star_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_board_star_count() RETURNS trigger
@@ -155,10 +151,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_board_star_count() OWNER TO postgres;
-
 --
--- Name: update_board_subscriber_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_board_subscriber_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_board_subscriber_count() RETURNS trigger
@@ -208,43 +202,40 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_board_subscriber_count() OWNER TO postgres;
-
 --
--- Name: update_board_user_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_board_user_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_board_user_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
+
 BEGIN
 	IF (TG_OP = 'DELETE') THEN
 		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
 		UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = true) t WHERE "id" = OLD."user_id";
-	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = false) t WHERE "id" = OLD."user_id";
+		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 2) t WHERE "id" = OLD."user_id";
 		RETURN OLD;
 	ELSIF (TG_OP = 'UPDATE') THEN
 		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
 	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = true) t WHERE "id" = OLD."user_id";
-	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = false) t WHERE "id" = OLD."user_id";
+		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 2) t WHERE "id" = OLD."user_id";
 		RETURN OLD;
 	ELSIF (TG_OP = 'INSERT') THEN
 		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
 	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-	        UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "is_admin" = true) t WHERE "id" = NEW."user_id";
-	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "is_admin" = false) t WHERE "id" = NEW."user_id";
+	        UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 1) t WHERE "id" = NEW."user_id";
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 2) t WHERE "id" = NEW."user_id";
 		RETURN NEW;
 	END IF;
 END;
 $$;
 
 
-ALTER FUNCTION public.update_board_user_count() OWNER TO postgres;
-
 --
--- Name: update_card_activity_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_activity_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_activity_count() RETURNS trigger
@@ -288,10 +279,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_activity_count() OWNER TO postgres;
-
 --
--- Name: update_card_attachment_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_attachment_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_attachment_count() RETURNS trigger
@@ -327,10 +316,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_attachment_count() OWNER TO postgres;
-
 --
--- Name: update_card_checklist_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_checklist_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_checklist_count() RETURNS trigger
@@ -374,10 +361,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_checklist_count() OWNER TO postgres;
-
 --
--- Name: update_card_checklist_item_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_checklist_item_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_checklist_item_count() RETURNS trigger
@@ -453,10 +438,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_checklist_item_count() OWNER TO postgres;
-
 --
--- Name: update_card_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_count() RETURNS trigger
@@ -470,9 +453,12 @@ BEGIN
 		RETURN OLD;
 	ELSIF (TG_OP = 'UPDATE') THEN
 		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = OLD."list_id" AND "is_archived" = false) t WHERE "id" = OLD."list_id";
+		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = NEW."list_id" AND "is_archived" = false) t WHERE "id" = NEW."list_id";
 		UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+		UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
 		UPDATE "boards" SET "archived_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id" AND "is_archived" = true) t WHERE "id" = OLD."board_id";
 		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
 		RETURN OLD;
 	ELSIF (TG_OP = 'INSERT') THEN
 		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = NEW."list_id" AND "is_archived" = false) t WHERE "id" = NEW."list_id";
@@ -484,10 +470,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_count() OWNER TO postgres;
-
 --
--- Name: update_card_subscriber_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_subscriber_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_subscriber_count() RETURNS trigger
@@ -537,10 +521,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_subscriber_count() OWNER TO postgres;
-
 --
--- Name: update_card_user_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_user_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_user_count() RETURNS trigger
@@ -584,10 +566,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_user_count() OWNER TO postgres;
-
 --
--- Name: update_card_voters_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_card_voters_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_card_voters_count() RETURNS trigger
@@ -631,10 +611,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_card_voters_count() OWNER TO postgres;
-
 --
--- Name: update_comment_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_comment_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_comment_count() RETURNS trigger
@@ -670,10 +648,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_comment_count() OWNER TO postgres;
-
 --
--- Name: update_list_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_list_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_list_count() RETURNS trigger
@@ -698,10 +674,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_list_count() OWNER TO postgres;
-
 --
--- Name: update_list_subscriber_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_list_subscriber_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_list_subscriber_count() RETURNS trigger
@@ -751,10 +725,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_list_subscriber_count() OWNER TO postgres;
-
 --
--- Name: update_organization_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_organization_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_organization_count() RETURNS trigger
@@ -790,43 +762,40 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_organization_count() OWNER TO postgres;
-
 --
--- Name: update_organization_user_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_organization_user_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_organization_user_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
+
 BEGIN
 	IF (TG_OP = 'DELETE') THEN
 		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
 	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = true) t WHERE "id" = OLD."user_id";
-	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = false) t WHERE "id" = OLD."user_id";
+		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = OLD."user_id";
 		RETURN OLD;
 	ELSIF (TG_OP = 'UPDATE') THEN
 		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
 	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = true) t WHERE "id" = OLD."user_id";
-	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "is_admin" = false) t WHERE "id" = OLD."user_id";
+		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = OLD."user_id";
 		RETURN OLD;
 	ELSIF (TG_OP = 'INSERT') THEN
 		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
 	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-	        UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "is_admin" = true) t WHERE "id" = NEW."user_id";
-	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "is_admin" = false) t WHERE "id" = NEW."user_id";
+	        UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = NEW."user_id";
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = NEW."user_id";
 		RETURN NEW;
 	END IF;
 END;
 $$;
 
 
-ALTER FUNCTION public.update_organization_user_count() OWNER TO postgres;
-
 --
--- Name: update_user_delete(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_user_delete(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_user_delete() RETURNS trigger
@@ -864,10 +833,8 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_user_delete() OWNER TO postgres;
-
 --
--- Name: update_users_user_login_count(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: update_users_user_login_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_users_user_login_count() RETURNS trigger
@@ -917,10 +884,79 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_users_user_login_count() OWNER TO postgres;
+--
+-- Name: acl_board_links_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE acl_board_links_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
 
 --
--- Name: acl_links_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: acl_board_links; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE acl_board_links (
+    id bigint DEFAULT nextval('acl_board_links_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    url character varying(255) NOT NULL,
+    method character varying(255) NOT NULL,
+    slug character varying(255) NOT NULL,
+    group_id smallint,
+    is_hide smallint DEFAULT (0)::smallint NOT NULL
+);
+
+
+--
+-- Name: acl_board_links_boards_user_roles_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE acl_board_links_boards_user_roles_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: acl_board_links_boards_user_roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE acl_board_links_boards_user_roles (
+    id bigint DEFAULT nextval('acl_board_links_boards_user_roles_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    acl_board_link_id bigint NOT NULL,
+    board_user_role_id bigint NOT NULL
+);
+
+
+--
+-- Name: acl_board_links_listing; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW acl_board_links_listing AS
+ SELECT ablbur.board_user_role_id,
+    abl.slug,
+    abl.url,
+    abl.method
+   FROM (acl_board_links_boards_user_roles ablbur
+     JOIN acl_board_links abl ON ((abl.id = ablbur.acl_board_link_id)));
+
+
+--
+-- Name: acl_links_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE acl_links_id_seq
@@ -931,14 +967,8 @@ CREATE SEQUENCE acl_links_id_seq
     CACHE 1;
 
 
-ALTER TABLE acl_links_id_seq OWNER TO postgres;
-
-SET default_tablespace = '';
-
-SET default_with_oids = false;
-
 --
--- Name: acl_links; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: acl_links; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE acl_links (
@@ -950,15 +980,15 @@ CREATE TABLE acl_links (
     method character varying(255) NOT NULL,
     slug character varying(255) NOT NULL,
     group_id smallint,
-    is_allow_only_to_admin smallint DEFAULT (0)::smallint NOT NULL,
-    is_allow_only_to_user smallint DEFAULT (0)::smallint NOT NULL
+    is_user_action smallint DEFAULT (0)::smallint NOT NULL,
+    is_guest_action smallint DEFAULT (0)::smallint NOT NULL,
+    is_admin_action smallint DEFAULT (0)::smallint NOT NULL,
+    is_hide smallint DEFAULT (0)::smallint NOT NULL
 );
 
 
-ALTER TABLE acl_links OWNER TO postgres;
-
 --
--- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE acl_links_roles_roles_id_seq
@@ -969,10 +999,8 @@ CREATE SEQUENCE acl_links_roles_roles_id_seq
     CACHE 1;
 
 
-ALTER TABLE acl_links_roles_roles_id_seq OWNER TO postgres;
-
 --
--- Name: acl_links_roles; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: acl_links_roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE acl_links_roles (
@@ -984,10 +1012,8 @@ CREATE TABLE acl_links_roles (
 );
 
 
-ALTER TABLE acl_links_roles OWNER TO postgres;
-
 --
--- Name: acl_links_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: acl_links_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW acl_links_listing AS
@@ -999,10 +1025,75 @@ CREATE VIEW acl_links_listing AS
      JOIN acl_links acl ON ((acl.id = aclr.acl_link_id)));
 
 
-ALTER TABLE acl_links_listing OWNER TO postgres;
+--
+-- Name: acl_organization_links_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE acl_organization_links_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 
 --
--- Name: activities_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: acl_organization_links; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE acl_organization_links (
+    id bigint DEFAULT nextval('acl_organization_links_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    url character varying(255) NOT NULL,
+    method character varying(255) NOT NULL,
+    slug character varying(255) NOT NULL,
+    group_id smallint,
+    is_hide smallint DEFAULT (0)::smallint NOT NULL
+);
+
+
+--
+-- Name: acl_organization_links_organizations_user_roles_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE acl_organization_links_organizations_user_roles_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: acl_organization_links_organizations_user_roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE acl_organization_links_organizations_user_roles (
+    id bigint DEFAULT nextval('acl_organization_links_organizations_user_roles_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    acl_organization_link_id bigint NOT NULL,
+    organization_user_role_id bigint NOT NULL
+);
+
+
+--
+-- Name: acl_organization_links_listing; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW acl_organization_links_listing AS
+ SELECT aolour.organization_user_role_id,
+    aol.slug,
+    aol.url,
+    aol.method
+   FROM (acl_organization_links_organizations_user_roles aolour
+     JOIN acl_organization_links aol ON ((aol.id = aolour.acl_organization_link_id)));
+
+
+--
+-- Name: activities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE activities_id_seq
@@ -1013,10 +1104,8 @@ CREATE SEQUENCE activities_id_seq
     CACHE 1;
 
 
-ALTER TABLE activities_id_seq OWNER TO postgres;
-
 --
--- Name: activities; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE activities (
@@ -1040,10 +1129,8 @@ CREATE TABLE activities (
 );
 
 
-ALTER TABLE activities OWNER TO postgres;
-
 --
--- Name: boards_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: boards_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE boards_id_seq
@@ -1054,10 +1141,8 @@ CREATE SEQUENCE boards_id_seq
     CACHE 1;
 
 
-ALTER TABLE boards_id_seq OWNER TO postgres;
-
 --
--- Name: boards; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: boards; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE boards (
@@ -1085,16 +1170,16 @@ CREATE TABLE boards (
     background_picture_path character varying(255),
     music_name character varying(255),
     music_content text,
-    archived_list_count bigint DEFAULT 0::bigint,
-    archived_card_count bigint DEFAULT 0::bigint,
+    archived_list_count bigint DEFAULT (0)::bigint,
+    archived_card_count bigint DEFAULT (0)::bigint,
+    default_email_list_id bigint DEFAULT (0)::bigint NOT NULL,
+    is_default_email_position_as_bottom boolean DEFAULT false NOT NULL,
     CONSTRAINT name CHECK ((char_length(name) > 0))
 );
 
 
-ALTER TABLE boards OWNER TO postgres;
-
 --
--- Name: cards_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: cards_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE cards_id_seq
@@ -1105,10 +1190,8 @@ CREATE SEQUENCE cards_id_seq
     CACHE 1;
 
 
-ALTER TABLE cards_id_seq OWNER TO postgres;
-
 --
--- Name: cards; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE cards (
@@ -1138,92 +1221,8 @@ CREATE TABLE cards (
 );
 
 
-ALTER TABLE cards OWNER TO postgres;
-
 --
--- Name: cards_labels_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE cards_labels_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE cards_labels_id_seq OWNER TO postgres;
-
---
--- Name: cards_labels; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE cards_labels (
-    id bigint DEFAULT nextval('cards_labels_id_seq'::regclass) NOT NULL,
-    created timestamp without time zone NOT NULL,
-    modified timestamp without time zone NOT NULL,
-    label_id bigint NOT NULL,
-    card_id bigint NOT NULL,
-    list_id bigint,
-    board_id bigint
-);
-
-
-ALTER TABLE cards_labels OWNER TO postgres;
-
---
--- Name: labels_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE labels_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE labels_id_seq OWNER TO postgres;
-
---
--- Name: labels; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE labels (
-    id bigint DEFAULT nextval('labels_id_seq'::regclass) NOT NULL,
-    created timestamp without time zone NOT NULL,
-    modified timestamp without time zone NOT NULL,
-    name character varying(255) NOT NULL,
-    card_count bigint DEFAULT 0 NOT NULL,
-    CONSTRAINT name CHECK ((char_length((name)::text) > 0))
-);
-
-
-ALTER TABLE labels OWNER TO postgres;
-
---
--- Name: cards_labels_listing; Type: VIEW; Schema: public; Owner: postgres
---
-
-CREATE VIEW cards_labels_listing AS
- SELECT cl.id,
-    cl.created,
-    cl.modified,
-    cl.label_id,
-    cl.card_id,
-    c.name AS card_name,
-    c.list_id,
-    l.name,
-    cl.board_id
-   FROM ((cards_labels cl
-     LEFT JOIN cards c ON ((c.id = cl.card_id)))
-     LEFT JOIN labels l ON ((l.id = cl.label_id)));
-
-
-ALTER TABLE cards_labels_listing OWNER TO postgres;
-
---
--- Name: checklist_items_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: checklist_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE checklist_items_id_seq
@@ -1234,10 +1233,8 @@ CREATE SEQUENCE checklist_items_id_seq
     CACHE 1;
 
 
-ALTER TABLE checklist_items_id_seq OWNER TO postgres;
-
 --
--- Name: checklist_items; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklist_items; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE checklist_items (
@@ -1254,10 +1251,8 @@ CREATE TABLE checklist_items (
 );
 
 
-ALTER TABLE checklist_items OWNER TO postgres;
-
 --
--- Name: checklists_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: checklists_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE checklists_id_seq
@@ -1268,10 +1263,8 @@ CREATE SEQUENCE checklists_id_seq
     CACHE 1;
 
 
-ALTER TABLE checklists_id_seq OWNER TO postgres;
-
 --
--- Name: checklists; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklists; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE checklists (
@@ -1288,10 +1281,34 @@ CREATE TABLE checklists (
 );
 
 
-ALTER TABLE checklists OWNER TO postgres;
+--
+-- Name: labels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE labels_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 
 --
--- Name: lists_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: labels; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE labels (
+    id bigint DEFAULT nextval('labels_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    card_count bigint DEFAULT 0 NOT NULL,
+    CONSTRAINT name CHECK ((char_length((name)::text) > 0))
+);
+
+
+--
+-- Name: lists_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE lists_id_seq
@@ -1302,10 +1319,8 @@ CREATE SEQUENCE lists_id_seq
     CACHE 1;
 
 
-ALTER TABLE lists_id_seq OWNER TO postgres;
-
 --
--- Name: lists; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: lists; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE lists (
@@ -1324,10 +1339,8 @@ CREATE TABLE lists (
 );
 
 
-ALTER TABLE lists OWNER TO postgres;
-
 --
--- Name: organizations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: organizations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE organizations_id_seq
@@ -1338,10 +1351,8 @@ CREATE SEQUENCE organizations_id_seq
     CACHE 1;
 
 
-ALTER TABLE organizations_id_seq OWNER TO postgres;
-
 --
--- Name: organizations; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organizations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE organizations (
@@ -1360,10 +1371,8 @@ CREATE TABLE organizations (
 );
 
 
-ALTER TABLE organizations OWNER TO postgres;
-
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE users_id_seq
@@ -1374,10 +1383,8 @@ CREATE SEQUENCE users_id_seq
     CACHE 1;
 
 
-ALTER TABLE users_id_seq OWNER TO postgres;
-
 --
--- Name: users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE users (
@@ -1416,21 +1423,20 @@ CREATE TABLE users (
     is_productivity_beats boolean DEFAULT false NOT NULL,
     user_login_count bigint DEFAULT (0)::bigint NOT NULL,
     is_ldap boolean DEFAULT false NOT NULL,
-    is_send_newsletter smallint DEFAULT 2::smallint,
-    last_email_notified_activity_id bigint DEFAULT 0::bigint,
-    owner_board_count bigint DEFAULT 0::bigint,
-    member_board_count bigint DEFAULT 0::bigint,
-    owner_organization_count bigint DEFAULT 0::bigint,
-    member_organization_count bigint DEFAULT 0::bigint,
+    is_send_newsletter smallint DEFAULT (2)::smallint,
+    last_email_notified_activity_id bigint DEFAULT (0)::bigint,
+    owner_board_count bigint DEFAULT (0)::bigint,
+    member_board_count bigint DEFAULT (0)::bigint,
+    owner_organization_count bigint DEFAULT (0)::bigint,
+    member_organization_count bigint DEFAULT (0)::bigint,
+    language character varying(10),
     CONSTRAINT password CHECK ((char_length((password)::text) > 0)),
     CONSTRAINT username CHECK ((char_length((username)::text) > 0))
 );
 
 
-ALTER TABLE users OWNER TO postgres;
-
 --
--- Name: activities_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: activities_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW activities_listing AS
@@ -1457,7 +1463,7 @@ CREATE VIEW activities_listing AS
     users.full_name,
     users.profile_picture_path,
     users.initials,
-    cll.name AS label_name,
+    la.name AS label_name,
     card.description AS card_description,
     users.role_id AS user_role_id,
     checklist_item.name AS checklist_item_name,
@@ -1470,7 +1476,7 @@ CREATE VIEW activities_listing AS
      LEFT JOIN boards board ON ((board.id = activity.board_id)))
      LEFT JOIN lists list ON ((list.id = activity.list_id)))
      LEFT JOIN cards card ON ((card.id = activity.card_id)))
-     LEFT JOIN cards_labels_listing cll ON ((cll.id = activity.card_id)))
+     LEFT JOIN labels la ON (((la.id = activity.foreign_id) AND ((activity.type)::text = 'add_card_label'::text))))
      LEFT JOIN checklist_items checklist_item ON ((checklist_item.id = activity.foreign_id)))
      LEFT JOIN checklists checklist ON ((checklist.id = checklist_item.checklist_id)))
      LEFT JOIN checklists checklist1 ON ((checklist1.id = activity.foreign_id)))
@@ -1478,10 +1484,8 @@ CREATE VIEW activities_listing AS
      LEFT JOIN organizations organizations ON ((organizations.id = activity.organization_id)));
 
 
-ALTER TABLE activities_listing OWNER TO postgres;
-
 --
--- Name: attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE attachments_id_seq
@@ -1492,10 +1496,8 @@ CREATE SEQUENCE attachments_id_seq
     CACHE 1;
 
 
-ALTER TABLE attachments_id_seq OWNER TO postgres;
-
 --
--- Name: boards_stars_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: boards_stars_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE boards_stars_id_seq
@@ -1506,10 +1508,8 @@ CREATE SEQUENCE boards_stars_id_seq
     CACHE 1;
 
 
-ALTER TABLE boards_stars_id_seq OWNER TO postgres;
-
 --
--- Name: board_stars; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_stars; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE board_stars (
@@ -1522,10 +1522,8 @@ CREATE TABLE board_stars (
 );
 
 
-ALTER TABLE board_stars OWNER TO postgres;
-
 --
--- Name: boards_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: boards_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE boards_subscribers_id_seq
@@ -1536,10 +1534,8 @@ CREATE SEQUENCE boards_subscribers_id_seq
     CACHE 1;
 
 
-ALTER TABLE boards_subscribers_id_seq OWNER TO postgres;
-
 --
--- Name: board_subscribers; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_subscribers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE board_subscribers (
@@ -1552,10 +1548,60 @@ CREATE TABLE board_subscribers (
 );
 
 
-ALTER TABLE board_subscribers OWNER TO postgres;
+--
+-- Name: board_user_roles_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE board_user_roles_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 
 --
--- Name: boards_labels_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: board_user_roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE board_user_roles (
+    id bigint DEFAULT nextval('board_user_roles_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    description character varying
+);
+
+
+--
+-- Name: cards_labels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE cards_labels_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cards_labels; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE cards_labels (
+    id bigint DEFAULT nextval('cards_labels_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    label_id bigint NOT NULL,
+    card_id bigint NOT NULL,
+    list_id bigint,
+    board_id bigint
+);
+
+
+--
+-- Name: boards_labels_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW boards_labels_listing AS
@@ -1571,10 +1617,8 @@ CREATE VIEW boards_labels_listing AS
      LEFT JOIN labels labels ON ((labels.id = cards_labels.label_id)));
 
 
-ALTER TABLE boards_labels_listing OWNER TO postgres;
-
 --
--- Name: boards_users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: boards_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE boards_users_id_seq
@@ -1585,10 +1629,8 @@ CREATE SEQUENCE boards_users_id_seq
     CACHE 1;
 
 
-ALTER TABLE boards_users_id_seq OWNER TO postgres;
-
 --
--- Name: boards_users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: boards_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE boards_users (
@@ -1597,14 +1639,12 @@ CREATE TABLE boards_users (
     modified timestamp without time zone NOT NULL,
     board_id bigint NOT NULL,
     user_id bigint NOT NULL,
-    is_admin boolean NOT NULL
+    board_user_role_id smallint DEFAULT (0)::smallint NOT NULL
 );
 
 
-ALTER TABLE boards_users OWNER TO postgres;
-
 --
--- Name: boards_users_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: boards_users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW boards_users_listing AS
@@ -1613,7 +1653,7 @@ CREATE VIEW boards_users_listing AS
     bu.modified,
     bu.board_id,
     bu.user_id,
-    (bu.is_admin)::integer AS is_admin,
+    bu.board_user_role_id,
     u.username,
     u.email,
     u.full_name,
@@ -1621,16 +1661,16 @@ CREATE VIEW boards_users_listing AS
     (u.is_email_confirmed)::integer AS is_email_confirmed,
     b.name AS board_name,
     u.profile_picture_path,
-    u.initials
+    u.initials,
+    b.default_email_list_id,
+    (b.is_default_email_position_as_bottom)::integer AS is_default_email_position_as_bottom
    FROM ((boards_users bu
      JOIN users u ON ((u.id = bu.user_id)))
      JOIN boards b ON ((b.id = bu.board_id)));
 
 
-ALTER TABLE boards_users_listing OWNER TO postgres;
-
 --
--- Name: card_attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: card_attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE card_attachments_id_seq
@@ -1641,10 +1681,8 @@ CREATE SEQUENCE card_attachments_id_seq
     CACHE 1;
 
 
-ALTER TABLE card_attachments_id_seq OWNER TO postgres;
-
 --
--- Name: card_attachments; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_attachments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE card_attachments (
@@ -1661,10 +1699,8 @@ CREATE TABLE card_attachments (
 );
 
 
-ALTER TABLE card_attachments OWNER TO postgres;
-
 --
--- Name: cards_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: cards_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE cards_subscribers_id_seq
@@ -1675,10 +1711,8 @@ CREATE SEQUENCE cards_subscribers_id_seq
     CACHE 1;
 
 
-ALTER TABLE cards_subscribers_id_seq OWNER TO postgres;
-
 --
--- Name: card_subscribers; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_subscribers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE card_subscribers (
@@ -1691,10 +1725,8 @@ CREATE TABLE card_subscribers (
 );
 
 
-ALTER TABLE card_subscribers OWNER TO postgres;
-
 --
--- Name: card_voters_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: card_voters_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE card_voters_id_seq
@@ -1705,10 +1737,8 @@ CREATE SEQUENCE card_voters_id_seq
     CACHE 1;
 
 
-ALTER TABLE card_voters_id_seq OWNER TO postgres;
-
 --
--- Name: card_voters; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_voters; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE card_voters (
@@ -1720,10 +1750,8 @@ CREATE TABLE card_voters (
 );
 
 
-ALTER TABLE card_voters OWNER TO postgres;
-
 --
--- Name: card_voters_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: card_voters_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW card_voters_listing AS
@@ -1741,10 +1769,27 @@ CREATE VIEW card_voters_listing AS
      LEFT JOIN users users ON ((users.id = card_voters.user_id)));
 
 
-ALTER TABLE card_voters_listing OWNER TO postgres;
+--
+-- Name: cards_labels_listing; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW cards_labels_listing AS
+ SELECT cl.id,
+    cl.created,
+    cl.modified,
+    cl.label_id,
+    cl.card_id,
+    c.name AS card_name,
+    c.list_id,
+    l.name,
+    cl.board_id
+   FROM ((cards_labels cl
+     LEFT JOIN cards c ON ((c.id = cl.card_id)))
+     LEFT JOIN labels l ON ((l.id = cl.label_id)));
+
 
 --
--- Name: cards_users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: cards_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE cards_users_id_seq
@@ -1755,10 +1800,8 @@ CREATE SEQUENCE cards_users_id_seq
     CACHE 1;
 
 
-ALTER TABLE cards_users_id_seq OWNER TO postgres;
-
 --
--- Name: cards_users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE cards_users (
@@ -1770,10 +1813,8 @@ CREATE TABLE cards_users (
 );
 
 
-ALTER TABLE cards_users OWNER TO postgres;
-
 --
--- Name: cards_users_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: cards_users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW cards_users_listing AS
@@ -1785,15 +1826,14 @@ CREATE VIEW cards_users_listing AS
     cu.card_id,
     cu.user_id,
     u.initials,
-    u.full_name
+    u.full_name,
+    u.email
    FROM (cards_users cu
      LEFT JOIN users u ON ((u.id = cu.user_id)));
 
 
-ALTER TABLE cards_users_listing OWNER TO postgres;
-
 --
--- Name: checklists_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: checklists_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW checklists_listing AS
@@ -1813,7 +1853,7 @@ CREATE VIEW checklists_listing AS
                     checklist_items.card_id,
                     checklist_items.checklist_id,
                     checklist_items.name,
-                    checklist_items.is_completed,
+                    (checklist_items.is_completed)::integer AS is_completed,
                     checklist_items."position"
                    FROM checklist_items checklist_items
                   WHERE (checklist_items.checklist_id = checklists.id)
@@ -1822,10 +1862,8 @@ CREATE VIEW checklists_listing AS
    FROM checklists checklists;
 
 
-ALTER TABLE checklists_listing OWNER TO postgres;
-
 --
--- Name: cards_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: cards_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW cards_listing AS
@@ -1876,7 +1914,8 @@ CREATE VIEW cards_listing AS
                     cards_users_listing.card_id,
                     cards_users_listing.user_id,
                     cards_users_listing.initials,
-                    cards_users_listing.full_name
+                    cards_users_listing.full_name,
+                    cards_users_listing.email
                    FROM cards_users_listing cards_users_listing
                   WHERE (cards_users_listing.card_id = cards.id)
                   ORDER BY cards_users_listing.id) cc) AS cards_users,
@@ -1900,7 +1939,7 @@ CREATE VIEW cards_listing AS
                     cards_subscribers.modified,
                     cards_subscribers.card_id,
                     cards_subscribers.user_id,
-                    cards_subscribers.is_subscribed
+                    (cards_subscribers.is_subscribed)::integer AS is_subscribed
                    FROM card_subscribers cards_subscribers
                   WHERE (cards_subscribers.card_id = cards.id)
                   ORDER BY cards_subscribers.id) cs) AS cards_subscribers,
@@ -1923,10 +1962,8 @@ CREATE VIEW cards_listing AS
      LEFT JOIN lists l ON ((l.id = cards.list_id)));
 
 
-ALTER TABLE cards_listing OWNER TO postgres;
-
 --
--- Name: lists_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: lists_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE lists_subscribers_id_seq
@@ -1937,10 +1974,8 @@ CREATE SEQUENCE lists_subscribers_id_seq
     CACHE 1;
 
 
-ALTER TABLE lists_subscribers_id_seq OWNER TO postgres;
-
 --
--- Name: list_subscribers; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: list_subscribers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE list_subscribers (
@@ -1953,10 +1988,8 @@ CREATE TABLE list_subscribers (
 );
 
 
-ALTER TABLE list_subscribers OWNER TO postgres;
-
 --
--- Name: lists_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: lists_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW lists_listing AS
@@ -1980,7 +2013,7 @@ CREATE VIEW lists_listing AS
                     cards_listing.due_date,
                     cards_listing.to_date,
                     cards_listing."position",
-                    cards_listing.is_archived,
+                    ((cards_listing.is_archived)::boolean)::integer AS is_archived,
                     cards_listing.attachment_count,
                     cards_listing.checklist_count,
                     cards_listing.checklist_item_count,
@@ -2009,17 +2042,15 @@ CREATE VIEW lists_listing AS
                     lists_subscribers.modified,
                     lists_subscribers.list_id,
                     lists_subscribers.user_id,
-                    lists_subscribers.is_subscribed
+                    (lists_subscribers.is_subscribed)::integer AS is_subscribed
                    FROM list_subscribers lists_subscribers
                   WHERE (lists_subscribers.list_id = lists.id)
                   ORDER BY lists_subscribers.id) ls) AS lists_subscribers
    FROM lists lists;
 
 
-ALTER TABLE lists_listing OWNER TO postgres;
-
 --
--- Name: boards_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: boards_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW boards_listing AS
@@ -2088,7 +2119,7 @@ CREATE VIEW boards_listing AS
                     boards_subscribers.modified,
                     boards_subscribers.board_id,
                     boards_subscribers.user_id,
-                    boards_subscribers.is_subscribed
+                    (boards_subscribers.is_subscribed)::integer AS is_subscribed
                    FROM board_subscribers boards_subscribers
                   WHERE (boards_subscribers.board_id = board.id)
                   ORDER BY boards_subscribers.id) bs) AS boards_subscribers,
@@ -2098,7 +2129,7 @@ CREATE VIEW boards_listing AS
                     boards_stars.modified,
                     boards_stars.board_id,
                     boards_stars.user_id,
-                    boards_stars.is_starred
+                    (boards_stars.is_starred)::integer AS is_starred
                    FROM board_stars boards_stars
                   WHERE (boards_stars.board_id = board.id)
                   ORDER BY boards_stars.id) bs) AS boards_stars,
@@ -2111,7 +2142,8 @@ CREATE VIEW boards_listing AS
                     card_attachments.path,
                     card_attachments.mimetype,
                     card_attachments.list_id,
-                    card_attachments.board_id
+                    card_attachments.board_id,
+                    card_attachments.link
                    FROM card_attachments card_attachments
                   WHERE (card_attachments.board_id = board.id)
                   ORDER BY card_attachments.id DESC) batt) AS attachments,
@@ -2122,7 +2154,7 @@ CREATE VIEW boards_listing AS
                     lists_listing.board_id,
                     lists_listing.name,
                     lists_listing."position",
-                    lists_listing.is_archived,
+                    ((lists_listing.is_archived)::boolean)::integer AS is_archived,
                     lists_listing.card_count,
                     lists_listing.lists_subscriber_count,
                     lists_listing.cards,
@@ -2136,27 +2168,27 @@ CREATE VIEW boards_listing AS
                     boards_users.modified,
                     boards_users.board_id,
                     boards_users.user_id,
-                    boards_users.is_admin,
+                    boards_users.board_user_role_id,
                     boards_users.username,
                     boards_users.email,
                     boards_users.full_name,
-                    boards_users.is_active,
-                    boards_users.is_email_confirmed,
+                    ((boards_users.is_active)::boolean)::integer AS is_active,
+                    ((boards_users.is_email_confirmed)::boolean)::integer AS is_email_confirmed,
                     boards_users.board_name,
                     boards_users.profile_picture_path,
                     boards_users.initials
                    FROM boards_users_listing boards_users
                   WHERE (boards_users.board_id = board.id)
-                  ORDER BY boards_users.id) bu) AS boards_users
+                  ORDER BY boards_users.id) bu) AS boards_users,
+    board.default_email_list_id,
+    board.is_default_email_position_as_bottom
    FROM ((boards board
      LEFT JOIN users users ON ((users.id = board.user_id)))
      LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
 
 
-ALTER TABLE boards_listing OWNER TO postgres;
-
 --
--- Name: cards_elasticsearch_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: cards_elasticsearch_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW cards_elasticsearch_listing AS
@@ -2212,10 +2244,8 @@ CREATE VIEW cards_elasticsearch_listing AS
              LEFT JOIN lists lists ON ((lists.id = cards.list_id)))) card;
 
 
-ALTER TABLE cards_elasticsearch_listing OWNER TO postgres;
-
 --
--- Name: checklist_add_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: checklist_add_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW checklist_add_listing AS
@@ -2231,10 +2261,8 @@ CREATE VIEW checklist_add_listing AS
   ORDER BY c.id;
 
 
-ALTER TABLE checklist_add_listing OWNER TO postgres;
-
 --
--- Name: cities; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cities; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE cities (
@@ -2250,10 +2278,8 @@ CREATE TABLE cities (
 );
 
 
-ALTER TABLE cities OWNER TO postgres;
-
 --
--- Name: cities_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: cities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE cities_id_seq
@@ -2264,10 +2290,8 @@ CREATE SEQUENCE cities_id_seq
     CACHE 1;
 
 
-ALTER TABLE cities_id_seq OWNER TO postgres;
-
 --
--- Name: cities_id_seq1; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: cities_id_seq1; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE cities_id_seq1
@@ -2278,17 +2302,15 @@ CREATE SEQUENCE cities_id_seq1
     CACHE 1;
 
 
-ALTER TABLE cities_id_seq1 OWNER TO postgres;
-
 --
--- Name: cities_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: cities_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE cities_id_seq1 OWNED BY cities.id;
 
 
 --
--- Name: countries; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: countries; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE countries (
@@ -2319,10 +2341,8 @@ CREATE TABLE countries (
 );
 
 
-ALTER TABLE countries OWNER TO postgres;
-
 --
--- Name: countries_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: countries_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE countries_id_seq
@@ -2333,10 +2353,8 @@ CREATE SEQUENCE countries_id_seq
     CACHE 1;
 
 
-ALTER TABLE countries_id_seq OWNER TO postgres;
-
 --
--- Name: countries_id_seq1; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: countries_id_seq1; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE countries_id_seq1
@@ -2347,17 +2365,15 @@ CREATE SEQUENCE countries_id_seq1
     CACHE 1;
 
 
-ALTER TABLE countries_id_seq1 OWNER TO postgres;
-
 --
--- Name: countries_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: countries_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE countries_id_seq1 OWNED BY countries.id;
 
 
 --
--- Name: email_templates_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: email_templates_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE email_templates_id_seq
@@ -2368,10 +2384,8 @@ CREATE SEQUENCE email_templates_id_seq
     CACHE 1;
 
 
-ALTER TABLE email_templates_id_seq OWNER TO postgres;
-
 --
--- Name: email_templates; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: email_templates; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE email_templates (
@@ -2389,10 +2403,8 @@ CREATE TABLE email_templates (
 );
 
 
-ALTER TABLE email_templates OWNER TO postgres;
-
 --
--- Name: gadget_users_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: gadget_users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW gadget_users_listing AS
@@ -2412,17 +2424,15 @@ CREATE VIEW gadget_users_listing AS
                     checklist_items.card_id,
                     checklist_items.checklist_id,
                     checklist_items.name,
-                    checklist_items.is_completed
+                    (checklist_items.is_completed)::integer AS is_completed
                    FROM checklist_items checklist_items
                   WHERE (checklist_items.checklist_id = checklists.id)
                   ORDER BY checklist_items.id) ci) AS checklist_items
    FROM checklists checklists;
 
 
-ALTER TABLE gadget_users_listing OWNER TO postgres;
-
 --
--- Name: ips_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: ips_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE ips_id_seq
@@ -2433,10 +2443,8 @@ CREATE SEQUENCE ips_id_seq
     CACHE 1;
 
 
-ALTER TABLE ips_id_seq OWNER TO postgres;
-
 --
--- Name: ips; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ips; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE ips (
@@ -2455,10 +2463,35 @@ CREATE TABLE ips (
 );
 
 
-ALTER TABLE ips OWNER TO postgres;
+--
+-- Name: languages_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE languages_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 
 --
--- Name: list_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: languages; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE languages (
+    id bigint DEFAULT nextval('languages_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(80) NOT NULL,
+    iso2 character varying(25) NOT NULL,
+    iso3 character varying(25) NOT NULL,
+    is_active smallint DEFAULT 1 NOT NULL
+);
+
+
+--
+-- Name: list_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE list_subscribers_id_seq
@@ -2469,10 +2502,8 @@ CREATE SEQUENCE list_subscribers_id_seq
     CACHE 1;
 
 
-ALTER TABLE list_subscribers_id_seq OWNER TO postgres;
-
 --
--- Name: login_types_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: login_types_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE login_types_id_seq
@@ -2483,10 +2514,8 @@ CREATE SEQUENCE login_types_id_seq
     CACHE 1;
 
 
-ALTER TABLE login_types_id_seq OWNER TO postgres;
-
 --
--- Name: login_types; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: login_types; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE login_types (
@@ -2497,10 +2526,8 @@ CREATE TABLE login_types (
 );
 
 
-ALTER TABLE login_types OWNER TO postgres;
-
 --
--- Name: oauth_access_tokens; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_access_tokens; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE oauth_access_tokens (
@@ -2512,10 +2539,8 @@ CREATE TABLE oauth_access_tokens (
 );
 
 
-ALTER TABLE oauth_access_tokens OWNER TO postgres;
-
 --
--- Name: oauth_authorization_codes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_authorization_codes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE oauth_authorization_codes (
@@ -2528,10 +2553,8 @@ CREATE TABLE oauth_authorization_codes (
 );
 
 
-ALTER TABLE oauth_authorization_codes OWNER TO postgres;
-
 --
--- Name: oauth_clients; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_clients; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE oauth_clients (
@@ -2540,14 +2563,51 @@ CREATE TABLE oauth_clients (
     redirect_uri character varying(2000),
     grant_types character varying(80),
     scope character varying(100),
-    user_id character varying(80)
+    user_id character varying(80),
+    client_name character varying(255),
+    client_url character varying(255),
+    logo_url character varying(255),
+    tos_url character varying(255),
+    policy_url character varying(2000),
+    modified timestamp without time zone,
+    created timestamp without time zone,
+    id integer NOT NULL
 );
 
 
-ALTER TABLE oauth_clients OWNER TO postgres;
+--
+-- Name: oauth_clients_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE oauth_clients_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 
 --
--- Name: oauth_jwt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_clients_id_seq1; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE oauth_clients_id_seq1
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: oauth_clients_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE oauth_clients_id_seq1 OWNED BY oauth_clients.id;
+
+
+--
+-- Name: oauth_jwt; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE oauth_jwt (
@@ -2557,10 +2617,8 @@ CREATE TABLE oauth_jwt (
 );
 
 
-ALTER TABLE oauth_jwt OWNER TO postgres;
-
 --
--- Name: oauth_refresh_tokens; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_refresh_tokens; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE oauth_refresh_tokens (
@@ -2572,10 +2630,8 @@ CREATE TABLE oauth_refresh_tokens (
 );
 
 
-ALTER TABLE oauth_refresh_tokens OWNER TO postgres;
-
 --
--- Name: oauth_scopes; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_scopes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE oauth_scopes (
@@ -2584,10 +2640,33 @@ CREATE TABLE oauth_scopes (
 );
 
 
-ALTER TABLE oauth_scopes OWNER TO postgres;
+--
+-- Name: organization_user_roles_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE organization_user_roles_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 
 --
--- Name: organizations_users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: organization_user_roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE organization_user_roles (
+    id bigint DEFAULT nextval('organization_user_roles_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    description character varying
+);
+
+
+--
+-- Name: organizations_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE organizations_users_id_seq
@@ -2598,10 +2677,8 @@ CREATE SEQUENCE organizations_users_id_seq
     CACHE 1;
 
 
-ALTER TABLE organizations_users_id_seq OWNER TO postgres;
-
 --
--- Name: organizations_users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organizations_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE organizations_users (
@@ -2610,14 +2687,12 @@ CREATE TABLE organizations_users (
     modified timestamp without time zone NOT NULL,
     organization_id bigint NOT NULL,
     user_id bigint NOT NULL,
-    is_admin boolean NOT NULL
+    organization_user_role_id smallint DEFAULT (0)::smallint NOT NULL
 );
 
 
-ALTER TABLE organizations_users OWNER TO postgres;
-
 --
--- Name: organizations_users_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: organizations_users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW organizations_users_listing AS
@@ -2626,7 +2701,7 @@ CREATE VIEW organizations_users_listing AS
     organizations_users.modified,
     organizations_users.user_id,
     organizations_users.organization_id,
-    (organizations_users.is_admin)::integer AS is_admin,
+    organizations_users.organization_user_role_id,
     users.role_id,
     users.username,
     users.email,
@@ -2655,7 +2730,7 @@ CREATE VIEW organizations_users_listing AS
            FROM ( SELECT boards_users.id,
                     boards_users.board_id,
                     boards_users.user_id,
-                    boards_users.is_admin,
+                    boards_users.board_user_role_id,
                     boards.name
                    FROM (boards_users boards_users
                      JOIN boards ON ((boards.id = boards_users.board_id)))
@@ -2672,10 +2747,8 @@ CREATE VIEW organizations_users_listing AS
      LEFT JOIN organizations organizations ON ((organizations.id = organizations_users.organization_id)));
 
 
-ALTER TABLE organizations_users_listing OWNER TO postgres;
-
 --
--- Name: organizations_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: organizations_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW organizations_listing AS
@@ -2700,14 +2773,14 @@ CREATE VIEW organizations_listing AS
                     boards_listing.background_picture_url,
                     boards_listing.commenting_permissions,
                     boards_listing.voting_permissions,
-                    boards_listing.is_closed,
-                    boards_listing.is_allow_organization_members_to_join,
+                    ((boards_listing.is_closed)::boolean)::integer AS is_closed,
+                    ((boards_listing.is_allow_organization_members_to_join)::boolean)::integer AS is_allow_organization_members_to_join,
                     boards_listing.boards_user_count,
                     boards_listing.list_count,
                     boards_listing.card_count,
                     boards_listing.boards_subscriber_count,
                     boards_listing.background_pattern_url,
-                    boards_listing.is_show_image_front_of_card,
+                    ((boards_listing.is_show_image_front_of_card)::boolean)::integer AS is_show_image_front_of_card,
                     boards_listing.organization_name,
                     boards_listing.organization_website_url,
                     boards_listing.organization_description,
@@ -2728,7 +2801,7 @@ CREATE VIEW organizations_listing AS
                     organizations_users_listing.modified,
                     organizations_users_listing.user_id,
                     organizations_users_listing.organization_id,
-                    organizations_users_listing.is_admin,
+                    organizations_users_listing.organization_user_role_id,
                     organizations_users_listing.role_id,
                     organizations_users_listing.username,
                     organizations_users_listing.email,
@@ -2766,10 +2839,8 @@ CREATE VIEW organizations_listing AS
      LEFT JOIN users u ON ((u.id = organizations.user_id)));
 
 
-ALTER TABLE organizations_listing OWNER TO postgres;
-
 --
--- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE roles_id_seq
@@ -2780,10 +2851,8 @@ CREATE SEQUENCE roles_id_seq
     CACHE 1;
 
 
-ALTER TABLE roles_id_seq OWNER TO postgres;
-
 --
--- Name: roles; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE roles (
@@ -2794,10 +2863,8 @@ CREATE TABLE roles (
 );
 
 
-ALTER TABLE roles OWNER TO postgres;
-
 --
--- Name: role_links_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: role_links_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW role_links_listing AS
@@ -2809,10 +2876,8 @@ CREATE VIEW role_links_listing AS
    FROM roles role;
 
 
-ALTER TABLE role_links_listing OWNER TO postgres;
-
 --
--- Name: setting_categories; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: setting_categories; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE setting_categories (
@@ -2826,10 +2891,8 @@ CREATE TABLE setting_categories (
 );
 
 
-ALTER TABLE setting_categories OWNER TO postgres;
-
 --
--- Name: setting_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: setting_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE setting_categories_id_seq
@@ -2840,17 +2903,15 @@ CREATE SEQUENCE setting_categories_id_seq
     CACHE 1;
 
 
-ALTER TABLE setting_categories_id_seq OWNER TO postgres;
-
 --
--- Name: setting_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: setting_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE setting_categories_id_seq OWNED BY setting_categories.id;
 
 
 --
--- Name: settings_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE settings_id_seq
@@ -2861,10 +2922,8 @@ CREATE SEQUENCE settings_id_seq
     CACHE 1;
 
 
-ALTER TABLE settings_id_seq OWNER TO postgres;
-
 --
--- Name: settings; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: settings; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE settings (
@@ -2876,15 +2935,13 @@ CREATE TABLE settings (
     description text,
     type character varying(8),
     options text,
-    label character varying(22),
+    label character varying(255),
     "order" integer DEFAULT 0 NOT NULL
 );
 
 
-ALTER TABLE settings OWNER TO postgres;
-
 --
--- Name: settings_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: settings_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW settings_listing AS
@@ -2910,10 +2967,8 @@ CREATE VIEW settings_listing AS
    FROM setting_categories setting_categories;
 
 
-ALTER TABLE settings_listing OWNER TO postgres;
-
 --
--- Name: simple_board_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: simple_board_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW simple_board_listing AS
@@ -2941,10 +2996,10 @@ CREATE VIEW simple_board_listing AS
                     lists.user_id,
                     lists.name,
                     lists."position",
-                    lists.is_archived,
+                    (lists.is_archived)::integer AS is_archived,
                     lists.card_count,
                     lists.lists_subscriber_count,
-                    lists.is_deleted
+                    (lists.is_deleted)::integer AS is_deleted
                    FROM lists lists
                   WHERE (lists.board_id = board.id)
                   ORDER BY lists."position") l) AS lists,
@@ -2958,7 +3013,7 @@ CREATE VIEW simple_board_listing AS
            FROM ( SELECT bs.id,
                     bs.board_id,
                     bs.user_id,
-                    bs.is_starred
+                    (bs.is_starred)::integer AS is_starred
                    FROM board_stars bs
                   WHERE (bs.board_id = board.id)
                   ORDER BY bs.id) l) AS stars,
@@ -2967,7 +3022,7 @@ CREATE VIEW simple_board_listing AS
            FROM ( SELECT bu.id,
                     bu.board_id,
                     bu.user_id,
-                    bu.is_admin
+                    bu.board_user_role_id
                    FROM boards_users bu
                   WHERE (bu.board_id = board.id)
                   ORDER BY bu.id) l) AS users,
@@ -2979,10 +3034,8 @@ CREATE VIEW simple_board_listing AS
   ORDER BY board.name;
 
 
-ALTER TABLE simple_board_listing OWNER TO postgres;
-
 --
--- Name: states; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: states; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE states (
@@ -2995,10 +3048,8 @@ CREATE TABLE states (
 );
 
 
-ALTER TABLE states OWNER TO postgres;
-
 --
--- Name: states_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: states_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE states_id_seq
@@ -3009,10 +3060,8 @@ CREATE SEQUENCE states_id_seq
     CACHE 1;
 
 
-ALTER TABLE states_id_seq OWNER TO postgres;
-
 --
--- Name: states_id_seq1; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: states_id_seq1; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE states_id_seq1
@@ -3023,17 +3072,15 @@ CREATE SEQUENCE states_id_seq1
     CACHE 1;
 
 
-ALTER TABLE states_id_seq1 OWNER TO postgres;
-
 --
--- Name: states_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: states_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE states_id_seq1 OWNED BY states.id;
 
 
 --
--- Name: user_logins; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_logins; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE user_logins (
@@ -3046,10 +3093,8 @@ CREATE TABLE user_logins (
 );
 
 
-ALTER TABLE user_logins OWNER TO postgres;
-
 --
--- Name: user_logins_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: user_logins_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE user_logins_id_seq
@@ -3060,17 +3105,15 @@ CREATE SEQUENCE user_logins_id_seq
     CACHE 1;
 
 
-ALTER TABLE user_logins_id_seq OWNER TO postgres;
-
 --
--- Name: user_logins_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: user_logins_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE user_logins_id_seq OWNED BY user_logins.id;
 
 
 --
--- Name: users_cards_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: users_cards_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW users_cards_listing AS
@@ -3105,10 +3148,8 @@ CREATE VIEW users_cards_listing AS
      JOIN lists l ON ((l.id = c.list_id)));
 
 
-ALTER TABLE users_cards_listing OWNER TO postgres;
-
 --
--- Name: users_listing; Type: VIEW; Schema: public; Owner: postgres
+-- Name: users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW users_listing AS
@@ -3153,7 +3194,7 @@ CREATE VIEW users_listing AS
            FROM ( SELECT boards_stars.id,
                     boards_stars.board_id,
                     boards_stars.user_id,
-                    boards_stars.is_starred
+                    (boards_stars.is_starred)::integer AS is_starred
                    FROM board_stars boards_stars
                   WHERE (boards_stars.user_id = users.id)
                   ORDER BY boards_stars.id) o) AS boards_stars,
@@ -3161,7 +3202,7 @@ CREATE VIEW users_listing AS
            FROM ( SELECT boards_users.id,
                     boards_users.board_id,
                     boards_users.user_id,
-                    boards_users.is_admin,
+                    boards_users.board_user_role_id,
                     boards.name,
                     boards.background_picture_url,
                     boards.background_pattern_url,
@@ -3189,7 +3230,8 @@ CREATE VIEW users_listing AS
     users.owner_board_count,
     users.member_board_count,
     users.owner_organization_count,
-    users.member_organization_count
+    users.member_organization_count,
+    users.language
    FROM (((((((((users users
      LEFT JOIN ips i ON ((i.id = users.ip_id)))
      LEFT JOIN cities rci ON ((rci.id = i.city_id)))
@@ -3202,523 +3244,476 @@ CREATE VIEW users_listing AS
      LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
 
 
-ALTER TABLE users_listing OWNER TO postgres;
+--
+-- Name: webhooks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE webhooks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: webhooks; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE webhooks (
+    id bigint DEFAULT nextval('webhooks_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL,
+    description character varying(255) NOT NULL,
+    url character varying(255) NOT NULL,
+    secret character varying(255) NOT NULL,
+    is_active boolean DEFAULT false NOT NULL
+);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cities ALTER COLUMN id SET DEFAULT nextval('cities_id_seq1'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY countries ALTER COLUMN id SET DEFAULT nextval('countries_id_seq1'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY oauth_clients ALTER COLUMN id SET DEFAULT nextval('oauth_clients_id_seq1'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY setting_categories ALTER COLUMN id SET DEFAULT nextval('setting_categories_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states ALTER COLUMN id SET DEFAULT nextval('states_id_seq1'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY user_logins ALTER COLUMN id SET DEFAULT nextval('user_logins_id_seq'::regclass);
 
 
 --
--- Data for Name: acl_links; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: acl_board_links; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_allow_only_to_admin, is_allow_only_to_user) FROM stdin;
-1	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Forgot password	/users/forgotpassword	POST	users_forgotpassword	1	0	0
-2	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Register	/users/register	POST	users_register	1	0	0
-3	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Login	/users/login	POST	users_login	1	0	0
-58	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View board	/boards/?	GET	view_board	2	0	0
-5	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add organization	/organizations	POST	add_organization	5	0	1
-6	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add board	/boards	POST	add_board	2	0	1
-7	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe board	/boards/?/board_subscribers	POST	subscribe_board	2	0	1
-8	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Copy board	/boards/?/copy	POST	copy_board	2	0	1
-10	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Change password	/users/?/changepassword	POST	user_changepassword	1	0	1
-11	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Upload organization logo	/organizations/?/upload_logo	POST	upload_organization_logo	5	0	1
-12	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add list	/boards/?/lists	POST	add_list	3	0	1
-13	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe list	/boards/?/lists/?/list_subscribers	POST	subscribe_list	3	0	1
-16	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Vote card	/boards/?/lists/?/cards/?/card_voters	POST	vote_card	4	0	1
-17	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add card	/boards/?/lists/?/cards	POST	add_card	4	0	1
-18	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Upload attachment to card	/boards/?/lists/?/cards/?/attachments	POST	add_card_attachment	4	0	1
-19	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Assign labels to card	/boards/?/lists/?/cards/?/labels	POST	add_labels	4	0	1
-20	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add checklist to card	/boards/?/lists/?/cards/?/checklists	POST	add_checklists	4	0	1
-21	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add item to checklist	/boards/?/lists/?/cards/?/checklists/?/items	POST	add_checklist_item	4	0	1
-22	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Convert item to card	/boards/?/lists/?/cards/?/checklists/?/items/?/convert_to_card	POST	convert_item_to_card	4	0	1
-23	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Upload profile picture	/users/?	POST	add_user_profile_picture	1	0	1
-24	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Upload custom background to board	/boards/?/custom_backgrounds	POST	add_custom_background	2	0	1
-25	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Assign member to card	/boards/?/lists/?/cards/?/users/?	POST	add_card_user	4	0	1
-26	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Copy card	/boards/?/lists/?/cards/?/copy	POST	copy_card	4	0	1
-28	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit organization	/organizations/?	PUT	edit_organization	5	0	1
-57	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Users management	/users	GET	view_user_listing	1	1	0
-31	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit board	/boards/?	PUT	edit_board	2	0	1
-32	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unsubscribe board	/subscriber/?/edit	PUT	unsubscribe_board	2	0	1
-33	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit list	/boards/?/lists/?	PUT	edit_list	3	0	1
-34	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit card	/boards/?/lists/?/cards/?	PUT	edit_card	4	0	1
-35	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unsubscribe list	/boards/?/lists/?/list_subscribers/?	PUT	unsubscribe_list	3	0	1
-36	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unsubscribe card	/boards/?/lists/?/cards/?/card_subscribers/?	PUT	unsubscribe_card	4	0	1
-39	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit checklist	/boards/?/lists/?/cards/?/checklists/?	PUT	edit_checklist	4	0	1
-41	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Undo activity	/activities/undo/?	PUT	undo_activity	4	0	1
-42	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit user details	/users/?	PUT	edit_user_details	1	0	1
-43	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete board	/boards/?	DELETE	delete_board	2	0	1
-44	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete organization	/organizations/?	DELETE	delete_organization	5	0	1
-45	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove organization member	/organizations_users/?	DELETE	remove_organization_user	5	0	1
-46	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove board member	/boards_users/?	DELETE	remove_board_user	2	0	1
-47	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete list	/boards/?/lists/?	DELETE	delete_list	3	0	1
-62	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Organization members listing	/organizations_users/?	GET	view_organization_user_listing	5	0	1
-50	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete card	/boards/?/lists/?/cards/?	DELETE	delete_card	4	0	1
-51	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove attachment from card	/boards/?/lists/?/cards/?/attachments/?	DELETE	remove_card_attachment	4	0	1
-52	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete checklist	/boards/?/lists/?/cards/?/checklists/?	DELETE	delete_checklist	4	0	1
-53	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete item in checklist	/boards/?/lists/?/cards/?/checklists/?/items/?	DELETE	delete_checklist_item	4	0	1
-54	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove card member	/boards/?/lists/?/cards/?/cards_users/?	DELETE	remove_card_user	4	0	1
-72	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Archived lists	/boards/?/archived_lists	GET	view_archived_lists	3	0	1
-61	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View organization	/organizations/?	GET	view_organization	5	0	1
-101	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	Setting view	/settings/?	GET	setting_list	6	1	0
-55	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete user	/users/?	DELETE	delete_user	1	0	1
-70	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Board search	/boards/search	GET	view_board_search	2	0	1
-56	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View boards listing	/boards	GET	view_board_listing	2	0	1
-29	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Update organization member permission	/organizations_users/?	PUT	edit_organization_user	5	0	1
-111	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Settings management	/settings	GET	load_settings	6	1	0
-109	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Email templates management	/email_templates/?	GET	view_email_template_listing	6	1	0
-99	2014-11-21 02:52:08.822706	2014-11-21 02:52:08.822706	Setting update	/settings	POST	setting_update	6	1	0
-110	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit email template	/email_templates/?	PUT	edit_email_template	6	1	0
-64	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View user activities	/users/?/activities	GET	view_user_activities	1	0	1
-115	2014-08-25 13:14:18.2	2014-08-25 13:14:18.2	All activities	/activities	GET	activities_listing	2	1	1
-4	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add organization member	/organizations/?/users/?	POST	add_organization_user	5	0	1
-9	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add board member	/boards/?/users	POST	add_board_users	2	0	1
-14	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Post comment to card	/boards/?/lists/?/cards/?/comments	POST	comment_card	4	0	1
-15	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe card	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_card	4	0	1
-68	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Starred boards listing	/boards/starred	GET	view_stared_boards	2	0	1
-38	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit comment	/boards/?/lists/?/cards/?/comments/?	PUT	edit_comment	4	0	1
-40	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit item in checklist	/boards/?/lists/?/cards/?/checklists/?/items/?	PUT	edit_checklist_item	4	0	1
-49	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete comment	/boards/?/lists/?/cards/?/comments/?	DELETE	delete_comment	4	0	1
-69	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Board subscribers	/boards/?/board_subscribers	GET	view_board_subscribers	2	0	1
-63	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View board activities	/boards/?/activities	GET	view_board_activities	2	0	1
-71	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Archived cards	/boards/?/archived_cards	GET	view_archived_cards	4	0	1
-73	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Cards listing	/boards/?/lists/?/cards/?	GET	view_card_isting	4	0	1
-75	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Checklist listing	/boards/?/lists/?/cards/?/checklists	GET	view_checklist_listing	4	0	1
-85	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View user assigned cards	/users/?/cards	GET	view_user_cards	4	0	1
-86	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View user assigned boards	/users/?/boards	GET	view_user_board	2	0	1
-87	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Search card to add in comment	/boards/?/lists/?/cards/?/search	GET	view_card_search	4	0	1
-74	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Card activities	/boards/?/lists/?/cards/?/activities	GET	view_card_activities	4	0	0
-30	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Update board member permission	/boards_users/?	PUT	edit_board_user	2	0	1
-81	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View user	/users/?	GET	view_user	1	0	1
-89	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View card labels	/boards/?/lists/?/cards/?/labels	GET	view_card_labels	4	0	1
-91	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Archived card send back to board	/boards/?/lists/?/cards	POST	send_back_to_archived_card	4	0	1
-92	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Archived list send back to board	/lists/?	PUT	send_back_to_archived_list	2	0	1
-77	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Board visibility	/boards/?/visibility	GET	view_board_visibility	2	0	1
-104	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Starred board	/boards/?/boards_stars	POST	starred_board	2	0	1
-105	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unstarred board	/starred/?/edit	PUT	unstarred_board	2	0	1
-60	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Board members listing	/board_users/?	GET	view_board_listing	2	0	1
-67	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	My boards listing	/boards/my_boards	GET	view_my_boards	2	0	1
-97	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Move list cards	/boards/?/lists/?/cards	PUT	move_list_cards	4	0	1
-98	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Search card	/cards/search	GET	search_card	4	0	1
-103	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View starred boards listing	/boards/?/boards_stars	GET	view_board_star	2	0	1
-106	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View closed boards	/boards/closed_boards	GET	view_closed_boards	2	0	1
-108	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View organizations listing	/organizations	GET	view_organization_listing	5	0	1
-112	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove card member	/boards/?/lists/?/cards/?/users/?	DELETE	delete_card_user	4	0	1
-113	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unstar board	/boards/?/boards_stars/?	PUT	board_star	2	0	1
-114	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unsubscribe board	/boards/?/board_subscribers/?	PUT	board_subscriber	2	0	1
-78	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Organization visibility	/organizations/?/visibility	GET	view_organization_visibility	5	0	1
-116	2014-08-25 13:14:18.2	2014-08-25 13:14:18.2	Download attachment from card	/download/?	GET	activities_listing	4	1	1
-76	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View user search	/users/search	GET	view_user_search	1	0	1
-79	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Load workflow templates	/workflow_templates	GET	view_workflow_templates	2	0	1
-94	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Roles listing	/acl_links	GET	roles	6	1	0
-80	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Search	/search	GET	view_search	2	0	1
-82	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Board sync Google calendar URL	/boards/?/sync_calendar	GET	view_sync_calendar	2	0	1
-118	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Roles Update	/acl_links	POST	roles	6	1	0
-117	2015-05-09 13:14:18.2	2015-05-09 13:14:18.2	Create user	/users	POST	users	1	1	0
-27	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	User activation	/users/?/activation	PUT	user_activation	1	0	0
-37	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unvote card	/boards/?/lists/?/cards/?/card_voters/?	DELETE	unvote_card	4	0	1
-119	2015-12-23 10:06:20.344	2015-12-23 10:06:20.344	Users Bulk Action	/users/bulk_action	POST	users_bulk_action	6	1	0
-120	2015-12-23 10:06:20.355	2015-12-23 10:06:20.355	Boards management	/boards/list	GET	view_board_listing	1	1	0
-121	2015-12-23 10:06:20.359	2015-12-23 10:06:20.359	Boards Bulk Action	/boards/bulk_action	POST	boards_bulk_action	6	1	0
+COPY acl_board_links (id, created, modified, name, url, method, slug, group_id, is_hide) FROM stdin;
+1	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add board member	/boards/?/users	POST	add_board_users	2	0
+2	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add card	/boards/?/lists/?/cards	POST	add_card	4	0
+3	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add checklist to card	/boards/?/lists/?/cards/?/checklists	POST	add_checklists	4	0
+4	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add item to checklist	/boards/?/lists/?/cards/?/checklists/?/items	POST	add_checklist_item	4	0
+5	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add list	/boards/?/lists	POST	add_list	3	0
+7	2016-02-19 16:21:04.718	2016-02-19 16:21:04.718	Archive card			archive_card	4	0
+8	2016-02-19 16:21:04.687	2016-02-19 16:21:04.687	Archive list			archive_list	3	0
+9	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Archived card send back to board	/boards/?/lists/?/cards	POST	send_back_to_archived_card	4	0
+10	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Archived list send back to board	/lists/?	PUT	send_back_to_archived_list	2	0
+12	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Assign member to card	/boards/?/lists/?/cards/?/users/?	POST	add_card_user	4	0
+14	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Board subscribers	/boards/?/board_subscribers	GET	view_board_subscribers	2	1
+15	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Board sync Google calendar URL	/boards/?/sync_calendar	GET	view_sync_calendar	2	0
+16	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Card activities	/boards/?/lists/?/cards/?/activities	GET	view_card_activities	4	0
+17	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Cards listing	/boards/?/lists/?/cards/?	GET	view_card_isting	4	1
+18	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Checklist listing	/boards/?/lists/?/cards/?/checklists	GET	view_checklist_listing	4	0
+19	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Convert item to card	/boards/?/lists/?/cards/?/checklists/?/items/?/convert_to_card	POST	convert_item_to_card	4	0
+20	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Copy board	/boards/?/copy	POST	copy_board	2	0
+21	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Copy card	/boards/?/lists/?/cards/?/copy	POST	copy_card	4	0
+22	2016-02-16 16:57:48.45	2016-02-16 16:57:48.45	Delete all archived cards	/boards/?/cards	DELETE	delete_all_archived_cards	2	0
+23	2016-02-16 16:57:48.372	2016-02-16 16:57:48.372	Delete all archived lists	/boards/?/lists	DELETE	delete_all_archived_lists	2	0
+25	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete card	/boards/?/lists/?/cards/?	DELETE	delete_card	4	0
+26	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete checklist	/boards/?/lists/?/cards/?/checklists/?	DELETE	delete_checklist	4	0
+27	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete comment	/boards/?/lists/?/cards/?/comments/?	DELETE	delete_comment	4	0
+28	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete item in checklist	/boards/?/lists/?/cards/?/checklists/?/items/?	DELETE	delete_checklist_item	4	0
+30	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete list	/boards/?/lists/?	DELETE	delete_list	3	0
+31	2014-08-25 13:14:18.2	2014-08-25 13:14:18.2	Download attachment from card	/download/?	GET	download_attachment_card	4	0
+32	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit board	/boards/?	PUT	edit_board	2	0
+33	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit card	/boards/?/lists/?/cards/?	PUT	edit_card	4	0
+34	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit checklist	/boards/?/lists/?/cards/?/checklists/?	PUT	edit_checklist	4	0
+35	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit comment	/boards/?/lists/?/cards/?/comments/?	PUT	edit_comment	4	0
+36	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit item in checklist	/boards/?/lists/?/cards/?/checklists/?/items/?	PUT	edit_checklist_item	4	0
+37	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit list	/boards/?/lists/?	PUT	edit_list	3	0
+38	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Move list cards	/boards/?/lists/?/cards	PUT	move_list_cards	4	0
+39	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Post comment to card	/boards/?/lists/?/cards/?/comments	POST	comment_card	4	0
+40	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove attachment from card	/boards/?/lists/?/cards/?/attachments/?	DELETE	remove_card_attachment	4	0
+41	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove board member	/boards_users/?	DELETE	remove_board_user	2	0
+42	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove card member	/boards/?/lists/?/cards/?/users/?	DELETE	delete_card_user	4	0
+45	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe board	/boards/?/board_subscribers	POST	subscribe_board	2	0
+46	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe card	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_card	4	0
+47	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe list	/boards/?/lists/?/list_subscribers	POST	subscribe_list	3	0
+49	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unsubscribe board	/boards/?/board_subscribers/?	PUT	board_subscriber	2	0
+50	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unsubscribe card	/boards/?/lists/?/cards/?/card_subscribers/?	PUT	unsubscribe_card	4	0
+51	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unsubscribe list	/boards/?/lists/?/list_subscribers/?	PUT	unsubscribe_list	3	0
+52	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Unvote card	/boards/?/lists/?/cards/?/card_voters/?	DELETE	unvote_card	4	0
+53	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Update board member permission	/boards_users/?	PUT	edit_board_user	2	0
+54	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Upload attachment to card	/boards/?/lists/?/cards/?/attachments	POST	add_card_attachment	4	0
+55	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Upload custom background to board	/boards/?/custom_backgrounds	POST	add_custom_background	2	0
+56	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View Archived card	/boards/?/archived_cards	GET	view_archived_cards	4	0
+57	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View archived list	/boards/?/archived_lists	GET	view_archived_lists	3	0
+58	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View board activities	/boards/?/activities	GET	view_board_activities	2	0
+59	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View card labels	/boards/?/lists/?/cards/?/labels	GET	view_card_labels	4	0
+61	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Vote card	/boards/?/lists/?/cards/?/card_voters	POST	vote_card	4	0
+29	2016-02-16 16:57:48.45	2016-02-16 16:57:48.45	Add / Delete Labels	/boards/?/labels/?	DELETE	delete_labels	2	0
+44	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Search card to add in comment	/boards/?/cards/search	GET	view_card_search	4	0
+11	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Assign labels to card	/boards/?/lists/?/cards/?/labels	POST	add_labels	4	1
 \.
 
 
 --
--- Name: acl_links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Data for Name: acl_board_links_boards_user_roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('acl_links_id_seq', 121, true);
+COPY acl_board_links_boards_user_roles (id, created, modified, acl_board_link_id, board_user_role_id) FROM stdin;
+1	2016-02-22 12:43:35.008	2016-02-22 12:43:35.008	1	1
+3	2016-02-22 12:43:36.131	2016-02-22 12:43:36.131	10	1
+5	2016-02-22 12:43:37.17	2016-02-22 12:43:37.17	15	1
+6	2016-02-22 12:43:37.888	2016-02-22 12:43:37.888	20	1
+7	2016-02-22 12:43:38.505	2016-02-22 12:43:38.505	22	1
+8	2016-02-22 12:43:39.931	2016-02-22 12:43:39.931	23	1
+10	2016-02-22 12:43:40.966	2016-02-22 12:43:40.966	29	1
+11	2016-02-22 12:43:41.585	2016-02-22 12:43:41.585	32	1
+12	2016-02-22 12:43:42.23	2016-02-22 12:43:42.23	41	1
+13	2016-02-22 12:43:42.736	2016-02-22 12:43:42.736	45	1
+14	2016-02-22 12:43:43.589	2016-02-22 12:43:43.589	49	1
+15	2016-02-22 12:43:45.065	2016-02-22 12:43:45.065	53	1
+16	2016-02-22 12:43:45.646	2016-02-22 12:43:45.646	55	1
+17	2016-02-22 12:43:46.14	2016-02-22 12:43:46.14	58	1
+18	2016-02-22 12:43:47.394	2016-02-22 12:43:47.394	5	1
+19	2016-02-22 12:43:47.942	2016-02-22 12:43:47.942	8	1
+20	2016-02-22 12:43:48.548	2016-02-22 12:43:48.548	30	1
+21	2016-02-22 12:43:49.176	2016-02-22 12:43:49.176	37	1
+22	2016-02-22 12:43:49.848	2016-02-22 12:43:49.848	47	1
+23	2016-02-22 12:43:51.762	2016-02-22 12:43:51.762	51	1
+24	2016-02-22 12:43:52.402	2016-02-22 12:43:52.402	57	1
+25	2016-02-22 12:43:53.654	2016-02-22 12:43:53.654	2	1
+26	2016-02-22 12:43:55.821	2016-02-22 12:43:55.821	3	1
+27	2016-02-22 12:43:56.556	2016-02-22 12:43:56.556	4	1
+28	2016-02-22 12:43:57.59	2016-02-22 12:43:57.59	7	1
+29	2016-02-22 12:43:58.523	2016-02-22 12:43:58.523	9	1
+30	2016-02-22 12:43:59.332	2016-02-22 12:43:59.332	11	1
+31	2016-02-22 12:44:00.126	2016-02-22 12:44:00.126	12	1
+32	2016-02-22 12:44:00.853	2016-02-22 12:44:00.853	16	1
+33	2016-02-22 12:44:01.581	2016-02-22 12:44:01.581	18	1
+34	2016-02-22 12:44:03.168	2016-02-22 12:44:03.168	19	1
+35	2016-02-22 12:44:03.774	2016-02-22 12:44:03.774	21	1
+36	2016-02-22 12:44:04.428	2016-02-22 12:44:04.428	25	1
+37	2016-02-22 12:44:05.131	2016-02-22 12:44:05.131	26	1
+38	2016-02-22 12:44:05.738	2016-02-22 12:44:05.738	27	1
+39	2016-02-22 12:44:06.437	2016-02-22 12:44:06.437	28	1
+40	2016-02-22 12:44:08.372	2016-02-22 12:44:08.372	31	1
+41	2016-02-22 12:44:08.95	2016-02-22 12:44:08.95	33	1
+42	2016-02-22 12:44:09.715	2016-02-22 12:44:09.715	34	1
+43	2016-02-22 12:44:10.4	2016-02-22 12:44:10.4	35	1
+44	2016-02-22 12:44:11.628	2016-02-22 12:44:11.628	36	1
+45	2016-02-22 12:44:13.156	2016-02-22 12:44:13.156	38	1
+46	2016-02-22 12:44:13.809	2016-02-22 12:44:13.809	39	1
+47	2016-02-22 12:44:15.24	2016-02-22 12:44:15.24	40	1
+48	2016-02-22 12:44:15.774	2016-02-22 12:44:15.774	42	1
+50	2016-02-22 12:44:18.192	2016-02-22 12:44:18.192	44	1
+51	2016-02-22 12:44:18.738	2016-02-22 12:44:18.738	46	1
+53	2016-02-22 12:44:20.659	2016-02-22 12:44:20.659	50	1
+54	2016-02-22 12:44:21.955	2016-02-22 12:44:21.955	52	1
+55	2016-02-22 12:44:22.802	2016-02-22 12:44:22.802	54	1
+56	2016-02-22 12:44:23.529	2016-02-22 12:44:23.529	56	1
+57	2016-02-22 12:44:24.402	2016-02-22 12:44:24.402	59	1
+59	2016-02-22 12:44:26.051	2016-02-22 12:44:26.051	61	1
+62	2016-02-22 12:46:11.58	2016-02-22 12:46:11.58	15	2
+63	2016-02-22 12:46:14.307	2016-02-22 12:46:14.307	20	2
+64	2016-02-22 12:46:45.613	2016-02-22 12:46:45.613	32	2
+65	2016-02-22 12:46:50.203	2016-02-22 12:46:50.203	45	2
+66	2016-02-22 12:46:51.058	2016-02-22 12:46:51.058	49	2
+67	2016-02-22 12:47:00.281	2016-02-22 12:47:00.281	58	2
+68	2016-02-22 12:47:04.274	2016-02-22 12:47:04.274	55	2
+69	2016-02-22 12:47:06.413	2016-02-22 12:47:06.413	5	2
+70	2016-02-22 12:47:08.035	2016-02-22 12:47:08.035	8	2
+71	2016-02-22 12:47:09.228	2016-02-22 12:47:09.228	30	2
+72	2016-02-22 12:47:10.195	2016-02-22 12:47:10.195	37	2
+73	2016-02-22 12:47:11.524	2016-02-22 12:47:11.524	47	2
+74	2016-02-22 12:47:12.297	2016-02-22 12:47:12.297	51	2
+75	2016-02-22 12:47:13.172	2016-02-22 12:47:13.172	57	2
+76	2016-02-22 12:47:16.28	2016-02-22 12:47:16.28	2	2
+77	2016-02-22 12:47:17.203	2016-02-22 12:47:17.203	3	2
+78	2016-02-22 12:47:17.917	2016-02-22 12:47:17.917	4	2
+79	2016-02-22 12:47:19.217	2016-02-22 12:47:19.217	7	2
+80	2016-02-22 12:47:24.908	2016-02-22 12:47:24.908	11	2
+81	2016-02-22 12:47:25.573	2016-02-22 12:47:25.573	12	2
+82	2016-02-22 12:47:26.632	2016-02-22 12:47:26.632	16	2
+83	2016-02-22 12:47:27.406	2016-02-22 12:47:27.406	18	2
+84	2016-02-22 12:47:28.325	2016-02-22 12:47:28.325	19	2
+85	2016-02-22 12:47:30.053	2016-02-22 12:47:30.053	21	2
+86	2016-02-22 12:47:31.461	2016-02-22 12:47:31.461	25	2
+87	2016-02-22 12:47:32.572	2016-02-22 12:47:32.572	26	2
+88	2016-02-22 12:47:34.276	2016-02-22 12:47:34.276	27	2
+89	2016-02-22 12:47:36.189	2016-02-22 12:47:36.189	28	2
+90	2016-02-22 12:47:37.972	2016-02-22 12:47:37.972	31	2
+91	2016-02-22 12:47:38.728	2016-02-22 12:47:38.728	33	2
+92	2016-02-22 12:47:39.751	2016-02-22 12:47:39.751	34	2
+93	2016-02-22 12:47:40.498	2016-02-22 12:47:40.498	35	2
+94	2016-02-22 12:47:41.485	2016-02-22 12:47:41.485	36	2
+95	2016-02-22 12:47:42.15	2016-02-22 12:47:42.15	38	2
+96	2016-02-22 12:47:43.781	2016-02-22 12:47:43.781	39	2
+97	2016-02-22 12:47:44.712	2016-02-22 12:47:44.712	40	2
+98	2016-02-22 12:47:45.469	2016-02-22 12:47:45.469	42	2
+100	2016-02-22 12:47:47.076	2016-02-22 12:47:47.076	44	2
+101	2016-02-22 12:47:48.52	2016-02-22 12:47:48.52	46	2
+103	2016-02-22 12:47:58.03	2016-02-22 12:47:58.03	50	2
+104	2016-02-22 12:47:59.63	2016-02-22 12:47:59.63	52	2
+105	2016-02-22 12:48:01.776	2016-02-22 12:48:01.776	54	2
+106	2016-02-22 12:48:02.615	2016-02-22 12:48:02.615	56	2
+107	2016-02-22 12:48:03.725	2016-02-22 12:48:03.725	59	2
+109	2016-02-22 12:48:07.046	2016-02-22 12:48:07.046	61	2
+112	2016-02-22 12:48:30.485	2016-02-22 12:48:30.485	15	3
+113	2016-02-22 12:48:37.553	2016-02-22 12:48:37.553	45	3
+114	2016-02-22 12:48:38.118	2016-02-22 12:48:38.118	49	3
+115	2016-02-22 12:48:43.07	2016-02-22 12:48:43.07	58	3
+116	2016-02-22 12:48:47.487	2016-02-22 12:48:47.487	47	3
+117	2016-02-22 12:48:48.016	2016-02-22 12:48:48.016	51	3
+118	2016-02-22 12:48:49.539	2016-02-22 12:48:49.539	57	3
+119	2016-02-22 12:49:05.555	2016-02-22 12:49:05.555	16	3
+120	2016-02-22 12:49:07.169	2016-02-22 12:49:07.169	18	3
+121	2016-02-22 12:49:13.259	2016-02-22 12:49:13.259	31	3
+123	2016-02-22 12:49:27.487	2016-02-22 12:49:27.487	46	3
+124	2016-02-22 12:49:29.363	2016-02-22 12:49:29.363	50	3
+125	2016-02-22 12:49:43.194	2016-02-22 12:49:43.194	56	3
+126	2016-02-22 12:49:44.285	2016-02-22 12:49:44.285	59	3
+128	2016-02-22 12:49:49.309	2016-02-22 12:49:49.309	61	3
+\.
 
 
 --
--- Data for Name: acl_links_roles; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Name: acl_board_links_boards_user_roles_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('acl_board_links_boards_user_roles_seq', 1, false);
+
+
+--
+-- Name: acl_board_links_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('acl_board_links_seq', 1, false);
+
+
+--
+-- Data for Name: acl_links; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_user_action, is_guest_action, is_admin_action, is_hide) FROM stdin;
+1	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add board	/boards	POST	add_board	2	1	0	0	0
+2	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add organization	/organizations	POST	add_organization	2	1	0	0	0
+3	2016-02-09 16:51:25.779	2016-02-09 16:51:25.779	Add webhooks	/webhooks	POST	add_webhook	2	1	0	0	0
+4	2014-08-25 13:14:18.2	2014-08-25 13:14:18.2	All activities	/activities	GET	activities_listing	2	1	0	0	0
+5	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Board search	/boards/search	GET	view_board_search	2	1	0	0	0
+6	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Board visibility	/boards/?/visibility	GET	view_board_visibility	2	1	0	0	0
+7	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Change password	/users/?/changepassword	POST	user_changepassword	2	1	0	0	0
+8	2016-02-09 16:51:25.779	2016-02-09 16:51:25.779	Delete webhooks	/webhooks/?	DELETE	delete_webhook	2	1	0	0	0
+9	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit user details	/users/?	PUT	edit_user_details	2	1	0	0	0
+10	2016-02-09 16:51:25.779	2016-02-09 16:51:25.779	Edit webhooks	/webhooks/?	PUT	edit_webhook	2	1	0	0	0
+11	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Forgot password	/users/forgotpassword	POST	users_forgotpassword	1	0	1	0	0
+12	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Load workflow templates	/workflow_templates	GET	view_workflow_templates	2	1	0	0	0
+13	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Login	/users/login	POST	users_login	1	0	1	0	1
+14	2016-02-16 20:04:41.092	2016-02-16 20:04:41.092	My boards listing	/boards/my_boards	GET	view_my_boards	2	1	0	0	0
+15	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Organization visibility	/organizations/?/visibility	GET	view_organization_visibility	2	1	0	0	0
+16	2016-02-09 16:51:26.139	2016-02-09 16:51:26.139	Post oauth token	/oauth/token	POST	post_oauth_token	1	0	1	0	0
+17	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Register	/users/register	POST	users_register	1	0	1	0	0
+18	2016-02-09 16:51:25.217	2016-02-09 16:51:25.217	Revoke OAuth authorized applications	/oauth/applications/?	DELETE	delete_connected_applications	2	1	0	0	0
+19	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Search	/search	GET	view_search	2	1	0	0	0
+20	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Settings management	/settings	GET	load_settings	3	0	0	1	1
+21	2016-02-18 17:42:32.045	2016-02-18 17:42:32.045	Starred board	/boards/?/boards_stars	POST	starred_board	2	1	0	0	0
+22	2016-02-16 20:06:48.576	2016-02-16 20:06:48.576	Starred boards listing	/boards/starred	GET	view_stared_boards	2	1	0	0	0
+24	2016-02-18 17:45:14.983	2016-02-18 17:45:14.983	Unstar board	/boards/?/boards_stars/?	PUT	unstarred_board	2	1	0	0	0
+23	2016-02-18 17:24:25.733	2016-02-18 17:24:25.733	Unstar board	/boards/?/boards_stars/?	PUT	board_star	2	1	0	0	0
+25	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Upload profile picture	/users/?	POST	add_user_profile_picture	2	1	0	0	0
+26	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	User activation	/users/?/activation	PUT	user_activation	1	0	1	0	0
+27	2016-02-18 20:11:14.482	2016-02-18 20:11:14.482	View board	/boards/?	GET	view_board	2	1	1	0	0
+28	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View boards listing	/boards	GET	view_board_listing	2	1	0	0	0
+29	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View closed boards	/boards/closed_boards	GET	view_closed_boards	2	1	0	0	0
+30	2016-02-09 16:51:25.217	2016-02-09 16:51:25.217	View OAuth authorized applications	/oauth/applications	GET	view_connected_applications	2	1	0	0	0
+31	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View organization	/organizations/?	GET	view_organization	2	1	0	0	0
+32	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View organizations listing	/organizations	GET	view_organization_listing	2	1	0	0	0
+33	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View starred boards listing	/boards/?/boards_stars	GET	view_board_star	2	1	0	0	0
+34	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View user	/users/?	GET	view_user	2	1	0	0	0
+35	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View user activities	/users/?/activities	GET	view_user_activities	2	1	0	0	0
+36	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View user assigned boards	/users/?/boards	GET	view_user_board	2	1	0	0	0
+37	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View user assigned cards	/users/?/cards	GET	view_user_cards	2	1	0	0	0
+38	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View user search	/users/search	GET	view_user_search	2	1	0	0	0
+39	2016-02-09 16:51:25.779	2016-02-09 16:51:25.779	View webhooks	/webhooks	GET	view_webhooks	2	1	0	0	0
+122	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Undo activity	/activities/undo/?	PUT	undo_activity	2	1	0	0	0
+123	2016-03-07 11:45:43.8	2016-03-07 11:45:43.8	User detail	/users/me	GET	user_detail	0	1	0	1	1
+\.
+
+
+--
+-- Name: acl_links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('acl_links_id_seq', 123, true);
+
+
+--
+-- Data for Name: acl_links_roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
-1164	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	101	1
-1165	2014-11-21 02:52:08.822706	2014-11-21 02:52:08.822706	102	1
-1166	2014-11-21 02:52:08.822706	2014-11-21 02:52:08.822706	103	1
-1167	2014-11-21 02:52:08.822706	2014-11-21 02:52:08.822706	104	1
-1168	2014-11-21 02:52:08.822706	2014-11-21 02:52:08.822706	103	2
-1169	2014-11-21 02:52:08.822706	2014-11-21 02:52:08.822706	104	2
-1170	2014-11-21 02:52:08.822706	2014-11-21 02:52:08.822706	105	1
-1171	2014-11-21 02:52:08.822706	2014-11-21 02:52:08.822706	105	2
-870	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	1	1
-871	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	1	2
-872	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	1	3
-873	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	2	1
-874	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	2	2
-875	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	2	3
-876	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	3	1
-877	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	3	2
-878	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	3	3
-879	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	4	1
-880	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	4	2
-881	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	4	3
-882	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	5	1
-883	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	5	2
-885	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	6	1
-888	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	7	1
-889	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	7	2
-890	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	7	3
-891	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	8	1
-892	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	8	2
-893	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	8	3
-894	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	9	1
-895	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	9	2
-896	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	9	3
-897	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	10	1
-898	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	10	2
-899	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	10	3
-900	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	11	1
-901	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	11	2
-902	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	11	3
-903	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	12	1
-904	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	12	2
-905	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	12	3
-906	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	13	1
-907	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	13	2
-908	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	13	3
-909	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	14	1
-910	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	14	2
-911	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	14	3
-912	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	15	1
-913	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	15	2
-914	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	15	3
-915	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	16	1
-916	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	16	2
-917	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	16	3
-918	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	17	1
-919	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	17	2
-920	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	17	3
-921	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	18	1
-922	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	18	2
-923	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	18	3
-924	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	19	1
-925	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	19	2
-926	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	19	3
-927	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	20	1
-928	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	20	2
-929	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	20	3
-930	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	21	1
-931	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	21	2
-932	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	21	3
-933	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	22	1
-934	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	22	2
-935	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	22	3
-936	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	23	1
-937	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	23	2
-938	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	23	3
-939	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	24	1
-940	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	24	2
-941	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	24	3
-942	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	25	1
-943	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	25	2
-944	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	25	3
-945	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	26	1
-946	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	26	2
-947	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	26	3
-948	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	27	1
-949	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	27	2
-950	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	27	3
-951	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	28	1
-952	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	28	2
-953	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	28	3
-954	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	29	1
-955	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	29	2
-956	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	29	3
-957	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	30	1
-958	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	30	2
-959	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	30	3
-960	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	31	1
-961	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	31	2
-962	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	31	3
-963	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	32	1
-964	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	32	2
-965	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	32	3
-966	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	33	1
-967	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	33	2
-968	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	33	3
-969	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	34	1
-970	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	34	2
-971	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	34	3
-972	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	35	1
-973	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	35	2
-974	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	35	3
-975	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	36	1
-976	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	36	2
-977	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	36	3
-978	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	37	1
-979	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	37	2
-980	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	37	3
-981	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	38	1
-982	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	38	2
-983	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	38	3
-984	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	39	1
-985	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	39	2
-986	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	39	3
-987	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	40	1
-988	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	40	2
-989	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	40	3
-990	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	41	1
-991	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	41	2
-992	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	41	3
-993	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	42	1
-994	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	42	2
-995	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	42	3
-996	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	43	1
-997	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	43	2
-998	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	43	3
-999	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	44	1
-1000	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	44	2
-1001	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	44	3
-1002	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	45	1
-1003	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	45	2
-1004	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	45	3
-1005	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	46	1
-1006	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	46	2
-1007	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	46	3
-1008	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	47	1
-1009	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	47	2
-1010	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	47	3
-1011	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	48	1
-1012	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	48	2
-1013	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	48	3
-1014	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	49	1
-1015	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	49	2
-1016	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	49	3
-1017	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	50	1
-1018	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	50	2
-1019	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	50	3
-1020	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	51	1
-1021	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	51	2
-1022	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	51	3
-1023	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	52	1
-1024	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	52	2
-1025	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	52	3
-1026	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	53	1
-1027	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	53	2
-1028	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	53	3
-1029	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	54	1
-1030	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	54	2
-1031	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	54	3
-1032	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	55	1
-1033	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	55	2
-1034	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	55	3
-1035	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	56	1
-1036	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	56	2
-1037	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	56	3
-1038	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	57	1
-1041	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	58	1
-1042	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	58	2
-1043	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	58	3
-1044	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	59	1
-1045	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	59	2
-1046	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	59	3
-1047	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	60	1
-1048	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	60	2
-1049	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	60	3
-1050	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	61	1
-1051	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	61	2
-1052	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	61	3
-1053	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	62	1
-1054	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	62	2
-1055	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	62	3
-1056	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	63	1
-1057	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	63	2
-1058	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	63	3
-1059	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	64	1
-1060	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	64	2
-1061	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	64	3
-1062	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	65	1
-1063	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	65	2
-1064	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	65	3
-1065	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	66	1
-1066	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	66	2
-1067	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	66	3
-1068	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	67	1
-1069	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	67	2
-1070	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	67	3
-1071	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	68	1
-1072	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	68	2
-1073	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	68	3
-1074	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	69	1
-1075	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	69	2
-1076	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	69	3
-1077	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	70	1
-1078	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	70	2
-1079	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	70	3
-1080	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	71	1
-1081	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	71	2
-1082	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	71	3
-1083	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	72	1
-1084	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	72	2
-1085	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	72	3
-1086	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	73	1
-1087	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	73	2
-1088	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	73	3
-1089	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	74	1
-1090	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	74	2
-1091	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	74	3
-1092	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	75	1
-1093	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	75	2
-1094	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	75	3
-1095	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	76	1
-1096	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	76	2
-1097	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	76	3
-1098	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	77	1
-1099	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	77	2
-1100	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	77	3
-1101	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	78	1
-1102	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	78	2
-1103	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	78	3
-1104	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	79	1
-1105	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	79	2
-1106	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	79	3
-1107	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	80	1
-1108	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	80	2
-1109	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	80	3
-1110	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	81	1
-1111	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	81	2
-1112	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	81	3
-1113	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	82	1
-1114	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	82	2
-1115	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	82	3
-1116	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	83	1
-1117	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	83	2
-1118	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	83	3
-1119	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	84	1
-1120	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	84	2
-1121	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	84	3
-1122	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	85	1
-1123	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	85	2
-1124	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	85	3
-1125	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	86	1
-1126	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	86	2
-1127	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	86	3
-1128	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	87	1
-1129	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	87	2
-1130	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	87	3
-1131	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	88	1
-1132	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	88	2
-1133	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	88	3
-1134	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	89	1
-1135	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	89	2
-1136	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	89	3
-1137	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	90	1
-1138	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	90	2
-1139	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	90	3
-1140	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	91	1
-1141	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	91	2
-1142	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	91	3
-1143	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	92	1
-1144	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	92	2
-1145	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	92	3
-1146	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	93	1
-1147	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	93	2
-1148	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	93	3
-1149	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	94	1
-1152	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	95	1
-1153	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	95	2
-1154	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	95	3
-1155	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	96	1
-1156	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	96	2
-1157	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	96	3
-1158	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	97	1
-1159	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	97	2
-1160	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	97	3
-1161	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	98	1
-1162	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	98	2
-1163	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	98	3
-1172	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	106	1
-1173	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	106	2
-1174	2014-11-14 16:23:16.77598	2014-11-14 16:23:16.77598	106	3
-1175	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	106	1
-1176	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	106	2
-1177	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	106	3
-1178	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	108	1
-1179	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	109	1
-1180	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	110	1
-1181	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	108	2
-1182	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	108	2
-1183	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	108	3
-1184	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	108	3
-1185	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	111	1
-1186	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	111	2
-1187	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	111	3
-1188	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	99	1
-1189	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	112	1
-1190	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	112	2
-1191	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	112	3
-1192	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	113	1
-1193	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	113	2
-1194	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	113	3
-1195	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	114	1
-1196	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	114	2
-1197	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	114	3
-1198	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	24	1
-1199	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	24	2
-1200	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	24	3
-1201	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	115	1
-1202	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	115	2
-1203	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	115	3
-1204	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	116	1
-1205	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	116	2
-1206	2014-11-21 06:46:53.094432	2014-11-21 06:46:53.094432	116	3
-1207	2015-05-09 06:46:53.094432	2015-05-09 06:46:53.094432	117	1
-1208	2015-05-09 06:46:53.094432	2015-05-09 06:46:53.094432	117	2
-1209	2015-05-09 06:46:53.094432	2015-05-09 06:46:53.094432	117	3
-1210	2013-02-07 10:11:00	2015-04-25 19:58:48.8	118	1
-1211	2015-12-23 10:06:20.347	2015-12-23 10:06:20.347	120	1
-1212	2015-12-23 10:06:20.35	2015-12-23 10:06:20.35	120	2
-1213	2015-12-23 10:06:20.353	2015-12-23 10:06:20.353	120	3
-1214	2015-12-23 10:06:20.357	2015-12-23 10:06:20.357	121	1
-1215	2015-12-23 10:06:20.362	2015-12-23 10:06:20.362	122	1
-1216	2015-12-23 10:06:20.364	2015-12-23 10:06:20.364	122	2
-1217	2015-12-23 10:06:20.365	2015-12-23 10:06:20.365	122	3
+1	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	23	1
+2	2016-02-20 19:08:19.584	2016-02-20 19:08:19.584	24	2
+3	2016-02-20 19:08:19.584	2016-02-20 19:08:19.584	24	1
+4	2016-02-20 19:07:31.102	2016-02-20 19:07:31.102	25	2
+5	2016-02-20 19:07:31.102	2016-02-20 19:07:31.102	25	1
+6	2016-02-20 19:07:27.124	2016-02-20 19:07:27.124	26	3
+7	2016-02-20 19:08:20.385	2016-02-20 19:08:20.385	27	2
+8	2016-02-20 19:08:21.237	2016-02-20 19:08:21.237	27	3
+9	2016-02-20 19:08:20.385	2016-02-20 19:08:20.385	27	1
+10	2016-02-20 19:07:57.812	2016-02-20 19:07:57.812	39	2
+11	2016-02-20 19:07:57.812	2016-02-20 19:07:57.812	39	1
+12	2016-02-20 19:07:29.971	2016-02-20 19:07:29.971	1	2
+13	2016-02-20 19:07:29.971	2016-02-20 19:07:29.971	1	1
+14	2016-02-20 19:07:29.324	2016-02-20 19:07:29.324	2	2
+15	2016-02-20 19:07:29.324	2016-02-20 19:07:29.324	2	1
+16	2016-02-20 19:07:58.59	2016-02-20 19:07:58.59	3	2
+17	2016-02-20 19:07:58.59	2016-02-20 19:07:58.59	3	1
+18	2016-02-20 19:07:47.43	2016-02-20 19:07:47.43	4	1
+19	2016-02-20 19:07:36.217	2016-02-20 19:07:36.217	5	2
+20	2016-02-20 19:07:36.217	2016-02-20 19:07:36.217	5	1
+21	2016-02-20 19:07:38.318	2016-02-20 19:07:38.318	6	2
+22	2016-02-20 19:07:31.771	2016-02-20 19:07:31.771	9	1
+23	2016-02-20 19:08:16.346	2016-02-20 19:08:16.346	10	2
+24	2016-02-20 19:08:16.346	2016-02-20 19:08:16.346	10	1
+25	2016-02-20 19:07:25.664	2016-02-20 19:07:25.664	11	3
+26	2016-02-20 19:07:39.589	2016-02-20 19:07:39.589	12	2
+27	2016-02-20 19:07:26.404	2016-02-20 19:07:26.404	17	3
+28	2016-02-20 19:07:57.006	2016-02-20 19:07:57.006	18	2
+29	2016-02-20 19:07:57.006	2016-02-20 19:07:57.006	18	1
+30	2016-02-20 19:07:41.054	2016-02-20 19:07:41.054	19	2
+31	2016-02-20 19:07:41.054	2016-02-20 19:07:41.054	19	1
+32	2016-02-22 10:58:31.89	2016-02-22 10:58:31.89	20	3
+33	2016-02-22 12:17:06.002	2016-02-22 12:17:06.002	20	1
+34	2016-02-20 19:08:18.616	2016-02-20 19:08:18.616	21	1
+35	2016-02-20 19:07:32.362	2016-02-20 19:07:32.362	28	2
+36	2016-02-20 19:07:32.362	2016-02-20 19:07:32.362	28	1
+37	2016-02-20 19:07:34.351	2016-02-20 19:07:34.351	31	2
+38	2016-02-20 19:07:34.351	2016-02-20 19:07:34.351	31	1
+39	2016-02-20 19:07:45.749	2016-02-20 19:07:45.749	32	2
+40	2016-02-20 19:07:45.749	2016-02-20 19:07:45.749	32	1
+41	2016-02-20 19:07:43.927	2016-02-20 19:07:43.927	33	2
+42	2016-02-20 19:07:43.927	2016-02-20 19:07:43.927	33	1
+43	2016-02-20 19:07:41.755	2016-02-20 19:07:41.755	34	2
+44	2016-02-20 19:07:41.755	2016-02-20 19:07:41.755	34	1
+45	2016-02-20 19:07:47.43	2016-02-20 19:07:47.43	4	2
+46	2016-02-20 19:07:39.589	2016-02-20 19:07:39.589	12	1
+47	2016-02-20 19:07:38.318	2016-02-20 19:07:38.318	6	1
+48	2016-02-22 10:59:06.81	2016-02-22 10:59:06.81	13	3
+49	2016-02-20 19:07:48.396	2016-02-20 19:07:48.396	14	2
+50	2016-02-20 19:07:48.396	2016-02-20 19:07:48.396	14	1
+51	2016-02-20 19:07:45.001	2016-02-20 19:07:45.001	29	2
+52	2016-02-20 19:07:45.001	2016-02-20 19:07:45.001	29	1
+53	2016-02-20 19:07:52.525	2016-02-20 19:07:52.525	30	2
+54	2016-02-20 19:07:52.525	2016-02-20 19:07:52.525	30	1
+55	2016-02-20 19:07:39.029	2016-02-20 19:07:39.029	15	2
+56	2016-02-20 19:07:39.029	2016-02-20 19:07:39.029	15	1
+57	2016-02-20 19:07:27.772	2016-02-20 19:07:27.772	16	3
+58	2016-02-20 19:07:35.269	2016-02-20 19:07:35.269	35	2
+59	2016-02-20 19:07:35.269	2016-02-20 19:07:35.269	35	1
+60	2016-02-20 19:07:43.227	2016-02-20 19:07:43.227	36	2
+61	2016-02-20 19:07:43.227	2016-02-20 19:07:43.227	36	1
+62	2016-02-20 19:07:42.416	2016-02-20 19:07:42.416	37	2
+63	2016-02-20 19:07:42.416	2016-02-20 19:07:42.416	37	1
+64	2016-02-20 19:07:37.681	2016-02-20 19:07:37.681	38	2
+65	2016-02-20 19:07:37.681	2016-02-20 19:07:37.681	38	1
+66	2016-02-20 19:07:50.147	2016-02-20 19:07:50.147	22	2
+67	2016-02-20 19:07:50.147	2016-02-20 19:07:50.147	22	1
+68	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	23	2
+69	2016-02-20 19:07:30.541	2016-02-20 19:07:30.541	7	2
+70	2016-02-20 19:08:18.616	2016-02-20 19:08:18.616	21	2
+71	2016-02-22 12:58:43.86	2016-02-22 12:58:43.86	20	2
+72	2016-02-20 19:07:30.541	2016-02-20 19:07:30.541	7	1
+73	2016-02-20 19:08:17.963	2016-02-20 19:08:17.963	8	2
+74	2016-02-20 19:08:17.963	2016-02-20 19:08:17.963	8	1
+75	2016-02-20 19:07:31.771	2016-02-20 19:07:31.771	9	2
+1218	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	122	1
+1219	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	123	2
 \.
 
 
 --
--- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1217, true);
+SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1219, true);
 
 
 --
--- Data for Name: activities; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: acl_organization_links; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY acl_organization_links (id, created, modified, name, url, method, slug, group_id, is_hide) FROM stdin;
+1	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add organization member	/organizations/?/users/?	POST	add_organization_user	5	0
+2	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete organization	/organizations/?	DELETE	delete_organization	5	0
+3	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit organization	/organizations/?	PUT	edit_organization	5	0
+4	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Organization members listing	/organizations_users/?	GET	view_organization_user_listing	5	0
+5	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Organization visibility	/organizations/?/visibility	GET	view_organization_visibility	5	0
+6	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove organization member	/organizations/?/organizations_users/?	DELETE	remove_organization_user	5	0
+7	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Update organization member permission	/organizations_users/?	PUT	edit_organization_user	5	0
+8	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Upload organization logo	/organizations/?/upload_logo	POST	upload_organization_logo	5	0
+\.
+
+
+--
+-- Data for Name: acl_organization_links_organizations_user_roles; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY acl_organization_links_organizations_user_roles (id, created, modified, acl_organization_link_id, organization_user_role_id) FROM stdin;
+1	2016-02-22 12:44:27.98	2016-02-22 12:44:27.98	1	1
+2	2016-02-22 12:44:28.532	2016-02-22 12:44:28.532	2	1
+3	2016-02-22 12:44:29.562	2016-02-22 12:44:29.562	3	1
+4	2016-02-22 12:44:30.3	2016-02-22 12:44:30.3	4	1
+5	2016-02-22 12:44:30.946	2016-02-22 12:44:30.946	5	1
+6	2016-02-22 12:44:32.307	2016-02-22 12:44:32.307	6	1
+7	2016-02-22 12:44:33.987	2016-02-22 12:44:33.987	7	1
+8	2016-02-22 12:44:34.861	2016-02-22 12:44:34.861	8	1
+9	2016-02-22 12:45:11.11	2016-02-22 12:45:11.11	4	2
+10	2016-02-22 12:45:12.731	2016-02-22 12:45:12.731	5	2
+11	2016-02-22 12:45:18.662	2016-02-22 12:45:18.662	8	2
+12	2016-02-22 12:45:19.841	2016-02-22 12:45:19.841	3	2
+13	2016-02-22 12:45:30.059	2016-02-22 12:45:30.059	4	3
+14	2016-02-22 12:45:36.157	2016-02-22 12:45:36.157	5	3
+\.
+
+
+--
+-- Name: acl_organization_links_organizations_user_roles_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('acl_organization_links_organizations_user_roles_seq', 1, false);
+
+
+--
+-- Name: acl_organization_links_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('acl_organization_links_seq', 1, false);
+
+
+--
+-- Data for Name: activities; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY activities (id, created, modified, board_id, list_id, card_id, user_id, foreign_id, type, comment, revisions, root, freshness_ts, depth, path, materialized_path, organization_id) FROM stdin;
@@ -3726,21 +3721,21 @@ COPY activities (id, created, modified, board_id, list_id, card_id, user_id, for
 
 
 --
--- Name: activities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: activities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('activities_id_seq', 2, true);
 
 
 --
--- Name: attachments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: attachments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('attachments_id_seq', 1, false);
 
 
 --
--- Data for Name: board_stars; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: board_stars; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY board_stars (id, created, modified, board_id, user_id, is_starred) FROM stdin;
@@ -3748,7 +3743,7 @@ COPY board_stars (id, created, modified, board_id, user_id, is_starred) FROM std
 
 
 --
--- Data for Name: board_subscribers; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: board_subscribers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY board_subscribers (id, created, modified, board_id, user_id, is_subscribed) FROM stdin;
@@ -3756,51 +3751,69 @@ COPY board_subscribers (id, created, modified, board_id, user_id, is_subscribed)
 
 
 --
--- Data for Name: boards; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: board_user_roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY boards (id, created, modified, user_id, organization_id, name, board_visibility, background_color, background_picture_url, commenting_permissions, voting_permissions, inivitation_permissions, is_closed, is_allow_organization_members_to_join, boards_user_count, list_count, card_count, boards_subscriber_count, background_pattern_url, boards_star_count, is_show_image_front_of_card, background_picture_path, music_name, music_content, archived_list_count, archived_card_count) FROM stdin;
+COPY board_user_roles (id, created, modified, name, description) FROM stdin;
+1	2016-02-22 17:39:17.68	2016-02-22 17:39:17.68	Owner	Can view and edit cards, remove members, and change settings for the board.
+2	2016-02-22 17:39:17.68	2016-02-22 17:39:17.68	Editor	Can view and edit cards, remove members, but not change settings.
+3	2016-02-22 17:39:17.68	2016-02-22 17:39:17.68	Viewer	Can view only.
 \.
 
 
 --
--- Name: boards_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: board_user_roles_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('board_user_roles_seq', 1, false);
+
+
+--
+-- Data for Name: boards; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY boards (id, created, modified, user_id, organization_id, name, board_visibility, background_color, background_picture_url, commenting_permissions, voting_permissions, inivitation_permissions, is_closed, is_allow_organization_members_to_join, boards_user_count, list_count, card_count, boards_subscriber_count, background_pattern_url, boards_star_count, is_show_image_front_of_card, background_picture_path, music_name, music_content, archived_list_count, archived_card_count, default_email_list_id, is_default_email_position_as_bottom) FROM stdin;
+\.
+
+
+--
+-- Name: boards_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('boards_id_seq', 2, true);
 
 
 --
--- Name: boards_stars_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: boards_stars_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('boards_stars_id_seq', 1, false);
 
 
 --
--- Name: boards_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: boards_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('boards_subscribers_id_seq', 1, true);
 
 
 --
--- Data for Name: boards_users; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: boards_users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY boards_users (id, created, modified, board_id, user_id, is_admin) FROM stdin;
+COPY boards_users (id, created, modified, board_id, user_id, board_user_role_id) FROM stdin;
 \.
 
 
 --
--- Name: boards_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: boards_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('boards_users_id_seq', 2, true);
 
 
 --
--- Data for Name: card_attachments; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: card_attachments; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY card_attachments (id, created, modified, card_id, name, path, list_id, board_id, mimetype, link) FROM stdin;
@@ -3808,14 +3821,14 @@ COPY card_attachments (id, created, modified, card_id, name, path, list_id, boar
 
 
 --
--- Name: card_attachments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: card_attachments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('card_attachments_id_seq', 1, true);
 
 
 --
--- Data for Name: card_subscribers; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: card_subscribers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY card_subscribers (id, created, modified, card_id, user_id, is_subscribed) FROM stdin;
@@ -3823,7 +3836,7 @@ COPY card_subscribers (id, created, modified, card_id, user_id, is_subscribed) F
 
 
 --
--- Data for Name: card_voters; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: card_voters; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY card_voters (id, created, modified, card_id, user_id) FROM stdin;
@@ -3831,14 +3844,14 @@ COPY card_voters (id, created, modified, card_id, user_id) FROM stdin;
 
 
 --
--- Name: card_voters_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: card_voters_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('card_voters_id_seq', 1, true);
 
 
 --
--- Data for Name: cards; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: cards; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY cards (id, created, modified, board_id, list_id, name, description, due_date, "position", is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, cards_user_count, cards_subscriber_count, card_voter_count, activity_count, user_id, is_deleted, comment_count) FROM stdin;
@@ -3846,14 +3859,14 @@ COPY cards (id, created, modified, board_id, list_id, name, description, due_dat
 
 
 --
--- Name: cards_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cards_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('cards_id_seq', 1, true);
 
 
 --
--- Data for Name: cards_labels; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: cards_labels; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY cards_labels (id, created, modified, label_id, card_id, list_id, board_id) FROM stdin;
@@ -3861,21 +3874,21 @@ COPY cards_labels (id, created, modified, label_id, card_id, list_id, board_id) 
 
 
 --
--- Name: cards_labels_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cards_labels_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('cards_labels_id_seq', 1, true);
 
 
 --
--- Name: cards_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cards_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('cards_subscribers_id_seq', 1, true);
 
 
 --
--- Data for Name: cards_users; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: cards_users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY cards_users (id, created, modified, card_id, user_id) FROM stdin;
@@ -3883,14 +3896,14 @@ COPY cards_users (id, created, modified, card_id, user_id) FROM stdin;
 
 
 --
--- Name: cards_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cards_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('cards_users_id_seq', 1, true);
 
 
 --
--- Data for Name: checklist_items; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: checklist_items; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY checklist_items (id, created, modified, user_id, card_id, checklist_id, name, is_completed, "position") FROM stdin;
@@ -3898,14 +3911,14 @@ COPY checklist_items (id, created, modified, user_id, card_id, checklist_id, nam
 
 
 --
--- Name: checklist_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: checklist_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('checklist_items_id_seq', 1, true);
 
 
 --
--- Data for Name: checklists; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: checklists; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY checklists (id, created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, "position") FROM stdin;
@@ -3913,14 +3926,14 @@ COPY checklists (id, created, modified, user_id, card_id, name, checklist_item_c
 
 
 --
--- Name: checklists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: checklists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('checklists_id_seq', 1, true);
 
 
 --
--- Data for Name: cities; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: cities; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY cities (id, created, modified, country_id, state_id, latitude, longitude, name, is_active) FROM stdin;
@@ -3929,21 +3942,21 @@ COPY cities (id, created, modified, country_id, state_id, latitude, longitude, n
 
 
 --
--- Name: cities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('cities_id_seq', 15178, false);
 
 
 --
--- Name: cities_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cities_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('cities_id_seq1', 1, true);
 
 
 --
--- Data for Name: countries; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: countries; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capital, areainsqkm, population, continent, tld, currency, currencyname, phone, postalcodeformat, postalcoderegex, languages, geonameid, neighbours, equivalentfipscode, created, iso2, iso3, modified) FROM stdin;
@@ -4201,42 +4214,43 @@ COPY countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capita
 
 
 --
--- Name: countries_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: countries_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('countries_id_seq', 262, false);
 
 
 --
--- Name: countries_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: countries_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('countries_id_seq1', 1, false);
 
 
 --
--- Data for Name: email_templates; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: email_templates; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY email_templates (id, created, modified, from_email, reply_to_email, name, description, subject, email_text_content, email_variables, display_name) FROM stdin;
-1	2014-05-08 12:13:37.268	2014-05-08 12:13:37.268	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	activation	We will send this mail, when user registering an account he/she will get an activation request.	Restyaboard / Account confirmation	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,\r\n</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">You are one step ahead. Please click the below URL to activate your account.<br>##ACTIVATION_URL##<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME, ACTIVATION_URL	Activation
-2	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	welcome	We will send this mail, when user register in this site and get activate.	Restyaboard / Welcome	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We wish to say a quick hello and thanks for registering at ##SITE_NAME##.<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME	Welcome
-3	2014-05-08 12:13:59.784	2014-05-08 12:13:59.784	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	forgetpassword	We will send this mail, when user submit the forgot password form	Restyaboard / Password reset	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We have received a password reset request for your account at ##SITE_NAME##.<br>New password: ##PASSWORD##<br>If you didn't requested this action and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_NAME, SITE_URL, CONTACT_EMAIL, NAME, PASSWORD	Forgot Password
-4	2014-05-08 12:13:50.69	2014-05-08 12:13:50.69	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	changepassword	We will send this mail to user, when admin change users password.	Restyaboard / Password changed	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">Admin reset your password for your ##SITE_NAME## account.<br>Your new password: ##PASSWORD##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_NAME, SITE_URL, PASSWORD	Change Password
-5	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	newprojectuser	We will send this mail, when user added for board.	Restyaboard / ##BOARD_NAME## assigned by ##CURRENT_USER##	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2>\r\n<p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CURRENT_USER## has added you to the board ##BOARD_NAME## ##BOARD_URL##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, NAME, BOARD_NAME, CURRENT_USER, BOARD_URL	New Board User
-6	2015-10-09 06:15:49.891	2015-10-09 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	email_notification	We will send this mail, when user activities in this site.	Restyaboard / ##NOTIFICATION_COUNT## new notifications since ##SINCE##	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Image: Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Here's what you missed...</h2>\r\n<p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n<div style="text-align:center;margin:5px 15px;padding:10px 0px;">\r\n<a href="##SITE_URL##/#/user/##USER_ID##/settings">Change email preferences</a>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\r\n</h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, CONTENT, NAME, NOTIFICATION_COUNT, SINCE	Email Notification
+2	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	welcome	We will send this mail, when user register in this site and get activate.	Restyaboard / Welcome	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We wish to say a quick hello and thanks for registering at ##SITE_NAME##.<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME	Welcome
+4	2014-05-08 12:13:50.69	2014-05-08 12:13:50.69	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	changepassword	We will send this mail to user, when admin change users password.	Restyaboard / Password changed	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">Admin reset your password for your ##SITE_NAME## account.<br>Your new password: ##PASSWORD##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=change_password_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_NAME, SITE_URL, PASSWORD	Change Password
+5	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	newprojectuser	We will send this mail, when user added for board.	Restyaboard / ##BOARD_NAME## assigned by ##CURRENT_USER##	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2>\r\n<p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CURRENT_USER## has added you to the board ##BOARD_NAME## ##BOARD_URL##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=new_board_member_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, NAME, BOARD_NAME, CURRENT_USER, BOARD_URL	New Board User
+6	2015-10-09 06:15:49.891	2015-10-09 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	email_notification	We will send this mail, when user activities in this site.	Restyaboard / ##NOTIFICATION_COUNT## new notifications since ##SINCE##	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="Restyaboard"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="Restyaboard"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<div style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;margin-top:30px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Here's what you missed…</h2>\r\n<div style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</div>\r\n</div>\r\n</div>\r\n</div>\r\n<div style="text-align:center;margin:5px 15px;padding:10px 0px;">\r\n<a href="##SITE_URL##/#/user/##USER_ID##/settings">Change email preferences</a>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\r\n</h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, CONTENT, NAME, NOTIFICATION_COUNT, SINCE	Email Notification
+1	2014-05-08 12:13:37.268	2014-05-08 12:13:37.268	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	activation	We will send this mail, when user registering an account he/she will get an activation request.	Restyaboard / Account confirmation	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,\r\n</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">You are one step ahead. Please click the below URL to activate your account.<br>##ACTIVATION_URL##<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=activation_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME, ACTIVATION_URL	Activation
+3	2014-05-08 12:13:59.784	2014-05-08 12:13:59.784	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	forgetpassword	We will send this mail, when user submit the forgot password form	Restyaboard / Password reset	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We have received a password reset request for your account at ##SITE_NAME##.<br>New password: ##PASSWORD##<br>If you didn't requested this action and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=forgot_password_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_NAME, SITE_URL, CONTACT_EMAIL, NAME, PASSWORD	Forgot Password
+7	2016-01-10 06:15:49.891	2016-01-10 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	due_date_notification	We will send this mail, One day before when the card due date end.	##SUBJECT##	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;">\r\n<h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Due soon…</h2>\r\n<p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=due_date_notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\r\n</h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, SUBJECT, CONTENT	Due Date Notification
 \.
 
 
 --
--- Name: email_templates_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: email_templates_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('email_templates_id_seq', 1, true);
 
 
 --
--- Data for Name: ips; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: ips; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY ips (id, created, modified, ip, host, user_agent, "order", city_id, state_id, country_id, latitude, longitude) FROM stdin;
@@ -4245,14 +4259,14 @@ COPY ips (id, created, modified, ip, host, user_agent, "order", city_id, state_i
 
 
 --
--- Name: ips_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: ips_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('ips_id_seq', 1, true);
 
 
 --
--- Data for Name: labels; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: labels; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY labels (id, created, modified, name, card_count) FROM stdin;
@@ -4260,14 +4274,444 @@ COPY labels (id, created, modified, name, card_count) FROM stdin;
 
 
 --
--- Name: labels_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: labels_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('labels_id_seq', 1, true);
 
 
 --
--- Data for Name: list_subscribers; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: languages; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY languages (id, created, modified, name, iso2, iso3, is_active) FROM stdin;
+1	2016-03-10 16:24:44.693	2016-03-10 16:24:44.693	Acoli	ach	ach	0
+2	2016-03-10 16:24:44.72	2016-03-10 16:24:44.72	Adyghe	ady	ady	0
+3	2016-03-10 16:24:44.721	2016-03-10 16:24:44.721	Afrikaans	af	af	0
+4	2016-03-10 16:24:44.721	2016-03-10 16:24:44.721	Afrikaans (South Africa)	af_ZA	af_ZA	0
+5	2016-03-10 16:24:44.722	2016-03-10 16:24:44.722	Akan	ak	ak	0
+6	2016-03-10 16:24:44.722	2016-03-10 16:24:44.722	Albanian	sq	sq	0
+7	2016-03-10 16:24:44.723	2016-03-10 16:24:44.723	Albanian (Albania)	sq_AL	sq_AL	0
+8	2016-03-10 16:24:44.723	2016-03-10 16:24:44.723	Albanian Gheg	aln	aln	0
+9	2016-03-10 16:24:44.723	2016-03-10 16:24:44.723	Amharic	am	am	0
+10	2016-03-10 16:24:44.724	2016-03-10 16:24:44.724	Amharic (Ethiopia)	am_ET	am_ET	0
+11	2016-03-10 16:24:44.724	2016-03-10 16:24:44.724	Arabic	ar	ar	0
+12	2016-03-10 16:24:44.725	2016-03-10 16:24:44.725	Arabic (Egypt)	ar_EG	ar_EG	0
+13	2016-03-10 16:24:44.725	2016-03-10 16:24:44.725	Arabic (Saudi Arabia)	ar_SA	ar_SA	0
+14	2016-03-10 16:24:44.725	2016-03-10 16:24:44.725	Arabic (Sudan)	ar_SD	ar_SD	0
+15	2016-03-10 16:24:44.726	2016-03-10 16:24:44.726	Arabic (Syria)	ar_SY	ar_SY	0
+16	2016-03-10 16:24:44.726	2016-03-10 16:24:44.726	Arabic (Unitag)	ar_AA	ar_AA	0
+17	2016-03-10 16:24:44.727	2016-03-10 16:24:44.727	Aragonese	an	an	0
+18	2016-03-10 16:24:44.727	2016-03-10 16:24:44.727	Armenian	hy	hy	0
+19	2016-03-10 16:24:44.727	2016-03-10 16:24:44.727	Armenian (Armenia)	hy_AM	hy_AM	0
+20	2016-03-10 16:24:44.728	2016-03-10 16:24:44.728	Assamese	as	as	0
+21	2016-03-10 16:24:44.728	2016-03-10 16:24:44.728	Assamese (India)	as_IN	as_IN	0
+22	2016-03-10 16:24:44.728	2016-03-10 16:24:44.728	Asturian	ast	ast	0
+23	2016-03-10 16:24:44.729	2016-03-10 16:24:44.729	Asturian (Spain)	ast_ES	ast_ES	0
+24	2016-03-10 16:24:44.729	2016-03-10 16:24:44.729	Azerbaijani	az	az	0
+25	2016-03-10 16:24:44.729	2016-03-10 16:24:44.729	Azerbaijani (Arabic)	az@Arab	az@Arab	0
+26	2016-03-10 16:24:44.729	2016-03-10 16:24:44.729	Azerbaijani (Azerbaijan)	az_AZ	az_AZ	0
+27	2016-03-10 16:24:44.73	2016-03-10 16:24:44.73	Azerbaijani (Iran)	az_IR	az_IR	0
+28	2016-03-10 16:24:44.73	2016-03-10 16:24:44.73	Azerbaijani (Latin)	az@latin	az@latin	0
+29	2016-03-10 16:24:44.73	2016-03-10 16:24:44.73	Balochi	bal	bal	0
+30	2016-03-10 16:24:44.731	2016-03-10 16:24:44.731	Bashkir	ba	ba	0
+31	2016-03-10 16:24:44.732	2016-03-10 16:24:44.732	Basque	eu	eu	0
+32	2016-03-10 16:24:44.732	2016-03-10 16:24:44.732	Basque (Spain)	eu_ES	eu_ES	0
+33	2016-03-10 16:24:44.732	2016-03-10 16:24:44.732	Bavarian	bar	bar	0
+34	2016-03-10 16:24:44.733	2016-03-10 16:24:44.733	Belarusian	be	be	0
+35	2016-03-10 16:24:44.733	2016-03-10 16:24:44.733	Belarusian (Belarus)	be_BY	be_BY	0
+36	2016-03-10 16:24:44.733	2016-03-10 16:24:44.733	Belarusian (Tarask)	be@tarask	be@tarask	0
+37	2016-03-10 16:24:44.734	2016-03-10 16:24:44.734	Bengali	bn	bn	0
+38	2016-03-10 16:24:44.734	2016-03-10 16:24:44.734	Bengali (Bangladesh)	bn_BD	bn_BD	0
+39	2016-03-10 16:24:44.734	2016-03-10 16:24:44.734	Bengali (India)	bn_IN	bn_IN	0
+40	2016-03-10 16:24:44.735	2016-03-10 16:24:44.735	Bodo	brx	brx	0
+41	2016-03-10 16:24:44.735	2016-03-10 16:24:44.735	Bosnian	bs	bs	0
+42	2016-03-10 16:24:44.735	2016-03-10 16:24:44.735	Bosnian (Bosnia and Herzegovina)	bs_BA	bs_BA	0
+43	2016-03-10 16:24:44.736	2016-03-10 16:24:44.736	Breton	br	br	0
+44	2016-03-10 16:24:44.736	2016-03-10 16:24:44.736	Bulgarian	bg	bg	0
+45	2016-03-10 16:24:44.739	2016-03-10 16:24:44.739	Bulgarian (Bulgaria)	bg_BG	bg_BG	0
+46	2016-03-10 16:24:44.739	2016-03-10 16:24:44.739	Burmese	my	my	0
+47	2016-03-10 16:24:44.739	2016-03-10 16:24:44.739	Burmese (Myanmar)	my_MM	my_MM	0
+48	2016-03-10 16:24:44.74	2016-03-10 16:24:44.74	Catalan	ca	ca	0
+49	2016-03-10 16:24:44.74	2016-03-10 16:24:44.74	Catalan (Spain)	ca_ES	ca_ES	0
+50	2016-03-10 16:24:44.74	2016-03-10 16:24:44.74	Catalan (Valencian)	ca@valencia	ca@valencia	0
+51	2016-03-10 16:24:44.741	2016-03-10 16:24:44.741	Cebuano	ceb	ceb	0
+52	2016-03-10 16:24:44.741	2016-03-10 16:24:44.741	Central Atlas Tamazight	tzm	tzm	0
+53	2016-03-10 16:24:44.741	2016-03-10 16:24:44.741	Chhattisgarhi	hne	hne	0
+54	2016-03-10 16:24:44.742	2016-03-10 16:24:44.742	Chiga	cgg	cgg	0
+55	2016-03-10 16:24:44.742	2016-03-10 16:24:44.742	Chinese	zh	zh	0
+56	2016-03-10 16:24:44.743	2016-03-10 16:24:44.743	Chinese (China)	zh_CN	zh_CN	0
+57	2016-03-10 16:24:44.743	2016-03-10 16:24:44.743	Chinese (China) (GB2312)	zh_CN.GB2312	zh_CN.GB2312	0
+58	2016-03-10 16:24:44.743	2016-03-10 16:24:44.743	Chinese (Gan)	gan	gan	0
+59	2016-03-10 16:24:44.744	2016-03-10 16:24:44.744	Chinese (Hakka)	hak	hak	0
+60	2016-03-10 16:24:44.744	2016-03-10 16:24:44.744	Chinese (Hong Kong)	zh_HK	zh_HK	0
+61	2016-03-10 16:24:44.744	2016-03-10 16:24:44.744	Chinese (Huizhou)	czh	czh	0
+62	2016-03-10 16:24:44.745	2016-03-10 16:24:44.745	Chinese (Jinyu)	cjy	cjy	0
+63	2016-03-10 16:24:44.745	2016-03-10 16:24:44.745	Chinese (Literary)	lzh	lzh	0
+64	2016-03-10 16:24:44.746	2016-03-10 16:24:44.746	Chinese (Mandarin)	cmn	cmn	0
+65	2016-03-10 16:24:44.746	2016-03-10 16:24:44.746	Chinese (Min Bei)	mnp	mnp	0
+66	2016-03-10 16:24:44.747	2016-03-10 16:24:44.747	Chinese (Min Dong)	cdo	cdo	0
+67	2016-03-10 16:24:44.747	2016-03-10 16:24:44.747	Chinese (Min Nan)	nan	nan	0
+68	2016-03-10 16:24:44.747	2016-03-10 16:24:44.747	Chinese (Min Zhong)	czo	czo	0
+69	2016-03-10 16:24:44.748	2016-03-10 16:24:44.748	Chinese (Pu-Xian)	cpx	cpx	0
+70	2016-03-10 16:24:44.748	2016-03-10 16:24:44.748	Chinese Simplified	zh-Hans	zh-Hans	0
+71	2016-03-10 16:24:44.749	2016-03-10 16:24:44.749	Chinese (Taiwan)	zh_TW	zh_TW	0
+72	2016-03-10 16:24:44.749	2016-03-10 16:24:44.749	Chinese (Taiwan) (Big5) 	zh_TW.Big5	zh_TW.Big5	0
+73	2016-03-10 16:24:44.749	2016-03-10 16:24:44.749	Chinese Traditional	zh-Hant	zh-Hant	0
+74	2016-03-10 16:24:44.75	2016-03-10 16:24:44.75	Chinese (Wu)	wuu	wuu	0
+75	2016-03-10 16:24:44.75	2016-03-10 16:24:44.75	Chinese (Xiang)	hsn	hsn	0
+76	2016-03-10 16:24:44.75	2016-03-10 16:24:44.75	Chinese (Yue)	yue	yue	0
+77	2016-03-10 16:24:44.751	2016-03-10 16:24:44.751	Chuvash	cv	cv	0
+78	2016-03-10 16:24:44.751	2016-03-10 16:24:44.751	Colognian	ksh	ksh	0
+79	2016-03-10 16:24:44.751	2016-03-10 16:24:44.751	Cornish	kw	kw	0
+80	2016-03-10 16:24:44.752	2016-03-10 16:24:44.752	Corsican	co	co	0
+81	2016-03-10 16:24:44.752	2016-03-10 16:24:44.752	Crimean Turkish	crh	crh	0
+82	2016-03-10 16:24:44.752	2016-03-10 16:24:44.752	Croatian	hr	hr	0
+83	2016-03-10 16:24:44.752	2016-03-10 16:24:44.752	Croatian (Croatia)	hr_HR	hr_HR	0
+84	2016-03-10 16:24:44.752	2016-03-10 16:24:44.752	Czech	cs	cs	0
+85	2016-03-10 16:24:44.753	2016-03-10 16:24:44.753	Czech (Czech Republic)	cs_CZ	cs_CZ	0
+86	2016-03-10 16:24:44.753	2016-03-10 16:24:44.753	Danish	da	da	0
+87	2016-03-10 16:24:44.753	2016-03-10 16:24:44.753	Danish (Denmark)	da_DK	da_DK	0
+88	2016-03-10 16:24:44.754	2016-03-10 16:24:44.754	Divehi	dv	dv	0
+89	2016-03-10 16:24:44.754	2016-03-10 16:24:44.754	Dogri	doi	doi	0
+90	2016-03-10 16:24:44.754	2016-03-10 16:24:44.754	Dutch	nl	nl	0
+91	2016-03-10 16:24:44.755	2016-03-10 16:24:44.755	Dutch (Belgium)	nl_BE	nl_BE	0
+92	2016-03-10 16:24:44.755	2016-03-10 16:24:44.755	Dutch (Netherlands)	nl_NL	nl_NL	0
+93	2016-03-10 16:24:44.755	2016-03-10 16:24:44.755	Dzongkha	dz	dz	0
+94	2016-03-10 16:24:44.756	2016-03-10 16:24:44.756	Dzongkha (Bhutan)	dz_BT	dz_BT	0
+95	2016-03-10 16:24:44.756	2016-03-10 16:24:44.756	English (Australia)	en_AU	en_AU	0
+96	2016-03-10 16:24:44.757	2016-03-10 16:24:44.757	English (Austria)	en_AT	en_AT	0
+97	2016-03-10 16:24:44.757	2016-03-10 16:24:44.757	English (Bangladesh)	en_BD	en_BD	0
+98	2016-03-10 16:24:44.757	2016-03-10 16:24:44.757	English (Belgium)	en_BE	en_BE	0
+99	2016-03-10 16:24:44.758	2016-03-10 16:24:44.758	English (Canada)	en_CA	en_CA	0
+100	2016-03-10 16:24:44.758	2016-03-10 16:24:44.758	English (Chile)	en_CL	en_CL	0
+101	2016-03-10 16:24:44.759	2016-03-10 16:24:44.759	English (Croatia)	en_HR	en_HR	0
+102	2016-03-10 16:24:44.76	2016-03-10 16:24:44.76	English (Czech Republic)	en_CZ	en_CZ	0
+103	2016-03-10 16:24:44.76	2016-03-10 16:24:44.76	English (Egypt)	en_EG	en_EG	0
+104	2016-03-10 16:24:44.761	2016-03-10 16:24:44.761	English (Estonia)	en_ee	en_ee	0
+105	2016-03-10 16:24:44.761	2016-03-10 16:24:44.761	English (Finland)	en_FI	en_FI	0
+106	2016-03-10 16:24:44.761	2016-03-10 16:24:44.761	English (Germany)	en_DE	en_DE	0
+107	2016-03-10 16:24:44.762	2016-03-10 16:24:44.762	English (Ghana)	en_GH	en_GH	0
+108	2016-03-10 16:24:44.762	2016-03-10 16:24:44.762	English (Greece)	en_GR	en_GR	0
+109	2016-03-10 16:24:44.763	2016-03-10 16:24:44.763	English (Hong Kong)	en_HK	en_HK	0
+110	2016-03-10 16:24:44.763	2016-03-10 16:24:44.763	English (Hungary)	en_HU	en_HU	0
+111	2016-03-10 16:24:44.763	2016-03-10 16:24:44.763	English (India)	en_IN	en_IN	0
+112	2016-03-10 16:24:44.764	2016-03-10 16:24:44.764	English (Ireland)	en_IE	en_IE	0
+113	2016-03-10 16:24:44.764	2016-03-10 16:24:44.764	English (Italy)	en_IT	en_IT	0
+114	2016-03-10 16:24:44.764	2016-03-10 16:24:44.764	English (Latvia)	en_lv	en_lv	0
+115	2016-03-10 16:24:44.764	2016-03-10 16:24:44.764	English (Lithuania)	en_lt	en_lt	0
+116	2016-03-10 16:24:44.764	2016-03-10 16:24:44.764	English (Netherlands)	en_NL	en_NL	0
+117	2016-03-10 16:24:44.764	2016-03-10 16:24:44.764	English (New Zealand)	en_NZ	en_NZ	0
+118	2016-03-10 16:24:44.766	2016-03-10 16:24:44.766	English (Nigeria)	en_NG	en_NG	0
+119	2016-03-10 16:24:44.766	2016-03-10 16:24:44.766	English (Norway)	en_NO	en_NO	0
+120	2016-03-10 16:24:44.766	2016-03-10 16:24:44.766	English (Pakistan)	en_PK	en_PK	0
+121	2016-03-10 16:24:44.767	2016-03-10 16:24:44.767	English (Poland)	en_PL	en_PL	0
+122	2016-03-10 16:24:44.767	2016-03-10 16:24:44.767	English (Portugal)	en_PT	en_PT	0
+123	2016-03-10 16:24:44.767	2016-03-10 16:24:44.767	English (Romania)	en_RO	en_RO	0
+124	2016-03-10 16:24:44.768	2016-03-10 16:24:44.768	English (Slovakia)	en_SK	en_SK	0
+125	2016-03-10 16:24:44.768	2016-03-10 16:24:44.768	English (South Africa)	en_ZA	en_ZA	0
+126	2016-03-10 16:24:44.768	2016-03-10 16:24:44.768	English (Spain)	en_ES	en_ES	0
+127	2016-03-10 16:24:44.768	2016-03-10 16:24:44.768	English (Sri Lanka)	en_LK	en_LK	0
+128	2016-03-10 16:24:44.768	2016-03-10 16:24:44.768	English (Sweden)	en_SE	en_SE	0
+129	2016-03-10 16:24:44.768	2016-03-10 16:24:44.768	English (Switzerland)	en_CH	en_CH	0
+130	2016-03-10 16:24:44.769	2016-03-10 16:24:44.769	English (United Kingdom)	en_GB	en_GB	0
+131	2016-03-10 16:24:44.769	2016-03-10 16:24:44.769	English (United States)	en_US	en_US	0
+132	2016-03-10 16:24:44.769	2016-03-10 16:24:44.769	Erzya	myv	myv	0
+133	2016-03-10 16:24:44.77	2016-03-10 16:24:44.77	Esperanto	eo	eo	0
+134	2016-03-10 16:24:44.77	2016-03-10 16:24:44.77	Estonian	et	et	0
+135	2016-03-10 16:24:44.771	2016-03-10 16:24:44.771	Estonian (Estonia)	et_EE	et_EE	0
+136	2016-03-10 16:24:44.771	2016-03-10 16:24:44.771	Faroese	fo	fo	0
+137	2016-03-10 16:24:44.771	2016-03-10 16:24:44.771	Faroese (Faroe Islands)	fo_FO	fo_FO	0
+138	2016-03-10 16:24:44.772	2016-03-10 16:24:44.772	Filipino	fil	fil	0
+139	2016-03-10 16:24:44.772	2016-03-10 16:24:44.772	Finnish	fi	fi	0
+140	2016-03-10 16:24:44.773	2016-03-10 16:24:44.773	Finnish (Finland)	fi_FI	fi_FI	0
+141	2016-03-10 16:24:44.774	2016-03-10 16:24:44.774	Franco-Provençal (Arpitan)	frp	frp	0
+142	2016-03-10 16:24:44.774	2016-03-10 16:24:44.774	French	fr	fr	0
+143	2016-03-10 16:24:44.774	2016-03-10 16:24:44.774	French (Belgium)	fr_BE	fr_BE	0
+144	2016-03-10 16:24:44.774	2016-03-10 16:24:44.774	French (Canada)	fr_CA	fr_CA	0
+145	2016-03-10 16:24:44.774	2016-03-10 16:24:44.774	French (France)	fr_FR	fr_FR	0
+146	2016-03-10 16:24:44.775	2016-03-10 16:24:44.775	French (Switzerland)	fr_CH	fr_CH	0
+147	2016-03-10 16:24:44.775	2016-03-10 16:24:44.775	Friulian	fur	fur	0
+148	2016-03-10 16:24:44.775	2016-03-10 16:24:44.775	Fulah	ff	ff	0
+149	2016-03-10 16:24:44.777	2016-03-10 16:24:44.777	Fulah (Senegal)	ff_SN	ff_SN	0
+150	2016-03-10 16:24:44.777	2016-03-10 16:24:44.777	Gaelic, Scottish	gd	gd	0
+151	2016-03-10 16:24:44.777	2016-03-10 16:24:44.777	Galician	gl	gl	0
+152	2016-03-10 16:24:44.778	2016-03-10 16:24:44.778	Galician (Spain)	gl_ES	gl_ES	0
+153	2016-03-10 16:24:44.778	2016-03-10 16:24:44.778	Ganda	lg	lg	0
+154	2016-03-10 16:24:44.778	2016-03-10 16:24:44.778	Georgian	ka	ka	0
+155	2016-03-10 16:24:44.779	2016-03-10 16:24:44.779	Georgian (Georgia)	ka_GE	ka_GE	0
+156	2016-03-10 16:24:44.779	2016-03-10 16:24:44.779	German	de	de	0
+157	2016-03-10 16:24:44.779	2016-03-10 16:24:44.779	German (Austria)	de_AT	de_AT	0
+158	2016-03-10 16:24:44.78	2016-03-10 16:24:44.78	German (Germany)	de_DE	de_DE	0
+159	2016-03-10 16:24:44.78	2016-03-10 16:24:44.78	German (Switzerland)	de_CH	de_CH	0
+160	2016-03-10 16:24:44.78	2016-03-10 16:24:44.78	Greek	el	el	0
+161	2016-03-10 16:24:44.78	2016-03-10 16:24:44.78	Greek (Greece)	el_GR	el_GR	0
+162	2016-03-10 16:24:44.78	2016-03-10 16:24:44.78	Greenlandic	kl	kl	0
+163	2016-03-10 16:24:44.78	2016-03-10 16:24:44.78	Gujarati	gu	gu	0
+164	2016-03-10 16:24:44.782	2016-03-10 16:24:44.782	Gujarati (India)	gu_IN	gu_IN	0
+165	2016-03-10 16:24:44.782	2016-03-10 16:24:44.782	Gun	gun	gun	0
+166	2016-03-10 16:24:44.782	2016-03-10 16:24:44.782	Haitian (Haitian Creole)	ht	ht	0
+167	2016-03-10 16:24:44.783	2016-03-10 16:24:44.783	Haitian (Haitian Creole) (Haiti)	ht_HT	ht_HT	0
+168	2016-03-10 16:24:44.783	2016-03-10 16:24:44.783	Hausa	ha	ha	0
+169	2016-03-10 16:24:44.783	2016-03-10 16:24:44.783	Hawaiian	haw	haw	0
+170	2016-03-10 16:24:44.784	2016-03-10 16:24:44.784	Hebrew	he	he	0
+171	2016-03-10 16:24:44.784	2016-03-10 16:24:44.784	Hebrew (Israel)	he_IL	he_IL	0
+172	2016-03-10 16:24:44.785	2016-03-10 16:24:44.785	Hindi	hi	hi	0
+173	2016-03-10 16:24:44.785	2016-03-10 16:24:44.785	Hindi (India)	hi_IN	hi_IN	0
+174	2016-03-10 16:24:44.785	2016-03-10 16:24:44.785	Hungarian	hu	hu	0
+175	2016-03-10 16:24:44.785	2016-03-10 16:24:44.785	Hungarian (Hungary)	hu_HU	hu_HU	0
+176	2016-03-10 16:24:44.785	2016-03-10 16:24:44.785	Hungarian (Romanian)	hu_RO	hu_RO	0
+177	2016-03-10 16:24:44.785	2016-03-10 16:24:44.785	Icelandic	is	is	0
+178	2016-03-10 16:24:44.786	2016-03-10 16:24:44.786	Icelandic (Iceland)	is_IS	is_IS	0
+179	2016-03-10 16:24:44.786	2016-03-10 16:24:44.786	Ido	io	io	0
+180	2016-03-10 16:24:44.788	2016-03-10 16:24:44.788	Igbo	ig	ig	0
+181	2016-03-10 16:24:44.788	2016-03-10 16:24:44.788	Iloko	ilo	ilo	0
+182	2016-03-10 16:24:44.788	2016-03-10 16:24:44.788	Indonesian	id	id	0
+183	2016-03-10 16:24:44.789	2016-03-10 16:24:44.789	Indonesian (Indonesia)	id_ID	id_ID	0
+184	2016-03-10 16:24:44.789	2016-03-10 16:24:44.789	Interlingua	ia	ia	0
+185	2016-03-10 16:24:44.789	2016-03-10 16:24:44.789	Inuktitut	iu	iu	0
+186	2016-03-10 16:24:44.79	2016-03-10 16:24:44.79	Irish	ga	ga	0
+187	2016-03-10 16:24:44.79	2016-03-10 16:24:44.79	Irish (Ireland)	ga_IE	ga_IE	0
+188	2016-03-10 16:24:44.79	2016-03-10 16:24:44.79	Italian	it	it	0
+189	2016-03-10 16:24:44.791	2016-03-10 16:24:44.791	Italian (Italy)	it_IT	it_IT	0
+190	2016-03-10 16:24:44.791	2016-03-10 16:24:44.791	Italian (Switzerland)	it_CH	it_CH	0
+191	2016-03-10 16:24:44.791	2016-03-10 16:24:44.791	Japanese	ja	ja	0
+192	2016-03-10 16:24:44.791	2016-03-10 16:24:44.791	Japanese (Japan)	ja_JP	ja_JP	0
+193	2016-03-10 16:24:44.791	2016-03-10 16:24:44.791	Javanese	jv	jv	0
+194	2016-03-10 16:24:44.792	2016-03-10 16:24:44.792	Kabyle	kab	kab	0
+195	2016-03-10 16:24:44.792	2016-03-10 16:24:44.792	Kannada	kn	kn	0
+196	2016-03-10 16:24:44.792	2016-03-10 16:24:44.792	Kannada (India)	kn_IN	kn_IN	0
+197	2016-03-10 16:24:44.793	2016-03-10 16:24:44.793	Kapampangan	pam	pam	0
+198	2016-03-10 16:24:44.793	2016-03-10 16:24:44.793	Kashmiri	ks	ks	0
+199	2016-03-10 16:24:44.793	2016-03-10 16:24:44.793	Kashmiri (India)	ks_IN	ks_IN	0
+200	2016-03-10 16:24:44.795	2016-03-10 16:24:44.795	Kashubian	csb	csb	0
+201	2016-03-10 16:24:44.795	2016-03-10 16:24:44.795	Kazakh	kk	kk	0
+202	2016-03-10 16:24:44.795	2016-03-10 16:24:44.795	Kazakh (Arabic)	kk@Arab	kk@Arab	0
+203	2016-03-10 16:24:44.796	2016-03-10 16:24:44.796	Kazakh (Cyrillic)	kk@Cyrl	kk@Cyrl	0
+204	2016-03-10 16:24:44.796	2016-03-10 16:24:44.796	Kazakh (Kazakhstan)	kk_KZ	kk_KZ	0
+205	2016-03-10 16:24:44.796	2016-03-10 16:24:44.796	Kazakh (Latin)	kk@latin	kk@latin	0
+206	2016-03-10 16:24:44.797	2016-03-10 16:24:44.797	Khmer	km	km	0
+207	2016-03-10 16:24:44.797	2016-03-10 16:24:44.797	Khmer (Cambodia)	km_KH	km_KH	0
+208	2016-03-10 16:24:44.797	2016-03-10 16:24:44.797	Kinyarwanda	rw	rw	0
+209	2016-03-10 16:24:44.797	2016-03-10 16:24:44.797	Klingon	tlh	tlh	0
+210	2016-03-10 16:24:44.797	2016-03-10 16:24:44.797	Konkani	kok	kok	0
+211	2016-03-10 16:24:44.798	2016-03-10 16:24:44.798	Korean	ko	ko	0
+212	2016-03-10 16:24:44.798	2016-03-10 16:24:44.798	Korean (Korea)	ko_KR	ko_KR	0
+213	2016-03-10 16:24:44.798	2016-03-10 16:24:44.798	Kurdish	ku	ku	0
+214	2016-03-10 16:24:44.799	2016-03-10 16:24:44.799	Kurdish (Iraq)	ku_IQ	ku_IQ	0
+215	2016-03-10 16:24:44.8	2016-03-10 16:24:44.8	Kyrgyz	ky	ky	0
+216	2016-03-10 16:24:44.8	2016-03-10 16:24:44.8	Ladino	lad	lad	0
+217	2016-03-10 16:24:44.8	2016-03-10 16:24:44.8	Lao	lo	lo	0
+218	2016-03-10 16:24:44.801	2016-03-10 16:24:44.801	Lao (Laos)	lo_LA	lo_LA	0
+219	2016-03-10 16:24:44.801	2016-03-10 16:24:44.801	Latgalian	ltg	ltg	0
+220	2016-03-10 16:24:44.802	2016-03-10 16:24:44.802	Latin	la	la	0
+221	2016-03-10 16:24:44.802	2016-03-10 16:24:44.802	Latvian	lv	lv	0
+222	2016-03-10 16:24:44.803	2016-03-10 16:24:44.803	Latvian (Latvia)	lv_LV	lv_LV	0
+223	2016-03-10 16:24:44.803	2016-03-10 16:24:44.803	Lezghian	lez	lez	0
+224	2016-03-10 16:24:44.803	2016-03-10 16:24:44.803	Ligurian	lij	lij	0
+225	2016-03-10 16:24:44.803	2016-03-10 16:24:44.803	Limburgian	li	li	0
+226	2016-03-10 16:24:44.803	2016-03-10 16:24:44.803	Lingala	ln	ln	0
+227	2016-03-10 16:24:44.804	2016-03-10 16:24:44.804	Lithuanian	lt	lt	0
+228	2016-03-10 16:24:44.804	2016-03-10 16:24:44.804	Lithuanian (Lithuania)	lt_LT	lt_LT	0
+229	2016-03-10 16:24:44.804	2016-03-10 16:24:44.804	Lojban	jbo	jbo	0
+230	2016-03-10 16:24:44.805	2016-03-10 16:24:44.805	LOLCAT English	en@lolcat	en@lolcat	0
+231	2016-03-10 16:24:44.805	2016-03-10 16:24:44.805	Lombard	lmo	lmo	0
+232	2016-03-10 16:24:44.805	2016-03-10 16:24:44.805	Lower Sorbian	dsb	dsb	0
+233	2016-03-10 16:24:44.807	2016-03-10 16:24:44.807	Low German	nds	nds	0
+234	2016-03-10 16:24:44.807	2016-03-10 16:24:44.807	Luxembourgish	lb	lb	0
+235	2016-03-10 16:24:44.807	2016-03-10 16:24:44.807	Macedonian	mk	mk	0
+236	2016-03-10 16:24:44.808	2016-03-10 16:24:44.808	Macedonian (Macedonia)	mk_MK	mk_MK	0
+237	2016-03-10 16:24:44.808	2016-03-10 16:24:44.808	Maithili	mai	mai	0
+238	2016-03-10 16:24:44.808	2016-03-10 16:24:44.808	Malagasy	mg	mg	0
+239	2016-03-10 16:24:44.808	2016-03-10 16:24:44.808	Malay	ms	ms	0
+240	2016-03-10 16:24:44.808	2016-03-10 16:24:44.808	Malayalam	ml	ml	0
+241	2016-03-10 16:24:44.808	2016-03-10 16:24:44.808	Malayalam (India)	ml_IN	ml_IN	0
+242	2016-03-10 16:24:44.809	2016-03-10 16:24:44.809	Malay (Malaysia)	ms_MY	ms_MY	0
+243	2016-03-10 16:24:44.809	2016-03-10 16:24:44.809	Maltese	mt	mt	0
+244	2016-03-10 16:24:44.809	2016-03-10 16:24:44.809	Maltese (Malta)	mt_MT	mt_MT	0
+245	2016-03-10 16:24:44.81	2016-03-10 16:24:44.81	Manipuri	mni	mni	0
+246	2016-03-10 16:24:44.81	2016-03-10 16:24:44.81	Maori	mi	mi	0
+247	2016-03-10 16:24:44.81	2016-03-10 16:24:44.81	Mapudungun	arn	arn	0
+248	2016-03-10 16:24:44.812	2016-03-10 16:24:44.812	Marathi	mr	mr	0
+249	2016-03-10 16:24:44.812	2016-03-10 16:24:44.812	Marathi (India)	mr_IN	mr_IN	0
+250	2016-03-10 16:24:44.813	2016-03-10 16:24:44.813	Marshallese	mh	mh	0
+251	2016-03-10 16:24:44.813	2016-03-10 16:24:44.813	Mirandese	mw1	mw1	0
+252	2016-03-10 16:24:44.813	2016-03-10 16:24:44.813	Mongolian	mn	mn	0
+253	2016-03-10 16:24:44.814	2016-03-10 16:24:44.814	Mongolian (Mongolia)	mn_MN	mn_MN	0
+254	2016-03-10 16:24:44.814	2016-03-10 16:24:44.814	Nahuatl	nah	nah	0
+255	2016-03-10 16:24:44.815	2016-03-10 16:24:44.815	Navajo	nv	nv	0
+256	2016-03-10 16:24:44.815	2016-03-10 16:24:44.815	Ndebele, South	nr	nr	0
+257	2016-03-10 16:24:44.815	2016-03-10 16:24:44.815	Neapolitan	nap	nap	0
+258	2016-03-10 16:24:44.816	2016-03-10 16:24:44.816	Nepali	ne	ne	0
+259	2016-03-10 16:24:44.816	2016-03-10 16:24:44.816	Nepali (Nepal)	ne_NP	ne_NP	0
+260	2016-03-10 16:24:44.816	2016-03-10 16:24:44.816	Nias	nia	nia	0
+261	2016-03-10 16:24:44.817	2016-03-10 16:24:44.817	N'ko	nqo	nqo	0
+262	2016-03-10 16:24:44.817	2016-03-10 16:24:44.817	Northern Sami	se	se	0
+263	2016-03-10 16:24:44.818	2016-03-10 16:24:44.818	Northern Sotho	nso	nso	0
+264	2016-03-10 16:24:44.818	2016-03-10 16:24:44.818	Norwegian	no	no	0
+265	2016-03-10 16:24:44.818	2016-03-10 16:24:44.818	Norwegian Bokmål	nb	nb	0
+266	2016-03-10 16:24:44.818	2016-03-10 16:24:44.818	Norwegian Bokmål (Norway)	nb_NO	nb_NO	0
+267	2016-03-10 16:24:44.818	2016-03-10 16:24:44.818	Norwegian (Norway)	no_NO	no_NO	0
+268	2016-03-10 16:24:44.819	2016-03-10 16:24:44.819	Norwegian Nynorsk	nn	nn	0
+269	2016-03-10 16:24:44.819	2016-03-10 16:24:44.819	Norwegian Nynorsk (Norway)	nn_NO	nn_NO	0
+270	2016-03-10 16:24:44.819	2016-03-10 16:24:44.819	Nyanja	ny	ny	0
+271	2016-03-10 16:24:44.82	2016-03-10 16:24:44.82	Occitan (post 1500)	oc	oc	0
+272	2016-03-10 16:24:44.82	2016-03-10 16:24:44.82	Oriya	or	or	0
+273	2016-03-10 16:24:44.82	2016-03-10 16:24:44.82	Oriya (India)	or_IN	or_IN	0
+274	2016-03-10 16:24:44.822	2016-03-10 16:24:44.822	Oromo	om	om	0
+275	2016-03-10 16:24:44.822	2016-03-10 16:24:44.822	Ossetic	os	os	0
+276	2016-03-10 16:24:44.822	2016-03-10 16:24:44.822	Palatinate German	pfl	pfl	0
+277	2016-03-10 16:24:44.822	2016-03-10 16:24:44.822	Panjabi (Punjabi)	pa	pa	0
+278	2016-03-10 16:24:44.822	2016-03-10 16:24:44.822	Panjabi (Punjabi) (India)	pa_IN	pa_IN	0
+279	2016-03-10 16:24:44.823	2016-03-10 16:24:44.823	Papiamento	pap	pap	0
+280	2016-03-10 16:24:44.823	2016-03-10 16:24:44.823	Persian	fa	fa	0
+281	2016-03-10 16:24:44.823	2016-03-10 16:24:44.823	Persian (Afghanistan)	fa_AF	fa_AF	0
+282	2016-03-10 16:24:44.825	2016-03-10 16:24:44.825	Persian (Iran)	fa_IR	fa_IR	0
+283	2016-03-10 16:24:44.825	2016-03-10 16:24:44.825	Piemontese	pms	pms	0
+284	2016-03-10 16:24:44.825	2016-03-10 16:24:44.825	Pirate English	en@pirate	en@pirate	0
+285	2016-03-10 16:24:44.826	2016-03-10 16:24:44.826	Polish	pl	pl	0
+286	2016-03-10 16:24:44.826	2016-03-10 16:24:44.826	Polish (Poland)	pl_PL	pl_PL	0
+287	2016-03-10 16:24:44.826	2016-03-10 16:24:44.826	Portuguese	pt	pt	0
+288	2016-03-10 16:24:44.827	2016-03-10 16:24:44.827	Portuguese (Brazil)	pt_BR	pt_BR	0
+289	2016-03-10 16:24:44.827	2016-03-10 16:24:44.827	Portuguese (Portugal)	pt_PT	pt_PT	0
+290	2016-03-10 16:24:44.827	2016-03-10 16:24:44.827	Pushto	ps	ps	0
+291	2016-03-10 16:24:44.828	2016-03-10 16:24:44.828	Romanian	ro	ro	0
+292	2016-03-10 16:24:44.828	2016-03-10 16:24:44.828	Romanian (Romania)	ro_RO	ro_RO	0
+293	2016-03-10 16:24:44.828	2016-03-10 16:24:44.828	Romansh	rm	rm	0
+294	2016-03-10 16:24:44.829	2016-03-10 16:24:44.829	Russian	ru	ru	0
+295	2016-03-10 16:24:44.829	2016-03-10 16:24:44.829	Russian (Estonia)	ru_ee	ru_ee	0
+296	2016-03-10 16:24:44.829	2016-03-10 16:24:44.829	Russian (Latvia)	ru_lv	ru_lv	0
+297	2016-03-10 16:24:44.83	2016-03-10 16:24:44.83	Russian (Lithuania)	ru_lt	ru_lt	0
+298	2016-03-10 16:24:44.83	2016-03-10 16:24:44.83	Russian Petrine orthography	ru@petr1708	ru@petr1708	0
+299	2016-03-10 16:24:44.83	2016-03-10 16:24:44.83	Russian (Russia)	ru_RU	ru_RU	0
+300	2016-03-10 16:24:44.831	2016-03-10 16:24:44.831	Sakha (Yakut)	sah	sah	0
+301	2016-03-10 16:24:44.831	2016-03-10 16:24:44.831	Samoan	sm	sm	0
+302	2016-03-10 16:24:44.831	2016-03-10 16:24:44.831	Sango	sg	sg	0
+303	2016-03-10 16:24:44.832	2016-03-10 16:24:44.832	Sanskrit	sa	sa	0
+304	2016-03-10 16:24:44.832	2016-03-10 16:24:44.832	Santali	sat	sat	0
+305	2016-03-10 16:24:44.832	2016-03-10 16:24:44.832	Sardinian	sc	sc	0
+306	2016-03-10 16:24:44.833	2016-03-10 16:24:44.833	Scots	sco	sco	0
+307	2016-03-10 16:24:44.833	2016-03-10 16:24:44.833	Serbian	sr	sr	0
+308	2016-03-10 16:24:44.834	2016-03-10 16:24:44.834	Serbian (Ijekavian)	sr@Ijekavian	sr@Ijekavian	0
+309	2016-03-10 16:24:44.834	2016-03-10 16:24:44.834	Serbian (Ijekavian Latin)	sr@ijekavianlatin	sr@ijekavianlatin	0
+310	2016-03-10 16:24:44.834	2016-03-10 16:24:44.834	Serbian (Latin)	sr@latin	sr@latin	0
+311	2016-03-10 16:24:44.835	2016-03-10 16:24:44.835	Serbian (Latin) (Serbia)	sr_RS@latin	sr_RS@latin	0
+312	2016-03-10 16:24:44.835	2016-03-10 16:24:44.835	Serbian (Serbia)	sr_RS	sr_RS	0
+313	2016-03-10 16:24:44.835	2016-03-10 16:24:44.835	Shona	sn	sn	0
+314	2016-03-10 16:24:44.836	2016-03-10 16:24:44.836	Sicilian	scn	scn	0
+315	2016-03-10 16:24:44.836	2016-03-10 16:24:44.836	Silesian	szl	szl	0
+316	2016-03-10 16:24:44.836	2016-03-10 16:24:44.836	Sindhi	sd	sd	0
+317	2016-03-10 16:24:44.837	2016-03-10 16:24:44.837	Sinhala	si	si	0
+318	2016-03-10 16:24:44.837	2016-03-10 16:24:44.837	Sinhala (Sri Lanka)	si_LK	si_LK	0
+319	2016-03-10 16:24:44.837	2016-03-10 16:24:44.837	Slovak	sk	sk	0
+320	2016-03-10 16:24:44.838	2016-03-10 16:24:44.838	Slovak (Slovakia)	sk_SK	sk_SK	0
+321	2016-03-10 16:24:44.838	2016-03-10 16:24:44.838	Slovenian	sl	sl	0
+322	2016-03-10 16:24:44.838	2016-03-10 16:24:44.838	Slovenian (Slovenia)	sl_SI	sl_SI	0
+323	2016-03-10 16:24:44.839	2016-03-10 16:24:44.839	Somali	so	so	0
+324	2016-03-10 16:24:44.839	2016-03-10 16:24:44.839	Songhay	son	son	0
+325	2016-03-10 16:24:44.84	2016-03-10 16:24:44.84	Sotho, Southern	st	st	0
+326	2016-03-10 16:24:44.84	2016-03-10 16:24:44.84	Sotho, Southern (South Africa)	st_ZA	st_ZA	0
+327	2016-03-10 16:24:44.84	2016-03-10 16:24:44.84	Southern Sami	sma	sma	0
+328	2016-03-10 16:24:44.841	2016-03-10 16:24:44.841	Spanish	es	es	0
+329	2016-03-10 16:24:44.841	2016-03-10 16:24:44.841	Spanish (Argentina)	es_AR	es_AR	0
+330	2016-03-10 16:24:44.841	2016-03-10 16:24:44.841	Spanish (Bolivia)	es_BO	es_BO	0
+331	2016-03-10 16:24:44.842	2016-03-10 16:24:44.842	Spanish (Chile)	es_CL	es_CL	0
+332	2016-03-10 16:24:44.842	2016-03-10 16:24:44.842	Spanish (Colombia)	es_CO	es_CO	0
+333	2016-03-10 16:24:44.842	2016-03-10 16:24:44.842	Spanish (Costa Rica)	es_CR	es_CR	0
+334	2016-03-10 16:24:44.843	2016-03-10 16:24:44.843	Spanish (Dominican Republic)	es_DO	es_DO	0
+335	2016-03-10 16:24:44.843	2016-03-10 16:24:44.843	Spanish (Ecuador)	es_EC	es_EC	0
+336	2016-03-10 16:24:44.843	2016-03-10 16:24:44.843	Spanish (El Salvador)	es_SV	es_SV	0
+337	2016-03-10 16:24:44.844	2016-03-10 16:24:44.844	Spanish (Guatemala)	es_GT	es_GT	0
+338	2016-03-10 16:24:44.844	2016-03-10 16:24:44.844	Spanish (Honduras)	es_HN	es_HN	0
+339	2016-03-10 16:24:44.844	2016-03-10 16:24:44.844	Spanish (Latin America)	es_419	es_419	0
+340	2016-03-10 16:24:44.845	2016-03-10 16:24:44.845	Spanish (Mexico)	es_MX	es_MX	0
+341	2016-03-10 16:24:44.845	2016-03-10 16:24:44.845	Spanish (Nicaragua)	es_NI	es_NI	0
+342	2016-03-10 16:24:44.845	2016-03-10 16:24:44.845	Spanish (Panama)	es_PA	es_PA	0
+343	2016-03-10 16:24:44.846	2016-03-10 16:24:44.846	Spanish (Paraguay)	es_PY	es_PY	0
+344	2016-03-10 16:24:44.846	2016-03-10 16:24:44.846	Spanish (Peru)	es_PE	es_PE	0
+345	2016-03-10 16:24:44.847	2016-03-10 16:24:44.847	Spanish (Puerto Rico)	es_PR	es_PR	0
+346	2016-03-10 16:24:44.847	2016-03-10 16:24:44.847	Spanish (Spain)	es_ES	es_ES	0
+347	2016-03-10 16:24:44.847	2016-03-10 16:24:44.847	Spanish (United States)	es_US	es_US	0
+348	2016-03-10 16:24:44.848	2016-03-10 16:24:44.848	Spanish (Uruguay)	es_UY	es_UY	0
+349	2016-03-10 16:24:44.848	2016-03-10 16:24:44.848	Spanish (Venezuela)	es_VE	es_VE	0
+350	2016-03-10 16:24:44.848	2016-03-10 16:24:44.848	Sundanese	su	su	0
+351	2016-03-10 16:24:44.849	2016-03-10 16:24:44.849	Swahili	sw	sw	0
+352	2016-03-10 16:24:44.849	2016-03-10 16:24:44.849	Swahili (Democratic Republic of the Congo)	sw_CD	sw_CD	0
+353	2016-03-10 16:24:44.849	2016-03-10 16:24:44.849	Swahili (Kenya)	sw_KE	sw_KE	0
+354	2016-03-10 16:24:44.85	2016-03-10 16:24:44.85	Swati	ss	ss	0
+355	2016-03-10 16:24:44.85	2016-03-10 16:24:44.85	Swedish	sv	sv	0
+356	2016-03-10 16:24:44.851	2016-03-10 16:24:44.851	Swedish (Finland)	sv_FI	sv_FI	0
+357	2016-03-10 16:24:44.851	2016-03-10 16:24:44.851	Swedish (Sweden)	sv_SE	sv_SE	0
+358	2016-03-10 16:24:44.851	2016-03-10 16:24:44.851	Tagalog	tl	tl	0
+359	2016-03-10 16:24:44.851	2016-03-10 16:24:44.851	Tagalog (Philippines)	tl_PH	tl_PH	0
+360	2016-03-10 16:24:44.852	2016-03-10 16:24:44.852	Tajik	tg	tg	0
+361	2016-03-10 16:24:44.852	2016-03-10 16:24:44.852	Tajik (Tajikistan)	tg_TJ	tg_TJ	0
+362	2016-03-10 16:24:44.853	2016-03-10 16:24:44.853	Talossan	tzl	tzl	0
+363	2016-03-10 16:24:44.853	2016-03-10 16:24:44.853	Tamil	ta	ta	0
+364	2016-03-10 16:24:44.853	2016-03-10 16:24:44.853	Tamil (India)	ta_IN	ta_IN	0
+365	2016-03-10 16:24:44.854	2016-03-10 16:24:44.854	Tamil (Sri-Lanka)	ta_LK	ta_LK	0
+366	2016-03-10 16:24:44.854	2016-03-10 16:24:44.854	Tatar	tt	tt	0
+367	2016-03-10 16:24:44.854	2016-03-10 16:24:44.854	Telugu	te	te	0
+368	2016-03-10 16:24:44.854	2016-03-10 16:24:44.854	Telugu (India)	te_IN	te_IN	0
+369	2016-03-10 16:24:44.854	2016-03-10 16:24:44.854	Tetum (Tetun)	tet	tet	0
+370	2016-03-10 16:24:44.854	2016-03-10 16:24:44.854	Thai	th	th	0
+371	2016-03-10 16:24:44.855	2016-03-10 16:24:44.855	Thai (Thailand)	th_TH	th_TH	0
+372	2016-03-10 16:24:44.855	2016-03-10 16:24:44.855	Tibetan	bo	bo	0
+373	2016-03-10 16:24:44.856	2016-03-10 16:24:44.856	Tibetan (China)	bo_CN	bo_CN	0
+374	2016-03-10 16:24:44.856	2016-03-10 16:24:44.856	Tigrinya	ti	ti	0
+375	2016-03-10 16:24:44.857	2016-03-10 16:24:44.857	Tongan	to	to	0
+376	2016-03-10 16:24:44.858	2016-03-10 16:24:44.858	Tsonga	ts	ts	0
+377	2016-03-10 16:24:44.858	2016-03-10 16:24:44.858	Tswana	tn	tn	0
+378	2016-03-10 16:24:44.859	2016-03-10 16:24:44.859	Turkish	tr	tr	0
+379	2016-03-10 16:24:44.859	2016-03-10 16:24:44.859	Turkish (Turkey)	tr_TR	tr_TR	0
+380	2016-03-10 16:24:44.859	2016-03-10 16:24:44.859	Turkmen	tk	tk	0
+381	2016-03-10 16:24:44.86	2016-03-10 16:24:44.86	Turkmen (Turkmenistan)	tk_TM	tk_TM	0
+382	2016-03-10 16:24:44.86	2016-03-10 16:24:44.86	Udmurt	udm	udm	0
+383	2016-03-10 16:24:44.86	2016-03-10 16:24:44.86	Uighur	ug	ug	0
+384	2016-03-10 16:24:44.86	2016-03-10 16:24:44.86	Uighur (Arabic)	ug@Arab	ug@Arab	0
+385	2016-03-10 16:24:44.86	2016-03-10 16:24:44.86	Uighur (Cyrillic)	ug@Cyrl	ug@Cyrl	0
+386	2016-03-10 16:24:44.86	2016-03-10 16:24:44.86	Uighur (Latin)	ug@Latin	ug@Latin	0
+387	2016-03-10 16:24:44.861	2016-03-10 16:24:44.861	Ukrainian	uk	uk	0
+388	2016-03-10 16:24:44.861	2016-03-10 16:24:44.861	Ukrainian (Ukraine)	uk_UA	uk_UA	0
+389	2016-03-10 16:24:44.863	2016-03-10 16:24:44.863	Upper Franconian	vmf	vmf	0
+390	2016-03-10 16:24:44.863	2016-03-10 16:24:44.863	Upper Sorbian	hsb	hsb	0
+391	2016-03-10 16:24:44.863	2016-03-10 16:24:44.863	Urdu	ur	ur	0
+392	2016-03-10 16:24:44.863	2016-03-10 16:24:44.863	Urdu (Pakistan)	ur_PK	ur_PK	0
+393	2016-03-10 16:24:44.863	2016-03-10 16:24:44.863	Uzbek	uz	uz	0
+394	2016-03-10 16:24:44.863	2016-03-10 16:24:44.863	Uzbek (Arabic)	uz@Arab	uz@Arab	0
+395	2016-03-10 16:24:44.864	2016-03-10 16:24:44.864	Uzbek (Cyrillic)	uz@Cyrl	uz@Cyrl	0
+396	2016-03-10 16:24:44.864	2016-03-10 16:24:44.864	Uzbek (Latin)	uz@Latn	uz@Latn	0
+397	2016-03-10 16:24:44.864	2016-03-10 16:24:44.864	Uzbek (Uzbekistan)	uz_UZ	uz_UZ	0
+398	2016-03-10 16:24:44.865	2016-03-10 16:24:44.865	Venda	ve	ve	0
+399	2016-03-10 16:24:44.865	2016-03-10 16:24:44.865	Venetian	vec	vec	0
+400	2016-03-10 16:24:44.865	2016-03-10 16:24:44.865	Vietnamese	vi	vi	0
+401	2016-03-10 16:24:44.866	2016-03-10 16:24:44.866	Vietnamese (Viet Nam)	vi_VN	vi_VN	0
+402	2016-03-10 16:24:44.866	2016-03-10 16:24:44.866	Vlaams	vls	vls	0
+403	2016-03-10 16:24:44.867	2016-03-10 16:24:44.867	Walloon	wa	wa	0
+404	2016-03-10 16:24:44.867	2016-03-10 16:24:44.867	Wáray-Wáray	war	war	0
+405	2016-03-10 16:24:44.867	2016-03-10 16:24:44.867	Welsh	cy	cy	0
+406	2016-03-10 16:24:44.868	2016-03-10 16:24:44.868	Welsh (United Kingdom)	cy_GB	cy_GB	0
+407	2016-03-10 16:24:44.868	2016-03-10 16:24:44.868	Western Frisian	fy	fy	0
+408	2016-03-10 16:24:44.868	2016-03-10 16:24:44.868	Western Frisian (Netherlands)	fy_NL	fy_NL	0
+409	2016-03-10 16:24:44.87	2016-03-10 16:24:44.87	Wolof	wo	wo	0
+410	2016-03-10 16:24:44.87	2016-03-10 16:24:44.87	Wolof (Senegal)	wo_SN	wo_SN	0
+411	2016-03-10 16:24:44.87	2016-03-10 16:24:44.87	Xhosa	xh	xh	0
+412	2016-03-10 16:24:44.87	2016-03-10 16:24:44.87	Yiddish	yi	yi	0
+413	2016-03-10 16:24:44.87	2016-03-10 16:24:44.87	Yoruba	yo	yo	0
+414	2016-03-10 16:24:44.871	2016-03-10 16:24:44.871	Zulu	zu	zu	0
+415	2016-03-10 16:24:44.871	2016-03-10 16:24:44.871	Zulu (South Africa)	zu_ZA	zu_ZA	0
+\.
+
+
+--
+-- Name: languages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('languages_id_seq', 1, false);
+
+
+--
+-- Data for Name: list_subscribers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY list_subscribers (id, created, modified, list_id, user_id, is_subscribed) FROM stdin;
@@ -4275,14 +4719,14 @@ COPY list_subscribers (id, created, modified, list_id, user_id, is_subscribed) F
 
 
 --
--- Name: list_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: list_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('list_subscribers_id_seq', 1, false);
 
 
 --
--- Data for Name: lists; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: lists; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY lists (id, created, modified, board_id, user_id, name, "position", is_archived, card_count, lists_subscriber_count, is_deleted) FROM stdin;
@@ -4290,21 +4734,21 @@ COPY lists (id, created, modified, board_id, user_id, name, "position", is_archi
 
 
 --
--- Name: lists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: lists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('lists_id_seq', 196, true);
 
 
 --
--- Name: lists_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: lists_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('lists_subscribers_id_seq', 1, true);
 
 
 --
--- Data for Name: login_types; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: login_types; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY login_types (id, created, modified, name) FROM stdin;
@@ -4314,14 +4758,14 @@ COPY login_types (id, created, modified, name) FROM stdin;
 
 
 --
--- Name: login_types_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: login_types_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('login_types_id_seq', 2, true);
 
 
 --
--- Data for Name: oauth_access_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: oauth_access_tokens; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY oauth_access_tokens (access_token, client_id, user_id, expires, scope) FROM stdin;
@@ -4329,7 +4773,7 @@ COPY oauth_access_tokens (access_token, client_id, user_id, expires, scope) FROM
 
 
 --
--- Data for Name: oauth_authorization_codes; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: oauth_authorization_codes; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY oauth_authorization_codes (authorization_code, client_id, user_id, redirect_uri, expires, scope) FROM stdin;
@@ -4337,16 +4781,33 @@ COPY oauth_authorization_codes (authorization_code, client_id, user_id, redirect
 
 
 --
--- Data for Name: oauth_clients; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: oauth_clients; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY oauth_clients (client_id, client_secret, redirect_uri, grant_types, scope, user_id) FROM stdin;
-7742632501382313	4g7C4l1Y2b0S6a7L8c1E7B3K0e	http://localhost/restyaboard/server/php/R/r.php	client_credentials password refresh_token		2
+COPY oauth_clients (client_id, client_secret, redirect_uri, grant_types, scope, user_id, client_name, client_url, logo_url, tos_url, policy_url, modified, created, id) FROM stdin;
+7742632501382313	4g7C4l1Y2b0S6a7L8c1E7B3K0e		client_credentials password refresh_token authorization_code		2	Web App	\N	\N	\N	\N	\N	\N	2
+6664115227792148	hw3wpe2cfsxxygogwue47cwnf7	\N	client_credentials refresh_token authorization_code	\N	\N	Mobile App	\N	\N	\N	\N	2016-02-22 17:39:17.208	2016-02-22 17:39:17.208	3
+7857596005287233	n0l2wlujcpkj0bd7gk8918gm6b	\N	client_credentials refresh_token authorization_code	\N	\N	Zapier	\N	\N	\N	\N	2016-02-22 17:39:17.208	2016-02-22 17:39:17.208	4
+1193674816623028	zhxzlbts63ecvs2ybwb2m26vew		client_credentials refresh_token authorization_code	\N	\N	Amazon Echo App	http://amazon.com	\N	\N	\N	2016-03-09 07:14:29.165491	2016-03-09 07:13:57.717503	5
 \.
 
 
 --
--- Data for Name: oauth_jwt; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Name: oauth_clients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('oauth_clients_id_seq', 1, false);
+
+
+--
+-- Name: oauth_clients_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('oauth_clients_id_seq1', 5, true);
+
+
+--
+-- Data for Name: oauth_jwt; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY oauth_jwt (client_id, subject, public_key) FROM stdin;
@@ -4354,7 +4815,7 @@ COPY oauth_jwt (client_id, subject, public_key) FROM stdin;
 
 
 --
--- Data for Name: oauth_refresh_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: oauth_refresh_tokens; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY oauth_refresh_tokens (refresh_token, client_id, user_id, expires, scope) FROM stdin;
@@ -4365,15 +4826,35 @@ b43d289f47100a9c70ebd21f31c15db059ef82bb	7742632501382313	admin	2015-06-04 08:15
 
 
 --
--- Data for Name: oauth_scopes; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: oauth_scopes; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY oauth_scopes (scope, is_default) FROM stdin;
+read	t
+write	f
 \.
 
 
 --
--- Data for Name: organizations; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: organization_user_roles; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY organization_user_roles (id, created, modified, name, description) FROM stdin;
+1	2016-02-22 17:39:17.743	2016-02-22 17:39:17.743	Owner	Can view, create and edit org boards, and change settings for the organization.
+2	2016-02-22 17:39:17.743	2016-02-22 17:39:17.743	Editor	Can view, create, and edit org boards, but not change settings.
+3	2016-02-22 17:39:17.743	2016-02-22 17:39:17.743	Viewer	Can view only.
+\.
+
+
+--
+-- Name: organization_user_roles_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('organization_user_roles_seq', 1, false);
+
+
+--
+-- Data for Name: organizations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY organizations (id, created, modified, user_id, name, website_url, description, logo_url, organization_visibility, organizations_user_count, board_count) FROM stdin;
@@ -4381,47 +4862,47 @@ COPY organizations (id, created, modified, user_id, name, website_url, descripti
 
 
 --
--- Name: organizations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: organizations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('organizations_id_seq', 1, true);
 
 
 --
--- Data for Name: organizations_users; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: organizations_users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY organizations_users (id, created, modified, organization_id, user_id, is_admin) FROM stdin;
+COPY organizations_users (id, created, modified, organization_id, user_id, organization_user_role_id) FROM stdin;
 \.
 
 
 --
--- Name: organizations_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: organizations_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('organizations_users_id_seq', 1, true);
 
 
 --
--- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY roles (id, created, modified, name) FROM stdin;
-1	2014-09-02 19:43:15.815	2014-09-02 19:43:15.815	admin
-2	2014-09-02 19:43:15.815	2014-09-02 19:43:15.815	user
-3	2014-09-02 19:43:15.815	2014-09-02 19:43:15.815	guest
+1	2014-09-02 19:43:15.815	2014-09-02 19:43:15.815	Admin
+2	2014-09-02 19:43:15.815	2014-09-02 19:43:15.815	User
+3	2014-09-02 19:43:15.815	2014-09-02 19:43:15.815	Guest
 \.
 
 
 --
--- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('roles_id_seq', 3, true);
 
 
 --
--- Data for Name: setting_categories; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: setting_categories; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY setting_categories (id, created, modified, parent_id, name, description, "order") FROM stdin;
@@ -4433,18 +4914,19 @@ COPY setting_categories (id, created, modified, parent_id, name, description, "o
 1	2014-04-23 16:30:20.121	2014-04-23 16:30:20.121	\N	ElasticSearch		4
 9	\N	\N	2	Enabled Login Options	Enabled Login Options	1
 2	2014-11-08 02:52:08.822706	2014-04-28 17:01:11	\N	Login	\N	2
+10	2016-02-22 17:39:16.971	2016-02-22 17:39:16.971	\N	IMAP	\N	5
 \.
 
 
 --
--- Name: setting_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: setting_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('setting_categories_id_seq', 5, true);
 
 
 --
--- Data for Name: settings; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: settings; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY settings (id, setting_category_id, setting_category_parent_id, name, value, description, type, options, label, "order") FROM stdin;
@@ -4454,34 +4936,40 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 21	3	0	SITE_TIMEZONE	+0200	\N	text	\N	Site Timezone	5
 18	6	0	DROPBOX_APPKEY		\N	text	\N	Dropbox App Key	1
 20	6	0	FLICKR_API_KEY		\N	text	\N	Flickr API Key	2
-16	1	0	ELASTICSEARCH_URL		\N	text	\N	URL	3
-17	1	0	ELASTICSEARCH_INDEX		\N	text	\N	Index	4
 23	0	0	elasticsearch.last_processed_activtiy_id	0	\N	hidden	\N	Last Activity ID	3
-2	4	2	LDAP_SERVER	\N	\N	text	\N	Server	5
-5	4	2	LDAP_PORT	\N	\N	text	\N	Port	6
-4	4	2	LDAP_PROTOCOL_VERSION	\N	\N	text	\N	Protocol Version	7
-7	4	2	LDAP_ORGANISATION	\N	\N	text	\N	Organization	9
 3	9	2	LDAP_LOGIN_ENABLED	false	\N	checkbox	\N	LDAP	2
 22	9	2	STANDARD_LOGIN_ENABLED	true	\N	checkbox	\N	Standard	1
-8	5	2	LDAP_UID_FIELD	\N	\N	text	\N	Uid field	10
-9	5	2	LDAP_BIND_DN	\N	\N	text	\N	Bind dn	11
-10	5	2	LDAP_BIND_PASSWD	\N	\N	text	\N	Bind password	12
-6	4	2	LDAP_ROOT_DN	\N	\N	text	\N	Root dn	8
 29	3	0	DEFAULT_REPLY_TO_EMAIL_ADDRESS	board@restya.com	\N	text	\N	Reply To Email Address	3
 30	3	0	DEFAULT_CONTACT_EMAIL_ADDRESS	board@restya.com	\N	text	\N	Contact Email Address	4
 13	3	0	DEFAULT_FROM_EMAIL_ADDRESS	board@restya.com	\N	text	\N	From Email Address	2
+31	3	0	DEFAULT_LANGUAGE	en	\N	text	\N	Default Language	6
+36	0	0	webhooks.last_processed_activtiy_id	0	\N	hidden	\N	Webhook Activity ID	0
+24	4	2	ENABLE_SSL_CONNECTIVITY	\N	Use encryption (SSL, ldaps:// URL) when connects to server?	checkbox	\N	Enable SSL Connectivity	3
+5	4	2	LDAP_PORT	\N	Server port (e.g., 389 for LDAP and 636 for LDAP using SSL)	text	\N	Port	5
+8	5	2	LDAP_UID_FIELD	\N	You can use different field from the username here. For pre-windows 2000 style login, use sAMAccountName and for a UPN style login use userPrincipalName.	text	\N	Account Filter	9
+9	5	2	LDAP_BIND_DN	\N	Enter a valid user account/DN to pre-bind with if your LDAP server does not allow anonymous profile searches, or requires a user with specific privileges to search.	text	\N	Bind DN	10
+10	5	2	LDAP_BIND_PASSWD	\N	Enter a password for the above Bind DN.	password	\N	Bind password	11
+2	4	2	LDAP_SERVER	\N	The DNS name or IP address of the server (e.g., dc.domain.local)	text	\N	Server	4
+4	4	2	LDAP_PROTOCOL_VERSION	\N	Difference between LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)	text	\N	Protocol Version	6
+6	4	2	LDAP_ROOT_DN	\N	This is your search base for LDAP queries. This should be at least your domain root, (e.g., dc=domain,dc=local) You can define this as a Organizational Unit if you want to narrow down the search base (e.g., ou=team,ou=company,dc=domain,dc=local)	text	\N	Base DN	7
+16	1	0	ELASTICSEARCH_URL		e.g., http://localhost:9200/	text	\N	Server URL	3
+17	1	0	ELASTICSEARCH_INDEX		Used to prefix index names to avoid potential collisions. e.g., restya	text	\N	Index Name	4
+32	10	0	IMAP_HOST		\N	text	\N	Incoming Mail Server	1
+33	10	0	IMAP_PORT		e.g., 993	text	\N	Port	2
+34	10	0	IMAP_EMAIL		\N	text	\N	Email address	3
+35	10	0	IMAP_EMAIL_PASSWORD		\N	password	\N	Password	4
 \.
 
 
 --
--- Name: settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('settings_id_seq', 23, true);
+SELECT pg_catalog.setval('settings_id_seq', 24, true);
 
 
 --
--- Data for Name: states; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: states; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY states (id, created, modified, country_id, name, is_active) FROM stdin;
@@ -4490,21 +4978,21 @@ COPY states (id, created, modified, country_id, name, is_active) FROM stdin;
 
 
 --
--- Name: states_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: states_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('states_id_seq', 15138, false);
 
 
 --
--- Name: states_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: states_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('states_id_seq1', 1, true);
 
 
 --
--- Data for Name: user_logins; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: user_logins; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY user_logins (id, created, modified, user_id, ip_id, user_agent) FROM stdin;
@@ -4514,47 +5002,62 @@ COPY user_logins (id, created, modified, user_id, ip_id, user_agent) FROM stdin;
 
 
 --
--- Name: user_logins_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: user_logins_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('user_logins_id_seq', 2, true);
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count) FROM stdin;
-1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	media/User/1/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f	0	0	0	0	0	0
-2	2014-07-05 11:46:40.804	2014-07-05 11:46:40.804	2	user	board+user@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	User	U	\N	\N	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	0	\N	\N	\N	\N	f	0	f	0	0	0	0	0	0
+COPY users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count, language) FROM stdin;
+1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	media/User/1/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f	0	0	0	0	0	0	\N
+2	2014-07-05 11:46:40.804	2014-07-05 11:46:40.804	2	user	board+user@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	User	U	\N	\N	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	0	\N	\N	\N	\N	f	0	f	0	0	0	0	0	0	\N
 \.
 
 
 --
--- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('users_id_seq', 2, true);
 
 
 --
--- Name: acl_links_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Data for Name: webhooks; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY acl_links
-    ADD CONSTRAINT acl_links_id PRIMARY KEY (id);
-
-
---
--- Name: acl_links_roles_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY acl_links_roles
-    ADD CONSTRAINT acl_links_roles_id PRIMARY KEY (id);
+COPY webhooks (id, created, modified, name, description, url, secret, is_active) FROM stdin;
+\.
 
 
 --
--- Name: activities_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: webhooks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('webhooks_id_seq', 1, false);
+
+
+--
+-- Name: acl_board_links_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY acl_board_links
+    ADD CONSTRAINT acl_board_links_id PRIMARY KEY (id);
+
+
+--
+-- Name: acl_organization_links_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY acl_organization_links
+    ADD CONSTRAINT acl_organization_links_id PRIMARY KEY (id);
+
+
+--
+-- Name: activities_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY activities
@@ -4562,7 +5065,7 @@ ALTER TABLE ONLY activities
 
 
 --
--- Name: board_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY board_subscribers
@@ -4570,7 +5073,7 @@ ALTER TABLE ONLY board_subscribers
 
 
 --
--- Name: board_users_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_users_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY boards_users
@@ -4578,7 +5081,7 @@ ALTER TABLE ONLY boards_users
 
 
 --
--- Name: boards_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: boards_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY boards
@@ -4586,7 +5089,7 @@ ALTER TABLE ONLY boards
 
 
 --
--- Name: card_attachments_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_attachments_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY card_attachments
@@ -4594,7 +5097,7 @@ ALTER TABLE ONLY card_attachments
 
 
 --
--- Name: card_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY card_subscribers
@@ -4602,7 +5105,7 @@ ALTER TABLE ONLY card_subscribers
 
 
 --
--- Name: card_users_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_users_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY cards_users
@@ -4610,7 +5113,7 @@ ALTER TABLE ONLY cards_users
 
 
 --
--- Name: card_voters_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_voters_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY card_voters
@@ -4618,7 +5121,7 @@ ALTER TABLE ONLY card_voters
 
 
 --
--- Name: cards_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY cards
@@ -4626,7 +5129,7 @@ ALTER TABLE ONLY cards
 
 
 --
--- Name: cards_labels_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_labels_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY cards_labels
@@ -4634,7 +5137,7 @@ ALTER TABLE ONLY cards_labels
 
 
 --
--- Name: checklist_items_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklist_items_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY checklist_items
@@ -4642,7 +5145,7 @@ ALTER TABLE ONLY checklist_items
 
 
 --
--- Name: checklists_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklists_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY checklists
@@ -4650,7 +5153,7 @@ ALTER TABLE ONLY checklists
 
 
 --
--- Name: cities_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cities_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY cities
@@ -4658,7 +5161,7 @@ ALTER TABLE ONLY cities
 
 
 --
--- Name: countries_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: countries_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY countries
@@ -4666,7 +5169,7 @@ ALTER TABLE ONLY countries
 
 
 --
--- Name: email_templates_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: email_templates_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY email_templates
@@ -4674,7 +5177,7 @@ ALTER TABLE ONLY email_templates
 
 
 --
--- Name: ips_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: ips_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY ips
@@ -4682,7 +5185,7 @@ ALTER TABLE ONLY ips
 
 
 --
--- Name: labels_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: labels_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY labels
@@ -4690,7 +5193,7 @@ ALTER TABLE ONLY labels
 
 
 --
--- Name: lists_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: lists_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY lists
@@ -4698,7 +5201,7 @@ ALTER TABLE ONLY lists
 
 
 --
--- Name: lists_subscribers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: lists_subscribers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY list_subscribers
@@ -4706,7 +5209,7 @@ ALTER TABLE ONLY list_subscribers
 
 
 --
--- Name: oauth_access_tokens_access_token; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_access_tokens_access_token; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY oauth_access_tokens
@@ -4714,7 +5217,7 @@ ALTER TABLE ONLY oauth_access_tokens
 
 
 --
--- Name: oauth_authorization_codes_authorization_code; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_authorization_codes_authorization_code; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY oauth_authorization_codes
@@ -4722,7 +5225,7 @@ ALTER TABLE ONLY oauth_authorization_codes
 
 
 --
--- Name: oauth_clients_client_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_clients_client_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY oauth_clients
@@ -4730,7 +5233,7 @@ ALTER TABLE ONLY oauth_clients
 
 
 --
--- Name: oauth_jwt_client_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_jwt_client_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY oauth_jwt
@@ -4738,7 +5241,7 @@ ALTER TABLE ONLY oauth_jwt
 
 
 --
--- Name: oauth_refresh_tokens_refresh_token; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_refresh_tokens_refresh_token; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY oauth_refresh_tokens
@@ -4746,7 +5249,7 @@ ALTER TABLE ONLY oauth_refresh_tokens
 
 
 --
--- Name: organization_users_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organization_users_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY organizations_users
@@ -4754,7 +5257,7 @@ ALTER TABLE ONLY organizations_users
 
 
 --
--- Name: organizations_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organizations_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY organizations
@@ -4762,7 +5265,7 @@ ALTER TABLE ONLY organizations
 
 
 --
--- Name: roles_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: roles_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY roles
@@ -4770,7 +5273,7 @@ ALTER TABLE ONLY roles
 
 
 --
--- Name: setting_categories_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: setting_categories_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY setting_categories
@@ -4778,7 +5281,7 @@ ALTER TABLE ONLY setting_categories
 
 
 --
--- Name: settings_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: settings_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY settings
@@ -4786,7 +5289,7 @@ ALTER TABLE ONLY settings
 
 
 --
--- Name: states_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: states_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY states
@@ -4794,7 +5297,7 @@ ALTER TABLE ONLY states
 
 
 --
--- Name: users_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY users
@@ -4802,616 +5305,637 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: acl_links_roles_acl_link_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: acl_board_links_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX acl_links_roles_acl_link_id ON acl_links_roles USING btree (acl_link_id);
-
-
---
--- Name: acl_links_roles_role_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX acl_links_roles_role_id ON acl_links_roles USING btree (role_id);
+CREATE INDEX acl_board_links_group_id ON acl_board_links USING btree (group_id);
 
 
 --
--- Name: acl_links_slug; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: acl_board_links_slug; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX acl_links_slug ON acl_links USING btree (slug);
+CREATE INDEX acl_board_links_slug ON acl_board_links USING btree (slug);
 
 
 --
--- Name: activities_attachment_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: acl_board_links_url; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX acl_board_links_url ON acl_board_links USING btree (url);
+
+
+--
+-- Name: acl_organization_links_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX acl_organization_links_group_id ON acl_organization_links USING btree (group_id);
+
+
+--
+-- Name: acl_organization_links_slug; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX acl_organization_links_slug ON acl_organization_links USING btree (slug);
+
+
+--
+-- Name: acl_organization_links_url; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX acl_organization_links_url ON acl_organization_links USING btree (url);
+
+
+--
+-- Name: activities_attachment_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_attachment_id ON activities USING btree (foreign_id);
 
 
 --
--- Name: activities_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_board_id ON activities USING btree (board_id);
 
 
 --
--- Name: activities_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_card_id ON activities USING btree (card_id);
 
 
 --
--- Name: activities_depth; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_depth; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_depth ON activities USING btree (depth);
 
 
 --
--- Name: activities_freshness_ts; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_freshness_ts; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_freshness_ts ON activities USING btree (freshness_ts);
 
 
 --
--- Name: activities_list_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_list_id ON activities USING btree (list_id);
 
 
 --
--- Name: activities_materialized_path; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_materialized_path; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_materialized_path ON activities USING btree (materialized_path);
 
 
 --
--- Name: activities_path; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_path; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_path ON activities USING btree (path);
 
 
 --
--- Name: activities_root; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_root; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_root ON activities USING btree (root);
 
 
 --
--- Name: activities_type; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_type ON activities USING btree (type);
 
 
 --
--- Name: activities_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: activities_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX activities_user_id ON activities USING btree (user_id);
 
 
 --
--- Name: attachments_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: attachments_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX attachments_card_id ON card_attachments USING btree (card_id);
 
 
 --
--- Name: board_stars_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_stars_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX board_stars_board_id ON board_stars USING btree (board_id);
 
 
 --
--- Name: board_stars_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_stars_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX board_stars_user_id ON board_stars USING btree (user_id);
 
 
 --
--- Name: board_subscribers_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_subscribers_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX board_subscribers_board_id ON board_subscribers USING btree (board_id);
 
 
 --
--- Name: board_subscribers_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_subscribers_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX board_subscribers_user_id ON board_subscribers USING btree (user_id);
 
 
 --
--- Name: board_users_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_users_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX board_users_board_id ON boards_users USING btree (board_id);
 
 
 --
--- Name: board_users_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: board_users_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX board_users_user_id ON boards_users USING btree (user_id);
 
 
 --
--- Name: boards_organization_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: boards_organization_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX boards_organization_id ON boards USING btree (organization_id);
 
 
 --
--- Name: boards_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: boards_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX boards_user_id ON boards USING btree (user_id);
 
 
 --
--- Name: card_attachments_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_attachments_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_attachments_board_id ON card_attachments USING btree (board_id);
 
 
 --
--- Name: card_attachments_list_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_attachments_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_attachments_list_id ON card_attachments USING btree (list_id);
 
 
 --
--- Name: card_subscribers_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_subscribers_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_subscribers_card_id ON card_subscribers USING btree (card_id);
 
 
 --
--- Name: card_subscribers_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_subscribers_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_subscribers_user_id ON card_subscribers USING btree (user_id);
 
 
 --
--- Name: card_users_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_users_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_users_card_id ON cards_users USING btree (card_id);
 
 
 --
--- Name: card_users_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_users_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_users_user_id ON cards_users USING btree (user_id);
 
 
 --
--- Name: card_voters_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_voters_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_voters_card_id ON card_voters USING btree (card_id);
 
 
 --
--- Name: card_voters_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: card_voters_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX card_voters_user_id ON card_voters USING btree (user_id);
 
 
 --
--- Name: cards_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_board_id ON cards USING btree (board_id);
 
 
 --
--- Name: cards_labels_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_labels_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_labels_board_id ON cards_labels USING btree (board_id);
 
 
 --
--- Name: cards_labels_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_labels_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_labels_card_id ON cards_labels USING btree (card_id);
 
 
 --
--- Name: cards_labels_label_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_labels_label_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_labels_label_id ON cards_labels USING btree (label_id);
 
 
 --
--- Name: cards_labels_list_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_labels_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_labels_list_id ON cards_labels USING btree (list_id);
 
 
 --
--- Name: cards_list_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_list_id ON cards USING btree (list_id);
 
 
 --
--- Name: cards_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: cards_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX cards_user_id ON cards USING btree (user_id);
 
 
 --
--- Name: checklist_items_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklist_items_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX checklist_items_card_id ON checklist_items USING btree (card_id);
 
 
 --
--- Name: checklist_items_checklist_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklist_items_checklist_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX checklist_items_checklist_id ON checklist_items USING btree (checklist_id);
 
 
 --
--- Name: checklist_items_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklist_items_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX checklist_items_user_id ON checklist_items USING btree (user_id);
 
 
 --
--- Name: checklists_card_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklists_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX checklists_card_id ON checklists USING btree (card_id);
 
 
 --
--- Name: checklists_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: checklists_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX checklists_user_id ON checklists USING btree (user_id);
 
 
 --
--- Name: email_templates_name; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: email_templates_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX email_templates_name ON email_templates USING btree (name);
 
 
 --
--- Name: labels_name; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: labels_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX labels_name ON labels USING btree (name);
 
 
 --
--- Name: list_subscribers_list_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: list_subscribers_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX list_subscribers_list_id ON list_subscribers USING btree (list_id);
 
 
 --
--- Name: list_subscribers_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: list_subscribers_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX list_subscribers_user_id ON list_subscribers USING btree (user_id);
 
 
 --
--- Name: lists_board_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: lists_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX lists_board_id ON lists USING btree (board_id);
 
 
 --
--- Name: lists_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: lists_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX lists_user_id ON lists USING btree (user_id);
 
 
 --
--- Name: oauth_access_tokens_client_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_access_tokens_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_access_tokens_client_id ON oauth_access_tokens USING btree (client_id);
 
 
 --
--- Name: oauth_access_tokens_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_access_tokens_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_access_tokens_user_id ON oauth_access_tokens USING btree (user_id);
 
 
 --
--- Name: oauth_authorization_codes_client_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_authorization_codes_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_authorization_codes_client_id ON oauth_authorization_codes USING btree (client_id);
 
 
 --
--- Name: oauth_authorization_codes_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_authorization_codes_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_authorization_codes_user_id ON oauth_authorization_codes USING btree (user_id);
 
 
 --
--- Name: oauth_clients_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_clients_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_clients_user_id ON oauth_clients USING btree (user_id);
 
 
 --
--- Name: oauth_refresh_tokens_client_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_refresh_tokens_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_refresh_tokens_client_id ON oauth_refresh_tokens USING btree (client_id);
 
 
 --
--- Name: oauth_refresh_tokens_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: oauth_refresh_tokens_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX oauth_refresh_tokens_user_id ON oauth_refresh_tokens USING btree (user_id);
 
 
 --
--- Name: organization_users_organization_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organization_users_organization_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX organization_users_organization_id ON organizations_users USING btree (organization_id);
 
 
 --
--- Name: organization_users_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organization_users_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX organization_users_user_id ON organizations_users USING btree (user_id);
 
 
 --
--- Name: organizations_user_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: organizations_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX organizations_user_id ON organizations USING btree (user_id);
 
 
 --
--- Name: roles_name; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: roles_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX roles_name ON roles USING btree (name);
 
 
 --
--- Name: setting_categories_parent_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: setting_categories_parent_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX setting_categories_parent_id ON setting_categories USING btree (parent_id);
 
 
 --
--- Name: settings_setting_category_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: settings_setting_category_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX settings_setting_category_id ON settings USING btree (setting_category_id);
 
 
 --
--- Name: settings_setting_category_parent_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: settings_setting_category_parent_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX settings_setting_category_parent_id ON settings USING btree (setting_category_parent_id);
 
 
 --
--- Name: users_email; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users_email; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX users_email ON users USING btree (email);
 
 
 --
--- Name: users_last_activity_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users_last_activity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX users_last_activity_id ON users USING btree (last_activity_id);
 
 
 --
--- Name: users_role_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users_role_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX users_role_id ON users USING btree (role_id);
 
 
 --
--- Name: users_username; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users_username; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX users_username ON users USING btree (username);
 
 
 --
--- Name: label_card_count_update; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: label_card_count_update; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER label_card_count_update AFTER INSERT OR DELETE OR UPDATE ON cards_labels FOR EACH ROW EXECUTE PROCEDURE label_card_count_update();
 
 
 --
--- Name: update_board_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_board_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_board_count AFTER INSERT OR DELETE OR UPDATE ON boards FOR EACH ROW EXECUTE PROCEDURE update_board_count();
 
 
 --
--- Name: update_board_star_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_board_star_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_board_star_count AFTER INSERT OR DELETE OR UPDATE ON board_stars FOR EACH ROW EXECUTE PROCEDURE update_board_star_count();
 
 
 --
--- Name: update_board_subscriber_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_board_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_board_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON board_subscribers FOR EACH ROW EXECUTE PROCEDURE update_board_subscriber_count();
 
 
 --
--- Name: update_board_user_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_board_user_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_board_user_count AFTER INSERT OR DELETE OR UPDATE ON boards_users FOR EACH ROW EXECUTE PROCEDURE update_board_user_count();
 
 
 --
--- Name: update_card_activity_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_activity_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_activity_count AFTER INSERT OR DELETE OR UPDATE ON activities FOR EACH ROW EXECUTE PROCEDURE update_card_activity_count();
 
 
 --
--- Name: update_card_attachment_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_attachment_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_attachment_count AFTER INSERT OR DELETE OR UPDATE ON card_attachments FOR EACH ROW EXECUTE PROCEDURE update_card_attachment_count();
 
 
 --
--- Name: update_card_checklist_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_checklist_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_checklist_count AFTER INSERT OR DELETE OR UPDATE ON checklists FOR EACH ROW EXECUTE PROCEDURE update_card_checklist_count();
 
 
 --
--- Name: update_card_checklist_item_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_checklist_item_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_checklist_item_count AFTER INSERT OR DELETE OR UPDATE ON checklist_items FOR EACH ROW EXECUTE PROCEDURE update_card_checklist_item_count();
 
 
 --
--- Name: update_card_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_count AFTER INSERT OR DELETE OR UPDATE ON cards FOR EACH ROW EXECUTE PROCEDURE update_card_count();
 
 
 --
--- Name: update_card_subscriber_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON card_subscribers FOR EACH ROW EXECUTE PROCEDURE update_card_subscriber_count();
 
 
 --
--- Name: update_card_user_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_user_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_user_count AFTER INSERT OR DELETE OR UPDATE ON cards_users FOR EACH ROW EXECUTE PROCEDURE update_card_user_count();
 
 
 --
--- Name: update_card_voters_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_card_voters_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_card_voters_count AFTER INSERT OR DELETE OR UPDATE ON card_voters FOR EACH ROW EXECUTE PROCEDURE update_card_voters_count();
 
 
 --
--- Name: update_comment_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_comment_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_comment_count AFTER INSERT OR DELETE OR UPDATE ON activities FOR EACH ROW EXECUTE PROCEDURE update_comment_count();
 
 
 --
--- Name: update_list_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_list_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_list_count AFTER INSERT OR DELETE OR UPDATE ON lists FOR EACH ROW EXECUTE PROCEDURE update_list_count();
 
 
 --
--- Name: update_list_subscriber_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_list_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_list_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON list_subscribers FOR EACH ROW EXECUTE PROCEDURE update_list_subscriber_count();
 
 
 --
--- Name: update_organization_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_organization_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_organization_count AFTER INSERT OR DELETE OR UPDATE ON organizations FOR EACH ROW EXECUTE PROCEDURE update_organization_count();
 
 
 --
--- Name: update_organization_user_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_organization_user_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_organization_user_count AFTER INSERT OR DELETE OR UPDATE ON organizations_users FOR EACH ROW EXECUTE PROCEDURE update_organization_user_count();
 
 
 --
--- Name: update_user_delete; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_user_delete; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_user_delete AFTER DELETE ON users FOR EACH ROW EXECUTE PROCEDURE update_user_delete();
 
 
 --
--- Name: update_users_user_login_count; Type: TRIGGER; Schema: public; Owner: postgres
+-- Name: update_users_user_login_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_users_user_login_count AFTER INSERT OR DELETE OR UPDATE ON user_logins FOR EACH ROW EXECUTE PROCEDURE update_users_user_login_count();
 
 
 --
--- Name: cities_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: cities_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cities
@@ -5419,7 +5943,7 @@ ALTER TABLE ONLY cities
 
 
 --
--- Name: cities_state_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: cities_state_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cities
@@ -5427,7 +5951,7 @@ ALTER TABLE ONLY cities
 
 
 --
--- Name: states_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: states_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states
@@ -5435,7 +5959,7 @@ ALTER TABLE ONLY states
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: postgres
+-- Name: public; Type: ACL; Schema: -; Owner: -
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
@@ -5445,7 +5969,7 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
--- Name: acl_links_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: acl_links_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE acl_links_id_seq FROM PUBLIC;
@@ -5454,16 +5978,7 @@ GRANT ALL ON SEQUENCE acl_links_id_seq TO postgres;
 
 
 --
--- Name: acl_links; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE acl_links FROM PUBLIC;
-REVOKE ALL ON TABLE acl_links FROM postgres;
-GRANT ALL ON TABLE acl_links TO postgres;
-
-
---
--- Name: acl_links_roles_roles_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: acl_links_roles_roles_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE acl_links_roles_roles_id_seq FROM PUBLIC;
@@ -5472,25 +5987,7 @@ GRANT ALL ON SEQUENCE acl_links_roles_roles_id_seq TO postgres;
 
 
 --
--- Name: acl_links_roles; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE acl_links_roles FROM PUBLIC;
-REVOKE ALL ON TABLE acl_links_roles FROM postgres;
-GRANT ALL ON TABLE acl_links_roles TO postgres;
-
-
---
--- Name: acl_links_listing; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE acl_links_listing FROM PUBLIC;
-REVOKE ALL ON TABLE acl_links_listing FROM postgres;
-GRANT ALL ON TABLE acl_links_listing TO postgres;
-
-
---
--- Name: activities_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: activities_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE activities_id_seq FROM PUBLIC;
@@ -5499,7 +5996,7 @@ GRANT ALL ON SEQUENCE activities_id_seq TO postgres;
 
 
 --
--- Name: activities; Type: ACL; Schema: public; Owner: postgres
+-- Name: activities; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE activities FROM PUBLIC;
@@ -5508,7 +6005,7 @@ GRANT ALL ON TABLE activities TO postgres;
 
 
 --
--- Name: boards_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: boards_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE boards_id_seq FROM PUBLIC;
@@ -5517,7 +6014,7 @@ GRANT ALL ON SEQUENCE boards_id_seq TO postgres;
 
 
 --
--- Name: boards; Type: ACL; Schema: public; Owner: postgres
+-- Name: boards; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE boards FROM PUBLIC;
@@ -5526,7 +6023,7 @@ GRANT ALL ON TABLE boards TO postgres;
 
 
 --
--- Name: cards_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE cards_id_seq FROM PUBLIC;
@@ -5535,7 +6032,7 @@ GRANT ALL ON SEQUENCE cards_id_seq TO postgres;
 
 
 --
--- Name: cards; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE cards FROM PUBLIC;
@@ -5544,52 +6041,7 @@ GRANT ALL ON TABLE cards TO postgres;
 
 
 --
--- Name: cards_labels_id_seq; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON SEQUENCE cards_labels_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE cards_labels_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE cards_labels_id_seq TO postgres;
-
-
---
--- Name: cards_labels; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE cards_labels FROM PUBLIC;
-REVOKE ALL ON TABLE cards_labels FROM postgres;
-GRANT ALL ON TABLE cards_labels TO postgres;
-
-
---
--- Name: labels_id_seq; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON SEQUENCE labels_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE labels_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE labels_id_seq TO postgres;
-
-
---
--- Name: labels; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE labels FROM PUBLIC;
-REVOKE ALL ON TABLE labels FROM postgres;
-GRANT ALL ON TABLE labels TO postgres;
-
-
---
--- Name: cards_labels_listing; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE cards_labels_listing FROM PUBLIC;
-REVOKE ALL ON TABLE cards_labels_listing FROM postgres;
-GRANT ALL ON TABLE cards_labels_listing TO postgres;
-
-
---
--- Name: checklist_items_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: checklist_items_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE checklist_items_id_seq FROM PUBLIC;
@@ -5598,7 +6050,7 @@ GRANT ALL ON SEQUENCE checklist_items_id_seq TO postgres;
 
 
 --
--- Name: checklist_items; Type: ACL; Schema: public; Owner: postgres
+-- Name: checklist_items; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE checklist_items FROM PUBLIC;
@@ -5607,7 +6059,7 @@ GRANT ALL ON TABLE checklist_items TO postgres;
 
 
 --
--- Name: checklists_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: checklists_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE checklists_id_seq FROM PUBLIC;
@@ -5616,7 +6068,7 @@ GRANT ALL ON SEQUENCE checklists_id_seq TO postgres;
 
 
 --
--- Name: checklists; Type: ACL; Schema: public; Owner: postgres
+-- Name: checklists; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE checklists FROM PUBLIC;
@@ -5625,7 +6077,25 @@ GRANT ALL ON TABLE checklists TO postgres;
 
 
 --
--- Name: lists_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: labels_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+REVOKE ALL ON SEQUENCE labels_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE labels_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE labels_id_seq TO postgres;
+
+
+--
+-- Name: labels; Type: ACL; Schema: public; Owner: -
+--
+
+REVOKE ALL ON TABLE labels FROM PUBLIC;
+REVOKE ALL ON TABLE labels FROM postgres;
+GRANT ALL ON TABLE labels TO postgres;
+
+
+--
+-- Name: lists_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE lists_id_seq FROM PUBLIC;
@@ -5634,7 +6104,7 @@ GRANT ALL ON SEQUENCE lists_id_seq TO postgres;
 
 
 --
--- Name: lists; Type: ACL; Schema: public; Owner: postgres
+-- Name: lists; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE lists FROM PUBLIC;
@@ -5643,7 +6113,7 @@ GRANT ALL ON TABLE lists TO postgres;
 
 
 --
--- Name: organizations_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: organizations_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE organizations_id_seq FROM PUBLIC;
@@ -5652,7 +6122,7 @@ GRANT ALL ON SEQUENCE organizations_id_seq TO postgres;
 
 
 --
--- Name: organizations; Type: ACL; Schema: public; Owner: postgres
+-- Name: organizations; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE organizations FROM PUBLIC;
@@ -5661,7 +6131,7 @@ GRANT ALL ON TABLE organizations TO postgres;
 
 
 --
--- Name: users_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE users_id_seq FROM PUBLIC;
@@ -5670,7 +6140,7 @@ GRANT ALL ON SEQUENCE users_id_seq TO postgres;
 
 
 --
--- Name: users; Type: ACL; Schema: public; Owner: postgres
+-- Name: users; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE users FROM PUBLIC;
@@ -5679,7 +6149,7 @@ GRANT ALL ON TABLE users TO postgres;
 
 
 --
--- Name: activities_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: activities_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE activities_listing FROM PUBLIC;
@@ -5688,7 +6158,7 @@ GRANT ALL ON TABLE activities_listing TO postgres;
 
 
 --
--- Name: attachments_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: attachments_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE attachments_id_seq FROM PUBLIC;
@@ -5697,7 +6167,7 @@ GRANT ALL ON SEQUENCE attachments_id_seq TO postgres;
 
 
 --
--- Name: boards_stars_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: boards_stars_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE boards_stars_id_seq FROM PUBLIC;
@@ -5706,7 +6176,7 @@ GRANT ALL ON SEQUENCE boards_stars_id_seq TO postgres;
 
 
 --
--- Name: board_stars; Type: ACL; Schema: public; Owner: postgres
+-- Name: board_stars; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE board_stars FROM PUBLIC;
@@ -5715,7 +6185,7 @@ GRANT ALL ON TABLE board_stars TO postgres;
 
 
 --
--- Name: boards_subscribers_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: boards_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE boards_subscribers_id_seq FROM PUBLIC;
@@ -5724,7 +6194,7 @@ GRANT ALL ON SEQUENCE boards_subscribers_id_seq TO postgres;
 
 
 --
--- Name: board_subscribers; Type: ACL; Schema: public; Owner: postgres
+-- Name: board_subscribers; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE board_subscribers FROM PUBLIC;
@@ -5733,7 +6203,25 @@ GRANT ALL ON TABLE board_subscribers TO postgres;
 
 
 --
--- Name: boards_labels_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_labels_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+REVOKE ALL ON SEQUENCE cards_labels_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE cards_labels_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE cards_labels_id_seq TO postgres;
+
+
+--
+-- Name: cards_labels; Type: ACL; Schema: public; Owner: -
+--
+
+REVOKE ALL ON TABLE cards_labels FROM PUBLIC;
+REVOKE ALL ON TABLE cards_labels FROM postgres;
+GRANT ALL ON TABLE cards_labels TO postgres;
+
+
+--
+-- Name: boards_labels_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE boards_labels_listing FROM PUBLIC;
@@ -5742,7 +6230,7 @@ GRANT ALL ON TABLE boards_labels_listing TO postgres;
 
 
 --
--- Name: boards_users_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: boards_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE boards_users_id_seq FROM PUBLIC;
@@ -5751,7 +6239,7 @@ GRANT ALL ON SEQUENCE boards_users_id_seq TO postgres;
 
 
 --
--- Name: boards_users; Type: ACL; Schema: public; Owner: postgres
+-- Name: boards_users; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE boards_users FROM PUBLIC;
@@ -5760,7 +6248,7 @@ GRANT ALL ON TABLE boards_users TO postgres;
 
 
 --
--- Name: card_attachments_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: card_attachments_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE card_attachments_id_seq FROM PUBLIC;
@@ -5769,7 +6257,7 @@ GRANT ALL ON SEQUENCE card_attachments_id_seq TO postgres;
 
 
 --
--- Name: card_attachments; Type: ACL; Schema: public; Owner: postgres
+-- Name: card_attachments; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE card_attachments FROM PUBLIC;
@@ -5778,7 +6266,7 @@ GRANT ALL ON TABLE card_attachments TO postgres;
 
 
 --
--- Name: cards_subscribers_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE cards_subscribers_id_seq FROM PUBLIC;
@@ -5787,7 +6275,7 @@ GRANT ALL ON SEQUENCE cards_subscribers_id_seq TO postgres;
 
 
 --
--- Name: card_subscribers; Type: ACL; Schema: public; Owner: postgres
+-- Name: card_subscribers; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE card_subscribers FROM PUBLIC;
@@ -5796,7 +6284,7 @@ GRANT ALL ON TABLE card_subscribers TO postgres;
 
 
 --
--- Name: card_voters_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: card_voters_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE card_voters_id_seq FROM PUBLIC;
@@ -5805,7 +6293,7 @@ GRANT ALL ON SEQUENCE card_voters_id_seq TO postgres;
 
 
 --
--- Name: card_voters; Type: ACL; Schema: public; Owner: postgres
+-- Name: card_voters; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE card_voters FROM PUBLIC;
@@ -5814,7 +6302,7 @@ GRANT ALL ON TABLE card_voters TO postgres;
 
 
 --
--- Name: card_voters_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: card_voters_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE card_voters_listing FROM PUBLIC;
@@ -5823,7 +6311,16 @@ GRANT ALL ON TABLE card_voters_listing TO postgres;
 
 
 --
--- Name: cards_users_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_labels_listing; Type: ACL; Schema: public; Owner: -
+--
+
+REVOKE ALL ON TABLE cards_labels_listing FROM PUBLIC;
+REVOKE ALL ON TABLE cards_labels_listing FROM postgres;
+GRANT ALL ON TABLE cards_labels_listing TO postgres;
+
+
+--
+-- Name: cards_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE cards_users_id_seq FROM PUBLIC;
@@ -5832,7 +6329,7 @@ GRANT ALL ON SEQUENCE cards_users_id_seq TO postgres;
 
 
 --
--- Name: cards_users; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_users; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE cards_users FROM PUBLIC;
@@ -5841,7 +6338,7 @@ GRANT ALL ON TABLE cards_users TO postgres;
 
 
 --
--- Name: cards_users_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: cards_users_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE cards_users_listing FROM PUBLIC;
@@ -5850,7 +6347,7 @@ GRANT ALL ON TABLE cards_users_listing TO postgres;
 
 
 --
--- Name: checklists_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: checklists_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE checklists_listing FROM PUBLIC;
@@ -5859,7 +6356,7 @@ GRANT ALL ON TABLE checklists_listing TO postgres;
 
 
 --
--- Name: lists_subscribers_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: lists_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE lists_subscribers_id_seq FROM PUBLIC;
@@ -5868,7 +6365,7 @@ GRANT ALL ON SEQUENCE lists_subscribers_id_seq TO postgres;
 
 
 --
--- Name: list_subscribers; Type: ACL; Schema: public; Owner: postgres
+-- Name: list_subscribers; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE list_subscribers FROM PUBLIC;
@@ -5877,7 +6374,7 @@ GRANT ALL ON TABLE list_subscribers TO postgres;
 
 
 --
--- Name: checklist_add_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: checklist_add_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE checklist_add_listing FROM PUBLIC;
@@ -5886,7 +6383,7 @@ GRANT ALL ON TABLE checklist_add_listing TO postgres;
 
 
 --
--- Name: cities; Type: ACL; Schema: public; Owner: postgres
+-- Name: cities; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE cities FROM PUBLIC;
@@ -5895,7 +6392,7 @@ GRANT ALL ON TABLE cities TO postgres;
 
 
 --
--- Name: cities_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: cities_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE cities_id_seq FROM PUBLIC;
@@ -5904,7 +6401,7 @@ GRANT ALL ON SEQUENCE cities_id_seq TO postgres;
 
 
 --
--- Name: cities_id_seq1; Type: ACL; Schema: public; Owner: postgres
+-- Name: cities_id_seq1; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE cities_id_seq1 FROM PUBLIC;
@@ -5913,7 +6410,7 @@ GRANT ALL ON SEQUENCE cities_id_seq1 TO postgres;
 
 
 --
--- Name: countries; Type: ACL; Schema: public; Owner: postgres
+-- Name: countries; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE countries FROM PUBLIC;
@@ -5922,7 +6419,7 @@ GRANT ALL ON TABLE countries TO postgres;
 
 
 --
--- Name: countries_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: countries_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE countries_id_seq FROM PUBLIC;
@@ -5931,7 +6428,7 @@ GRANT ALL ON SEQUENCE countries_id_seq TO postgres;
 
 
 --
--- Name: countries_id_seq1; Type: ACL; Schema: public; Owner: postgres
+-- Name: countries_id_seq1; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE countries_id_seq1 FROM PUBLIC;
@@ -5940,7 +6437,7 @@ GRANT ALL ON SEQUENCE countries_id_seq1 TO postgres;
 
 
 --
--- Name: email_templates_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: email_templates_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE email_templates_id_seq FROM PUBLIC;
@@ -5949,7 +6446,7 @@ GRANT ALL ON SEQUENCE email_templates_id_seq TO postgres;
 
 
 --
--- Name: email_templates; Type: ACL; Schema: public; Owner: postgres
+-- Name: email_templates; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE email_templates FROM PUBLIC;
@@ -5958,7 +6455,7 @@ GRANT ALL ON TABLE email_templates TO postgres;
 
 
 --
--- Name: gadget_users_listing; Type: ACL; Schema: public; Owner: postgres
+-- Name: gadget_users_listing; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE gadget_users_listing FROM PUBLIC;
@@ -5967,7 +6464,7 @@ GRANT ALL ON TABLE gadget_users_listing TO postgres;
 
 
 --
--- Name: ips_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: ips_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE ips_id_seq FROM PUBLIC;
@@ -5976,7 +6473,7 @@ GRANT ALL ON SEQUENCE ips_id_seq TO postgres;
 
 
 --
--- Name: ips; Type: ACL; Schema: public; Owner: postgres
+-- Name: ips; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE ips FROM PUBLIC;
@@ -5985,7 +6482,7 @@ GRANT ALL ON TABLE ips TO postgres;
 
 
 --
--- Name: list_subscribers_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: list_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE list_subscribers_id_seq FROM PUBLIC;
@@ -5994,7 +6491,7 @@ GRANT ALL ON SEQUENCE list_subscribers_id_seq TO postgres;
 
 
 --
--- Name: login_types_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: login_types_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE login_types_id_seq FROM PUBLIC;
@@ -6003,7 +6500,7 @@ GRANT ALL ON SEQUENCE login_types_id_seq TO postgres;
 
 
 --
--- Name: login_types; Type: ACL; Schema: public; Owner: postgres
+-- Name: login_types; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE login_types FROM PUBLIC;
@@ -6012,7 +6509,7 @@ GRANT ALL ON TABLE login_types TO postgres;
 
 
 --
--- Name: oauth_access_tokens; Type: ACL; Schema: public; Owner: postgres
+-- Name: oauth_access_tokens; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE oauth_access_tokens FROM PUBLIC;
@@ -6021,7 +6518,7 @@ GRANT ALL ON TABLE oauth_access_tokens TO postgres;
 
 
 --
--- Name: oauth_authorization_codes; Type: ACL; Schema: public; Owner: postgres
+-- Name: oauth_authorization_codes; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE oauth_authorization_codes FROM PUBLIC;
@@ -6030,7 +6527,7 @@ GRANT ALL ON TABLE oauth_authorization_codes TO postgres;
 
 
 --
--- Name: oauth_clients; Type: ACL; Schema: public; Owner: postgres
+-- Name: oauth_clients; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE oauth_clients FROM PUBLIC;
@@ -6039,7 +6536,7 @@ GRANT ALL ON TABLE oauth_clients TO postgres;
 
 
 --
--- Name: oauth_jwt; Type: ACL; Schema: public; Owner: postgres
+-- Name: oauth_jwt; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE oauth_jwt FROM PUBLIC;
@@ -6048,7 +6545,7 @@ GRANT ALL ON TABLE oauth_jwt TO postgres;
 
 
 --
--- Name: oauth_refresh_tokens; Type: ACL; Schema: public; Owner: postgres
+-- Name: oauth_refresh_tokens; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE oauth_refresh_tokens FROM PUBLIC;
@@ -6057,7 +6554,7 @@ GRANT ALL ON TABLE oauth_refresh_tokens TO postgres;
 
 
 --
--- Name: oauth_scopes; Type: ACL; Schema: public; Owner: postgres
+-- Name: oauth_scopes; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE oauth_scopes FROM PUBLIC;
@@ -6066,7 +6563,7 @@ GRANT ALL ON TABLE oauth_scopes TO postgres;
 
 
 --
--- Name: organizations_users_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: organizations_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE organizations_users_id_seq FROM PUBLIC;
@@ -6075,7 +6572,7 @@ GRANT ALL ON SEQUENCE organizations_users_id_seq TO postgres;
 
 
 --
--- Name: organizations_users; Type: ACL; Schema: public; Owner: postgres
+-- Name: organizations_users; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE organizations_users FROM PUBLIC;
@@ -6084,7 +6581,7 @@ GRANT ALL ON TABLE organizations_users TO postgres;
 
 
 --
--- Name: roles_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: roles_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE roles_id_seq FROM PUBLIC;
@@ -6093,7 +6590,7 @@ GRANT ALL ON SEQUENCE roles_id_seq TO postgres;
 
 
 --
--- Name: roles; Type: ACL; Schema: public; Owner: postgres
+-- Name: roles; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE roles FROM PUBLIC;
@@ -6102,16 +6599,7 @@ GRANT ALL ON TABLE roles TO postgres;
 
 
 --
--- Name: role_links_listing; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE role_links_listing FROM PUBLIC;
-REVOKE ALL ON TABLE role_links_listing FROM postgres;
-GRANT ALL ON TABLE role_links_listing TO postgres;
-
-
---
--- Name: setting_categories; Type: ACL; Schema: public; Owner: postgres
+-- Name: setting_categories; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE setting_categories FROM PUBLIC;
@@ -6120,7 +6608,7 @@ GRANT ALL ON TABLE setting_categories TO postgres;
 
 
 --
--- Name: setting_categories_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: setting_categories_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE setting_categories_id_seq FROM PUBLIC;
@@ -6129,7 +6617,7 @@ GRANT ALL ON SEQUENCE setting_categories_id_seq TO postgres;
 
 
 --
--- Name: settings_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: settings_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE settings_id_seq FROM PUBLIC;
@@ -6138,7 +6626,7 @@ GRANT ALL ON SEQUENCE settings_id_seq TO postgres;
 
 
 --
--- Name: settings; Type: ACL; Schema: public; Owner: postgres
+-- Name: settings; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE settings FROM PUBLIC;
@@ -6147,16 +6635,7 @@ GRANT ALL ON TABLE settings TO postgres;
 
 
 --
--- Name: settings_listing; Type: ACL; Schema: public; Owner: postgres
---
-
-REVOKE ALL ON TABLE settings_listing FROM PUBLIC;
-REVOKE ALL ON TABLE settings_listing FROM postgres;
-GRANT ALL ON TABLE settings_listing TO postgres;
-
-
---
--- Name: states; Type: ACL; Schema: public; Owner: postgres
+-- Name: states; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE states FROM PUBLIC;
@@ -6165,7 +6644,7 @@ GRANT ALL ON TABLE states TO postgres;
 
 
 --
--- Name: states_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: states_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE states_id_seq FROM PUBLIC;
@@ -6174,7 +6653,7 @@ GRANT ALL ON SEQUENCE states_id_seq TO postgres;
 
 
 --
--- Name: states_id_seq1; Type: ACL; Schema: public; Owner: postgres
+-- Name: states_id_seq1; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE states_id_seq1 FROM PUBLIC;
@@ -6183,7 +6662,7 @@ GRANT ALL ON SEQUENCE states_id_seq1 TO postgres;
 
 
 --
--- Name: user_logins; Type: ACL; Schema: public; Owner: postgres
+-- Name: user_logins; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE user_logins FROM PUBLIC;
@@ -6192,7 +6671,7 @@ GRANT ALL ON TABLE user_logins TO postgres;
 
 
 --
--- Name: user_logins_id_seq; Type: ACL; Schema: public; Owner: postgres
+-- Name: user_logins_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE user_logins_id_seq FROM PUBLIC;
