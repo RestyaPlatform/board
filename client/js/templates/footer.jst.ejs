@@ -195,7 +195,7 @@ if (_.isEmpty(role_links.where({
 						<li> <a class="cur <% if(lang[0].replace(/[^a-z\d\s]+/gi, '') !== authuser.user.language){ %>js-change-language<%}%>" data-lang="<%- lang[0].replace(/[^a-z\d\s]+/gi, '') %>"><%- lang[1].replace(/[^a-z\d\s]+/gi, '') %><% if((!_.isEmpty(authuser.user.language) && lang[0].replace(/[^a-z\d\s]+/gi, '') === authuser.user.language) || (_.isEmpty(authuser.user.language) && lang[0].replace(/[^a-z\d\s]+/gi, '') === DEFAULT_LANGUAGE)){ %><i class="icon-ok"></i><% } %></a> </li>			
 				   <% }); %>
 				   <li class="divider"></li>
-				   <li> <a href="http://transifex.com/restya/restyaboard/?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=translation_footer" target="_blank" title="<%- i18next.t('Contribute to Translation') %>"><span class="pull-left"><i class="icon-plus"></i></span>&nbsp;  <%- i18next.t('Contribute to Translation') %></a>
+				   <li> <a href="http://transifex.com/restya/restyaboard/?utm_source=Restyaboard&utm_medium=web&utm_campaign=translation_footer" target="_blank" title="<%- i18next.t('Contribute to Translation') %>"><span class="pull-left"><i class="icon-plus"></i></span>&nbsp;  <%- i18next.t('Contribute to Translation') %></a>
 				   </li>
 				</ul>
 			</li>
