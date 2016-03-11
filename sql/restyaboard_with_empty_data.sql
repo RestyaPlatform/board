@@ -4425,7 +4425,7 @@ COPY languages (id, created, modified, name, iso2, iso3, is_active) FROM stdin;
 138	2016-03-10 16:24:44.772	2016-03-10 16:24:44.772	Filipino	fil	fil	0
 139	2016-03-10 16:24:44.772	2016-03-10 16:24:44.772	Finnish	fi	fi	0
 140	2016-03-10 16:24:44.773	2016-03-10 16:24:44.773	Finnish (Finland)	fi_FI	fi_FI	0
-141	2016-03-10 16:24:44.774	2016-03-10 16:24:44.774	Franco-Provençal (Arpitan)	frp	frp	0
+141	2016-03-10 16:24:44.774	2016-03-10 16:24:44.774	Franco-Provencal (Arpitan)	frp	frp	0
 142	2016-03-10 16:24:44.774	2016-03-10 16:24:44.774	French	fr	fr	0
 143	2016-03-10 16:24:44.774	2016-03-10 16:24:44.774	French (Belgium)	fr_BE	fr_BE	0
 144	2016-03-10 16:24:44.774	2016-03-10 16:24:44.774	French (Canada)	fr_CA	fr_CA	0
@@ -4549,8 +4549,8 @@ COPY languages (id, created, modified, name, iso2, iso3, is_active) FROM stdin;
 262	2016-03-10 16:24:44.817	2016-03-10 16:24:44.817	Northern Sami	se	se	0
 263	2016-03-10 16:24:44.818	2016-03-10 16:24:44.818	Northern Sotho	nso	nso	0
 264	2016-03-10 16:24:44.818	2016-03-10 16:24:44.818	Norwegian	no	no	0
-265	2016-03-10 16:24:44.818	2016-03-10 16:24:44.818	Norwegian Bokmål	nb	nb	0
-266	2016-03-10 16:24:44.818	2016-03-10 16:24:44.818	Norwegian Bokmål (Norway)	nb_NO	nb_NO	0
+265	2016-03-10 16:24:44.818	2016-03-10 16:24:44.818	Norwegian Bokmal	nb	nb	0
+266	2016-03-10 16:24:44.818	2016-03-10 16:24:44.818	Norwegian Bokmal (Norway)	nb_NO	nb_NO	0
 267	2016-03-10 16:24:44.818	2016-03-10 16:24:44.818	Norwegian (Norway)	no_NO	no_NO	0
 268	2016-03-10 16:24:44.819	2016-03-10 16:24:44.819	Norwegian Nynorsk	nn	nn	0
 269	2016-03-10 16:24:44.819	2016-03-10 16:24:44.819	Norwegian Nynorsk (Norway)	nn_NO	nn_NO	0
@@ -4688,7 +4688,7 @@ COPY languages (id, created, modified, name, iso2, iso3, is_active) FROM stdin;
 401	2016-03-10 16:24:44.866	2016-03-10 16:24:44.866	Vietnamese (Viet Nam)	vi_VN	vi_VN	0
 402	2016-03-10 16:24:44.866	2016-03-10 16:24:44.866	Vlaams	vls	vls	0
 403	2016-03-10 16:24:44.867	2016-03-10 16:24:44.867	Walloon	wa	wa	0
-404	2016-03-10 16:24:44.867	2016-03-10 16:24:44.867	Wáray-Wáray	war	war	0
+404	2016-03-10 16:24:44.867	2016-03-10 16:24:44.867	Waray-Waray	war	war	0
 405	2016-03-10 16:24:44.867	2016-03-10 16:24:44.867	Welsh	cy	cy	0
 406	2016-03-10 16:24:44.868	2016-03-10 16:24:44.868	Welsh (United Kingdom)	cy_GB	cy_GB	0
 407	2016-03-10 16:24:44.868	2016-03-10 16:24:44.868	Western Frisian	fy	fy	0
@@ -4942,7 +4942,7 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 29	3	0	DEFAULT_REPLY_TO_EMAIL_ADDRESS	board@restya.com	\N	text	\N	Reply To Email Address	3
 30	3	0	DEFAULT_CONTACT_EMAIL_ADDRESS	board@restya.com	\N	text	\N	Contact Email Address	4
 13	3	0	DEFAULT_FROM_EMAIL_ADDRESS	board@restya.com	\N	text	\N	From Email Address	2
-31	3	0	DEFAULT_LANGUAGE	en	\N	text	\N	Default Language	6
+31	3	0	DEFAULT_LANGUAGE	en_US	\N	text	\N	Default Language	6
 36	0	0	webhooks.last_processed_activtiy_id	0	\N	hidden	\N	Webhook Activity ID	0
 24	4	2	ENABLE_SSL_CONNECTIVITY	\N	Use encryption (SSL, ldaps:// URL) when connects to server?	checkbox	\N	Enable SSL Connectivity	3
 5	4	2	LDAP_PORT	\N	Server port (e.g., 389 for LDAP and 636 for LDAP using SSL)	text	\N	Port	5

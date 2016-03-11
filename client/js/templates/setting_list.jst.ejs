@@ -97,10 +97,10 @@
 								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- setting.label %></label>
 								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
 									<select name="<%- setting.name %>" id="inputSetting<%- setting.id %>" class="form-control">
-									 <% _.each(window.sessionStorage.getItem('languages').split(','), function(language) { %>
-											<% var lang = language.split(':'); %>
-											<option <% if(lang[0].replace(/[^a-z\d\s]+/gi, '') === setting.value){ %>selected <% }%> value="<%- lang[0].replace(/[^a-z\d\s]+/gi, '') %>"><%- lang[1].replace(/[^a-z\d\s]+/gi, '') %></option>
-									 <% }); %>
+									 <%
+									 _.each(JSON.parse(window.sessionStorage.getItem('languages')), function(v, k) { %>
+										<option <% if(k === setting.value) { %>selected <% }%> value="<%- k %>"><%- v %></option>
+									<% }); %>
 									</select>
 									<div><span class="help-block"><%= i18next.t(setting.description) %></span></div>
 								  </div>

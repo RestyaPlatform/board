@@ -1,5 +1,5 @@
 INSERT INTO "settings" ("id", "setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
-VALUES ('31', '3', '0', 'DEFAULT_LANGUAGE', 'en', NULL, 'text', NULL, 'Default Language', '6');
+VALUES ('31', '3', '0', 'DEFAULT_LANGUAGE', 'en_US', NULL, 'text', NULL, 'Default Language', '6');
 
 ALTER TABLE "users" ADD "language" character varying(10) NULL;
 
@@ -161,7 +161,7 @@ INSERT INTO "languages" ("id", "created", "modified", "name", "iso2", "iso3", "i
 (138,	'2016-03-10 16:24:44.772',	'2016-03-10 16:24:44.772',	'Filipino',	'fil',	'fil',	0),
 (139,	'2016-03-10 16:24:44.772',	'2016-03-10 16:24:44.772',	'Finnish',	'fi',	'fi',	0),
 (140,	'2016-03-10 16:24:44.773',	'2016-03-10 16:24:44.773',	'Finnish (Finland)',	'fi_FI',	'fi_FI',	0),
-(141,	'2016-03-10 16:24:44.774',	'2016-03-10 16:24:44.774',	'Franco-Provençal (Arpitan)',	'frp',	'frp',	0),
+(141,	'2016-03-10 16:24:44.774',	'2016-03-10 16:24:44.774',	'Franco-Provencal (Arpitan)',	'frp',	'frp',	0),
 (142,	'2016-03-10 16:24:44.774',	'2016-03-10 16:24:44.774',	'French',	'fr',	'fr',	0),
 (143,	'2016-03-10 16:24:44.774',	'2016-03-10 16:24:44.774',	'French (Belgium)',	'fr_BE',	'fr_BE',	0),
 (144,	'2016-03-10 16:24:44.774',	'2016-03-10 16:24:44.774',	'French (Canada)',	'fr_CA',	'fr_CA',	0),
@@ -285,8 +285,8 @@ INSERT INTO "languages" ("id", "created", "modified", "name", "iso2", "iso3", "i
 (262,	'2016-03-10 16:24:44.817',	'2016-03-10 16:24:44.817',	'Northern Sami',	'se',	'se',	0),
 (263,	'2016-03-10 16:24:44.818',	'2016-03-10 16:24:44.818',	'Northern Sotho',	'nso',	'nso',	0),
 (264,	'2016-03-10 16:24:44.818',	'2016-03-10 16:24:44.818',	'Norwegian',	'no',	'no',	0),
-(265,	'2016-03-10 16:24:44.818',	'2016-03-10 16:24:44.818',	'Norwegian Bokmål',	'nb',	'nb',	0),
-(266,	'2016-03-10 16:24:44.818',	'2016-03-10 16:24:44.818',	'Norwegian Bokmål (Norway)',	'nb_NO',	'nb_NO',	0),
+(265,	'2016-03-10 16:24:44.818',	'2016-03-10 16:24:44.818',	'Norwegian Bokmal',	'nb',	'nb',	0),
+(266,	'2016-03-10 16:24:44.818',	'2016-03-10 16:24:44.818',	'Norwegian Bokmal (Norway)',	'nb_NO',	'nb_NO',	0),
 (267,	'2016-03-10 16:24:44.818',	'2016-03-10 16:24:44.818',	'Norwegian (Norway)',	'no_NO',	'no_NO',	0),
 (268,	'2016-03-10 16:24:44.819',	'2016-03-10 16:24:44.819',	'Norwegian Nynorsk',	'nn',	'nn',	0),
 (269,	'2016-03-10 16:24:44.819',	'2016-03-10 16:24:44.819',	'Norwegian Nynorsk (Norway)',	'nn_NO',	'nn_NO',	0),
@@ -424,7 +424,7 @@ INSERT INTO "languages" ("id", "created", "modified", "name", "iso2", "iso3", "i
 (401,	'2016-03-10 16:24:44.866',	'2016-03-10 16:24:44.866',	'Vietnamese (Viet Nam)',	'vi_VN',	'vi_VN',	0),
 (402,	'2016-03-10 16:24:44.866',	'2016-03-10 16:24:44.866',	'Vlaams',	'vls',	'vls',	0),
 (403,	'2016-03-10 16:24:44.867',	'2016-03-10 16:24:44.867',	'Walloon',	'wa',	'wa',	0),
-(404,	'2016-03-10 16:24:44.867',	'2016-03-10 16:24:44.867',	'Wáray-Wáray',	'war',	'war',	0),
+(404,	'2016-03-10 16:24:44.867',	'2016-03-10 16:24:44.867',	'Waray-Waray',	'war',	'war',	0),
 (405,	'2016-03-10 16:24:44.867',	'2016-03-10 16:24:44.867',	'Welsh',	'cy',	'cy',	0),
 (406,	'2016-03-10 16:24:44.868',	'2016-03-10 16:24:44.868',	'Welsh (United Kingdom)',	'cy_GB',	'cy_GB',	0),
 (407,	'2016-03-10 16:24:44.868',	'2016-03-10 16:24:44.868',	'Western Frisian',	'fy',	'fy',	0),
