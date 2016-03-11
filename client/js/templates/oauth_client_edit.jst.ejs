@@ -1,0 +1,30 @@
+<div class="well-sm"><h3><%- i18next.t('Edit OAuth application') %></h3></div>
+<form id="oauthClientEditForm" name="oauthClientEditForm" class="form-horizontal col-xs-12">
+  <div class="form-group">
+	<label class="col-sm-2 control-label col-xs-12" for="inputClientName"><%- i18next.t("Application Name") %></label>
+	<div class="col-sm-8 col-xs-12">
+		<input type="text" required name="client_name" value="<%- oauth_client.client_name %>" id="inputClientName" class="form-control" placeholder="<%- i18next.t('Application Name') %>" title="<%- i18next.t('Application Name') %>">
+		<div><span class="help-block"><%- i18next.t('Something users will recognize and trust') %></span></div>
+	</div>
+  </div>
+  <div class="form-group">
+	<label class="col-sm-2 control-label col-xs-12" for="inputClientUrl"><%- i18next.t("Homepage URL") %></label>
+	<div class="col-sm-8 col-xs-12">
+		<input type="text" name="client_url" value="<%- oauth_client.client_url %>" id="inputClientUrl" class="form-control" placeholder="<%- i18next.t('Homepage URL') %>" title="<%- i18next.t('Homepage URL') %>">
+		<div><span class="help-block"><%- i18next.t('The full URL to your application homepage') %></span></div>
+	</div>
+  </div>
+  <div class="form-group">
+	<label class="col-sm-2 control-label col-xs-12" for="inputRedirectUris"><%- i18next.t("Authorization callback URL") %></label>
+	<div class="col-sm-8 col-xs-12">
+		<input type="text" name="redirect_uri" value="<%- oauth_client.redirect_uri %>" id="inputRedirectUris" class="form-control" placeholder="<%- i18next.t('Authorization callback URL') %>" title="<%- i18next.t('Authorization callback URL') %>">
+		<div><span class="help-block"><%- i18next.t('Your application\'s callback URL. Multiple URL can be separated by space')%></span></div>
+	</div>
+  </div>
+  <div class="form-group">
+	<label class="sr-only col-sm-2 control-label col-xs-12" for="submit2"><%- i18next.t('Update application') %></label>
+	<div class="col-sm-8">
+		<input type="submit" class="btn btn-primary" id="submitEditClient" value="<%- i18next.t('Update application') %>">
+	</div>
+  </div>
+</form>

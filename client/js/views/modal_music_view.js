@@ -51,7 +51,7 @@ App.ModalMusicView = Backbone.View.extend({
             patch: true,
             success: function(model, response) {
                 var view = new Backbone.View();
-                view.flash('success', 'Updated successfully.');
+                view.flash('success', i18next.t('Updated successfully.'));
                 $('#music-modal').modal('hide');
                 $('div.modal-backdrop').remove();
                 if (!_.isEmpty(music_name) && music_name != 'NULL') {

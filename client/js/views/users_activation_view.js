@@ -48,9 +48,9 @@ App.UseractivationView = Backbone.View.extend({
             patch: true,
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
-                    self.flash('success', response.success);
+                    self.flash('success', i18next.t('Your activation has been confirmed. You can now login to the site.'));
                 } else {
-                    self.flash('danger', response.error);
+                    self.flash('danger', i18next.t('Invalid Activation URL'));
                 }
                 app.navigate('#/users/login', {
                     trigger: true,

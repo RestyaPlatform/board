@@ -61,7 +61,7 @@ App.SwitchToListView = Backbone.View.extend({
         var self = this;
         var sort_by = $(e.target).data('sort-by');
         var filtered_cards = self.model.cards.filter(function(card) {
-            return card.attributes.is_archived === false || card.attributes.is_archived === 0;
+            return parseInt(card.attributes.is_archived) === 0;
         });
         var is_card_empty = true;
         var view = '';

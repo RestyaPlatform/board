@@ -36,6 +36,10 @@ App.AdminUserIndexView = Backbone.View.extend({
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.users = new App.UserCollection();
         _this.users.url = api_url + 'users.json?page=' + _this.current_page;
+        app.navigate('#/' + 'users?page=' + _this.current_page, {
+            trigger: false,
+            trigger_function: false,
+        });
         _this.users.fetch({
             cache: false,
             abortPending: true,
@@ -46,7 +50,10 @@ App.AdminUserIndexView = Backbone.View.extend({
                 });
                 $('#header').html(_this.headerView.el);
                 $('#js-navbar-default').remove();
-                var view = $('#content').html(new App.UserIndexContainerView({}).el);
+                var view = $('#content').html(new App.UserIndexContainerView({
+                    filter_count: response.filter_count,
+                    roles: response.roles
+                }).el);
                 users.each(function(user) {
                     $('.js-user-list').append(new App.UserIndex({
                         model: user

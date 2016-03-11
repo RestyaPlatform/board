@@ -1,54 +1,4 @@
-@media only screen and (min-device-width:768px) and (max-device-width:1024px) {
-	body {
-		.dockmodal {
-			.splitter-wrap {
-				width: 100% !important;
-				.ui-resizable-handle {
-					display: none !important;
-				}
-			}
-		}
-		.popped-out {
-			textarea.form-control {
-				height: 100px;
-			}
-			ul.card-view-mn {
-				li.dropdown {
-					ul.dropdown-menu {
-						li {
-							>div {
-								&:first-child {
-									width: 20%;
-								}
-								&:last-child {
-									width: 80%;
-								}
-							}
-							&.small {
-								div {
-									&:last-child {
-										left: 20%;
-									}
-								}
-							}
-						}
-					}
-				}
-				.duedate {
-					.form-group {
-						.input-group {
-							width: 80%;
-						}
-						.control-label {
-							width: 20%;
-						}
-					}
-				}
-			}
-		}
-	}
-}
-@media (min-width:768px) and (max-width:1004px) {
+@media (min-width:768px) and (max-width:1024px) {
 	body {
 		.popped-out {
 			textarea.form-control {
@@ -93,10 +43,6 @@
 @media (max-width:767px) {
 	body {
 		.content {
-			.row {
-				margin-left: 0;
-				margin-right: 0;
-			}
 			main {
 				padding-bottom: 35px;
 			}
@@ -192,7 +138,7 @@
 							> li {
 								margin-bottom: 2px;
 								>a {
-									padding: 4px 7px;
+									padding: 6px 9px;
 									.lead {
 										font-size: 20px;
 										display: inline-block;
@@ -219,7 +165,7 @@
 								&.footer-logo {
 									a {
 										padding: 4px 7px;
-										margin-top: 1px;
+										margin-top: -5px;
 									}
 									.notification-count {
 										display: none;
@@ -231,7 +177,7 @@
 					.footer-logo {
 						position: absolute;
 						left: 43%;
-						top: -40px;
+						top: -33px;
 					}
 					.search-container {
 						width: 100%;
@@ -300,11 +246,6 @@
 									>li {
 										float: none !important;
 										display: inline-block;
-										&.board-btn, &.org-btn {
-											a {
-												padding: 14px 30px;
-											}
-										}
 										&.about-btn {
 											display: none !important;
 											width: 100%;
@@ -312,11 +253,6 @@
 											padding-right: 10px;
 											a {
 												float: right !important;
-											}
-										}
-										&.org-btn {
-											>a {
-												padding: 14px 10px;
 											}
 										}
 									}
@@ -406,12 +342,16 @@
 					}
 				}
 			}
+			.bg-primary {
+				.navbar-toggle {
+					border-color: #ffffff !important;
+				}
+			}
 			.board-viewlist {
 				.table {
 					width: 700px;
 					a {
 						white-space: normal;
-						word-wrap: break-word;
 					}
 				}
 			}
@@ -420,11 +360,10 @@
 			display: block !important;
 			width: 96% !important;
 			right: 5px !important;
-			.splitter-wrap {
-				width: 100% !important;
-				.ui-resizable-handle {
-					display: none !important;
-				}
+			.dropdown-submenu >.dropdown-menu {
+				left: 0;
+				margin-top: 25px;
+				right: auto;
 			}
 		}
 		.ui-autocomplete, .ui-autocomplete.ui-menu.search-block {
@@ -438,48 +377,26 @@
 					&:first-child {
 						width: 100%;
 					}
-				}
-			}
-		}
-	}
-	.popped-out {
-		ul.card-view-mn {
-			li.dropdown {
-				ul.dropdown-menu > li > div {
 					.form-group {
 						.col-xs-12 {
-							padding: 0px 15px;
+							padding-left: 15px;
 						}
 					}
 				}
 			}
-		}
-	}
-	.popped-out {
-		ul.card-view-mn {
 			.duedate {
 				.form-group {
 					.control-label {
 						width: 100%;
 					}
-				}
-			}
-		}
-	}
-	.popped-out {
-		ul.card-view-mn {
-			.duedate {
-				.form-group {
 					.input-group {
-						padding: 0px 15px;
+						padding-left: 15px;
 					}
 				}
 			}
 		}
-	}
-	.popped-out {
 		.full-form {
-			padding: 0px 15px;
+			margin-left: 0;
 		}
 	}
 }
@@ -496,14 +413,6 @@
 						height: 250px;
 					}
 				}
-			}
-		}
-		.dockmodal {
-			max-height: 398px !important;
-			.dropdown-submenu >.dropdown-menu {
-				left: 0;
-				margin-top: 25px;
-				right: auto;
 			}
 		}
 	}
@@ -549,21 +458,6 @@
 		}
 	}
 }
-@media (max-width:768px) and (orientation:portrait) {
-	body {
-		.content {
-			footer {
-				.nav {
-					>li {
-						>a {
-							padding: 10px 12px;
-						}
-					}
-				}
-			}
-		}
-	}
-}
 @media (max-width:568px) and (orientation:landscape) {
 	body {
 		.dockmodal {
@@ -580,41 +474,31 @@
 					>li {
 						a {
 							word-break: break-all;
-							float: none;
 							display: block;
 							margin-bottom: 5px;
 						}
 					}
 				}
 			}
-			footer {
-				.nav {
-					> li {
-						>a {
-							[class^="icon-"], [class*=" icon-"] {
-								padding: 0;
-							}
-						}
-					}
-				}
-				&.navbar {
-					min-height: inherit;
-				}
-			}
 		}
 		.dockmodal {
 			bottom: 32px !important;
-			.dropdown-submenu >.dropdown-menu {
-				left: 0;
-				margin-top: 25px;
-				right: auto;
-			}
 			.form-horizontal {
 				.col-xs-6 {
 					.select2-container {
 						width: 100% !important;
 					}
 				}
+			}
+		}
+	}
+}
+@media (max-width:1024px) {
+	.dockmodal {
+		.splitter-wrap {
+			width: 100% !important;
+			.ui-resizable-handle {
+				display: none !important;
 			}
 		}
 	}

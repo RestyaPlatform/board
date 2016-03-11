@@ -1,0 +1,31 @@
+<div class="clearfix text-center col-xs-12">
+	<a href="#" class="js-back-to-sidebar pull-left btn btn-xs btn-link">
+			<i class="icon-caret-left"></i>
+	</a>
+	<span class="col-xs-10 navbar-btn"><strong><%- i18next.t('Labels') %></strong></span>
+</div>
+<div class="col-xs-12 divider"></div>
+<div class="col-xs-12 member-modal js-pre-scrollable vertical-scrollbar">
+	<% if (board.labels.length > 0) { %>
+	<ul class="nav nav-pills nav-stacked label-block">
+	<% 
+		var labels = Array();
+		board.labels.each(function(label) {
+			if (!_.contains(labels, label.attributes.name)) {
+				labels.push(label.attributes.name);
+		%>    
+		<li class="clearfix cur card-label-show h5 btn-link media">
+			<span style="background:#<%- converter.colorCode(label.attributes.name).substring(0, 6) %>;color:#ffffff" class="pull-left btn btn-xs"><i class="<%= LABEL_ICON %> icon-light"></i></span><div class="htruncate"><%-label.attributes.name %></div><div><a data-id="<%- label.attributes.label_id %>" class="js-delete-labels btn btn-default btn-xs pull-right" data-toggle="dropdown">
+			<i class="icon-remove cur"></i></a></div> 
+		</li> 
+	<%		}
+		}); 
+		%>
+	</ul>
+	<hr>
+	<% }else{ %>
+	<span class="alert alert-info">
+		<%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('labels')] }) %>
+    </span>
+	<% } %>
+</div>

@@ -29,6 +29,7 @@ App.AdminBoardView = Backbone.View.extend({
         }
         this.message = options.message;
         this.starred_boards = options.starred_boards;
+        this.model.board_user_roles = options.board_user_roles;
         _.bindAll(this, 'render');
         if (this.model !== null) {
             this.model.collection.bind('change', this.render);
@@ -98,15 +99,16 @@ App.AdminBoardView = Backbone.View.extend({
         return this;
     },
     renderAdminBoardUsers: function() {
-        if (this.model.attributes.boards_users !== null) {
+        if (this.model.attributes.boards_users !== null && !_.isUndefined(this.model.attributes.boards_users)) {
             var admins = this.model.attributes.boards_users.filter(function(normal_user) {
-                return normal_user.is_admin === true || normal_user.is_admin === 1;
+                return parseInt(normal_user.board_user_role_id) === 1;
             });
             this.model.admin_board_users = admins;
             var normal_users = this.model.attributes.boards_users.filter(function(normal_user) {
-                return normal_user.is_admin === false || normal_user.is_admin === 0;
+                return parseInt(normal_user.board_user_role_id) != 1;
             });
             this.model.normal_board_users = normal_users;
+            this.render();
         }
     },
     /**
@@ -133,12 +135,12 @@ App.AdminBoardView = Backbone.View.extend({
         e.preventDefault();
         var name = $(e.currentTarget).attr('name');
         var value = 'unstar';
-        var is_starred = true;
+        var is_starred = 1;
         var self = this;
         var content = '<i class="icon-star text-primary"></i>';
         if (name == 'unstar') {
             value = 'star';
-            is_starred = false;
+            is_starred = 0;
             content = '<i class="icon-star-empty"></i>';
         }
         $(e.currentTarget).attr('name', value);
@@ -155,7 +157,10 @@ App.AdminBoardView = Backbone.View.extend({
             if (this.starred_boards.length === 0 || $('.js-header-starred-boards > .js-board-view').length === 0) {
                 $('.js-header-starred-boards').append(new App.BoardSimpleView({
                     model: null,
-                    message: 'No starred boards available.',
+                    message: i18next.t('No %s available.', {
+                        postProcess: 'sprintf',
+                        sprintf: [i18next.t('starred boards')]
+                    }),
                     id: 'js-starred-board-empty',
                     className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 media-list'
                 }).el);
@@ -179,9 +184,6 @@ App.AdminBoardView = Backbone.View.extend({
             success: function(model, response) {
                 App.boards.get(self.model.attributes.id).boards_stars.reset(self.boardStar);
                 self.model.boards_stars.add(self.boardStar);
-                self.footerView = new App.FooterView({
-                    model: authuser
-                }).renderStarredBoards();
             }
         });
         return false;
@@ -338,7 +340,7 @@ App.AdminBoardView = Backbone.View.extend({
         this.model.set('organization_id', parseInt(data.organization_id));
 
 
-        $('.js-sidebar-board-visibility').html('Change Visibility');
+        $('.js-sidebar-board-visibility').html(i18next.t('Change Visibility'));
         var board = new App.Board();
         this.model.url = api_url + 'boards/' + this.model.attributes.id + '.json';
 

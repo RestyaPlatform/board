@@ -10,7 +10,7 @@ if (typeof App == 'undefined') {
 App.BoardsUserCollection = Backbone.Collection.extend({
     model: App.BoardsUser,
     comparator: function(item) {
-        return -item.get('is_admin');
+        return -item.get('board_user_role_id');
     },
     search: function(letters) {
         if (letters === "") return this;

@@ -43,20 +43,10 @@ App.UserActivityView = Backbone.View.extend({
      *
      */
     render: function() {
-        var current_user_can_undo_it = false;
-        if (!_.isUndefined(App.boards) && !_.isEmpty(this.model) && !_.isUndefined(this.model.attributes.board_id) && !_.isUndefined(App.boards.get(this.model.attributes.board_id))) {
-            var board_users = App.boards.get(this.model.attributes.board_id).attributes.users;
-            _.each(board_users, function(board_user) {
-                if (parseInt(board_user.user_id) === parseInt(authuser.user.id) && board_user.is_admin === true) {
-                    current_user_can_undo_it = true;
-                }
-            });
-        }
         this.$el.html(this.template({
             activity: this.model,
             type: this.type,
-            converter: this.converter,
-            current_user_can_undo_it: current_user_can_undo_it
+            converter: this.converter
         }));
         this.showTooltip();
         return this;
@@ -74,7 +64,7 @@ App.UserActivityView = Backbone.View.extend({
         this.model.save({}, {
             patch: true,
             success: function(model, response) {
-                self.flash('danger', "Undo Succeed");
+                self.flash('danger', i18next.t('Undo Succeed'));
                 emojify.run();
             }
         });

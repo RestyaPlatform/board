@@ -1,0 +1,24 @@
+<% if (!_.isUndefined(oauth_applications) && oauth_applications.length > 0 ) { 
+				_.each(oauth_applications, function(oauth_application) { %>
+  <div class="clearfix">
+    <div class="col-xs-10">
+      <h4><span class="c"><%- oauth_application.client_name %></span></h4>
+    </div>
+	<div class="col-xs-2 pull-right">
+	  <div class="row-fluid">
+		<div class="pull-right">
+		  <div class="btn-group">
+			<button class="btn js-delete" data-client_id="<%- oauth_application.client_id %>" title="<%- i18next.t('Revoke') %>"><%- i18next.t('Revoke') %></button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+  </div>
+
+<hr/>
+<%
+				}); 
+} else { %>
+	<div class="col-xs-12 alert alert-info">
+	<%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('authorized OAuth application')] }) %></div>
+<% } %>

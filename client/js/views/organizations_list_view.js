@@ -74,7 +74,7 @@ App.OrganizationsListView = Backbone.View.extend({
         var organization = new App.Organization();
         organization.url = api_url + 'organizations/' + this.model.organization_id + '.json';
         organization.set('id', this.model.organization_id);
-        this.flash('success', 'Organization deleted successfully.');
+        this.flash('success', i18next.t('Organization deleted successfully.'));
         organization.destroy({
             success: function(model, response) {
                 app.navigate('#/', {

@@ -3,13 +3,16 @@
 	<div class="col-xs-12">
 		<div class="clearfix">
 			<ul class="nav nav-tabs no-bor h3">
-				<li <% if (_.isUndefined(type) || type == 'profile') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/profile"  >Profile</a></li>
+				<li <% if (_.isUndefined(type) || type == 'profile') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/profile"  ><%- i18next.t("Profile") %></a></li>
 				<% if(!_.isEmpty(role_links.where({slug: "view_user_cards"}))){ %>
-					<li  <% if (!_.isUndefined(type) && type == 'cards') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/cards" >Cards</a></li>
+					<li  <% if (!_.isUndefined(type) && type == 'cards') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/cards" ><%- i18next.t("Cards") %></a></li>
 				<% } %>
-				<% if(!_.isEmpty(role_links.where({slug: "edit_user_details"}))){ %>
-					<li <% if (!_.isUndefined(type) && type == 'settings') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/settings" >Settings</a></li>
+				<% if(authuser.user.id === page.id || authuser.user.role_id == 1) { if(!_.isEmpty(role_links.where({slug: "edit_user_details"}))){ %>
+					<li <% if (!_.isUndefined(type) && type == 'settings') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/settings" ><%- i18next.t("Settings") %></a></li>
 				<% } %>
+				<% if(!_.isEmpty(role_links.where({slug: "view_connected_applications"}))){ %>
+					<li <% if (!_.isUndefined(type) && type == 'oauth_applications') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/oauth_applications" ><%- i18next.t("Authorized OAuth Applications") %></a></li>
+				<% } } %>  
 			</ul>
 		</div>
 		<div class="row">
@@ -17,7 +20,7 @@
 				<% if (!_.isEmpty(role_links.where({slug: "view_user_activities"}))) { %>
 					<div class="modal-body tab-pane <% if (_.isUndefined(type) || type == 'profile') { %>active<%}%>" id="profile">
 						<div id="js-user-activites"></div>
-						<span class="btn btn-primary hide" id="js-user-activites-load-more">Load more activities</span>
+						<span class="btn btn-primary hide" id="js-user-activites-load-more"><%- i18next.t("Load more activities") %></span>
 					</div>
 				<% } %>
 				<% if(!_.isEmpty(role_links.where({slug: "view_user_cards"}))){ %>
@@ -27,44 +30,44 @@
 					<div class="modal-body tab-pane <% if (!_.isUndefined(type) && type == 'settings') { %>active<%}%>" id="settings">
 						<form class="form-horizontal clearfix pull-left js-user-profile-edit" role="form" enctype="multipart/form-data" id="js-user-profile-edit">
 							<div class="form-group">
-								<label for="inputFullName" class="col-sm-4 control-label">Full Name</label>
+								<label for="inputFullName" class="col-sm-4 control-label"><%- i18next.t("Full Name") %></label>
 								<div class="col-sm-8">
 									<input type="text" id="inputFullName" class="form-control" name="full_name" value="<%- user.attributes.full_name %>" maxlength="50">
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="AboutMe" class="col-sm-4 control-label">About Me</label>
+								<label for="AboutMe" class="col-sm-4 control-label"><%- i18next.t("About Me") %></label>
 								<div class="col-sm-8">
 									<textarea class="form-control" id="AboutMe" rows="6" name="about_me"><%- user.attributes.about_me %></textarea>
 								</div>
 							</div>
 							<% if(!_.isUndefined(authuser.user) && authuser.user.role_id == 1){%>
-								<div class="form-group">
-									<label for="inputemail" class="col-sm-4 control-label">Email</label>
+								<div class="form-group required">
+									<label for="inputemail" class="col-sm-4 control-label"><%- i18next.t("Email") %></label>
 									<div class="col-sm-8">
-										<input type="email" id="inputemail" class="form-control" name="email" value="<%- user.attributes.email %>">
+										<input type="email" id="inputemail" class="form-control" name="email" value="<%- user.attributes.email %>" required>
 									</div>
 								</div>
 							<% } %>
 							<div class="form-group required">
-								<label for="inputinitials" class="col-sm-4 control-label">Initials</label>
+								<label for="inputinitials" class="col-sm-4 control-label"><%- i18next.t("Initials") %></label>
 								<div class="col-sm-8">
 									<input type="text" id="inputinitials" class="form-control initialism" name="initials" value="<%- user.attributes.initials.toUpperCase() %>" maxlength="2" required>
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="is_send_newsletter" class="col-sm-4 control-label">Notifications</label>
+								<label for="is_send_newsletter" class="col-sm-4 control-label"><%- i18next.t("Notifications") %></label>
 								<div class="col-sm-8">
 									<select  id="is_send_newsletter" class="js-chosen-select" name="is_send_newsletter">
-										<option value="0">Never,Don't send email notifications</option>
-										<option value="1">Periodically,Send email notification every 1 hour</option>
-										<option value="2">Instantly,Send email notification every 5 minutes</option>
+										<option value="0"><%- i18next.t("Never, Don't send email notifications") %></option>
+										<option value="1"><%- i18next.t("Periodically, Send email notification every 1 hour") %></option>
+										<option value="2"><%- i18next.t("Instantly, Send email notification every 5 minutes") %></option>
 									</select>
 								</div>
 							</div>
 							<% if(!_.isEmpty(role_links.where({slug: "add_user_profile_picture"}))){ %>
 								<div class="form-group" id="dropzone">
-									<label for="inputAttachment" class="col-sm-4 control-label sr-only">Upload Avatar</label>
+									<label for="inputAttachment" class="col-sm-4 control-label sr-only"><%- i18next.t("Upload Avatar") %></label>
 									<div class="col-xs-8">
 										<a data-placement="bottom" title="<%- user.attributes.username%>" data-toggle="tooltip" href="#" class="avatar-option js-use-uploaded-avatar drag-box navbar-left"> 
 											<% if(!_.isEmpty(user.attributes.profile_picture_path) && user.attributes.profile_picture_path != 'NULL') { 
@@ -85,11 +88,15 @@
 							<% } %>
 							<div class="col-xs-9 pull-right clearfix">
 								<div class="form-group">
-									<label for="submit2" class="col-sm-1 control-label sr-only">submit</label>
-									<input type="submit" value="Submit" id="submit2" class="btn btn-primary btn-lg">
+									<label for="submit2" class="col-sm-1 control-label sr-only"><%- i18next.t("Submit") %></label>
+									<input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary btn-lg">
 								</div>
 							</div>
 						</form>
+					</div>
+				<% } %>
+				<% if(!_.isEmpty(role_links.where({slug: "view_connected_applications"}))){ %>
+					<div class="modal-body tab-pane <% if (!_.isUndefined(type) && type == 'oauth_applications') { %>active<%}%>" id="oauth_applications">
 					</div>
 				<% } %>
 			</div>

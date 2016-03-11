@@ -64,8 +64,12 @@ App.LoginView = Backbone.View.extend({
                     auth_response.user.full_name = response.user.full_name;
                     auth_response.board_id = response.board_id;
                     auth_response.user.notify_count = response.user.notify_count;
+                    auth_response.user.unread_activity_id = response.user.unread_activity_id;
                     auth_response.user.last_activity_id = response.user.last_activity_id;
+                    auth_response.user.language = response.user.language;
+                    auth_response.user.is_ldap = response.user.is_ldap;
                     window.sessionStorage.setItem('auth', JSON.stringify(auth_response));
+                    i18next.changeLanguage(response.user.language);
                     api_token = response.access_token;
                     var links = JSON.parse(response.links);
                     window.sessionStorage.setItem('links', response.links);
@@ -78,17 +82,32 @@ App.LoginView = Backbone.View.extend({
                     this.headerView = new App.HeaderView({
                         model: model
                     });
-                    $('#content').html('');
                     $('.company').addClass('hide');
                     $('#header').html(this.headerView.el);
-                    app.navigate('#/boards', {
-                        trigger: true,
-                        replace: true
-                    });
-                    //self.flash('success', 'Wellcome ' + authuser.user.username);
+                    if (!_.isEmpty(window.sessionStorage.getItem('redirect_link'))) {
+                        var redirect_link = window.sessionStorage.getItem('redirect_link');
+                        sessionStorage.removeItem('redirect_link');
+                        window.location = redirect_link;
+                    } else {
+                        window.location = '#/boards';
+                    }
                 } else {
                     $('input#inputPassword', target).val('');
-                    self.flash('danger', response.error);
+                    if (response.code === 'LDAP') {
+                        if (response.error === 'ERROR_LDAP_AUTH_FAILED') {
+                            self.flash('danger', i18next.t('LDAP authentication failed.'));
+                        } else if (response.error === 'ERROR_LDAP_SERVER_CONNECT_FAILED') {
+                            self.flash('danger', i18next.t('LDAP server connection failed.'));
+                        } else {
+                            self.flash('danger', i18next.t('Email not associated for this LDAP account.'));
+                        }
+                    } else {
+                        if (is_offline_data) {
+                            self.flash('danger', i18next.t('Sorry, login failed. Internet connection not available.'));
+                        } else {
+                            self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
+                        }
+                    }
                 }
 
             }
@@ -117,6 +136,8 @@ App.LoginView = Backbone.View.extend({
     changeFavicon: function(count) {
         if (!_.isUndefined(count) && count !== '0') {
             favicon.badge(count);
+        } else {
+            favicon.badge(0);
         }
     }
 });

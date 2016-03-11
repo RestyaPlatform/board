@@ -1,27 +1,42 @@
 <% if(!_.isEmpty(role_links.where({slug: "view_my_boards"}))){ %>
   <div class="panel clearfix col-xs-12">    
-    <div class="well-lg navbar-btn"></div>
+    <div class="well-sm"></div>
+	<section class="clearfix">
+		 <div class="col-xs-12">
+			<ul class="nav nav-pills text-center thumbnail js-filter-list">
+				<li><a class="js-filter cur" data-filter="open" title="<%- i18next.t('Open') %>"><span class="show"><strong><%- filter_count.open %></strong></span><%- i18next.t('Open') %></a></li>
+				<li><a class="js-filter cur" data-filter="closed" title="<%- i18next.t('Closed') %>"><span class="show"><strong><%- filter_count.closed %></strong></span><%- i18next.t('Closed') %></a></li>
+				<li><a class="js-filter cur" data-filter="public" title="<%- i18next.t('Public') %>"><span class="show"><strong><%- filter_count.public %></strong></span><%- i18next.t('Public') %></a></li>
+				<li><a class="js-filter cur" data-filter="private" title="<%- i18next.t('Private') %>"><span class="show"><strong><%- filter_count.private %></strong></span><%- i18next.t('Private') %></a></li>
+				<li><a class="js-filter cur" data-filter="organization" title="<%- i18next.t('Organization') %>"><span class="show"><strong><%- filter_count.organization %></strong></span><%- i18next.t('Organization') %></a></li>
+				<% var all = parseInt(filter_count.open) + parseInt(filter_count.closed); %>
+				<li class="active"><a href="#/boards/list" title="<%- i18next.t('All') %>"><span class="show"><strong><%-  all %></strong></span><%- i18next.t('All') %></a></li>
+			</ul>
+		 </div>
+	</section>
+	<section>
+		<div class="well-sm"></div>
 		<form role="form" class="col-xs-12">
 			<div class="table-responsive">
 				<table class="table table-striped table-bordered table-hover list-group-item-text">
 					<thead> 
 						<tr class="active">
-						  <th rowspan="2" class="text-center">Select</th>
-						  <th rowspan="2" class="col-xs-2 text-center"><span class="js-sort cur" data-field="name" data-direction="desc"  title="Board Name"><span class="icon-caret-down"></span>Board</span></th>
-						   <th rowspan="2" class="text-center"><span class="js-sort cur" data-field="organization_name" data-direction="desc"  title="Organization"><span class="icon-caret-down hide"></span>Organization</span></th>
-						   <th rowspan="2" class="text-center col-xs-1"><span class="js-sort cur" data-field="username" data-direction="desc"  title="Created by"><span class="icon-caret-down hide"></span>Created by</span></th>
-						   <th rowspan="2" class="text-center">Members</th>
-						  <th colspan="2" class="text-center">List</th>
-						  <th colspan="2" class="text-center">Card</th>
-						  <th rowspan="2" class="text-center"><span class="js-sort cur" data-field="created" data-direction="desc"  title="Created"><span class="icon-caret-down hide"></span>Created</span></th>
-						  <th rowspan="2" class="text-center"><span class="js-sort cur" data-field="modified" data-direction="desc"  title="Last activity"><span class="icon-caret-down hide"></span>Last activity</span></th>
-						  <th rowspan="2" class="text-center">Visibility</th>
+						  <th rowspan="2" class="text-center"><%- i18next.t("Select") %></th>
+						  <th rowspan="2" class="col-xs-2 text-center"><span class="js-sort cur" data-field="name" data-direction="desc"  title="<%- i18next.t('Board Name') %>"><span class="icon-caret-down"></span><%- i18next.t("Board") %></span></th>
+						   <th rowspan="2" class="text-center"><span class="js-sort cur" data-field="organization_name" data-direction="desc"  title="Organization"><span class="icon-caret-down hide"></span><%- i18next.t("Organization") %></span></th>
+						   <th rowspan="2" class="text-center col-xs-1"><span class="js-sort cur" data-field="username" data-direction="desc"  title="Created by"><span class="icon-caret-down hide"></span><%- i18next.t("Created by") %></span></th>
+						   <th rowspan="2" class="text-center"><%- i18next.t("Members") %></th>
+						  <th colspan="2" class="text-center"><%- i18next.t("List") %></th>
+						  <th colspan="2" class="text-center"><%- i18next.t("Card") %></th>
+						  <th rowspan="2" class="text-center"><span class="js-sort cur" data-field="created" data-direction="desc"  title="<%- i18next.t('Created') %>"><span class="icon-caret-down hide"></span><%- i18next.t("Created") %></span></th>
+						  <th rowspan="2" class="text-center"><span class="js-sort cur" data-field="modified" data-direction="desc"  title="<%- i18next.t('Last activity') %>"><span class="icon-caret-down hide"></span><%- i18next.t("Last activity") %></span></th>
+						  <th rowspan="2" class="text-center"><%- i18next.t("Visibility") %></th>
 						</tr>
 						<tr class="active">
-						  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="list_count" data-direction="desc"  title="List">Open</span></th>
-						  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="archived_list_count" data-direction="desc"  title="List">Archived</span></th>
-						  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="card_count" data-direction="desc"  title="List">Open</span></th>
-						  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="archived_card_count" data-direction="desc"  title="Cart">Archived</span></th>
+						  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="list_count" data-direction="desc"  title="<%- i18next.t('Open') %>"><%- i18next.t("Open") %></span></th>
+						  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="archived_list_count" data-direction="desc"  title="<%- i18next.t('Archived') %>"><%- i18next.t("Archived") %></span></th>
+						  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="card_count" data-direction="desc"  title="<%- i18next.t('Open') %>"><%- i18next.t("Open") %></span></th>
+						  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="archived_card_count" data-direction="desc"  title="<%- i18next.t('Archived') %>"><%- i18next.t("Archived") %></span></th>
 						</tr>
 					</thead>  
 					<tbody class="js-my-boards">
@@ -32,25 +47,26 @@
         <div class="clearfix navbar-btn col-xs-12">
 			  <div class="well-sm navbar-btn"></div>
 				<ul class="list-inline pull-left">
-					<li>Select:</li>
-					<li><a href="#/users" class="js-select js-no-pjax" data-checked="js-checkbox-list" title="All">All</a></li>
-					<li><a href="#/users" class="js-select js-no-pjax" data-unchecked="js-checkbox-list" title="None">None</a></li>
-					<li><a title="Inactive" href="#/users" class="js-select" data-unchecked="js-checkbox-active" data-checked="js-checkbox-inactive">Closed</a></li>
-					<li><a title="Active" href="#/users" class="js-select" data-unchecked="js-checkbox-inactive" data-checked="js-checkbox-active">Open</a></li>
+					<li><%- i18next.t("Select") %>:</li>
+					<li><a href="#/users" class="js-select js-no-pjax" data-checked="js-checkbox-list" title="<%- i18next.t('All') %>"><%- i18next.t("All") %></a></li>
+					<li><a href="#/users" class="js-select js-no-pjax" data-unchecked="js-checkbox-list" title="<%- i18next.t('None') %>"><%- i18next.t("None") %></a></li>
+					<li><a title="<%- i18next.t('Inactive') %>" href="#/users" class="js-select" data-unchecked="js-checkbox-active" data-checked="js-checkbox-inactive"><%- i18next.t("Closed") %></a></li>
+					<li><a title="<%- i18next.t('Active') %>" href="#/users" class="js-select" data-unchecked="js-checkbox-inactive" data-checked="js-checkbox-active"><%- i18next.t("Open") %></a></li>
 				</ul>
 			  <div class="pull-left">
 				<form class="form-inline" role="form">
 				  <div class="pr clearfix">
 						<select class="js-more-action-user" id="js-more-action">
-						  <option>More Actions</option>
-						  <option value="1">Close</option>
-						  <option value="2">Reopen</option>
-						  <option value="3">Delete</option>
+						  <option value="0"><%- i18next.t("More Actions") %></option>
+						  <option value="1"><%- i18next.t("Close") %></option>
+						  <option value="2"><%- i18next.t("Reopen") %></option>
+						  <option value="3"><%- i18next.t("Delete") %></option>
 						</select>
 					</div>
 				</form>
 			  </div>
 			  <div class="pull-right pagination pagination-right pagination-boxes list-group-item-heading"></div>
         </div>
+	</section>
    </div>
 <% } %>

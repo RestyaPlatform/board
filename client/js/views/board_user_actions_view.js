@@ -22,8 +22,7 @@ App.BoardUserActionsView = Backbone.View.extend({
         'click .js-view-user-activities': 'showUserActivitiesListModal',
         'click .js-show-dropdown': 'showDropdown',
         'click .js-no-action': 'noAction',
-        'click .js-edit-board-member-permission-to-admin': 'editBoardMemberPermissionToAdmin',
-        'click .js-edit-board-member-permission-to-normal': 'editBoardMemberPermissionToNormal',
+        'click .js-edit-board-member-permission': 'editBoardMemberPermission',
         'click .js-close-popup': 'closePopup',
     },
     /**
@@ -34,7 +33,6 @@ App.BoardUserActionsView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
-        this.is_admin = options.is_admin;
         this.render();
     },
     template: JST['templates/board_user_actions'],
@@ -48,17 +46,8 @@ App.BoardUserActionsView = Backbone.View.extend({
      *
      */
     render: function() {
-        var is_admin;
-        if (this.model !== null && this.model.collection !== null && this.model.collection.models !== null) {
-            for (i = 0; i < this.model.collection.models.length; i++) {
-                if (this.model.collection.models[i].attributes.user_id == authuser.user.id) {
-                    is_admin = (this.model.collection.models[i].attributes.is_admin === true || this.model.collection.models[i].attributes.is_admin === 1) ? true : false;
-                }
-            }
-        }
         this.$el.html(this.template({
             user: this.model,
-            is_admin: is_admin
         }));
         this.showTooltip();
         return this;
@@ -98,41 +87,19 @@ App.BoardUserActionsView = Backbone.View.extend({
         return false;
     },
     /**
-     * editBoardMemberPermissionToAdmin()
-     * change board member permission to admin
+     * editBoardMemberPermission()
+     * change board member permission
      * @param e
      * @type Object(DOM event)
      * @return false
      */
-    editBoardMemberPermissionToAdmin: function(e) {
+    editBoardMemberPermission: function(e) {
         var self = this;
         var target = $(e.currentTarget);
         this.model.url = api_url + 'boards_users/' + this.model.attributes.id + '.json';
-        this.model.set('is_admin', true);
+        this.model.set('board_user_role_id', target.data('board_user_role_id'));
         this.model.save({
-            is_admin: true
-        }, {
-            success: function(model, response) {
-
-            }
-        });
-
-        return false;
-    },
-    /**
-     * editBoardMemberPermissionToNoraml()
-     * change board member permission to noraml
-     * @param e
-     * @type Object(DOM event)
-     * @return false
-     */
-    editBoardMemberPermissionToNormal: function(e) {
-        var self = this;
-        var target = $(e.currentTarget);
-        this.model.url = api_url + 'boards_users/' + this.model.attributes.id + '.json';
-        this.model.set('is_admin', false);
-        this.model.save({
-            is_admin: false
+            board_user_role_id: target.data('board_user_role_id')
         }, {
             success: function(model, response) {
 

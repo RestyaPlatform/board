@@ -1,43 +1,35 @@
 <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 col-lg-offset-4 col-md-offset-4 col-sm-offset-3">
 	<div class="panel panel-default">
 		 <div class="panel-heading lead">
-			Login
+			<%- i18next.t('Login') %>
 		 </div>
 		 <div class="panel-body well-lg">
 			<form class="form-horizontal clearfix col-xs-12" role="form" name="UserLoginForm" id="UserLoginForm">
 				<div class="form-group">
 					<% 
-					   if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED == "true"){
-							loginPlaceholder = 'LDAP/STANDARD Login';
-					   }else if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED == "true") { 
-							loginPlaceholder = 'LDAP Login';
+					   if (!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED == "true" && !_.isEmpty(STANDARD_LOGIN_ENABLED) && STANDARD_LOGIN_ENABLED === "true") {
+							loginPlaceholder = i18next.t('Email or Username or LDAP Login');
+					   } else if (!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED == "true") {
+							loginPlaceholder = i18next.t('LDAP Login');
 					   } else {
-							loginPlaceholder = 'Email or Username';
+							loginPlaceholder = i18next.t('Email or Username');
 					   }
 					%>
-				  <label for="inputEmail" class="sr-only control-label">Email or Username</label>
+				  <label for="inputEmail" class="sr-only control-label"><%- i18next.t('Email or Username') %></label>
 				  <input type="text" placeholder="<%= loginPlaceholder %>" class="form-control" id="inputEmail" name="email"  title="<%= loginPlaceholder %>" required/>
 				</div>
 				<div class="form-group">
-				  <label for="inputPassword" class="sr-only control-label">Password</label>
-				  <input type="password" placeholder="Password" class="form-control" id="inputPassword" name="password" title="Password" required/>
+				  <label for="inputPassword" class="sr-only control-label"><%- i18next.t('Password') %></label>
+				  <input type="password" placeholder="<%- i18next.t('Password') %>" class="form-control" id="inputPassword" name="password" title="<%- i18next.t('Password') %>" required/>
 				</div>
 				<div class="form-group">
-				  <label for="submit2" class="sr-only control-label">Login</label>
-				  <input type="submit" value="Submit" class="btn btn-primary col-xs-12" value="Login" id="submitLogin" />
+				  <label for="submit2" class="sr-only control-label"><%- i18next.t('Login') %></label>
+				  <input type="submit" class="btn btn-primary col-xs-12" value="<%- i18next.t('Login') %>" id="submitLogin" />
 				</div>
 				<ul class="list-inline small text-center">
 				  <% if(!_.isEmpty(role_links.where({slug: "users_forgotpassword"}))){ %>
-					<li><a href="#/users/forgotpassword" title="Forgot your password?" class="text-primary">Forgot your password?</a></li>
-					<%
-					  }
-					if(!_.isEmpty(role_links.where({slug: "users_register"}))){
-						if ( (!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false" ) || (!_.isEmpty(STANDARD_LOGIN_ENABLED) && (STANDARD_LOGIN_ENABLED === "true"))) {
-					%>
-					<%
-						}
-					}
-					%>
+					<li><a href="#/users/forgotpassword" title="<%- i18next.t('Forgot your password') %>?" class="text-primary"><%- i18next.t('Forgot your password') %>?</a></li>
+			      <% } %>
 				</ul>
 		  </form>
 		 </div>

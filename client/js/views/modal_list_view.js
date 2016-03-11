@@ -88,12 +88,14 @@ App.ModalListView = Backbone.View.extend({
         var attachments = this.model.collection.board.attachments.where({
             list_id: this.model.id
         });
+        var self = this;
         var filtered_attachments = new App.AttachmentCollection();
         filtered_attachments.reset(attachments);
         if (filtered_attachments.length > 0) {
             filtered_attachments.each(function(attachment) {
                 var view = new App.AttachmentView({
-                    model: attachment
+                    model: attachment,
+                    board: self.model.board
                 });
                 view_attachment.append(view.render().el).find('.timeago').timeago();
             });

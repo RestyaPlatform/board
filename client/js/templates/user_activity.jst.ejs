@@ -49,15 +49,15 @@
 							<div class="clearfix col-xs-12">
 								<small class="col-xs-12 pull-left">
 									<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all") { %>
-										<div class="js-acticity-action-<%- activity.attributes.id %>">
+										<div class="js-acticity-action-<%- activity.attributes.id %> pull-left">  
 											<ul class="list-inline col-xs-offset-0">
 											<% if(!_.isEmpty(role_links.where({slug: "edit_comment"}))){ %>
-												<li><a title="Edit" class="js-show-edit-activity js-edit-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-edit"></i>Edit</a></li>
-											<% } %> 
-												<li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-repeat"></i>Reply</a></li>
+												<li><a title="<%- i18next.t('Edit') %>" class="js-show-edit-activity js-edit-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-edit"></i><%- i18next.t("Edit") %></a></li>
+											<% } %>         
+												<li><a title="<%- i18next.t('Reply') %>" class="js-show-reply-activity-form js-reply-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-repeat"></i><%- i18next.t("Reply") %></a></li>
 											<% if(!_.isEmpty(role_links.where({slug: "delete_comment"}))){ %>
 												<li class="dropdown">
-													<a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete" data-toggle="dropdown" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-remove"></i>Delete</a>
+													<a title="<%- i18next.t('Delete') %>" class="dropdown-toggle js-show-confirm-comment-delete" data-toggle="dropdown" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-remove"></i><%- i18next.t("Delete") %></a>
 													<ul class="dropdown-menu arrow arrow-right">
 														<li id="js-acticity-actions-response-<%- activity.attributes.id %>" class="js-dropdown-popup dropdown-popup"></li>
 													</ul>
@@ -68,7 +68,7 @@
 									<% } else if(activity.attributes.revisions != null && activity.attributes.revisions != "" && (parseInt(authuser.user.id) == 1 || current_user_can_undo_it == true )){ %>
 										<% if(!_.isEmpty(role_links.where({slug: "undo_activity"}))){ %>
 											<% if(_.isUndefined(activity.from_footer)) { %>
-												<div class="js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline col-xs-offset-0"><li><a title="Undo" class="js-undo2 pull-left" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i>Undo</a></li></ul></div>
+												<div class="js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline col-xs-offset-0"><li><a title="<%- i18next.t('Undo') %>" class="js-undo2 pull-left" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>
 											<% }%>	
 										<% } %>
 									<% } %>
@@ -82,5 +82,5 @@
 			<li><hr></li>
 		</ul>
 <% }else{ %>
-	<span id="js-no-activities">No activities available.</span>
+	<span id="js-no-activities" class="alert alert-info col-xs-12"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></span>
 <% } %>

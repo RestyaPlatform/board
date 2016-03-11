@@ -6,7 +6,8 @@
   <meta name="description" content="Restyaboard powered kanban board. Download open source from http://restya.com/board/">
   <meta name="keywords" content="Restyaboard, http://restya.com/board/">
   <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.1/html5shiv.js"></script><![endif]-->
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
+  <link rel="manifest" href="manifest.json">
   <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
   <!-- build:css css/default.cache.css -->
   <link rel="stylesheet" type="text/css" href="css/fullcalendar.css">
@@ -31,13 +32,13 @@
     <main id="content" class="container-fluid">
      <div id="life"></div>
     </main>
-    <a class="company hide" href="http://restya.com/board" title="Open source. Trello like kanban board." rel="generator">Powered by Restyaboard</a>
+    <div class="text-center"><a target="_blank" class="company hide" href="http://restya.com/board/?utm_source=Restyaboard&utm_medium=web&utm_campaign=login_footer" title="Open source. Trello like kanban board." rel="generator">Powered by Restyaboard</a></div>
    </div>
    <footer id="footer" class="navbar-fixed-bottom container-fluid footer"></footer>
   </div>
   <script>
-  var api_url = '/api/v1/';
-  var template_url = '/client/';
+  var api_url = '/restyaboard/api/v1/';
+  var template_url = '/restyaboard/client/';
   </script>
   <script>window.addEventListener('load', function(e){window.applicationCache.addEventListener('updateready', function(e){if (window.applicationCache.status == window.applicationCache.UPDATEREADY){window.applicationCache.swapCache();if (confirm('A new version of this site is available. Load it?')){window.location.reload();}}}, false);}, false);</script>
   <!-- build:js js/default.cache.js -->
@@ -62,12 +63,10 @@
   <script src="js/libs/bootstrap-transition.js"></script>
   <script src="js/libs/bootstrap-tab.js"></script>
   <script src="js/libs/bootstrap-modal.js"></script>
-  <script src="js/libs/modernizr.custom.js"></script>
   <script src="js/libs/md5.js"></script>
   <script src="js/libs/select2.js"></script>
   <script src="js/libs/ImageSelect.jquery.js"></script>
   <script src="js/libs/date.format.js"></script>
-  <script src="js/libs/i18n.js"></script>
   <script src="js/libs/jquery.gritter.min.js"></script>
   <script src="js/libs/jquery.scrollTo-min.js"></script>
   <script src="js/libs/jquery.dockmodal.js"></script>
@@ -93,6 +92,11 @@
   <script src="js/libs/splitter.js"></script>
   <script src="js/libs/musical.js"></script>
   <script src="js/libs/favico-0.3.8.min.js"></script>
+  <script src="js/libs/i18next.min.js"></script>
+  <script src="js/libs/i18nextXHRBackend.min.js"></script>
+  <script src="js/libs/i18nextSprintfPostProcessor.min.js"></script>
+  <script src="js/libs/jquery.hotkeys.js"></script>
+  <script src="js/libs/backbone-hotkeys.js"></script>
   <script src="js/models/oauth.js"></script>
   <script src="js/models/user.js"></script>
   <script src="js/models/board.js"></script>
@@ -121,6 +125,13 @@
   <script src="js/models/boards_star.js"></script>
   <script src="js/models/instant_card_add.js"></script>
   <script src="js/models/email_template.js"></script>
+  <script src="js/models/app.js"></script>
+  <script src="js/models/oauth_client.js"></script>
+  <script src="js/models/oauth_application.js"></script>
+  <script src="js/models/acl_board_links.js"></script>
+  <script src="js/models/board_user_roles.js"></script>
+  <script src="js/models/acl_organization_links.js"></script>
+  <script src="js/models/organization_user_roles.js"></script>
   <script src="js/collections/user_collection.js"></script>
   <script src="js/collections/attachment_collection.js"></script>
   <script src="js/collections/list_collection.js"></script>
@@ -149,6 +160,13 @@
   <script src="js/collections/board_star_collection.js"></script>
   <script src="js/collections/email_template_collection.js"></script>
   <script src="js/collections/role_settings_collection.js"></script>
+  <script src="js/collections/app_collection.js"></script>
+  <script src="js/collections/oauth_client_collection.js"></script>
+  <script src="js/collections/oauth_application_collection.js"></script>
+  <script src="js/collections/acl_board_links_collection.js"></script>
+  <script src="js/collections/organization_user_roles_collection.js"></script>
+  <script src="js/collections/acl_organization_links_collection.js"></script>
+  <script src="js/collections/board_user_roles_collection.js"></script>
   <script src="js/templates/templates.js"></script>
   <script src="js/views/application_view.js"></script>
   <script src="js/views/admin_user_add_view.js"></script>
@@ -198,6 +216,7 @@
   <script src="js/views/archived_items_view.js"></script>
   <script src="js/views/board_background_view.js"></script>
   <script src="js/views/board_filter_view.js"></script>
+  <script src="js/views/board_labels_view.js"></script>
   <script src="js/views/board_user_activity_view.js"></script>
   <script src="js/views/board_user_remove_confirm_view.js"></script>
   <script src="js/views/card_copy_view.js"></script>
@@ -207,6 +226,7 @@
   <script src="js/views/move_list_view.js"></script>
   <script src="js/views/copy_list_view.js"></script>
   <script src="js/views/list_delete_confirm_view.js"></script>
+  <script src="js/views/label_delete_confirm_view.js"></script>
   <script src="js/views/list_actions_view.js"></script>
   <script src="js/views/card_labels_form_view.js"></script>
   <script src="js/views/card_positions_form_view.js"></script>
@@ -307,6 +327,21 @@
   <script src="js/views/emoji_list_view.js"></script>
   <script src="js/views/admin_user_index_view.js"></script>
   <script src="js/views/admin_boards_list_view.js"></script>
+  <script src="js/views/oauth_applications_view.js"></script>
+  <script src="js/views/oauth_client_view.js"></script>
+  <script src="js/views/oauth_client_add_view.js"></script>
+  <script src="js/views/oauth_client_edit_view.js"></script>
+  <script src="js/views/app_view.js"></script>
+  <script src="js/views/app_setting_view.js"></script>
+  <script src="js/views/email_to_board_setting_view.js"></script>
+  <script src="js/views/qr_code_view.js"></script>
+  <script src="js/views/board_labels_view.js"></script>
+  <script src="js/views/label_delete_confirm_view.js"></script>
+  <script src="js/views/subscribe_board_confirm_view.js"></script>
+  <script src="js/views/unsubscribe_board_confirm_view.js"></script>
+  <script src="js/views/archive_card_delete_confirm_view.js"></script>
+  <script src="js/views/archive_list_delete_confirm_view.js"></script>
+  <script src="js/views/modal_shortcut_view.js"></script>
   <script src="js/common.js"></script>
   <script src="js/application.js"></script>
   <!-- endbuild -->

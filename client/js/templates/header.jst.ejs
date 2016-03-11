@@ -1,4 +1,4 @@
-<% if(_.isEmpty(current_param) || ((typeof(user) == "undefined" || (typeof(user) != "undefined" && user.role_id != 1)) || (current_param !== 'activities' && current_param !== 'users' && current_param !== 'roles' && current_param !== 'settings' && current_param !== 'email_templates' && current_param !== 'boards' && current_param !== 'admin_boards_list'))){ %>
+<% if(_.isEmpty(current_param) || ((typeof(user) == "undefined" || (typeof(user) != "undefined" && user.role_id != 1)) || (current_param !== 'activities' && current_param !== 'users' && current_param !== 'roles' && current_param !== 'apps' && current_param !== 'settings' && current_param !== 'email_templates' && current_param !== 'boards' && current_param !== 'admin_boards_list' && current_param !== 'oauth_clients'))){ %>
 <div id="js-navbar-default" class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
   <div class="row">
@@ -7,6 +7,7 @@
 	  <div class="clearfix"><h2 class="navbar-left navbar-btn list-group-item-text"><span class="navbar-left"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span></h1>
 	  </div>
 	</div>
+	<nav class="navbar-collapse collapse">
 	<div class="navbar-right navbar-btn h4">
 	  
 	  <%  if(typeof(user) == "undefined") { %>
@@ -15,57 +16,62 @@
 			if(!_.isEmpty(role_links.where({slug: "users_register"}))) {
 				if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") {
 		%>
-		<li class="<% if(Backbone.history.fragment.indexOf('users/register') != -1){%>active<%}%>"><a href="#/users/register" title="Register"><strong>Register</strong></a></li>
+		<li class="<% if(Backbone.history.fragment.indexOf('users/register') != -1){%>active<%}%>"><a href="#/users/register" title="<%- i18next.t('Register') %>"><strong><%- i18next.t("Register") %></strong></a></li>
 		 <% 	
 				}
 		   }
 			if(!_.isEmpty(role_links.where({slug: "users_login"}))){
 		 %>
-		<li class="<% if(Backbone.history.fragment.indexOf('users/login') != -1){%>active<%}%>"><a href="#/users/login" title="Login"><strong>Login</strong></a></li>
+		<li class="<% if(Backbone.history.fragment.indexOf('users/login') != -1){%>active<%}%>"><a href="#/users/login" title="<%- i18next.t('Login') %>"><strong><%- i18next.t("Login") %></strong></a></li>
 		 <%
 		 	}
 		 %>
 		 </ul>
 	 <% }else{ %> 
 	 	<ul class="nav nav-pills navbar-left">
-			<li class="<%  var fragment = Backbone.history.fragment; var fragments = fragment.split('/'); if(fragment.indexOf('boards')  != -1 && fragments.length == 1){%>active<%}%>"><a href="#/boards" title="My Boards" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-user"></i></a></li>
-            <li class="<% if(Backbone.history.fragment.indexOf('boards/starred') != -1){%>active<%}%>"><a href="#/boards/starred" title="Starred Boards" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-star"></i></a></li>
-			<li class="<% if(Backbone.history.fragment.indexOf('boards/closed') != -1){%>active<%}%>"><a href="#/boards/closed" title="Closed Boards" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-th-large"></i></a></li>
+			<li class="<%  var fragment = Backbone.history.fragment; var fragments = fragment.split('/'); if(fragment.indexOf('boards')  != -1 && fragments.length == 1){%>active<%}%>"><a href="#/boards" title="<%- i18next.t('My Boards') %>" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-user"></i></a></li>
+            <li class="<% if(Backbone.history.fragment.indexOf('boards/starred') != -1){%>active<%}%>"><a href="#/boards/starred" title="<%- i18next.t('Starred Boards') %>" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-star"></i></a></li>
+			<li class="<% if(Backbone.history.fragment.indexOf('boards/closed') != -1){%>active<%}%>"><a href="#/boards/closed" title="<%- i18next.t('Closed Boards') %>" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-th-large"></i></a></li>
         </ul>
 	 <% }%>
 	  
 	</div>
+	</nav>
    </div>
   </div>
 </div>
-<% } else if(typeof(user) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'roles' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list')){ %>
+<% } else if(typeof(user) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'roles' || current_param === 'apps' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list'|| current_param === 'oauth_clients')){ %>
 <% 
 	if(!_.isEmpty(current_param) && (current_param === 'activities')) {
-		current_title = 'Activities';
+		current_title = i18next.t('Activities');
 	} else if(!_.isEmpty(current_param) && (current_param === 'users')){ 
-		current_title = 'Users';
+		current_title = i18next.t('Users');
 	} else if(!_.isEmpty(current_param) && (current_param === 'roles')){ 
-		current_title = 'Roles';
+		current_title = i18next.t('Roles');
+	} else if(!_.isEmpty(current_param) && (current_param === 'apps')){ 
+		current_title = i18next.t('Apps');
 	} else if(!_.isEmpty(current_param) && (current_param === 'settings')){ 
-		current_title = 'Settings';
+		current_title = i18next.t('Settings');
 	} else if(!_.isEmpty(current_param) && (current_param === 'email_templates')){ 
-		current_title = 'Email Templates';
+		current_title = i18next.t('Email Templates');
 	} else if(!_.isEmpty(current_param) && (current_param === 'admin_boards_list')){ 
-		current_title = 'Boards';
+		current_title = i18next.t('Boards');
+	} else if(!_.isEmpty(current_param) && (current_param === 'oauth_clients')){ 
+		current_title = i18next.t('Developer applications');
 	} 
 %>
 
 <div class="container-fluid bg-primary">
 <div class="navbar-header">
 	<button data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle" type="button"> 
-		<span class="sr-only">Toggle navigation</span> 
+		<span class="sr-only"><%- i18next.t("Toggle navigation") %></span> 
 		<span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> 
 	</button>
   <div class="clearfix navbar-left"> 
 	<h1 class="navbar-left navbar-btn mob-no-mar clearfix"><div class="navbar-left"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"></a></div></h1>
 	<ul class="list-inline navbar-left h2 navbar-btn navbar-form whitec text-center hidden-xs">
             <li class="navbar-btn "><span class="h5">/</span></li>
-            <li><span class="icon-user h3"></span><span class="h4"> Admin CP</span></li>
+            <li><span class="icon-user h3"></span><span class="h4"> <%- i18next.t("Admin CP") %></span></li>
             <li class="navbar-btn "><span class="h5">/</span></li>
             <li id="js-navbar-header"><span class="h4"><%- current_title %></span></li>
      </ul>
@@ -73,75 +79,65 @@
 	 <div class="pull-left well-sm"> <div class="js-dropdown dropdown  docmodal-submenu row">
               <a data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle label" href="#"> <i class="icon-cog h3"></i></a>
               <ul role="menu" class="dropdown-menu arrow">
-                 <li class="text-center text-muted"><strong>Sort</strong></li>
+                 <li class="text-center text-muted"><strong><%- i18next.t("Sort") %></strong></li>
                  <li class="divider"></li>
-                 <li><a title="Username" href="#" class="js-sort-by" data-field="username">Username</a></li>
-				 <li class="dropdown-submenu inner-dropdown dropdown"> <a href="#" title="Roles" data-toggle="dropdown" class="dropdown-toggle js-open-popover">Roles</a>
+                 <li><a title="<%- i18next.t('Username') %>" href="#" class="js-sort-by" data-field="username"><%- i18next.t("Username") %></a></li>
+				 <li class="dropdown-submenu inner-dropdown dropdown"> <a href="#" title="<%- i18next.t('Roles') %>" data-toggle="dropdown" class="dropdown-toggle js-open-popover"><%- i18next.t("Roles") %></a>
                   <ul class="dropdown-menu">
 				    <li class="inner-dropdown dropdown">
-						<a title="Admin (<%- this.admin_board_users %>)" href="#" class="js-sort-by" data-field="role_id">Admin (<%- this.admin_board_users %>)</a>
+						<a title="<%- i18next.t('Admin (%s)', { postProcess: 'sprintf', sprintf: [this.admin_board_users]}) %>" href="#" class="js-sort-by" data-field="role_id"><%- i18next.t("Admin (%s)", { postProcess: 'sprintf', sprintf: [this.admin_board_users]}) %></a>
 					</li>
                     <li class="inner-dropdown dropdown">
-						<a title="User (<%- this.normal_board_users %>)" href="#" class="js-sort-by" data-field="role_id">User (<%- this.normal_board_users %>)</a>
-					</li>
-                  </ul>
-                </li>
-                <li class="dropdown-submenu inner-dropdown dropdown"> <a href="#" title="Login" data-toggle="dropdown" class="dropdown-toggle js-open-popover">Login</a>
-                  <ul class="dropdown-menu">
-                    <li class="inner-dropdown dropdown">
-						<a title="Login Time" href="#" class="js-sort-by" data-field="last_login_date">Time</a>
-					</li>
-                    <li class="inner-dropdown dropdown">
-						<a title="Login IP" href="#" class="js-sort-by" data-field="last_login_ip">IP</a>
+						<a title="<%- i18next.t('User (%s)', { postProcess: 'sprintf', sprintf: [this.normal_board_users]}) %>" href="#" class="js-sort-by" data-field="role_id"><%- i18next.t("User (%s)", { postProcess: 'sprintf', sprintf: [this.normal_board_users]}) %></a>
 					</li>
                   </ul>
                 </li>
-                <li class="dropdown-submenu inner-dropdown dropdown"> <a href="#" title="Registered" data-toggle="dropdown" class="dropdown-toggle js-open-popover">Registered</a>
+                <li class="dropdown-submenu inner-dropdown dropdown"> <a href="#" title="<%- i18next.t('Login') %>" data-toggle="dropdown" class="dropdown-toggle js-open-popover"><%- i18next.t("Login") %></a>
                   <ul class="dropdown-menu">
                     <li class="inner-dropdown dropdown">
-						<a title="Time" href="#" class="js-sort-by" data-field="created">Time</a>
+						<a title="<%- i18next.t('Login Time') %>" href="#" class="js-sort-by" data-field="last_login_date"><%- i18next.t("Time") %></a>
+					</li>
+                    <li class="inner-dropdown dropdown">
+						<a title="<%- i18next.t('Login IP') %>" href="#" class="js-sort-by" data-field="last_login_ip"><%- i18next.t("IP") %></a>
+					</li>
+                  </ul>
+                </li>
+                <li class="dropdown-submenu inner-dropdown dropdown"> <a href="#" title="<%- i18next.t('Registered') %>" data-toggle="dropdown" class="dropdown-toggle js-open-popover"><%- i18next.t("Registered") %></a>
+                  <ul class="dropdown-menu">
+                    <li class="inner-dropdown dropdown">
+						<a title="<%- i18next.t('Time') %>" href="#" class="js-sort-by" data-field="created"><%- i18next.t("Time") %></a>
 					</li>
                     <li>
-						<a title="Registered IP" href="#" class="js-sort-by" data-field="registered_ip">IP</a>
+						<a title="<%- i18next.t('IP') %>" href="#" class="js-sort-by" data-field="registered_ip"><%- i18next.t("IP") %></a>
 					</li>
                   </ul>
                 </li>
-                <li><a title="Organizations Count" href="#" class="js-sort-by" data-field="joined_organization_count">Organizations Count</a>
+                <li><a title="<%- i18next.t('Organizations Count') %>" href="#" class="js-sort-by" data-field="joined_organization_count"><%- i18next.t("Organizations Count") %></a>
 				</li>
-                <li><a title="Board Count" href="#" class="js-sort-by" data-field="joined_board_count">Board Count</a>
+                <li><a title="<%- i18next.t('Board Count') %>" href="#" class="js-sort-by" data-field="joined_board_count"><%- i18next.t("Board Count") %></a>
 				</li>
               </ul>
             </div></div>
-				<% 
-				if(!_.isEmpty(role_links.where({slug: "users"}))) {
-					if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") { %>
-					<div class="pull-left well-sm"><a class="label" href="#/users/admin_user_add" title="Add User"><i class="icon-plus-sign h3"></i><span class="h4">Add User</span></a></div>
-				<% } 
-				} %>
+				<% if (!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") { %>
+					<div class="pull-left well-sm"><a class="label" href="#/users/admin_user_add" title="<%- i18next.t('Add User') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("Add User") %></span></a></div>
+				<% } %>
+			<% } %>
+			<% if(!_.isEmpty(current_param) && (current_param === 'oauth_clients')){ %>
+				<div class="pull-left well-sm"><a class="label" href="#/oauth_clients/add" title="<%- i18next.t('New application') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("New application") %></span></a></div>
 			<% } %>
 	</div>
 	</div>
 	<nav class="navbar-collapse collapse"> 
 	<div class="navbar-right clearfix">
 		<ul class="nav nav-pills navbar-left navbar-btn">
-			<% if(!_.isEmpty(role_links.where({slug: "activities_listing"}))){ %>
-				<li class="js-admin-activity-menu navbar-btn"><a title="Activities" href="#/activities">Activities</a></li>
-			<% } %>		
-			<% if(!_.isEmpty(role_links.where({slug: "view_user_listing"}))){ %>
-				<li class="js-admin-user-menu navbar-btn"><a title="Users" href="#/users">Users</a></li>
-			<% } %>	
-            <% if(!_.isEmpty(role_links.where({slug: "view_board_listing"}))){ %>
-				<li class="js-admin-board-menu navbar-btn"><a title="Boards" href="#/boards/list">Boards</a></li>
-			<% } %>				
-			<% if(!_.isEmpty(role_links.where({slug: "roles"}))){ %>
-				<li class="js-admin-role-menu navbar-btn"><a title="Roles" href="#/roles">Roles</a></li>
-			<% } %>
-			<% if(!_.isEmpty(role_links.where({slug: "setting_list"}))){ %>
-				<li class="js-admin-setting-menu navbar-btn"><a title="Settings" href="#/settings">Settings</a></li>
-			<% } %>
-			<% if(!_.isEmpty(role_links.where({slug: "view_email_template_listing"}))){ %>
-				<li class="js-admin-email-menu navbar-btn"><a title="Email Templates" href="#/email_templates">Email Templates</a></li>
-			<% } %>
+			<li class="js-admin-activity-menu navbar-btn"><a title="<%- i18next.t('Activities') %>" href="#/activities"><%- i18next.t("Activities") %></a></li>
+			<li class="js-admin-user-menu navbar-btn"><a title="<%- i18next.t('Users') %>" href="#/users"><%- i18next.t("Users") %></a></li>
+			<li class="js-admin-board-menu navbar-btn"><a title="<%- i18next.t('Boards') %>" href="#/boards/list"><%- i18next.t("Boards") %></a></li>
+			<li class="js-admin-role-menu navbar-btn"><a title="<%- i18next.t('Roles') %>" href="#/roles"><%- i18next.t("Roles") %></a></li>
+			<li class="js-admin-app-menu navbar-btn"><a title="<%- i18next.t('Apps') %>" href="#/apps"><%- i18next.t("Apps") %></a></li>
+			<li class="js-admin-client-menu navbar-btn"><a title="<%- i18next.t('Developer applications') %>" href="#/oauth_clients"><%- i18next.t("Developer applications") %></a></li>
+			<li class="js-admin-setting-menu navbar-btn"><a title="<%- i18next.t('Settings') %>" href="#/settings"><%- i18next.t("Settings") %></a></li>
+			<li class="js-admin-email-menu navbar-btn"><a title="<%- i18next.t('Email Templates') %>" href="#/email_templates"><%- i18next.t("Email Templates") %></a></li>
 		</ul>
 	</div>
 	</nav>

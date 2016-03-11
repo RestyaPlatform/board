@@ -1,7 +1,7 @@
 <li class="clearfix text-center col-xs-12">
 	<div class="clearfix">
 		<a class="js-back-to-card-actions pull-left" href="#"><i class="icon-caret-left"></i></a>
-		<span class="col-xs-10"><strong>Members</strong></span>
+		<span class="col-xs-10"><strong><%- i18next.t('Members') %></strong></span>
 		<a class="js-close-popup pull-right" href="#"><i class="icon-remove"></i></a>
 	</div>
 </li>
@@ -35,5 +35,5 @@
 					<% } 
 			}); 
 		}else{ %>
-			<li>No members available.</li>
+			<li><span class="alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('members')] }) %></span></li>
 		<% } %>

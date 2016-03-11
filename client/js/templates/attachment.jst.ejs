@@ -12,18 +12,18 @@
 	</a>
 	<div class="clearfix btn-block col-xs-12">
 		<a target="_blank" class="htruncate col-xs-12 btn-block" href="<%= attachment.downloadLink('download', attachment.get('id')) %>" title="<%- attachment.get('name') %>"><%- attachment.get('name') %>
-		<span class="show">Added <small class="text-muted"><abbr class="timeago" title="<%- attachment.get('created') %>"><%- attachment.get("created") %></abbr></small></span>
+		<span class="show"><%- i18next.t("Added") %> <small class="text-muted"><abbr class="timeago" title="<%- attachment.get('created') %>"><%- attachment.get("created") %></abbr></small></span>
 		</a> 
 		<%if(!_.isUndefined(authuser.user)) {%>
 		<div class="btn-toolbar navbar-btn">
 			<div class="btn-group btn-group-xs navbar-btn">
 				<div class="btn btn-primary">
 				<% var download_link = attachment.downloadLink('download', attachment.get('id')); %>
-					<a target="_blank" href="<%= download_link %>" title="Download">
+					<a target="_blank" href="<%= download_link %>" title="<%- i18next.t('Download') %>">
 						<i class="icon-arrow-down cur icon-light"></i>
 					</a>
 				</div>
-				<% if(!_.isEmpty(role_links.where({slug: "remove_card_attachment"}))){ %>
+				<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "remove_card_attachment", board_user_role_id: parseInt(board.board_user_role_id)})))) { %> 
 					<div class="dropdown dropdown pull-left">
 						<a href="#" title="Delete" class="js-show-confirm-delete-attachment dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown"><i class="icon-remove cur"></i></a>
 						<ul class="dropdown-menu arrow list-unstyled">
@@ -36,5 +36,5 @@
 		<% } %>
 	</div>
 <% }else{ %> 
-	<span>No attachments available</span>
+	<span class="alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('attachments')] }) %></span>
 <% } %> 

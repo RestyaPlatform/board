@@ -1,15 +1,15 @@
 <div class="list js-list-form well ">
-	<a href="#" class="js-show-add-list-form toggle-show text-muted" title="Add a list">Add a list</a>
+	<a href="#" class="js-show-add-list-form toggle-show text-muted" title="<%- i18next.t('Add a list') %>"><%- i18next.t("Add a list") %></a>
 	<span class="hide"></span>
 	<form class="js-add-list">
 		<div class="form-group required">
-			<label for="inputListName" class="hide">Name</label>
+			<label for="inputListName" class="hide"><%- i18next.t("Name") %></label>
 			<input maxlength="255" type="text" id="inputListName" name="name" autocomplete="off" class="form-control input-sm"placeholder="Add a list" required />
 		</div>
 		<div class="submit">
 			
 			<input type="submit" name="Save" class="btn btn-primary" value="Save"/>
-			<i class="icon-remove js-hide-add-list-form btn btn-link cur" title="Cancel"></i>
+			<i class="icon-remove js-hide-add-list-form btn btn-link cur" title="<%- i18next.t('Cancel') %>"></i>
 		</div>
 	</form>
 </div>

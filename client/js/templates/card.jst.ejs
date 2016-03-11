@@ -1,5 +1,5 @@
 <div class="panel-body">
-  <% if(!_.isEmpty(role_links.where({slug: "view_card_labels"}))){  %>
+  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.board.acl_links.where({slug: "view_card_labels", board_user_role_id: parseInt(card.board_user_role_id)})))) {  %>
   <div class="clearfix js-card-label-section-<%- card.attributes.id %>">
   <%
   	card.labels.each(function(label) {
@@ -12,7 +12,7 @@
   
   </div>
  <%  } %> 
-  <% if(!_.isEmpty(card.attachments) && card.attachments.length > 0 && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ %>
+  <% if(!_.isEmpty(card.attachments) && card.attachments.length > 0 && !_.isEmpty(card.attachments.at(0).attributes.name) && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ %>
 	  <div class="clearfix js-card-attachment-image navbar-btn <% if(!_.isEmpty(card.collection) && !card.list.collection.board.attributes.is_show_image_front_of_card){ %> hide <% } %>">
 		<%
 			var img_src = card.showImage('CardAttachment',  card.attachments.at(0).attributes.id, 'large_thumb' );
@@ -25,7 +25,7 @@
   	<%
 		if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
 			var cards_subscribers = card.cards_subscribers.where({
-				is_subscribed: true,
+				is_subscribed: 1,
 				user_id: parseInt(authuser.user.id) 
 			});
 		}
@@ -34,25 +34,25 @@
 		<li><small><span class="icon-eye-open"></span></small></li>
 	<% } %> 
 	<% if(card.card_voters.length > 0){ %>
-	<li><small title="<%- card.card_voters.length %> Votes"><span class="icon-thumbs-up"></span><span><%- card.card_voters.length %></span></small></li>
+	<li><small  title="<%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %> "><span class="icon-thumbs-up"></span><span><%- card.card_voters.length %></span></small></li>
 	<% } %>
 	<% 
 	if(card.attributes.comment_count > 0){ 
 	%>
-	<li><small title="<%- card.attributes.comment_count %> Comments" ><span class="icon-comment"></span><span><%- card.attributes.comment_count %></span></small></li>
+	<li><small title="<%- i18next.t('{{count}} Comment', {count: card.attributes.comment_count}) %> " ><span class="icon-comment"></span><span><%- card.attributes.comment_count %></span></small></li>
 	<% } %>
 	<% if(!_.isEmpty(card.attributes.description)){ %>
-	<li><small title="Description"><span class="icon-align-left"></span><span></span></small></li>
+	<li><small title="<%- i18next.t('Description') %>"><span class="icon-align-left"></span><span></span></small></li>
 	<% } %>
 	<% if(card.attributes.checklist_item_count > 0){ %>
-		<li><small title="<%- card.attributes.checklist_item_completed_count %> checklist completed out of <%- card.attributes.checklist_item_count %>"><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %><div class="label label-success"> <% } %><span class="icon-list-ul"></span><span><%- card.attributes.checklist_item_completed_count %>/<%- card.attributes.checklist_item_count %></span><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %></div><% } %></small></li>
+		<li><small title="<%- i18next.t('%s checklist completed out of %s', { postProcess: 'sprintf', sprintf: [card.attributes.checklist_item_completed_count, card.attributes.checklist_item_count]}) %> "><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %><div class="label label-success"> <% } %><span class="icon-list-ul"></span><span><%- card.attributes.checklist_item_completed_count %>/<%- card.attributes.checklist_item_count %></span><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %></div><% } %></small></li>
 	<% } %> 
 	<% if(card.attributes.due_date > 0){ %>
-		<li><small title="Due Date"><span class="icon-time"></span><span><%- card.attributes.due_date %></span></small></li>
+		<li><small title="<%- i18next.t('Due Date') %>"><span class="icon-time"></span><span><%- card.attributes.due_date %></span></small></li>
 	<% } %> 
 	<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0){ %>
 	<li>
-		<small title="<%- card.attachments.length %> Attachments">
+		<small title="<%- i18next.t('{{count}} Attachment', {count: card.attachments.length}) %> ">
 			<span class="icon-paper-clip"></span>
 			<span>
 			<%- card.attachments.length %>
@@ -67,7 +67,7 @@
 		var date_time = card.attributes.due_date.split('T');
 		date_time = date_time[0].split(' ');
 	%>
-	<li><small title="Due Date"><span class="label label-default"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
+	<li><small title=" <%- i18next.t('Due Date') %>"><span class="label label-default"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
 	<% } %>
 	</ul>
 	<div class="clearfix pull-right">

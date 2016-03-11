@@ -90,7 +90,8 @@ App.ModalBoardView = Backbone.View.extend({
             for (var attachments_i = 0; attachments_i < attachments_length; attachments_i++) {
                 var attachment = attachments.models[attachments_i];
                 var view = new App.AttachmentView({
-                    model: attachment
+                    model: attachment,
+                    board: this.model
                 });
                 view_attachment.append(view.render().el);
             }

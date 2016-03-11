@@ -1,16 +1,16 @@
 <div class="form-group required clearfix">
-	<label for="inputItemName" class="sr-only">Name</label>
+	<label for="inputItemName" class="sr-only"> <%- i18next.t('Name') %>
+</label>
 	<div class="clearfix">
 		<textarea name="name" id="ChecklistItem" class="form-control" required></textarea>
 	</div>
 </div>
 <div class="submit">
-	<input type="submit" name="Save" class="btn btn-primary" value="Add">
-	<i class="icon-remove js-hide-checklist-item-add-form btn btn-link cur" title="Cancel"></i>
-	<div class=" pull-right dropdown">
-			<a title="Item Options" class="dropdown-toggle js-show-item-options btn btn-link" data-toggle="dropdown" href="#"><i class="icon-chevron-sign-down"></i></a>
-			<ul class="dropdown-menu arrow arrow-right">
-				<li class="js-dropdown-popup dropdown-popup" id="js-item-add-option-response-<%-checklist.id %>"></li>
+	<input type="submit" name="Save" class="btn btn-primary" value="<%- i18next.t('Add') %>">
+	<i class="icon-remove js-hide-checklist-item-add-form btn btn-link cur" title="<%- i18next.t('Cancel') %>"></i>
+	<div class="navbar-right dropdown">
+			<a title="<%- i18next.t('Item Options') %>" class="dropdown-toggle js-show-item-options btn btn-link" data-toggle="dropdown" href="#"><i class="icon-chevron-sign-down"></i></a>
+			<ul class="dropdown-menu dropdown-menu-left arrow  js-dropdown-popup dropdown-popup" id="js-item-add-option-response-<%-checklist.id %>">
 			</ul>
 		</div>
 </div>

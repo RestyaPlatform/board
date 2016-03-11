@@ -41,41 +41,18 @@ $dc.ready(function() {
         target.parents('li.dropdown').removeClass('open');
         return false;
     }).on('click', '.js-start', function(e) {
-        var actionSheet = $(".action-sheet");
-        /* Grazie a modernizr riprendo il nome dell'evento di fine animazione, che cambia a seconda del browser */
-        var endTransitionName = {
-            'WebkitTransition': 'webkitTransitionEnd',
-            'OTransition': 'oTransitionEnd',
-            'msTransition': 'MSTransitionEnd',
-            'transition': 'transitionend'
-        };
-        var transitionEventName = endTransitionName[Modernizr.prefixed('transition')];
-        var X = $(this).attr('id');
-        if (X == 1) {
+        var actionSheet = $('.action-sheet');
+        if ($('#footer').hasClass('action-open')) {
             setTimeout(function() {
-                actionSheet.removeClass("open"); //aggiungiamo la classe 'open' per avviare l'aniamzione
+                actionSheet.removeClass('open');
             }, 10);
-            $(this).attr('id', '0');
-            $("#footer").removeClass("action-open");
+            $('#footer').removeClass('action-open');
         } else {
             setTimeout(function() {
-                actionSheet.addClass("open"); //aggiungiamo la classe 'open' per avviare l'aniamzione
+                actionSheet.addClass('open');
             }, 10);
-            $(this).attr('id', '1');
-            $("#footer").addClass("action-open");
+            $('#footer').addClass('action-open');
         }
-    }).on('click', '.cancel', function(e) {
-        var _endTransitionName = {
-            'WebkitTransition': 'webkitTransitionEnd',
-            'OTransition': 'oTransitionEnd',
-            'msTransition': 'MSTransitionEnd',
-            'transition': 'transitionend'
-        };
-        var _transitionEventName = _endTransitionName[Modernizr.prefixed('transition')];
-        var _actionSheet = $(".action-sheet");
-        _actionSheet.removeClass("open").one(_transitionEventName, function() {
-            _actionSheet.hide();
-        });
     }).on('click', '.js-edit-organization', function(e) {
         $('.js-organization-view-block').hide();
         $('.js-organization-edit-block').show();
@@ -134,7 +111,12 @@ $dc.ready(function() {
 (jQuery);
 
 function changeTitle(title) {
-    document.title = SITE_NAME + "'s Restyaboard" + " | " + title;
+    if (title !== undefined) {
+        document.title = i18next.t("%s's Restyaboard | %s", {
+            postProcess: 'sprintf',
+            sprintf: [SITE_NAME, title]
+        });
+    }
 }
 
 function checkKeycode(keycode, c) {
@@ -144,9 +126,9 @@ function checkKeycode(keycode, c) {
 }
 
 function makeLink(text, board_id) {
-    var matches = text.match(/#(\d+)/g);
-    if (matches !== undefined && matches !== null) {
-        $.each(matches, function(key, val) {
+    var card_id_arr = text.match(/#(\d+)/g);
+    if (card_id_arr !== undefined && card_id_arr !== null) {
+        $.each(card_id_arr, function(key, val) {
             var temp = val.split('#');
             if (temp['1'] !== undefined) {
                 var cardLink = '<a class="js-open-card-view" data-card_id="' + temp['1'] + '" href="#/board/' + board_id + '/card/' + temp['1'] + '">' + val + '</a>';
@@ -154,22 +136,14 @@ function makeLink(text, board_id) {
             }
         });
         return text;
-    } else {
-        var split_text = text.split(" ");
-        var ret_text = '';
-        if (split_text[0].match(/^@/)) {
-            for (var i = 0; i < split_text.length; i++) {
-                if (i === 0) {
-                    ret_text += '<span class="atMention">' + split_text[0] + '</span>' + " ";
-                } else {
-                    ret_text += " " + split_text[i];
-                }
-            }
-        } else {
-            ret_text = text;
-        }
-        return ret_text;
     }
+    var username_arr = text.match(/(@[a-zA-Z0-9]*)/g);
+    if (username_arr !== undefined && username_arr !== null) {
+        $.each(username_arr, function(key, val) {
+            text = text.replace(val, '<span class="atMention">' + val + '</span>');
+        });
+    }
+    return text;
 }
 
 var favicon = new Favico({

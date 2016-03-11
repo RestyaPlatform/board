@@ -4,18 +4,18 @@
 		<h1 class="navbar-left navbar-btn list-group-item-text"><span class="navbar-left"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span></h1>
 		<ul class="list-inline navbar-left h2 navbar-btn navbar-form text-center">
 			<li class="text-muted"><span class="h5">/</span></li>
-			<li><span class="text-muted h4">Organizations</span></li>
+			<li><span class="text-muted h4"><%- i18next.t('Organizations') %></span></li>
 		</ul>
 		 <div class="pull-left"> <div class="js-dropdown dropdown  docmodal-submenu row">
               <a data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle btn btn-link show" href="#"> <i class="icon-cog h3 text-muted"></i></a>
               <ul role="menu" class="dropdown-menu arrow">
-                 <li class="text-center text-muted"><strong>Sort</strong></li>
+                 <li class="text-center text-muted"><strong><%- i18next.t('Sort') %></strong></li>
                  <li class="divider"></li>
-                 <li><a title="Name" href="#" class="js-sort-by" data-field="name">Name</a></li>
-                <li><a title="Owner" href="#" data-field="username" class="js-sort-by">Owner</a></li>
-                <li><a title="Created" href="#" data-field="created" class="js-sort-by">Created</a></li>
-                <li><a title="Users Count" href="#" data-field="organizations_user_count" class="js-sort-by">Users Count</a></li>
-                <li><a title="Board Count" href="#" data-field="board_count" class="js-sort-by">Board Count</a></li>
+                 <li><a title="<%- i18next.t('Name') %>" href="#" class="js-sort-by" data-field="name"><%- i18next.t('Name') %></a></li>
+                <li><a title="<%- i18next.t('Owner') %>" href="#" data-field="username" class="js-sort-by"><%- i18next.t('Owner') %></a></li>
+                <li><a title="<%- i18next.t('Created') %>" href="#" data-field="created" class="js-sort-by"><%- i18next.t('Created') %></a></li>
+                <li><a title="<%- i18next.t('Users Count') %>" href="#" data-field="organizations_user_count" class="js-sort-by"><%- i18next.t('Users Count') %></a></li>
+                <li><a title="<%- i18next.t('Board Count') %>" href="#" data-field="board_count" class="js-sort-by"><%- i18next.t('Board Count') %></a></li>
               </ul>
             </div></div>
 	</div>

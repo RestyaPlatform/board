@@ -1,0 +1,8 @@
+<div class="clearfix text-center col-xs-12">	
+	<a href="#" class="js-archived-items pull-left" data-list-id="<%- list.id %>"><i class="icon-caret-left "></i></a><span class="col-xs-10"><strong><%- i18next.t("Delete All List") %></strong></span><a class="js-close-popup pull-right" href="#"><i class="icon-remove "></i></a>
+</div>
+<div class="col-xs-12 divider"></div>
+<div class="col-xs-12">
+	<p><%- i18next.t("There is no undo. This will remove All Archive Lists and destroy its history.") %></p>	
+	<a class="js-delete-all-archived-list-delete btn  btn-primary" title="<%- i18next.t('Delete All List') %>" data-list-id="<%- list.id %>"><%- i18next.t("Delete") %></a>
+</div>

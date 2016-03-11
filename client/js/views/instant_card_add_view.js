@@ -46,7 +46,7 @@ App.InstantCardAddView = Backbone.View.extend({
     className: 'js-instant-card-from',
     tagName: 'div',
     attributes: {
-        'title': 'Instant Add Card'
+        'title': i18next.t('Instant Add Card')
     },
     bindings: {
         '#board_id': {
@@ -61,7 +61,7 @@ App.InstantCardAddView = Backbone.View.extend({
                 collection: function() {
                     var board_arr = [];
                     _.each(this.boards.models, function(board) {
-                        if (!_.isEmpty(board.attributes.lists) && board.attributes.lists.length > 0 && board.attributes.is_closed === 0) {
+                        if (!_.isEmpty(board.attributes.lists) && board.attributes.lists.length > 0 && parseInt(board.attributes.is_closed) === 0) {
                             var temp = {};
                             temp.id = board.id;
                             temp.name = _.escape(board.attributes.name);
@@ -101,11 +101,14 @@ App.InstantCardAddView = Backbone.View.extend({
                     this.$('.js-instant-card-user-ids').val('');
                     this.$('.js-instant-card-member-search-response').nextAll().remove();
                     this.$('#inputInstantCardAddUserSearch').val('');
-                    $('<li class="small"><div class="col-xs-12">Search for a person in ' + SITE_NAME + ' by name or email address.</div></li>').insertAfter(this.$('.js-instant-card-member-search-response'));
+                    $('<li class="small"><div class="col-xs-12">' + i18next.t('Search for a person in %s by name or email address.', {
+                        postProcess: 'sprintf',
+                        sprintf: [SITE_NAME]
+                    }) + '</div></li>').insertAfter(this.$('.js-instant-card-member-search-response'));
                     var list_arr = [];
                     if (!_.isUndefined(board)) {
                         _.each(board.attributes.lists, function(list) {
-                            if (list.is_archived === false) {
+                            if (parseInt(list.is_archived) === 0) {
                                 var list_temp = {};
                                 list_temp.id = list.id;
                                 list_temp.name = _.escape(list.name);
@@ -143,7 +146,7 @@ App.InstantCardAddView = Backbone.View.extend({
         var self = this;
         $('.js-hidden-blocks').append(this.$el.html(this.template({
             boards: this.boards
-        })).attr('title', 'Instant Add Card'));
+        })).attr('title', i18next.t('Instant Add Card')));
         this.$el.dockmodal({
             initialState: 'docked',
             height: 300,
@@ -218,7 +221,7 @@ App.InstantCardAddView = Backbone.View.extend({
             var list_id = parseInt(data.list_id);
             data.list_id = list_id;
             card.url = api_url + 'boards/' + data.board_id + '/lists/' + data.list_id + '/cards.json';
-            card.set('is_archived', false);
+            card.set('is_archived', 0);
             card.set(data);
             card.set('board_id', board_id);
             card.set('due_date', null);
@@ -399,7 +402,7 @@ App.InstantCardAddView = Backbone.View.extend({
         this.$('.js-instant-user').parent().addClass('js-tooltip').attr('data-original-title', this.card_users_names.join(',')).attr('title', this.card_users_names.join(','));
         $('.js-tooltip').tooltip();
         if (this.card_users.length === 0) {
-            this.$('.js-instant-user').removeClass('text-primary').parent().removeClass('js-tooltip').attr('data-original-title', '').attr('title', 'Users');
+            this.$('.js-instant-user').removeClass('text-primary').parent().removeClass('js-tooltip').attr('data-original-title', '').attr('title', i18next.t('Users'));
         }
         this.$('.js-card-user-ids').val(this.card_users.join(','));
     },
@@ -434,7 +437,7 @@ App.InstantCardAddView = Backbone.View.extend({
             var _labels = _.pluck(self.$('.js-card-label').select2('data'), 'text');
             self.$('.js-instant-label').parent().attr('data-original-title', _labels.join(',')).attr('title', _labels.join(','));
             if (self.$('.js-card-label').select2('data').length === 0) {
-                self.$('.js-instant-label').removeClass('text-primary').parent().removeClass('js-tooltip').attr('data-original-title', '').attr('title', 'Labels');
+                self.$('.js-instant-label').removeClass('text-primary').parent().removeClass('js-tooltip').attr('data-original-title', '').attr('title', i18next.t('Labels'));
             }
         });
     }

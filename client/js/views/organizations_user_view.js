@@ -51,17 +51,9 @@ App.OrganizationsUserView = Backbone.View.extend({
      */
     render: function() {
         this.model.organizations_users.showImage = this.showImage;
-        this.is_admin = false;
-        if (!_.isUndefined(authuser.user)) {
-            var admin = this.model.organizations_users.findWhere({
-                user_id: parseInt(authuser.user.id),
-                is_admin: 1
-            });
-            this.is_admin = (!_.isEmpty(admin) || (!_.isUndefined(authuser.user) && parseInt(authuser.user.role_id) === 1)) ? true : false;
-        }
         this.$el.html(this.template({
+            organization: this.model,
             organizations_users: this.model.organizations_users,
-            is_admin: this.is_admin
         }));
         this.showTooltip();
         return this;
@@ -75,7 +67,10 @@ App.OrganizationsUserView = Backbone.View.extend({
     clearMemberList: function(e) {
         var self = this;
         self.$('.js-organization-member-search-response').nextAll().remove();
-        self.$('.js-organization-member-search-response').after('<li class="small col-xs-12">Search for a person in Restyaboard by name or email address.</li>');
+        self.$('.js-organization-member-search-response').after('<li class="small col-xs-12">' + i18next.t('Search for a person in %s by name or email address.', {
+            postProcess: 'sprintf',
+            sprintf: [SITE_NAME]
+        }) + '</li>');
     },
     /**
      * organizationUsersSearch()
@@ -135,13 +130,13 @@ App.OrganizationsUserView = Backbone.View.extend({
         organizations_user.save({
             organization_id: self.model.id,
             user_id: user_id,
-            is_admin: 'FALSE'
+            organization_user_role_id: 2
         }, {
             success: function(model, response) {
                 organizations_user.set(response.organizations_users);
                 organizations_user.set('organization_id', self.model.id);
                 organizations_user.set('user_id', parseInt(user_id));
-                organizations_user.set('is_admin', false);
+                organizations_user.set('organization_user_role_id', 2);
                 organizations_user.set('id', parseInt(response.id));
                 self.model.organizations_users.add(organizations_user);
             }
@@ -161,10 +156,10 @@ App.OrganizationsUserView = Backbone.View.extend({
         var organizations_user_id = target.data('organizations_user_id');
         target.parents('li.dropdown').removeClass('open');
         self.model.organizations_users.remove(self.model.organizations_users.get(parseInt(organizations_user_id)));
-        self.flash('success', 'User removed from this organization');
+        self.flash('success', i18next.t('User removed from this organization'));
         self.render();
         var organizationsUser = new App.OrganizationsUser();
-        organizationsUser.url = api_url + 'organizations_users/' + organizations_user_id + '.json';
+        organizationsUser.url = api_url + 'organizations/' + self.model.id + '/organizations_users/' + organizations_user_id + '.json';
         organizationsUser.set('id', organizations_user_id);
         organizationsUser.destroy();
         return false;
@@ -182,7 +177,10 @@ App.OrganizationsUserView = Backbone.View.extend({
         var organizationsUser = this.model.organizations_users.findWhere({
             id: parseInt(organizations_user_id)
         });
+        organizationsUser.organization_user_role_id = this.model.organization_user_role_id;
         organizationsUser.organizations_user_id = organizations_user_id;
+        organizationsUser.organization_user_roles = this.model.organization_user_roles;
+        organizationsUser.acl_links = this.model.acl_links;
         $('.js-show-organization-member-permission-form-response').html(new App.OrganizationMemberPermissionFormView({
             model: organizationsUser
         }).el);

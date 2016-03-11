@@ -79,7 +79,7 @@ App.OrganizationHeaderView = Backbone.View.extend({
     editOrganization: function(e) {
         if (!$.trim($('#inputOrganizationName').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">Whitespace alone not allowed</div>').insertAfter('#inputOrganizationName');
+            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputOrganizationName');
             return false;
         } else {
             $('.error-msg').remove();
@@ -111,7 +111,7 @@ App.OrganizationHeaderView = Backbone.View.extend({
         organization.url = api_url + 'organizations/' + this.model.organization_id + '.json';
         organization.set('id', this.model.organization_id);
         organization.destroy();
-        this.flash('success', 'Organization deleted successfully');
+        this.flash('success', i18next.t('Organization deleted successfully.'));
         app.navigate('#/organizations', {
             trigger: true,
             replace: true

@@ -9,14 +9,14 @@
 			is_org_found = true;
 		}
 		var selected = (parseInt(organization.id) === board.attributes.organization_id) ? 'selected="selected"' : '';
-		var current = (parseInt(organization.id) === board.attributes.organization_id) ? ' (current)' : ''; 
+		var current = (parseInt(organization.id) === board.attributes.organization_id) ? ' '+i18next.t('(current)') : ''; 
 		organization_options += '<option value="' + organization.id + '" ' + selected + '>' + _.escape(organization.attributes.name) + current + '</option>'; 
 	}); 
 	if(!is_org_found && board.attributes.organization_id != 0){
 		display_options = true;
-		organization_options += '<option value="' + board.attributes.organization_id + '" selected="selected" >' + _.escape(board.attributes.organization_name) + '(current)</option>'; 
+		organization_options += '<option value="' + board.attributes.organization_id + '" selected="selected" >' + _.escape(board.attributes.organization_name) + ' '+i18next.t('(current)')+'</option>'; 
 	}
 %> 
 <form class="normal js-save-board-visibility" name="BoardVisibilityForm">
-<div class="form-group select"><label for="inputListBoard">Organization</label><select name="organization_id" class="form-control cur" required><% if (display_options) {%><option value="">Please select organization</option><%=organization_options %><%}else{%><option value="">(none)</option><%}%></select></div><div class="submit"><input type="submit" class="btn btn-primary" value="Save" <% if (!display_options) {%> disabled<%}%>></div>
+<div class="form-group select"><label for="inputListBoard"><%- i18next.t('Organization') %></label><select name="organization_id" class="form-control cur" required><% if (display_options) {%><option value=""><%- i18next.t('Please select organization') %></option><%=organization_options %><%}else{%><option value=""><%- i18next.t('(none)') %></option><%}%></select></div><div class="submit"><input type="submit" class="btn btn-primary" value="<%- i18next.t('Save') %>" <% if (!display_options) {%><%- i18next.t('Disabled') %> <%}%>></div>
 </form>

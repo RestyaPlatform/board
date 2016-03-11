@@ -1,0 +1,34 @@
+<ul class="list-unstyled">
+	<li>
+		<div class="clearfix text-center col-xs-12">
+			<a href="#" class="js-back-to-sidebar pull-left btn btn-xs btn-link"><i class="icon-caret-left"></i></a> 
+			<span class="col-xs-10 navbar-btn"><strong><%- i18next.t("Add Cards via Email") %></strong></span>
+		</div>
+		<div class="col-xs-12 divider"></div>
+		<div class="col-xs-12">
+			<div class="form-group">
+			  <label for="boardEmail"><%- i18next.t("Your email address for this board") %></label>
+			  <input type="text" readonly="readonly" value="<%- board_email %>" class="form-control js-board-email" name="boardEmail" id="boardEmail">
+			</div>
+			<div class="col-xs-12 divider"></div>
+			<div class="form-group">
+			  <p><%- i18next.t("Your emailed cards appear in...") %></p>
+			  <label><%- i18next.t("List") %></label>
+			  <select class="js-select-list form-control input-sm cur list-group" placeholder="<%- i18next.t('List') %>">
+			  <% _.each(board.lists.models, function(list) { 
+				  if(parseInt(list.attributes.is_archived) === 0){
+			  %>
+				<option <% if(board.attributes.default_email_list_id === list.attributes.id){ %>selected<% } %> value="<%- list.attributes.id %>"><%- list.attributes.name %></option>
+			  <% } 
+			  });
+			  %>
+			  </select>
+			  <label><%- i18next.t("Position") %></label>
+			  <select class="js-select-position form-control input-sm cur">
+				<option <% if(parseInt(board.attributes.is_default_email_position_as_bottom) === 0){ %>selected<% } %> value="false"><%- i18next.t('Top') %></option>
+				<option <% if(parseInt(board.attributes.is_default_email_position_as_bottom) === 1){ %>selected<% } %> value="true"><%- i18next.t('Bottom') %></option>
+			  </select>
+			</div>
+		</div>
+	</li>
+</ul>

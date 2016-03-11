@@ -49,10 +49,23 @@ App.ChangepasswordView = Backbone.View.extend({
         user.url = api_url + 'users/' + this.model.user_id + '/changepassword.json';
         user.save(data, {
             success: function(model, response) {
-                if (!_.isEmpty(response.error)) {
-                    self.flash('danger', response.error);
+                if (response.error) {
+                    if (parseInt(response.error) === 1) {
+                        self.flash('danger', i18next.t('Your old password is incorrect, please try again.'));
+                    } else if (parseInt(response.error) === 2) {
+                        self.flash('danger', i18next.t('Unable to change password. Please try again.'));
+                    } else if (parseInt(response.error) === 3) {
+                        self.flash('danger', i18next.t('New and confirm password field must match, please try again.'));
+                    }
                 } else {
-                    self.flash('success', 'Password has been changed successfully.');
+                    if (sessionStorage.length > 0) {
+                        for (i = 0; i < sessionStorage.length; i++) {
+                            if (sessionStorage.key(i).search(/.*_access_token$/i) !== -1) {
+                                sessionStorage.removeItem(sessionStorage.key(i));
+                            }
+                        }
+                    }
+                    self.flash('success', i18next.t('Password has been changed successfully.'));
                     app.navigate('#/users/logout', {
                         trigger: true,
                         replace: true

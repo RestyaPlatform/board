@@ -1,10 +1,10 @@
 <span class="pull-left">
-	<span class="pull-left">This board will be </span>
-	<span class="pull-left">Private</span>.
+	<span class="pull-left"> <%- i18next.t('This board will be') %> </span>
+	<span class="pull-left"><%- i18next.t('Private') %></span>.
 </span>
-<a class="pull-left js-change-visibility" href="#">Change</a>
+<a class="pull-left js-change-visibility" href="#"><%- i18next.t('Change') %></a>
 <% if (name == 'org') { %>
-	<span class="pull-left"><span class="pull-left">This board will be </span><span class="pull-left">Organization</span>.</span><a class="pull-left js-change-visibility" href="#">Change</a>
+	<span class="pull-left"><span class="pull-left"><%- i18next.t('This board will be') %> </span><span class="pull-left"><%- i18next.t('Organization') %></span>.</span><a class="pull-left js-change-visibility" href="#"><%- i18next.t('Change') %></a>
 <% } else if (name == 'public') { %>
-	<span class="pull-left"><span class="pull-left">This board will be </span><span class="pull-left">Public</span>.</span><a class="pull-left js-change-visibility" href="#">Change</a>
+	<span class="pull-left"><span class="pull-left"><%- i18next.t('This board will be') %> </span><span class="pull-left"><%- i18next.t('Public') %></span>.</span><a class="pull-left js-change-visibility" href="#"><%- i18next.t('Change') %></a>
 <% } %>

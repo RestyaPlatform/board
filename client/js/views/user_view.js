@@ -35,11 +35,13 @@ App.UserView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function(options) {
+        $('.action-close', $('.dockmodal.active')).trigger('click');
         var last_activity_id = 0;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
         this.type = 'profile';
+        this.page = options.page;
         if (!_.isUndefined(options.type)) {
             this.type = options.type;
         }
@@ -56,7 +58,7 @@ App.UserView = Backbone.View.extend({
      *
      */
     render: function() {
-        if (!_.isUndefined(this.type) && (this.type == 'cards' || this.type == 'settings')) {
+        if (!_.isUndefined(this.type) && (this.type == 'cards' || this.type == 'settings' || this.type == 'oauth_applications')) {
             this.renderType();
         } else {
             var self = this;
@@ -68,7 +70,8 @@ App.UserView = Backbone.View.extend({
                 success: function(user, response) {
                     self.$el.html(self.template({
                         user: self.model,
-                        type: self.type
+                        type: self.type,
+                        page: self.page,
                     }));
                     if (!_.isEmpty(activities.models)) {
                         var last_activity = _.min(activities.models, function(activity) {
@@ -107,10 +110,13 @@ App.UserView = Backbone.View.extend({
         var is_send_newsletter_val = this.model.attributes.is_send_newsletter;
         this.$el.html(this.template({
             user: this.model,
-            type: this.type
+            type: this.type,
+            page: this.page
         }));
         if (this.type == 'cards') {
             this.userCards();
+        } else if (this.type == 'oauth_applications') {
+            this.oauthApplications();
         } else {
             var _this = this;
             _(function() {
@@ -192,17 +198,21 @@ App.UserView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                self.flash('danger', 'Unable to update. Please try again.');
+                self.flash('danger', i18next.t('Unable to update. Please try again.'));
             },
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
-                    self.flash('success', response.success);
-                } else if (!_.isEmpty(response.error)) {
-                    self.flash('danger', response.error);
+                    self.flash('success', i18next.t('User Profile has been updated.'));
+                } else if (response.error) {
+                    if (response.error === 1) {
+                        self.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
+                    } else if (response.error === 2) {
+                        self.flash('danger', i18next.t('Email address already exist. User Profile could not be updated. Please, try again.'));
+                    }
                 } else {
-                    self.flash('danger', 'User Profile could not be updated. Please, try again.');
+                    self.flash('danger', i18next.t('User Profile could not be updated. Please, try again.'));
                 }
-                if (!_.isUndefined(response.activity.profile_picture_path)) {
+                if (!_.isUndefined(response.activity.profile_picture_path) && response.activity.profile_picture_path !== null) {
                     self.model.set('profile_picture_path', response.activity.profile_picture_path);
                     var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
                     Auth.user.profile_picture_path = response.activity.profile_picture_path;
@@ -218,6 +228,29 @@ App.UserView = Backbone.View.extend({
                     self.model.set('is_send_newsletter', data.is_send_newsletter);
                     $('.js-user-img').html('<i class="avatar avatar-color-194 avatar-sm">' + $('#inputinitials').val() + '</i>');
                 }
+            }
+        });
+    },
+    /**
+     * oauthApplications()
+     * display connected applications
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     */
+    oauthApplications: function() {
+        var self = this;
+        var oauth_applications = new App.OauthApplicationCollection();
+        oauth_applications.url = api_url + 'oauth/applications.json';
+        oauth_applications.fetch({
+            cache: false,
+            success: function(model, response) {
+                if (!_.isEmpty(response)) {
+                    self.$('#oauth_applications').append(new App.OauthApplicationsView({
+                        model: response
+                    }).el);
+                }
+                $('#tab-loaded-content').load();
             }
         });
     },
@@ -247,7 +280,10 @@ App.UserView = Backbone.View.extend({
                         }).el);
                     });
                 } else {
-                    self.$('#cards').html('No cards available.');
+                    self.$('#cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
+                        postProcess: 'sprintf',
+                        sprintf: [i18next.t('cards')]
+                    }) + '</span>');
                 }
                 $('#tab-loaded-content').load();
             }
@@ -340,7 +376,7 @@ App.UserView = Backbone.View.extend({
         $('#dropzone-cssloader').addClass('cssloader');
         var ext = $('#js-user-profile-attachment').val().split('.').pop().toLowerCase();
         if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == -1) {
-            self.flash('danger', 'File extension not supported. It supports only jpg, png, bmp and gif.');
+            self.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
             $('#dropzone-cssloader').removeClass('cssloader');
             return false;
         } else {
@@ -356,8 +392,12 @@ App.UserView = Backbone.View.extend({
                 contentType: false,
                 success: function(model, response) {
                     $('#dropzone-cssloader').removeClass('cssloader');
-                    if (!_.isEmpty(response.error)) {
-                        self.flash('danger', response.error);
+                    if (response.error) {
+                        if (response.error === 1) {
+                            self.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
+                        } else if (response.error === 2) {
+                            self.flash('danger', i18next.t('Email address already exist. User Profile could not be updated. Please, try again.'));
+                        }
                     }
                     self.model.set('profile_picture_path', response.profile_picture_path);
                     var Auth = JSON.parse(window.sessionStorage.getItem('auth'));

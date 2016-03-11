@@ -12,5 +12,7 @@
 
 </a>
 <% }else{%>
- No users available.
+<span class="alert alert-info">
+  <%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('users')] }) %>
+</span>
 <%}%>

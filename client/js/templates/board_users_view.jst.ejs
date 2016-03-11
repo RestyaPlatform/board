@@ -6,8 +6,8 @@
 	<% } else {%>
 		<i class="avatar avatar-color-194 img-rounded"><%- user.attributes.initials %></i>									
 	<% } %>
-	<% if(is_admin && user.attributes.is_admin) { %>
-		<span class="name-block col-xs-1 label btn-xs col-xs-push-0">Owner</span>
+	<% if(user.board_user_roles[user.attributes.board_user_role_id - 1].id === 1){ %>
+		<span class="name-block col-xs-1 label btn-xs col-xs-push-0"><%- i18next.t('Owner') %></span>
 	<% } %>
 </span></a>
 		<ul class="dropdown-menu dropdown-menu-left arrow arrow-left">

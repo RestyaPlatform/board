@@ -1,7 +1,7 @@
 <td>
     <div class="form-group text-center">
 	    <div class="checkbox">
-            <input id="<%- user.attributes.id%>"  name="user_id[<%- user.attributes.id %>]" value="<%- user.attributes.id%>" class="js-checkbox-list <%if(user.attributes.is_active == true){%>js-checkbox-active<%}else{%>js-checkbox-inactive<%}%>" type="checkbox">
+            <input <% if(user.attributes.role_id == 1){%>disabled<%}%> id="<%- user.attributes.id%>"  name="user_id[<%- user.attributes.id %>]" value="<%- user.attributes.id%>" class="js-checkbox-list <%if(parseInt(user.attributes.is_active) === 1){%>js-checkbox-active<%}else{%>js-checkbox-inactive<%}%>" type="checkbox">
             <label class="js-update-user" data-user_id="<%- user.attributes.id %>" for="<%- user.attributes.id%>"></label>
         </div>
     </div>
@@ -18,8 +18,12 @@
 			  <%  } %> 
     </a>
    <a class="col-xs-7 htruncate" href="#/user/<%- user.attributes.id%>"><%- user.attributes.full_name%></a><a><% if(!user.attributes.is_email_confirmed){ %>
-			<span class="label label-warning navbar-right">Unconfirmed</span>
-		<% } %> </a>
+			<span class="label label-warning navbar-right"><%- i18next.t('Unconfirmed') %></span>
+		<% } %> 
+	<% if(user.attributes.is_ldap){ %>
+			<span class="label label-success navbar-right">LDAP</span>
+		<% } %>
+		</a>
 		
 </div>
 <div class="clearfix navbar-btn">
@@ -49,7 +53,7 @@
 </td>
 <td class="text-center">
     <div class="btn-group text-left navbar-btn dropdown">
-	    <a title="Organizations" class="btn btn-default btn-xs <% if(user.attributes.owner_organization_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>"
+	    <a title="<%- i18next.t('Organizations') %>" class="btn btn-default btn-xs <% if(user.attributes.owner_organization_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>"
 		<% if(user.attributes.owner_organization_count != 0){ %>href="#"<%}else{%>href="#/users"<%}%>
 		<% if(user.attributes.owner_organization_count != 0){ %>data-toggle="dropdown"<%}%>><%- user.attributes.owner_organization_count%></a>
 			<% if(user.attributes.owner_organization_count != 0){ %>
@@ -70,7 +74,7 @@
 </td>
 <td class="text-center">
     <div class="btn-group text-left navbar-btn dropdown">
-	    <a title="Organizations" class="btn btn-default btn-xs <% if(user.attributes.member_organization_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>"
+	    <a title="<%- i18next.t('Organizations') %>" class="btn btn-default btn-xs <% if(user.attributes.member_organization_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>"
 		<% if(user.attributes.member_organization_count != 0){ %>href="#"<%}else{%>href="#/users"<%}%>
 		<% if(user.attributes.member_organization_count != 0){ %>data-toggle="dropdown"<%}%>><%- user.attributes.member_organization_count%></a>
 			<% if(user.attributes.member_organization_count != 0){ %>
@@ -91,7 +95,7 @@
 </td>
 <td class="text-center"> 
    <div class="btn-group text-left navbar-btn dropdown">
-		<a title="Boards" class="btn btn-default btn-xs <% if(user.attributes.created_board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>"
+		<a title="<%- i18next.t('Boards') %>" class="btn btn-default btn-xs <% if(user.attributes.created_board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>"
 		<% if(user.attributes.created_board_count != 0){ %>href="#"<%}else{%>href="#/users"<%}%>
 		<% if(user.attributes.created_board_count != 0){ %>data-toggle="dropdown"<%}%>><%- user.attributes.created_board_count%></a>
 			<% if(user.attributes.created_board_count != 0){ %>
@@ -102,7 +106,7 @@
 </td>
 <td class="text-center">
     <div class="btn-group text-left navbar-btn dropdown">
-		<a title="Boards" class="btn btn-default btn-xs <% if(user.attributes.owner_board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>"
+		<a title="<%- i18next.t('Boards') %>" class="btn btn-default btn-xs <% if(user.attributes.owner_board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>"
 		<% if(user.attributes.owner_board_count != 0){ %>href="#"<%}else{%>href="#/users"<%}%>
 		<% if(user.attributes.owner_board_count != 0){ %>data-toggle="dropdown"<%}%>><%- user.attributes.owner_board_count%></a>
 			<% if(user.attributes.owner_board_count != 0){ %>
@@ -113,7 +117,7 @@
 </td>
 <td class="text-center">
     <div class="btn-group text-left navbar-btn dropdown">
-		<a title="Boards" class="btn btn-default btn-xs <% if(user.attributes.member_board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>"
+		<a title="<%- i18next.t('Boards') %>" class="btn btn-default btn-xs <% if(user.attributes.member_board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>"
 		<% if(user.attributes.member_board_count != 0){ %>href="#"<%}else{%>href="#/users"<%}%>
 		<% if(user.attributes.member_board_count != 0){ %>data-toggle="dropdown"<%}%>><%- user.attributes.member_board_count%></a>
 			<% if(user.attributes.member_board_count != 0){ %>
@@ -126,25 +130,25 @@
     <a href="#" class="js-no-action" title="<%- user.attributes.user_login_count%>"><span class="navbar-btn"><%- user.attributes.user_login_count%></span></a>
 </td>
 <td class="text-center">
-    <a href="#" class="js-no-action"><abbr class="timeago" title="<%- user.get('created') %>"><%- user.get("created") %></abbr></a>
-</td> 
+    <a href="#" class="js-no-action">
+	    <% if(user.get('last_login_date') !== null){ %><abbr class="timeago" title="<%- user.get('last_login_date') %>"><%- user.get("last_login_date") %></abbr><%}else{%>-<%}%>
+	</a>
+</td>
 <td class="text-center">
-    <a href="#" class="js-no-action" title=<%- user.attributes.registered_ip%> <%- user.attributes.register_country_name %> <%- user.attributes.register_city_name %>">
-		<span class="show"><%- user.attributes.registered_ip%></span> 
+    <a href="#" class="js-no-action" title=<%- user.attributes.last_login_ip%> <%- user.attributes.login_country_name %> <%- user.attributes.register_city_name %>">
+		<span class="show"><%- user.attributes.last_login_ip%></span> 
 			<span>
 				<% if(!_.isEmpty(user.attributes.register_country_iso2)){ %>
-				    <span class="flags flag-<%- user.attributes.register_country_iso2%> top-smspace" title="<%- user.attributes.register_country_name %>"><%- user.attributes.register_country_name %></span>
+				    <span class="flags flag-<%- user.attributes.register_country_iso2%> top-smspace" title="<%- user.attributes.login_country_name %>"><%- user.attributes.login_country_name %></span>
 				<% } else { %>
-						<span class="top-smspace">N/A</span>
+						<span class="top-smspace"><%- i18next.t("N/A") %></span>
 					<% } %>
 			</span> <%- user.attributes.register_city_name %>
 	</a>
 </td>
 <td class="text-center">
-    <a href="#" class="js-no-action">
-	    <% if(user.get('last_login_date') !== null){ %><abbr class="timeago" title="<%- user.get('last_login_date') %>"><%- user.get("last_login_date") %></abbr><%}else{%>-<%}%>
-	</a>
-</td>
+    <a href="#" class="js-no-action"><abbr class="timeago" title="<%- user.get('created') %>"><%- user.get("created") %></abbr></a>
+</td> 
 <td class="text-center">
     <a href="#" class="js-no-action" title=<%- user.attributes.registered_ip%> <%- user.attributes.register_country_name %> <%- user.attributes.register_city_name %>">
 	    <span class="show"><%- user.attributes.registered_ip%></span> 
@@ -152,21 +156,20 @@
 				<% if(!_.isEmpty(user.attributes.register_country_iso2)){ %>
 					<span class="flags flag-<%- user.attributes.register_country_iso2%> top-smspace" title="<%- user.attributes.register_country_name %>"><%- user.attributes.register_country_name %></span>
 				<% } else { %>
-					<span class="top-smspace">N/A</span>
+					<span class="top-smspace"><%- i18next.t("N/A") %></span>
 				<% } %>
 		</span> <span><%- user.attributes.register_city_name %></span>
 	</a>
 </td>
 <td class="text-center">
 	<div class="dropdown btn-group">  
-	<button class="btn btn-default" type="button"><%if(user.attributes.role_id == 1){%> Admin <%}else if(user.attributes.role_id == 2){%> User <%}else{%> Guest<%}%></button>
+	<button class="btn btn-default" type="button"><%if(user.attributes.role_id == 1){%> Admin <%}else if(user.attributes.role_id == 2){%> <%- i18next.t("User") %> <%}else{%> <%- i18next.t("Guest") %><%}%></button>
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button">
-		    <span class="caret"></span><span class="sr-only">Toggle Dropdown</span>
+		    <span class="caret"></span><span class="sr-only"><%- i18next.t("Toggle Dropdown") %></span>
         </button>
 			    <ul class="dropdown-menu arrow arrow-right" role="menu">
-					<li><a href="#" class="<% if(user.attributes.role_id == 1){%>js-no-action<%}else{%>js-change-user-role<%}%>" data-role-id="1">Admin <% if(user.attributes.role_id == 1){%><i class="icon-ok"></i><%}%></a></li>
-					<li><a href="#" class="<% if(user.attributes.role_id == 2){%>js-no-action<%}else{%>js-change-user-role<%}%>" data-role-id="2">User <% if(user.attributes.role_id == 2){%><i class="icon-ok"></i><%}%></a></li>
-					<li><a href="#" class="<% if(user.attributes.role_id == 3){%>js-no-action<%}else{%>js-change-user-role<%}%>" data-role-id="3">Guest <% if(user.attributes.role_id == 3){%><i class="icon-ok"></i><%}%></a></li>
+					<li><a href="#" class="<% if(user.attributes.role_id == 1){%>js-no-action<%}else{%>js-change-user-role<%}%>" data-role-id="1"><%- i18next.t("Admin") %> <% if(user.attributes.role_id == 1){%><i class="icon-ok"></i><%}%></a></li>
+					<li><a href="#" class="<% if(user.attributes.role_id == 2){%>js-no-action<%}else{%>js-change-user-role<%}%>" data-role-id="2"><%- i18next.t("User") %> <% if(user.attributes.role_id == 2){%><i class="icon-ok"></i><%}%></a></li>
 				</ul>
 	</div>
 </td>
@@ -174,31 +177,30 @@
 
 <td>
    <ul class="list-inline list-group-item-text">
-       <li class="navbar-btn">
-	        <a href="#" class="btn btn-default btn-xs <%if(user.attributes.is_active == true){%>js-block-user<%}else{%>js-unblock-user<%}%>"  title="Block" <% if(user.attributes.role_id == 1){%> disabled="disabled" <% } %>>
-	           <i class="icon-exclamation"></i>
-			   <span><%if(user.attributes.is_active == true){%>Block<%}else{%>Unblock<%}%></span>
-			</a>
-	   
-	    </li>  
+	   <li class="navbar-btn"><a href="#" title="<%- i18next.t('Activities') %>" class="btn btn-default btn-xs js-all-user-activities"><%- i18next.t("Activities") %></a></li>
+	   <li>
+		<ul class="list-inline">
+			<li class="navbar-btn">
+				<a href="#" class="btn btn-default btn-xs <%if(parseInt(user.attributes.is_active) === 1){%>js-block-user<%}else{%>js-unblock-user<%}%>"  title="<%- i18next.t('Block') %>" <% if(user.attributes.role_id == 1){%> disabled="disabled" <% } %>>
+	            <i class="icon-exclamation"></i>
+			    <span><%if(parseInt(user.attributes.is_active) === 1){%><%- i18next.t("Block") %><%}else{%><%- i18next.t("Unblock") %><%}%></span></a>
+		    </li>  
 			<li class="navbar-btn">
 			    <span class="dropdown navbar-btn">
 				<a aria-expanded="false" data-toggle="dropdown" class="btn btn-primary btn-xs" href="#" <% if(user.attributes.role_id == 1){%> disabled="disabled" <% } %> >
-					<i class="icon-remove"></i> Delete
+					<i class="icon-remove"></i> <%- i18next.t("Delete") %>
 			    </a>
 				
 				<ul class="dropdown-menu dropdown-menu-right arrow arrow-right col-xs-12">
-						<li class="col-lg-12 clearfix text-center"> <div><span class="col-xs-10"><strong>Delete User?</strong></span><a class="js-close-popover pull-right" href="#/users"><i class="icon-remove "></i></a></div> </li>
+						<li class="col-lg-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t("Delete User") + '?' %></strong></span><a class="js-close-popover pull-right" href="#/users"><i class="icon-remove "></i></a></div> </li>
 						<li class="col-lg-12 divider"></li>
 						<li class="col-lg-12 text-left">
-						   <span class="show">Deleting an user is permanent. There is no undo.</span>
-							  <div class="col-xs-12 btn-block navbar-btn"><a title="Delete User" class="js-remove-user"><span class="btn btn-primary">Delete</span></a></div>
+						   <span class="show"><%- i18next.t("Deleting an user is permanent. There is no undo.") %></span>
+							  <div class="col-xs-12 btn-block navbar-btn"><a title="<%- i18next.t('Delete User') %>" class="js-remove-user"><span class="btn btn-primary"><%- i18next.t("Delete") %></span></a></div>
 					   </li>
 	             </ul>
 			</li>
-			<li class="navbar-btn"><a href="#" title="Activities" class="btn btn-default btn-xs js-all-user-activities">Activities</a></li>
-		
-			   
-			
+		</ul>
+	   </li>
     </ul>
 </td>

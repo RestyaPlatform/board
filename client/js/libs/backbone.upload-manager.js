@@ -129,7 +129,7 @@
         bindProcessEvents: function ()
         {
 			if(!_.isUndefined(authuser.user)){
-				this.$el.html('Drop files to upload');
+				this.$el.html(i18next.t('Drop files to upload'));
 			}
             var self = this;
             this.uploadProcess.on('fileuploaddragover', function (e) {

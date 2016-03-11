@@ -1,7 +1,7 @@
 <td>
     <div class="form-group text-center">
 	    <div class="checkbox">
-            <input id="<%- board.attributes.id%>"  name="board_id[<%- board.attributes.id %>]" value="<%- board.attributes.id%>" class="js-checkbox-list <%if(board.attributes.is_closed == false){%>js-checkbox-active<%}else{%>js-checkbox-inactive<%}%>" type="checkbox">
+            <input id="<%- board.attributes.id%>"  name="board_id[<%- board.attributes.id %>]" value="<%- board.attributes.id%>" class="js-checkbox-list <%if(parseInt(board.attributes.is_closed) === 0){%>js-checkbox-active<%}else{%>js-checkbox-inactive<%}%>" type="checkbox">
             <label class="js-update-board" data-board_id="<%- board.attributes.id %>" for="<%- board.attributes.id%>"></label>
         </div>
     </div>
@@ -87,8 +87,8 @@
 						<% } else {%>
 							<i class="avatar avatar-color-194 img-rounded"><%= (admin_board_user.initials) %></i>
 						<% } %>
-						<% if(admin_board_user.is_admin) { %>
-							<span class="name-block col-xs-12 label btn-xs col-xs-push-0">Owner</span>
+						<% if(!_.isUndefined(board.board_user_roles[admin_board_user.board_user_role_id - 1].id) && parseInt(board.board_user_roles[admin_board_user.board_user_role_id - 1].id) === 1){ %>
+							<span class="name-block col-xs-12 label btn-xs col-xs-push-0"><%- i18next.t("Owner") %></span>
 						<% } %>
 					</span>
 				</span>
@@ -119,13 +119,13 @@
 			 
 			  <% if(_.isUndefined(board.normal_board_users) && _.isUndefined(board.admin_board_users)) { %>-<% } else {%> <span class="col-xs-3 label small hidden-xs"> 
 				<span class="small navbar-btn">
-					<span class="show text-left text-muted" title="Owner <%= admin_board_users_count %>">Owner <%- admin_board_users_count %></span> 
-					<span class="show navbar-btn text-left text-muted" title="Member <%= normal_board_users_count %>">Member <%- normal_board_users_count %></span>
+					<span class="show text-left text-muted" title="<%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %> "><%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %></span> 
+					<span class="show navbar-btn text-left text-muted" title="<%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %> "><%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %></span>
 					</span> 
 				</span> <% } %></a>
 				<ul class="list-unstyled js-visibility-chooser dropdown-menu arrow arrow-right">
 					  <li class="text-center">
-						<strong>Members</strong>
+						<strong><%- i18next.t("Members") %></strong>
 						<span href="#" class="js-close-popover pull-right col-xs-2"><i class="icon-remove cur"></i></span>
 					  </li>
 					  <li class="divider"></li>
@@ -141,8 +141,8 @@
 										<% } else {%>
 											<i class="avatar avatar-color-194 img-rounded"><%- user.attributes.initials %></i>									
 										<% } %>
-										<% if(user.attributes.is_admin) { %>
-											<span class="name-block col-xs-1 label btn-xs col-xs-push-0">Owner</span>
+										<% if(!_.isUndefined(board.board_user_roles[user.attributes.board_user_role_id - 1].id) && parseInt(board.board_user_roles[user.attributes.board_user_role_id - 1].id) === 1){ %>
+											<span class="name-block col-xs-1 label btn-xs col-xs-push-0"><%- i18next.t("Owner") %></span>
 										<% } %>
 									</span>
 								</li>
@@ -188,11 +188,11 @@
 			%>
 			<button class="btn btn-default btn-sm js-board-visibility" type="button"><i class="<%- board_visibility_icon%>"></i><span class="hidden-xs"><%= board_visibility %></span></button>
 			
-			<button data-toggle="dropdown" class="btn btn-default btn-sm dropdown-toggle active js-board-visibility" type="button"> <span><i class="icon-caret-down cur"></i></span> <span class="sr-only">Toggle Dropdown</span> </button>
+			<button data-toggle="dropdown" class="btn btn-default btn-sm dropdown-toggle active js-board-visibility" type="button"> <span><i class="icon-caret-down cur"></i></span> <span class="sr-only"><%- i18next.t("Toggle Dropdown") %></span> </button>
 			
 			<ul class="dropdown-menu arrow arrow-right col-xs-push-0">
 				<li class="js-visibility-popup js-dropdown-popup dropdown-popup col-xs-12">          
-					<div class="clearfix text-center"><a class="js-back-to-board-visibility hide pull-left" href="#"><i class="icon-caret-left"></i></a><span class="col-xs-10"><strong>Change Visibility</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
+					<div class="clearfix text-center"><a class="js-back-to-board-visibility hide pull-left" href="#"><i class="icon-caret-left"></i></a><span class="col-xs-10"><strong><%- i18next.t("Change Visibility") %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
 					</div>
 				</li>
 				<li class="col-xs-12 divider js-visibility-list"></li>

@@ -1,5 +1,6 @@
 <div class="clearfix text-center col-xs-12">							
-	<a href="#" class="js-back-to-item-options pull-left"><i class="icon-caret-left"></i></a><span class="col-xs-10"><strong>Mention Member</strong></span><a href="#" class="js-close-popup pull-right"><i class="icon-remove"></i></a>
+	<a href="#" class="js-back-to-item-options pull-left"><i class="icon-caret-left"></i></a><span class="col-xs-10"><strong> <%- i18next.t('Mention a member') %>
+</strong></span><a href="#" class="js-close-popup pull-right"><i class="icon-remove"></i></a>
 </div>
 <div class="col-xs-12 divider"></div>
 <div class="col-xs-12">
@@ -7,15 +8,13 @@
 		<li>
 		  <form method="post" class="text-center">
 			<div class="form-group">
-			  <label class="sr-only">Search Member</label>
-			  <input type="text" id="inputItemUserSearch" autocomplete="off" placeholder="Search members" name="email" required class="js-item-search-member form-control input-sm" title="Search Members">
+			  <label class="sr-only"><%- i18next.t('Search Member') %></label>
+			  <input type="text" id="inputItemUserSearch" autocomplete="off" placeholder="<%- i18next.t('Search Members') %>" name="email" required class="js-item-search-member form-control input-sm" title="<%- i18next.t('Search Members') %>">
 			</div>
 		  </form>
 		</li>
 		<li class="js-item-member-search-response">
-			Search for a person in <%- SITE_NAME %> by name or email address.
-		</li>
+			<%- i18next.t('Search for a person in %s by name or email address.', { postProcess: 'sprintf', sprintf: [SITE_NAME] }) %> 
+			</li>
 	</ul>
 </div>
-
-

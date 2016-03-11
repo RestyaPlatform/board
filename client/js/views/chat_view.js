@@ -30,7 +30,7 @@ App.ChatView = Backbone.View.extend({
      *
      */
     render: function() {
-        this.$el.html(this.template()).attr('title', 'Chat');
+        this.$el.html(this.template()).attr('title', i18next.t('Chat'));
         this.$el.dockmodal({
             initialState: 'docked',
             height: 300,

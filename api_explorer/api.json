@@ -1,0 +1,4634 @@
+{
+  "basePath": "/api",
+  "definitions": {
+    "Board": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "description": "unique identifier for the board",
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "Login": {
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "User": {
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "is_agree_terms_and_conditions": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "addBoard": {
+      "properties": {
+        "board_visibility": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "board_visibility"
+      ]
+    },
+    "addBoardMember": {
+      "properties": {
+        "board_user_role_id": {
+          "type": "integer"
+        },
+        "user_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "user_id",
+        "board_user_role_id"
+      ]
+    },
+    "addCard": {
+      "properties": {
+        "board_id": {
+          "type": "integer"
+        },
+        "list_id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "position": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "board_id",
+        "list_id",
+        "name",
+        "position"
+      ]
+    },
+    "addChecklist": {
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "addChecklistItem": {
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "addClient": {
+      "properties": {
+        "client_name": {
+          "type": "string"
+        },
+        "client_url": {
+          "type": "string"
+        },
+        "logo_url": {
+          "type": "string"
+        },
+        "policy_url": {
+          "type": "string"
+        },
+        "redirect_uris": {
+          "type": "string"
+        },
+        "tos_url": {
+          "type": "string"
+        }
+      }
+    },
+    "addComment": {
+      "properties": {
+        "comment": {
+          "type": "string"
+        }
+      }
+    },
+    "addList": {
+      "properties": {
+        "board_id": {
+          "type": "integer"
+        },
+        "is_archived": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "position": {
+          "type": "integer"
+        },
+        "uuid": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "board_id",
+        "name",
+        "uuid"
+      ]
+    },
+    "addListSubscriber": {
+      "properties": {
+        "is_subscribed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "is_subscribed"
+      ]
+    },
+    "addOrganization": {
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "addWebhook": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "is_active": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "secret": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "add_card_user": {
+      "properties": {
+        "board_id": {
+          "type": "integer"
+        },
+        "initials": {
+          "type": "string"
+        },
+        "is_offline": {
+          "type": "boolean"
+        },
+        "list_id": {
+          "type": "integer"
+        },
+        "profile_picture_path": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "changeMemberPermission": {
+      "properties": {
+        "is_admin": {
+          "type": "string"
+        },
+        "user ID": {
+          "type": "string"
+        }
+      }
+    },
+    "changepassword": {
+      "properties": {
+        "confirmpassword": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "oldpassword": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "copy_board": {
+      "properties": {
+        "board_visibility": {
+          "type": "integer"
+        },
+        "keepCards": {
+          "type": "boolean"
+        },
+        "organization_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "board_visibility",
+        "organization_id",
+        "keepCards"
+      ]
+    },
+    "copy_card": {
+      "properties": {
+        "copied_card_id": {
+          "type": "integer"
+        },
+        "keep_activities": {
+          "type": "boolean"
+        },
+        "keep_attachments": {
+          "type": "boolean"
+        },
+        "keep_checklists": {
+          "type": "boolean"
+        },
+        "keep_labels": {
+          "type": "boolean"
+        },
+        "keep_users": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "keep_attachments",
+        "keep_activities",
+        "keep_labels",
+        "keep_users",
+        "keep_checklists",
+        "copied_card_id",
+        "name"
+      ]
+    },
+    "editBoard": {
+      "properties": {
+        "board_visibility": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "organization_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "board_visibility"
+      ]
+    },
+    "editCard": {
+      "properties": {
+        "archive": {
+          "type": "string"
+        },
+        "due date": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "position",
+        "archive",
+        "due date"
+      ]
+    },
+    "editChecklist": {
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "editChecklistItem": {
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "editClient": {
+      "properties": {
+        "client_name": {
+          "type": "string"
+        },
+        "client_url": {
+          "type": "string"
+        },
+        "logo_url": {
+          "type": "string"
+        },
+        "policy_url": {
+          "type": "string"
+        },
+        "redirect_uris": {
+          "type": "string"
+        },
+        "tos_url": {
+          "type": "string"
+        }
+      }
+    },
+    "editComment": {
+      "properties": {
+        "comment": {
+          "type": "string"
+        }
+      }
+    },
+    "editList": {
+      "properties": {
+        "archive": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "position",
+        "archive"
+      ]
+    },
+    "editOrganization": {
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "editUser": {
+      "properties": {
+        "dob": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "gender_id": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "editWebhook": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "is_active": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "secret": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "forgotPassword": {
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "move_list_cards": {
+      "properties": {
+        "is_archived": {
+          "type": "boolean"
+        },
+        "list_id": {
+          "type": "integer"
+        }
+      }
+    },
+    "oauthToken": {
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "redirect_uri": {
+          "type": "string"
+        }
+      }
+    },
+    "send_back_to_archived_card": {
+      "properties": {
+        "board_id": {
+          "type": "integer"
+        },
+        "due_date": {
+          "format": "date",
+          "type": "string"
+        },
+        "list_id": {
+          "type": "integer"
+        },
+        "position": {
+          "type": "integer"
+        },
+        "user_ids": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "board_id",
+        "list_id",
+        "position"
+      ]
+    },
+    "send_back_to_archived_list": {
+      "properties": {
+        "board_id": {
+          "type": "integer"
+        },
+        "is_archived": {
+          "type": "boolean"
+        },
+        "list_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "board_id",
+        "list_id"
+      ]
+    },
+    "star_board": {
+      "properties": {
+        "board_id": {
+          "type": "integer"
+        },
+        "is_starred": {
+          "type": "boolean"
+        },
+        "user_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "board_id",
+        "is_starred",
+        "user_id"
+      ]
+    },
+    "subscribeCard": {
+      "properties": {
+        "board_id": {
+          "type": "integer"
+        },
+        "card_id": {
+          "type": "integer"
+        },
+        "is_offline": {
+          "type": "boolean"
+        },
+        "is_subscribe": {
+          "type": "boolean"
+        },
+        "list_id": {
+          "type": "integer"
+        },
+        "user_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "board_id",
+        "list_id",
+        "is_subscribe"
+      ]
+    }
+  },
+  "host": "boardalpha.demo.restya.com",
+  "info": {
+    "title": "Restyaboard API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/activities/undo/{activityId}.json": {
+      "put": {
+        "description": "Update the activities",
+        "operationId": "editActivities",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Activity ID to undo",
+            "in": "path",
+            "name": "activityId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/activities"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Page not found"
+          }
+        },
+        "summary": "Undo activities",
+        "tags": [
+          "activities_listing"
+        ]
+      }
+    },
+    "/v1/boards.json": {
+      "get": {
+        "description": "Returns a Board based on userID",
+        "operationId": "findBoardsByUserID",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Current Login user ID",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Board"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Pet not found"
+          }
+        },
+        "summary": "Find Board by userId",
+        "tags": [
+          "boards"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addBoard",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Created Board",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addBoard"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add a new Board",
+        "tags": [
+          "boards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}.json": {
+      "delete": {
+        "operationId": "deleteBoard",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Board ID to delete",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Delete the board",
+        "tags": [
+          "boards"
+        ]
+      },
+      "get": {
+        "description": "Returns a Board based on ID",
+        "operationId": "getBoardById",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Board"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Pet not found"
+          }
+        },
+        "summary": "View Board",
+        "tags": [
+          "boards"
+        ]
+      },
+      "put": {
+        "description": "Update the board details",
+        "operationId": "editBoard",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Edit Board",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/editBoard"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Board"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Pet not found"
+          }
+        },
+        "summary": "Edit Board",
+        "tags": [
+          "boards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/activities.json": {
+      "get": {
+        "description": "Returns Board Activities",
+        "operationId": "Activities listing",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Activities"
+            }
+          }
+        },
+        "summary": "Activities",
+        "tags": [
+          "boards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/board_subscribers.json": {
+      "get": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "listBoardSubscribers",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "listing the board Subscribers",
+        "tags": [
+          "boards"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addBoardSubscriber",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs add Subscriber into the Board",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add subscriber to Board",
+        "tags": [
+          "boards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/board_subscribers/{userId}.json": {
+      "put": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "unSubscribeBoard",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs Unsubscribe from the Board",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "ID of User that needs to Unsubscribe from the Board",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "userId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Unsubscribe the Board",
+        "tags": [
+          "boards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/boards_stars.json": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "description": "Star board",
+        "operationId": "star_board",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Copy Board",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/star_board"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Star board",
+        "tags": [
+          "boards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/copy.json": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "description": "Copy board",
+        "operationId": "copy_board",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Copy Board",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/copy_board"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Copy board",
+        "tags": [
+          "boards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/custom_backgrounds.json": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "uploadCustomBackground",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Upload custom background to board",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/uploadCustomBackground"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Upload custom background to board",
+        "tags": [
+          "boards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists.json": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addList",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Created List",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addList"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add a new List",
+        "tags": [
+          "lists"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}.json": {
+      "delete": {
+        "operationId": "deleteList",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Board ID to delete",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "List ID to delete",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Delete the list",
+        "tags": [
+          "lists"
+        ]
+      },
+      "put": {
+        "description": "Update the List details",
+        "operationId": "editList",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "listId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Edit List",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/editList"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "items": {},
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Pet not found"
+          }
+        },
+        "summary": "Edit List",
+        "tags": [
+          "lists"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards.json": {
+      "get": {
+        "description": "Archived card send back to board",
+        "operationId": "send_back_to_archived_card",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected Board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Selected List ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Archived card send back to board",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/send_back_to_archived_card"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Archived card send back to board",
+        "tags": [
+          "cards"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addCard",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Created Card",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addCard"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add a new Card",
+        "tags": [
+          "cards"
+        ]
+      },
+      "put": {
+        "description": "Move list cards",
+        "operationId": "move_list_cards",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected Board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Selected List ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Move list cards",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/move_list_cards"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Move list cards",
+        "tags": [
+          "cards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}.json": {
+      "delete": {
+        "operationId": "deleteCard",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Board ID to delete",
+            "in": "query",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "List ID to delete",
+            "in": "query",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Card ID to delete",
+            "in": "query",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Delete the Card",
+        "tags": [
+          "cards"
+        ]
+      },
+      "put": {
+        "description": "Update the Card details",
+        "operationId": "editCard",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected card ID",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Edit Card",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/editCard"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Card"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Pet not found"
+          }
+        },
+        "summary": "Edit Card",
+        "tags": [
+          "cards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/activities.json": {
+      "get": {
+        "description": "Returns Card Activities",
+        "operationId": "Activities listing",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected card ID",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Activities"
+            }
+          }
+        },
+        "summary": "Activities",
+        "tags": [
+          "cards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/attachments.json": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addLabel",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected card ID",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add a Label",
+        "tags": [
+          "card_attachments"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/attachments/{attachmentId}.json": {
+      "delete": {
+        "description": "Remove attachment from card",
+        "operationId": "remove_card_attachment",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Selected card ID",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "attachment ID to remove",
+            "in": "path",
+            "name": "attachmentId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Remove attachment from card",
+        "tags": [
+          "cards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/card_subscribers.json": {
+      "post": {
+        "description": "Subscribe Card",
+        "operationId": "subscribeCard",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected card ID",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subscribe Card",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/subscribeCard"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Subscribe Card",
+        "tags": [
+          "cards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/card_voters.json": {
+      "delete": {
+        "operationId": "deleteCardVoter",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Card ID to delete",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Delete all Card voters",
+        "tags": [
+          "card_voters"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addVote",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Selected card ID",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add a Vote",
+        "tags": [
+          "card_voters"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/card_voters/{cardVoterId}.json": {
+      "delete": {
+        "operationId": "deleteCardVoter",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Card ID to delete",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Card voter ID to delete",
+            "in": "path",
+            "name": "cardVoterId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Delete the Card voter",
+        "tags": [
+          "card_voters"
+        ]
+      },
+      "put": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "updateVote",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Card ID to delete",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Selected card voter ID",
+            "in": "path",
+            "name": "cardVoterId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Update a Vote",
+        "tags": [
+          "card_voters"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/checklists.json": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addChecklist",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Created checklist object",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addChecklist"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add a checklist",
+        "tags": [
+          "checklists"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/checklists/{checkListId}/items/{itemId}/convert_to_card.json": {
+      "post": {
+        "description": "Convert item to card",
+        "operationId": "convert_item_to_card",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected card ID",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected Checklist ID",
+            "in": "path",
+            "name": "checkListId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected Checklist Item ID",
+            "in": "path",
+            "name": "itemId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Convert item to card",
+        "tags": [
+          "cards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/checklists/{checklistId}.json": {
+      "delete": {
+        "operationId": "deleteCardVoter",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Board ID to delete",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "List ID to delete",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Card ID to delete",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Checklist ID to delete",
+            "in": "path",
+            "name": "checklistId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Delete comment",
+        "tags": [
+          "checklists"
+        ]
+      },
+      "put": {
+        "description": "Update the Checklist",
+        "operationId": "editChecklist",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Board ID to edit",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "List ID to edit",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Card ID to edit",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Checklist ID to edit",
+            "in": "path",
+            "name": "checklistId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Edit Checklist",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/editChecklist"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Page not found"
+          }
+        },
+        "summary": "Edit Checklist",
+        "tags": [
+          "checklists"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/checklists/{checklistId}/items.json": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addChecklistItem",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected checklist ID",
+            "in": "path",
+            "name": "checklistId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Created checklist object",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addChecklistItem"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add a checklist item",
+        "tags": [
+          "checklist_items"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/checklists/{checklistId}/items/{checklistItemId}.json": {
+      "delete": {
+        "operationId": "deleteCardVoter",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Board ID to delete",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "List ID to delete",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Card ID to delete",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Checklist ID to delete",
+            "in": "path",
+            "name": "checklistId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Checklist item ID to edit",
+            "in": "path",
+            "name": "checklistItemId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Delete comment",
+        "tags": [
+          "checklist_items"
+        ]
+      },
+      "put": {
+        "description": "Update the Checklist",
+        "operationId": "editChecklistItem",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Board ID to edit",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "List ID to edit",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Card ID to edit",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Checklist ID to edit",
+            "in": "path",
+            "name": "checklistId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Checklist item ID to edit",
+            "in": "path",
+            "name": "checklistItemId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Edit Checklist",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/editChecklistItem"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Page not found"
+          }
+        },
+        "summary": "Edit Checklist",
+        "tags": [
+          "checklist_items"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/comment.json": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addComment",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected card ID",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Created comment object",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addComment"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add a comment",
+        "tags": [
+          "comments"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/comment/{commentId}.json": {
+      "delete": {
+        "operationId": "deleteCardVoter",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Board ID to delete",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "List ID to delete",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Card ID to delete",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Comment ID to delete",
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Delete comment",
+        "tags": [
+          "comments"
+        ]
+      },
+      "put": {
+        "description": "Update the Comment",
+        "operationId": "editComment",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Board ID to edit",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "List ID to edit",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Card ID to edit",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Comment ID to edit",
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Edit Comment",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/editComment"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Page not found"
+          }
+        },
+        "summary": "Edit Comment",
+        "tags": [
+          "comments"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/copy.json": {
+      "post": {
+        "description": "Copy card",
+        "operationId": "copy_card",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected card ID",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Assign member to card",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/add_card_user"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Copy card",
+        "tags": [
+          "cards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/labels.json": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addLabel",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Card ID to delete",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add a Label",
+        "tags": [
+          "cards_labels"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/users/{userId}.json": {
+      "post": {
+        "description": "Assign member to card",
+        "operationId": "add_card_user",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected board ID",
+            "in": "path",
+            "name": "boardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected list ID",
+            "in": "path",
+            "name": "listId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected card ID",
+            "in": "path",
+            "name": "cardId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected User ID",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Assign member to card",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/add_card_user"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Assign member to card",
+        "tags": [
+          "cards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/list_subscribers.json": {
+      "post": {
+        "description": "Add the List Subscribers",
+        "operationId": "addListSubscriber",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "listId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Edit List",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addListSubscriber"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "items": {},
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          }
+        },
+        "summary": "Add List Subscribers",
+        "tags": [
+          "lists"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/lists/{listId}/list_subscribers/{subscriberId}.json": {
+      "put": {
+        "description": "Unsubscribe the List",
+        "operationId": "unSubscribeList",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "listId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "ID of User that needs to be Unsubscribe",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "subscriberId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "items": {},
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          }
+        },
+        "summary": "Unsubscribe the List",
+        "tags": [
+          "lists"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/users.json": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addBoardMember",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Add Board Member",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addBoardMember"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add board member",
+        "tags": [
+          "boards"
+        ]
+      }
+    },
+    "/v1/boards/{boardId}/visibility.json": {
+      "get": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "viewBoardVisibility",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board that needs to be fetched",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "boardId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "View board visibility",
+        "tags": [
+          "boards"
+        ]
+      }
+    },
+    "/v1/boards_users/{id}.json": {
+      "delete": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "removeBoardMember",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of BoardUser Table needs to Remove",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Remove member from the Board",
+        "tags": [
+          "boards"
+        ]
+      }
+    },
+    "/v1/boards_users/{userId}.json": {
+      "put": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "description": "Update board member permissions",
+        "operationId": "edit_board_user",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of Board user that needs to be update",
+            "format": "int64",
+            "in": "path",
+            "maximum": 100000,
+            "minimum": 1,
+            "name": "userId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Update board member permissions",
+        "tags": [
+          "boards"
+        ]
+      }
+    },
+    "/v1/oauth.json": {
+      "get": {
+        "operationId": "oauth",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Get Oauth token",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/v1/oauth/applications.json": {
+      "get": {
+        "description": "Returns applications listing",
+        "operationId": "applicationsListing",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Applications"
+            }
+          },
+          "404": {
+            "description": "Application not found"
+          }
+        },
+        "summary": "Applications",
+        "tags": [
+          "oauth_applications"
+        ]
+      }
+    },
+    "/v1/oauth/applications/{applicationId}.json": {
+      "delete": {
+        "operationId": "deleteApplication",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Application to delete",
+            "in": "path",
+            "name": "applicationId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Delete application",
+        "tags": [
+          "oauth_applications"
+        ]
+      }
+    },
+    "/v1/oauth/clients.json": {
+      "get": {
+        "description": "Returns clients listing",
+        "operationId": "clientsListing",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Clients"
+            }
+          },
+          "404": {
+            "description": "Client not found"
+          }
+        },
+        "summary": "Clients",
+        "tags": [
+          "oauth_clients"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addClient",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Created client object",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addClient"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add a client",
+        "tags": [
+          "oauth_clients"
+        ]
+      }
+    },
+    "/v1/oauth/clients/{clientId}.json": {
+      "delete": {
+        "operationId": "deleteClient",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Client to delete",
+            "in": "path",
+            "name": "clientId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Delete client",
+        "tags": [
+          "oauth_clients"
+        ]
+      },
+      "put": {
+        "description": "Update the client",
+        "operationId": "editClient",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Client to edit",
+            "in": "path",
+            "name": "clientId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Edit Client",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/editClient"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Page not found"
+          }
+        },
+        "summary": "Edit client",
+        "tags": [
+          "oauth_clients"
+        ]
+      }
+    },
+    "/v1/oauth/token.json": {
+      "post": {
+        "operationId": "getToken",
+        "parameters": [
+          {
+            "description": "oauthToken",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/oauthToken"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Get token",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/v1/organizations.json": {
+      "get": {
+        "description": "Returns boards list",
+        "operationId": "Boards listing",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Organizations"
+            }
+          }
+        },
+        "summary": "Boards Listing",
+        "tags": [
+          "organizations"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addOrganization",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Created Organization object",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addOrganization"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add a organization",
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/v1/organizations/{organizationId}.json": {
+      "delete": {
+        "operationId": "deleteOrganization",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Organization ID to delete",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Delete Organization",
+        "tags": [
+          "organizations"
+        ]
+      },
+      "put": {
+        "description": "Update the Organization",
+        "operationId": "editOrganization",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Organization ID to edit",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Edit Organization",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/editOrganization"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Organization"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Page not found"
+          }
+        },
+        "summary": "Edit Organization",
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/v1/organizations/{organizationId}/upload_logo.json": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "uploadOrganizationLogo",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Organization ID",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Upload organization logo",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/uploadOrganizationLogo"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Upload organization logo",
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/v1/organizations/{organizationId}/users/{userId}.json": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addMember",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Organization ID",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "User ID",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add a member",
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/v1/organizations_users/{organizationId}.json": {
+      "get": {
+        "description": "Returns member list",
+        "operationId": "Members listing",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Organization ID to get listing",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Organizations"
+            }
+          }
+        },
+        "summary": "Member Listing",
+        "tags": [
+          "organizations"
+        ]
+      },
+      "put": {
+        "description": "Change member  permission",
+        "operationId": "changeMemberPermission",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Organization ID to get listing",
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Change Member Permission",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/changeMemberPermission"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/ChangeMemberPermission"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Page not found"
+          }
+        },
+        "summary": "Change member  permission",
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/v1/organizations_users/{userId}.json": {
+      "delete": {
+        "description": "Remove organization member",
+        "operationId": "remove_organization_user",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "User ID to Remove from Organization members list",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Remove organization member",
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/v1/users.json": {
+      "get": {
+        "description": "Returns Users listing",
+        "operationId": "usersListing",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "summary": "Users",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/v1/users/forgotpassword.json": {
+      "post": {
+        "operationId": "forgotPassword",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Created Forgot Password object",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/forgotPassword"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Enter your Email, and we will send resetting your password.",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/v1/users/login.json": {
+      "post": {
+        "operationId": "loginUser",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Created user object",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Login"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Logs user into the system",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/v1/users/logout.json": {
+      "get": {
+        "operationId": "logoutUser",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Logs out current logged in user session",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/v1/users/register.json": {
+      "post": {
+        "operationId": "createUsers",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Created user object",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Creates user",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/v1/users/{userId}.json": {
+      "delete": {
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "description": "User ID to delete",
+            "in": "query",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Delete the user",
+        "tags": [
+          "users"
+        ]
+      },
+      "get": {
+        "description": "Returns Users view",
+        "operationId": "usersView",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected user ID",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "summary": "UserView",
+        "tags": [
+          "users"
+        ]
+      },
+      "put": {
+        "description": "Update the users details",
+        "operationId": "editUsers",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Current Login user ID",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Edit user object",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/editUser"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "summary": "Edit User",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/v1/users/{userId}/activities.json": {
+      "get": {
+        "description": "Returns User Activities",
+        "operationId": "Activities listing",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected user ID",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Activities"
+            }
+          }
+        },
+        "summary": "Activities",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/v1/users/{userId}/cards.json": {
+      "get": {
+        "description": "View user cards",
+        "operationId": "view_user_cards",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Selected User ID",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "View user cards",
+        "tags": [
+          "cards"
+        ]
+      }
+    },
+    "/v1/users/{userId}/changepassword.json": {
+      "put": {
+        "description": "This can only be done by the logged in user.",
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Current Login user ID",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Change Password user object",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/changepassword"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "400": {
+            "description": "Invalid username supplied"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "summary": "Change Password",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/v1/webhooks.json": {
+      "get": {
+        "description": "Returns webhooks listing",
+        "operationId": "webhooksListing",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Webhooks"
+            }
+          },
+          "404": {
+            "description": "Webhook not found"
+          }
+        },
+        "summary": "Webhooks",
+        "tags": [
+          "webhooks"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "addWebhook",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Created webhook object",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addWebhook"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Add a webhook",
+        "tags": [
+          "webhooks"
+        ]
+      }
+    },
+    "/v1/webhooks/{webhookId}.json": {
+      "delete": {
+        "operationId": "deleteWebhook",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Webhook to delete",
+            "in": "path",
+            "name": "webhookId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          }
+        },
+        "summary": "Delete webhook",
+        "tags": [
+          "webhooks"
+        ]
+      },
+      "put": {
+        "description": "Update the webhook",
+        "operationId": "editWebhook",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Webhook to edit",
+            "in": "path",
+            "name": "webhookId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Edit Webhook",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/editWebhook"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Page not found"
+          }
+        },
+        "summary": "Edit webhook",
+        "tags": [
+          "webhooks"
+        ]
+      }
+    },
+    "/v1/workflow_templates.json": {
+      "get": {
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "operationId": "loadWorkflowTemplates",
+        "parameters": [
+          {
+            "description": "OAuth token",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml",
+          "text/plain",
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Load workflow templates",
+        "tags": [
+          "boards"
+        ]
+      }
+    }
+  },
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0",
+  "tags": [
+    {
+      "description": "Operations about Users",
+      "name": "users"
+    },
+    {
+      "description": "Operations about Boards",
+      "name": "boards"
+    },
+    {
+      "description": "Operations about Lists",
+      "name": "lists"
+    },
+    {
+      "description": "Operations about Cards",
+      "name": "cards"
+    },
+    {
+      "description": "Operations about Card voters",
+      "name": "card_voters"
+    },
+    {
+      "description": "Operations about Card labels",
+      "name": "cards_labels"
+    },
+    {
+      "description": "Operations about Card attachments",
+      "name": "card_attachments"
+    },
+    {
+      "description": "Operations about Card comments",
+      "name": "comments"
+    },
+    {
+      "description": "Operations about Checklists",
+      "name": "checklists"
+    },
+    {
+      "description": "Operations about Checklist items",
+      "name": "checklist_items"
+    },
+    {
+      "description": "Operations about Activities",
+      "name": "activities_listing"
+    },
+    {
+      "description": "Operations about Organizations",
+      "name": "organizations"
+    },
+    {
+      "description": "Operations about Clients",
+      "name": "oauth_clients"
+    },
+    {
+      "description": "Operations about Applications",
+      "name": "oauth_applications"
+    },
+    {
+      "description": "Operations about Webhooks",
+      "name": "webhooks"
+    }
+  ]
+}

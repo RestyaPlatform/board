@@ -53,6 +53,12 @@ App.CardCheckListView = Backbone.View.extend({
         }
         _.bindAll(this, 'render', 'renderItemsCollection');
         this.model.checklist_items.bind('remove', this.renderItemsCollection);
+        var board_user_role_id = this.model.board_users.findWhere({
+            user_id: parseInt(authuser.user.id)
+        });
+        if (!_.isEmpty(board_user_role_id)) {
+            this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+        }
     },
     /**
      * checklistSort()
@@ -214,9 +220,10 @@ App.CardCheckListView = Backbone.View.extend({
             });
             view_item.append(view.render().el);
         });
-        if (!_.isEmpty(role_links.where({
-                slug: 'add_checklist_item'
-            })) && is_show_link !== false) {
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.board_users.board.acl_links.where({
+                slug: 'add_checklist_item',
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            }))) && is_show_link !== false) {
             view_item.after(new App.ChecklistItemAddLinkView().el);
         }
     },
@@ -249,7 +256,7 @@ App.CardCheckListView = Backbone.View.extend({
     updateChecklist: function(e) {
         if (!$.trim($('#checklistEditName').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">Whitespace alone not allowed</div>').insertAfter('#checklistEditName');
+            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#checklistEditName');
         } else {
             $('.error-msg').remove();
             e.preventDefault();
@@ -356,7 +363,7 @@ App.CardCheckListView = Backbone.View.extend({
      */
     hideChecklistItemAddForm: function(e) {
         e.preventDefault();
-        $(e.target).parents('div.js-checklist-item-add-form-view').prev('a.js-add-item-view').removeClass('hide').addClass('js-show-checklist-item-add-form').html('Add Item');
+        $(e.target).parents('div.js-checklist-item-add-form-view').prev('a.js-add-item-view').removeClass('hide').addClass('js-show-checklist-item-add-form').html(i18next.t('Add Item'));
         $(e.target).parents('div.js-checklist-item-add-form-view').html('');
     },
     /**
@@ -369,7 +376,7 @@ App.CardCheckListView = Backbone.View.extend({
     addChecklistItem: function(e) {
         if (!$.trim($('#ChecklistItem').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">Whitespace alone not allowed</div>').insertAfter('#ChecklistItem');
+            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#ChecklistItem');
             return false;
         } else {
             $('.error-msg').remove();
@@ -423,7 +430,7 @@ App.CardCheckListView = Backbone.View.extend({
                             checklist_item.set('checklist_id', self.model.id);
                             checklist_item.set('position', i);
                             checklist_item.set('name', _.escape(item.replace('\r', '')));
-                            checklist_item.set('is_completed', false);
+                            checklist_item.set('is_completed', 0);
                             checklist_item.card = self.model.card;
                             checklist_item.checklist = new App.CheckList();
                             checklist_item.checklist = self.model;
@@ -475,7 +482,7 @@ App.CardCheckListView = Backbone.View.extend({
      */
     renderProgress: function() {
         var completed_count = this.model.checklist_items.filter(function(checklist_item) {
-            return checklist_item.get('is_completed') === true || checklist_item.get('is_completed') == 'true';
+            return parseInt(checklist_item.get('is_completed')) === 1;
         }).length;
         var total_count = this.model.checklist_items.length;
         completed_count = 0 < total_count ? Math.round(100 * completed_count / total_count) : 0;

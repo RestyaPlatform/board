@@ -1,5 +1,5 @@
 <div class="clearfix text-center col-xs-12">
-  <a href="#" class="js-back-to-sidebar pull-left btn btn-xs btn-link"><i class="icon-caret-left"></i></a><span class="col-xs-10 navbar-btn"><strong>Change Background</strong></span>
+  <a href="#" class="js-back-to-sidebar pull-left btn btn-xs btn-link"><i class="icon-caret-left"></i></a><span class="col-xs-10 navbar-btn"><strong><%- i18next.t("Change Background") %></strong></span>
 </div>
 <div class="col-xs-12 divider"></div>
 <div class="col-xs-12 member-modal js-pre-scrollable vertical-scrollbar clearfix">
@@ -37,7 +37,7 @@
     <li class="list-inline js-change-color board-background-select navbar-btn cur" data-color="#ccdc87"><span class="background-box show well-lg" style="background-color:#ccdc87"></span></li>
     <li class="list-inline js-change-color board-background-select navbar-btn cur" data-color="#f1eabf"><span class="background-box show well-lg" style="background-color:#f1eabf"></span></li>
   </ul>
-  <h4>Photos</h4>
+  <h4><%- i18next.t("Photos") %></h4>
   <% if (!_.isEmpty(board.attributes.background_picture_url) && board.attributes.background_picture_url != 'NULL') {
 	   var background_picture_url = (board.attributes.background_picture_url).replace("_XXXX.jpg", "_s.jpg"); 
   %>
@@ -57,19 +57,19 @@
 				</p>
 				<div class="pull-right">
 					<div class="btn-group btn-group-xs navbar-btn">
-						<a class="btn btn-primary js-modal-fliker-trigger" title="change" href="#" data-type="image" data-toggle="modal" data-target="#modalFlickrPhoto">Change</a>
+						<a class="btn btn-primary js-modal-fliker-trigger" title="<%- i18next.t('Change') %>" href="#" data-type="image" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Change") %></a>
 						<div class="dropdown btn btn-default">
-							<a data-toggle="dropdown" class="dropdown-toggle" title="Delete" href="#">
+							<a data-toggle="dropdown" class="dropdown-toggle" title="<%- i18next.t('Delete') %>" href="#">
 								<i class="icon-remove cur js-delete-background-img"></i>
 							</a>
 							<ul class="dropdown-menu arrow arrow-right list-unstyled">
 								<li id="js-attachment-confirm-respons-22" class="js-dropdown-popup">
 								  <div>
-									<div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>Delete Attachment?</strong></span><a href="#" class="js-span-close-popup pull-right"><i class="icon-remove"></i></a></div>
+									<div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong><%- i18next.t("Delete Attachment") %>?</strong></span><a href="#" class="js-span-close-popup pull-right"><i class="icon-remove"></i></a></div>
 									<div class="col-xs-12 divider"></div>
 									<div class="col-xs-12 text-left">
-									  <p>Deleting an background photo. There is no undo.</p>
-									  <a title="Delete background photo" class="btn btn-primary btn-large">Delete</a></div>
+									  <p><%- i18next.t("Deleting an background photo. There is no undo.") %></p>
+									  <a title="<%- i18next.t('Delete background photo') %>" class="btn btn-primary btn-large"><%- i18next.t("Delete") %></a></div>
 								  </div>
 								</li>
 							</ul>
@@ -78,7 +78,7 @@
 				</div>
 			</div>
 			<div>
-				<small class="navbar-btn">Powered by <a href="javascript:void(0);" title="Flickr"><strong class="text-primary">Flickr</strong></a></small>
+				<small class="navbar-btn"><%- i18next.t("Powered by") %> <a href="javascript:void(0);" title="<%- i18next.t('Flickr') %>"><strong class="text-primary"><%- i18next.t("Flickr") %></strong></a></small>
 			</div>		
 		</li>
 		</ul>	
@@ -87,10 +87,10 @@
 		</li>
 	  </ul>
   <% } else { %>
-	 <a href="#" class="js-modal-fliker-trigger"  data-type="image" data-toggle="modal" data-target="#modalFlickrPhoto">Choose...</a>
+	 <a href="#" class="js-modal-fliker-trigger"  data-type="image" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Choose...") %></a>
   <% } %>  
 
-  <h4>Patterns and Textures</h4>
+  <h4><%- i18next.t("Patterns and Textures") %></h4>
   <% if (!_.isEmpty(board.attributes.background_pattern_url) && board.attributes.background_pattern_url != 'NULL') { 
 		var background_pattern_url = (board.attributes.background_pattern_url).replace("_XXXX.jpg", "_s.jpg"); 
   %>		
@@ -108,19 +108,19 @@
 				<% } %> </p>
 				<div class="pull-right">
 					<div class="btn-group btn-group-xs navbar-btn">
-						<a class="btn btn-primary js-modal-fliker-trigger" title="change" href="#" data-type="texture" data-toggle="modal" data-target="#modalFlickrPhoto">Change</a>
+						<a class="btn btn-primary js-modal-fliker-trigger" title="<%- i18next.t('Change') %>" href="#" data-type="texture" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Change") %></a>
 						<div class="dropdown btn btn-default">
-							<a data-toggle="dropdown" class="dropdown-toggle" title="Delete" href="#">
+							<a data-toggle="dropdown" class="dropdown-toggle" title="<%- i18next.t('Delete') %>" href="#">
 								<i class="icon-remove cur js-delete-background-img"></i>
 							</a>
 							<ul class="dropdown-menu arrow arrow-right list-unstyled">
 								<li id="js-attachment-confirm-respons-22" class="js-dropdown-popup">
 								  <div>
-									<div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>Delete Attachment?</strong></span><a href="#" class="js-span-close-popup pull-right"><i class="icon-remove"></i></a></div>
+									<div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong><%- i18next.t("Delete Attachment") %>?</strong></span><a href="#" class="js-span-close-popup pull-right"><i class="icon-remove"></i></a></div>
 									<div class="col-xs-12 divider"></div>
 									<div class="col-xs-12 text-left">
-									  <p>Deleting an background photo. There is no undo.</p>
-									  <a title="Delete background photo" class="btn btn-primary btn-large">Delete</a></div>
+									  <p><%- i18next.t("Deleting an background photo. There is no undo.") %></p>
+									  <a title="<%- i18next.t('Delete background photo') %>" class="btn btn-primary btn-large"><%- i18next.t("Delete") %></a></div>
 								  </div>
 								</li>
 							</ul>
@@ -129,7 +129,7 @@
 				</div>
 			</div>
 			<div>
-				<small class="navbar-btn">Powered by <a href="javascript:void(0);" title="Flickr"><strong class="text-primary">Flickr</strong></a></small>
+				<small class="navbar-btn"><%- i18next.t("Powered by") %> <a href="javascript:void(0);" title="<%- i18next.t('Flickr') %>"><strong class="text-primary"><%- i18next.t("Flickr") %></strong></a></small>
 			</div>		
 		</li>
 		</ul>
@@ -137,29 +137,29 @@
 	</li>
   </ul>
   <% } else { %>
-	 <a href="#" class="js-modal-fliker-trigger" data-type="texture" data-toggle="modal" data-target="#modalFlickrPhoto">Choose...</a>
+	 <a href="#" class="js-modal-fliker-trigger" data-type="texture" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Choose...") %></a>
   <% } %>  
  
   
- 
-  <h4>Custom<span class="clearfix navbar-btn col-xs-7 pull-right"><span id="custom-dropzone-cssloader"></span></span></h4>
+<% if(authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "add_custom_background", board_user_role_id: parseInt(board.board_user_role_id)}))){ %> 
+  <h4><%- i18next.t("Custom") %><span class="clearfix navbar-btn col-xs-7 pull-right"><span id="custom-dropzone-cssloader"></span></span></h4>
   <ul class="js-board-background-custom-lists list-inline">
     <% board.custom_attachments.each(function(custom_attachment) { %>
     <li class="js-change-custom-background board-background-select navbar-btn cur" data-background="<%= custom_attachment.get('path') %>"><span class="background-box show well-lg" style="background-image:url(<%= custom_attachment.get('path') %>"></span></li>
     <% }); %>
   </ul>
 
-<% if(!_.isEmpty(role_links.where({slug: "add_custom_background"}))){ %>
+
 <div class="clearfix col-xs-12" id="custom-background-dropzone">
 	<form id="js-board-custom-background-form" class="form-horizontal clearfix  js-cusotm-background-add" role="form" enctype="multipart/form-data">
 		<div id="manager-area" class="js-cusotm-background-dropzone empty-block js-computer-open-board-background">
-			Drop files to upload
+			<%- i18next.t("Drop files to upload") %>
 		</div>
 	</form>
 </div>
 <% } %>
 <div class="col-xs-12 member-modal clearfix btn-block">
-<h4>Productivity Beats</h4>
+<h4><%- i18next.t("Productivity Beats") %></h4>
 <% if (!_.isEmpty(board.attributes.music_content) && board.attributes.music_content != 'NULL') { %>
  <ul class="list-inline col-xs-offset-0 clearfix">
     <li class="clearfix col-xs-12">
@@ -175,19 +175,19 @@
 				</p>
 				<div class="pull-right">
 					<div class="btn-group btn-group-xs navbar-btn">
-						<a class="btn btn-primary js-modal-music-trigger" title="change" href="#" data-toggle="modal" data-target="#modalMusic">Change</a>
+						<a class="btn btn-primary js-modal-music-trigger" title="<%- i18next.t('Change') %>" href="#" data-toggle="modal" data-target="#modalMusic"><%- i18next.t("Change") %></a>
 						<div class="dropdown btn btn-default">
-							<a data-toggle="dropdown" class="dropdown-toggle" title="Delete" href="#">
+							<a data-toggle="dropdown" class="dropdown-toggle" title="<%- i18next.t('Delete') %>" href="#">
 								<i class="icon-remove cur js-music-clear"></i>
 							</a>
 							<ul class="dropdown-menu arrow arrow-right list-unstyled">
 								<li id="js-attachment-confirm-respons-22" class="js-dropdown-popup">
 								  <div>
-									<div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>Delete Attachment?</strong></span><a href="#" class="js-span-close-popup pull-right"><i class="icon-remove"></i></a></div>
+									<div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong><%- i18next.t("Delete Attachment") %>?</strong></span><a href="#" class="js-span-close-popup pull-right"><i class="icon-remove"></i></a></div>
 									<div class="col-xs-12 divider"></div>
 									<div class="col-xs-12 text-left">
-									  <p>Deleting an background photo. There is no undo.</p>
-									  <a title="Delete background photo" class="btn btn-primary btn-large">Delete</a></div>
+									  <p><%- i18next.t("Deleting an background photo. There is no undo.") %></p>
+									  <a title="<%- i18next.t('Delete background photo') %>" class="btn btn-primary btn-large"><%- i18next.t("Delete") %></a></div>
 								  </div>
 								</li>
 							</ul>
@@ -201,7 +201,7 @@
 	</li>
   </ul>
   <% } else { %>
-	<a href="#" class="js-modal-music-trigger" data-toggle="modal" data-target="#modalMusic">Add ...</a>
+	<a href="#" class="js-modal-music-trigger" data-toggle="modal" data-target="#modalMusic"><%- i18next.t("Add...") %></a>
   <% } %>  
 </div>
 </div>

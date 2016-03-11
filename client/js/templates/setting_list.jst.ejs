@@ -9,7 +9,7 @@
 				_.each(list.models, function(settingCategory) {				
 					var settings = settingCategory.get('settings');
 		%>
-				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>"><%- settingCategory.get('name') %></a></li>
+				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>"><%- i18next.t(settingCategory.get('name')) %></a></li>
 		<% 
 					i++;
 				});
@@ -26,6 +26,9 @@
 		%>		
 				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%}%>" id="settingTab<%- settingCategory.get('id') %>">
 					<% if(!_.isEmpty(settings)){ %>
+					<% if(settingCategory.get('id') == 10){ %>
+					<p class="alert alert-info ">To add/reply cards via email you must set up a secret email account with IMAP access.</p>
+					<% } %>
 					<form class="form-horizontal clearfix <% if(settingCategory.get('id') == 2){ %>col-lg-8<% } else { %>col-lg-6<% } %> col-md-8 col-sm-12 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
 					<%
 					 var server_detail_fields_count = 0;
@@ -58,7 +61,7 @@
 									<hr>
 									<fieldset>
 										<legend>
-											<span class="show h4">LDAP configuration</span>
+											<span class="show h4"><%- i18next.t('LDAP configuration') %></span>
 										</legend>
 									</fieldset>
 								<% } %>
@@ -78,22 +81,39 @@
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-8 checkbox-inline">
 						<% } %>
-									<div class="checkbox pull-left">
-										<input class="js-checkbox" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" type="checkbox" <% if(setting.value === 'true') { %> checked="checked" <% } %> value="<%- setting.value %>">
-										<label for="inputSetting<%- setting.id %>"><%- setting.label %> </label>
-									</div>
+									<div class="<% if(setting.name != 'ENABLE_SSL_CONNECTIVITY'){ %>checkbox pull-left<% } else { %>form-group<% } %>">
+									<% if(setting.name === 'ENABLE_SSL_CONNECTIVITY'){ %><div class="col-xs-3"></div><div		class="col-xs-9"><% } %>
+ 										<input class="js-checkbox" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" type="checkbox" <% if(setting.value === 'true') { %> checked="checked" <% } %> value="<%- setting.value %>">
+ 										<label for="inputSetting<%- setting.id %>"><%- setting.label %> </label>
+									<% if(setting.name === 'ENABLE_SSL_CONNECTIVITY'){ %></div><% } %>
+ 									</div>
 					    <% if(setting.id == 3){ %>
 								</div>
 							</div>
 						<% } %>
 						<% } else {%>
-							<div class="form-group">
-							  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- setting.label %></label>
-							  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
-								<input type="text" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" class="form-control" value="<%- setting.value %>" />
-								<div><span class="help-block"><%= setting.description %></span></div>
-							  </div>
-							</div>
+							<% if(setting.id == 31){ %>
+								<div class="form-group">
+								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- setting.label %></label>
+								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
+									<select name="<%- setting.name %>" id="inputSetting<%- setting.id %>" class="form-control">
+									 <%
+									 _.each(JSON.parse(window.sessionStorage.getItem('languages')), function(v, k) { %>
+										<option <% if(k === setting.value) { %>selected <% }%> value="<%- k %>"><%- v %></option>
+									<% }); %>
+									</select>
+									<div><span class="help-block"><%= i18next.t(setting.description) %></span></div>
+								  </div>
+								</div>
+							<% } else {%>
+								<div class="form-group">
+								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- setting.label %></label>
+								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
+									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" class="form-control" value="<%- setting.value %>" />
+									<div><span class="help-block"><%= setting.description %></span></div>
+								  </div>
+								</div>
+							<% } %>
 						<% } %>
 						<% 
 							if((setting.setting_category_id == 4 || setting.setting_category_id == 5) && (current_server_detail_fields_count == server_detail_fields_count || current_connection_detail_fields_count == connection_detail_fields_count)){ 
@@ -106,19 +126,42 @@
 						<%}%>
 					<% }); %>
 					  <div class="form-group">
-						<label for="submit2" class="sr-only <% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12">submit</label>
+						<label for="submit2" class="sr-only <% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t('Submit') %></label>
 						<div class="col-sm-8">
-						<input type="submit" value="Submit" id="submit2" class="btn btn-primary">
+						<input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary">
 						</div>
 					  </div>
 					</form>
 					<% } %>
 				</div>
-		<% 
-					j++;
-				});
+		<% j++; %>
+		<% if(settingCategory.id == 2 && id == 2){ %>
+			<legend>
+				<span class="show h4">Import LDAP users</span>
+			</legend>
+			<div class="form-group">
+				<div class="col-xs-3"></div><div class="col-xs-9">
+					<input type="checkbox" value="" name="enableImportUsers" id="enableImportUsers" class="js-enable-import-user">
+					<label for="enableImportUsers"><%- i18next.t('Import Groups from LDAP into Organizations and put users under organization. If this option is unchecked, only the users will be imported (not organization)') %> </label>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-xs-3"></div><div class="col-xs-9">
+					<input type="checkbox" value="" name="dontSendWelcomeMail" id="dontSendWelcomeMail">
+					<label for="dontSendWelcomeMail"><%- i18next.t("Don't send welcome email") %> </label>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="enableImportUsersSubmit" class="sr-only col-sm-4 control-label col-xs-12"><%- i18next.t('Import users') %></label>
+				<div class="col-sm-8">
+				<button type="button" id="importUsersSubmit" class="js-import-users btn btn-primary"><%- i18next.t('Import users') %></button>
+				<span class="clearfix hide" id="js-loader-img"><span class="cssloader"></span></span>
+				</div>
+		    </div>
+		<% } %>
+		<% });
 			} 
-		%>				
+		%>	
 		</div>
 	</div>
   </div>

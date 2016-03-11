@@ -4,7 +4,7 @@
 #
 # Usage: ./restyaboard.sh
 #
-# Copyright (c) 2014-2015 Restya.
+# Copyright (c) 2014-2016 Restya.
 # Dual License (OSL 3.0 & Commercial License)
 {
 	if [[ $EUID -ne 0 ]];
@@ -58,20 +58,40 @@
 			psql -U postgres -c "\q"
 			sleep 1
 			
-			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
-			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ])
-			then
-				echo "*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh" >> /var/spool/cron/crontabs/root
-			else
-				echo "*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh" >> /var/spool/cron/root
-			fi
+			sed -i "s/server\/php\/R\/oauth_callback.php/server\/php\/oauth_callback.php/" /etc/nginx/conf.d/restyaboard.conf
+			sed -i "s/server\/php\/R\/download.php/server\/php\/download.php/" /etc/nginx/conf.d/restyaboard.conf
+			sed -i "s/server\/php\/R\/ical.php/server\/php\/ical.php/" /etc/nginx/conf.d/restyaboard.conf
+			sed -i "s/server\/php\/R\/image.php/server\/php\/image.php/" /etc/nginx/conf.d/restyaboard.conf
 			
-			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ])
 			then
-				echo "0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh" >> /var/spool/cron/crontabs/root
+				echo "Changing files path for existing cron..."
+				sed -i "s/server\/php\/R\/cron.sh/server\/php\/indexing_to_elasticsearch.sh/" /var/spool/cron/crontabs/root
+				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/instant_email_notification.sh/" /var/spool/cron/crontabs/root
+				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/periodic_email_notification.sh/" /var/spool/cron/crontabs/root
+			
+				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
+				echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/crontabs/root
+				
+				echo "Setting up cron for every 5 minutes to send activities to webhook..."
+				echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/crontabs/root
+				
+				echo "Setting up cron for every 5 minutes to send email notification to past due..."
+				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
 			else
-				echo "0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh" >> /var/spool/cron/root
+				echo "Changing files path for existing cron..."
+				sed -i "s/server\/php\/R\/cron.sh/server\/php\/indexing_to_elasticsearch.sh/" /var/spool/cron/root
+				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/instant_email_notification.sh/" /var/spool/cron/root
+				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/periodic_email_notification.sh/" /var/spool/cron/root
+			
+				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
+				echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/root
+				
+				echo "Setting up cron for every 5 minutes to send activities to webhook..."
+				echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/root
+				
+				echo "Setting up cron for every 5 minutes to send email notification to past due..."
+				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
 			fi
 			
 			echo "Updating SQL..."
@@ -105,7 +125,7 @@
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ])
 	then
 		set +x
-		echo "Setup script will install version ${RESTYABOARD_VERSION} and create database ${POSTGRES_DBNAME} with user ${POSTGRES_DBUSER} and password ${POSTGRES_DBPASS}. To continue enter \"y\" or to quit the process and edit the version and database details enter \"n\" (y/n)?" 
+		echo "Setup script will install version ${RESTYABOARD_VERSION} and create database ${POSTGRES_DBNAME} with user ${POSTGRES_DBUSER} and password ${POSTGRES_DBPASS}. To continue enter \"y\" or to quit the process and edit the version and database details enter \"n\" (y/n)?"
 		read -r answer
 		set -x
 		case "${answer}" in
@@ -142,16 +162,19 @@
 			if ! hash php 2>&-; then
 				echo "PHP is not installed!"
 				set +x
-				echo "Do you want to install PHP (y/n)?" 
+				echo "Do you want to install PHP (y/n)?"
 				read -r answer
 				set -x
 				case "${answer}" in
 					[Yy])
 					echo "Installing PHP..."
-					apt-get install -y php5 php5-fpm php5-common
-					service php5-fpm start
+					apt-get install -y php5 php5-common
 				esac
 			fi
+			
+			echo "Installing PHP fpm and cli extension..."
+			apt-get install -y php5-fpm php5-cli
+			service php5-fpm start
 			
 			echo "Checking PHP curl extension..."
 			php -m | grep curl
@@ -185,7 +208,16 @@
 			php -m | grep imagick
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-imagick..."
-				apt-get install -y php5-imagick
+				apt-get install gcc
+				apt-get install imagemagick
+				apt-get install php5-imagick
+			fi
+			
+			echo "Checking PHP imap extension..."
+			php -m | grep imap
+			if [ "$?" -gt 0 ]; then
+				echo "Installing php5-imap..."
+				apt-get install -y php5-imap
 			fi
 			
 			echo "Setting up timezone..."
@@ -214,7 +246,7 @@
 					cd /etc/postgresql/9.4/main || exit
 					mv pg_hba.conf pg_hba.conf_old
 					mv pg_hba.conf.1 pg_hba.conf
-					service postgresql restart		
+					service postgresql restart
 				esac
 			fi
 			
@@ -252,7 +284,7 @@
 			set -x
 			echo "$webdir"
 			echo "Changing server_name in nginx configuration..."
-			sed -i "s/server_name.*$/server_name $webdir;/" /etc/nginx/conf.d/restyaboard.conf
+			sed -i "s/server_name.*$/server_name \"$webdir\";/" /etc/nginx/conf.d/restyaboard.conf
 			sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
 			
 			set +x
@@ -276,12 +308,12 @@
 			echo "postfix postfix/main_mailer_type string 'Internet Site'"\
 			| debconf-set-selections &&\
 			apt-get install -y postfix
-		
+			
 			echo "Changing permission..."
 			chmod -R go+w "$dir/media"
 			chmod -R go+w "$dir/client/img"
 			chmod -R go+w "$dir/tmp/cache"
-			chmod -R 0755 $dir/server/php/R/shell/*.sh
+			chmod -R 0755 $dir/server/php/shell/*.sh
 
 			psql -U postgres -c "\q"
 			sleep 1
@@ -289,6 +321,8 @@
 			echo "Creating PostgreSQL user and database..."
 			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
 			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;"
+			psql -U postgres -c "COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';"
 			if [ "$?" = 0 ];
 			then
 				echo "Importing empty SQL..."
@@ -296,20 +330,29 @@
 			fi
 			
 			echo "Changing PostgreSQL database name, user and password..."
-			sed -i "s/^.*'R_DB_NAME'.*$/define('R_DB_NAME', '${POSTGRES_DBNAME}');/g" "$dir/server/php/R/config.inc.php"
-			sed -i "s/^.*'R_DB_USER'.*$/define('R_DB_USER', '${POSTGRES_DBUSER}');/g" "$dir/server/php/R/config.inc.php"
-			sed -i "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_DBPASS}');/g" "$dir/server/php/R/config.inc.php"
-			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/R/config.inc.php"
-			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/R/config.inc.php"
+			sed -i "s/^.*'R_DB_NAME'.*$/define('R_DB_NAME', '${POSTGRES_DBNAME}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'R_DB_USER'.*$/define('R_DB_USER', '${POSTGRES_DBUSER}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_DBPASS}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
 			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo "*/5 * * * * $dir/server/php/R/shell/cron.sh" >> /var/spool/cron/crontabs/root
+			echo "*/5 * * * * $dir/server/php/shell/indexing_to_elasticsearch.sh" >> /var/spool/cron/crontabs/root
 			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
-			echo "*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh" >> /var/spool/cron/crontabs/root
+			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/crontabs/root
 			
 			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
-			echo "0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh" >> /var/spool/cron/crontabs/root
+			echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh" >> /var/spool/cron/crontabs/root
+			
+			echo "Setting up cron for every 30 minutes to fetch IMAP email..."
+			echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/crontabs/root
+			
+			echo "Setting up cron for every 5 minutes to send activities to webhook..."
+			echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/crontabs/root
+			
+			echo "Setting up cron for every 5 minutes to send email notification to past due..."
+			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
 
 			echo "Starting services..."
 			service cron restart
@@ -320,7 +363,7 @@
 		esac
 	else
 		set +x
-		echo "Setup script will install version ${RESTYABOARD_VERSION} and create database ${POSTGRES_DBNAME} with user ${POSTGRES_DBUSER} and password ${POSTGRES_DBPASS}. To continue enter \"y\" or to quit the process and edit the version and database details enter \"n\" (y/n)?" 
+		echo "Setup script will install version ${RESTYABOARD_VERSION} and create database ${POSTGRES_DBNAME} with user ${POSTGRES_DBUSER} and password ${POSTGRES_DBPASS}. To continue enter \"y\" or to quit the process and edit the version and database details enter \"n\" (y/n)?"
 		read -r answer
 		set -x
 		case "${answer}" in
@@ -356,11 +399,14 @@
 					[Yy])
 					echo "Installing PHP..."
 					yum install -y epel-release
-					yum install -y php-fpm php-cli
-					service php-fpm start
-					chkconfig --levels 35 php-fpm on
+					yum install -y php
 				esac
 			fi
+			
+			echo "Installing PHP fpm and cli extension..."
+			yum install -y php-fpm php-devel php-cli
+			service php-fpm start
+			chkconfig --levels 35 php-fpm on
 
 			echo "Checking PHP curl extension..."
 			php -m | grep curl
@@ -399,7 +445,25 @@
 			if [ "$?" -gt 0 ];
 			then
 				echo "Installing php-imagick..."
-				yum install -y php-imagick
+				yum install ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
+				cd /usr/local/src
+				wget http://pecl.php.net/get/imagick-2.2.2.tgz
+				tar zxvf ./imagick-2.2.2.tgz
+				cd imagick-2.2.2
+				phpize
+				./configure
+				make
+				make test
+				make install
+				echo "extension=imagick.so" >> /etc/php.ini
+			fi
+			
+			echo "Checking PHP imap extension..."
+			php -m | grep imap
+			if [ "$?" -gt 0 ];
+			then
+				echo "Installing php-imap..."
+				yum install -y php-imap
 			fi
 			
 			echo "Setting up timezone..."
@@ -477,10 +541,6 @@
 			echo "Downloading Restyaboard script..."
 			mkdir ${DOWNLOAD_DIR}
 			curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
-            if [ ! -f /usr/bin/unzip ];
-			then
-				yum install -y unzip
-			fi
 			unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
 			cp ${DOWNLOAD_DIR}/restyaboard.conf /etc/nginx/conf.d
 			rm /tmp/restyaboard.zip
@@ -517,7 +577,7 @@
 			chmod -R go+w "$dir/media"
 			chmod -R go+w "$dir/client/img"
 			chmod -R go+w "$dir/tmp/cache"
-			chmod -R 0755 $dir/server/php/R/shell/*.sh
+			chmod -R 0755 $dir/server/php/shell/*.sh
 
 			psql -U postgres -c "\q"	
 			sleep 1
@@ -525,6 +585,8 @@
 			echo "Creating PostgreSQL user and database..."
 			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
 			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;"
+			psql -U postgres -c "COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';"
 			if [ "$?" = 0 ];
 			then
 				echo "Importing empty SQL..."
@@ -532,20 +594,29 @@
 			fi
 
 			echo "Changing PostgreSQL database name, user and password..."
-			sed -i "s/^.*'R_DB_NAME'.*$/define('R_DB_NAME', '${POSTGRES_DBNAME}');/g" "$dir/server/php/R/config.inc.php"
-			sed -i "s/^.*'R_DB_USER'.*$/define('R_DB_USER', '${POSTGRES_DBUSER}');/g" "$dir/server/php/R/config.inc.php"
-			sed -i "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_DBPASS}');/g" "$dir/server/php/R/config.inc.php"
-			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/R/config.inc.php"
-			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/R/config.inc.php"
+			sed -i "s/^.*'R_DB_NAME'.*$/define('R_DB_NAME', '${POSTGRES_DBNAME}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'R_DB_USER'.*$/define('R_DB_USER', '${POSTGRES_DBUSER}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_DBPASS}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
 			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo "*/5 * * * * $dir/server/php/R/shell/cron.sh" >> /var/spool/cron/root
+			echo "*/5 * * * * $dir/server/php/shell/indexing_to_elasticsearch.sh" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
-			echo "*/5 * * * * $dir/server/php/R/shell/instant_email_notification.sh" >> /var/spool/cron/root
+			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
-			echo "0 * * * * $dir/server/php/R/shell/periodic_email_notification.sh" >> /var/spool/cron/root
+			echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh" >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 30 minutes to fetch IMAP email..."
+			echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 5 minutes to send activities to webhook..."
+			echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 5 minutes to send email notification to past due..."
+			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
 			
 			echo "Reset php-fpm (use unix socket mode)..."
 			sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf

@@ -48,7 +48,9 @@ App.BoardView = Backbone.View.extend({
         this.model.bind('change:board_visibility', this.render);
         this.model.bind('change:background_color change:background_picture_url change:background_pattern_url', this.setBoardBackground);
         this.model.bind('change:music_content', this.musical);
+        this.model.labels.bind('remove', this.renderListsCollection);
         this.model.lists.bind('add', this.renderListsCollection);
+        this.model.lists.bind('change:name', this.renderListsCollection);
         this.model.lists.bind('change:position', this.renderListsCollection);
         this.model.lists.bind('change:is_archived', this.renderListsCollection, this);
         this.model.lists.bind('change:comment_count', this.renderListsCollection, this);
@@ -75,7 +77,23 @@ App.BoardView = Backbone.View.extend({
         this.populateAttachments();
         this.populateSubscribers();
         this.populateStars();
+        this.populateAclLinks();
+        if (!_.isUndefined(authuser.user)) {
+            var board_user_role_id = this.model.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(board_user_role_id)) {
+                this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+            }
+        }
         this.render();
+    },
+    // Resets this boards acl_links collection
+    populateAclLinks: function() {
+        var acl_links = this.model.get('acl_links') || [];
+        this.model.acl_links.reset(acl_links, {
+            silent: true
+        });
     },
     // Resets this boards lists collection
     populateLists: function() {
@@ -306,10 +324,10 @@ App.BoardView = Backbone.View.extend({
         e.preventDefault();
         var name = $(e.currentTarget).attr('name');
         var value = 'unsubscribe';
-        var content = '<i class="icon-eye-close"></i>Unsubscribe';
+        var content = '<i class="icon-eye-close"></i>' + i18next.t('Unsubscribe');
         if (name == 'unsubscribe') {
             value = 'subscribe';
-            content = '<i class="icon-eye-open"></i>Subscribe';
+            content = '<i class="icon-eye-open"></i>' + i18next.t('Subscribe');
         }
         $(e.currentTarget).attr('name', value);
         $(e.currentTarget).attr('title', value);
@@ -356,11 +374,11 @@ App.BoardView = Backbone.View.extend({
         $('.js-star-load').removeClass('hide');
         var name = $(e.currentTarget).attr('name');
         var value = 'unstar';
-        var is_starred = true;
+        var is_starred = 1;
         var content = '<i class="icon-star text-primary"></i>';
         if (name == 'unstar') {
             value = 'star';
-            is_starred = false;
+            is_starred = 0;
             content = '<i class="icon-star-empty"></i>';
         }
         $(e.currentTarget).attr('name', value);
@@ -372,11 +390,11 @@ App.BoardView = Backbone.View.extend({
             value = '';
             if ($('#inputBoardStar').val() == 'false') {
                 value = 'true';
-                is_starred = true;
+                is_starred = 1;
                 $('#inputBoardStar').val(value);
             } else {
                 value = 'false';
-                is_starred = false;
+                is_starred = 0;
                 $('#inputBoardStar').val(value);
             }
             var data = $('form#BoardStarForm').serializeObject();
@@ -419,14 +437,14 @@ App.BoardView = Backbone.View.extend({
     closeBoard: function(e) {
         e.preventDefault();
         this.model.url = api_url + 'boards/' + this.model.id + '.json';
-        App.boards.get(this.model.id).set('is_closed', true);
-        this.model.set('is_closed', true);
+        App.boards.get(this.model.id).set('is_closed', 1);
+        this.model.set('is_closed', 1);
         this.footerView = new App.FooterView({
             model: authuser,
             board_id: this.model.id
         }).renderClosedBoards();
         this.model.save({
-            is_closed: true
+            is_closed: 1
         }, {
             patch: true,
             success: function(model, response) {
@@ -444,9 +462,9 @@ App.BoardView = Backbone.View.extend({
     reopenBoard: function(e) {
         var data = $(e.target).serializeObject();
         this.model.url = api_url + 'boards/' + this.model.id + '.json';
-        this.model.set('is_closed', false);
+        this.model.set('is_closed', 0);
         this.model.save({
-            is_closed: false
+            is_closed: 0
         }, {
             patch: true,
             success: function(model, response) {}
@@ -528,7 +546,6 @@ App.BoardView = Backbone.View.extend({
         var boardUser = new App.BoardUsers();
         boardUser.url = api_url + 'boards_users/' + board_user_id + '.json';
         boardUser.set('id', board_user_id);
-        boardUser.set('is_admin', 1);
         boardUser.save();
         return false;
     },
@@ -551,7 +568,6 @@ App.BoardView = Backbone.View.extend({
         var boardUser = new App.BoardUsers();
         boardUser.url = api_url + 'boards_users/' + board_user_id + '.json';
         boardUser.set('id', board_user_id);
-        boardUser.set('is_admin', 0);
         boardUser.save();
         return false;
     },
@@ -640,6 +656,11 @@ App.BoardView = Backbone.View.extend({
         this.renderListsCollection();
         this.setBoardBackground();
         if (!_.isUndefined(authuser.user)) {
+            var setintervalid = '',
+                is_moving_right = '',
+                previous_offset = 0,
+                previous_move = '',
+                is_create_setinterval = true;
             $('#js-board-lists', this.$el).sortable({
                 containment: 'window',
                 axis: 'x',
@@ -660,21 +681,48 @@ App.BoardView = Backbone.View.extend({
                     $(ev.target).find('.js-list-head').children('div.dropdown').removeClass('open');
                 },
                 stop: function(ev, ui) {
+                    clearInterval(setintervalid);
+                    is_create_setinterval = true;
+                    previous_offset = 0;
                     $(ev.target).find('.js-list-head').addClass('cur-grab');
                 },
                 over: function(ev, ui) {
                     var scrollLeft = 0;
-                    if ((($(window).width() - ui.offset.left) < 520) || (ui.offset.left > $(window).width())) {
-                        scrollLeft = $('#js-board-lists').scrollLeft() + ($(window).width() - ui.offset.left);
-                        $('#js-board-lists').stop().animate({
-                            scrollLeft: scrollLeft
-                        }, 800);
-                    } else if (ui.offset.left <= 260) {
-                        scrollLeft = $('#js-board-lists').scrollLeft() - ($(window).width() - ui.offset.left);
-                        $('#js-board-lists').stop().animate({
-                            scrollLeft: scrollLeft
-                        }, 800);
+                    var list_per_page = Math.floor($(window).width() / 270);
+                    if (previous_offset !== 0 && previous_offset != ui.offset.left) {
+                        if (previous_offset > ui.offset.left) {
+                            is_moving_right = false;
+                        } else {
+                            is_moving_right = true;
+                        }
                     }
+                    if (previous_move !== is_moving_right) {
+                        clearInterval(setintervalid);
+                        is_create_setinterval = true;
+                    }
+                    if (is_moving_right === true && ui.offset.left > (list_per_page - 1) * 270) {
+                        if (is_create_setinterval) {
+                            setintervalid = setInterval(function() {
+                                scrollLeft = parseInt($('#js-board-lists').scrollLeft()) + 50;
+                                $('#js-board-lists').animate({
+                                    scrollLeft: scrollLeft
+                                }, 10);
+                            }, 100);
+                            is_create_setinterval = false;
+                        }
+                    } else if (is_moving_right === false && ui.offset.left < 50) {
+                        if (is_create_setinterval) {
+                            setintervalid = setInterval(function() {
+                                scrollLeft = parseInt($('#js-board-lists').scrollLeft()) - 50;
+                                $('#js-board-lists').animate({
+                                    scrollLeft: scrollLeft
+                                }, 10);
+                            }, 100);
+                            is_create_setinterval = false;
+                        }
+                    }
+                    previous_offset = ui.offset.left;
+                    previous_move = is_moving_right;
                 }
             });
         }
@@ -702,6 +750,18 @@ App.BoardView = Backbone.View.extend({
      *
      */
     renderListsCollection: function() {
+        App.sortable = {};
+        App.sortable.setintervalid_horizontal = '';
+        App.sortable.setintervalid_vertical = '';
+        App.sortable.is_moving_right = '';
+        App.sortable.is_moving_top = '';
+        App.sortable.previous_offset_horizontal = 0;
+        App.sortable.previous_offset_vertical = 0;
+        App.sortable.previous_move_horizontal = '';
+        App.sortable.previous_move_vertical = '';
+        App.sortable.is_create_setinterval_horizontal = true;
+        App.sortable.is_create_setinterval_vertical = true;
+        App.sortable.previous_id = '';
         var self = this;
         var view_list = self.$('#js-add-list-block');
         var list_content = '';
@@ -735,7 +795,7 @@ App.BoardView = Backbone.View.extend({
             if (!_.isUndefined(list.get('is_new')) && list.get('is_new') === true) {
                 list.set('board_id', self.model.id);
             } else {
-                if (list.get('is_archived') === false || list.get('is_archived') === 0) {
+                if (parseInt(list.get('is_archived')) === 0) {
                     var subscribers = new App.ListSubscriberCollection();
                     subscribers.add(list.get('lists_subscribers'), {
                         silent: true
@@ -754,11 +814,13 @@ App.BoardView = Backbone.View.extend({
                         silent: true
                     });
                     list.attachments = self.model.attachments;
+                    list.board_user_role_id = self.model.board_user_role_id;
+                    list.board = self.model;
                     view = new App.ListView({
                         model: list,
                         attributes: {
                             'data-list_id': list.attributes.id
-                        },
+                        }
                     });
                     if (view_list.length > 0) {
                         view_list.before(view.render().el);
@@ -837,6 +899,10 @@ App.BoardView = Backbone.View.extend({
         } else if (!_.isEmpty(background_color) && background_color != 'NULL') {
             $('body').css({
                 'background': background_color,
+            }).addClass('board-view');
+        } else {
+            $('body').css({
+                'background': '',
             }).addClass('board-view');
         }
     },
@@ -969,16 +1035,28 @@ App.BoardView = Backbone.View.extend({
             var newPosition = difference + before.position();
             data.position = newPosition;
         }
-        data.is_archived = false;
+        data.is_archived = 0;
         data.board_id = self.model.id;
-        if (_.isUndefined(data.clone_list_id)) {
+        var view = '';
+        if (!_.isUndefined(data.clone_list_id)) {
             list.set(data, {
                 silent: true
             });
+            list.board = self.model;
+            view = new App.ListView({
+                model: list,
+                attributes: {
+                    'data-list_id': list.attributes.id,
+                },
+            });
+            $(view.render().el).insertAfter($(e.target).parents('.js-board-list'));
         }
         list.url = api_url + 'boards/' + self.model.id + '/lists.json';
         list.save(data, {
             success: function(model, response, options) {
+                if (self.model.attributes.lists !== null) {
+                    self.model.attributes.lists.push(list);
+                }
                 if (!_.isUndefined(data.clone_list_id)) {
                     if (!_.isUndefined(response.list.labels) && response.list.labels.length > 0) {
                         self.model.labels.add(response.list.labels, {
@@ -998,7 +1076,9 @@ App.BoardView = Backbone.View.extend({
                     }
                     list.set(response.list);
                     list.set('cards', response.list.cards);
-                    self.model.cards.add(response.list.cards);
+                    self.model.cards.add(response.list.cards, {
+                        silent: true
+                    });
                     var i = 1;
                     _.each(response.list.attachments, function(attachment) {
                         var options = {
@@ -1068,7 +1148,7 @@ App.BoardView = Backbone.View.extend({
                 }
                 list.set('board_id', self.model.id);
                 if (list.attributes.is_archived === 0) {
-                    list.attributes.is_archived = false;
+                    list.attributes.is_archived = 0;
                 }
                 self.model.lists.add(list, {
                     silent: true
@@ -1078,15 +1158,16 @@ App.BoardView = Backbone.View.extend({
                 });
                 App.boards.get(list.attributes.board_id).lists.add(list);
                 list.board_users = self.model.board_users;
-                var view = new App.ListView({
-                    model: list,
-                    attributes: {
-                        'data-list_id': list.attributes.id,
-                    },
-                });
                 if (!_.isUndefined(data.clone_list_id)) {
                     $(view.render().el).insertAfter($(e.target).parents('.js-board-list'));
                 } else {
+                    list.board = self.model;
+                    view = new App.ListView({
+                        model: list,
+                        attributes: {
+                            'data-list_id': list.attributes.id,
+                        },
+                    });
                     $(view.render().el).insertBefore($('#js-add-list-block'));
                 }
             }
@@ -1135,7 +1216,7 @@ App.BoardView = Backbone.View.extend({
         }
         el.find('.js-archived-cards-container').html('');
         cards.each(function(card) {
-            if (card.attributes.is_archived === true) {
+            if (card.attributes.is_archived === 1) {
                 el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                     model: card
                 }).el);
@@ -1162,7 +1243,7 @@ App.BoardView = Backbone.View.extend({
         }
         el.find('.js-archived-cards-container').html('');
         lists.each(function(list) {
-            if (list.attributes.is_archived === true) {
+            if (list.attributes.is_archived === 1) {
                 el.find('.js-archived-cards-container').append(new App.ArchivedListView({
                     model: list
                 }).el);

@@ -24,12 +24,29 @@ App.OrganizationsView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         this.model.organizations_users.add(this.model.attributes.organizations_users);
+        this.populateAclLinks();
+        if (!_.isUndefined(authuser.user)) {
+            var organization_user_role_id = this.model.organizations_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(organization_user_role_id)) {
+                this.model.organization_user_role_id = organization_user_role_id.attributes.organization_user_role_id;
+            }
+        }
         this.render();
         if (this.type === 'users') {
             this.getOrganizationMemberLists();
         }
         this.model.boards.bind('change:organization_id remove', this.renderOrganizationCollection, this);
 
+
+    },
+    // Resets this boards acl_links collection
+    populateAclLinks: function() {
+        var acl_links = this.model.get('acl_links') || [];
+        this.model.acl_links.reset(acl_links, {
+            silent: true
+        });
     },
     template: JST['templates/organization_view'],
     /**
@@ -37,11 +54,9 @@ App.OrganizationsView = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
-
         'click .js-close-popover': 'closePopup',
         'click .js-get-organization-member-lists': 'getOrganizationMemberLists',
-        'click .js-edit-organization-member-permission-to-admin': 'editOrganizationMemberPermissionToAdmin',
-        'click .js-edit-organization-member-permission-to-normal': 'editOrganizationMemberPermissionToNormal',
+        'click .js-edit-organization-member-permission': 'editOrganizationMemberPermission',
         'click .js-trigger-logo-upload': 'triggerLogoUpload',
         'change .js-edit-organization-logo': 'editOrganizationLogo',
         'click .js-show-confirm-delete-organization-member': 'showConfirmDeleteOrganizationMember',
@@ -71,14 +86,17 @@ App.OrganizationsView = Backbone.View.extend({
             iframe: true
         }, {
             success: function(model, response) {
-                model.set('logo_url', response.logo_url);
-                self.render();
-                if (self.type === 'users') {
-                    self.getOrganizationMemberLists();
+                if (response.error === 1) {
+                    self.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
+                } else {
+                    model.set('logo_url', response.logo_url);
+                    self.render();
+                    if (self.type === 'users') {
+                        self.getOrganizationMemberLists();
+                    }
+                    $('#js-organization-logo-9').attr('href', response.logo_url);
                 }
-                $('#js-organization-logo-9').attr('href', response.logo_url);
-            },
-            error: function(model, response) {}
+            }
         });
         return false;
     },
@@ -125,55 +143,31 @@ App.OrganizationsView = Backbone.View.extend({
         }).el);
     },
     /**
-     * editOrganizationMemberPermissionToNormal()
-     * change organization member permission to normal
+     * editOrganizationMemberPermission()
+     * change organization member permission
      * @param e
      * @type Object(DOM event)
      * @return false
      */
-    editOrganizationMemberPermissionToNormal: function(e) {
+    editOrganizationMemberPermission: function(e) {
         var self = this;
         var target = $(e.currentTarget);
         var organizations_user_id = target.data('organizations_user_id');
-        $('.js-change-permission-content-' + organizations_user_id).html('Normal');
+        var organizations_id = target.data('organizations_id');
+        //$('.js-change-permission-content-' + organizations_user_id).html('Normal');
         target.parents('li.dropdown').removeClass('open');
         var organizationsUser = new App.OrganizationsUser();
         organizationsUser.url = api_url + 'organizations_users/' + organizations_user_id + '.json';
         organizationsUser.set('id', organizations_user_id);
-        organizationsUser.set('is_admin', 0);
-        this.model.organizations_users.get(parseInt(organizations_user_id)).set('is_admin', 0);
+        organizationsUser.set('organization_id', organizations_id);
+        organizationsUser.set('organization_user_role_id', target.data('organization_user_role_id'));
+        this.model.organizations_users.get(parseInt(organizations_user_id)).set('organization_user_role_id', target.data('organization_user_role_id'));
         self.getOrganizationMemberLists();
         organizationsUser.save({
-            is_admin: false
+            organization_user_role_id: target.data('organization_user_role_id')
         });
         return false;
     },
-    /**
-     * editOrganizationMemberPermissionToAdmin()
-     * change organization member permission to admin
-     * @param e
-     * @type Object(DOM event)
-     * @return false
-     */
-    editOrganizationMemberPermissionToAdmin: function(e) {
-        var self = this;
-        var target = $(e.currentTarget);
-        var organizations_user_id = target.data('organizations_user_id');
-        $('.js-change-permission-content-' + organizations_user_id).html('Admin');
-        target.parents('li.dropdown').removeClass('open');
-        var organizationsUser = new App.OrganizationsUser();
-        organizationsUser.url = api_url + 'organizations_users/' + organizations_user_id + '.json';
-        organizationsUser.set('id', organizations_user_id);
-        organizationsUser.set('is_admin', 1);
-        this.model.organizations_users.get(parseInt(organizations_user_id)).set('is_admin', 1);
-        self.getOrganizationMemberLists();
-        organizationsUser.save({
-            is_admin: true
-        });
-
-        return false;
-    },
-
     /**
      * getOrganizationMemberLists()
      * display organization members list
@@ -193,6 +187,10 @@ App.OrganizationsView = Backbone.View.extend({
      *
      */
     render: function() {
+        $('#header').html(new App.OrganizationHeaderView({
+            model: this.model,
+            type: self.page_view_type
+        }).el);
         this.$el.html(this.template({
             organization: this.model,
             type: this.type
@@ -215,7 +213,7 @@ App.OrganizationsView = Backbone.View.extend({
                 $('#org-loader').addClass('cssloader');
                 var allowedExt = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png)$/i;
                 if (!allowedExt.exec(file.attributes.data.name)) {
-                    _this.flash('danger', 'File extension not supported. It supports only jpg, png, bmp and gif.');
+                    _this.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
                     $('#org-loader').removeClass('cssloader');
                 }
             });
@@ -295,7 +293,7 @@ App.OrganizationsView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                self.flash('danger', 'Unable to update. Please try again.');
+                self.flash('danger', i18next.t('Unable to update. Please try again.'));
             },
             success: function(model, response) {
                 $('#org-loader').removeClass('cssloader');
@@ -305,6 +303,8 @@ App.OrganizationsView = Backbone.View.extend({
                     if (self.type === 'users') {
                         self.getOrganizationMemberLists();
                     }
+                } else {
+                    self.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
                 }
             }
         });
@@ -327,7 +327,7 @@ App.OrganizationsView = Backbone.View.extend({
                 var stared;
                 if (!_.isUndefined(authuser.user)) {
                     stared = board.board_stars.findWhere({
-                        user_id: parseInt(authuser.user.id)
+                        is_starred: 1
                     });
                 }
                 var view = new App.OrganizationBoardView({

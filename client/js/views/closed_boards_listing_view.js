@@ -50,9 +50,9 @@ App.ClosedBoardsListingView = Backbone.View.extend({
         var board = new App.Board();
         board.url = api_url + 'boards/' + this.model.id + '.json';
         board.set('id', this.model.id);
-        App.boards.get(this.model.id).set('is_closed', false);
+        App.boards.get(this.model.id).set('is_closed', 0);
         board.save({
-            is_closed: false
+            is_closed: 0
         }, {
             success: function(model, response) {
                 app.navigate('#/board/' + board.get('id'), {

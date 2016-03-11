@@ -26,7 +26,17 @@ App.ActivityView = Backbone.View.extend({
         }
         _.bindAll(this, 'render', 'undo', 'undo_all');
         this.type = options.type;
-        this.board = options.board;
+        if (!_.isUndefined(options.board)) {
+            this.board = options.board;
+        }
+        if (!_.isUndefined(this.model.board_users)) {
+            var board_user_role_id = this.model.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(board_user_role_id)) {
+                this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+            }
+        }
         emojify.run();
     },
     converter: new Showdown.converter(),
@@ -62,20 +72,11 @@ App.ActivityView = Backbone.View.extend({
      *
      */
     render: function() {
-        var current_user_can_undo_it = false;
-        if (!_.isUndefined(App.boards) && !_.isEmpty(this.model) && !_.isUndefined(this.model.attributes.board_id) && !_.isUndefined(App.boards.get(this.model.attributes.board_id))) {
-            var board_users = App.boards.get(this.model.attributes.board_id).attributes.users;
-            _.each(board_users, function(board_user) {
-                if (parseInt(board_user.user_id) === parseInt(authuser.user.id) && board_user.is_admin === true) {
-                    current_user_can_undo_it = true;
-                }
-            });
-        }
         this.$el.html(this.template({
             activity: this.model,
             type: this.type,
             converter: this.converter,
-            current_user_can_undo_it: current_user_can_undo_it
+            board: this.board
         }));
         if (!_.isEmpty(this.model)) {
             this.$el.addClass('js-list-activity-' + this.model.attributes.id);
@@ -172,17 +173,76 @@ App.ActivityView = Backbone.View.extend({
         this.model.save({}, {
             patch: true,
             success: function(model, response) {
-                self.flash('danger', "Undo Succeed");
-                if (!_.isUndefined(response.activity)) {
-                    var activity = new App.Activity();
-                    activity.set(response.activity);
-                    var view = new App.ActivityView({
-                        model: activity
+                self.flash('danger', i18next.t('Undo Succeed'));
+                if (!_.isUndefined(response.undo.card)) {
+                    var card = self.board.cards.findWhere({
+                        id: parseInt(response.undo.card.id)
                     });
-                    var view_activity = $('#js-list-user-activities-list');
-                    view_activity.prepend(view.render().el).find('.timeago').timeago();
-                    emojify.run();
+                    card.set(response.undo.card);
+                    _.each(response.undo.card, function(val, key) {
+                        if (key === 'id' || key === 'list_id' || key === 'board_id') {
+                            card.set(key, parseInt(val));
+                        }
+                        var activity = new App.Activity();
+                        activity.set(response.activity);
+                        if (!_.isUndefined(card.activities)) {
+                            card.activities.unshift(activity);
+                        }
+                    });
+                    var view_activity = this.$('#js-card-activities-' + response.undo.card.id);
+                    view_activity.html('');
+                    if (!_.isEmpty(card.activities)) {
+                        card.activities.each(function(activity) {
+                            $('#js-loader-img').removeClass('hide');
+                            if (!_.isEmpty(self.model.collection)) {
+                                activity.cards.add(self.model.collection.models);
+                            }
+                            if (!_.isUndefined(response.undo.update_card_comment)) {
+                                if (activity.attributes.id == response.undo.update_card_comment) {
+                                    activity.attributes.comment = response.undo.card.comment;
+                                }
+                            }
+                            var view = new App.ActivityView({
+                                model: activity,
+                                board: self.board
+                            });
+                            view_activity.append(view.render().el).find('.timeago').timeago();
+                            emojify.run();
+                            $('#js-loader-img').addClass('hide');
+                        });
+                    }
+                } else if (!_.isUndefined(response.undo.list)) {
+                    var list = self.board.lists.findWhere({
+                        id: parseInt(response.undo.list.id)
+                    });
+                    if (!_.isUndefined(response.undo.list.is_archived)) {
+                        response.undo.list.is_archived = (response.undo.list.is_archived == 'f') ? 0 : 1;
+                    }
+                    list.set(response.undo.list);
+                    _.each(response.undo.list, function(val, key) {
+                        if (key === 'id' || key === 'board_id') {
+                            list.set(key, parseInt(val));
+                        }
+                    });
+                } else if (!_.isUndefined(response.undo.board)) {
+                    self.board.set(response.undo.board);
+                    _.each(response.undo.board, function(val, key) {
+                        if (key === 'id' || key === 'user_id') {
+                            self.board.set(key, parseInt(val));
+                        }
+                    });
+                } else if (!_.isUndefined(response.undo.checklist)) {
+                    var checklist = self.board.checklists.findWhere({
+                        id: parseInt(response.undo.checklist.id)
+                    });
+                    checklist.set(response.undo.checklist);
+                } else if (!_.isUndefined(response.undo.checklist_item)) {
+                    var checklist_item = self.board.checklist_items.findWhere({
+                        id: parseInt(response.undo.checklist_item.id)
+                    });
+                    checklist_item.set(response.undo.checklist_item);
                 }
+                return false;
             }
         });
         return false;

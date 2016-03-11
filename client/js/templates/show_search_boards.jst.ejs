@@ -5,12 +5,12 @@
 		<span class="details">
 			<span title="<%- board.attributes.name %>" class="board-list-item-name htruncate col-xs-12 row"><%- board.attributes.name %></span>
 			<span class="pull-right hide js-stared-conatiner js-stared-conatiner-<%- board.attributes.id %>">
-				<span  title="Click to star this board. It will show up at top of your boards list." name="subscribe" class="icon-star-empty js-star-board" data-board_id="<%- board.attributes.id %>">		</span>
+				<span  title="<%- i18next.t('Click to star this board. It will show up at top of your boards list.') %>" name="subscribe" class="icon-star-empty js-star-board" data-board_id="<%- board.attributes.id %>">		</span>
 			</span>
 		</span>
 	</a>
 <% } else{ %>
 	<span class="col-xs-12"><div class="alert alert-info">
-	No boards available.
+	<%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('boards')] }) %>
 </div></span>
 <% } %>

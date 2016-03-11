@@ -1,32 +1,57 @@
 <div class="form-group">
-	<label for="inputListName">Title</label>
-	<input id="inputListName" type="text" placeholder="Title" autocomplete="off" class="form-control input-sm" name="name" value="Checklist" title="Whitespace not allowed" required pattern=".*\S+.*">
+	<label for="inputListName"><%- i18next.t('Title') %></label>
+	<input id="inputListName" type="text" placeholder=" <%- i18next.t('Title') %>
+" autocomplete="off" class="form-control input-sm" name="name" value="Checklist" title="<%- i18next.t('Whitespace alone not allowed') %> " required pattern=".*\S+.*">
 </div>
 <div class="form-group">
-	<label for="copy-items">Copy Items From</label>
+	<label for="copy-items"><%- i18next.t('Copy Items From') %></label>
 	<input type="hidden" name="board_id" value="<%- card.attributes.board_id %>" />
 	<input type="hidden" name="list_id" value="<%- card.attributes.list_id %>" />
 	<input type="hidden" name="card_id" value="<%- card.id %>" />
 	<select  name="checklist_id" id="inputchecklist" class="form-control input-sm cur">
-		<option value="0">Please Select</option>
+		<option value="0"><%- i18next.t('Please Select') %></option>
 		<%
-        var prev_group_id = 0;
-		var content = '';
-        card.checklists.each(function(checklist_list) {
-            if (prev_group_id != checklist_list.attributes.id) {
-                prev_group_id = checklist_list.attributes.id;
-                content += '<optgroup label="' + _.escape(checklist_list.attributes.name) + '">';
+			var prev_group_id = 0;
+			var content = '';
+			var checklist_options = [];
+			if (card.board_users.board.checklists.models.length > 0) {
+				card.board_users.board.checklists.models[0].collection.each(function(checklist_list) {
+					var card_name = card.collection.findWhere({
+						id: checklist_list.attributes.card_id
+					}).get('name');
+					var card_id = checklist_list.attributes.card_id
+					var i = {};
+					i.checklist_id = checklist_list.attributes.id;
+					i.checklist_name = checklist_list.attributes.name;
+					i.checklist_item_count = !isNaN(checklist_list.attributes.checklist_item_count)?checklist_list.attributes.checklist_item_count:checklist_list.checklist_items.length;
+					if (_.isUndefined(checklist_options[card_id])) {
+						var c = {};
+						c.card_id = card_id;
+						c.card_name = card_name;
+						c.checklists = [];
+						c.checklists.push(i);
+						checklist_options[card_id] = c;
+					} else {
+						checklist_options[card_id].checklists.push(i);
+					}
+				});
+			}
+			var content = '';
+            if (!_.isEmpty(checklist_options)) {
+				checklist_options.forEach(function (checklist_option) {
+					content += '<optgroup label="' + _.escape(checklist_option.card_name) + '">';
+					checklist_option.checklists.forEach(function (item) {
+						content += '<option value="' + item.checklist_id + '">' + _.escape(item.checklist_name) + ' (' + item.checklist_item_count + ' items)</option>';
+					});
+					content += '</optgroup>';
+				});
             }
-            content += '<option value="' + checklist_list.attributes.id + '">' + _.escape(checklist_list.attributes.name) + ' (' + checklist_list.checklist_items.length + ' items)</option>';
-            if (prev_group_id !== 0 && prev_group_id != checklist_list.attributes.id) {
-                content += '</optgroup>';
-            }
-        });
+
 		%>
-        <%= content%>
+        <%= content %>
 	</select>
 </div>
 <div class="form-group">
-	<label for="submit" class="sr-only col-sm-4 control-label">submit</label>
-	<input type="submit" name="Save" class="btn btn-primary" value="Add">
+	<label for="submit" class="sr-only col-sm-4 control-label"><%- i18next.t('submit') %></label>
+	<input type="submit" name="Save" class="btn btn-primary" value="<%- i18next.t('Add') %>">
 </div>

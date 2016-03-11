@@ -26,6 +26,44 @@ App.SettingView = Backbone.View.extend({
      */
     events: {
         'submit form#js-setting-list-form': 'updateSetting',
+        'click .js-import-users': 'importUsers',
+    },
+    /**
+     * importUsers()
+     * @return false
+     */
+    importUsers: function(e) {
+        var importUsersUrl = api_url + 'users/import.json?token=' + api_token;
+        $('.js-import-users').attr('disabled', true);
+        $('#js-loader-img').removeClass('hide');
+        var is_import_organizations = ($('#enableImportUsers').is(":checked")) ? true : false;
+        var is_send_welcome_mail = ($('#dontSendWelcomeMail').is(":checked")) ? false : true;
+        $.ajax({
+            type: 'POST',
+            data: {
+                'is_import_organizations': is_import_organizations,
+                'is_send_welcome_mail': is_send_welcome_mail
+            },
+            url: importUsersUrl,
+            success: function(response) {
+                if (response.success) {
+                    if (is_import_organizations) {
+                        self.flash('success', i18next.t('Users and organizations imported successfully.'));
+                    } else {
+                        self.flash('success', i18next.t('Users imported successfully.'));
+                    }
+                } else {
+                    if (response.error === 'user_not_found') {
+                        self.flash('danger', i18next.t('User records not available.'));
+                    } else {
+                        self.flash('danger', i18next.t('LDAP connection failed.'));
+                    }
+                }
+                $('#js-loader-img').addClass('hide');
+                $('.js-import-users').attr('disabled', false);
+            },
+            dataType: 'json'
+        });
     },
     /**
      * updateSetting()
@@ -48,15 +86,19 @@ App.SettingView = Backbone.View.extend({
                 data.STANDARD_LOGIN_ENABLED = 'false';
             }
         }
+        data.ENABLE_SSL_CONNECTIVITY = 'false';
+        if (!_.isUndefined($("input[name='ENABLE_SSL_CONNECTIVITY']:checked").val())) {
+            data.ENABLE_SSL_CONNECTIVITY = 'true';
+        }
         var self = this;
         var settingModel = new App.SettingCategory();
         settingModel.url = api_url + 'settings.json';
         settingModel.save(data, {
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
-                    self.flash('success', response.success);
+                    self.flash('success', i18next.t('Settings updated successfully.'));
                 } else {
-                    self.flash('danger', 'Settings not updated properly.');
+                    self.flash('danger', i18next.t('Settings not updated properly.'));
                 }
             }
         });
