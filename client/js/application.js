@@ -57,7 +57,7 @@ Backbone.View.prototype.board_view_height = function(type, message) {
     $('.board-list-view').css('height', boardH);
 };
 Backbone.View.prototype.showImage = function(model, id, size, is_random) {
-    var hash = calcMD5(SecuritySalt + model + id + 'png' + size + SITE_NAME);
+    var hash = calcMD5(SecuritySalt + model + id + 'png' + size);
     var image_url = window.location.pathname + 'img/' + size + '/' + model + '/' + id + '.' + hash + '.png';
     if (is_random)
         image_url = image_url + "?uid=" + Math.floor((Math.random() * 9999) + 1);
