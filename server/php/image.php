@@ -19,7 +19,7 @@ $filename = $_GET['filename'];
 $val = $thumbsizes[$model][$size];
 list($width, $height) = explode('x', $val);
 list($id, $hash, $ext) = explode('.', $filename);
-if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size . SITE_NAME)) {
+if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size)) {
     $condition = array(
         $id
     );

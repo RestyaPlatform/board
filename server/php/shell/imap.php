@@ -43,7 +43,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
             $hash = $mail[3];
         }
         // Check email hash with generated hash
-        if ($hash == md5(SECURITYSALT . $board_id . $card_id . SITE_NAME)) {
+        if ($hash == md5(SECURITYSALT . $board_id . $card_id)) {
             $condition = array(
                 $board_id
             );
