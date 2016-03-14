@@ -145,7 +145,7 @@ App.FooterView = Backbone.View.extend({
             board_id: this.board_id,
             board: this.board,
             languages: window.sessionStorage.getItem('languages').split(','),
-            apps: JSON.parse(window.sessionStorage.getItem('apps'))
+            apps: (window.sessionStorage.getItem('apps') !== "") ? JSON.parse(window.sessionStorage.getItem('apps')) : ''
         }));
 
         if (_.isEmpty(this.board_id)) {

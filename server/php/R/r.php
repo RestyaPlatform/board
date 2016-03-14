@@ -4726,7 +4726,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
                     }
                 }
             }
-            $response['apps'] = json_encode($response['apps']);
+            $response['apps'] = !empty($response['apps']) ? json_encode($response['apps']) : '';
             echo json_encode($response);
             exit;
         }
