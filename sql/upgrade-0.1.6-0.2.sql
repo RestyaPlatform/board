@@ -2110,3 +2110,6 @@ UPDATE "settings" SET "label" = 'Password' WHERE "name" = 'IMAP_EMAIL_PASSWORD';
 
 INSERT INTO "oauth_clients" ("client_id", "client_secret", "redirect_uri", "grant_types", "scope", "user_id", "client_name", "client_url", "logo_url", "tos_url", "policy_url", "modified", "created") VALUES
 ('1193674816623028',	'zhxzlbts63ecvs2ybwb2m26vew',	'',	'client_credentials refresh_token authorization_code',	NULL,	NULL,	'Amazon Echo App',	'http://amazon.com',	NULL,	NULL,	NULL,	'2016-03-09 07:14:29.165491',	'2016-03-09 07:13:57.717503');
+
+UPDATE "settings" SET "name" = 'elasticsearch.last_processed_activity_id' WHERE "name" = 'elasticsearch.last_processed_activtiy_id';
+UPDATE "settings" SET "name" = 'webhooks.last_processed_activity_id' WHERE "name" = 'webhooks.last_processed_activtiy_id';
