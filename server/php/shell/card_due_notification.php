@@ -29,7 +29,7 @@ if ($db_lnk) {
             foreach ($cards_users as $cards_user) {
                 $mail_content = '';
                 if (!empty($cards_user->profile_picture_path)) {
-                    $hash = md5(SECURITYSALT . 'User' . $cards_user->user_id . 'png' . 'small_thumb' . SITE_NAME);
+                    $hash = md5(SECURITYSALT . 'User' . $cards_user->user_id . 'png' . 'small_thumb');
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $cards_user->user_id . '.' . $hash . '.png';
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $cards_user->full_name . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($cards_user->initials)) {

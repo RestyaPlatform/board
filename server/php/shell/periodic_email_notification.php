@@ -64,7 +64,7 @@ if ($db_lnk) {
             $tmp_card_id = '';
             while ($activity = pg_fetch_assoc($activities_result)) {
                 if (!empty($activity['profile_picture_path'])) {
-                    $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb' . SITE_NAME);
+                    $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb');
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
@@ -88,7 +88,7 @@ if ($db_lnk) {
                 }
                 if (!empty($activity['card_id'])) {
                     $imap_email = split("@", IMAP_EMAIL);
-                    $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id'] . SITE_NAME) . '@' . $imap_email[1];
+                    $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
                         $activity['card_id']
                     );
@@ -157,7 +157,7 @@ if ($db_lnk) {
             $tmp_card_id = '';
             while ($activity = pg_fetch_assoc($activities_result)) {
                 if (!empty($activity['profile_picture_path'])) {
-                    $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb' . SITE_NAME);
+                    $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb');
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
@@ -181,7 +181,7 @@ if ($db_lnk) {
                 }
                 if (!empty($activity['card_id'])) {
                     $imap_email = split("@", IMAP_EMAIL);
-                    $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id'] . SITE_NAME) . '@' . $imap_email[1];
+                    $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
                         $activity['card_id']
                     );
@@ -250,7 +250,7 @@ if ($db_lnk) {
             $tmp_card_id = '';
             while ($activity = pg_fetch_assoc($activities_result)) {
                 if (!empty($activity['profile_picture_path'])) {
-                    $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb' . SITE_NAME);
+                    $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb');
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
@@ -274,7 +274,7 @@ if ($db_lnk) {
                 }
                 if (!empty($activity['card_id'])) {
                     $imap_email = split("@", IMAP_EMAIL);
-                    $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id'] . SITE_NAME) . '@' . $imap_email[1];
+                    $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
                         $activity['card_id']
                     );

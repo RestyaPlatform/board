@@ -67,7 +67,29 @@
 		var date_time = card.attributes.due_date.split('T');
 		date_time = date_time[0].split(' ');
 	%>
-	<li><small title=" <%- i18next.t('Due Date') %>"><span class="label label-default"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
+	<%
+	    card_due_date = card.attributes.due_date.split(' ');
+        if (!_.isEmpty(card_due_date[1])) {
+            card_due_date = card_due_date[0] + 'T' + card_due_date[1];
+        }
+        var today = new Date();
+        var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+        var due_date = new Date(card_due_date);
+        var diff = Math.floor(due_date.getTime() - today.getTime());
+
+        var day = 1000 * 60 * 60 * 24;
+        var days = Math.floor(diff / day);
+        var months = Math.floor((days + (today.getDate() + 1)) / next_month_last_day.getDate());
+
+        var years = Math.floor(months / 12);
+        var week = days - (6 - (today.getDay()));
+		var label = 'label-default';
+		if (years < 0 || months < 0 || days <= -1) {
+			label = 'label-danger';
+		}
+	%>
+	<li><small title=" <%- i18next.t('Due Date') %>"><span class="label <%- label %>"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
 	<% } %>
 	</ul>
 	<div class="clearfix pull-right">
