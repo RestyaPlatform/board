@@ -124,6 +124,7 @@ if (_.isEmpty(role_links.where({
   <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user) && (!_.isEmpty(role_links.where({slug: "view_organization_listing"})))){ %>
   <li class="hidden-xs org-btn"><a title="<%- i18next.t('Organizations') %>" href="#/organizations" class="btn btn-default"><span><%- i18next.t("Organizations") %></span></a></li>
    <% } %>	
+  <% if(apps !== ""){ %>
   <li class="dropdown hidden-xs board-btn js-show-add-apps-list"> 
 	  <a title="<%- i18next.t('Apps') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-apps-list"><span><%- i18next.t("Apps") %> </span><span><i class="icon-collapse"></i></span> </a>
 	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12">
@@ -136,6 +137,7 @@ if (_.isEmpty(role_links.where({
 			</li>
 	  </ul>
 	</li>
+  <% } %>
   <% } %>
 </ul>
 <% if(!_.isUndefined(authuser.user)){%>
