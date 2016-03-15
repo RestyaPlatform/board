@@ -4790,10 +4790,15 @@ if (!empty($_GET['_url']) && $db_lnk) {
                 break;
             }
         }
-    } else if ($r_resource_cmd == '/boards/?/lists/?/cards') {
-        echo json_encode(array(
-            'error' => 1
-        ));
+    } else {
+        if ($r_resource_cmd == '/boards/?/lists/?/cards') {
+            $error = array(
+                'error' => 1
+            );
+            echo json_encode($error);
+            exit;
+        }
+        header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
     }
 } else {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);

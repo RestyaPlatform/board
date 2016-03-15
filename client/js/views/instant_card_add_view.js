@@ -307,7 +307,7 @@ App.InstantCardAddView = Backbone.View.extend({
                             }
                         }
                     } else {
-                        alert('you don\'t have permission to add a card');
+                        self.flash('danger', i18next.t('You don\'t have permission to add a card'));
                     }
                 }
             });
