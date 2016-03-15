@@ -4792,10 +4792,10 @@ if (!empty($_GET['_url']) && $db_lnk) {
         }
     } else {
         if ($r_resource_cmd == '/boards/?/lists/?/cards') {
-            $error = array(
+            $response = array(
                 'error' => 1
             );
-            echo json_encode($error);
+            echo json_encode($response);
             exit;
         }
         header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication failed', true, 401);
