@@ -207,7 +207,7 @@ if (_.isEmpty(role_links.where({
 	  	<li class="hidden-xs"><a data-container="body" data-toggle="tooltip" data-placement="top" title="<%- i18next.t('Instant add card') %>" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-instant-card-from<% }%>" data-original-title="Add New"><i class="icon-plus-sign lead"></i></a></li>
 	  <% } %>
 	  <li class="dropdown notifications pull-right hidden-xs"><a data-toggle="dropdown" href="#" class="btn btn-default pull-right js-show-notification" title="Notifications"><sup class="badge notification-count hide js-notification-count"></sup><i class="icon-bell lead"></i></a>
-		<div class="tabbable tabs-below dropdown-menu pull-right js-dropdown-popup" role="menu">
+		<div id="all_activities" class="tabbable tabs-below dropdown-menu pull-right js-dropdown-popup" role="menu">
 		  <div class="tab-content bg-info clearfix">
 		    <div class="col-xs-12 user-filter navbar-btn">
 				<span class="pull-left"><strong><%- i18next.t('Activity') %></strong></span>

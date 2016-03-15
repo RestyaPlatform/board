@@ -1754,21 +1754,26 @@ App.FooterView = Backbone.View.extend({
         var i = 0;
         var hide_class = '';
         var target = $(e.currentTarget);
-        $('#' + target.attr('id')).toggleClass('active');
-        if (!$('#modal-comments').hasClass('active')) {
-            i++;
-            hide_class = hide_class + '.modal-comments, ';
-        }
-        if (!$('#modal-activities').hasClass('active')) {
-            i++;
-            hide_class = hide_class + '.modal-activities, ';
-        }
-        hide_class = hide_class.substring(0, hide_class.lastIndexOf(', '));
-        if (i === 2 || i === 0) {
-            $('.modal-comments, .modal-activities').parent('li').removeClass('hide');
-        }
-        if (i !== 2) {
-            $(hide_class).parent('li').addClass('hide');
+        var e_target = $(e.target).parents().find('#all_activities');
+        if (!$('#' + target.attr('id'), e_target).parent('ul').hasClass('called')) {
+            $('#' + target.attr('id'), e_target).parent('ul').addClass('called');
+            $('#' + target.attr('id'), e_target).toggleClass('active');
+            if (!$('#modal-comments', e_target).hasClass('active')) {
+                i++;
+                hide_class = hide_class + '.modal-comments, ';
+            }
+            if (!$('#modal-activities', e_target).hasClass('active')) {
+                i++;
+                hide_class = hide_class + '.modal-activities, ';
+            }
+            hide_class = hide_class.substring(0, hide_class.lastIndexOf(', '));
+            if (i === 2 || i === 0) {
+                $('.modal-comments, .modal-activities', e_target).parent('li').removeClass('hide');
+            }
+            if (i !== 2) {
+                $(hide_class, e_target).parent('li').addClass('hide');
+            }
+            $('#' + target.attr('id'), e_target).parent('ul').removeClass('called');
         }
         return false;
     },
