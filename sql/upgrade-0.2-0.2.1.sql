@@ -93,3 +93,7 @@ CREATE OR REPLACE VIEW users_listing AS
    LEFT JOIN states lst ON ((lst.id = li.state_id)))
    LEFT JOIN countries lco ON ((lco.id = li.country_id)))
    LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
+
+UPDATE "settings" SET "description" = 'It is used in all outgoing emails' WHERE "name" = 'DEFAULT_CONTACT_EMAIL_ADDRESS';
+
+UPDATE "countries" SET "name" = 'United States' WHERE "name" = 'UnitedStates';
