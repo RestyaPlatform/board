@@ -135,15 +135,12 @@
 	</a>
 </td>
 <td class="text-center">
-    <a href="#" class="js-no-action" title=<%- user.attributes.last_login_ip%> <%- user.attributes.login_country_name %> <%- user.attributes.register_city_name %>">
+    <a href="#" class="js-no-action" title=<%- user.attributes.last_login_ip%> <%- user.attributes.login_country_name %> <%- user.attributes.login_city_name %>">
 		<span class="show"><%- user.attributes.last_login_ip%></span> 
-			<span>
-				<% if(!_.isEmpty(user.attributes.register_country_iso2)){ %>
-				    <span class="flags flag-<%- user.attributes.register_country_iso2%> top-smspace" title="<%- user.attributes.login_country_name %>"><%- user.attributes.login_country_name %></span>
-				<% } else { %>
-						<span class="top-smspace"><%- i18next.t("N/A") %></span>
-					<% } %>
-			</span> <%- user.attributes.register_city_name %>
+				<% if(!_.isEmpty(user.attributes.login_country_iso2)){ %>
+				    <span class="flags flag-<%- user.attributes.login_country_iso2%> top-smspace" title="<%- user.attributes.login_country_name %>"><%- user.attributes.login_country_name %></span>
+				<% } %>
+			<% if(!_.isEmpty(user.attributes.login_city_name)){ %> <%- user.attributes.login_city_name %><% } %>
 	</a>
 </td>
 <td class="text-center">
@@ -152,13 +149,10 @@
 <td class="text-center">
     <a href="#" class="js-no-action" title=<%- user.attributes.registered_ip%> <%- user.attributes.register_country_name %> <%- user.attributes.register_city_name %>">
 	    <span class="show"><%- user.attributes.registered_ip%></span> 
-			<span>
-				<% if(!_.isEmpty(user.attributes.register_country_iso2)){ %>
-					<span class="flags flag-<%- user.attributes.register_country_iso2%> top-smspace" title="<%- user.attributes.register_country_name %>"><%- user.attributes.register_country_name %></span>
-				<% } else { %>
-					<span class="top-smspace"><%- i18next.t("N/A") %></span>
-				<% } %>
-		</span> <span><%- user.attributes.register_city_name %></span>
+			<% if(!_.isEmpty(user.attributes.register_country_iso2)){ %>
+				<span class="flags flag-<%- user.attributes.register_country_iso2%> top-smspace" title="<%- user.attributes.register_country_name %>"><%- user.attributes.register_country_name %></span>
+			<% } %>
+		<% if(!_.isEmpty(user.attributes.register_city_name)){ %> <span><%- user.attributes.register_city_name %></span><% } %>
 	</a>
 </td>
 <td class="text-center">
