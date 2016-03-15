@@ -4790,6 +4790,15 @@ if (!empty($_GET['_url']) && $db_lnk) {
                 break;
             }
         }
+    } else {
+        if ($r_resource_cmd == '/boards/?/lists/?/cards') {
+            $response = array(
+                'error' => 1
+            );
+            echo json_encode($response);
+            exit;
+        }
+        header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication failed', true, 401);
     }
 } else {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
