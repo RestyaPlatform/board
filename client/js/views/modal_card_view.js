@@ -240,7 +240,6 @@ App.ModalCardView = Backbone.View.extend({
         var hide_class = '';
         var target = $(e.currentTarget);
 		var e_target = $(e.target).parents().find('#card_activities');
-		console.log(e_target);
 		if (!$('#' + target.attr('id'), e_target).parent('ul').hasClass('called')) {
 			$('#' + target.attr('id'), e_target).parent('ul').addClass('called');
 			$('#' + target.attr('id'), e_target).toggleClass('active');
