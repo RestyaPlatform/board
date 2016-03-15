@@ -244,66 +244,70 @@ App.InstantCardAddView = Backbone.View.extend({
             $(e.target)[0].reset();
             card.save(data, {
                 success: function(model, response) {
-                    card.set('list_id', parseInt(data.list_id));
-                    card.set('id', parseInt(response.id));
-                    if (!_.isUndefined(self.board) && board_id === self.board.id) {
-                        self.board.cards.add(card);
-                        self.board.lists.get(parseInt(data.list_id)).cards.add(card);
-                        if (!_.isUndefined(response.cards_labels)) {
-                            var _i = 1;
-                            _.each(response.cards_labels, function(label) {
-                                var new_label = new App.Label();
-                                new_label.set(label);
-                                new_label.set('id', parseInt(label.id));
-                                new_label.set('label_id', parseInt(label.label_id));
-                                new_label.set('card_id', parseInt(label.card_id));
-                                new_label.set('list_id', parseInt(label.list_id));
-                                new_label.set('board_id', parseInt(label.board_id));
-                                var options = {
-                                    silent: true
-                                };
-                                if (_i === response.cards_labels.length) {
-                                    options.silent = false;
-                                }
-                                self.board.labels.add(new_label, options);
-                                _i++;
-                            });
+                    if (!_.isUndefined(response.id)) {
+                        card.set('list_id', parseInt(data.list_id));
+                        card.set('id', parseInt(response.id));
+                        if (!_.isUndefined(self.board) && board_id === self.board.id) {
+                            self.board.cards.add(card);
+                            self.board.lists.get(parseInt(data.list_id)).cards.add(card);
+                            if (!_.isUndefined(response.cards_labels)) {
+                                var _i = 1;
+                                _.each(response.cards_labels, function(label) {
+                                    var new_label = new App.Label();
+                                    new_label.set(label);
+                                    new_label.set('id', parseInt(label.id));
+                                    new_label.set('label_id', parseInt(label.label_id));
+                                    new_label.set('card_id', parseInt(label.card_id));
+                                    new_label.set('list_id', parseInt(label.list_id));
+                                    new_label.set('board_id', parseInt(label.board_id));
+                                    var options = {
+                                        silent: true
+                                    };
+                                    if (_i === response.cards_labels.length) {
+                                        options.silent = false;
+                                    }
+                                    self.board.labels.add(new_label, options);
+                                    _i++;
+                                });
+                            }
+                        } else {
+                            var card_count = App.boards.get(board_id).lists.get(parseInt(data.list_id)).get('card_count');
+                            App.boards.get(board_id).lists.get(parseInt(data.list_id)).set('card_count', card_count + 1);
+                            if (this.model !== null) {
+                                App.boards.get(board_id).lists.sortByColumn('position');
+                                data = [];
+                                var color_codes = ['#DB7093', '#F47564', '#EDA287', '#FAC1AD', '#FFE4E1', '#D3ABF0', '#DC9CDC', '#69BFBA', '#66CDAA', '#8FBC8F', '#CBFDCA', '#EEE8AA', '#BC8F8F', '#CD853F', '#D2B48C', '#F5DEB3', '#64BCF2', '#87CEFA', '#B0C4DE', '#D6E2F7'];
+                                var i = 0;
+                                App.boards.get(board_id).lists.each(function(list) {
+                                    if (!list.attributes.is_archived) {
+                                        var _data = {};
+                                        _data.title = list.attributes.name;
+                                        _data.value = list.attributes.card_count;
+                                        _data.color = color_codes[i];
+                                        i++;
+                                        if (i > 20) {
+                                            i = 0;
+                                        }
+                                        if (list.attributes.card_count > 0) {
+                                            data.push(_data);
+                                        }
+                                    }
+                                });
+                                var _this = this;
+                                _(function() {
+                                    var starred_board = $('#js-starred-board-' + board_id);
+                                    var my_board = $('#js-my-board-' + board_id);
+                                    if (starred_board.length > 0) {
+                                        starred_board.find('.js-chart').html('').drawDoughnutChart(data);
+                                    }
+                                    if (my_board.length > 0) {
+                                        my_board.find('.js-chart').html('').drawDoughnutChart(data);
+                                    }
+                                }).defer();
+                            }
                         }
                     } else {
-                        var card_count = App.boards.get(board_id).lists.get(parseInt(data.list_id)).get('card_count');
-                        App.boards.get(board_id).lists.get(parseInt(data.list_id)).set('card_count', card_count + 1);
-                        if (this.model !== null) {
-                            App.boards.get(board_id).lists.sortByColumn('position');
-                            data = [];
-                            var color_codes = ['#DB7093', '#F47564', '#EDA287', '#FAC1AD', '#FFE4E1', '#D3ABF0', '#DC9CDC', '#69BFBA', '#66CDAA', '#8FBC8F', '#CBFDCA', '#EEE8AA', '#BC8F8F', '#CD853F', '#D2B48C', '#F5DEB3', '#64BCF2', '#87CEFA', '#B0C4DE', '#D6E2F7'];
-                            var i = 0;
-                            App.boards.get(board_id).lists.each(function(list) {
-                                if (!list.attributes.is_archived) {
-                                    var _data = {};
-                                    _data.title = list.attributes.name;
-                                    _data.value = list.attributes.card_count;
-                                    _data.color = color_codes[i];
-                                    i++;
-                                    if (i > 20) {
-                                        i = 0;
-                                    }
-                                    if (list.attributes.card_count > 0) {
-                                        data.push(_data);
-                                    }
-                                }
-                            });
-                            var _this = this;
-                            _(function() {
-                                var starred_board = $('#js-starred-board-' + board_id);
-                                var my_board = $('#js-my-board-' + board_id);
-                                if (starred_board.length > 0) {
-                                    starred_board.find('.js-chart').html('').drawDoughnutChart(data);
-                                }
-                                if (my_board.length > 0) {
-                                    my_board.find('.js-chart').html('').drawDoughnutChart(data);
-                                }
-                            }).defer();
-                        }
+                        alert('you don\'t have permission to add a card');
                     }
                 }
             });
