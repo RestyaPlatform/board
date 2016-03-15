@@ -13,8 +13,7 @@
         }
       },
       "required": [
-        "id",
-        "name"
+        "id"
       ]
     },
     "Login": {
@@ -493,23 +492,6 @@
         "position"
       ]
     },
-    "send_back_to_archived_list": {
-      "properties": {
-        "board_id": {
-          "type": "integer"
-        },
-        "is_archived": {
-          "type": "boolean"
-        },
-        "list_id": {
-          "type": "integer"
-        }
-      },
-      "required": [
-        "board_id",
-        "list_id"
-      ]
-    },
     "star_board": {
       "properties": {
         "board_id": {
@@ -590,10 +572,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/activities"
-            }
+            "description": "No response was specified"
           },
           "400": {
             "description": "Invalid ID supplied"
@@ -617,13 +596,6 @@
             "description": "OAuth token",
             "in": "query",
             "name": "token",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "Current Login user ID",
-            "in": "path",
-            "name": "userId",
             "required": true,
             "type": "string"
           }
@@ -839,7 +811,7 @@
     "/v1/boards/{boardId}/activities.json": {
       "get": {
         "description": "Returns Board Activities",
-        "operationId": "Activities listing",
+        "operationId": "Board activities listing",
         "parameters": [
           {
             "description": "OAuth token",
@@ -864,10 +836,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Activities"
-            }
+            "description": "No response was specified"
           }
         },
         "summary": "Activities",
@@ -1158,15 +1127,6 @@
             "name": "boardId",
             "required": true,
             "type": "integer"
-          },
-          {
-            "description": "Upload custom background to board",
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/uploadCustomBackground"
-            }
           }
         ],
         "produces": [
@@ -1528,21 +1488,21 @@
           },
           {
             "description": "Board ID to delete",
-            "in": "query",
+            "in": "path",
             "name": "boardId",
             "required": true,
             "type": "string"
           },
           {
             "description": "List ID to delete",
-            "in": "query",
+            "in": "path",
             "name": "listId",
             "required": true,
             "type": "string"
           },
           {
             "description": "Card ID to delete",
-            "in": "query",
+            "in": "path",
             "name": "cardId",
             "required": true,
             "type": "string"
@@ -1614,10 +1574,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Card"
-            }
+            "description": "No response was specified"
           },
           "400": {
             "description": "Invalid ID supplied"
@@ -1635,7 +1592,7 @@
     "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/activities.json": {
       "get": {
         "description": "Returns Card Activities",
-        "operationId": "Activities listing",
+        "operationId": "Card activities listing",
         "parameters": [
           {
             "description": "OAuth token",
@@ -1674,10 +1631,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Activities"
-            }
+            "description": "No response was specified"
           }
         },
         "summary": "Activities",
@@ -1692,7 +1646,7 @@
           "application/json",
           "application/xml"
         ],
-        "operationId": "addLabel",
+        "operationId": "addAttachments",
         "parameters": [
           {
             "description": "OAuth token",
@@ -1863,7 +1817,7 @@
     },
     "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/card_voters.json": {
       "delete": {
-        "operationId": "deleteCardVoter",
+        "operationId": "deleteCardVoters",
         "parameters": [
           {
             "description": "OAuth token",
@@ -2218,7 +2172,7 @@
     },
     "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/checklists/{checklistId}.json": {
       "delete": {
-        "operationId": "deleteCardVoter",
+        "operationId": "deleteChecklist",
         "parameters": [
           {
             "description": "OAuth token",
@@ -2329,10 +2283,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Comment"
-            }
+            "description": "No response was specified"
           },
           "400": {
             "description": "Invalid ID supplied"
@@ -2422,7 +2373,7 @@
     },
     "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/checklists/{checklistId}/items/{checklistItemId}.json": {
       "delete": {
-        "operationId": "deleteCardVoter",
+        "operationId": "deleteChecklistItem",
         "parameters": [
           {
             "description": "OAuth token",
@@ -2547,10 +2498,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Comment"
-            }
+            "description": "No response was specified"
           },
           "400": {
             "description": "Invalid ID supplied"
@@ -2633,7 +2581,7 @@
     },
     "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/comment/{commentId}.json": {
       "delete": {
-        "operationId": "deleteCardVoter",
+        "operationId": "deleteComment",
         "parameters": [
           {
             "description": "OAuth token",
@@ -2744,10 +2692,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Comment"
-            }
+            "description": "No response was specified"
           },
           "400": {
             "description": "Invalid ID supplied"
@@ -2801,7 +2746,7 @@
             "name": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/add_card_user"
+              "$ref": "#/definitions/copy_card"
             }
           }
         ],
@@ -3180,7 +3125,7 @@
         ]
       }
     },
-    "/v1/boards_users/{id}.json": {
+    "/v1/boards_users/{userId}.json": {
       "delete": {
         "consumes": [
           "application/json",
@@ -3201,7 +3146,7 @@
             "in": "path",
             "maximum": 100000,
             "minimum": 1,
-            "name": "id",
+            "name": "userId",
             "required": true,
             "type": "integer"
           }
@@ -3224,9 +3169,7 @@
         "tags": [
           "boards"
         ]
-      }
-    },
-    "/v1/boards_users/{userId}.json": {
+      },
       "put": {
         "consumes": [
           "application/json",
@@ -3311,10 +3254,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Applications"
-            }
+            "description": "No response was specified"
           },
           "404": {
             "description": "Application not found"
@@ -3383,10 +3323,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Clients"
-            }
+            "description": "No response was specified"
           },
           "404": {
             "description": "Client not found"
@@ -3512,10 +3449,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Comment"
-            }
+            "description": "No response was specified"
           },
           "400": {
             "description": "Invalid ID supplied"
@@ -3579,10 +3513,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Organizations"
-            }
+            "description": "No response was specified"
           }
         },
         "summary": "Boards Listing",
@@ -3705,10 +3636,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Organization"
-            }
+            "description": "No response was specified"
           },
           "400": {
             "description": "Invalid ID supplied"
@@ -3744,15 +3672,6 @@
             "name": "organizationId",
             "required": true,
             "type": "string"
-          },
-          {
-            "description": "Upload organization logo",
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/uploadOrganizationLogo"
-            }
           }
         ],
         "produces": [
@@ -3825,7 +3744,7 @@
         ]
       }
     },
-    "/v1/organizations_users/{organizationId}.json": {
+    "/v1/organizations_users/{id}.json": {
       "get": {
         "description": "Returns member list",
         "operationId": "Members listing",
@@ -3840,7 +3759,7 @@
           {
             "description": "Organization ID to get listing",
             "in": "path",
-            "name": "organizationId",
+            "name": "id",
             "required": true,
             "type": "string"
           }
@@ -3853,10 +3772,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Organizations"
-            }
+            "description": "No response was specified"
           }
         },
         "summary": "Member Listing",
@@ -3878,7 +3794,7 @@
           {
             "description": "Organization ID to get listing",
             "in": "path",
-            "name": "organizationId",
+            "name": "id",
             "required": true,
             "type": "string"
           },
@@ -3900,10 +3816,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/ChangeMemberPermission"
-            }
+            "description": "No response was specified"
           },
           "400": {
             "description": "Invalid ID supplied"
@@ -3916,9 +3829,7 @@
         "tags": [
           "organizations"
         ]
-      }
-    },
-    "/v1/organizations_users/{userId}.json": {
+      },
       "delete": {
         "description": "Remove organization member",
         "operationId": "remove_organization_user",
@@ -3933,7 +3844,7 @@
           {
             "description": "User ID to Remove from Organization members list",
             "in": "path",
-            "name": "userId",
+            "name": "id",
             "required": true,
             "type": "integer"
           }
@@ -3973,10 +3884,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Users"
-            }
+            "description": "No response was specified"
           },
           "404": {
             "description": "User not found"
@@ -4125,7 +4033,7 @@
         "parameters": [
           {
             "description": "User ID to delete",
-            "in": "query",
+            "in": "path",
             "name": "userId",
             "required": true,
             "type": "string"
@@ -4175,10 +4083,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Users"
-            }
+            "description": "No response was specified"
           },
           "404": {
             "description": "User not found"
@@ -4240,7 +4145,7 @@
     "/v1/users/{userId}/activities.json": {
       "get": {
         "description": "Returns User Activities",
-        "operationId": "Activities listing",
+        "operationId": "User activities listing",
         "parameters": [
           {
             "description": "OAuth token",
@@ -4262,10 +4167,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Activities"
-            }
+            "description": "No response was specified"
           }
         },
         "summary": "Activities",
@@ -4381,10 +4283,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Webhooks"
-            }
+            "description": "No response was specified"
           },
           "404": {
             "description": "Webhook not found"
@@ -4510,10 +4409,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No response was specified",
-            "schema": {
-              "$ref": "#/definitions/Comment"
-            }
+            "description": "No response was specified"
           },
           "400": {
             "description": "Invalid ID supplied"
