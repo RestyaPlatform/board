@@ -4798,7 +4798,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
             echo json_encode($error);
             exit;
         }
-        header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
+        header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication failed', true, 401);
     }
 } else {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
