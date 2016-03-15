@@ -795,7 +795,7 @@ App.BoardHeaderView = Backbone.View.extend({
             if (!_.isEmpty(cards)) {
                 var i = 0;
                 _.each(cards, function(card) {
-                    if ((is_from_filter === true && $.inArray(card.id, card_ids) !== -1 && card.due_date !== null) || (is_from_filter === false && card.due_date !== null)) {
+                    if (card.is_archived === 0 && ((is_from_filter === true && $.inArray(card.id, card_ids) !== -1 && card.due_date !== null) || (is_from_filter === false && card.due_date !== null))) {
                         var l = {};
                         var n = {};
                         var c = [];
@@ -817,7 +817,8 @@ App.BoardHeaderView = Backbone.View.extend({
                         var created_date = new Date(card_created_date[0]);
                         var form_date = card_created_date[0] + 'T' + card_created_date[1];
                         if (created_date.getTime() > due_date.getTime()) {
-                            form_date = card.due_date;
+                            card_created_date = card.due_date.split(' ');
+                            form_date = card_created_date[0] + 'T' + card_created_date[1];
                         }
                         var _card_due_date = card.due_date.split(' ');
                         var to_date = _card_due_date[0] + 'T' + _card_due_date[1];
