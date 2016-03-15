@@ -52,7 +52,7 @@
 			unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
 			
 			echo "Updating files..."
-			cp -r ${DOWNLOAD_DIR} "$dir"
+			cp -r ${DOWNLOAD_DIR}/. "$dir"
 			
 			echo "Connecting database to run SQL changes..."
 			psql -U postgres -c "\q"

@@ -461,12 +461,10 @@ function ldapAuthenticate($p_user_id, $p_password)
             $t_br = @ldap_bind($t_ds);
         }
         if (!$t_br) {
-            trigger_error(ERROR_LDAP_AUTH_FAILED, ERROR);
-            return ERROR_LDAP_AUTH_FAILED;
+            return 'ERROR_LDAP_AUTH_FAILED';
         }
     } else {
-        trigger_error(ERROR_LDAP_SERVER_CONNECT_FAILED, ERROR);
-        return ERROR_LDAP_SERVER_CONNECT_FAILED;
+        return 'ERROR_LDAP_SERVER_CONNECT_FAILED';
     }
     // Search for the user id
     $t_sr = ldap_search($t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs);
@@ -491,6 +489,9 @@ function ldapAuthenticate($p_user_id, $p_password)
                 
             }
         }
+    }
+    if (empty($user['User']['email'])) {
+        return 'ERROR_LDAP_EMAIL_NOT_ASSOCIATED';
     }
     ldap_free_result($t_sr);
     ldap_unbind($t_ds);
