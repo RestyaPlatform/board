@@ -58,6 +58,13 @@
 			psql -U postgres -c "\q"
 			sleep 1
 			
+			echo "Changing PostgreSQL database name, user and password..."
+			sed -i "s/^.*'R_DB_NAME'.*$/define('R_DB_NAME', '${POSTGRES_DBNAME}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'R_DB_USER'.*$/define('R_DB_USER', '${POSTGRES_DBUSER}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_DBPASS}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
+			
 			sed -i "s/server\/php\/R\/oauth_callback.php/server\/php\/oauth_callback.php/" /etc/nginx/conf.d/restyaboard.conf
 			sed -i "s/server\/php\/R\/download.php/server\/php\/download.php/" /etc/nginx/conf.d/restyaboard.conf
 			sed -i "s/server\/php\/R\/ical.php/server\/php\/ical.php/" /etc/nginx/conf.d/restyaboard.conf
