@@ -126,23 +126,8 @@ function checkKeycode(keycode, c) {
 }
 
 function makeLink(text, board_id) {
-    var card_id_arr = text.match(/#(\d+)/g);
-    if (card_id_arr !== undefined && card_id_arr !== null) {
-        $.each(card_id_arr, function(key, val) {
-            var temp = val.split('#');
-            if (temp['1'] !== undefined) {
-                var cardLink = '<a class="js-open-card-view" data-card_id="' + temp['1'] + '" href="#/board/' + board_id + '/card/' + temp['1'] + '">' + val + '</a>';
-                text = text.replace(val, cardLink);
-            }
-        });
-        return text;
-    }
-    var username_arr = text.match(/(@[a-zA-Z0-9]*)/g);
-    if (username_arr !== undefined && username_arr !== null) {
-        $.each(username_arr, function(key, val) {
-            text = text.replace(val, '<span class="atMention">' + val + '</span>');
-        });
-    }
+    text = text.replace(/#(\d+)/g, '<a class="js-open-card-view" data-card_id="$1" href="#/board/' + board_id + '/card/$1">#$1</a>');
+    text = text.replace(/(@[^\s]*)/g, '<span class="atMention">$1</span>');
     return text;
 }
 
