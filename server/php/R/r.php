@@ -1576,8 +1576,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $authUser['profile_picture_path'] = $profile_picture_path;
                     $response['profile_picture_path'] = $profile_picture_path;
                     $comment = '##USER_NAME## updated the profile image';
-                    $foreign_ids['user_id'] = $authUser['id'];
-                    $response['activity'] = insertActivity($authUser['id'], $comment, 'update_profile_attachment', $foreign_ids);
+                    $foreign_ids['user_id'] = $r_resource_vars['users'];
+                    $response['activity'] = insertActivity($r_resource_vars['users'], $comment, 'update_profile_attachment', $foreign_ids);
                 }
                 $qry_val_arr = array(
                     $profile_picture_path,
@@ -1611,7 +1611,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $comment = '##USER_NAME## updated the profile.';
                 $foreign_ids['user_id'] = $authUser['id'];
                 $table_name = 'users';
-                $id = $authUser['id'];
+                $id = $r_resource_vars['users'];
                 if (!empty($table_name) && !empty($id)) {
                     $put = getbindValues($table_name, $_POST);
                     if ($table_name == 'users') {
@@ -4790,6 +4790,15 @@ if (!empty($_GET['_url']) && $db_lnk) {
                 break;
             }
         }
+    } else {
+        if ($r_resource_cmd == '/boards/?/lists/?/cards') {
+            $response = array(
+                'error' => 1
+            );
+            echo json_encode($response);
+            exit;
+        }
+        header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication failed', true, 401);
     }
 } else {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);

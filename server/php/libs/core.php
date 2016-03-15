@@ -388,9 +388,6 @@ function getRevisiondifference($from_text, $to_text)
     // limit input
     $from_text = substr($from_text, 0, 1024 * 100);
     $to_text = substr($to_text, 0, 1024 * 100);
-    // ensure input is suitable for diff
-    $from_text = mb_convert_encoding($from_text, 'HTML-ENTITIES', 'UTF-8');
-    $to_text = mb_convert_encoding($to_text, 'HTML-ENTITIES', 'UTF-8');
     $granularity = 2; // 0: Paragraph/lines, 1: Sentence, 2: Word, 3: Character
     $granularityStacks = array(
         FineDiff::$paragraphGranularity,
