@@ -388,9 +388,6 @@ function getRevisiondifference($from_text, $to_text)
     // limit input
     $from_text = substr($from_text, 0, 1024 * 100);
     $to_text = substr($to_text, 0, 1024 * 100);
-    // ensure input is suitable for diff
-    $from_text = mb_convert_encoding($from_text, 'HTML-ENTITIES', 'UTF-8');
-    $to_text = mb_convert_encoding($to_text, 'HTML-ENTITIES', 'UTF-8');
     $granularity = 2; // 0: Paragraph/lines, 1: Sentence, 2: Word, 3: Character
     $granularityStacks = array(
         FineDiff::$paragraphGranularity,
@@ -461,12 +458,10 @@ function ldapAuthenticate($p_user_id, $p_password)
             $t_br = @ldap_bind($t_ds);
         }
         if (!$t_br) {
-            trigger_error(ERROR_LDAP_AUTH_FAILED, ERROR);
-            return ERROR_LDAP_AUTH_FAILED;
+            return 'ERROR_LDAP_AUTH_FAILED';
         }
     } else {
-        trigger_error(ERROR_LDAP_SERVER_CONNECT_FAILED, ERROR);
-        return ERROR_LDAP_SERVER_CONNECT_FAILED;
+        return 'ERROR_LDAP_SERVER_CONNECT_FAILED';
     }
     // Search for the user id
     $t_sr = ldap_search($t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs);
@@ -491,6 +486,9 @@ function ldapAuthenticate($p_user_id, $p_password)
                 
             }
         }
+    }
+    if (empty($user['User']['email'])) {
+        return 'ERROR_LDAP_EMAIL_NOT_ASSOCIATED';
     }
     ldap_free_result($t_sr);
     ldap_unbind($t_ds);
@@ -668,7 +666,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0\r\n";
         $headers.= "Content-Type: text/html; charset=ISO-8859-1\r\n";
-        $headers.= "X-Mailer: Restyaboard (0.2; +http://restya.com/board)\r\n";
+        $headers.= "X-Mailer: Restyaboard (0.2.1; +http://restya.com/board)\r\n";
         $headers.= "X-Auto-Response-Suppress: All\r\n";
         mail($to, $subject, $message, $headers);
     }

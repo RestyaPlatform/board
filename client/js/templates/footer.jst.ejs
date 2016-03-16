@@ -29,7 +29,7 @@ if (_.isEmpty(role_links.where({
 		<% if(board_id !== undefined && board_id !== null && board_id !== "" && !_.isEmpty(this.music_content) && this.music_content !== ''){ %>
 			<% if(parseInt(authuser.user.is_productivity_beats) === 1) { %>
 				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" class="animation btn btn-default js-product-beat-action" data-type='on'>
-				<span class="show"><i class="icon-volume-up lead tada-animation"></i></span>
+				<span class="show"><i class="icon-volume-up lead tada-animation show"></i></span>
 				</a>
 			<% } else { %>
 				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" class="animation btn btn-default js-product-beat-action" data-type='off'>
@@ -124,11 +124,12 @@ if (_.isEmpty(role_links.where({
   <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user) && (!_.isEmpty(role_links.where({slug: "view_organization_listing"})))){ %>
   <li class="hidden-xs org-btn"><a title="<%- i18next.t('Organizations') %>" href="#/organizations" class="btn btn-default"><span><%- i18next.t("Organizations") %></span></a></li>
    <% } %>	
+  <% if(apps !== ""){ %>
   <li class="dropdown hidden-xs board-btn js-show-add-apps-list"> 
 	  <a title="<%- i18next.t('Apps') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-apps-list"><span><%- i18next.t("Apps") %> </span><span><i class="icon-collapse"></i></span> </a>
 	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12">
 			<% _.each(apps, function(key,value) { %>
-				<li id="<%- value %>" class="hidden-xs org-btn"><a title="<%- key.name %>" href="#" data-toggle="modal" data-target="#<%- value %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- key.name %></span></a></li>
+				<li id="<%- value %>" class="hidden-xs org-btn"><a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- value %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- i18next.t(key.name) %></span></a></li>
 			<% }); %>
 			<li class="divider js-apps-list-container-search"></li>
 			<li class="dropdown clearfix">
@@ -136,6 +137,7 @@ if (_.isEmpty(role_links.where({
 			</li>
 	  </ul>
 	</li>
+  <% } %>
   <% } %>
 </ul>
 <% if(!_.isUndefined(authuser.user)){%>
@@ -201,11 +203,9 @@ if (_.isEmpty(role_links.where({
 		</ul>
 	  </li>
 	  <li class="hidden-xs"><a data-toggle="tooltip" data-placement="top" title="<%- i18next.t('Chat') %>" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-chat<% }%>" data-original-title="<%- i18next.t('Chat') %>"><i class="icon-comment lead"></i></a></li> 
-	  <% if(!_.isEmpty(role_links.where({slug: "add_card"}))){ %>
-	  	<li class="hidden-xs"><a data-container="body" data-toggle="tooltip" data-placement="top" title="<%- i18next.t('Instant add card') %>" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-instant-card-from<% }%>" data-original-title="Add New"><i class="icon-plus-sign lead"></i></a></li>
-	  <% } %>
+	  <li class="hidden-xs"><a data-container="body" data-toggle="tooltip" data-placement="top" title="<%- i18next.t('Instant add card') %>" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-instant-card-from<% }%>" data-original-title="Add New"><i class="icon-plus-sign lead"></i></a></li>
 	  <li class="dropdown notifications pull-right hidden-xs"><a data-toggle="dropdown" href="#" class="btn btn-default pull-right js-show-notification" title="Notifications"><sup class="badge notification-count hide js-notification-count"></sup><i class="icon-bell lead"></i></a>
-		<div class="tabbable tabs-below dropdown-menu pull-right js-dropdown-popup" role="menu">
+		<div id="all_activities" class="tabbable tabs-below dropdown-menu pull-right js-dropdown-popup" role="menu">
 		  <div class="tab-content bg-info clearfix">
 		    <div class="col-xs-12 user-filter navbar-btn">
 				<span class="pull-left"><strong><%- i18next.t('Activity') %></strong></span>

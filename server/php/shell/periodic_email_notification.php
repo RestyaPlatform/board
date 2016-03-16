@@ -22,7 +22,7 @@ if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
 }
 if ($db_lnk) {
     $qry_val_arr = array(
-        2
+        1
     );
     $users_result = pg_query_params($db_lnk, 'SELECT users.id, users.username, users.email, users.full_name, users.last_email_notified_activity_id, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT bs.board_id FROM board_subscribers bs WHERE bs.user_id = users.id) d) AS board_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ls.list_id, l.board_id FROM list_subscribers ls, lists l WHERE ls.user_id = users.id AND l.id = ls.list_id) d) AS list_ids,(SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT cs.card_id, c.list_id, c.board_id FROM card_subscribers cs, cards c WHERE cs.user_id = users.id AND c.id = cs.card_id) d) AS card_ids FROM users WHERE is_send_newsletter = $1', $qry_val_arr);
     while ($user = pg_fetch_assoc($users_result)) {
@@ -64,7 +64,7 @@ if ($db_lnk) {
             $tmp_card_id = '';
             while ($activity = pg_fetch_assoc($activities_result)) {
                 if (!empty($activity['profile_picture_path'])) {
-                    $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb' . SITE_NAME);
+                    $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb');
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
@@ -88,7 +88,7 @@ if ($db_lnk) {
                 }
                 if (!empty($activity['card_id'])) {
                     $imap_email = split("@", IMAP_EMAIL);
-                    $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id'] . SITE_NAME) . '@' . $imap_email[1];
+                    $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
                         $activity['card_id']
                     );
@@ -157,7 +157,7 @@ if ($db_lnk) {
             $tmp_card_id = '';
             while ($activity = pg_fetch_assoc($activities_result)) {
                 if (!empty($activity['profile_picture_path'])) {
-                    $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb' . SITE_NAME);
+                    $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb');
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
@@ -181,7 +181,7 @@ if ($db_lnk) {
                 }
                 if (!empty($activity['card_id'])) {
                     $imap_email = split("@", IMAP_EMAIL);
-                    $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id'] . SITE_NAME) . '@' . $imap_email[1];
+                    $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
                         $activity['card_id']
                     );
@@ -250,7 +250,7 @@ if ($db_lnk) {
             $tmp_card_id = '';
             while ($activity = pg_fetch_assoc($activities_result)) {
                 if (!empty($activity['profile_picture_path'])) {
-                    $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb' . SITE_NAME);
+                    $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb');
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
@@ -274,7 +274,7 @@ if ($db_lnk) {
                 }
                 if (!empty($activity['card_id'])) {
                     $imap_email = split("@", IMAP_EMAIL);
-                    $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id'] . SITE_NAME) . '@' . $imap_email[1];
+                    $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
                         $activity['card_id']
                     );

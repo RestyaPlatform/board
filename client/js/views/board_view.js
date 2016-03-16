@@ -1147,9 +1147,7 @@ App.BoardView = Backbone.View.extend({
                     list.set('id', data.uuid);
                 }
                 list.set('board_id', self.model.id);
-                if (list.attributes.is_archived === 0) {
-                    list.attributes.is_archived = 0;
-                }
+                list.set('is_archived', 0);
                 self.model.lists.add(list, {
                     silent: true
                 });

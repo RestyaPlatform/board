@@ -16,7 +16,7 @@ $app_path = dirname(dirname(__FILE__));
 require_once $app_path . '/config.inc.php';
 if ($db_lnk) {
     $qry_val_arr = array(
-        'webhooks.last_processed_activtiy_id'
+        'webhooks.last_processed_activity_id'
     );
     $result = pg_query_params($db_lnk, 'SELECT value FROM settings WHERE name = $1', $qry_val_arr);
     $row = pg_fetch_assoc($result);
@@ -68,10 +68,10 @@ if ($db_lnk) {
                         curl_multi_remove_handle($mh, $$ch);
                         $j++;
                     }
-                    $last_processed_activtiy_id = $activity['id'];
+                    $last_processed_activity_id = $activity['id'];
                     $qry_val_arr = array(
-                        $last_processed_activtiy_id,
-                        'webhooks.last_processed_activtiy_id'
+                        $last_processed_activity_id,
+                        'webhooks.last_processed_activity_id'
                     );
                     pg_query_params($db_lnk, 'UPDATE settings SET value = $1 WHERE name = $2', $qry_val_arr);
                     curl_multi_close($mh);

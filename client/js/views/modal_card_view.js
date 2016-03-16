@@ -239,21 +239,26 @@ App.ModalCardView = Backbone.View.extend({
         var i = 0;
         var hide_class = '';
         var target = $(e.currentTarget);
-        $('#' + target.attr('id')).toggleClass('active');
-        if (!$('#modal-comments').hasClass('active')) {
-            i++;
-            hide_class = hide_class + '.modal-comments, ';
-        }
-        if (!$('#modal-activities').hasClass('active')) {
-            i++;
-            hide_class = hide_class + '.modal-activities, ';
-        }
-        hide_class = hide_class.substring(0, hide_class.lastIndexOf(', '));
-        if (i === 2 || i === 0) {
-            $('.modal-comments, .modal-activities').parent('li').removeClass('hide');
-        }
-        if (i !== 2) {
-            $(hide_class).parent('li').addClass('hide');
+        var e_target = $(e.target).parents().find('#card_activities');
+        if (!$('#' + target.attr('id'), e_target).parent('ul').hasClass('called')) {
+            $('#' + target.attr('id'), e_target).parent('ul').addClass('called');
+            $('#' + target.attr('id'), e_target).toggleClass('active');
+            if (!$('#modal-comments', e_target).hasClass('active')) {
+                i++;
+                hide_class = hide_class + '.modal-comments, ';
+            }
+            if (!$('#modal-activities', e_target).hasClass('active')) {
+                i++;
+                hide_class = hide_class + '.modal-activities, ';
+            }
+            hide_class = hide_class.substring(0, hide_class.lastIndexOf(', '));
+            if (i === 2 || i === 0) {
+                $('.modal-comments, .modal-activities', e_target).parent('li').removeClass('hide');
+            }
+            if (i !== 2) {
+                $(hide_class, e_target).parent('li').addClass('hide');
+            }
+            $('#' + target.attr('id'), e_target).parent('ul').removeClass('called');
         }
         return false;
     },
@@ -1780,7 +1785,7 @@ App.ModalCardView = Backbone.View.extend({
             var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + user.get('full_name') + ' (' + user.get('username') + ')" data-container="body" data-toggle="tooltip">' + user.get('initials') + '</i>';
             var profile_picture_path = user.get('profile_picture_path');
             if (!_.isEmpty(profile_picture_path)) {
-                var hash = calcMD5(SecuritySalt + 'User' + user.attributes.user_id + 'png' + 'small_thumb' + SITE_NAME);
+                var hash = calcMD5(SecuritySalt + 'User' + user.attributes.user_id + 'png' + 'small_thumb');
                 profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + user.attributes.user_id + '.' + hash + '.png';
                 content_img = '<img src="' + profile_picture_path + '" alt="' + user.get('username') + '" title="' + user.get('full_name') + ' (' + user.get('username') + ')" class="img-rounded img-responsive avatar" data-container="body" data-toggle="tooltip">';
             }
@@ -1963,7 +1968,7 @@ App.ModalCardView = Backbone.View.extend({
         var full_name = target.data('user-fullname');
         var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + full_name + ' (' + user_name + ')">' + user_initial + '</i>';
         if (!_.isEmpty(user_profile_picture_path)) {
-            var hash = calcMD5(SecuritySalt + 'User' + user_id + 'png' + 'small_thumb' + SITE_NAME);
+            var hash = calcMD5(SecuritySalt + 'User' + user_id + 'png' + 'small_thumb');
             var profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + user_id + '.' + hash + '.png';
             content_img = '<img src="' + profile_picture_path + '" alt="' + user_name + '" title="' + full_name + ' (' + user_name + ')" class="img-rounded img-responsive avatar">';
         }

@@ -67,6 +67,10 @@ module.exports = function(grunt) {
             index: {
                 src: 'client/index.html',
                 dest: 'client/index.html'
+            },
+            api_explorer: {
+                src: 'api_explorer/index.html',
+                dest: 'api_explorer/index.html'
             }
         },
         cssmin: {

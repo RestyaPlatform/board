@@ -43,7 +43,7 @@ App.EmailToBoardSettingView = Backbone.View.extend({
      */
     render: function() {
         var imap_email = IMAP_EMAIL.split('@');
-        var board_email = imap_email[0] + '+' + this.model.id + '+' + calcMD5(SecuritySalt + this.model.id + SITE_NAME) + '@' + imap_email[1];
+        var board_email = imap_email[0] + '+' + this.model.id + '+' + calcMD5(SecuritySalt + this.model.id) + '@' + imap_email[1];
         this.$el.html(this.template({
             board: this.model,
             board_email: board_email

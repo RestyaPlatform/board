@@ -217,7 +217,7 @@
 	  </div>
 	  <div class="splitter-wrap ui-resizable"> 
 	  <div class="inner col-xs-12">   
-		<ul class="list-unstyled navbar-btn row">
+		<ul class="list-unstyled navbar-btn row"  id="card_activities">
 		  <li class="list-group-item list-group-item-info clearfix">
 			<div class="list-group-item-heading clearfix">
 				  <h3 class="pull-left"><%- i18next.t('Activity') %></h3>
@@ -495,7 +495,7 @@
 			  <% } %>
 			  <% } else{ %> 
 			  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-			  <a class="panel-heading show js-delete-card-vote"" title="<%- i18next.t('Unvote') %>" href="#" data-id="<%- voted_user.id %>"> <span class="text-muted show panel-title" ><i class="icon-thumbs-up-alt"></i><%- i18next.t('Unvote') %></span> </a>
+			  <a class="panel-heading show js-delete-card-vote"" title="<%- i18next.t('Unvote') %>" href="#" data-id="<%- voted_user.id %>"> <span class="show" ><i class="icon-thumbs-up-alt"></i><%- i18next.t('Unvote') %></span> </a>
 			  <% } %>
 			  <% } }%>
 			</li>
@@ -543,7 +543,7 @@
 				</div>
 				<div class="form-group">
 					<% var imap_email = IMAP_EMAIL.split('@');
-					   var card_email = imap_email[0] + '+' + card.attributes.board_id + '+' + card.attributes.id + '+' + calcMD5(SecuritySalt + card.attributes.board_id + card.attributes.id + SITE_NAME)+'@'+imap_email[1];
+					   var card_email = imap_email[0] + '+' + card.attributes.board_id + '+' + card.attributes.id + '+' + calcMD5(SecuritySalt + card.attributes.board_id + card.attributes.id)+'@'+imap_email[1];
 					%>
 				  <span class="show"><%- i18next.t("Email for this card") %></span>
 				  <input readonly="readonly" class="form-control" value="<%- card_email %>">

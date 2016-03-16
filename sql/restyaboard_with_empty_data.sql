@@ -3231,7 +3231,8 @@ CREATE VIEW users_listing AS
     users.member_board_count,
     users.owner_organization_count,
     users.member_organization_count,
-    users.language
+    users.language,
+    (users.is_ldap)::integer AS is_ldap
    FROM (((((((((users users
      LEFT JOIN ips i ON ((i.id = users.ip_id)))
      LEFT JOIN cities rci ON ((rci.id = i.city_id)))
@@ -4202,7 +4203,6 @@ COPY countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capita
 246	VE	VEN	862	VE	Venezuela	Caracas	912050	27223228	SA	.ve	VEF	Bolivar             	58        	####                	^(d{4})$            	es-VE	3625428	GY,BR,CO            	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 247	VN	VNM	704	VM	Vietnam	Hanoi	329560	89571130	AS	.vn	VND	Dong                	84        	######              	^(d{6})$            	vi,en,fr,zh,km	1562822	CN,LA,KH            	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 248	WF	WLF	876	WF	Wallis and Futuna	Mata Utu	274	16025	OC	.wf	XPF	Franc               	681       	#####               	^(986d{2})$         	wls,fud,fr-WF	4034749	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
-240	US	USA	840	US	UnitedStates	Washington	9629091	310232863	NA	.us	USD	Dollar              	1         	#####-####          	^(d{9})$            	en-US,es-US,haw,fr	6252001	CA,MX,CU            	          	2013-02-07 10:11:00	US	USA	2013-09-19 16:10:20.878
 250	YE	YEM	887	YM	Yemen	Sanaa	527970	23495361	AS	.ye	YER	Rial                	967       	                    	                    	ar-YE	69543	SA,OM               	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 251	ZM	ZMB	894	ZA	Zambia	Lusaka	752614	13460305	AF	.zm	ZMK	Kwacha              	260       	#####               	^(d{5})$            	en-ZM,bem,loz,lun,lue,ny,toi	895949	ZW,TZ,MZ,CD,NA,MW,AO	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 3	AL	ALB	8	AL	Albania	Tirana	28748	2986952	EU	.al	ALL	Lek                 	355       	                    	                    	sq,el	783754	MK,GR,CS,ME,RS,XK   	          	2013-02-07 10:11:00	2	3	2013-04-11 16:15:53.73
@@ -4210,6 +4210,7 @@ COPY countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capita
 112	JP	JPN	392	JA	Japan	Tokyo	377835	127288000	AS	.jp	JPY	Yen                 	81        	###-####            	^(d{7})$            	ja	1861060	                    	          	2013-02-07 10:11:00	JA	JAP	2013-09-19 14:53:54.835
 239	GB	GBR	826	UK	United Kingdom	London	244820	62348447	EU	.uk	GBP	Pound               	44        	@# #@@|@## #@@|@@# #	^(([A-Z]d{2}[A-Z]{2}	en-GB,cy-GB,gd	2635167	IE                  	          	2013-02-07 10:11:00	UK	UKS	2013-09-19 14:55:04.538
 252	ZW	ZWE	716	ZI	Zimbabwe	Harare	390580	0	AF	.zw	ZWL	Dollar              	263       	                    	                    	en-ZW,sn,nr,nd	878675	ZA,MZ,BW,ZM         	          	2013-02-07 10:11:00	\N	\N	2013-11-19 14:03:16.283
+240	US	USA	840	US	United States	Washington	9629091	310232863	NA	.us	USD	Dollar              	1         	#####-####          	^(d{9})$            	en-US,es-US,haw,fr	6252001	CA,MX,CU            	          	2013-02-07 10:11:00	US	USA	2013-09-19 16:10:20.878
 \.
 
 
@@ -4936,20 +4937,16 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 21	3	0	SITE_TIMEZONE	+0200	\N	text	\N	Site Timezone	5
 18	6	0	DROPBOX_APPKEY		\N	text	\N	Dropbox App Key	1
 20	6	0	FLICKR_API_KEY		\N	text	\N	Flickr API Key	2
-23	0	0	elasticsearch.last_processed_activtiy_id	0	\N	hidden	\N	Last Activity ID	3
 3	9	2	LDAP_LOGIN_ENABLED	false	\N	checkbox	\N	LDAP	2
 22	9	2	STANDARD_LOGIN_ENABLED	true	\N	checkbox	\N	Standard	1
 29	3	0	DEFAULT_REPLY_TO_EMAIL_ADDRESS	board@restya.com	\N	text	\N	Reply To Email Address	3
-30	3	0	DEFAULT_CONTACT_EMAIL_ADDRESS	board@restya.com	\N	text	\N	Contact Email Address	4
 13	3	0	DEFAULT_FROM_EMAIL_ADDRESS	board@restya.com	\N	text	\N	From Email Address	2
 31	3	0	DEFAULT_LANGUAGE	en_US	\N	text	\N	Default Language	6
-36	0	0	webhooks.last_processed_activtiy_id	0	\N	hidden	\N	Webhook Activity ID	0
 24	4	2	ENABLE_SSL_CONNECTIVITY	\N	Use encryption (SSL, ldaps:// URL) when connects to server?	checkbox	\N	Enable SSL Connectivity	3
 5	4	2	LDAP_PORT	\N	Server port (e.g., 389 for LDAP and 636 for LDAP using SSL)	text	\N	Port	5
 8	5	2	LDAP_UID_FIELD	\N	You can use different field from the username here. For pre-windows 2000 style login, use sAMAccountName and for a UPN style login use userPrincipalName.	text	\N	Account Filter	9
 9	5	2	LDAP_BIND_DN	\N	Enter a valid user account/DN to pre-bind with if your LDAP server does not allow anonymous profile searches, or requires a user with specific privileges to search.	text	\N	Bind DN	10
 10	5	2	LDAP_BIND_PASSWD	\N	Enter a password for the above Bind DN.	password	\N	Bind password	11
-2	4	2	LDAP_SERVER	\N	The DNS name or IP address of the server (e.g., dc.domain.local)	text	\N	Server	4
 4	4	2	LDAP_PROTOCOL_VERSION	\N	Difference between LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)	text	\N	Protocol Version	6
 6	4	2	LDAP_ROOT_DN	\N	This is your search base for LDAP queries. This should be at least your domain root, (e.g., dc=domain,dc=local) You can define this as a Organizational Unit if you want to narrow down the search base (e.g., ou=team,ou=company,dc=domain,dc=local)	text	\N	Base DN	7
 16	1	0	ELASTICSEARCH_URL		e.g., http://localhost:9200/	text	\N	Server URL	3
@@ -4958,6 +4955,10 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 33	10	0	IMAP_PORT		e.g., 993	text	\N	Port	2
 34	10	0	IMAP_EMAIL		\N	text	\N	Email address	3
 35	10	0	IMAP_EMAIL_PASSWORD		\N	password	\N	Password	4
+23	0	0	elasticsearch.last_processed_activity_id	0	\N	hidden	\N	Last Activity ID	3
+2	4	2	LDAP_SERVER	\N	The DNS name or IP address of the server (e.g., dc.domain.local)	text	\N	Server	4
+36	0	0	webhooks.last_processed_activity_id	0	\N	hidden	\N	Webhook Activity ID	0
+30	3	0	DEFAULT_CONTACT_EMAIL_ADDRESS	board@restya.com	It is used in all outgoing emails	text	\N	Contact Email Address	4
 \.
 
 

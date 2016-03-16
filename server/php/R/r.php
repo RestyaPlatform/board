@@ -1398,7 +1398,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
         if (LDAP_LOGIN_ENABLED && (empty($log_user) || (!empty($log_user) && $log_user['is_ldap'] == 1))) {
             $check_user = ldapAuthenticate($r_post['email'], $r_post['password']);
-            if (!empty($check_user['User']) && $check_user['User']['is_username_exits'] && $check_user['User']['is_password_matched'] && isset($check_user['User']['email']) && !empty($check_user['User']['email'])) {
+            if (is_array($check_user) && !empty($check_user['User']) && $check_user['User']['is_username_exits'] && $check_user['User']['is_password_matched'] && isset($check_user['User']['email']) && !empty($check_user['User']['email'])) {
                 $val_arr = array(
                     $check_user['User']['email']
                 );
@@ -1422,11 +1422,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $user = executeQuery('SELECT * FROM users_listing WHERE id = $1', $val_arr);
                 }
             } else {
-                if (!empty($check_user) && $check_user == 'ERROR_LDAP_AUTH_FAILED' || $check_user == 'ERROR_LDAP_SERVER_CONNECT_FAILED') {
-                    $ldap_error = $check_user;
-                } else {
-                    $ldap_error = 'ldap_error';
-                }
+                $ldap_error = $check_user;
             }
         } else if (STANDARD_LOGIN_ENABLED && !empty($log_user) && $log_user['is_ldap'] == 0) {
             $r_post['password'] = crypt($r_post['password'], $log_user['password']);
@@ -1580,8 +1576,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $authUser['profile_picture_path'] = $profile_picture_path;
                     $response['profile_picture_path'] = $profile_picture_path;
                     $comment = '##USER_NAME## updated the profile image';
-                    $foreign_ids['user_id'] = $authUser['id'];
-                    $response['activity'] = insertActivity($authUser['id'], $comment, 'update_profile_attachment', $foreign_ids);
+                    $foreign_ids['user_id'] = $r_resource_vars['users'];
+                    $response['activity'] = insertActivity($r_resource_vars['users'], $comment, 'update_profile_attachment', $foreign_ids);
                 }
                 $qry_val_arr = array(
                     $profile_picture_path,
@@ -1615,7 +1611,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $comment = '##USER_NAME## updated the profile.';
                 $foreign_ids['user_id'] = $authUser['id'];
                 $table_name = 'users';
-                $id = $authUser['id'];
+                $id = $r_resource_vars['users'];
                 if (!empty($table_name) && !empty($id)) {
                     $put = getbindValues($table_name, $_POST);
                     if ($table_name == 'users') {
@@ -1860,7 +1856,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $list = glob($mediadir . '.*');
                         @unlink($list[0]);
                     }
-                    $hash = md5(SECURITYSALT . 'Board' . $r_resource_vars['boards'] . 'jpg' . 'extra_large_thumb' . SITE_NAME);
+                    $hash = md5(SECURITYSALT . 'Board' . $r_resource_vars['boards'] . 'jpg' . 'extra_large_thumb');
                     $background_picture_url = $_server_domain_url . '/img/extra_large_thumb/Board/' . $r_resource_vars['boards'] . '.' . $hash . '.jpg';
                     $r_post['background_picture_path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'];
                     $r_post['path'] = $background_picture_url;
@@ -4726,7 +4722,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
                     }
                 }
             }
-            $response['apps'] = json_encode($response['apps']);
+            $response['apps'] = !empty($response['apps']) ? json_encode($response['apps']) : '';
             echo json_encode($response);
             exit;
         }
@@ -4794,6 +4790,15 @@ if (!empty($_GET['_url']) && $db_lnk) {
                 break;
             }
         }
+    } else {
+        if ($r_resource_cmd == '/boards/?/lists/?/cards') {
+            $response = array(
+                'error' => 1
+            );
+            echo json_encode($response);
+            exit;
+        }
+        header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication failed', true, 401);
     }
 } else {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);

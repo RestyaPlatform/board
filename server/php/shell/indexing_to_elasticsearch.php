@@ -16,7 +16,7 @@ $app_path = dirname(dirname(__FILE__));
 require_once $app_path . '/config.inc.php';
 if ($db_lnk) {
     $qry_val_arr = array(
-        'elasticsearch.last_processed_activtiy_id'
+        'elasticsearch.last_processed_activity_id'
     );
     $result = pg_query_params($db_lnk, 'SELECT value FROM settings WHERE name = $1', $qry_val_arr);
     $row = pg_fetch_assoc($result);
@@ -55,6 +55,7 @@ if ($db_lnk) {
                 switch ($http_code) {
                 case 201:
                 case 200:
+                    $last_processed_activity_id = $row['id'];
                     echo 'Saved Successfully.' . PHP_EOL;
                     break;
 
@@ -65,13 +66,14 @@ if ($db_lnk) {
                 default:
                     echo 'Not Found.' . PHP_EOL;
                 }
-                $last_processed_activtiy_id = $row['id'];
             }
-            $qry_val_arr = array(
-                $last_processed_activtiy_id,
-                'elasticsearch.last_processed_activtiy_id'
-            );
-            pg_query_params($db_lnk, 'UPDATE settings SET value = $1 WHERE name = $2', $qry_val_arr);
+            if (!empty($last_processed_activity_id)) {
+                $qry_val_arr = array(
+                    $last_processed_activity_id,
+                    'elasticsearch.last_processed_activity_id'
+                );
+                pg_query_params($db_lnk, 'UPDATE settings SET value = $1 WHERE name = $2', $qry_val_arr);
+            }
             curl_close($ch);
         }
     }
