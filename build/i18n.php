@@ -87,7 +87,36 @@ $database_translation_arr = array(
 	'Enter a password for the above Bind DN.' => 'Enter a password for the above Bind DN.',
 	'Use encryption (SSL, ldaps:// URL) when connects to server?' => 'Use encryption (SSL, ldaps:// URL) when connects to server?',
 	'Enable SSL Connectivity' => 'Enable SSL Connectivity',
-	'LDAP' => 'LDAP'
+	'LDAP' => 'LDAP',
+	'Zapier Connect' => 'Zapier Connect',
+	'Post my comments to Slack' => 'Post my comments to Slack',
+	'Import from GitHub' => 'Import from GitHub',
+	'Hide Card ID' => 'Hide Card ID',
+	'Theming/CSSilize' => 'Theming/CSSilize',
+	'Amazon Echo App' => 'Amazon Echo App',
+	'Collaborate/TogetherJS' => 'Collaborate/TogetherJS',
+	'Owner' => 'Owner',
+	'Editor' => 'Editor',
+	'Viewer' => 'Viewer',
+	'Guest' => 'Guest',
+	'Access your Restyaboard notifications through Amazon Echo. This Restyaboard Alexa Skill is developed using AWS Lambda. You will need to login to Restyaboard in Amazon Alexa Android App.' => 'Access your Restyaboard notifications through Amazon Echo. This Restyaboard Alexa Skill is developed using AWS Lambda. You will need to login to Restyaboard in Amazon Alexa Android App.',
+	'CSSilize, theming partner' => 'CSSilize, theming partner',
+	'Hide Card ID from cards listing as in Trello' => 'Hide Card ID from cards listing as in Trello',
+	'Import GitHub repositories. users, issues and comments' => 'Import GitHub repositories. users, issues and comments',
+	'Auto post your comments to Slack' => 'Auto post your comments to Slack',
+	'Collaborate using Mozilla\'s TogetherJS' => 'Collaborate using Mozilla\'s TogetherJS',
+	'Generate "access token" for Zapier connection' => 'Generate "access token" for Zapier connection',
+	'Incoming Mail Server' => 'Incoming Mail Server',
+	'Email address' => 'Email address',
+	'Password' => 'Password',
+	'Server URL' => 'Server URL',
+	'Index Name' => 'Index Name',
+	'XMPP Chat' => 'XMPP Chat',
+	'Bosh Service URL' => 'Bosh Service URL',
+	'Jabber Host' => 'Jabber Host',
+	'Client Resource Name' => 'Client Resource Name',
+	'Jabber Path' => 'Jabber Path'
+	
 );
 $t = $t + $database_translation_arr;
 ksort($t);

@@ -129,7 +129,7 @@ if (_.isEmpty(role_links.where({
 	  <a title="<%- i18next.t('Apps') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-apps-list"><span><%- i18next.t("Apps") %> </span><span><i class="icon-collapse"></i></span> </a>
 	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12">
 			<% _.each(apps, function(key,value) { %>
-				<li id="<%- value %>" class="hidden-xs org-btn"><a title="<%- key.name %>" href="#" data-toggle="modal" data-target="#<%- value %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- key.name %></span></a></li>
+				<li id="<%- value %>" class="hidden-xs org-btn"><a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- value %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- i18next.t(key.name) %></span></a></li>
 			<% }); %>
 			<li class="divider js-apps-list-container-search"></li>
 			<li class="dropdown clearfix">
