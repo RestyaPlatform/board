@@ -101,6 +101,15 @@
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
 			fi
 			
+			set +x
+			echo "Folder structure modified. Script going to delete unwanted files inside R folder except r.php and README.md. Do you want to do it now y/n?"
+			read -r answer
+			set -x
+			case "${answer}" in
+				[Yy])
+				rm -rf $dir/server/php/R/shell $dir/server/php/R/libs $dir/server/php/R/image.php $dir/server/php/R/config.inc.php $dir/server/php/R/authorize.php $dir/server/php/R/oauth_callback.php $dir/server/php/R/download.php $dir/server/php/R/ical.php
+			esac
+			
 			echo "Updating SQL..."
 			psql -d ${POSTGRES_DBNAME} -f "$dir/sql/${RESTYABOARD_VERSION}.sql" -U ${POSTGRES_DBUSER}
 			/bin/echo "$RESTYABOARD_VERSION" > /opt/restyaboard/release
