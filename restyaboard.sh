@@ -73,9 +73,9 @@
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
 				echo "Changing files path for existing cron..."
-				sed -i "s/server\/php\/R\/cron.sh/server\/php\/indexing_to_elasticsearch.sh/" /var/spool/cron/crontabs/root
-				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/instant_email_notification.sh/" /var/spool/cron/crontabs/root
-				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/periodic_email_notification.sh/" /var/spool/cron/crontabs/root
+				sed -i "s/server\/php\/R\/cron.sh/server\/php\/shell\/indexing_to_elasticsearch.sh/" /var/spool/cron/crontabs/root
+				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/shell\/instant_email_notification.sh/" /var/spool/cron/crontabs/root
+				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/shell\/periodic_email_notification.sh/" /var/spool/cron/crontabs/root
 			
 				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
 				echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/crontabs/root
@@ -87,9 +87,9 @@
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
 			else
 				echo "Changing files path for existing cron..."
-				sed -i "s/server\/php\/R\/cron.sh/server\/php\/indexing_to_elasticsearch.sh/" /var/spool/cron/root
-				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/instant_email_notification.sh/" /var/spool/cron/root
-				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/periodic_email_notification.sh/" /var/spool/cron/root
+				sed -i "s/server\/php\/R\/cron.sh/server\/php\/shell\/indexing_to_elasticsearch.sh/" /var/spool/cron/root
+				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/shell\/instant_email_notification.sh/" /var/spool/cron/root
+				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/shell\/periodic_email_notification.sh/" /var/spool/cron/root
 			
 				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
 				echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/root
