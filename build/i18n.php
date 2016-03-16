@@ -126,4 +126,4 @@ $database_translation_arr = array(
 );
 $t = $t + $database_translation_arr;
 ksort($t);
-file_put_contents('client/locales/en/translation.json', json_encode($t, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+file_put_contents('client/locales/en_US/translation.json', json_encode($t, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
