@@ -34,7 +34,7 @@
       if (url && url.length > 1) {
         url = decodeURIComponent(url[1]);
       } else {
-        url = "/restyaboard/api_explorer/api.json";
+        url = "/api_explorer/api.json";
       }
 
       // Pre load translate...
@@ -46,7 +46,7 @@
         dom_id: "swagger-ui-container",
         supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
         onComplete: function(swaggerApi, swaggerUi){
-		  window.swaggerUi.api.setBasePath('/restyaboard/api');
+		  window.swaggerUi.api.setBasePath('/api');
           if(typeof initOAuth == "function") {
             initOAuth({
               clientId: "your-client-id",
