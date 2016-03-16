@@ -115,8 +115,19 @@ $database_translation_arr = array(
 	'Bosh Service URL' => 'Bosh Service URL',
 	'Jabber Host' => 'Jabber Host',
 	'Client Resource Name' => 'Client Resource Name',
-	'Jabber Path' => 'Jabber Path'
-	
+	'Jabber Path' => 'Jabber Path',
+	'Used to prefix index names to avoid potential collisions. e.g., restya' => 'Used to prefix index names to avoid potential collisions. e.g., restya',
+	'Zapier Client ID' => 'Zapier Client ID',
+	'Zapier Client Secret' => 'Zapier Client Secret',
+	'Zapier OAuth Token URL' => 'Zapier OAuth Token URL',
+	'Slack Client ID' => 'Slack Client ID',
+	'Slack Client Secret' => 'Slack Client Secret',
+	'Slack OAuth Token URL' => 'Slack OAuth Token URL',
+	'Register a new application in Slack in this URL <a href=\'https://api.slack.com/applications/new\' target=\'_blank\'>https://api.slack.com/applications/new</a> with providing below details,<br/>App Name: ##SITE_NAME##<br/>Short Description: Give some description about your site<br/>Describe what your app does on Slack (3-5 sentences): Give some description about what your app does on Slack<br/>Redirect URI(s): ##SITE_URL##/plugins/r_slack/login.html' => 'Register a new application in Slack in this URL <a href=\'https://api.slack.com/applications/new\' target=\'_blank\'>https://api.slack.com/applications/new</a> with providing below details,<br/>App Name: ##SITE_NAME##<br/>Short Description: Give some description about your site<br/>Describe what your app does on Slack (3-5 sentences): Give some description about what your app does on Slack<br/>Redirect URI(s): ##SITE_URL##/plugins/r_slack/login.html',
+	'GitHub Client ID' => 'GitHub Client ID',
+	'GitHub Client Secret' => 'GitHub Client Secret',
+	'GitHub OAuth Token URL' => 'GitHub OAuth Token URL',
+	'Register a new application in GitHub in this URL <a href=\'https://github.com/settings/applications/new\' target=\'_blank\'>https://github.com/settings/applications/new</a> with providing below details,<br/>Application Name: ##SITE_NAME##<br/>Homepage URL: ##SITE_URL##<br/>Application description: Give some description about your site<br/>Authorization callback URL: ##SITE_URL##/apps/r_import_github/login.html' => 'Register a new application in GitHub in this URL <a href=\'https://github.com/settings/applications/new\' target=\'_blank\'>https://github.com/settings/applications/new</a> with providing below details,<br/>Application Name: ##SITE_NAME##<br/>Homepage URL: ##SITE_URL##<br/>Application description: Give some description about your site<br/>Authorization callback URL: ##SITE_URL##/apps/r_import_github/login.html'	
 );
 $t = $t + $database_translation_arr;
 ksort($t);
