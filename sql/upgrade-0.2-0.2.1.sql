@@ -82,7 +82,7 @@ CREATE OR REPLACE VIEW users_listing AS
     users.owner_organization_count,
     users.member_organization_count,
     users.language,
-    (users.is_ldap)::integer AS is_ldap,
+    (users.is_ldap)::integer AS is_ldap
    FROM (((((((((users users
    LEFT JOIN ips i ON ((i.id = users.ip_id)))
    LEFT JOIN cities rci ON ((rci.id = i.city_id)))
