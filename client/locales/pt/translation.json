@@ -204,7 +204,7 @@
     "Deleting an user is permanent. There is no undo.": "Excluindo um usuário é permanente. Não há como desfazer.",
     "Description": "Descrição",
     "Developer applications": "aplicativos de desenvolvedor",
-    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx": "Diferença betwen LDAPv3 e LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx",
+    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)": "Diferença betwen LDAPv3 e LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)",
     "Disable it in Admin Control Panel for default behavior": "Desativá-lo no painel de controle do administrador para o comportamento padrão",
     "Disabled": "Desativado",
     "Do not close or refresh this window": "Não feche ou atualizar esta janela",
@@ -512,7 +512,7 @@
     "System": "Sistema",
     "Technologies and Components": "Tecnologias e componentes",
     "Template": "Modelo",
-    "The DNS name or IP address of the server. For example dc.domain.local.": "O nome DNS ou o endereço IP do servidor. Por exemplo dc.domain.local.",
+    "The DNS name or IP address of the server (e.g., dc.domain.local).": "O nome DNS ou o endereço IP do servidor. Por exemplo dc.domain.local.",
     "The board must be added to an org to enable this.": "O conselho deve ser adicionado a um org para permitir isso.",
     "The full URL to your application homepage": "O URL completo à sua página inicial aplicativo",
     "Theming/CSSilize": "Theming / CSSilize",
@@ -528,7 +528,7 @@
     "This board will be": "Esta placa será",
     "This card is archived.": "Este cartão é arquivada.",
     "This is a simple sample App to show the possibilities of App platform": "Este é um exemplo simples App para mostrar as possibilidades de plataforma App",
-    "This is your search base for LDAP queries. This should be at least your domain root, for example dc=domain,dc=local You can define this as a Organizational Unit if you want to narrow down the search base. For example: ou=team,ou=company,dc=domain,dc=local": "Esta é a sua base de pesquisa para consultas LDAP. Esta deve ser, pelo menos, a sua raiz de domínio, por exemplo dc = domain, dc = local Você pode definir isso como uma unidade organizacional se você quiser estreitar a base de pesquisa. Por exemplo: ou = equipe, ou = empresa, dc = domain, dc = local",
+    "This is your search base for LDAP queries. This should be at least your domain root, (e.g., dc=domain,dc=local) You can define this as a Organizational Unit if you want to narrow down the search base (e.g., ou=team,ou=company,dc=domain,dc=local)": "Esta é a sua base de pesquisa para consultas LDAP. Esta deve ser, pelo menos, a sua raiz de domínio, por exemplo dc = domain, dc = local Você pode definir isso como uma unidade organizacional se você quiser estreitar a base de pesquisa. Por exemplo: ou = equipe, ou = empresa, dc = domain, dc = local",
     "This organization is private. It's not indexed or visible to those outside the org.": "Esta organização é privada. Não é indexada ou visível para aqueles que estão fora do org.",
     "This organization is public. It's visible to anyone with the link and will show up in search engines like Google. Only those invited to the org can add and edit org boards.": "Esta organização é pública. É visível para qualquer pessoa com o link e vai aparecer nos motores de busca como o Google. Somente aqueles convidados para a org pode adicionar e editar placas org.",
     "This will remove all the cards in this list from the board. To view archived cards and bring them back to the board, click \"Menu\" > \"Archived Items\".": "Isto irá remover todas as cartas na lista do tabuleiro. Para ver cartões arquivados e trazê-los de volta à prancheta, clique em \"Menu\"> \"itens armazenados\".",
@@ -650,5 +650,6 @@
     "{{count}} Comment": "{{count}} Comentário",
     "{{count}} Comment_plural": "{{count}} Comentários",
     "{{count}} Vote": "{{count}} Votar",
-    "{{count}} Vote_plural": "{{count}} Votos"
+    "{{count}} Vote_plural": "{{count}} Votos",
+    "It is used in all outgoing emails": "Ele é usado em todos os e-mails enviados"
 }

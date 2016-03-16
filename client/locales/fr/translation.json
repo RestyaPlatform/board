@@ -204,7 +204,7 @@
     "Deleting an user is permanent. There is no undo.": "Suppression d'un utilisateur est permanente. Il n'y a aucune annulation.",
     "Description": "Description",
     "Developer applications": "applications pour les développeurs",
-    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx": "Différence LDAPv3 et LDAPv2 Situés entre https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx",
+    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)": "Différence LDAPv3 et LDAPv2 Situés entre https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)",
     "Disable it in Admin Control Panel for default behavior": "Désactivez-le dans le Panneau de configuration de l'administrateur pour le comportement par défaut",
     "Disabled": "désactivé",
     "Do not close or refresh this window": "Ne fermez pas cette fenêtre ou rafraîchir",
@@ -512,7 +512,7 @@
     "System": "Système",
     "Technologies and Components": "Technologies et Composants",
     "Template": "Modèle",
-    "The DNS name or IP address of the server. For example dc.domain.local.": "Le nom DNS ou l'adresse IP du serveur. Par exemple dc.domain.local.",
+    "The DNS name or IP address of the server (e.g., dc.domain.local).": "Le nom DNS ou l'adresse IP du serveur. Par exemple dc.domain.local.",
     "The board must be added to an org to enable this.": "Le conseil doit être ajouté à un org pour permettre cela.",
     "The full URL to your application homepage": "L'URL complète à votre page d'accueil de l'application",
     "Theming/CSSilize": "Theming / CSSilize",
@@ -528,7 +528,7 @@
     "This board will be": "Ce conseil sera",
     "This card is archived.": "Cette carte est archivée.",
     "This is a simple sample App to show the possibilities of App platform": "Ceci est un échantillon simple App pour montrer les possibilités de la plate-forme App",
-    "This is your search base for LDAP queries. This should be at least your domain root, for example dc=domain,dc=local You can define this as a Organizational Unit if you want to narrow down the search base. For example: ou=team,ou=company,dc=domain,dc=local": "Ceci est votre base de recherche pour les requêtes LDAP. Cela devrait être au moins la racine de votre domaine, par exemple dc = domain, dc = local Vous pouvez définir cela comme une unité d'organisation si vous souhaitez affiner la base de recherche. Par exemple: ou = équipe, ou = société, dc = domain, dc = local",
+    "This is your search base for LDAP queries. This should be at least your domain root, (e.g., dc=domain,dc=local) You can define this as a Organizational Unit if you want to narrow down the search base (e.g., ou=team,ou=company,dc=domain,dc=local)": "Ceci est votre base de recherche pour les requêtes LDAP. Cela devrait être au moins la racine de votre domaine, par exemple dc = domain, dc = local Vous pouvez définir cela comme une unité d'organisation si vous souhaitez affiner la base de recherche. Par exemple: ou = équipe, ou = société, dc = domain, dc = local",
     "This organization is private. It's not indexed or visible to those outside the org.": "Cette organisation est privée. Il est pas indexé ou visible à ceux en dehors de l'org.",
     "This organization is public. It's visible to anyone with the link and will show up in search engines like Google. Only those invited to the org can add and edit org boards.": "Cette organisation est publique. Il est visible à toute personne avec le lien et apparaîtra dans les moteurs de recherche comme Google. Seuls ceux invités à l'org peut ajouter et modifier des conseils organigrammes.",
     "This will remove all the cards in this list from the board. To view archived cards and bring them back to the board, click \"Menu\" > \"Archived Items\".": "Cela permettra d'éliminer toutes les cartes dans cette liste de la carte. Pour voir les cartes archivés et les ramener à la carte, cliquez sur «Menu»> «éléments archivés\".",
@@ -650,5 +650,6 @@
     "{{count}} Comment": "{{count}} Commentaire",
     "{{count}} Comment_plural": "{{count}} Commentaires",
     "{{count}} Vote": "{{count}} Votez",
-    "{{count}} Vote_plural": "{{count}} Votes"
+    "{{count}} Vote_plural": "{{count}} Votes",
+    "It is used in all outgoing emails": "Il est utilisé dans tous les e-mails sortants"
 }

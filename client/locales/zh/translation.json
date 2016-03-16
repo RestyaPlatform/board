@@ -204,7 +204,7 @@
     "Deleting an user is permanent. There is no undo.": "刪除用戶是永久性的。沒有撤消。",
     "Description": "描述",
     "Developer applications": "開發應用程序",
-    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx": "差異愨的LDAPv3和的LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx",
+    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)": "差異愨的LDAPv3和的LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)",
     "Disable it in Admin Control Panel for default behavior": "禁用管理控制面板中的默認行為",
     "Disabled": "殘疾人",
     "Do not close or refresh this window": "不要關閉或刷新此窗口",
@@ -512,7 +512,7 @@
     "System": "系統",
     "Technologies and Components": "技術和部件",
     "Template": "模板",
-    "The DNS name or IP address of the server. For example dc.domain.local.": "DNS名稱或服務器的IP地址。例如dc.domain.local。",
+    "The DNS name or IP address of the server (e.g., dc.domain.local).": "DNS名稱或服務器的IP地址。例如dc.domain.local。",
     "The board must be added to an org to enable this.": "董事會必須添加到一個組織，使這一點。",
     "The full URL to your application homepage": "完整的URL到應用程序的主頁",
     "Theming/CSSilize": "主題化/ CSSilize",
@@ -528,7 +528,7 @@
     "This board will be": "這個委員會將是",
     "This card is archived.": "此卡存檔。",
     "This is a simple sample App to show the possibilities of App platform": "這是一個簡單的示例應用程序顯示應用程序平台的可能性",
-    "This is your search base for LDAP queries. This should be at least your domain root, for example dc=domain,dc=local You can define this as a Organizational Unit if you want to narrow down the search base. For example: ou=team,ou=company,dc=domain,dc=local": "這是LDAP查詢搜索的基礎。這應該是至少你的域名根目錄，例如DC =域，DC =本地，如果你想縮小搜索庫可以定義這是一個組織單位。例如：OU =隊，OU =公司，DC =域，DC =本地",
+    "This is your search base for LDAP queries. This should be at least your domain root, (e.g., dc=domain,dc=local) You can define this as a Organizational Unit if you want to narrow down the search base (e.g., ou=team,ou=company,dc=domain,dc=local)": "這是LDAP查詢搜索的基礎。這應該是至少你的域名根目錄，例如DC =域，DC =本地，如果你想縮小搜索庫可以定義這是一個組織單位。例如：OU =隊，OU =公司，DC =域，DC =本地",
     "This organization is private. It's not indexed or visible to those outside the org.": "這個組織是私人的。它沒有索引或可見的那些組織之外。",
     "This organization is public. It's visible to anyone with the link and will show up in search engines like Google. Only those invited to the org can add and edit org boards.": "這個組織是公開的。這是可見的任何人的聯繫，並會像谷歌搜索引擎中出現。只有那些受邀的組織可以添加和編輯組織板。",
     "This will remove all the cards in this list from the board. To view archived cards and bring them back to the board, click \"Menu\" > \"Archived Items\".": "這將在從板列表中刪除所有的牌。要查看存檔卡，並把他們帶回董事會，點擊“菜單”>“歸檔項目”。",
@@ -650,5 +650,6 @@
     "{{count}} Comment": "{{count}} 評論",
     "{{count}} Comment_plural": "{{count}} 評論",
     "{{count}} Vote": "{{count}} 投票",
-    "{{count}} Vote_plural": "{{count}} 投票"
+    "{{count}} Vote_plural": "{{count}} 投票",
+    "It is used in all outgoing emails": "它在所有外發郵件使用"
 }

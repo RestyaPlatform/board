@@ -204,7 +204,7 @@
     "Deleting an user is permanent. There is no undo.": "Usuwanie użytkownika jest trwały. Nie ma cofania.",
     "Description": "Opis",
     "Developer applications": "Twórca aplikacji",
-    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx": "Różnicy między LDAPv3 i LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx",
+    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)": "Różnicy między LDAPv3 i LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)",
     "Disable it in Admin Control Panel for default behavior": "Wyłącz go Admin Control Panel domyślne zachowanie",
     "Disabled": "Wyłączone",
     "Do not close or refresh this window": "Nie zamykaj tego okna lub odświeżyć",
@@ -512,7 +512,7 @@
     "System": "System",
     "Technologies and Components": "Technologii i komponentów",
     "Template": "Szablon",
-    "The DNS name or IP address of the server. For example dc.domain.local.": "Nazwa DNS lub adres IP serwera. Na przykład dc.domain.local.",
+    "The DNS name or IP address of the server (e.g., dc.domain.local).": "Nazwa DNS lub adres IP serwera. Na przykład dc.domain.local.",
     "The board must be added to an org to enable this.": "Płyta musi być dodany do org, aby to umożliwić.",
     "The full URL to your application homepage": "Pełny adres URL do strony głównej aplikacji",
     "Theming/CSSilize": "Skórki / CSSilize",
@@ -528,7 +528,7 @@
     "This board will be": "Płyta ta będzie",
     "This card is archived.": "Karta ta jest zachowana w archiwum.",
     "This is a simple sample App to show the possibilities of App platform": "Jest to prosta próbka App, aby pokazać możliwości platformy App",
-    "This is your search base for LDAP queries. This should be at least your domain root, for example dc=domain,dc=local You can define this as a Organizational Unit if you want to narrow down the search base. For example: ou=team,ou=company,dc=domain,dc=local": "Jest to baza wyszukiwania dla zapytań LDAP. To powinno być przynajmniej twój główny domeny, na przykład, DC = domena, DC = lokalnym Można określić to jako jednostki organizacyjnej, jeśli chcesz, aby zawęzić podstawy wyszukiwania. Na przykład: ou = zespołu, ou = firma, dc = domain, dc = lokalnym",
+    "This is your search base for LDAP queries. This should be at least your domain root, (e.g., dc=domain,dc=local) You can define this as a Organizational Unit if you want to narrow down the search base (e.g., ou=team,ou=company,dc=domain,dc=local)": "Jest to baza wyszukiwania dla zapytań LDAP. To powinno być przynajmniej twój główny domeny, na przykład, DC = domena, DC = lokalnym Można określić to jako jednostki organizacyjnej, jeśli chcesz, aby zawęzić podstawy wyszukiwania. Na przykład: ou = zespołu, ou = firma, dc = domain, dc = lokalnym",
     "This organization is private. It's not indexed or visible to those outside the org.": "Organizacja ta jest prywatny. To nie jest indeksowany lub widoczny dla tych spoza org.",
     "This organization is public. It's visible to anyone with the link and will show up in search engines like Google. Only those invited to the org can add and edit org boards.": "Organizacja ta jest publiczna. Jest to widoczne dla każdego z link i pojawi się w wyszukiwarkach takich jak Google. Tylko ci, zaproszeni na org można dodawać i edytować org deski.",
     "This will remove all the cards in this list from the board. To view archived cards and bring them back to the board, click \"Menu\" > \"Archived Items\".": "Spowoduje to usunięcie wszystkich kart na tej liście z planszy. Aby wyświetlić zarchiwizowane karty i oddać je do tablicy, kliknij \"Menu\"> \"zarchiwizowanych elementów\".",
@@ -650,5 +650,6 @@
     "{{count}} Comment": "{{count}} Komentarz",
     "{{count}} Comment_plural": "{{count}} Komentarze",
     "{{count}} Vote": "{{count}} Zagłosuj",
-    "{{count}} Vote_plural": "{{count}} Głosów"
+    "{{count}} Vote_plural": "{{count}} Głosów",
+    "It is used in all outgoing emails": "Jest on stosowany we wszystkich wysyłanych wiadomości"
 }

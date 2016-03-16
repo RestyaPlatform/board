@@ -204,7 +204,7 @@
     "Deleting an user is permanent. There is no undo.": "Deleting an user is permanent. There is no undo.",
     "Description": "Description",
     "Developer applications": "Developer applications",
-    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx": "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx",
+    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)": "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)",
     "Disable it in Admin Control Panel for default behavior": "Disable it in Admin Control Panel for default behavior",
     "Disabled": "Disabled",
     "Do not close or refresh this window": "Do not close or refresh this window",
@@ -512,7 +512,7 @@
     "System": "System",
     "Technologies and Components": "Technologies and Components",
     "Template": "Template",
-    "The DNS name or IP address of the server. For example dc.domain.local.": "The DNS name or IP address of the server. For example dc.domain.local.",
+    "The DNS name or IP address of the server (e.g., dc.domain.local).": "The DNS name or IP address of the server (e.g., dc.domain.local).",
     "The board must be added to an org to enable this.": "The board must be added to an org to enable this.",
     "The full URL to your application homepage": "The full URL to your application homepage",
     "Theming/CSSilize": "Theming/CSSilize",
@@ -528,7 +528,7 @@
     "This board will be": "This board will be",
     "This card is archived.": "This card is archived.",
     "This is a simple sample App to show the possibilities of App platform": "This is a simple sample App to show the possibilities of App platform",
-    "This is your search base for LDAP queries. This should be at least your domain root, for example dc=domain,dc=local You can define this as a Organizational Unit if you want to narrow down the search base. For example: ou=team,ou=company,dc=domain,dc=local": "This is your search base for LDAP queries. This should be at least your domain root, for example dc=domain,dc=local You can define this as a Organizational Unit if you want to narrow down the search base. For example: ou=team,ou=company,dc=domain,dc=local",
+    "This is your search base for LDAP queries. This should be at least your domain root, (e.g., dc=domain,dc=local) You can define this as a Organizational Unit if you want to narrow down the search base (e.g., ou=team,ou=company,dc=domain,dc=local)": "This is your search base for LDAP queries. This should be at least your domain root, (e.g., dc=domain,dc=local) You can define this as a Organizational Unit if you want to narrow down the search base (e.g., ou=team,ou=company,dc=domain,dc=local)",
     "This organization is private. It's not indexed or visible to those outside the org.": "This organization is private. It's not indexed or visible to those outside the org.",
     "This organization is public. It's visible to anyone with the link and will show up in search engines like Google. Only those invited to the org can add and edit org boards.": "This organization is public. It's visible to anyone with the link and will show up in search engines like Google. Only those invited to the org can add and edit org boards.",
     "This will remove all the cards in this list from the board. To view archived cards and bring them back to the board, click \"Menu\" > \"Archived Items\".": "This will remove all the cards in this list from the board. To view archived cards and bring them back to the board, click \"Menu\" > \"Archived Items\".",
@@ -650,5 +650,6 @@
     "{{count}} Comment": "{{count}} Comment",
     "{{count}} Comment_plural": "{{count}} Comments",
     "{{count}} Vote": "{{count}} Vote",
-    "{{count}} Vote_plural": "{{count}} Votes"
+    "{{count}} Vote_plural": "{{count}} Votes",
+    "It is used in all outgoing emails": "It is used in all outgoing emails"
 }
