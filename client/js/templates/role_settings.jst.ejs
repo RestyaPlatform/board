@@ -5,7 +5,7 @@
 				<thead>
 					<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
 					<% roles.each(function(role) { %>
-						<th class="col-xs-1 text-center"><%- role.attributes.name %></th>
+						<th class="col-xs-1 text-center"><%- i18next.t(role.attributes.name) %></th>
 					<% }); %>
 				</thead>
 				<tbody class="js-acl-link-list-body acl-link-list">
@@ -100,7 +100,7 @@
 				<thead>
 					<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
 					<% board_user_roles.each(function(board_user_role) { %>
-						<th class="col-xs-1 text-center"><%- board_user_role.attributes.name %></th>
+						<th class="col-xs-1 text-center"><%- i18next.t(board_user_role.attributes.name) %></th>
 					<% }); %>
 				</thead>
 				<tbody class="js-acl-link-list-body acl-link-list">
@@ -150,7 +150,7 @@
 				<thead>
 					<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
 					<% organization_user_roles.each(function(organization_user_role) { %>
-						<th class="col-xs-1 text-center"><%- organization_user_role.attributes.name %></th>
+						<th class="col-xs-1 text-center"><%- i18next.t(organization_user_role.attributes.name) %></th>
 					<% }); %>
 				</thead>
 				<tbody class="js-acl-link-list-body acl-link-list">

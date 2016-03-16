@@ -186,7 +186,7 @@
 					board_visibility_icon = 'icon-circle';
 				}
 			%>
-			<button class="btn btn-default btn-sm js-board-visibility" type="button"><i class="<%- board_visibility_icon%>"></i><span class="hidden-xs"><%= board_visibility %></span></button>
+			<button class="btn btn-default btn-sm js-board-visibility" type="button"><i class="<%- board_visibility_icon%>"></i><span class="hidden-xs"><%= i18next.t(board_visibility) %></span></button>
 			
 			<button data-toggle="dropdown" class="btn btn-default btn-sm dropdown-toggle active js-board-visibility" type="button"> <span><i class="icon-caret-down cur"></i></span> <span class="sr-only"><%- i18next.t("Toggle Dropdown") %></span> </button>
 			

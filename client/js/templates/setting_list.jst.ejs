@@ -27,7 +27,7 @@
 				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%}%>" id="settingTab<%- settingCategory.get('id') %>">
 					<% if(!_.isEmpty(settings)){ %>
 					<% if(settingCategory.get('id') == 10){ %>
-					<p class="alert alert-info ">To add/reply cards via email you must set up a secret email account with IMAP access.</p>
+					<p class="alert alert-info "><%- i18next.t('To add/reply cards via email you must set up a secret email account with IMAP access.') %></p>
 					<% } %>
 					<form class="form-horizontal clearfix <% if(settingCategory.get('id') == 2){ %>col-lg-8<% } else { %>col-lg-6<% } %> col-md-8 col-sm-12 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
 					<%
@@ -70,7 +70,7 @@
 										<div class="col-sm-offset-2">
 									<% } %>
 											<legend>
-												<span class="show h4"><%=setting.category_name%></span>
+												<span class="show h4"><%= i18next.t(setting.category_name) %></span>
 											</legend>				
 									<% if(setting.setting_category_id == 4 || setting.setting_category_id == 5) { %>
 										<div class="col-sm-offset-2">
@@ -84,7 +84,7 @@
 									<div class="<% if(setting.name != 'ENABLE_SSL_CONNECTIVITY'){ %>checkbox pull-left<% } else { %>form-group<% } %>">
 									<% if(setting.name === 'ENABLE_SSL_CONNECTIVITY'){ %><div class="col-xs-3"></div><div		class="col-xs-9"><% } %>
  										<input class="js-checkbox" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" type="checkbox" <% if(setting.value === 'true') { %> checked="checked" <% } %> value="<%- setting.value %>">
- 										<label for="inputSetting<%- setting.id %>"><%- setting.label %> </label>
+ 										<label for="inputSetting<%- setting.id %>"><%- i18next.t(setting.label) %> </label>
 									<% if(setting.name === 'ENABLE_SSL_CONNECTIVITY'){ %></div><% } %>
  									</div>
 					    <% if(setting.id == 3){ %>
@@ -94,9 +94,9 @@
 						<% } else {%>
 							<% if(setting.id == 31){ %>
 								<div class="form-group">
-								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- setting.label %></label>
+								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t(setting.label) %></label>
 								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
-									<select name="<%- setting.name %>" id="inputSetting<%- setting.id %>" class="form-control">
+									<select name="<%- i18next.t(setting.name) %>" id="inputSetting<%- setting.id %>" class="form-control">
 									 <%
 									 _.each(JSON.parse(window.sessionStorage.getItem('languages')), function(v, k) { %>
 										<option <% if(k === setting.value) { %>selected <% }%> value="<%- k %>"><%- v %></option>
@@ -107,10 +107,10 @@
 								</div>
 							<% } else {%>
 								<div class="form-group">
-								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- setting.label %></label>
+								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t(setting.label) %></label>
 								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
-									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" class="form-control" value="<%- setting.value %>" />
-									<div><span class="help-block"><%= setting.description %></span></div>
+									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" value="<%- setting.value %>" />
+									<div><span class="help-block"><%= i18next.t(setting.description) %></span></div>
 								  </div>
 								</div>
 							<% } %>
@@ -137,7 +137,7 @@
 		<% j++; %>
 		<% if(settingCategory.id == 2 && id == 2){ %>
 			<legend>
-				<span class="show h4">Import LDAP users</span>
+				<span class="show h4"><%- i18next.t('Import LDAP users') %></span>
 			</legend>
 			<div class="form-group">
 				<div class="col-xs-3"></div><div class="col-xs-9">
