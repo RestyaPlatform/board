@@ -204,7 +204,7 @@
     "Deleting an user is permanent. There is no undo.": "ஒரு பயனர் நீக்குதல் நிரந்தரமானது. செயல்தவிர்க்க முடியாது.",
     "Description": "விளக்கம்",
     "Developer applications": "படைப்பாளி பயன்பாடுகள்",
-    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx": "இது LDAPv3 மற்றும் LDAPv2 வின் betwen வேறுபாடு https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx",
+    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)": "இது LDAPv3 மற்றும் LDAPv2 வின் betwen வேறுபாடு https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)",
     "Disable it in Admin Control Panel for default behavior": "இயல்புநிலை நடத்தை அதை நிர்வாகம் கண்ட்ரோல் பேனல் முடக்கவும்",
     "Disabled": "முடக்கப்பட்டது",
     "Do not close or refresh this window": "மூட அல்லது இந்த சாளரத்தில் புதுப்பிக்க",
@@ -512,7 +512,7 @@
     "System": "அமைப்பு",
     "Technologies and Components": "டெக்னாலஜீஸ் மற்றும் கூறுகள்",
     "Template": "டெம்ப்ளேட்",
-    "The DNS name or IP address of the server. For example dc.domain.local.": "DNS பெயர் அல்லது ஐபி முகவரி. dc.domain.local உதாரணமாக.",
+    "The DNS name or IP address of the server (e.g., dc.domain.local).": "DNS பெயர் அல்லது ஐபி முகவரி. dc.domain.local உதாரணமாக.",
     "The board must be added to an org to enable this.": "குழு இதை இயக்க ஒரு org சேர்க்க வேண்டும்.",
     "The full URL to your application homepage": "உங்கள் விண்ணப்பத்தை முகப்பு முழு URL ஐ",
     "Theming/CSSilize": "செருப்பை / CSSilize",
@@ -528,7 +528,7 @@
     "This board will be": "இந்த பலகை இருக்கும்",
     "This card is archived.": "இந்த அட்டை காப்பிடப்பட்டுள்ளது.",
     "This is a simple sample App to show the possibilities of App platform": "இந்த ஆப் தளம் சாத்தியமுண்டு காட்ட ஒரு எளிய மாதிரி பயன்பாடு ஆகும்",
-    "This is your search base for LDAP queries. This should be at least your domain root, for example dc=domain,dc=local You can define this as a Organizational Unit if you want to narrow down the search base. For example: ou=team,ou=company,dc=domain,dc=local": "இந்த LDAP, கேள்விகளுக்கும், உங்கள் தேடல் தளம் உள்ளது. இந்த உதாரணம் DC = டொமைன், DC = உள்ளூர் நீங்கள் தேடல் அடிப்படை நோக்கை சுருக்கிக் வேண்டும் என்றால் நீங்கள் ஒரு நிறுவன யூனிட் இந்த வரையறுக்க முடியாது, குறைந்தபட்சம் உங்கள் டொமைன் ரூட் இருக்க வேண்டும். OU = அணி, OU = நிறுவனம், DC = டொமைன், DC = உள்ளூர்: உதாரணமாக",
+    "This is your search base for LDAP queries. This should be at least your domain root, (e.g., dc=domain,dc=local) You can define this as a Organizational Unit if you want to narrow down the search base (e.g., ou=team,ou=company,dc=domain,dc=local)": "இந்த LDAP, கேள்விகளுக்கும், உங்கள் தேடல் தளம் உள்ளது. இந்த உதாரணம் DC = டொமைன், DC = உள்ளூர் நீங்கள் தேடல் அடிப்படை நோக்கை சுருக்கிக் வேண்டும் என்றால் நீங்கள் ஒரு நிறுவன யூனிட் இந்த வரையறுக்க முடியாது, குறைந்தபட்சம் உங்கள் டொமைன் ரூட் இருக்க வேண்டும். OU = அணி, OU = நிறுவனம், DC = டொமைன், DC = உள்ளூர்: உதாரணமாக",
     "This organization is private. It's not indexed or visible to those outside the org.": "இந்த அமைப்பு தனியார் ஆகிறது. அது குறியிடப்படுவதாயினும் அல்லது நிறுவனத்துடன் வெளியே அந்த தெரியும்.",
     "This organization is public. It's visible to anyone with the link and will show up in search engines like Google. Only those invited to the org can add and edit org boards.": "இந்த அமைப்பு பொது உள்ளது. இது இணைப்பு உள்ளவர்களுக்குக் காணும்படி மற்றும் கூகிள் போன்ற தேடுபொறிகள் வரை காண்பிக்கும். ஒரே org க்கு அழைக்கப்பட்டவர்கள் சேர்க்க மற்றும் நிறுவனத்துடன் பலகைகள் திருத்த முடியும்.",
     "This will remove all the cards in this list from the board. To view archived cards and bring them back to the board, click \"Menu\" > \"Archived Items\".": "இந்த குழுவில் இருந்து இந்த பட்டியலில் உள்ள அனைத்து அட்டைகள் நீக்க வேண்டும். காப்பகப்படுத்தப்படாது அட்டைகள் பார்க்க மற்றும் மீண்டும் குழு அவற்றை கொண்டு, \"பட்டி\"> \"காப்பகப்படுத்தப்பட்ட உருப்படிகள்\" என்பதை கிளிக் செய்யவும்.",
@@ -650,5 +650,6 @@
     "{{count}} Comment": "{{count}} கருத்து",
     "{{count}} Comment_plural": "{{count}} கருத்துக்கள்",
     "{{count}} Vote": "{{count}} வாக்களியுங்கள்",
-    "{{count}} Vote_plural": "{{count}} வாக்குரிமை"
+    "{{count}} Vote_plural": "{{count}} வாக்குரிமை",
+    "It is used in all outgoing emails": "அது அனைத்து வெளிச்செல்லும் மின்னஞ்சல்களை பயன்படுத்தப்படுகிறது"
 }

@@ -204,7 +204,7 @@
     "Deleting an user is permanent. There is no undo.": "Удаление пользователя является постоянным. Там нет отмены.",
     "Description": "Описание",
     "Developer applications": "приложения для разработчиков",
-    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx": "Betwen LDAPv3 Разница и LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx",
+    "Difference betwen LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)": "Betwen LDAPv3 Разница и LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)",
     "Disable it in Admin Control Panel for default behavior": "Отключить его в панель управления администратора поведение по умолчанию",
     "Disabled": "Отключено",
     "Do not close or refresh this window": "Не закрыть или обновить окно",
@@ -512,7 +512,7 @@
     "System": "система",
     "Technologies and Components": "Технологии и компоненты",
     "Template": "Шаблон",
-    "The DNS name or IP address of the server. For example dc.domain.local.": "Имя DNS или IP-адрес сервера. Например dc.domain.local.",
+    "The DNS name or IP address of the server (e.g., dc.domain.local).": "Имя DNS или IP-адрес сервера. Например dc.domain.local.",
     "The board must be added to an org to enable this.": "Совет должен быть добавлен к орг включить это.",
     "The full URL to your application homepage": "Полный URL к домашней странице вашего приложения",
     "Theming/CSSilize": "Тематизация / CSSilize",
@@ -528,7 +528,7 @@
     "This board will be": "Эта плата будет",
     "This card is archived.": "Эта карта находится в архиве.",
     "This is a simple sample App to show the possibilities of App platform": "Это простой пример приложения, чтобы показать возможности платформы App",
-    "This is your search base for LDAP queries. This should be at least your domain root, for example dc=domain,dc=local You can define this as a Organizational Unit if you want to narrow down the search base. For example: ou=team,ou=company,dc=domain,dc=local": "Это ваш поиск базы для запросов LDAP. Это должно быть по крайней мере, ваш корневой домен, например, dc = домен, DC = локальный Вы можете определить это как организационной единицы, если вы хотите, чтобы сузить область поиска базы. Например: НУ = команда, OU = компания, DC = домен, DC = локальный",
+    "This is your search base for LDAP queries. This should be at least your domain root, (e.g., dc=domain,dc=local) You can define this as a Organizational Unit if you want to narrow down the search base (e.g., ou=team,ou=company,dc=domain,dc=local)": "Это ваш поиск базы для запросов LDAP. Это должно быть по крайней мере, ваш корневой домен, например, dc = домен, DC = локальный Вы можете определить это как организационной единицы, если вы хотите, чтобы сузить область поиска базы. Например: НУ = команда, OU = компания, DC = домен, DC = локальный",
     "This organization is private. It's not indexed or visible to those outside the org.": "Эта организация является частным. Это не индексируются или видимым для тех, за пределами орг.",
     "This organization is public. It's visible to anyone with the link and will show up in search engines like Google. Only those invited to the org can add and edit org boards.": "Эта организация является открытой. Это видно любому, кто ссылке и будет отображаться в поисковых системах, как Google. Только те, предлагается орг можете добавлять и редактировать организационных доска.",
     "This will remove all the cards in this list from the board. To view archived cards and bring them back to the board, click \"Menu\" > \"Archived Items\".": "Это позволит удалить все карты в этом списке с доски. Для просмотра архивных карт и вернуть их к доске, нажмите кнопку \"Меню\"> \"архивные элементы\".",
@@ -650,5 +650,6 @@
     "{{count}} Comment": "{{count}} комментарий",
     "{{count}} Comment_plural": "{{count}} Комментарии",
     "{{count}} Vote": "{{count}} Голосовать",
-    "{{count}} Vote_plural": "{{count}} голосов"
+    "{{count}} Vote_plural": "{{count}} голосов",
+    "It is used in all outgoing emails": "Он используется во всех исходящих сообщениях"
 }
