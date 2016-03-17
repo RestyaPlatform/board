@@ -210,7 +210,80 @@
 				  <% } %>
 				</div>
 				<% } %>
-				
+				<div class="list-group-item-text clearfix">	
+				<ul class="list-inline well-sm">
+					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+					<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-move-card-form js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><i class="icon-folder-close"></i><%- i18next.t('Move') %></a>
+					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
+						<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
+						<li class="col-xs-12 divider"></li>
+						<li class="col-xs-12">
+						  <form role="form" class="js-move-card" name="MoveCardForm" id="MoveCardForm">
+							<div class="js-show-move-card-form-response"> </div>
+							<div class="form-group clearfix panel-body">
+							  <label class="sr-only"><%- i18next.t('Move') %></label>
+							  <input type="submit" id="submitListMove" class="btn btn-primary col-xs-12" value="<%- i18next.t('Move') %>" />
+							</div>
+						  </form>
+						</li>
+					  </ul>
+					</li>
+					<% } %>
+					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "copy_card",board_user_role_id: parseInt(list.board_user_role_id)})))  && !is_offline_data){ %>
+						<li class="btn btn-default dropdown js-hide-on-offline"> <a class="dropdown-toggle js-show-copy-card-form" role="button" data-toggle="dropdown" title="<%- i18next.t('Copy') %>" href="#"><i class="icon-copy"></i><%- i18next.t('Copy') %></a>
+						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 pre-scrollable vertical-scrollbar">
+							<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Copy Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
+							<li class="col-xs-12 divider"></li>
+							<li class="col-xs-12">
+							  <form role="form" method="post" class="js-copy-card">
+								<div class="form-group">
+								  <label for="card-title"><%- i18next.t('Title') %></label>
+								  <textarea id="card-title" class="form-control" rows="4" name="name"><%- card.attributes.name%></textarea>
+								</div>
+								<div class="js-show-copy-card-form-response"> </div>
+								<div class="form-group clearfix panel-body">
+								  <label class="sr-only"><%- i18next.t('Create card') %></label>
+								  <input type="submit" class="btn btn-primary col-xs-12" value="<%- i18next.t('Create card') %>">
+								</div>
+							  </form>
+							</li>
+						  </ul>
+						</li>
+					<% } %>
+					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && _.isEmpty(cards_subscribers)) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && !_.isEmpty(cards_subscribers)))) { %>
+						<%
+							var subscribe_disabled = '';
+							var subscribed = card.list.collection.board.board_subscribers.findWhere({
+								user_id: parseInt(authuser.user.id),
+								is_subscribed: 1
+							}); 
+							if (subscribed) {
+								subscribe_disabled = 'disabled';
+							}
+						%>
+						<li class="<%= subscribe_disabled %>"> 
+							<a class="btn btn-default <% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- i18next.t('Subscribe') %> " href="">
+							<% if(!_.isEmpty(cards_subscribers)){ %>
+								<i class="icon-eye-open"></i>
+						    <% } else { %>
+								<i class="icon-eye-close"></i>
+							<% } %>
+							<%- i18next.t('Subscribe') %>
+							</a> 
+					  </li>
+				   <% } %>
+					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+						<li> <a class="btn btn-default <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)})))) { %> js-card-send-to-board<% } %>" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><%}%>" href=""><i class="icon-cloud-download"></i>
+						<% if(parseInt(card.attributes.is_archived) === 0){ %>
+							<%- i18next.t('Archive') %>
+						<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+							  <%- i18next.t('Send to board') %>
+						<% } %>
+							</a> 
+						</li>
+					<% } %>
+				 </ul>
+				</div>
 			  </li>
 			</ul>
 		</div>
