@@ -4632,7 +4632,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
         '/users/login',
         '/users/register',
         '/oauth/token',
-		'/users/?/activation'
+        '/users/?/activation'
     );
     if ($r_resource_cmd != '/users/login') {
         $token_exception_url = array(
