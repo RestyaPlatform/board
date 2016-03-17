@@ -36,6 +36,7 @@
 			supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
 			onComplete: function(swaggerApi, swaggerUi) {
 				window.swaggerUi.api.setBasePath('/api');
+				window.swaggerUi.api.schemes = location.protocol.replace(':', '');
 				$('pre code').each(function(i, e) {
 					hljs.highlightBlock(e)
 				});
