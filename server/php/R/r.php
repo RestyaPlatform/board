@@ -4768,7 +4768,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
                 break;
 
             case 'PUT':
-                if ((in_array('write', $scope)) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) {
+                if (((in_array('write', $scope)) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) || $r_resource_cmd == '/users/?/activation') {
                     r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put);
                     $is_valid_req = true;
                 } else {
