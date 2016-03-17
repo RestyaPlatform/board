@@ -4631,7 +4631,8 @@ if (!empty($_GET['_url']) && $db_lnk) {
     $scope_exception_url = array(
         '/users/login',
         '/users/register',
-        '/oauth/token'
+        '/oauth/token',
+		'/users/?/activation'
     );
     if ($r_resource_cmd != '/users/login') {
         $token_exception_url = array(
@@ -4757,7 +4758,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
                 break;
 
             case 'POST':
-                if (((!empty($scope) && in_array('write', $scope)) || in_array($r_resource_cmd, $scope_exception_url)) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) {
+                if ((in_array('write', $scope) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) || in_array($r_resource_cmd, $scope_exception_url)) {
                     $r_post = json_decode(file_get_contents('php://input'));
                     $r_post = (array)$r_post;
                     r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post);
@@ -4768,7 +4769,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
                 break;
 
             case 'PUT':
-                if (((in_array('write', $scope)) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) || $r_resource_cmd == '/users/?/activation') {
+                if ((in_array('write', $scope) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) || in_array($r_resource_cmd, $scope_exception_url)) {
                     r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put);
                     $is_valid_req = true;
                 } else {
@@ -4777,7 +4778,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
                 break;
 
             case 'DELETE':
-                if ((in_array('write', $scope)) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) {
+                if ((in_array('write', $scope) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) || in_array($r_resource_cmd, $scope_exception_url)) {
                     r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters);
                     $is_valid_req = true;
                 } else {
