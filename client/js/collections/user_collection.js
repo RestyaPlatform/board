@@ -50,7 +50,7 @@ App.UserCollection = Backbone.Collection.extend({
                     _date = date[0];
                 }
                 sort_date = new Date(_date);
-                return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                return self.sortDirection.toLowerCase() === 'desc' ? -sort_date.getTime() : sort_date.getTime();
             }
         } else {
             if (self.sortDirection.toLowerCase() === 'desc') {
