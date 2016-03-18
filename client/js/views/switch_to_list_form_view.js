@@ -109,6 +109,17 @@ App.SwitchToListView = Backbone.View.extend({
                         }
                     });
                     return str;
+                } else if (sort_by === 'due_date') {
+                    if (item.get('due_date') !== null) {
+                        var date = item.get('due_date').split(' ');
+                        if (!_.isUndefined(date[1])) {
+                            _date = date[0] + 'T' + date[1];
+                        } else {
+                            _date = date[0];
+                        }
+                        sort_date = new Date(_date);
+                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
                 } else {
                     if (cards.sortDirection === 'desc') {
                         return -item.get(sort_by);
