@@ -552,11 +552,15 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
         'PUT'
     );
     $board_star = true;
-    $board_star_url = array(
+    $public_board_exception_url = array(
         '/boards/?/boards_stars/?',
-        '/boards/?/boards_stars'
+        '/boards/?/boards_stars',
+        '/boards/?/lists/?/cards/?/comments',
+        '/boards/?/board_subscribers',
+        '/boards/?/lists/?/list_subscribers',
+        '/boards/?/lists/?/cards/?/card_subscribers'
     );
-    if (in_array($r_resource_cmd, $board_star_url)) {
+    if (in_array($r_resource_cmd, $public_board_exception_url)) {
         $board_star = false;
     }
     //temp fix
