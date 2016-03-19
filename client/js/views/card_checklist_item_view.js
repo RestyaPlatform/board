@@ -156,8 +156,9 @@ App.CardCheckListItemView = Backbone.View.extend({
         var prev_form = $('form.js-item-edit-form');
         prev_form.parent().addClass('js-show-item-edit-form').html($('textarea', prev_form).val());
         prev_form.remove();
-        $(e.target).addClass('hide').html('');
-        $(e.target).after(new App.ChecklistItemEditFormView({
+        $(e.target).parent().addClass('hide');
+        $(e.target).html('');
+        $(e.target).parent().after(new App.ChecklistItemEditFormView({
             model: this.model
         }).el);
         return false;
@@ -172,7 +173,8 @@ App.CardCheckListItemView = Backbone.View.extend({
     hideChecklistEditForm: function(e) {
         e.preventDefault();
         var form = $('form.js-item-edit-form');
-        form.prev('.js-show-item-edit-form').removeClass('hide').html($('textarea', form).val());
+        form.prev('.js-show-item-edit-form').removeClass('hide');
+        form.prev('.js-show-item-edit-form').children().html($('textarea', form).val());
         form.remove();
     },
     /**
