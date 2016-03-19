@@ -64,7 +64,9 @@ App.ApplicationView = Backbone.View.extend({
                     abortPending: true,
                     success: function(model, response) {
                         api_token = response.access_token;
-                        window.sessionStorage.setItem('links', response.links);
+                        if (!_.isUndefined(response.links)) {
+                            window.sessionStorage.setItem('links', response.links);
+                        }
                         window.sessionStorage.setItem('languages', response.languages);
                         window.sessionStorage.setItem('apps', response.apps);
                         role_links.add(JSON.parse(response.links));
