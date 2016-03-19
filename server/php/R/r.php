@@ -863,7 +863,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             array_push($pg_params, $condition_param);
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM oauth_clients c ' . $condition . ') as d ';
-        $c_sql = 'SELECT COUNT(*) FROM oauth_clients c';
         break;
 
     case '/oauth/applications':
