@@ -3884,6 +3884,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $current_list_name = executeQuery('SELECT name FROM lists WHERE id =  $1', $qry_val_arr);
             $comment = '##USER_NAME## moved the card ##CARD_LINK## to ' . $current_list_name['name'];
             $activity_type = 'change_card_position';
+            if (!empty($r_put['list_id'])) {
+                $activity_type = 'move_card';
+                $id = $r_put['list_id'];
+            }
         }
         if (isset($previous_value) && isset($r_put['is_archived'])) {
             if ($r_put['is_archived']) {
