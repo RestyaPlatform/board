@@ -162,6 +162,7 @@ if (_.isEmpty(role_links.where({
 	<ul class="nav nav-pills navbar-right">
 	<% if(!_.isUndefined(authuser.user)){%>
 	<% if (!_.isUndefined(authuser.user) &&  !_.isEmpty(model.user) && model.user.role_id == 1) { %>
+		<li class="phone-block"><a class="btn btn-primary pull-right js-show-qr-code" id="phone" title="<%- i18next.t('View in iOS App') %>" href=""><i class="icon-mobile-phone lead"></i></a></li>
 	  	<li class="hidden-xs"><a title="<%- i18next.t('Admin CP') %>" class="btn btn-default pull-right admin-cp" href="#/activities"><span class="icon-user lead text-primary"></span><span class="hidden-xs text-primary"><%- i18next.t("Admin") %></span></a></li>
 	  <% } %>
 	  <% if((navigator.userAgent.toLowerCase().indexOf('android') > -1) && (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)){ %>

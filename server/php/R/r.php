@@ -863,7 +863,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             array_push($pg_params, $condition_param);
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM oauth_clients c ' . $condition . ') as d ';
-        $c_sql = 'SELECT COUNT(*) FROM oauth_clients c';
         break;
 
     case '/oauth/applications':
@@ -3885,6 +3884,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $current_list_name = executeQuery('SELECT name FROM lists WHERE id =  $1', $qry_val_arr);
             $comment = '##USER_NAME## moved the card ##CARD_LINK## to ' . $current_list_name['name'];
             $activity_type = 'change_card_position';
+            if (!empty($r_put['list_id'])) {
+                $activity_type = 'move_card';
+                $id = $r_put['list_id'];
+            }
         }
         if (isset($previous_value) && isset($r_put['is_archived'])) {
             if ($r_put['is_archived']) {
