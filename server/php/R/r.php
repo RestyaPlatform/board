@@ -3885,6 +3885,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $comment = '##USER_NAME## moved the card ##CARD_LINK## to ' . $current_list_name['name'];
             $activity_type = 'change_card_position';
             if (!empty($r_put['list_id'])) {
+                $foreign_ids['list_id'] = $r_resource_vars['lists'];
                 $activity_type = 'move_card';
                 $id = $r_put['list_id'];
             }
