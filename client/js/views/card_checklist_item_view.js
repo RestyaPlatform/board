@@ -153,15 +153,19 @@ App.CardCheckListItemView = Backbone.View.extend({
      *
      */
     showItemEditForm: function(e) {
-        var prev_form = $('form.js-item-edit-form');
-        prev_form.parent().addClass('js-show-item-edit-form').html($('textarea', prev_form).val());
-        prev_form.remove();
-        $(e.target).parent().addClass('hide');
-        $(e.target).html('');
-        $(e.target).parent().after(new App.ChecklistItemEditFormView({
-            model: this.model
-        }).el);
-        return false;
+        var target = $(e.target);
+        if (target.is('a')) {
+            return true;
+        } else {
+            var prev_form = $('form.js-item-edit-form');
+            prev_form.parent().addClass('js-show-item-edit-form').html($('textarea', prev_form).val());
+            prev_form.remove();
+            $('#js-checklist-item-' + this.model.id).addClass('hide').html('');
+            $('#js-checklist-item-' + this.model.id).after(new App.ChecklistItemEditFormView({
+                model: this.model
+            }).el);
+            return false;
+        }
     },
     /**
      * hideChecklistEditForm()
@@ -174,7 +178,7 @@ App.CardCheckListItemView = Backbone.View.extend({
         e.preventDefault();
         var form = $('form.js-item-edit-form');
         form.prev('.js-show-item-edit-form').removeClass('hide');
-        form.prev('.js-show-item-edit-form').children().html($('textarea', form).val());
+        $('#js-checklist-item-' + this.model.id).html(this.converter.makeHtml($('textarea', form).val()));
         form.remove();
     },
     /**
