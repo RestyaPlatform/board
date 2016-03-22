@@ -35,6 +35,7 @@ App.CardCheckListItemView = Backbone.View.extend({
             this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
         }
     },
+    converter: new Showdown.converter(),
     template: JST['templates/card_checklist_item'],
     className: function() {
         var class_name = 'js-checklist-item btn-block pull-left';
@@ -107,7 +108,8 @@ App.CardCheckListItemView = Backbone.View.extend({
      */
     render: function() {
         this.$el.html(this.template({
-            checklist_item: this.model
+            checklist_item: this.model,
+            converter: this.converter
         }));
         this.showTooltip();
         return this;
@@ -151,14 +153,19 @@ App.CardCheckListItemView = Backbone.View.extend({
      *
      */
     showItemEditForm: function(e) {
-        var prev_form = $('form.js-item-edit-form');
-        prev_form.parent().addClass('js-show-item-edit-form').html($('textarea', prev_form).val());
-        prev_form.remove();
-        $(e.target).addClass('hide').html('');
-        $(e.target).after(new App.ChecklistItemEditFormView({
-            model: this.model
-        }).el);
-        return false;
+        var target = $(e.target);
+        if (target.is('a')) {
+            return true;
+        } else {
+            var prev_form = $('form.js-item-edit-form');
+            prev_form.parent().addClass('js-show-item-edit-form').html($('textarea', prev_form).val());
+            prev_form.remove();
+            $('#js-checklist-item-' + this.model.id).addClass('hide').html('');
+            $('#js-checklist-item-' + this.model.id).after(new App.ChecklistItemEditFormView({
+                model: this.model
+            }).el);
+            return false;
+        }
     },
     /**
      * hideChecklistEditForm()
@@ -170,7 +177,8 @@ App.CardCheckListItemView = Backbone.View.extend({
     hideChecklistEditForm: function(e) {
         e.preventDefault();
         var form = $('form.js-item-edit-form');
-        form.prev('.js-show-item-edit-form').removeClass('hide').html($('textarea', form).val());
+        form.prev('.js-show-item-edit-form').removeClass('hide');
+        $('#js-checklist-item-' + this.model.id).html(this.converter.makeHtml($('textarea', form).val()));
         form.remove();
     },
     /**
