@@ -2207,6 +2207,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $r_post['position'] = 0;
                 }
                 $r_post['position']+= 1;
+                if (empty($r_post['member'])) {
+                    unset($r_post['member']);
+                }
                 $result = pg_execute_insert($table_name, $r_post);
                 $item = pg_fetch_assoc($result);
                 $response[$table_name][] = $item;
