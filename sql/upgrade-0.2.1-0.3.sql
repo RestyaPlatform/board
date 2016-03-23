@@ -296,7 +296,7 @@ CREATE OR REPLACE VIEW "cards_listing" AS
     cards.list_id,
     cards.name,
     cards.description,
-    cards.due_date,
+    to_char(cards.due_date, 'YYYY-MM-DD"T"HH24:MI:SS') as due_date,
     to_date(to_char(cards.due_date, 'YYYY/MM/DD'::text), 'YYYY/MM/DD'::text) AS to_date,
     cards."position",
     (cards.is_archived)::integer AS is_archived,
