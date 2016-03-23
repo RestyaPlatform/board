@@ -2,6 +2,24 @@ UPDATE "settings" SET "description" = 'It is used in all outgoing emails' WHERE 
 
 UPDATE "countries" SET "name" = 'United States' WHERE "name" = 'UnitedStates';
 
+INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
+VALUES ('40', now(), now(), 'Allow to post comments in public board', '/boards/?/lists/?/cards/?/comments', 'POST', 'comment_card', '2', '1', '0', '0', '0'),
+('41', now(), now(), 'Allow to subscribe board in public board', '/boards/?/board_subscribers', 'POST', 'subscribe_board', '2', '1', '0', '0', '0'),
+('42', now(), now(), 'Allow to subscribe list in public board', '/boards/?/lists/?/list_subscribers', 'POST', 'subscribe_list', '2', '1', '0', '0', '0'),
+('43', now(), now(), 'Allow to subscribe card in public board', '/boards/?/lists/?/cards/?/card_subscribers', 'POST', 'subscribe_card', '2', '1', '0', '0', '0');
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
+VALUES (now(), now(), '40', '1'),
+(now(), now(), '40', '2'),
+(now(), now(), '41', '1'),
+(now(), now(), '41', '2'),
+(now(), now(), '42', '1'),
+(now(), now(), '42', '2'),
+(now(), now(), '43', '1'),
+(now(), now(), '43', '2');
+
+UPDATE "acl_links" SET "name" = 'Allow to star/unstar in public board, card in public board' WHERE "slug" = 'starred_board';
+
 DROP VIEW activities_listing;
 CREATE OR REPLACE VIEW "activities_listing" AS
  SELECT activity.id,
