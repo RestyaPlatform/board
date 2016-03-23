@@ -91,6 +91,7 @@ App.ModalCardView = Backbone.View.extend({
         'keypress input[type=text]': 'onEnter',
         'click .js-show-emoji-list': 'showEmojiList',
         'click .js-comment-add-emoji': 'addEmoji',
+        'click .js-checklist-item-add-emoji': 'addChecklistItemEmoji',
         'click #modal-comments': 'showActivity',
         'click #modal-activities': 'showActivity',
         'keyup[c] .dockmodal': 'keyboardArchiveCard',
@@ -227,6 +228,17 @@ App.ModalCardView = Backbone.View.extend({
         e.preventDefault();
         var target = $(e.currentTarget);
         this.$el.find('.js-comment').val(this.$el.find('.js-comment').val() + ':' + target.text() + ': ');
+    },
+    /**
+     * addChecklistItemEmoji()
+     * Add emoji in comment
+     * @param e
+     * @type Object(DOM event)
+     */
+    addChecklistItemEmoji: function(e) {
+        e.preventDefault();
+        var target = $(e.currentTarget);
+        this.$el.find('#ChecklistItem').val(this.$el.find('#ChecklistItem').val() + ':' + target.text() + ': ');
     },
     /**
      * hideActivity()

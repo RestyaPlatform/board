@@ -19,7 +19,9 @@ App.AdminBoardsIndexView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function(options) {
+        this.sortField = options.sortField;
         this.filter_count = options.filter_count;
+        this.sortDirection = options.sortDirection;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
@@ -73,9 +75,31 @@ App.AdminBoardsIndexView = Backbone.View.extend({
             'board': this.model,
             filter_count: this.filter_count
         }));
+        if (!_.isUndefined(this.sortField)) {
+            this.renderBoardCollection();
+        }
         $('.js-admin-board-menu').addClass('active');
         $('.js-admin-activity-menu, .js-admin-setting-menu, .js-admin-email-menu, .js-admin-role-menu, .js-admin-user-menu').removeClass('active');
         this.showTooltip();
+        return this;
+    },
+    /**
+     * renderBoardCollection()
+     * populate the html to the dom
+     * @param NULL
+     * @return object
+     *
+     */
+    renderBoardCollection: function() {
+        var view = this.$el.find('.js-my-boards');
+        this.model.setSortField(this.sortField, this.sortDirection);
+        this.model.sort();
+        this.model.each(function(board) {
+            view.append(new App.AdminBoardView({
+                model: board,
+                board_user_roles: board.board_user_roles
+            }).el);
+        });
         return this;
     },
     /**	
@@ -105,7 +129,8 @@ App.AdminBoardsIndexView = Backbone.View.extend({
                 if (boards.length !== 0) {
                     boards.each(function(board) {
                         $('.js-my-boards').append(new App.AdminBoardView({
-                            model: board
+                            model: board,
+                            board_user_roles: response.board_user_roles
                         }).el);
                     });
                 } else {
@@ -182,7 +207,8 @@ App.AdminBoardsIndexView = Backbone.View.extend({
             success: function(boards, response) {
                 boards.each(function(board) {
                     $('.js-my-boards').append(new App.AdminBoardView({
-                        model: board
+                        model: board,
+                        board_user_roles: response.board_user_roles
                     }).el);
                 });
                 $('.js-my-boards').find('.timeago').timeago();
