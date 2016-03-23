@@ -813,24 +813,13 @@ App.BoardHeaderView = Backbone.View.extend({
                         } else if (days > -1) {
                             customClass = 'ganttGreen';
                         }
-                        card_created_date = card.created.split(' ');
+                        card_created_date = card.created.split('T');
                         var created_date = new Date(card_created_date[0]);
-                        var form_date = card_created_date[0] + 'T' + card_created_date[1];
-                        if (_.isUndefined(card_created_date[1])) {
-                            form_date = card_created_date[0];
-                        }
+                        var form_date = card.created;
                         if (created_date.getTime() > due_date.getTime()) {
-                            card_created_date = card.due_date.split(' ');
-                            form_date = card_created_date[0] + 'T' + card_created_date[1];
-                            if (_.isUndefined(card_created_date[1])) {
-                                form_date = card_created_date[0];
-                            }
+                            form_date = card.due_date;
                         }
-                        var _card_due_date = card.due_date.split(' ');
-                        var to_date = _card_due_date[0] + 'T' + _card_due_date[1];
-                        if (_.isUndefined(_card_due_date[1])) {
-                            to_date = _card_due_date[0];
-                        }
+                        var to_date = card.due_date;
                         d = new Date(form_date);
                         n.from = '/Date(' + d.getTime() + ')/';
                         d = new Date(to_date);
@@ -997,10 +986,6 @@ App.BoardHeaderView = Backbone.View.extend({
     getDue: function(card_due_date) {
         if (card_due_date === null) {
             return '';
-        }
-        card_due_date = card_due_date.split(' ');
-        if (!_.isEmpty(card_due_date[1])) {
-            card_due_date = card_due_date[0] + 'T' + card_due_date[1];
         }
         var today = new Date();
         var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
