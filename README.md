@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/RestyaPlatform/board.svg?branch=master)](https://travis-ci.org/RestyaPlatform/board)
 [![Coverage Status](https://coveralls.io/repos/github/RestyaPlatform/board/badge.svg)](https://coveralls.io/github/RestyaPlatform/board)
+[![Github All Releases](https://img.shields.io/github/downloads/RestyaPlatform/board/total.svg)](https://github.com/RestyaPlatform/board/)
 
 Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [Restya platform] (http://restya.com/).
 
