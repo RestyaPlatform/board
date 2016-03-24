@@ -1,0 +1,8 @@
+checks:
+    php:
+        code_rating: true
+        duplication: true
+filter:
+    excluded_paths:
+        - build/*
+        - server/php/libs/vendors/*
