@@ -125,11 +125,11 @@ if (_.isEmpty(role_links.where({
   <li class="hidden-xs org-btn"><a title="<%- i18next.t('Organizations') %>" href="#/organizations" class="btn btn-default"><span><%- i18next.t("Organizations") %></span></a></li>
    <% } %>	
   <% if(apps !== ""){ %>
-  <li class="dropdown hidden-xs board-btn js-show-add-apps-list"> 
+  <li class="dropdown hidden-xs board-btn js-show-add-apps-list add-apps-list"> 
 	  <a title="<%- i18next.t('Apps') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-apps-list"><span><%- i18next.t("Apps") %> </span><span><i class="icon-collapse"></i></span> </a>
 	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12">
 			<% _.each(apps, function(key,value) { %>
-				<li id="<%- value %>" class="hidden-xs org-btn"><a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- value %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- i18next.t(key.name) %></span></a></li>
+				<li id="<%- value %>" class="org-btn"><a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- value %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- i18next.t(key.name) %></span></a></li>
 			<% }); %>
 			<li class="divider js-apps-list-container-search"></li>
 			<li class="dropdown clearfix">
@@ -213,7 +213,7 @@ if (_.isEmpty(role_links.where({
 		  <div class="tab-content bg-info clearfix">
 		    <div class="col-xs-12 user-filter navbar-btn">
 				<span class="pull-left"><strong><%- i18next.t('Activity') %></strong></span>
-				<ul class="nav nav-pills pull-right">
+				<ul class="nav nav-pills pull-right mob-no-mar">
 					<li id="modal-activities"><a href="#" title="<%- i18next.t('Filter by activities') %>" class="text-muted"><i class="icon-time small"></i></a></li>
 					<li id="modal-comments"><a href="#" title="<%- i18next.t('Filter by comments') %>" class="text-muted"><i class=" icon-comment-alt small"></i></a></li>
 				</ul>    
