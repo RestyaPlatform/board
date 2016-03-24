@@ -26,8 +26,8 @@ App.BoardMemberAddSearchResultView = Backbone.View.extend({
         this.render();
     },
     template: JST['templates/board_member_add_search_result'],
-    tagName: 'li',
-    className: 'js-add-board-member clearfix',
+    tagName: 'a',
+    className: 'js-add-board-member cur row clearfix',
     events: {
         'click': 'addBoardMember',
     },

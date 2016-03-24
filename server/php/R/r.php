@@ -1412,7 +1412,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $check_user['User']['email'],
                         $r_post['password'],
                         $check_user['User']['first_name'],
-                        strtoupper(implode($match[0]))
+                        strtoupper(substr($r_post['email'], 0, 1))
                     );
                     $result = pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5, true, true, true) RETURNING * ', $val_arr);
                     $user = pg_fetch_assoc($result);
@@ -2545,7 +2545,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $values['email'],
                                 $password,
                                 $values['name'],
-                                strtoupper(implode($match[0]))
+                                strtoupper(substr($values['username'], 0, 1))
                             );
                             pg_query_params($db_lnk, 'INSERT INTO users(created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5,  true, true, true) RETURNING id ', $data);
                             if ($_POST['is_send_welcome_mail'] == 'true') {
@@ -2589,7 +2589,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                     $values['email'],
                                     $password,
                                     $values['name'],
-                                    strtoupper(implode($match[0]))
+                                    strtoupper(substr($values['username'], 0, 1))
                                 );
                                 $result1 = pg_query_params($db_lnk, 'INSERT INTO users(created, modified, role_id, username, email, password, full_name, initials, is_active, is_email_confirmed, is_ldap) VALUES (now(), now(), 2, $1, $2, $3, $4, $5,  true, true, true) RETURNING id ', $data);
                                 $user = pg_fetch_assoc($result1);
@@ -4657,7 +4657,8 @@ if (!empty($_GET['_url']) && $db_lnk) {
         '/users/login',
         '/users/register',
         '/oauth/token',
-        '/users/?/activation'
+        '/users/?/activation',
+        '/users/forgotpassword'
     );
     if ($r_resource_cmd != '/users/login') {
         $token_exception_url = array(
