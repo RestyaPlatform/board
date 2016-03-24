@@ -4830,5 +4830,5 @@ if (!empty($_GET['_url']) && $db_lnk) {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
 }
 if (R_DEBUG) {
-    @header('X-RDebug: ' . $r_debug);
+    header('X-RDebug: ' . $r_debug);
 }
