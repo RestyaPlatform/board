@@ -104,6 +104,7 @@ function getRandomStr($arr_characters, $length)
  */
 function getCryptHash($str)
 {
+	$salt = '';
     if (CRYPT_BLOWFISH) {
         if (version_compare(PHP_VERSION, '5.3.7') >= 0) { // http://www.php.net/security/crypt_blowfish.php
             $algo_selector = '$2y$';
@@ -314,6 +315,7 @@ function doGet($url)
 function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $revision = null, $foreign_id = null)
 {
     global $r_debug, $db_lnk;
+	$result = '';
     $fields = array(
         'created',
         'modified',
@@ -330,7 +332,7 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
         $type,
         $revision
     );
-    if ($foreign_id != null) {
+    if ($foreign_id !== null) {
         array_push($fields, 'foreign_id');
         array_push($values, $foreign_id);
     }
@@ -468,7 +470,7 @@ function ldapAuthenticate($p_user_id, $p_password)
     $t_info = ldap_get_entries($t_ds, $t_sr);
     $user['User']['is_username_exits'] = false;
     $user['User']['is_password_matched'] = false;
-    if ($t_info) {
+    if (!empty($t_info)) {
         $user['User']['is_username_exits'] = true;
         // Try to authenticate to each until we get a match
         for ($i = 0; $i < $t_info['count']; $i++) {
@@ -728,7 +730,6 @@ function saveIp()
             }
         }
         $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-        $country_id = $country_id;
         $state_id = (!empty($state_row['id'])) ? $state_row['id'] : $city_id;
         $city_id = (!empty($city_row['id'])) ? $city_row['id'] : $city_id;
         $lat = (!empty($_geo[3])) ? $_geo[3] : 0.00;
@@ -762,6 +763,7 @@ function saveIp()
 function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = '')
 {
     global $db_lnk, $authUser;
+	$foreign_ids = array();
     while ($card = pg_fetch_object($cards)) {
         $card->list_id = $new_list_id;
         $card_id = $card->id;
@@ -991,7 +993,7 @@ function importTrelloBoard($board = array())
 {
     set_time_limit(1800);
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
-    $users = array();
+    $users = $lists = $cards = array();
     if (!empty($board)) {
         $user_id = $authUser['id'];
         $board_visibility = array(
@@ -1065,7 +1067,6 @@ function importTrelloBoard($board = array())
         );
         pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
         if (!empty($board['lists'])) {
-            $lists = array();
             $i = 0;
             foreach ($board['lists'] as $list) {
                 $i+= 1;
@@ -1082,7 +1083,6 @@ function importTrelloBoard($board = array())
             }
         }
         if (!empty($board['cards'])) {
-            $cards = array();
             foreach ($board['cards'] as $card) {
                 $is_closed = ($card['closed']) ? 'true' : 'false';
                 $date = null;
@@ -1189,6 +1189,7 @@ function importTrelloBoard($board = array())
             }
         }
         if (!empty($board['actions'])) {
+			$type = $comment = '';
             foreach ($board['actions'] as $action) {
                 if ($action['type'] == 'commentCard') {
                     $type = 'add_comment';
