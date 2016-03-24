@@ -1,0 +1,4 @@
+filter:
+    excluded_paths:
+        - build/*
+	- server/php/libs/vendors/*
