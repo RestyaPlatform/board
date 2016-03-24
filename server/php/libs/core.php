@@ -1086,9 +1086,6 @@ function importTrelloBoard($board = array())
             foreach ($board['cards'] as $card) {
                 $is_closed = ($card['closed']) ? 'true' : 'false';
                 $date = null;
-                if (!empty($card['due'])) {
-                    $date = str_replace('T', ' ', $card['due']);
-                }
                 $qry_val_arr = array(
                     $new_board['id'],
                     $lists[$card['idList']],
@@ -1130,7 +1127,7 @@ function importTrelloBoard($board = array())
                         $filename = curlExecute($attachment['url'], 'get', $mediadir, 'image');
                         $path = $save_path . DIRECTORY_SEPARATOR . $filename['file_name'];
                         $name = $filename['file_name'];
-                        $created = $modified = str_replace('T', ' ', $attachment['date']);
+                        $created = $modified = $attachment['date'];
                         $qry_val_arr = array(
                             $created,
                             $modified,
@@ -1269,7 +1266,7 @@ function importTrelloBoard($board = array())
                     $type = 'delete_checklist';
                     $comment = '##USER_NAME## deleted checklist ##CHECKLIST_NAME## from card ##CARD_LINK##';
                 }
-                $created = $modified = str_replace('T', ' ', $action['date']);
+                $created = $modified = $action['date'];
                 $qry_val_arr = array(
                     $created,
                     $modified,

@@ -59,6 +59,7 @@ App.CardCheckListItemView = Backbone.View.extend({
         'click .js-markas-incomplete': 'markAsIncomplete',
         'click .js-show-item-options': 'showItemOptions',
         'click .js-show-mention-member-form': 'showMentionMemberForm',
+        'click .js-show-emoji-list-form': 'showEmojiList',
         'click .js-convert-to-card': 'convertToCard',
         'keyup .js-item-search-member': 'showSearchItemMembers',
         'click .js-back-to-item-options': 'backToItemOptions',
@@ -142,6 +143,7 @@ App.CardCheckListItemView = Backbone.View.extend({
             '-webkit-transition': 'all .6s  ease',
             'transition': 'all .6s  ease'
         }, 100);
+        emojify.run();
         return this;
     },
     /**
@@ -180,6 +182,7 @@ App.CardCheckListItemView = Backbone.View.extend({
         form.prev('.js-show-item-edit-form').removeClass('hide');
         $('#js-checklist-item-' + this.model.id).html(this.converter.makeHtml($('textarea', form).val()));
         form.remove();
+        emojify.run();
     },
     /**
      * updateItem()
@@ -198,6 +201,7 @@ App.CardCheckListItemView = Backbone.View.extend({
         this.model.save(data, {
             patch: true
         });
+        emojify.run();
         return false;
     },
     /**
@@ -350,6 +354,25 @@ App.CardCheckListItemView = Backbone.View.extend({
         $('#js-item-option-response-' + this.model.id).html(new App.ChecklistItemMentionMemberSerachFormView().el);
         this.$el.find('.js-item-member-search-response').html('');
         this.renderBoardUsers();
+        return false;
+    },
+    /**
+     * showEmojiList()
+     * Show the emoji list
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showEmojiList: function(e) {
+        e.preventDefault();
+        var emojiList = "smile,thumbsup,warning,sunglasses";
+        var emojiListArray = emojiList.split(",");
+        $('#js-item-option-response-' + this.model.id).html(new App.ChecklistItemEmojiListView({
+            model: emojiListArray
+        }).el);
+        //$('.js-show-emoji-list-response ul').remove();
+        emojify.run();
         return false;
     },
     /**

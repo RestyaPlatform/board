@@ -424,10 +424,6 @@ App.CardView = Backbone.View.extend({
         if (card_due_date === null) {
             return '';
         }
-        card_due_date = card_due_date.split(' ');
-        if (!_.isEmpty(card_due_date[1])) {
-            card_due_date = card_due_date[0] + 'T' + card_due_date[1];
-        }
         var today = new Date();
         var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);

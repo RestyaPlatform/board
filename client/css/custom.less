@@ -380,7 +380,7 @@ header {
 	}
 }
 .body-no-webkit-scrollbars:not(.firefox) .vertical-scrollbar {
-	padding-right: 1px;
+	padding-right: 12px;
 }
 .body-no-webkit-scrollbars .list-header span.show {
 	word-wrap: break-word;
@@ -1942,10 +1942,12 @@ footer, header {
 		display: none;
 	}
 }
-.js-activity {
-	.media, .media-body {
-		overflow:visible !important;
-		display: inline-block;
+#card_activities{
+	.js-activity {
+		.media, .media-body {
+			overflow:visible !important;
+			display: inline-block;
+		}
 	}
 }
 .user-filter { 
@@ -1965,4 +1967,12 @@ footer, header {
 .dropdown-menu-top {	
     top: 29px;
     left: -3px;
+}
+.no-mar{
+	margin: 0px;
+}
+.activities-list { 
+	p {
+		margin: 0px;
+	}
 }

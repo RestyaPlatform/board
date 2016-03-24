@@ -12,6 +12,7 @@
   
   </div>
  <%  } %> 
+ <div class="clearfix">
   <% if(!_.isEmpty(card.attachments) && card.attachments.length > 0 && !_.isEmpty(card.attachments.at(0).attributes.name) && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ %>
 	  <div class="clearfix js-card-attachment-image navbar-btn <% if(!_.isEmpty(card.collection) && !card.list.collection.board.attributes.is_show_image_front_of_card){ %> hide <% } %>">
 		<%
@@ -21,6 +22,8 @@
 	  </div>
 	<% } %> 
   <a href="#" title="<%- card.attributes.name %>"><%- card.attributes.name %></a>
+  </div>
+  <div class="pull-left navbar-btn">
   <ul class="list-unstyled list-inline text-muted clearfix">
   	<%
 		if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
@@ -68,10 +71,7 @@
 		date_time = date_time[0].split(' ');
 	%>
 	<%
-	    card_due_date = card.attributes.due_date.split(' ');
-        if (!_.isEmpty(card_due_date[1])) {
-            card_due_date = card_due_date[0] + 'T' + card_due_date[1];
-        }
+	    card_due_date = card.attributes.due_date;
         var today = new Date();
         var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
@@ -92,6 +92,7 @@
 	<li><small title=" <%- i18next.t('Due Date') %>"><span class="label <%- label %>"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
 	<% } %>
 	</ul>
+	</div>
 	<div class="clearfix pull-right">
 		<ul class="list-unstyled list-inline text-muted clearfix">
 		<%
