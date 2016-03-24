@@ -48,7 +48,7 @@
 				<% } %>
 			</span>
             <% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card'], activity.attributes.type)) { %>
-                <div class="thumbnail media-body">
+                <div class="thumbnail media-body no-mar">
 					<% _.each(activity.attributes.difference, function(difference) { %>
 						<%= converter.makeHtml(difference) %>
 					<% }); %>
@@ -57,7 +57,7 @@
 		</div>   
         <% } else {%>             
 		<div class="col-xs-12 row">
-			<div class="<% if(_.isUndefined(activity.from_footer)) { %>panel<%}%>">
+			<div class="panel no-mar">
 				<div class="panel-body">
 					<span class="js-activity-<%- activity.attributes.id %>">
 						<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
@@ -68,7 +68,7 @@
 						<% } %>
 					</span>
 					<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card'], activity.attributes.type)) { %>
-						<div class="thumbnail media-body"><%= converter.makeHtml(activity.attributes.difference[0]) %></div>
+						<div class="thumbnail media-body no-mar"><%= converter.makeHtml(activity.attributes.difference[0]) %></div>
 					<% } %>
 					
 				</div>
