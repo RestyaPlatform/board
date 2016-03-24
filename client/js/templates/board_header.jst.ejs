@@ -128,7 +128,7 @@
 								<div class="js-add-board-member-dropdown dropdown inner-dropdown col-xs-12"> 
 									<a href="#" class="text-muted" data-toggle="dropdown"><%- i18next.t('Add Member') %>...</a>
 									<ul class="dropdown-menu arrow">
-										<li class="js-dropdown-popup dropdown-popup">
+										<li>
 										  <div class="col-xs-12 text-center clearfix">
 											<span class="col-xs-10"><strong><%- i18next.t('Members') %></strong></span><a class="js-close-popover-board-member-dropdown pull-right" href="#"><i class="icon-remove"></i></a>										
 										  </div> 
@@ -141,10 +141,10 @@
 											  </div>
 											</form>
 										  </div>
-										  <ul class="list-unstyled js-board-member-search-response col-xs-12 pre-scrollable vertical-scrollbar">
-											<li class="clearfix small"><%- i18next.t('Search for a person in %s by name or email address.', { postProcess: 'sprintf', sprintf: [SITE_NAME]}) %></li>
-										  </ul>
-										</li>
+										  </li>
+										  <li class="js-board-member-search-response col-xs-12 pre-scrollable vertical-scrollbar">
+											<span class="small"><%- i18next.t('Search for a person in %s by name or email address.', { postProcess: 'sprintf', sprintf: [SITE_NAME]}) %></span>
+										 </li>
 									</ul>
 								</div>
 							</li>
