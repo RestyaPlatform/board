@@ -3906,7 +3906,6 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             if (!empty($r_put['list_id'])) {
                 $foreign_ids['list_id'] = $r_resource_vars['lists'];
                 $activity_type = 'move_card';
-                $id = $r_put['list_id'];
             }
         }
         if (isset($previous_value) && isset($r_put['is_archived'])) {
@@ -4213,7 +4212,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         }
         if (!empty($comment)) {
             $revision = '';
-            if ($activity_type != 'reopen_board' && $activity_type != 'moved_list_card' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'delete_organization_attachment') {
+            if ($activity_type != 'reopen_board' && $activity_type != 'moved_list_card' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'delete_organization_attachment' && $activity_type != 'move_card') {
                 $qry_va_arr = array(
                     $id
                 );
@@ -4228,7 +4227,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $revision = serialize($revisions);
             }
             $foreign_id = $id;
-            if ($activity_type == 'moved_list_card') {
+            if ($activity_type == 'moved_list_card' || $activity_type == 'move_card') {
                 $foreign_id = $r_put['list_id'];
             }
             $response['activity'] = insertActivity($authUser['id'], $comment, $activity_type, $foreign_ids, $revision, $foreign_id);
@@ -4831,5 +4830,5 @@ if (!empty($_GET['_url']) && $db_lnk) {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
 }
 if (R_DEBUG) {
-    header('X-RDebug: ' . $r_debug);
+    @header('X-RDebug: ' . $r_debug);
 }
