@@ -991,7 +991,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 if (isset($obj['board_activities']) && !empty($obj['board_activities'])) {
-                    for ($k = 0; $k < count($obj['board_activities']); $k++) {
+                    $board_activities_count = count($obj['board_activities']);
+                    for ($k = 0; $k < $board_activities_count; $k++) {
                         if (!empty($obj['board_activities'][$k]['revisions']) && trim($obj['board_activities'][$k]['revisions']) != '') {
                             $revisions = unserialize($obj['board_activities'][$k]['revisions']);
                             unset($dif);
@@ -1570,7 +1571,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     foreach ($thumbsizes['User'] as $key => $value) {
                         $mediadir = APP_PATH . '/client/img/' . $key . '/User/' . $r_resource_vars['users'];
                         $list = glob($mediadir . '.*');
-                        @unlink($list[0]);
+                        if (file_exists($list[0])) {
+                            @unlink($list[0]);
+                        }
                     }
                     $authUser['profile_picture_path'] = $profile_picture_path;
                     $response['profile_picture_path'] = $profile_picture_path;
@@ -1853,7 +1856,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     foreach ($thumbsizes['Board'] as $key => $value) {
                         $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Board' . DIRECTORY_SEPARATOR . $r_resource_vars['boards'];
                         $list = glob($mediadir . '.*');
-                        @unlink($list[0]);
+                        if (file_exists($list[0])) {
+                            @unlink($list[0]);
+                        }
                     }
                     $hash = md5(SECURITYSALT . 'Board' . $r_resource_vars['boards'] . 'jpg' . 'extra_large_thumb');
                     $background_picture_url = $_server_domain_url . '/img/extra_large_thumb/Board/' . $r_resource_vars['boards'] . '.' . $hash . '.jpg';
@@ -2029,7 +2034,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                 $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][0]['id'];
                 $list = glob($mediadir . '.*');
-                @unlink($list[0]);
+                if (file_exists($list[0])) {
+                    @unlink($list[0]);
+                }
             }
             $foreign_ids['board_id'] = $r_resource_vars['boards'];
             $foreign_ids['list_id'] = $r_resource_vars['lists'];
@@ -2038,7 +2045,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['card_attachments'][0]['id']);
         } else if (!empty($_FILES['attachment']) && is_array($_FILES['attachment']['name']) && $_FILES['attachment']['error'][0] == 0) {
             $file = $_FILES['attachment'];
-            for ($i = 0; $i < count($file['name']); $i++) {
+            $file_count = count($file['name']);
+            for ($i = 0; $i < $file_count; $i++) {
                 if ($file['name'][$i] != 'undefined') {
                     if (!file_exists($mediadir)) {
                         mkdir($mediadir, 0777, true);
@@ -2065,7 +2073,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                             $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
                             $list = glob($imgdir . '.*');
-                            @unlink($list[0]);
+                            if (file_exists($list[0])) {
+                                @unlink($list[0]);
+                            }
                         }
                     }
                 }
@@ -2368,12 +2378,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $logo_url = $save_path . DIRECTORY_SEPARATOR . $file['name'];
                     foreach ($thumbsizes['Organization'] as $key => $value) {
                         $list = glob(APP_PATH . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'] . '.*');
-                        @unlink($list[0]);
+                        if (file_exists($list[0])) {
+                            @unlink($list[0]);
+                        }
                     }
                     foreach ($thumbsizes['Organization'] as $key => $value) {
                         $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $r_resource_vars['organizations'];
                         $list = glob($mediadir . '.*');
-                        @unlink($list[0]);
+                        if (file_exists($list[0])) {
+                            @unlink($list[0]);
+                        }
                     }
                     $qry_val_arr = array(
                         $logo_url,
@@ -3480,7 +3494,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                     $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['id'];
                     $list = glob($mediadir . '.*');
-                    @unlink($list[0]);
+                    if (file_exists($list[0])) {
+                        @unlink($list[0]);
+                    }
                 }
             } else if ($r_resource_cmd == '/boards/?/lists/?/cards/?/card_voters') {
                 $qry_val_arr = array(
@@ -4127,7 +4143,9 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             foreach ($thumbsizes['Organization'] as $key => $value) {
                 $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $id;
                 $list = glob($mediadir . '.*');
-                @unlink($list[0]);
+                if (file_exists($list[0])) {
+                    @unlink($list[0]);
+                }
             }
             $comment = ((!empty($authUser['full_name'])) ? $authUser['full_name'] : $authUser['username']) . ' deleted attachment from organizations ##ORGANIZATION_LINK##';
             $activity_type = 'delete_organization_attachment';
@@ -4812,5 +4830,5 @@ if (!empty($_GET['_url']) && $db_lnk) {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
 }
 if (R_DEBUG) {
-    @header('X-RDebug: ' . $r_debug);
+    header('X-RDebug: ' . $r_debug);
 }
