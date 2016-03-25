@@ -74,6 +74,24 @@ App.HeaderView = Backbone.View.extend({
         if (typeof Notification != 'undefined') {
             this.model.is_show_enable_notification = (Notification.permission == 'default') ? true : false;
         }
+        if (!_.isUndefined(authuser.user)) {
+            setTimeout(function() {
+                converse.initialize({
+                    bosh_service_url: BOSH_SERVICE_URL,
+                    keepalive: true,
+                    jid: authuser.user.username + '@' + JABBER_HOST,
+                    authentication: 'prebind',
+                    prebind_url: api_url + 'xmpp_login.json?token=' + api_token,
+                    allow_logout: false,
+                    allow_contact_requests: false,
+                    hide_muc_server: true,
+                    show_controlbox_by_default: true,
+                    auto_list_rooms: true,
+                    play_sounds: true,
+                    allow_registration: false
+                });
+            }, 1000);
+        }
         this.$el.html(this.template(this.model));
         this.showTooltip();
         if (load_count === 1) {

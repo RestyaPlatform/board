@@ -41,6 +41,34 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     $response = array();
     $pg_params = array();
     switch ($r_resource_cmd) {
+    case '/xmpp_login':
+        include '../libs/vendors/xmpp-prebind-php/XmppPrebind.php';
+        $xmppPrebind = new XmppPrebind(JABBER_HOST, BOSH_SERVICE_URL, XMPP_CLIENT_RESOURCE_NAME, false, true);
+        $xmppPrebind->connect($authUser['username'], md5($authUser['password'] . SECURITYSALT));
+        $xmppPrebind->auth();
+        $response = $xmppPrebind->getSessionInfo();
+        break;
+
+    case '/chat_history':
+        $end = PAGING_COUNT;
+        $offset = 1;
+        if (!empty($r_resource_filters['page'])) {
+            $end = $r_resource_filters['page'] * PAGING_COUNT;
+            $offset = $end - PAGING_COUNT;
+        }
+        $chats = pg_query_params($db_lnk, "SELECT to_char(created, 'HH24:MI') as chat_time, * FROM activities_listing where board_id = $1 AND type = $2 ORDER BY id desc LIMIT $3 OFFSET $4", array(
+            $r_resource_filters['board_id'],
+            'chat',
+            $end,
+            $offset
+        ));
+        $chats_history = array();
+        while ($row = pg_fetch_assoc($chats)) {
+            $chats_history[] = $row;
+        }
+        $response = $chats_history;
+        break;
+
     case '/users/me':
         $role_val_arr = array(
             $authUser['role_id']
@@ -243,6 +271,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             while ($row = pg_fetch_assoc($s_result)) {
                 $response['user_boards'][] = $row;
             }
+            // ejabberd code
+            include '../libs/vendors/Ejabberd_Wrapper.php';
+            $user_jid = $authUser['username'] . '@' . JABBER_HOST;
+            $get_user_boards = Ejabberd_Wrapper::get_user_rooms($user_jid);
         }
         break;
 
@@ -573,14 +605,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 array_push($pg_params, $r_resource_filters['last_activity_id']);
                 $i++;
             }
-            if (!empty($r_resource_vars['lists'])) {
-                $condition.= ' AND al.list_id = $' . $i;
-                array_push($pg_params, $r_resource_vars['lists']);
-                $i++;
-            }
             if (!empty($r_resource_vars['cards'])) {
                 $condition.= ' AND al.card_id = $' . $i;
                 array_push($pg_params, $r_resource_vars['cards']);
+            } else if (!empty($r_resource_vars['lists'])) {
+                $condition.= ' AND al.list_id = $' . $i;
+                array_push($pg_params, $r_resource_vars['lists']);
+                $i++;
             }
             if (!empty($r_resource_filters['filter'])) {
                 $condition.= ' AND al.type = $' . $i;
@@ -793,7 +824,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/settings':
         $role_id = (empty($user['role_id'])) ? 3 : $user['role_id'];
-        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\' or name = \'LDAP_LOGIN_ENABLED\' OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'STANDARD_LOGIN_ENABLED\'', array());
+        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\' or name = \'LDAP_LOGIN_ENABLED\' OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'STANDARD_LOGIN_ENABLED\' OR name = \'BOSH_SERVICE_URL\' OR name = \'PREBIND_URL\' OR name = \'JABBER_HOST\' OR name = \'PAGING_COUNT\'', array());
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
@@ -1250,11 +1281,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'success' => 'Checked users are unblocked successfully.'
             );
         } else if ($action_id == 3) {
+            include '../libs/vendors/Ejabberd_Wrapper.php';
             foreach ($user_ids as $user_id) {
                 $conditions = array(
                     $user_id['user_id']
                 );
-                pg_query_params($db_lnk, 'DELETE FROM users WHERE id= $1', $conditions);
+                $users = pg_query_params($db_lnk, 'DELETE FROM users WHERE id= $1 RETURNING username', $conditions);
+                if ($users) {
+                    $user = pg_fetch_assoc($users);
+                    $destroy_room = Ejabberd_Wrapper::unregister($user['username']);
+                }
             }
             $response = array(
                 'success' => 'Checked users are deleted successfully.'
@@ -1292,11 +1328,21 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'success' => 'Checked boards are reopened successfully.'
             );
         } else if ($action_id == 3) {
+            include '../libs/vendors/Ejabberd_Wrapper.php';
             foreach ($board_ids as $board_id) {
                 $conditions = array(
                     $board_id['board_id']
                 );
-                pg_query_params($db_lnk, 'DELETE FROM boards WHERE id= $1', $conditions);
+                $boards = pg_query_params($db_lnk, 'DELETE FROM boards WHERE id= $1 RETURNING name', $conditions);
+                if ($boards) {
+                    $board = pg_fetch_assoc($boards);
+                    $destroy_room = Ejabberd_Wrapper::destroy_room($board['name']);
+                    $conditions = array(
+                        $board['name']
+                    );
+                    $chat_db_lnk = getEjabberdConnection();
+                    pg_query_params($chat_db_lnk, 'DELETE FROM muc_room WHERE name= $1', $conditions);
+                }
             }
             $response = array(
                 'success' => 'Checked boards are deleted successfully.'
@@ -1377,6 +1423,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
             $r_post['full_name'] = ($r_post['email'] == '') ? $r_post['username'] : email2name($r_post['email']);
+            // ejabberd code
+            include '../libs/vendors/Ejabberd_Wrapper.php';
+            $password_hash = md5($r_post['password'] . SECURITYSALT);
+            $register = Ejabberd_Wrapper::register($r_post['username'], $password_hash);
         } else {
             $msg = '';
             if ($user['email'] == $r_post['email']) {
@@ -1513,6 +1563,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $r_resource_vars['users']
                     );
                     $result = pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
+                    // ejabberd code
+                    include '../libs/vendors/Ejabberd_Wrapper.php';
+                    $password_hash = md5($r_post['password'] . SECURITYSALT);
+                    $change_password = Ejabberd_Wrapper::change_password($user['username'], $password_hash);
                     $conditions = array(
                         $authUser['username']
                     );
@@ -1722,6 +1776,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             unset($r_post['template']);
             $sql = true;
             $r_post['user_id'] = (!empty($authUser['id'])) ? $authUser['id'] : 1;
+            // ejabberd code
+            include '../libs/vendors/Ejabberd_Wrapper.php';
+            $create_room = Ejabberd_Wrapper::create_room($r_post['name']);
+            $send_direct_invitation = Ejabberd_Wrapper::send_direct_invitation($r_post['name'], 'none', 'none', $authUser['username']);
+            $set_room_affiliation = Ejabberd_Wrapper::set_room_affiliation($r_post['name'], $authUser['username'], 'admin');
         }
         break;
 
@@ -3564,6 +3623,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 $comment = '##USER_NAME## added member to board';
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board_user', $foreign_ids, '', $response['id']);
+                include '../libs/vendors/Ejabberd_Wrapper.php';
+                $send_direct_invitation = Ejabberd_Wrapper::send_direct_invitation($previous_value['name'], 'none', 'none', $r_post['username']);
+                $set_room_affiliation = Ejabberd_Wrapper::set_room_affiliation($previous_value['name'], $r_post['username'], 'member');
             } else if ($r_resource_cmd == '/organizations/?/users/?') {
                 $qry_val_arr = array(
                     $response['id']
@@ -4308,6 +4370,17 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $board_id
             );
             $last_activity_status = executeQuery('SELECT * FROM activities_listing al WHERE board_id IN ( $1 ) ORDER BY id DESC LIMIT 1', $qry_val_arr);
+            if ($r_put['is_active'] == false) {
+                $username = executeQuery('SELECT username FROM users WHERE id =' . $r_resource_vars['users']);
+                // ejabberd code
+                include '../libs/vendors/Ejabberd_Wrapper.php';
+                $deactivate_user = Ejabberd_Wrapper::ban_account($username['username'], 'Admin deactivated account');
+            }
+        }
+        if ($r_resource_cmd == '/boards_users/?') {
+            $affiliation = ($r_put['board_user_role_id'] == 1) ? 'admin' : 'member';
+            include '../libs/vendors/Ejabberd_Wrapper.php';
+            $set_room_affiliation = Ejabberd_Wrapper::set_room_affiliation($r_put['board_name'], $r_put['username'], $affiliation);
         }
         $val = '';
         for ($i = 1, $len = count($values); $i <= $len; $i++) {
@@ -4389,6 +4462,9 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_user', $foreign_id);
         $sql = 'DELETE FROM users WHERE id= $1';
         array_push($pg_params, $r_resource_vars['users']);
+        // ejabberd code
+        include '../libs/vendors/Ejabberd_Wrapper.php';
+        $delete_user = Ejabberd_Wrapper::unregister($username['username']);
         break;
 
     case '/organizations/?/organizations_users/?': // delete organization user
@@ -4436,6 +4512,8 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             pg_query_params($db_lnk, 'DELETE FROM cards_users WHERE card_id = $1 AND user_id = $2', $conditions);
         }
         array_push($pg_params, $r_resource_vars['boards_users']);
+        include '../libs/vendors/Ejabberd_Wrapper.php';
+        $set_room_affiliation = Ejabberd_Wrapper::set_room_affiliation($previous_value['board_name'], $previous_value['username'], 'outcast');
         break;
 
     case '/boards/?/lists/?': // delete lists
