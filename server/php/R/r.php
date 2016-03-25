@@ -2542,6 +2542,21 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $table_name = 'webhooks';
         break;
 
+    case '/roles':
+        $sql = true;
+        $table_name = 'roles';
+        break;
+
+    case '/board_user_roles':
+        $sql = true;
+        $table_name = 'board_user_roles';
+        break;
+
+    case '/organization_user_roles':
+        $sql = true;
+        $table_name = 'organization_user_roles';
+        break;
+
     case '/users/import':
         $t_ldap_server = (LDAP_IS_SSL == 'true') ? 'ldaps://' : 'ldap://';
         $t_ds = $ldap_connection = ldap_connect($t_ldap_server . LDAP_SERVER, LDAP_PORT);

@@ -914,3 +914,13 @@ INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") 
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('0', '0', 'chat.last_processed_chat_id', '0', NULL, 'hidden', NULL, 'Last Chat ID', '1');
 
 UPDATE "acl_board_links" SET "url" = '/boards/?/boards_users/?' WHERE "slug" = 'remove_board_user';
+
+INSERT INTO "acl_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
+VALUES (now(), now(), 'Role add', '/roles', 'POST', 'role_add', '1', '0', '0', '1', '1'),
+(now(), now(), 'Board user role add', '/board_user_roles', 'POST', 'board_user_role_add', '1', '0', '0', '1', '1'),
+(now(), now(), 'Organization user role add', '/organization_user_roles', 'POST', 'organization_user_role_add', '1', '0', '0', '1', '1');
+
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849', '2016-02-20 19:07:50.849', id, 1 FROM acl_links WHERE slug = 'role_add';
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849', '2016-02-20 19:07:50.849', id, 1 FROM acl_links WHERE slug = 'board_user_role_add';
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849', '2016-02-20 19:07:50.849', id, 1 FROM acl_links WHERE slug = 'organization_user_role_add';
