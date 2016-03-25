@@ -885,3 +885,13 @@ CREATE OR REPLACE VIEW "users_cards_listing" AS
    JOIN cards c ON ((c.id = cu.card_id)))
    JOIN boards b ON ((b.id = c.board_id)))
    JOIN lists l ON ((l.id = c.list_id)));
+
+INSERT INTO "acl_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
+VALUES (now(), now(), 'Role add', '/roles', 'POST', 'role_add', '1', '0', '0', '1', '1'),
+(now(), now(), 'Board user role add', '/board_user_roles', 'POST', 'board_user_role_add', '1', '0', '0', '1', '1'),
+(now(), now(), 'Organization user role add', '/organization_user_roles', 'POST', 'organization_user_role_add', '1', '0', '0', '1', '1');
+
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849', '2016-02-20 19:07:50.849', id, 1 FROM acl_links WHERE slug = 'role_add';
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849', '2016-02-20 19:07:50.849', id, 1 FROM acl_links WHERE slug = 'board_user_role_add';
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849', '2016-02-20 19:07:50.849', id, 1 FROM acl_links WHERE slug = 'organization_user_role_add';

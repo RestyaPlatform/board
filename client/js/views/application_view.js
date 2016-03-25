@@ -249,7 +249,7 @@ App.ApplicationView = Backbone.View.extend({
         if (this.model == 'admin_boards_index') {
             changeTitle(i18next.t('Boards'));
         }
-        if (this.model == 'role_settings') {
+        if (this.model == 'role_settings' || this.model == 'add_role' || this.model == 'add_board_user_role' || this.model == 'add_organization_user_role') {
             changeTitle(i18next.t('Role Settings'));
         }
         if (this.model == 'oauth_clients') {
@@ -820,6 +820,15 @@ App.ApplicationView = Backbone.View.extend({
                         }).el);
                     }
                 });
+            } else if (page.model == 'add_role') {
+                changeTitle(i18next.t('Add role'));
+                $('#content').html(new App.RoleAddView().el);
+            } else if (page.model == 'add_board_user_role') {
+                changeTitle(i18next.t('Add board user role'));
+                $('#content').html(new App.BoardUserRoleAddView().el);
+            } else if (page.model == 'add_organization_user_role') {
+                changeTitle(i18next.t('Add organization user role'));
+                $('#content').html(new App.OrganizationUserRoleAddView().el);
             } else if (page.model == 'organizations_index') {
                 changeTitle(i18next.t('Organizations'));
                 var organizations = new App.OrganizationCollection();
