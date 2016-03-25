@@ -885,3 +885,30 @@ CREATE OR REPLACE VIEW "users_cards_listing" AS
    JOIN cards c ON ((c.id = cu.card_id)))
    JOIN boards b ON ((b.id = c.board_id)))
    JOIN lists l ON ((l.id = c.list_id)));
+   
+INSERT INTO "setting_categories" ("id", "created", "modified", "parent_id", "name", "description", "order")
+VALUES (11, '2015-09-26 13:14:18', '2015-09-26 13:14:18', NULL, 'XMPP Chat', NULL, '5');
+
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('11', '0', 'BOSH_SERVICE_URL', 'http://phabricator.ahsan.in:5280/http-bind', NULL, 'text', NULL, 'Bosh Service URL', '1');
+
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('11', '0', 'JABBER_HOST', 'phabricator.ahsan.in', NULL, 'text', NULL, 'Jabber Host', '2');
+
+INSERT INTO "acl_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
+VALUES ('2015-10-05 13:14:18.2', '2015-10-05 13:14:18.2', 'XMPP chat login', '/xmpp_login', 'GET', 'xmpp_login', '1', '1', '1', '0', '0');
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849',	'2016-02-20 19:07:50.849',	id,	1 FROM acl_links WHERE slug = 'xmpp_login';
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849',	'2016-02-20 19:07:50.849',	id,	2 FROM acl_links WHERE slug = 'xmpp_login';
+
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('11', '0', 'XMPP_CLIENT_RESOURCE_NAME', 'agriya', NULL, 'text', NULL, 'Client Resource Name', '3');
+
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('11', '0', 'JABBER_PATH', 'ejabberdctl', NULL, 'text', NULL, 'Jabber Path', '4');
+
+INSERT INTO "acl_links" ("created", "modified", "name", "url", "method", "slug", "group_id",  "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
+VALUES ('2015-10-05 13:14:18.2', '2015-10-05 13:14:18.2', 'Chat History', '/chat_history', 'GET', 'chat_history', '1',  '1', '1', '0', '0');
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849',	'2016-02-20 19:07:50.849',	id,	1 FROM acl_links WHERE slug = 'chat_history';
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849',	'2016-02-20 19:07:50.849',	id,	2 FROM acl_links WHERE slug = 'chat_history';
+
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('0', '0', 'chat.last_processed_chat_id', '0', NULL, 'hidden', NULL, 'Last Chat ID', '1');
