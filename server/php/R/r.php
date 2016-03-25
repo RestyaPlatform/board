@@ -3777,7 +3777,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                         $organizations_user['user_id'],
                         2
                     );
-                    pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
+                    pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
                 }
             }
         }
@@ -4387,9 +4387,14 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_organization_user', $foreign_ids, '', $r_resource_vars['organizations_users']);
         $sql = 'DELETE FROM organizations_users WHERE id= $1';
         array_push($pg_params, $r_resource_vars['organizations_users']);
+        $qry_val_arr = array(
+            $r_resource_vars['organizations_users']
+        );
+        $organizations_users_result = pg_query_params($db_lnk, 'SELECT user_id FROM organizations_users_listing WHERE id = $1', $qry_val_arr);
+        $organizations_users = pg_fetch_assoc($organizations_users_result);
         $conditions = array(
             $previous_value['organization_id'],
-            $r_resource_vars['organizations_users']
+            $organizations_users['user_id']
         );
         pg_query_params($db_lnk, 'DELETE FROM boards_users WHERE board_id IN (SELECT id FROM boards WHERE organization_id = $1) AND user_id = $2', $conditions);
         break;
