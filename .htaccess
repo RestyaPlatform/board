@@ -4,7 +4,7 @@ Options -Indexes
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	# If installed in local or under a path say /restyaboard	/: (otherwise, doesn't need RewriteBase)
-	RewriteBase /restyaboard/
+	RewriteBase /
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteRule ^client/img/([a-zA-Z_]*)/([a-zA-Z_]*)/([a-zA-Z0-9_\.]*)$ server/php/image.php?size=$1&model=$2&filename=$3 [L]
