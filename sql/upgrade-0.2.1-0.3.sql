@@ -912,3 +912,5 @@ INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") 
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849',	'2016-02-20 19:07:50.849',	id,	2 FROM acl_links WHERE slug = 'chat_history';
 
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('0', '0', 'chat.last_processed_chat_id', '0', NULL, 'hidden', NULL, 'Last Chat ID', '1');
+
+UPDATE "acl_board_links" SET "url" = '/boards/?/boards_users/?' WHERE "slug" = 'remove_board_user';
