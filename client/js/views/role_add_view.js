@@ -64,8 +64,8 @@ App.RoleAddView = Backbone.View.extend({
      */
     render: function() {
         this.$el.html(this.template());
-        $('.js-admin-user-menu').addClass('active');
-        $('.js-admin-activity-menu, .js-admin-setting-menu, .js-admin-email-menu, .js-admin-role-menu, .js-admin-board-menu').removeClass('active');
+        $('.js-admin-role-menu').addClass('active');
+        $('.js-admin-activity-menu, .js-admin-setting-menu, .js-admin-email-menu, .js-admin-user-menu, .js-admin-board-menu').removeClass('active');
         this.showTooltip();
         return this;
     }
