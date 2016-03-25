@@ -33,7 +33,7 @@
             var view = this.views[id];
             if (view) {
                 delete this.views[id];
-                view.remove();
+                view.el.remove();
                 return view;
             }
         }.bind(this);
