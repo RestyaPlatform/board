@@ -175,9 +175,7 @@ this["templates"]["chatroom_sidebar"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<!-- <div class="participants"> -->\n<form class="room-invite">\n    <input class="invited-contact" placeholder="' +
-((__t = (label_invitation)) == null ? '' : __t) +
-'" type="text"/>\n</form>\n<label>' +
+__p += '<!-- <div class="participants"> -->\n<label>' +
 ((__t = (label_occupants)) == null ? '' : __t) +
 ':</label>\n<ul class="participant-list"></ul>\n<!-- </div> -->\n';
 
@@ -858,11 +856,7 @@ __p += '<dd class="available-chatroom">\n<a class="open-room" data-room-jid="' +
 ((__t = (open_title)) == null ? '' : __t) +
 '" href="#">' +
 ((__t = (name)) == null ? '' : __t) +
-'</a>\n<a class="room-info icon-room-info" data-room-jid="' +
-((__t = (jid)) == null ? '' : __t) +
-'"\n   title="' +
-((__t = (info_title)) == null ? '' : __t) +
-'" href="#">&nbsp;</a>\n</dd>\n';
+'</a>\n</dd>\n';
 
 }
 return __p
@@ -873,13 +867,9 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<form class="add-chatroom" action="" method="post">\n    <label>' +
+__p += '<form class="add-chatroom" action="" method="post">\n    <input type="hidden" name="chatroom" class="new-chatroom-name"\n        placeholder="' +
 ((__t = (label_room_name)) == null ? '' : __t) +
-'</label>\n    <input type="text" name="chatroom" class="new-chatroom-name"\n        placeholder="' +
-((__t = (label_room_name)) == null ? '' : __t) +
-'"/>\n    <label>' +
-((__t = (label_nickname)) == null ? '' : __t) +
-'</label>\n    <input type="text" name="nick" class="new-chatroom-nick"\n        placeholder="' +
+'"/>\n <input type="hidden" name="nick" class="new-chatroom-nick"\n        placeholder="' +
 ((__t = (label_nickname)) == null ? '' : __t) +
 '"/>\n    ';
  if (server_input_type != 'hidden') { ;
@@ -893,9 +883,7 @@ __p += '\n    <input type="' +
 ((__t = (server_input_type)) == null ? '' : __t) +
 '" name="server" class="new-chatroom-server"\n        placeholder="' +
 ((__t = (label_server)) == null ? '' : __t) +
-'"/>\n    <div class="button-group">\n        <input type="submit" class="left" name="join" value="' +
-((__t = (label_join)) == null ? '' : __t) +
-'"/>\n        <input type="button" class="right" name="show" id="show-rooms" value="' +
+'"/>\n    <input type="button" class="right hide" name="show" id="show-rooms" value="' +
 ((__t = (label_show_rooms)) == null ? '' : __t) +
 '"/>\n    </div>\n</form>\n<dl id="available-chatrooms"></dl>\n';
 

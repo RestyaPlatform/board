@@ -2162,15 +2162,15 @@
                         converse.templates.room_panel({
                             'server_input_type': converse.hide_muc_server && 'hidden' || 'text',
                             'server_label_global_attr': converse.hide_muc_server && ' hidden' || '',
-                            'label_room_name': __('Room name'),
+                            'label_room_name': __('Board name'),
                             'label_nickname': __('Nickname'),
                             'label_server': __('Server'),
-                            'label_join': __('Join Room'),
-                            'label_show_rooms': __('Show rooms')
+                            'label_join': __('Join Board'),
+                            'label_show_rooms': __('Show Boards')
                         })
                     ).hide());
                 this.$tabs = this.$parent.parent().find('#controlbox-tabs');
-                this.$tabs.append(converse.templates.chatrooms_tab({label_rooms: __('Rooms')}));
+                this.$tabs.append(converse.templates.chatrooms_tab({label_rooms: __('Boards')}));
                 return this;
             },
 
@@ -2190,7 +2190,7 @@
             informNoRoomsFound: function () {
                 var $available_chatrooms = this.$el.find('#available-chatrooms');
                 // # For translators: %1$s is a variable and will be replaced with the XMPP server name
-                $available_chatrooms.html('<dt>'+__('No rooms on %1$s',this.model.get('muc_domain'))+'</dt>');
+                $available_chatrooms.html('<dt>'+__('No boards')+'</dt>');
                 $('input#show-rooms').show().siblings('span.spinner').remove();
             },
 
@@ -2198,7 +2198,6 @@
                 /* Handle the IQ stanza returned from the server, containing
                  * all its public rooms.
                  */
-				 console.log(iq);
                 var name, jid, i, fragment,
                     that = this,
                     $available_chatrooms = this.$el.find('#available-chatrooms');
@@ -2206,7 +2205,7 @@
                 if (this.rooms.length) {
                     // # For translators: %1$s is a variable and will be
                     // # replaced with the XMPP server name
-                    $available_chatrooms.html('<dt>'+__('Rooms on %1$s',this.model.get('muc_domain'))+'</dt>');
+                   // $available_chatrooms.html('<dt>'+__('Boards on %1$s',this.model.get('muc_domain'))+'</dt>');
                     fragment = document.createDocumentFragment();
                     for (i=0; i<this.rooms.length; i++) {
                         name = Strophe.unescapeNode($(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid'));
@@ -2215,8 +2214,8 @@
                             converse.templates.room_item({
                                 'name':name,
                                 'jid':jid,
-                                'open_title': __('Click to open this room'),
-                                'info_title': __('Show more information on this room')
+                                'open_title': __('Click to open this board'),
+                                'info_title': __('Show more information on this board')
                                 })
                             )[0]);
                     }
@@ -2296,11 +2295,11 @@
                                     'label_requires_invite': __('Requires an invitation'),
                                     'label_moderated': __('Moderated'),
                                     'label_non_anon': __('Non-anonymous'),
-                                    'label_open_room': __('Open room'),
-                                    'label_permanent_room': __('Permanent room'),
+                                    'label_open_room': __('Open board'),
+                                    'label_permanent_room': __('Permanent board'),
                                     'label_public': __('Public'),
                                     'label_semi_anon':  _('Semi-anonymous'),
-                                    'label_temp_room':  _('Temporary room'),
+                                    'label_temp_room':  _('Temporary board'),
                                     'label_unmoderated': __('Unmoderated')
                                 }));
                         }.bind(this));
@@ -3774,7 +3773,7 @@
             restore: _.debounce(function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 this.model.messages.off('add',null,this);
-                this.remove();
+                //this.el.remove();
                 this.model.maximize();
             }, 200, true)
         });
@@ -6076,7 +6075,7 @@
             if (this.rosterview) {
                 this.rosterview.unregisterHandlers();
                 this.rosterview.model.off().reset(); // Removes roster groups
-                this.rosterview.undelegateEvents().remove();
+                //this.rosterview.undelegateEvents().remove();
             }
             this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
             if (this.features) {
@@ -6085,7 +6084,7 @@
             if (this.minimized_chats) {
                 this.minimized_chats.undelegateEvents().model.reset();
                 this.minimized_chats.removeAll(); // Remove sub-views
-                this.minimized_chats.tearDown().remove(); // Remove overview
+                //this.minimized_chats.tearDown().remove(); // Remove overview
                 delete this.minimized_chats;
             }
             return this;

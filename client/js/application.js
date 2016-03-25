@@ -21,7 +21,15 @@ var LDAP_LOGIN_ENABLED = '';
 var DEFAULT_LANGUAGE = '';
 var STANDARD_LOGIN_ENABLED = '';
 var IMAP_EMAIL = '';
+var BOSH_SERVICE_URL = '';
+var JABBER_HOST = '';
+var JABBER_PATH = '';
+var XMPP_CLIENT_RESOURCE_NAME = '';
+var PAGING_COUNT = '';
+var is_chat_opened = false;
+var chat_message_count = 0;
 var last_activity = '';
+var previous_date = '';
 var SecuritySalt = 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf';
 var last_user_activity_id = 0,
     load_more_last_board_activity_id = 0,
@@ -352,6 +360,8 @@ var AppRouter = Backbone.Router.extend({
                     replace: true
                 });
                 clearInterval(set_interval_id);
+                converse.user.logout();
+                $('#conversejs').remove();
                 var view = new Backbone.View();
                 view.flash('success', i18next.t('Logout successfully.'));
             }
