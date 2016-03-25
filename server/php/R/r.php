@@ -573,14 +573,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 array_push($pg_params, $r_resource_filters['last_activity_id']);
                 $i++;
             }
-            if (!empty($r_resource_vars['lists'])) {
-                $condition.= ' AND al.list_id = $' . $i;
-                array_push($pg_params, $r_resource_vars['lists']);
-                $i++;
-            }
             if (!empty($r_resource_vars['cards'])) {
                 $condition.= ' AND al.card_id = $' . $i;
                 array_push($pg_params, $r_resource_vars['cards']);
+            } else if (!empty($r_resource_vars['lists'])) {
+                $condition.= ' AND al.list_id = $' . $i;
+                array_push($pg_params, $r_resource_vars['lists']);
+                $i++;
             }
             if (!empty($r_resource_filters['filter'])) {
                 $condition.= ' AND al.type = $' . $i;
