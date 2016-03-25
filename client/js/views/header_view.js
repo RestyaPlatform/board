@@ -87,7 +87,6 @@ App.HeaderView = Backbone.View.extend({
                     hide_muc_server: true,
                     show_controlbox_by_default: true,
                     auto_list_rooms: true,
-                    //auto_reconnect: true,
                     play_sounds: true,
                     allow_registration: false
                 });

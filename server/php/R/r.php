@@ -1239,7 +1239,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
  */
 function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
 {
-    global $r_debug, $db_lnk, $authUser, $thumbsizes, $_server_domain_url, $chat_db_lnk;
+    global $r_debug, $db_lnk, $authUser, $thumbsizes, $_server_domain_url;
     $emailFindReplace = $response = array();
     $fields = 'created, modified';
     $values = 'now(), now()';
@@ -1341,6 +1341,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $conditions = array(
                         $board['name']
                     );
+                    $chat_db_lnk = getEjabberdConnection();
                     pg_query_params($chat_db_lnk, 'DELETE FROM muc_room WHERE name= $1', $conditions);
                 }
             }

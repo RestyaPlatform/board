@@ -37,11 +37,11 @@ define('R_DB_USER', 'restya');
 define('R_DB_PASSWORD', 'hjVl2!rGd');
 define('R_DB_NAME', 'restyaboard');
 define('R_DB_PORT', 5432);
-define('CHAT_DB_HOST', '192.168.1.7');
-define('CHAT_DB_USER', 'postgres');
+define('CHAT_DB_HOST', '');
+define('CHAT_DB_USER', '');
 define('CHAT_DB_PASSWORD', '');
-define('CHAT_DB_NAME', 'ejabberd15');
-define('CHAT_DB_PORT', 5432);
+define('CHAT_DB_NAME', '');
+define('CHAT_DB_PORT', '');
 define('SECURITYSALT', 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf');
 if (!file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
     $fh = fopen(APP_PATH . '/tmp/cache/site_url_for_shell.php', 'a');
@@ -50,7 +50,6 @@ if (!file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
     fclose($fh);
 }
 $db_lnk = pg_connect('host=' . R_DB_HOST . ' port=' . R_DB_PORT . ' dbname=' . R_DB_NAME . ' user=' . R_DB_USER . ' password=' . R_DB_PASSWORD . ' options=--client_encoding=UTF8') or die('Database could not connect');
-$chat_db_lnk = pg_connect('host=' . CHAT_DB_HOST . ' port=' . CHAT_DB_PORT . ' dbname=' . CHAT_DB_NAME . ' user=' . CHAT_DB_USER . ' password=' . CHAT_DB_PASSWORD . ' options=--client_encoding=UTF8') or die('Chat database could not connect');
 $settings = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE setting_category_id in (1,2,3,10,11) OR setting_category_parent_id in (1,2,3)', array());
 while ($setting = pg_fetch_assoc($settings)) {
     if ($setting['name'] == 'LDAP_LOGIN_ENABLED' || $setting['name'] == 'STANDARD_LOGIN_ENABLED') {
