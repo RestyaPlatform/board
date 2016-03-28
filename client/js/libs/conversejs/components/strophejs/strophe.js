@@ -1106,8 +1106,8 @@ Strophe = {
         text = text.replace(/\&/g, "&amp;");
         text = text.replace(/</g,  "&lt;");
         text = text.replace(/>/g,  "&gt;");
-        text = text.replace(/'/g,  "&apos;");
-        text = text.replace(/"/g,  "&quot;");
+        text = text.replace(/\'/g,  "&apos;");
+        text = text.replace(/\"/g,  "&quot;");
         return text;
     },
 
@@ -3935,7 +3935,7 @@ Strophe.SASLMD5.test = function(connection) {
  */
 Strophe.SASLMD5.prototype._quote = function (str)
   {
-    return '"' + str.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
+    return '"' + str.replace(/\\/g, "\\\\").replace(/\"/g, '\\"') + '"';
     //" end string workaround for emacs
   };
 
@@ -4342,7 +4342,6 @@ Strophe.Bosh.prototype = {
     _restore: function (jid, callback, wait, hold, wind)
     {
         var session = JSON.parse(window.sessionStorage.getItem('strophe-bosh-session'));
-		console.log(session);
         if (typeof session !== "undefined" &&
                    session !== null &&
                    session.rid &&
@@ -4375,7 +4374,6 @@ Strophe.Bosh.prototype = {
                 }));
             }
         } else {
-			console.log('*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/');
             window.sessionStorage.removeItem('strophe-bosh-session');
         }
     },
