@@ -894,7 +894,7 @@ INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "na
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('11', '0', 'JABBER_HOST', 'phabricator.ahsan.in', NULL, 'text', NULL, 'Jabber Host', '2');
 
 INSERT INTO "acl_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
-VALUES ('2015-10-05 13:14:18.2', '2015-10-05 13:14:18.2', 'XMPP chat login', '/xmpp_login', 'GET', 'xmpp_login', '1', '1', '1', '0', '0');
+VALUES ('2015-10-05 13:14:18.2', '2015-10-05 13:14:18.2', 'XMPP chat login', '/xmpp_login', 'GET', 'xmpp_login', '2', '1', '0', '1', '0');
 
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849',	'2016-02-20 19:07:50.849',	id,	1 FROM acl_links WHERE slug = 'xmpp_login';
 
@@ -905,7 +905,7 @@ INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "na
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('11', '0', 'JABBER_PATH', 'ejabberdctl', NULL, 'text', NULL, 'Jabber Path', '4');
 
 INSERT INTO "acl_links" ("created", "modified", "name", "url", "method", "slug", "group_id",  "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
-VALUES ('2015-10-05 13:14:18.2', '2015-10-05 13:14:18.2', 'Chat History', '/chat_history', 'GET', 'chat_history', '1',  '1', '1', '0', '0');
+VALUES ('2015-10-05 13:14:18.2', '2015-10-05 13:14:18.2', 'Chat History', '/chat_history', 'GET', 'chat_history', '2',  '1', '0', '1', '0');
 
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849',	'2016-02-20 19:07:50.849',	id,	1 FROM acl_links WHERE slug = 'chat_history';
 
