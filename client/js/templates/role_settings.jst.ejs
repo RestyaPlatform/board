@@ -1,6 +1,14 @@
 <div class="col-xs-12 js-container-div-role">
 	<form id="js-save-role-settings">
-		<div class="table-responsive navbar-btn">			
+		<div class="table-responsive navbar-btn">
+			<ul id = "myTab" class = "nav nav-tabs">
+			   <li class = "active"><a href = "#users" data-toggle = "tab"><%- i18next.t('Users') %></a></li>			   
+			   <li><a href = "#boards" data-toggle = "tab"><%- i18next.t('Boards') %></a></li>			
+			   <li><a href = "#organizations" data-toggle = "tab"><%- i18next.t('Organizations') %></a></li>			
+			</ul>
+			<div id = "myTabContent" class = "tab-content">
+			   <div class = "tab-pane fade in active" id = "users">
+			   <div class="pull-left well-sm"><a title="Add Role" href="#/roles/add"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t('Add Role') %></span></a></div>
 			<table class="table js-acl-link-list acl-link-list">
 				<thead>
 					<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
@@ -95,7 +103,10 @@
 					%>
 				</tbody>
 			</table>
-			<div class="well-sm col-xs-12"></div>
+			   </div>
+			   
+			   <div class = "tab-pane fade" id = "boards">
+			   <div class="pull-left well-sm"><a title="Add Board User Role" href="#/board_user_roles/add"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t('Add Board User Role') %></span></a></div>
 			<table class="table js-acl-link-list acl-link-list">
 				<thead>
 					<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
@@ -145,8 +156,11 @@
 					%>
 				</tbody>
 			</table>
-			<div class="well-sm col-xs-12"></div>
-			<table class="table js-acl-link-list acl-link-list">
+			   </div>
+			   
+			   <div class = "tab-pane fade" id = "organizations">
+			   <div class="pull-left well-sm"><a title="Add Organization User Role" href="#/organization_user_roles/add"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t('Add Organization User Role') %></span></a></div>
+				<table class="table js-acl-link-list acl-link-list">
 				<thead>
 					<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
 					<% organization_user_roles.each(function(organization_user_role) { %>
@@ -190,6 +204,8 @@
 					<% }); %>
 				</tbody>
 			</table>
+			   </div>
+			</div>
 		</div>
 	</form>
 </div>

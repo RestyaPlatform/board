@@ -1722,7 +1722,7 @@ App.ModalCardView = Backbone.View.extend({
      * display card activities
      */
     renderActivitiesCollection: function() {
-        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
+        if (!_.isUndefined(authuser.user) && (this.model.list.collection.board.attributes.board_visibility === 2 || authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
                 slug: "view_card_activities",
                 board_user_role_id: parseInt(this.model.board_user_role_id)
             })))) {
@@ -2199,6 +2199,7 @@ App.ModalCardView = Backbone.View.extend({
         });
         activitiy.board_user_role_id = this.model.board_user_role_id;
         activitiy.board = this.model.board;
+        $('.js-list-activity-' + activity_id).addClass('edit-comment');
         $('.js-activity-' + activity_id).html(new App.EditActivityFormView({
             model: activitiy,
             attributes: {

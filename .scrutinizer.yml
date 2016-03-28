@@ -1,0 +1,5 @@
+filter:
+  excluded_paths: [build/*, server/php/libs/vendors/*]
+checks:
+  php:
+    code_rating: true
