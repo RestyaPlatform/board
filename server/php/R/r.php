@@ -239,7 +239,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         } else {
             $sql.= '(LOWER(u.username) LIKE LOWER($2) OR LOWER(u.email) LIKE LOWER($3))) as d ';
         }
-        array_push($pg_params, $r_resource_filters['q'] . '%', $r_resource_filters['q'] . '%');
+        array_push($pg_params, '%' . $r_resource_filters['q'] . '%', '%' . $r_resource_filters['q'] . '%');
         if (empty($r_resource_filters['q'])) {
             $sql = false;
             $response = array();
