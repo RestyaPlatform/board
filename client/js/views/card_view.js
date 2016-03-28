@@ -148,6 +148,7 @@ App.CardView = Backbone.View.extend({
         var target = $(ev.target);
         var data = {};
         var list_id = parseInt(target.parents('.js-board-list:first').data('list_id'));
+        var previous_list_id = self.model.attributes.list_id;
         var previous_card_id = target.prev('.js-board-list-card').data('card_id');
         var next_card_id = target.next('.js-board-list-card').data('card_id');
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.attributes.id + '.json';
@@ -169,6 +170,8 @@ App.CardView = Backbone.View.extend({
             patch: true,
             silent: true
         });
+        self.model.list.collection.board.lists.get(previous_list_id).cards.remove(self.model);
+        self.model.list.collection.board.lists.get(list_id).cards.add(self.model);
         var attachments = self.model.list.collection.board.attachments.where({
             card_id: self.model.attributes.id
         });
