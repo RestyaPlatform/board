@@ -632,13 +632,15 @@
 				<div class="form-group">
 				  <input type="text" value="<%= window.location.origin %><%= window.location.pathname %>#/board/<%- card.attributes.board_id %>/card/<%- card.attributes.id %>" class="form-control input-sm js-select-card-url" readonly="readonly">
 				</div>
-				<div class="form-group">
-					<% var imap_email = IMAP_EMAIL.split('@');
-					   var card_email = imap_email[0] + '+' + card.attributes.board_id + '+' + card.attributes.id + '+' + calcMD5(SecuritySalt + card.attributes.board_id + card.attributes.id)+'@'+imap_email[1];
-					%>
-				  <span class="show"><%- i18next.t("Email for this card") %></span>
-				  <input readonly="readonly" class="form-control" value="<%- card_email %>">
-				</div>
+				<% if(!_.isEmpty(IMAP_EMAIL)){ %>
+					<div class="form-group">
+						<% var imap_email = IMAP_EMAIL.split('@');
+						   var card_email = imap_email[0] + '+' + card.attributes.board_id + '+' + card.attributes.id + '+' + calcMD5(SecuritySalt + card.attributes.board_id + card.attributes.id)+'@'+imap_email[1];
+						%>
+					  <span class="show"><%- i18next.t("Email for this card") %></span>
+					  <input readonly="readonly" class="form-control" value="<%- card_email %>">
+					</div>
+				<% } %>
 			  </form>
 			</li>
 		 </ul>
