@@ -1,5 +1,4 @@
-<div class="col-xs-12 js-container-div-role">
-	<form id="js-save-role-settings">
+<div class="col-xs-12 js-container-div-role well-lg navbar-btn">
 		<div class="table-responsive navbar-btn">
 			<ul id = "myTab" class = "nav nav-tabs">
 			   <li class = "active"><a href = "#users" data-toggle = "tab"><%- i18next.t('Users') %></a></li>			   
@@ -8,12 +7,59 @@
 			</ul>
 			<div id = "myTabContent" class = "tab-content">
 			   <div class = "tab-pane fade in active" id = "users">
-			   <div class="pull-left well-sm"><a title="Add Role" href="#/roles/add"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t('Add Role') %></span></a></div>
+			   <div class="pull-right well-sm dropdown"><a title="Add Role" class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="icon-plus-sign"></i><span><%- i18next.t('Add Role') %></span></a>
+			    <ul class="dropdown-menu arrow arrow-right">
+					<li> 
+						<div class="clearfix text-center col-xs-12">
+							<span class="col-xs-10"><strong><%- i18next.t("Add Role") %></strong></span><i class="icon-remove cur"></i>
+						</div>
+					</li>
+					<li class="col-xs-12 divider"></li>
+					<li class="col-xs-12">
+					    <form id="RoleAddForm" name="RoleAddForm" class="form-horizontal col-xs-12">
+						  <div class="form-group required">
+							<label class="sr-only control-label" for="inputName"><%- i18next.t("Name") %></label>
+							<input type="name" name="name" id="inputName" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
+						  </div>
+						  <div class="form-group">
+							<label class="sr-only control-label" for="submitAddRole"><%- i18next.t("Add") %></label>
+							<input type="submit" class="btn btn-primary col-xs-12" id="submitAddRole" value="<%- i18next.t('Add') %>">
+						  </div>
+						</form>
+					 </li>
+				</ul>
+			   </div>
 			<table class="table js-acl-link-list acl-link-list">
 				<thead>
 					<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
 					<% roles.each(function(role) { %>
-						<th class="col-xs-1 text-center"><%- i18next.t(role.attributes.name) %></th>
+						<th class="col-xs-1 text-center">
+						<div class="dropdown navbar-right"><a title="Edit Role" class="dropdown-toggle" data-toggle="dropdown">
+						<%- i18next.t(role.attributes.name) %>
+						<i class="icon-pencil"></i></a>
+			    <ul class="dropdown-menu arrow arrow-right">
+					<li> 
+						<div class="clearfix text-center col-xs-12">
+							<span class="col-xs-10"><strong><%- i18next.t("Edit Role") %></strong></span><i class="icon-remove cur"></i>
+						</div>
+					</li>
+					<li class="col-xs-12 divider"></li>
+					<li class="col-xs-12">
+					    <form id="RoleEditForm" name="RoleEditForm" class="form-horizontal col-xs-12">
+							<input type="hidden" name="id" value="<%- role.attributes.id %>">
+						  <div class="form-group required">
+							<label class="sr-only control-label" for="inputEditName"><%- i18next.t("Name") %></label>
+							<input type="name" name="name" id="inputEditName" value="<%- role.attributes.name %>" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
+						  </div>
+						  <div class="form-group">
+							<label class="sr-only control-label" for="submitEditRole"><%- i18next.t("Update") %></label>
+							<input type="submit" class="btn btn-primary col-xs-12" id="submitEditRole" value="<%- i18next.t('Update') %>">
+						  </div>
+						</form>
+					 </li>
+				</ul>
+			   </div>
+						</th>
 					<% }); %>
 				</thead>
 				<tbody class="js-acl-link-list-body acl-link-list">
@@ -106,12 +152,67 @@
 			   </div>
 			   
 			   <div class = "tab-pane fade" id = "boards">
-			   <div class="pull-left well-sm"><a title="Add Board User Role" href="#/board_user_roles/add"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t('Add Board User Role') %></span></a></div>
+			   <div class="pull-right well-sm dropdown">
+					<a title="Add Board User Role" href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-plus-sign"></i><span><%- i18next.t('Add Board User Role') %></span></a>
+					<ul class="dropdown-menu arrow arrow-right">
+						<li> 
+							<div class="clearfix text-center col-xs-12">
+								<span class="col-xs-10"><strong><%- i18next.t("Add Board User Role") %></strong></span><i class="icon-remove cur"></i>
+							</div>
+						</li>
+						<li class="col-xs-12 divider"></li>
+						<li class="col-xs-12">
+							<form id="BoardUserRoleAddForm" name="BoardUserRoleAddForm" class="form-horizontal col-xs-12">
+							  <div class="form-group required">
+								<label class="sr-only control-label" for="inputBoardName"><%- i18next.t("Name") %></label>
+								<input type="name" name="name" id="inputBoardName" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
+							  </div>
+							  <div class="form-group required">
+								<label class="sr-only control-label" for="inputBoardDescription"><%- i18next.t("Description") %></label>
+								<textarea name="description" id="inputBoardDescription" class="form-control js-role-name" placeholder="<%- i18next.t('Description') %>"></textarea>
+							  </div>
+							  <div class="form-group">
+								<label class="sr-only control-label" for="submitAddBoardUserRole"><%- i18next.t("Add") %></label>
+								<input type="submit" class="btn btn-primary col-xs-12" id="submitAddBoardUserRole" value="<%- i18next.t('Add') %>">
+							  </div>
+							</form>
+						 </li>
+					</ul>
+			   </div>
 			<table class="table js-acl-link-list acl-link-list">
 				<thead>
 					<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
 					<% board_user_roles.each(function(board_user_role) { %>
-						<th class="col-xs-1 text-center"><%- i18next.t(board_user_role.attributes.name) %></th>
+						<th class="col-xs-1 text-center">
+						<div class="dropdown navbar-right">
+							<a title="Edit Board User Role" class="dropdown-toggle" data-toggle="dropdown"><%- i18next.t(board_user_role.attributes.name) %><i class="icon-pencil"></i></a>
+							<ul class="dropdown-menu arrow arrow-right">
+								<li> 
+									<div class="clearfix text-center col-xs-12">
+										<span class="col-xs-10"><strong><%- i18next.t("Edit Board User Role") %></strong></span><i class="icon-remove cur"></i>
+									</div>
+								</li>
+								<li class="col-xs-12 divider"></li>
+								<li class="col-xs-12">
+									<form id="BoardUserRoleEditForm" name="BoardUserRoleEditForm" class="form-horizontal col-xs-12">
+									  <input type="hidden" name="id" value="<%- board_user_role.attributes.id %>">
+									  <div class="form-group required">
+										<label class="sr-only control-label" for="inputEditBoardName"><%- i18next.t("Name") %></label>
+										<input type="name" name="name" value="<%- board_user_role.attributes.name %>" id="inputEditBoardName" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
+									  </div>
+									  <div class="form-group required">
+										<label class="sr-only control-label" for="inputEditBoardDescription"><%- i18next.t("Description") %></label>
+										<textarea name="description" id="inputEditBoardDescription" class="form-control js-role-name" placeholder="<%- i18next.t('Description') %>"><%- board_user_role.attributes.description %></textarea>
+									  </div>
+									  <div class="form-group">
+										<label class="sr-only control-label" for="submitEditBoardUserRole"><%- i18next.t("Update") %></label>
+										<input type="submit" class="btn btn-primary col-xs-12" id="submitEditBoardUserRole" value="<%- i18next.t('Update') %>">
+									  </div>
+									</form>
+								 </li>
+							</ul>
+					   </div>
+						</th>
 					<% }); %>
 				</thead>
 				<tbody class="js-acl-link-list-body acl-link-list">
@@ -159,12 +260,65 @@
 			   </div>
 			   
 			   <div class = "tab-pane fade" id = "organizations">
-			   <div class="pull-left well-sm"><a title="Add Organization User Role" href="#/organization_user_roles/add"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t('Add Organization User Role') %></span></a></div>
+			   <div class="pull-right well-sm dropdown"><a title="Add Organization User Role" href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-plus-sign"></i><span><%- i18next.t('Add Organization User Role') %></span></a>
+			   <ul class="dropdown-menu arrow arrow-right">
+						<li> 
+							<div class="clearfix text-center col-xs-12">
+								<span class="col-xs-10"><strong><%- i18next.t("Add Organization User Role") %></strong></span><i class="icon-remove cur"></i>
+							</div>
+						</li>
+						<li class="col-xs-12 divider"></li>
+						<li class="col-xs-12">
+							<form id="OrganizationUserRoleAddForm" name="OrganizationUserRoleAddForm" class="form-horizontal col-xs-12">
+							  <div class="form-group required">
+								<label class="sr-only control-label" for="inputOrganizationName"><%- i18next.t("Name") %></label>
+								<input type="name" name="name" id="inputOrganizationName" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
+							  </div>
+							  <div class="form-group required">
+								<label class="sr-only control-label" for="inputOrganizationDescription"><%- i18next.t("Description") %></label>
+								<textarea name="description" id="inputOrganizationDescription" class="form-control js-role-name" placeholder="<%- i18next.t('Description') %>"></textarea>
+							  </div>
+							  <div class="form-group">
+								<label class="sr-only control-label" for="submitAddOrganizationUserRole"><%- i18next.t("Add") %></label>
+								<input type="submit" class="btn btn-primary col-xs-12" id="submitAddOrganizationUserRole" value="<%- i18next.t('Add') %>">
+							  </div>
+							</form>
+						 </li>
+					</ul>
+			   </div>
 				<table class="table js-acl-link-list acl-link-list">
 				<thead>
 					<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
 					<% organization_user_roles.each(function(organization_user_role) { %>
-						<th class="col-xs-1 text-center"><%- i18next.t(organization_user_role.attributes.name) %></th>
+						<th class="col-xs-1 text-center">
+							<div class="dropdown navbar-right"><a title="Edit Organization User Role" class="dropdown-toggle" data-toggle="dropdown"><%- i18next.t(organization_user_role.attributes.name) %><i class="icon-pencil"></i></a>
+							   <ul class="dropdown-menu arrow arrow-right">
+										<li> 
+											<div class="clearfix text-center col-xs-12">
+												<span class="col-xs-10"><strong><%- i18next.t("Edit Organization User Role") %></strong></span><i class="icon-remove cur"></i>
+											</div>
+										</li>
+										<li class="col-xs-12 divider"></li>
+										<li class="col-xs-12">
+											<form id="OrganizationUserRoleEditForm" name="OrganizationUserRoleEditForm" class="form-horizontal col-xs-12">
+											<input type="hidden" name="id" value="<%- organization_user_role.attributes.id %>">
+											  <div class="form-group required">
+												<label class="sr-only control-label" for="inputEditOrganizationName"><%- i18next.t("Name") %></label>
+												<input type="name" name="name" id="inputEditOrganizationName" value="<%- organization_user_role.attributes.name %>" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
+											  </div>
+											  <div class="form-group required">
+												<label class="sr-only control-label" for="inputEditOrganizationDescription"><%- i18next.t("Description") %></label>
+												<textarea name="description" id="inputEditOrganizationDescription" class="form-control js-role-name" placeholder="<%- i18next.t('Description') %>"><%- organization_user_role.attributes.description %></textarea>
+											  </div>
+											  <div class="form-group">
+												<label class="sr-only control-label" for="submitEditOrganizationUserRole"><%- i18next.t("Update") %></label>
+												<input type="submit" class="btn btn-primary col-xs-12" id="submitEditOrganizationUserRole" value="<%- i18next.t('Update') %>">
+											  </div>
+											</form>
+										 </li>
+									</ul>
+							   </div>
+						</th>
 					<% }); %>
 				</thead>
 				<tbody class="js-acl-link-list-body acl-link-list">
@@ -207,5 +361,4 @@
 			   </div>
 			</div>
 		</div>
-	</form>
 </div>
