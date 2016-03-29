@@ -86,8 +86,11 @@
 
     // XXX: these can perhaps be moved to src/polyfills.js
     String.prototype.splitOnce = function (delimiter) {
-        var components = this.split(delimiter);
-        return [components.shift(), components.join(delimiter)];
+		//quick fix
+		if (typeof this.split == 'function') {
+			var components = this.split(delimiter);
+			return [components.shift(), components.join(delimiter)];
+		}
     };
 
     var converse = {
