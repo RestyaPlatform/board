@@ -104,7 +104,7 @@ function getRandomStr($arr_characters, $length)
  */
 function getCryptHash($str)
 {
-	$salt = '';
+    $salt = '';
     if (CRYPT_BLOWFISH) {
         if (version_compare(PHP_VERSION, '5.3.7') >= 0) { // http://www.php.net/security/crypt_blowfish.php
             $algo_selector = '$2y$';
@@ -315,7 +315,7 @@ function doGet($url)
 function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $revision = null, $foreign_id = null)
 {
     global $r_debug, $db_lnk;
-	$result = '';
+    $result = '';
     $fields = array(
         'created',
         'modified',
@@ -763,7 +763,7 @@ function saveIp()
 function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = '')
 {
     global $db_lnk, $authUser;
-	$foreign_ids = array();
+    $foreign_ids = array();
     while ($card = pg_fetch_object($cards)) {
         $card->list_id = $new_list_id;
         $card_id = $card->id;
@@ -1189,7 +1189,7 @@ function importTrelloBoard($board = array())
             }
         }
         if (!empty($board['actions'])) {
-			$type = $comment = '';
+            $type = $comment = '';
             foreach ($board['actions'] as $action) {
                 if ($action['type'] == 'commentCard') {
                     $type = 'add_comment';

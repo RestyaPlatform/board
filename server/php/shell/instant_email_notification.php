@@ -30,19 +30,19 @@ if ($db_lnk) {
         $board_arr = (!empty($user['board_ids'])) ? array_filter(json_decode($user['board_ids'], true)) : '';
         $list_arr = (!empty($user['list_ids'])) ? array_filter(json_decode($user['list_ids'], true)) : '';
         $card_arr = (!empty($user['card_ids'])) ? array_filter(json_decode($user['card_ids'], true)) : '';
-        if (!empty($board_arr)) {
+        if (!empty($board_arr) && is_array($board_arr)) {
             foreach ($board_arr as $boards) {
                 $board_ids[] = $boards['board_id'];
             }
         }
-        if (!empty($list_arr)) {
+        if (!empty($list_arr) && is_array($list_arr)) {
             foreach ($list_arr as $lists) {
                 if (!in_array($lists['board_id'], $board_ids)) {
                     $list_ids[] = $lists['list_id'];
                 }
             }
         }
-        if (!empty($card_arr)) {
+        if (!empty($card_arr) && is_array($card_arr)) {
             foreach ($card_arr as $cards) {
                 if (!in_array($cards['board_id'], $board_ids) && !in_array($cards['list_id'], $list_ids)) {
                     $card_ids[] = $cards['card_id'];
