@@ -104,6 +104,7 @@ function getRandomStr($arr_characters, $length)
  */
 function getCryptHash($str)
 {
+	$salt = '';
     if (CRYPT_BLOWFISH) {
         if (version_compare(PHP_VERSION, '5.3.7') >= 0) { // http://www.php.net/security/crypt_blowfish.php
             $algo_selector = '$2y$';
@@ -176,7 +177,7 @@ function getCryptHash($str)
  *
  * @param string $url    URL
  * @param string $method optional Method of CURL default value : get
- * @param array  $post   optional CURL Values default value : array ()
+ * @param mixed  $post   optional CURL Values default value : array ()
  * @param string $format optional Format for values default value : plain
  *
  * @return mixed
@@ -314,6 +315,7 @@ function doGet($url)
 function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $revision = null, $foreign_id = null)
 {
     global $r_debug, $db_lnk;
+	$result = '';
     $fields = array(
         'created',
         'modified',
@@ -465,6 +467,7 @@ function ldapAuthenticate($p_user_id, $p_password)
     // Search for the user id
     $t_sr = ldap_search($t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs);
     $t_info = ldap_get_entries($t_ds, $t_sr);
+	$user = array();
     $user['User']['is_username_exits'] = false;
     $user['User']['is_password_matched'] = false;
     if (!empty($t_info)) {
@@ -748,7 +751,7 @@ function saveIp()
 /**
  * Copy Card
  *
- * @param array   $cards        Card record array
+ * @param mixed   $cards        Card record array
  * @param integer $new_list_id  List id of the new card
  * @param string  $name         Card name
  * @param integer $new_board_id Board id of the new card

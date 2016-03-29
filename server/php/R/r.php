@@ -38,8 +38,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
     // switch case.. if taking more length, then associative array...
     $sql = false;
-    $response = array();
-    $pg_params = array();
+    $response = $revisions = $pg_params = array();
     switch ($r_resource_cmd) {
     case '/xmpp_login':
         include '../libs/vendors/xmpp-prebind-php/XmppPrebind.php';
@@ -1030,7 +1029,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                                     if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $obj['type'] != 'moved_card_checklist_item' && $obj['type'] != 'add_card_desc' && $obj['type'] != 'add_card_duedate' && $obj['type'] != 'delete_card_duedate' && $obj['type'] != 'change_visibility' && $obj['type'] != 'add_background' && $obj['type'] != 'change_background') {
                                         $old_val = ($revisions['old_value'][$key] != null && $revisions['old_value'][$key] != 'null') ? $revisions['old_value'][$key] : '';
                                         $new_val = ($revisions['new_value'][$key] != null && $revisions['new_value'][$key] != 'null') ? $revisions['new_value'][$key] : '';
-                                        $diff[] = nl2br(getRevisiondifference($old_val, $old_val));
+                                        $diff[] = nl2br(getRevisiondifference($old_val, $new_val));
                                     }
                                     if ($obj['type'] == 'add_card_desc' || $obj['type'] == 'add_card_desc' || $obj['type'] == '	edit_card_duedate' || $obj['type'] == 'change_visibility' || $obj['type'] == 'add_background' || $obj['type'] == 'change_background') {
                                         $diff[] = $revisions['new_value'][$key];
@@ -1237,7 +1236,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
 {
     global $r_debug, $db_lnk, $authUser, $thumbsizes, $_server_domain_url;
-    $emailFindReplace = $response = $foreign_id = $cards = $foreign_ids = $diff = $no_organization_users = $srow = array();
+    $emailFindReplace = $response = $foreign_id = $cards = $foreign_ids = $diff = $no_organization_users = $srow = $revisions = array();
     $fields = 'created, modified';
     $values = 'now(), now()';
     $json = $sql = $is_return_vlaue = $is_import_board = $keepcards = false;
@@ -1599,6 +1598,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $is_return_vlaue = true;
         $profile_picture_path = 'null';
         $no_error = true;
+		$msg = '';
         if (!empty($_FILES['attachment']['name']) && $_FILES['attachment']['error'] == 0) {
             $allowed_ext = array(
                 'gif',
