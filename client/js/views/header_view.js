@@ -74,7 +74,7 @@ App.HeaderView = Backbone.View.extend({
         if (typeof Notification != 'undefined') {
             this.model.is_show_enable_notification = (Notification.permission == 'default') ? true : false;
         }
-        if (!_.isUndefined(authuser.user)) {
+        if (!_.isUndefined(authuser.user) && !_.isEmpty(BOSH_SERVICE_URL)) {
             setTimeout(function() {
                 converse.initialize({
                     bosh_service_url: BOSH_SERVICE_URL,
