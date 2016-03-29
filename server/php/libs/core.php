@@ -184,7 +184,7 @@ function getCryptHash($str)
  */
 function curlExecute($url, $method = 'get', $post = array() , $format = 'plain')
 {
-    $filename['file_name'] = '';
+    $filename = $return = $error = array();
     $mediadir = '';
     if ($format == 'image') {
         $mediadir = $post;
@@ -468,6 +468,7 @@ function ldapAuthenticate($p_user_id, $p_password)
     // Search for the user id
     $t_sr = ldap_search($t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs);
     $t_info = ldap_get_entries($t_ds, $t_sr);
+    $user = array();
     $user['User']['is_username_exits'] = false;
     $user['User']['is_password_matched'] = false;
     if (!empty($t_info)) {
@@ -639,7 +640,7 @@ function executeQuery($qry, $arr = array())
  * Common method to send mail
  *
  * @param string $template        Email template name
- * @param string $replace_content Email content replace array
+ * @param array  $replace_content Email content replace array
  * @param string $to              To email address
  * @param string $reply_to_mail   Reply to email address
  *
@@ -763,7 +764,7 @@ function saveIp()
 function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = '')
 {
     global $db_lnk, $authUser;
-    $foreign_ids = array();
+    $foreign_ids = $response = array();
     while ($card = pg_fetch_object($cards)) {
         $card->list_id = $new_list_id;
         $card_id = $card->id;
@@ -830,8 +831,6 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
                         $new_checklist_id = $checklist_result['id'];
                         $comment = '##USER_NAME## added checklist to this card ##CARD_LINK##';
                         insertActivity($authUser['id'], $comment, 'add_card_checklist', $foreign_ids, '', $new_checklist_id);
-                        $copy_checklists[] = $checklist_result;
-                        //Copy checklist items
                         $checklist_item_fields = 'card_id, checklist_id, user_id, name, position';
                         $qry_val_arr = array(
                             $checklist_id
@@ -843,7 +842,6 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
                                 $checklist_item->checklist_id = $new_checklist_id;
                                 $checklist_item_result = pg_execute_insert('checklist_items', $checklist_item);
                                 $checklist_item_result = pg_fetch_assoc($checklist_item_result);
-                                $copy_checklists_items[] = $checklist_item_result;
                                 $comment = '##USER_NAME## added checklist item to this card ##CARD_LINK##';
                                 insertActivity($authUser['id'], $comment, 'add_checklist_item', $foreign_ids, '', $checklist_item_result['id']);
                             }
@@ -902,7 +900,7 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
  * To generate query by passed args and insert into table
  *
  * @param string  $table_name Table name to execute the query
- * @param array   $r_post     Values
+ * @param mixed   $r_post     Values
  * @param integer $return_row Return rows
  *
  * @return mixed
@@ -1307,7 +1305,7 @@ function email2name($email)
 /**
  * Find and replace comment variables
  *
- * @param string $activity is activity informations
+ * @param array $activity is activity informations
  *
  * @return string
  */

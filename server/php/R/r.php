@@ -1242,10 +1242,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
 {
     global $r_debug, $db_lnk, $authUser, $thumbsizes, $_server_domain_url;
-    $emailFindReplace = $response = $foreign_id = array();
+    $emailFindReplace = $response = $foreign_id = $cards = $foreign_ids = $diff = $no_organization_users = $srow = array();
     $fields = 'created, modified';
     $values = 'now(), now()';
-    $json = $sql = $is_return_vlaue = $is_import_board = false;
+    $json = $sql = $is_return_vlaue = $is_import_board = $keepcards = false;
+    $is_keep_attachment = $is_keep_user = $is_keep_label = $is_keep_activity = $is_keep_checklist = $copied_card_id = 0;
     $uuid = $table_name = '';
     if (isset($r_post['uuid'])) {
         $uuid = $r_post['uuid'];
@@ -2344,7 +2345,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $is_return_vlaue = true;
         $r_post['user_id'] = $authUser['id'];
         $table_name = 'cards';
-        $is_keep_attachment = $is_keep_user = $is_keep_label = $is_keep_activity = $is_keep_checklist = 0;
         if (isset($r_post['keep_attachments'])) {
             $is_keep_attachment = $r_post['keep_attachments'];
             unset($r_post['keep_attachments']);
@@ -3711,13 +3711,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
     $values = array(
         'now()'
     );
-    $sfields = '';
-    $pg_params = array();
-    $emailFindReplace = $response = array();
+    $sfields = $table_name = $id = $activity_type = '';
+    $emailFindReplace = $response = $diff = $pg_params = $foreign_id = $foreign_ids = $revisions = $previous_value = $srow = array();
     $res_status = true;
     $sql = $json = false;
-    $table_name = '';
-    $id = '';
     unset($r_put['temp_id']);
     switch ($r_resource_cmd) {
     case '/users/?/activation': //users activation
@@ -4244,8 +4241,6 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
             $comment = ((!empty($authUser['full_name'])) ? $authUser['full_name'] : $authUser['username']) . ' deleted attachment from organizations ##ORGANIZATION_LINK##';
             $activity_type = 'delete_organization_attachment';
-            //insertActivity($authUser['id'], $comment, 'delete_organization_attachment', $foreign_ids, null, $r_resource_vars['attachments']);
-            
         } else {
             $organization_visibility = array(
                 '',
@@ -4455,8 +4450,8 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 {
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
     $sql = false;
-    $pg_params = array();
-    $response = array();
+    $pg_params = $diff = $response = $foreign_ids = $foreign_id = $revisions_del = array();
+    $activity_type = '';
     switch ($r_resource_cmd) {
     case '/users/?': // delete users
         $qry_val_arr = array(
