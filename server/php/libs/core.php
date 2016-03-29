@@ -334,7 +334,6 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
         array_push($fields, 'foreign_id');
         array_push($values, $foreign_id);
     }
-    $all_foreign_ids = $foreign_ids;
     foreach ($foreign_ids as $key => $value) {
         if ($key != 'id' && $key != 'user_id') {
             array_push($fields, $key);
@@ -474,7 +473,7 @@ function ldapAuthenticate($p_user_id, $p_password)
         for ($i = 0; $i < $t_info['count']; $i++) {
             $t_dn = $t_info[$i]['dn'];
             // Attempt to bind with the DN and password
-            if ($_data1 = @ldap_bind($t_ds, $t_dn, $p_password)) {
+            if (@ldap_bind($t_ds, $t_dn, $p_password)) {
                 $user['User']['is_password_matched'] = true;
                 if (isset($t_info[$i]['name'])) {
                     $user['User']['first_name'] = $t_info[$i]['name'][0];
@@ -688,8 +687,7 @@ function saveIp()
     );
     $ip_row = executeQuery('SELECT id FROM ips WHERE ip = $1', $qry_val_arr);
     if (!$ip_row) {
-        $country_id = $state_id = $city_id = 0;
-        $lat = $lng = 0.00;
+        $country_id = 0;
         if (!empty($_COOKIE['_geo'])) {
             $_geo = explode('|', $_COOKIE['_geo']);
             $qry_val_arr = array(
@@ -728,9 +726,8 @@ function saveIp()
             }
         }
         $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-        $country_id = $country_id;
-        $state_id = (!empty($state_row['id'])) ? $state_row['id'] : $city_id;
-        $city_id = (!empty($city_row['id'])) ? $city_row['id'] : $city_id;
+        $state_id = (!empty($state_row['id'])) ? $state_row['id'] : 0;
+        $city_id = (!empty($city_row['id'])) ? $city_row['id'] : 0;
         $lat = (!empty($_geo[3])) ? $_geo[3] : 0.00;
         $lng = (!empty($_geo[4])) ? $_geo[4] : 0.00;
         $qry_val_arr = array(
@@ -751,7 +748,6 @@ function saveIp()
 /**
  * Copy Card
  *
- * @param array   $card_fields  Fields of the card
  * @param array   $cards        Card record array
  * @param integer $new_list_id  List id of the new card
  * @param string  $name         Card name
@@ -759,7 +755,7 @@ function saveIp()
  *
  * @return void
  */
-function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = '')
+function copyCards($cards, $new_list_id, $name, $new_board_id = '')
 {
     global $db_lnk, $authUser;
     while ($card = pg_fetch_object($cards)) {
@@ -777,7 +773,7 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
             $foreign_ids['list_id'] = $new_list_id;
             $comment = '##USER_NAME## added ' . $card_result['name'] . ' card to ' . $name . '.';
             insertActivity($authUser['id'], $comment, 'add_card', $foreign_ids);
-            //Copy card attachments
+            // Copy card attachments
             $attachment_fields = 'list_id, card_id, name, path, mimetype';
             if (!empty($new_board_id)) {
                 $attachment_fields = 'board_id, list_id, card_id, name, path, mimetype';
@@ -797,7 +793,7 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
                     insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $attachment_result['id']);
                 }
             }
-            //Copy card comments
+            // Copy card comments
             $comment_fields = 'list_id, card_id, board_id, user_id, type, comment, root, freshness_ts, depth, path, materialized_path';
             $qry_val_arr = array(
                 $card_id,
@@ -809,10 +805,10 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
                     $comment->board_id = $new_board_id;
                     $comment->list_id = $new_list_id;
                     $comment->card_id = $new_card_id;
-                    $card_result = pg_execute_insert('activities', $comment);
+                    pg_execute_insert('activities', $comment);
                 }
             }
-            //Copy checklists
+            // Copy checklists
             $checklist_fields = 'card_id, user_id, name, checklist_item_count, checklist_item_completed_count, position';
             $qry_val_arr = array(
                 $card_id
@@ -829,7 +825,7 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
                         $comment = '##USER_NAME## added checklist to this card ##CARD_LINK##';
                         insertActivity($authUser['id'], $comment, 'add_card_checklist', $foreign_ids, '', $new_checklist_id);
                         $copy_checklists[] = $checklist_result;
-                        //Copy checklist items
+                        // Copy checklist items
                         $checklist_item_fields = 'card_id, checklist_id, user_id, name, position';
                         $qry_val_arr = array(
                             $checklist_id
@@ -849,7 +845,7 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
                     }
                 }
             }
-            //Copy card labels
+            // Copy card labels
             $cards_label_fields = 'list_id, card_id, board_id, label_id';
             if (!empty($new_board_id)) {
                 $cards_label_fields = 'board_id, list_id, card_id, label_id';
@@ -864,17 +860,13 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
                         $cards_label->board_id = $new_board_id;
                         $cards_label->list_id = $new_list_id;
                         $cards_label->card_id = $new_card_id;
-                        $cards_label_values = $new_board_id . ', ' . $new_list_id . ', ' . $new_card_id;
-                    } else {
-                        $cards_label_values = $new_list_id . ', ' . $new_card_id;
                     }
-                    $cards_label_result = pg_execute_insert('cards_labels', $cards_label);
-                    $cards_label_result = pg_fetch_assoc($cards_label_result);
+                    pg_execute_insert('cards_labels', $cards_label);
                     $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ##LABEL_NAME##';
                     insertActivity($authUser['id'], $comment, 'add_card_label', $foreign_ids);
                 }
             }
-            //Copy card users
+            // Copy card users
             $cards_user_fields = 'card_id, user_id';
             $qry_val_arr = array(
                 $card_id
@@ -936,13 +928,12 @@ function pg_execute_insert($table_name, $r_post, $return_row = 1)
 /**
  * Common method to get binded values
  *
- * @param string $table               Table name to get values
- * @param array  $data                Field list
- * @param array  $expected_fields_arr Optional default value : array ()
+ * @param string $table Table name to get values
+ * @param array  $data  Field list
  *
  * @return mixed
  */
-function getbindValues($table, $data, $expected_fields_arr = array())
+function getbindValues($table, $data)
 {
     global $db_lnk;
     $qry_val_arr = array(
