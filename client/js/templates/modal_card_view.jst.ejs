@@ -157,13 +157,16 @@
 				  <% } %>
 				  <% } %>
 				</ul>
-				<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 					<div class="list-group-item-text clearfix">
-					  <h4 class="text-muted"><%- i18next.t('Description') %> <a href="#" class="<%if(!_.isUndefined(authuser.user)) {%>js-show-card-desc-edit-form<%}else{%>js-no-action<%}%>" title="<%- i18next.t('Edit') %>">
+					  <h4 class="text-muted"><%- i18next.t('Description') %> 
+					  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
+						  <a href="#" class="<%if(!_.isUndefined(authuser.user)) {%>js-show-card-desc-edit-form<%}else{%>js-no-action<%}%>" title="<%- i18next.t('Edit') %>">
 					  <%if(!_.isUndefined(authuser.user)) {%>
 						<i class="icon-pencil"></i>
 					   <% } %>
-					  </a></h4>
+					  </a>
+					  <% } %>
+					  </h4>
 					  <% if(!_.isEmpty(card.attributes.description)){ %>
 					  <p class="js-show-card-desc"><%= converter.makeHtml(_.escape(card.attributes.description)) %></p>
 					  <% } %>
@@ -178,7 +181,7 @@
 					  </form>
 					  <% }%>
 					</div>
-				<% } %>
+
 				<div id="js-card-checklists"></div>
 				<% if(!_.isEmpty(card.attachments)){ %>
 				<div class="list-group-item-heading clearfix">
@@ -405,6 +408,7 @@
   <div class="dropdown dockheader-dropdown docmodal-submenu">
   <a aria-expanded="true" data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle label"> <i class="icon-cog h3"></i></a>
   <ul role="menu" class="dropdown-menu arrow">
+	  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 	  <li class="dropdown-submenu dropdown"> 
 		<a href="#" title="<%- i18next.t('Add') %>" class="dropdown-toggle js-open-popover" data-toggle="dropdown" ><%- i18next.t('Add') %></a>
 		<ul class="dropdown-menu">
@@ -502,6 +506,8 @@
 			<% } %>
 		</ul>
 	  </li>
+	  <% } %>
+	  <% if(!_.isUndefined(authuser.user)) { %>
 	  <li class="dropdown-submenu dropdown"> <a href="#" title="<%- i18next.t('Actions') %>" class="dropdown-toggle js-open-popover" data-toggle="dropdown"><%- i18next.t('Actions') %></a>
 		  <ul class="dropdown-menu">
 			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
@@ -608,6 +614,7 @@
 			<% } %>
 		  </ul>
 	  </li>
+	  <% } %>
 	  <li class="dropdown js-more-dropdown">
 	  <div class="col-xs-12 divider"></div>
 	  <a class="show btn btn-link js-more-menu quiet-button" data-toggle="dropdown" title="<%- i18next.t('More options share, print, export, and delete.') %>" href="#"><%- i18next.t('Share and more...') %></a>

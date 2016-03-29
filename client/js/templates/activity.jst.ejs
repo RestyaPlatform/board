@@ -6,7 +6,7 @@
 	 <span class="label label-primary col-xs-12 sr-only">&nbsp;</span>   
 	<%}%>    
 <% } %>                   
-<div class="media <%= unread %>  modal-<% if((activity.attributes.type == 'add_comment' ||  activity.attributes.type == 'edit_comment')) {%>comments<%} else { %>activities<%}%> <% if(activity.attributes.user_id == authuser.user.id) {%>modal-logged-user-activities<%}%>">
+<div class="media <%= unread %>  modal-<% if((activity.attributes.type == 'add_comment' ||  activity.attributes.type == 'edit_comment')) {%>comments<%} else { %>activities<%}%> <% if(!_.isUndefined(authuser.user) &&  activity.attributes.user_id == authuser.user.id) {%>modal-logged-user-activities<%}%>">
 <a data-placement="bottom" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" data-toggle="tooltip" data-container="body" data-html="true" class="js-tooltip pull-left" href="#/user/<%- activity.attributes.user_id %>">
 		<% if(!_.isEmpty(activity.attributes.profile_picture_path)) {
 			var profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'small_thumb' );
