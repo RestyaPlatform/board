@@ -994,11 +994,6 @@ function importTrelloBoard($board = array())
     $users = $lists = $cards = array();
     if (!empty($board)) {
         $user_id = $authUser['id'];
-        $board_visibility = array(
-            'Private',
-            'Organization',
-            'Public'
-        );
         $board_visibility = 0;
         if ($board['prefs']['permissionLevel'] == 'public') {
             $board_visibility = 2;
@@ -1114,7 +1109,7 @@ function importTrelloBoard($board = array())
                             $_card['id'],
                             $check_label['id']
                         );
-                        $_label = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, board_id, list_id, card_id, label_id) VALUES (now(), now(), $1, $2, $3, $4) RETURNING id', $qry_val_arr));
+                        pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, board_id, list_id, card_id, label_id) VALUES (now(), now(), $1, $2, $3, $4)', $qry_val_arr);
                     }
                 }
                 if (!empty($card['attachments'])) {
@@ -1124,7 +1119,6 @@ function importTrelloBoard($board = array())
                         $save_path = str_replace('\\', '/', $save_path);
                         $filename = curlExecute($attachment['url'], 'get', $mediadir, 'image');
                         $path = $save_path . DIRECTORY_SEPARATOR . $filename['file_name'];
-                        $name = $filename['file_name'];
                         $created = $modified = $attachment['date'];
                         $qry_val_arr = array(
                             $created,
@@ -1346,7 +1340,6 @@ function convertBooleanValues($table, $row)
         $table
     );
     $result = pg_query_params($db_lnk, 'SELECT * FROM information_schema.columns WHERE table_name = $1 ', $qry_val_arr);
-    $bindValues = array();
     while ($field_details = pg_fetch_assoc($result)) {
         if ($field_details['data_type'] == 'boolean') {
             $row[$field_details['column_name']] = ($row[$field_details['column_name']] == 'f') ? 0 : 1;
