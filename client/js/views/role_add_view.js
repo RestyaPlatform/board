@@ -30,30 +30,7 @@ App.RoleAddView = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
-        'submit form#RoleAddForm': 'roleAdd'
-    },
-    /**
-     * roleAdd()
-     * save role
-     * @return false
-     */
-    roleAdd: function(e) {
-        var target = $(e.target);
-        var data = target.serializeObject();
-        var self = this;
-        var role = new App.Role();
-        role.url = api_url + 'roles.json';
-        role.save(data, {
-            success: function(model, response) {
-                self.flash('success', i18next.t('Role added successfully.'));
-                target[0].reset();
-                app.navigate('#/roles', {
-                    trigger: true,
-                    replace: true
-                });
-            }
-        });
-        return false;
+
     },
     /**
      * render()

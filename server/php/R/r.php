@@ -791,7 +791,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($acl_links_result)) {
             $response['acl_links'][] = json_decode($row['row_to_json'], true);
         }
-        $roles_sql = 'SELECT id, name FROM roles';
+        $roles_sql = 'SELECT id, name FROM roles ORDER BY id ASC';
         $roles_result = pg_query_params($db_lnk, $roles_sql, array());
         $response['roles'] = array();
         while ($row = pg_fetch_assoc($roles_result)) {
@@ -803,7 +803,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($acl_board_links_result)) {
             $response['acl_board_links'][] = json_decode($row['row_to_json'], true);
         }
-        $board_user_roles_sql = 'SELECT id, name FROM board_user_roles';
+        $board_user_roles_sql = 'SELECT id, name, description FROM board_user_roles ORDER BY id ASC';
         $board_user_roles_result = pg_query_params($db_lnk, $board_user_roles_sql, array());
         $response['board_user_roles'] = array();
         while ($row = pg_fetch_assoc($board_user_roles_result)) {
@@ -815,7 +815,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($acl_organization_links_result)) {
             $response['acl_organization_links'][] = json_decode($row['row_to_json'], true);
         }
-        $organization_user_roles_sql = 'SELECT id, name FROM organization_user_roles';
+        $organization_user_roles_sql = 'SELECT id, name, description FROM organization_user_roles ORDER BY id ASC';
         $organization_user_roles_result = pg_query_params($db_lnk, $organization_user_roles_sql, array());
         $response['organization_user_roles'] = array();
         while ($row = pg_fetch_assoc($organization_user_roles_result)) {
@@ -4274,6 +4274,24 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $json = true;
         $table_name = 'webhooks';
         $id = $r_resource_vars['webhooks'];
+        break;
+
+    case '/roles/?':
+        $json = true;
+        $table_name = 'roles';
+        $id = $r_resource_vars['roles'];
+        break;
+
+    case '/board_user_roles/?':
+        $json = true;
+        $table_name = 'board_user_roles';
+        $id = $r_resource_vars['board_user_roles'];
+        break;
+
+    case '/organization_user_roles/?':
+        $json = true;
+        $table_name = 'organization_user_roles';
+        $id = $r_resource_vars['organization_user_roles'];
         break;
 
     default:
