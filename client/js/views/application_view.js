@@ -84,6 +84,12 @@ App.ApplicationView = Backbone.View.extend({
                                 LDAP_LOGIN_ENABLED = settings_response.LDAP_LOGIN_ENABLED;
                                 DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                                 STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
+                                BOSH_SERVICE_URL = settings_response.BOSH_SERVICE_URL;
+                                PREBIND_URL = settings_response.PREBIND_URL;
+                                JABBER_HOST = settings_response.JABBER_HOST;
+                                JABBER_PATH = settings_response.JABBER_PATH;
+                                XMPP_CLIENT_RESOURCE_NAME = settings_response.XMPP_CLIENT_RESOURCE_NAME;
+                                PAGING_COUNT = settings_response.PAGING_COUNT;
                                 APPS = settings_response.apps;
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 var current_language = DEFAULT_LANGUAGE;
@@ -142,6 +148,12 @@ App.ApplicationView = Backbone.View.extend({
                             LDAP_LOGIN_ENABLED = settings_response.LDAP_LOGIN_ENABLED;
                             DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                             STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
+                            BOSH_SERVICE_URL = settings_response.BOSH_SERVICE_URL;
+                            PREBIND_URL = settings_response.PREBIND_URL;
+                            JABBER_HOST = settings_response.JABBER_HOST;
+                            JABBER_PATH = settings_response.JABBER_PATH;
+                            XMPP_CLIENT_RESOURCE_NAME = settings_response.XMPP_CLIENT_RESOURCE_NAME;
+                            PAGING_COUNT = settings_response.PAGING_COUNT;
                             APPS = settings_response.apps;
                             IMAP_EMAIL = settings_response.IMAP_EMAIL;
                             var current_language = DEFAULT_LANGUAGE;
@@ -249,7 +261,7 @@ App.ApplicationView = Backbone.View.extend({
         if (this.model == 'admin_boards_index') {
             changeTitle(i18next.t('Boards'));
         }
-        if (this.model == 'role_settings') {
+        if (this.model == 'role_settings' || this.model == 'add_role' || this.model == 'add_board_user_role' || this.model == 'add_organization_user_role') {
             changeTitle(i18next.t('Role Settings'));
         }
         if (this.model == 'oauth_clients') {
@@ -820,6 +832,15 @@ App.ApplicationView = Backbone.View.extend({
                         }).el);
                     }
                 });
+            } else if (page.model == 'add_role') {
+                changeTitle(i18next.t('Add role'));
+                $('#content').html(new App.RoleAddView().el);
+            } else if (page.model == 'add_board_user_role') {
+                changeTitle(i18next.t('Add board user role'));
+                $('#content').html(new App.BoardUserRoleAddView().el);
+            } else if (page.model == 'add_organization_user_role') {
+                changeTitle(i18next.t('Add organization user role'));
+                $('#content').html(new App.OrganizationUserRoleAddView().el);
             } else if (page.model == 'organizations_index') {
                 changeTitle(i18next.t('Organizations'));
                 var organizations = new App.OrganizationCollection();

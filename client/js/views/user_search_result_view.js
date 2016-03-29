@@ -27,6 +27,7 @@ App.UserSearchResultView = Backbone.View.extend({
     },
     template: JST['templates/user_search_result'],
     tagName: 'li',
+    className: 'col-xs-12',
     /**
      * render()
      * populate the html to the dom

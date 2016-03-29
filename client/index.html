@@ -10,6 +10,7 @@
   <link rel="manifest" href="manifest.json">
   <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
   <!-- build:css css/default.cache.css -->
+  <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
   <link rel="stylesheet" type="text/css" href="css/fullcalendar.css">
   <link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.min.css">
   <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
@@ -97,6 +98,38 @@
   <script src="js/libs/i18nextSprintfPostProcessor.min.js"></script>
   <script src="js/libs/jquery.hotkeys.js"></script>
   <script src="js/libs/backbone-hotkeys.js"></script>
+  <!-- Conversejs files start -->
+  <script type="text/javascript" src="js/libs/conversejs/components/otr/build/dep/salsa20.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/src/bigint.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/otr/vendor/cryptojs/core.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/otr/vendor/cryptojs/enc-base64.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/crypto-js-evanvosberg/src/md5.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/crypto-js-evanvosberg/src/evpkdf.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/otr/vendor/cryptojs/cipher-core.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/otr/vendor/cryptojs/aes.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/otr/vendor/cryptojs/sha1.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/otr/vendor/cryptojs/sha256.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/otr/vendor/cryptojs/hmac.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/otr/vendor/cryptojs/pad-nopadding.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/otr/vendor/cryptojs/mode-ctr.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/otr/build/dep/eventemitter.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/src/otr.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/strophejs/strophe.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/strophejs-plugins/vcard/strophe.vcard.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/strophejs-plugins/disco/strophe.disco.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/strophejs-plugins/rsm/strophe.rsm.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/src/strophe.ping.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/backbone.browserStorage/backbone.browserStorage.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/backbone.overview/backbone.overview.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/momentjs/min/moment-with-locales.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/jquery.browser/dist/jquery.browser.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/typeahead.js/index.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/components/jed/jed.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/builds/locales.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/builds/templates.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/src/utils.js"></script>
+  <script type="text/javascript" src="js/libs/conversejs/converse.js"></script>
+  <!-- Conversejs files end -->
   <script src="js/models/oauth.js"></script>
   <script src="js/models/user.js"></script>
   <script src="js/models/board.js"></script>
@@ -132,6 +165,7 @@
   <script src="js/models/board_user_roles.js"></script>
   <script src="js/models/acl_organization_links.js"></script>
   <script src="js/models/organization_user_roles.js"></script>
+  <script src="js/models/chat_history.js"></script>
   <script src="js/collections/user_collection.js"></script>
   <script src="js/collections/attachment_collection.js"></script>
   <script src="js/collections/list_collection.js"></script>
@@ -167,6 +201,7 @@
   <script src="js/collections/organization_user_roles_collection.js"></script>
   <script src="js/collections/acl_organization_links_collection.js"></script>
   <script src="js/collections/board_user_roles_collection.js"></script>
+  <script src="js/collections/chat_history_collection.js"></script>
   <script src="js/templates/templates.js"></script>
   <script src="js/views/application_view.js"></script>
   <script src="js/views/admin_user_add_view.js"></script>
@@ -324,6 +359,8 @@
   <script src="js/views/music_repeat_view.js"></script>
   <script src="js/views/admin_board_view.js"></script>
   <script src="js/views/admin_boards_index_view.js"></script>
+  <script src="js/views/modal_chat_history_view.js"></script>
+  <script src="js/views/chat_history_view.js"></script>
   <script src="js/views/emoji_list_view.js"></script>
   <script src="js/views/checklist_item_emoji_list_view.js"></script>
   <script src="js/views/admin_user_index_view.js"></script>
@@ -343,6 +380,9 @@
   <script src="js/views/archive_card_delete_confirm_view.js"></script>
   <script src="js/views/archive_list_delete_confirm_view.js"></script>
   <script src="js/views/modal_shortcut_view.js"></script>
+  <script src="js/views/role_add_view.js"></script>
+  <script src="js/views/board_user_role_add_view.js"></script>
+  <script src="js/views/organization_user_role_add_view.js"></script>
   <script src="js/common.js"></script>
   <script src="js/application.js"></script>
   <!-- endbuild -->

@@ -6,7 +6,7 @@
 	 <span class="label label-primary col-xs-12 sr-only">&nbsp;</span>   
 	<%}%>    
 <% } %>                   
-<div class="media <%= unread %>  modal-<% if((activity.attributes.type == 'add_comment' ||  activity.attributes.type == 'edit_comment')) {%>comments<%} else { %>activities<%}%> <% if(activity.attributes.user_id == authuser.user.id) {%>modal-logged-user-activities<%}%>">
+<div class="media <%= unread %>  modal-<% if((activity.attributes.type == 'add_comment' ||  activity.attributes.type == 'edit_comment')) {%>comments<%} else { %>activities<%}%> <% if(!_.isUndefined(authuser.user) &&  activity.attributes.user_id == authuser.user.id) {%>modal-logged-user-activities<%}%>">
 <a data-placement="bottom" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" data-toggle="tooltip" data-container="body" data-html="true" class="js-tooltip pull-left" href="#/user/<%- activity.attributes.user_id %>">
 		<% if(!_.isEmpty(activity.attributes.profile_picture_path)) {
 			var profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'small_thumb' );
@@ -53,9 +53,7 @@
 			}
 		%>             
 		<div class="col-xs-12 btn-block">  
-			<div>
-				<div>
-					<span class="activities-list js-activity-<%- activity.attributes.id %>">
+					<div class="activities-list js-activity-<%- activity.attributes.id %>">
 					<% if((activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment')) { %>
 						<%if(!_.isUndefined(activity.from_footer)) { %>
 							<span><%= comment %></span>
@@ -63,24 +61,30 @@
 							<div class="panel no-mar"><div class="panel-body">
 
 							<%= converter.makeHtml(makeLink(activity.attributes.comment, activity.attributes.board_id)) %>
+							<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card'], activity.attributes.type)) { %>
+						<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text">
+							<% _.each(activity.attributes.difference, function(difference) { %>
+								<%= converter.makeHtml(difference) %>
+							<% }); %>
+						</div>
+					<% } %>
 							</div></div>
 					<% } else {%>
 						<%if(_.isUndefined(activity.from_footer)) { %>
 							<div class="panel no-mar"><div class="panel-body">
 						<% } %>
 							<%= converter.makeHtml(makeLink(activity.attributes.comment, activity.attributes.board_id)) %>
-						<%if(_.isUndefined(activity.from_footer)) { %>
-							</div></div>
-						<% } %>
-					<% }%>
-							
-					<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card'], activity.attributes.type)) { %>
-						<div class="thumbnail media-body list-group-item-text">
+							<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card'], activity.attributes.type)) { %>
+						<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text">
 							<% _.each(activity.attributes.difference, function(difference) { %>
 								<%= converter.makeHtml(difference) %>
 							<% }); %>
 						</div>
 					<% } %>
+						<%if(_.isUndefined(activity.from_footer)) { %>
+							</div></div>
+						<% } %>
+					<% }%>
 					<small class="pull-left">
 			<abbr class="timeago text-muted pull-left clearfix" title="<%- activity.attributes.created %>"><%- activity.attributes.created %></abbr>
 			<% if((activity.attributes.type == 'add_organization_attachment' || activity.attributes.type == 'change_visibility' || activity.attributes.type == 'add_organization_user' || activity.attributes.type == 'delete_organization_user') && (!_.isEmpty(activity.attributes.organization_name))) { %>
@@ -109,17 +113,15 @@
 				<% } else if(activity.attributes.revisions != null && activity.attributes.revisions != "" && !_.isUndefined(authuser.user)){ %>
 					<% if(!_.isEmpty(role_links.where({slug: "undo_activity"}))){ %>
 						<% if(!_.isUndefined(activity.from_footer)) { %>
-							<div class="js-acticity-action-<%- activity.attributes.id %>  pull-left"><ul class="list-inline col-xs-offset-0"><li><a title="Undo" class="js-undo2 col-xs-12 nav navbar-btn" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>							
+							<div class="js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline"><li><a title="Undo" class="js-undo2 col-xs-12 nav navbar-btn" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>							
 						<% } else { %>	
-							<div class="js-acticity-action-<%- activity.attributes.id %>  pull-left"><ul class="list-inline col-xs-offset-0"><li><a title="Undo" class="js-undo col-xs-12 nav navbar-btn" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>
+							<div class="js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline"><li><a title="Undo" class="js-undo col-xs-12 nav navbar-btn" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>
 						<% }%>	
 					<% } %>
 				<% } %>
 				<span class="pull-left col-xs-12 js-activity-reply-form-response-<%- activity.attributes.id %>"></span>
 		</small>
-					</span>
-				</div>
-			</div>		
+					</div>
 		</div>
         <% } %>
 	</div>

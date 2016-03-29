@@ -1395,3 +1395,12 @@ function isClientSecretAvailable()
     } while (!empty($oauth_client));
     return $client_secret;
 }
+/**
+ * Genrate ejabberd connection
+ *
+ * @return ejabberd connection
+ */
+function getEjabberdConnection()
+{
+    return pg_connect('host=' . CHAT_DB_HOST . ' port=' . CHAT_DB_PORT . ' dbname=' . CHAT_DB_NAME . ' user=' . CHAT_DB_USER . ' password=' . CHAT_DB_PASSWORD . ' options=--client_encoding=UTF8') or die('Database could not connect');
+}
