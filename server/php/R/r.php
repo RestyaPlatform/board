@@ -495,11 +495,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/boards/?':
+        $board = array();
         $s_sql = 'SELECT id FROM boards WHERE id =  $1';
         $board[] = $r_resource_vars['boards'];
         $check_board = executeQuery($s_sql, $board);
         if (!empty($check_board)) {
             $s_sql = 'SELECT b.board_visibility, bu.user_id FROM boards AS b LEFT JOIN boards_users AS bu ON bu.board_id = b.id WHERE b.id =  $1';
+            $arr = array();
             $arr[] = $r_resource_vars['boards'];
             if (!empty($authUser) && $authUser['role_id'] != 1) {
                 $s_sql.= ' AND (b.board_visibility = 2 OR bu.user_id = $2)';
@@ -564,6 +566,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/organizations/?':
         $s_sql = 'SELECT o.organization_visibility, ou.user_id FROM organizations AS o LEFT JOIN organizations_users AS ou ON ou.organization_id = o.id WHERE o.id =  $1';
+        $arr = array();
         $arr[] = $r_resource_vars['organizations'];
         if (!empty($authUser) && $authUser['role_id'] != 1) {
             $s_sql.= ' AND (o.organization_visibility = 1 OR ou.user_id = $2)';
@@ -1033,6 +1036,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                                     if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $obj['type'] != 'moved_card_checklist_item' && $obj['type'] != 'add_card_desc' && $obj['type'] != 'add_card_duedate' && $obj['type'] != 'delete_card_duedate' && $obj['type'] != 'change_visibility' && $obj['type'] != 'add_background' && $obj['type'] != 'change_background') {
                                         $old_val = ($revisions['old_value'][$key] != null && $revisions['old_value'][$key] != 'null') ? $revisions['old_value'][$key] : '';
                                         $new_val = ($revisions['new_value'][$key] != null && $revisions['new_value'][$key] != 'null') ? $revisions['new_value'][$key] : '';
+                                        $dif = array();
                                         $dif[] = nl2br(getRevisiondifference($old_val, $old_val));
                                     }
                                     if ($obj['type'] == 'add_card_desc' || $obj['type'] == 'add_card_desc' || $obj['type'] == '	edit_card_duedate' || $obj['type'] == 'change_visibility' || $obj['type'] == 'add_background' || $obj['type'] == 'change_background') {
@@ -1062,6 +1066,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                                 if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $obj['type'] != 'moved_card_checklist_item' && $obj['type'] != 'add_card_desc' && $obj['type'] != 'add_card_duedate' && $obj['type'] != 'delete_card_duedate' && $obj['type'] != 'add_background' && $obj['type'] != 'change_background' && $obj['type'] != 'change_visibility') {
                                     $old_val = (isset($revisions['old_value'][$key]) && $revisions['old_value'][$key] != null && $revisions['old_value'][$key] != 'null') ? $revisions['old_value'][$key] : '';
                                     $new_val = (isset($revisions['new_value'][$key]) && $revisions['new_value'][$key] != null && $revisions['new_value'][$key] != 'null') ? $revisions['new_value'][$key] : '';
+                                    $dif = array();
                                     $dif[] = nl2br(getRevisiondifference($old_val, $new_val));
                                 }
                                 if ($obj['type'] == 'add_card_desc' || $obj['type'] == 'add_card_desc' || $obj['type'] == '	edit_card_duedate' || $obj['type'] == 'add_background' || $obj['type'] == 'change_background' || $obj['type'] == 'change_visibility') {
@@ -1627,12 +1632,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $mediadir = APP_PATH . '/client/img/' . $key . '/User/' . $r_resource_vars['users'];
                         $list = glob($mediadir . '.*');
                         if (file_exists($list[0])) {
-                            @unlink($list[0]);
+                            unlink($list[0]);
                         }
                     }
                     $authUser['profile_picture_path'] = $profile_picture_path;
                     $response['profile_picture_path'] = $profile_picture_path;
                     $comment = '##USER_NAME## updated the profile image';
+                    $foreign_ids = array();
                     $foreign_ids['user_id'] = $r_resource_vars['users'];
                     $response['activity'] = insertActivity($r_resource_vars['users'], $comment, 'update_profile_attachment', $foreign_ids);
                 }
@@ -1666,6 +1672,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $r_resource_vars['users']
                 );
                 $comment = '##USER_NAME## updated the profile.';
+                $foreign_ids = array();
                 $foreign_ids['user_id'] = $authUser['id'];
                 $table_name = 'users';
                 $id = $r_resource_vars['users'];
@@ -1688,6 +1695,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $qry_va_arr = array(
                             $id
                         );
+                        $revisions = array();
                         $revisions['old_value'] = executeQuery('SELECT ' . $sfields . ' FROM ' . $table_name . ' WHERE id =  $1', $qry_va_arr);
                         unset($revisions['old_value']['is_send_newsletter']);
                         unset($_POST['is_send_newsletter']);
@@ -1917,7 +1925,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Board' . DIRECTORY_SEPARATOR . $r_resource_vars['boards'];
                         $list = glob($mediadir . '.*');
                         if (file_exists($list[0])) {
-                            @unlink($list[0]);
+                            unlink($list[0]);
                         }
                     }
                     $hash = md5(SECURITYSALT . 'Board' . $r_resource_vars['boards'] . 'jpg' . 'extra_large_thumb');
@@ -2095,7 +2103,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][0]['id'];
                 $list = glob($mediadir . '.*');
                 if (file_exists($list[0])) {
-                    @unlink($list[0]);
+                    unlink($list[0]);
                 }
             }
             $foreign_ids['board_id'] = $r_resource_vars['boards'];
@@ -2134,7 +2142,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
                             $list = glob($imgdir . '.*');
                             if (file_exists($list[0])) {
-                                @unlink($list[0]);
+                                unlink($list[0]);
                             }
                         }
                     }
@@ -2439,14 +2447,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     foreach ($thumbsizes['Organization'] as $key => $value) {
                         $list = glob(APP_PATH . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'] . '.*');
                         if (file_exists($list[0])) {
-                            @unlink($list[0]);
+                            unlink($list[0]);
                         }
                     }
                     foreach ($thumbsizes['Organization'] as $key => $value) {
                         $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $r_resource_vars['organizations'];
                         $list = glob($mediadir . '.*');
                         if (file_exists($list[0])) {
-                            @unlink($list[0]);
+                            unlink($list[0]);
                         }
                     }
                     $qry_val_arr = array(
@@ -3582,7 +3590,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['id'];
                     $list = glob($mediadir . '.*');
                     if (file_exists($list[0])) {
-                        @unlink($list[0]);
+                        unlink($list[0]);
                     }
                 }
             } else if ($r_resource_cmd == '/boards/?/lists/?/cards/?/card_voters') {
@@ -4233,7 +4241,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $id;
                 $list = glob($mediadir . '.*');
                 if (file_exists($list[0])) {
-                    @unlink($list[0]);
+                    unlink($list[0]);
                 }
             }
             $comment = ((!empty($authUser['full_name'])) ? $authUser['full_name'] : $authUser['username']) . ' deleted attachment from organizations ##ORGANIZATION_LINK##';
@@ -4941,5 +4949,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
 }
 if (R_DEBUG) {
-    @header('X-RDebug: ' . $r_debug);
+    if (!headers_sent()) {
+        header('X-RDebug: ' . $r_debug);
+    }
 }
