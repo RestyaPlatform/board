@@ -217,6 +217,7 @@
 				  <% } %>
 				</div>
 				<% } %>
+				<% if(!_.isUndefined(authuser.user)) { %>
 				<div class="list-group-item-text clearfix">	
 					<div class="col-xs-12 row">
 					  <h3 class="pull-left"><%- i18next.t('Actions') %></h3>
@@ -294,6 +295,7 @@
 					<% } %>
 				 </ul>
 				</div>
+				<% } %>
 			  </li>
 			</ul>
 		</div>
