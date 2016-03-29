@@ -2951,20 +2951,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 while ($cards_label = pg_fetch_assoc($cards_labels)) {
                     $response['cards_labels'][] = $cards_label;
                 }
-                if (!empty($clone_card_id)) {
-                    $qry_val_arr = array(
-                        $response['id'],
-                        $clone_card_id
-                    );
-                    pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, mimetype) SELECT created, modified, $1, name, path, mimetype FROM card_attachments WHERE card_id = $2', $qry_val_arr);
-                    $qry_val_arr = array(
-                        $clone_card_id
-                    );
-                    $s_result = pg_query_params($db_lnk, 'SELECT name, list_id, board_id, position FROM lists WHERE id = $1', $qry_val_arr);
-                    $previous_value = pg_fetch_assoc($s_result);
-                    $comment = '##USER_NAME## copied card "' . $r_post['name'] . '". from "' . $previous_value['name'] . '"';
-                    $response['activity'] = insertActivity($authUser['id'], $comment, 'copy_card', $foreign_id);
-                }
             } else if ($r_resource_cmd == '/boards/?/copy') {
                 $new_board_id = $row['id'];
                 //Copy board users
@@ -3686,7 +3672,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         'now()'
     );
     $sfields = $table_name = $id = $activity_type = '';
-    $emailFindReplace = $response = $diff = $pg_params = $foreign_id = $foreign_ids = $revisions = $previous_value = $srow = array();
+    $emailFindReplace = $response = $diff = $pg_params = $foreign_id = $foreign_ids = $revisions = $previous_value = $srow = $obj = array();
     $res_status = true;
     $sql = $json = false;
     unset($r_put['temp_id']);

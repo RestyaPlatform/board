@@ -930,7 +930,7 @@ function pg_execute_insert($table_name, $r_post, $return_row = 1)
  * Common method to get binded values
  *
  * @param string $table Table name to get values
- * @param array  $data  Field list
+ * @param mixed  $data  Field list
  *
  * @return mixed
  */
