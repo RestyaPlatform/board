@@ -104,6 +104,7 @@ function getRandomStr($arr_characters, $length)
  */
 function getCryptHash($str)
 {
+	$salt = '';
     if (CRYPT_BLOWFISH) {
         if (version_compare(PHP_VERSION, '5.3.7') >= 0) { // http://www.php.net/security/crypt_blowfish.php
             $algo_selector = '$2y$';
@@ -176,14 +177,14 @@ function getCryptHash($str)
  *
  * @param string $url    URL
  * @param string $method optional Method of CURL default value : get
- * @param array  $post   optional CURL Values default value : array ()
+ * @param mixed  $post   optional CURL Values default value : array ()
  * @param string $format optional Format for values default value : plain
  *
  * @return mixed
  */
 function curlExecute($url, $method = 'get', $post = array() , $format = 'plain')
 {
-    $filename['file_name'] = '';
+    $filename = $return = $error = array();
     $mediadir = '';
     if ($format == 'image') {
         $mediadir = $post;
@@ -314,6 +315,7 @@ function doGet($url)
 function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $revision = null, $foreign_id = null)
 {
     global $r_debug, $db_lnk;
+	$result = '';
     $fields = array(
         'created',
         'modified',
@@ -330,7 +332,7 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
         $type,
         $revision
     );
-    if ($foreign_id != null) {
+    if ($foreign_id !== null) {
         array_push($fields, 'foreign_id');
         array_push($values, $foreign_id);
     }
@@ -465,9 +467,10 @@ function ldapAuthenticate($p_user_id, $p_password)
     // Search for the user id
     $t_sr = ldap_search($t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs);
     $t_info = ldap_get_entries($t_ds, $t_sr);
+	$user = array();
     $user['User']['is_username_exits'] = false;
     $user['User']['is_password_matched'] = false;
-    if ($t_info) {
+    if (!empty($t_info)) {
         $user['User']['is_username_exits'] = true;
         // Try to authenticate to each until we get a match
         for ($i = 0; $i < $t_info['count']; $i++) {
@@ -636,7 +639,7 @@ function executeQuery($qry, $arr = array())
  * Common method to send mail
  *
  * @param string $template        Email template name
- * @param string $replace_content Email content replace array
+ * @param array  $replace_content Email content replace array
  * @param string $to              To email address
  * @param string $reply_to_mail   Reply to email address
  *
@@ -748,7 +751,7 @@ function saveIp()
 /**
  * Copy Card
  *
- * @param array   $cards        Card record array
+ * @param mixed   $cards        Card record array
  * @param integer $new_list_id  List id of the new card
  * @param string  $name         Card name
  * @param integer $new_board_id Board id of the new card
@@ -758,6 +761,7 @@ function saveIp()
 function copyCards($cards, $new_list_id, $name, $new_board_id = '')
 {
     global $db_lnk, $authUser;
+    $foreign_ids = $response = array();
     while ($card = pg_fetch_object($cards)) {
         $card->list_id = $new_list_id;
         $card_id = $card->id;
@@ -824,8 +828,6 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                         $new_checklist_id = $checklist_result['id'];
                         $comment = '##USER_NAME## added checklist to this card ##CARD_LINK##';
                         insertActivity($authUser['id'], $comment, 'add_card_checklist', $foreign_ids, '', $new_checklist_id);
-                        $copy_checklists[] = $checklist_result;
-                        // Copy checklist items
                         $checklist_item_fields = 'card_id, checklist_id, user_id, name, position';
                         $qry_val_arr = array(
                             $checklist_id
@@ -837,7 +839,6 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                                 $checklist_item->checklist_id = $new_checklist_id;
                                 $checklist_item_result = pg_execute_insert('checklist_items', $checklist_item);
                                 $checklist_item_result = pg_fetch_assoc($checklist_item_result);
-                                $copy_checklists_items[] = $checklist_item_result;
                                 $comment = '##USER_NAME## added checklist item to this card ##CARD_LINK##';
                                 insertActivity($authUser['id'], $comment, 'add_checklist_item', $foreign_ids, '', $checklist_item_result['id']);
                             }
@@ -892,7 +893,7 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
  * To generate query by passed args and insert into table
  *
  * @param string  $table_name Table name to execute the query
- * @param array   $r_post     Values
+ * @param mixed   $r_post     Values
  * @param integer $return_row Return rows
  *
  * @return mixed
@@ -982,14 +983,9 @@ function importTrelloBoard($board = array())
 {
     set_time_limit(1800);
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
-    $users = array();
+    $users = $lists = $cards = array();
     if (!empty($board)) {
         $user_id = $authUser['id'];
-        $board_visibility = array(
-            'Private',
-            'Organization',
-            'Public'
-        );
         $board_visibility = 0;
         if ($board['prefs']['permissionLevel'] == 'public') {
             $board_visibility = 2;
@@ -1056,7 +1052,6 @@ function importTrelloBoard($board = array())
         );
         pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
         if (!empty($board['lists'])) {
-            $lists = array();
             $i = 0;
             foreach ($board['lists'] as $list) {
                 $i+= 1;
@@ -1073,7 +1068,6 @@ function importTrelloBoard($board = array())
             }
         }
         if (!empty($board['cards'])) {
-            $cards = array();
             foreach ($board['cards'] as $card) {
                 $is_closed = ($card['closed']) ? 'true' : 'false';
                 $date = null;
@@ -1107,7 +1101,7 @@ function importTrelloBoard($board = array())
                             $_card['id'],
                             $check_label['id']
                         );
-                        $_label = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, board_id, list_id, card_id, label_id) VALUES (now(), now(), $1, $2, $3, $4) RETURNING id', $qry_val_arr));
+                        pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, board_id, list_id, card_id, label_id) VALUES (now(), now(), $1, $2, $3, $4)', $qry_val_arr);
                     }
                 }
                 if (!empty($card['attachments'])) {
@@ -1117,7 +1111,6 @@ function importTrelloBoard($board = array())
                         $save_path = str_replace('\\', '/', $save_path);
                         $filename = curlExecute($attachment['url'], 'get', $mediadir, 'image');
                         $path = $save_path . DIRECTORY_SEPARATOR . $filename['file_name'];
-                        $name = $filename['file_name'];
                         $created = $modified = $attachment['date'];
                         $qry_val_arr = array(
                             $created,
@@ -1180,6 +1173,7 @@ function importTrelloBoard($board = array())
             }
         }
         if (!empty($board['actions'])) {
+            $type = $comment = '';
             foreach ($board['actions'] as $action) {
                 if ($action['type'] == 'commentCard') {
                     $type = 'add_comment';
@@ -1297,7 +1291,7 @@ function email2name($email)
 /**
  * Find and replace comment variables
  *
- * @param string $activity is activity informations
+ * @param array $activity is activity informations
  *
  * @return string
  */
@@ -1338,7 +1332,6 @@ function convertBooleanValues($table, $row)
         $table
     );
     $result = pg_query_params($db_lnk, 'SELECT * FROM information_schema.columns WHERE table_name = $1 ', $qry_val_arr);
-    $bindValues = array();
     while ($field_details = pg_fetch_assoc($result)) {
         if ($field_details['data_type'] == 'boolean') {
             $row[$field_details['column_name']] = ($row[$field_details['column_name']] == 'f') ? 0 : 1;
