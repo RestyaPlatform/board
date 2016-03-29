@@ -322,19 +322,21 @@ App.OrganizationsView = Backbone.View.extend({
         view_board.html('');
         if (!_.isEmpty(this.model.boards.models)) {
             this.model.boards.each(function(board) {
-                board.board_stars.add(board.attributes.boards_stars);
-                self.model.board_users.add(board.attributes.boards_users);
-                var stared;
-                if (!_.isUndefined(authuser.user)) {
-                    stared = board.board_stars.findWhere({
-                        is_starred: 1
+                if (board.attributes.is_closed === 0) {
+                    board.board_stars.add(board.attributes.boards_stars);
+                    self.model.board_users.add(board.attributes.boards_users);
+                    var stared;
+                    if (!_.isUndefined(authuser.user)) {
+                        stared = board.board_stars.findWhere({
+                            is_starred: 1
+                        });
+                    }
+                    var view = new App.OrganizationBoardView({
+                        model: board,
+                        stared: stared
                     });
+                    view_board.append(view.el);
                 }
-                var view = new App.OrganizationBoardView({
-                    model: board,
-                    stared: stared
-                });
-                view_board.append(view.el);
             });
         } else {
             var view = new App.OrganizationBoardView({

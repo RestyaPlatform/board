@@ -1473,7 +1473,7 @@ App.ListView = Backbone.View.extend({
         });
         var is_card_empty = true;
         var view = '';
-        $('#js-card-listing-' + self.model.attributes.id).html('');
+        $('#js-card-listing-' + self.model.attributes.id).html('&nbsp;');
         if (!_.isEmpty(filtered_cards)) {
             _.each(filtered_cards, function(card) {
                 card.set('list_name', _.escape(self.model.attributes.name));

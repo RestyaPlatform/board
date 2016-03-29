@@ -1,0 +1,24 @@
+---
+engines:
+  csslint:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+      - php
+  eslint:
+    enabled: true
+  fixme:
+    enabled: true
+  phpmd:
+    enabled: true
+ratings:
+  paths:
+  - "**.css"
+  - "**.js"
+  - "**.php"
+exclude_paths:
+- build/*
+- server/php/libs/vendors/**/*

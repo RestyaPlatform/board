@@ -1410,12 +1410,11 @@ App.BoardHeaderView = Backbone.View.extend({
 
                 });
                 if (users.models.length === 0 || is_user_empty) {
-                    $('.js-board-member-search-response').html(new App.BoardMemberAddSearchResultView({
-                        model: null,
-                        className: 'small',
-                    }).el);
+                    $('.js-board-member-search-response').html('<span class="small">' + i18next.t('No %s available.', {
+                        postProcess: 'sprintf',
+                        sprintf: [i18next.t('users')]
+                    }) + '</span>');
                 }
-
             }
         });
 
