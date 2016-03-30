@@ -30,12 +30,13 @@ if ($db_lnk && $ejabberd_db_lnk && !empty($row)) {
         $user_qry = pg_query($db_lnk, "SELECT id FROM users WHERE username = '" . end($user_name) . "'");
         $user = pg_fetch_assoc($user_qry);
         $qry_val_arr = array(
+            $chat['created_at'],
             $user['id'],
             'chat',
             $chat['txt'],
             $chat['username']
         );
-        pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) SELECT now(), now(), id, $1, $2, $3 FROM boards WHERE name = $4', $qry_val_arr);
+        pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) SELECT $1, $1, id, $2, $3, $4 FROM boards WHERE name = $5', $qry_val_arr);
         $last_processed_chat_id = $chat['id'];
     }
     if (!empty($last_processed_chat_id)) {
