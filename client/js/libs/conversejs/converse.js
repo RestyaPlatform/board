@@ -2211,7 +2211,7 @@
                    // $available_chatrooms.html('<dt>'+__('Boards on %1$s',this.model.get('muc_domain'))+'</dt>');
                     fragment = document.createDocumentFragment();
                     for (i=0; i<this.rooms.length; i++) {
-                        name = Strophe.unescapeNode($(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid'));
+                        name = Strophe.unescapeNode(($(this.rooms[i]).attr('name')).replace("private, ", "")||$(this.rooms[i]).attr('jid'));
                         jid = $(this.rooms[i]).attr('jid');
                         fragment.appendChild($(
                             converse.templates.room_item({
@@ -2809,8 +2809,9 @@
                 } else {
                     this.model.save({hidden_occupants: false});
                     $el.removeClass('icon-show-users').addClass('icon-hide-users');
-                    this.$('.chat-area, form.sendXMPPMessage').css({width: ''});
+                    this.$('.chat-area, form.sendXMPPMessage').css({width: '', overflow: ''});
                     this.$('div.participants').show().animate({width: 'auto'}, this.scrollDown.bind(this));
+                    this.$('div.participants').css({ 'width' : ''});
                 }
             },
 
@@ -3767,7 +3768,7 @@
 
             close: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                this.remove();
+                //this.remove();
                 this.model.destroy();
                 converse.emit('chatBoxClosed', this);
                 return this;

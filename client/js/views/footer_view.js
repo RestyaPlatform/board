@@ -294,9 +294,8 @@ App.FooterView = Backbone.View.extend({
      */
     showChat: function(e) {
         e.preventDefault();
-        var chat = new App.ChatView({
-            model: chat,
-        });
+        $('#js-chat-count').addClass('hide').html('');
+        $('a#toggle-controlbox').trigger('click');
         return false;
     },
     /**
