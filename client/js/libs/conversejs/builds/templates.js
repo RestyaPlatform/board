@@ -513,7 +513,7 @@ __p += '\n            <input type="submit" class="submit login-anon" value="' +
 __p += '\n        ';
  if (authentication == PREBIND) { ;
  __p += '\n           <span class="spinner"></span>\n        ';
-__p += '\n            <p>if it takes time, please reload page to reconnect with chat.</p>\n        ';
+__p += '\n            <p>(If it takes time, please reload page to reconnect with chat.)</p>\n        ';
  } ;
 __p += '\n    ';
  } ;

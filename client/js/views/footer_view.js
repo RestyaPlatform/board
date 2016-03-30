@@ -294,8 +294,6 @@ App.FooterView = Backbone.View.extend({
      */
     showChat: function(e) {
         e.preventDefault();
-        is_chat_opened = true;
-        chat_message_count = 0;
         $('#js-chat-count').addClass('hide').html('');
         $('a#toggle-controlbox').trigger('click');
         return false;
