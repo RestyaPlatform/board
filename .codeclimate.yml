@@ -2,12 +2,6 @@
 engines:
   csslint:
     enabled: true
-  duplication:
-    enabled: true
-    config:
-      languages:
-      - javascript
-      - php
   eslint:
     enabled: true
   fixme:
