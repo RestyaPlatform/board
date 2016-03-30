@@ -24,7 +24,7 @@ if ($db_lnk && $ejabberd_db_lnk && !empty($row)) {
     $qry_val_arr = array(
         $row['value']
     );
-    $chat_history = pg_query_params($db_lnk, "SELECT * FROM archive WHERE id > $1", $qry_val_arr);
+    $chat_history = pg_query_params($ejabberd_db_lnk, "SELECT * FROM archive WHERE id > $1", $qry_val_arr);
     while ($chat = pg_fetch_assoc($chat_history)) {
         $user_name = explode('/', $chat['peer']);
         $user_qry = pg_query($db_lnk, "SELECT id FROM users WHERE username = '" . end($user_name) . "'");

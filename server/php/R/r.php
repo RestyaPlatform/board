@@ -61,7 +61,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $end,
             $offset
         );
-        $chats = pg_query_params($db_lnk, "SELECT to_char(created, 'HH24:MI') as chat_time, * FROM activities_listing where board_id = $1 AND type = $2 ORDER BY id desc LIMIT $3 OFFSET $4", $val_arr);
+        $chats = pg_query_params($db_lnk, "SELECT * FROM activities_listing where board_id = $1 AND type = $2 ORDER BY id desc LIMIT $3 OFFSET $4", $val_arr);
         $chats_history = array();
         while ($row = pg_fetch_assoc($chats)) {
             $chats_history[] = $row;
