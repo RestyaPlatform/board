@@ -20,5 +20,7 @@ ratings:
   - "**.js"
   - "**.php"
 exclude_paths:
+- api_explorer/*
 - build/*
+- client/js/libs/*
 - server/php/libs/vendors/**/*
