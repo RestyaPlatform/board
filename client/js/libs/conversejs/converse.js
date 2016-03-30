@@ -2810,7 +2810,8 @@
                     this.model.save({hidden_occupants: false});
                     $el.removeClass('icon-show-users').addClass('icon-hide-users');
                     this.$('.chat-area, form.sendXMPPMessage').css({width: '', overflow: ''});
-                    this.$('div.participants').show().animate({width: '98'}, this.scrollDown.bind(this));
+                    this.$('div.participants').show().animate({width: 'auto'}, this.scrollDown.bind(this));
+                    this.$('div.participants').css({ 'width' : ''});
                 }
             },
 
