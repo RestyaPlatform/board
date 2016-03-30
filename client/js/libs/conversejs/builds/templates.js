@@ -148,7 +148,7 @@ __p += '<div class="box-flyout" style="height: ' +
 __p += ' style="display:none" ';
  } ;
 __p += '>\n    <div class="dragresize dragresize-tm"></div>\n    <div class="chat-head chat-head-chatroom">\n        <a class="close-chatbox-button icon-close"></a>\n        <a class="toggle-chatbox-button icon-minus"></a>\n        <a class="configure-chatroom-button icon-wrench" style="display:none"></a>\n        <div class="chat-title"> ' +
-((__t = ( name )) == null ? '' : __t) +
+((__t = ( name.replace("private, ", "") )) == null ? '' : __t) +
 ' </div>\n        <p class="chatroom-topic"><p/>\n    </div>\n    <div class="chat-body"><span class="spinner centered"/></div>\n</div>\n';
 
 }
@@ -512,7 +512,8 @@ __p += '\n            <input type="submit" class="submit login-anon" value="' +
  } ;
 __p += '\n        ';
  if (authentication == PREBIND) { ;
-__p += '\n            <p>Disconnected.</p>\n        ';
+ __p += '\n           <span class="spinner"></span>\n        ';
+__p += '\n            <p>if it takes time, please reload page to reconnect with chat.</p>\n        ';
  } ;
 __p += '\n    ';
  } ;
@@ -1019,7 +1020,7 @@ with (obj) {
  if (show_emoticons)  { ;
 __p += '\n    <li class="toggle-smiley icon-happy" title="' +
 ((__t = (label_insert_smiley)) == null ? '' : __t) +
-'">\n        <ul>\n            <li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>\n            <li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>\n            <li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>\n            <li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>\n            <li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>\n            <li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>\n            <li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>\n            <li><a class="icon-wondering" href="#" data-emoticon=":\\"></a></li>\n            <li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>\n            <li><a class="icon-sad" href="#" data-emoticon=":("></a></li>\n            <li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>\n            <li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>\n            <li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>\n        </ul>\n    </li>\n';
+'">\n        <ul>\n            <li><a class="icon-smiley" href="javascript:void" data-emoticon=":)"></a></li>\n            <li><a class="icon-wink" href="javascript:void" data-emoticon=";)"></a></li>\n            <li><a class="icon-grin" href="javascript:void" data-emoticon=":D"></a></li>\n            <li><a class="icon-tongue" href="javascript:void" data-emoticon=":P"></a></li>\n            <li><a class="icon-cool" href="javascript:void" data-emoticon="8)"></a></li>\n            <li><a class="icon-evil" href="javascript:void" data-emoticon=">:)"></a></li>\n            <li><a class="icon-confused" href="javascript:void" data-emoticon=":S"></a></li>\n            <li><a class="icon-wondering" href="javascript:void" data-emoticon=":\\"></a></li>\n            <li><a class="icon-angry" href="javascript:void" data-emoticon=">:("></a></li>\n            <li><a class="icon-sad" href="javascript:void" data-emoticon=":("></a></li>\n            <li><a class="icon-shocked" href="javascript:void" data-emoticon=":O"></a></li>\n            <li><a class="icon-thumbs-up" href="javascript:void" data-emoticon="(^.^)b"></a></li>\n            <li><a class="icon-heart" href="javascript:void" data-emoticon="<3"></a></li>\n        </ul>\n    </li>\n';
  } ;
 __p += '\n';
  if (show_call_button)  { ;
