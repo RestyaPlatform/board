@@ -4,7 +4,7 @@
  *	App.boards						: this object contain all boards(Based on logged in user)
  *	this.model						: list model. @see Available Object in App.ListView
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -24,7 +24,7 @@ App.ModalChatHistoryView = Backbone.View.extend({
     events: {
         'hidden': 'teardown',
         'click .js-close-popover': 'closePopup',
-        'click #js-chat-histories-load-more': 'loadmorehistories',
+        'click #js-chat-histories-load-more': 'loadmorehistories'
     },
     /**
      * Constructor
@@ -47,7 +47,7 @@ App.ModalChatHistoryView = Backbone.View.extend({
      * @return false
      */
     getListing: function() {
-        self = this;
+        var self = this;
         var view_user_chats = this.$('#js-chat-history-list');
         view_user_chats.html('');
         var chat_histories = new App.ChatHistoryCollection();
@@ -112,7 +112,7 @@ App.ModalChatHistoryView = Backbone.View.extend({
      * @return false
      */
     loadmorehistories: function() {
-        self = this;
+        var self = this;
         var chat_histories = new App.ChatHistoryCollection();
         var page = $('#js-chat-histories-load-more').attr('data-page');
         chat_histories.url = api_url + 'chat_history.json?board_id=' + this.model.attributes.id + "&page=" + page;

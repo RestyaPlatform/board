@@ -3,7 +3,7 @@
  * Available Object:
  *	App.boards						: this object contain all boards(Based on logged in user)
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**

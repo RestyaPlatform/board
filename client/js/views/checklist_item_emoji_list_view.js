@@ -3,7 +3,7 @@
  * Available Object:
  *	App.boards						: this object contain all boards(Based on logged in user)
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -20,7 +20,7 @@ App.ChecklistItemEmojiListView = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
-        'keyup .js-search-emoji': 'showSearchEmoji',
+        'keyup .js-search-emoji': 'showSearchEmoji'
     },
     /**
      * Constructor
@@ -75,5 +75,5 @@ App.ChecklistItemEmojiListView = Backbone.View.extend({
         $('.js-search-emoji').focus().val(old_value);
         emojify.run();
         return false;
-    },
+    }
 });

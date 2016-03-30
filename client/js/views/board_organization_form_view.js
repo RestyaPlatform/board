@@ -6,7 +6,7 @@
  *	this.model						: organizations collection
  *	this.board						: board model. It contain all board based object @see Available Object in App.BoardView
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**

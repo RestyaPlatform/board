@@ -5,7 +5,7 @@
  *	this.model						: checklist model. It contain all card based object @see Available Object in App.CardView
  *	this.model.card					: card model. @see Available Object in CardView
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**

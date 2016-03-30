@@ -4,7 +4,7 @@
  *	App.boards						: this object contain all boards(Based on logged in user)
  *	this.model						: acl links collection.
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -228,5 +228,5 @@ App.RoleSettingsView = Backbone.View.extend({
             }
         });
         return false;
-    },
+    }
 });

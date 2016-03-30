@@ -5,7 +5,7 @@
  *	this.model						: board model. It contain all board based object @see Available Object in App.BoardView
  *	this.model.labels				: labels collection
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**

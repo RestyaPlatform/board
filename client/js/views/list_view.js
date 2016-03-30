@@ -9,7 +9,7 @@
  *	this.model.lists_subscribers  	: list user collection(Based on list)
  *	this.model.boards_subscribers  	: board user collection(Based on board)
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**

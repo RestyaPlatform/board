@@ -12,7 +12,7 @@
  *	this.model.list  				: list model(Based on card). It contain all list based object @see Available Object in App.ListView
  *	this.model.users				: card users collection(Based on card)
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**

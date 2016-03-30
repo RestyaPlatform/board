@@ -15,7 +15,7 @@
  *	this.model.lists				: lists collection(Based on board)
  *	this.model.labels 			   	: labels collection(Based on board)
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**

@@ -104,7 +104,7 @@ function getRandomStr($arr_characters, $length)
  */
 function getCryptHash($str)
 {
-	$salt = '';
+    $salt = '';
     if (CRYPT_BLOWFISH) {
         if (version_compare(PHP_VERSION, '5.3.7') >= 0) { // http://www.php.net/security/crypt_blowfish.php
             $algo_selector = '$2y$';
@@ -315,7 +315,7 @@ function doGet($url)
 function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $revision = null, $foreign_id = null)
 {
     global $r_debug, $db_lnk;
-	$result = '';
+    $result = '';
     $fields = array(
         'created',
         'modified',
@@ -467,7 +467,7 @@ function ldapAuthenticate($p_user_id, $p_password)
     // Search for the user id
     $t_sr = ldap_search($t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs);
     $t_info = ldap_get_entries($t_ds, $t_sr);
-	$user = array();
+    $user = array();
     $user['User']['is_username_exits'] = false;
     $user['User']['is_password_matched'] = false;
     if (!empty($t_info)) {

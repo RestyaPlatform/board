@@ -1598,7 +1598,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $is_return_vlaue = true;
         $profile_picture_path = 'null';
         $no_error = true;
-		$msg = '';
+        $msg = '';
         if (!empty($_FILES['attachment']['name']) && $_FILES['attachment']['error'] == 0) {
             $allowed_ext = array(
                 'gif',
