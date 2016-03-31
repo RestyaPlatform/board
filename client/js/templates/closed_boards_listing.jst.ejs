@@ -12,11 +12,13 @@ if (board.attributes.background_picture_url) {
 	style = '';
 }
 %>
+<a href="#/board/<%- board.attributes.id %>" class="col-xs-9">
 <span style="<%= style %>" class="preview-thumbnail"></span>
 	<span class="details navbar-btn">
 		<span title="<%- board.attributes.name %>" class="board-list-item-name navbar-btn"><%- board.attributes.name %></span>
 		<span class="pull-right hide js-stared-conatiner js-stared-conatiner-<%- board.attributes.board_id %>"></span>  
 	</span> 
+</a>
 <div class="pull-right js-reopen-dropdown dropdown">
 	<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="btn btn-primary btn-xs"> <%- i18next.t('Reopen') %>
 </span></a>

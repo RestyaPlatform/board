@@ -935,3 +935,55 @@ VALUES (now(), now(), 'Role edit', '/roles/?', 'PUT', 'role_edit', '1', '0', '0'
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849', '2016-02-20 19:07:50.849', id, 1 FROM acl_links WHERE slug = 'role_edit';
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849', '2016-02-20 19:07:50.849', id, 1 FROM acl_links WHERE slug = 'board_user_role_edit';
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") SELECT '2016-02-20 19:07:50.849', '2016-02-20 19:07:50.849', id, 1 FROM acl_links WHERE slug = 'organization_user_role_edit';
+
+CREATE VIEW "admin_boards_listing" AS
+ SELECT board.id,
+    board.name,
+    to_char(board.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(board.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    users.username,
+    users.full_name,
+    users.profile_picture_path,
+    users.initials,
+    board.user_id,
+    board.organization_id,
+    board.board_visibility,
+    board.background_color,
+    board.background_picture_url,
+    (board.is_closed)::integer AS is_closed,
+    board.boards_user_count,
+    board.list_count,
+    board.card_count,
+    board.archived_list_count,
+    board.archived_card_count,
+    board.boards_subscriber_count,
+    board.background_pattern_url,
+    board.music_name,
+    organizations.name AS organization_name,
+    organizations.website_url AS organization_website_url,
+    organizations.description AS organization_description,
+    organizations.logo_url AS organization_logo_url,
+    organizations.organization_visibility,
+    ( SELECT array_to_json(array_agg(row_to_json(bu.*))) AS array_to_json
+           FROM ( SELECT boards_users.id,
+                    boards_users.created,
+                    boards_users.modified,
+                    boards_users.board_id,
+                    boards_users.user_id,
+                    boards_users.board_user_role_id,
+                    boards_users.username,
+                    boards_users.email,
+                    boards_users.full_name,
+                    ((boards_users.is_active)::boolean)::integer AS is_active,
+                    ((boards_users.is_email_confirmed)::boolean)::integer AS is_email_confirmed,
+                    boards_users.board_name,
+                    boards_users.profile_picture_path,
+                    boards_users.initials
+                   FROM boards_users_listing boards_users
+                  WHERE (boards_users.board_id = board.id)
+                  ORDER BY boards_users.id) bu) AS boards_users,
+    board.default_email_list_id,
+    board.is_default_email_position_as_bottom
+   FROM ((boards board
+   LEFT JOIN users users ON ((users.id = board.user_id)))
+   LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));

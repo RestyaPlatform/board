@@ -88,6 +88,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.filterField = (!_.isUndefined(e)) ? $(e.currentTarget).data('filter') : _this.filterField;
         var users = new App.UserCollection();
+        $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
         users.url = api_url + 'users.json?page=' + _this.current_page + '&filter=' + _this.filterField;
         app.navigate('#/' + 'users?page=' + _this.current_page + '&filter=' + _this.filterField, {
             trigger: false,
@@ -139,6 +140,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         _this.sortDirection = (!_.isUndefined(e)) ? $(e.currentTarget).data('direction') : _this.sortDirection;
         var users = new App.UserCollection();
         users.setSortField(_this.sortField, _this.sortDirection);
+        $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
         users.url = api_url + 'users.json?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection;
         app.navigate('#/' + 'users?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection, {
             trigger: false,

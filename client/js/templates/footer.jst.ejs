@@ -161,12 +161,12 @@ if (_.isEmpty(role_links.where({
 <div class="navbar-right clearfix">
 	<ul class="nav nav-pills navbar-right">
 	<% if(!_.isUndefined(authuser.user)){%>
-	<% if (!_.isUndefined(authuser.user) &&  !_.isEmpty(model.user) && model.user.role_id == 1) { %>
-		<li class="phone-block"><a class="btn btn-primary pull-right js-show-qr-code" id="phone" title="<%- i18next.t('View in iOS App') %>" href=""><i class="icon-mobile-phone lead"></i></a></li>
-	  	<li class="hidden-xs"><a title="<%- i18next.t('Admin CP') %>" class="btn btn-default pull-right admin-cp" href="#/activities"><span class="icon-user lead text-primary"></span><span class="hidden-xs text-primary"><%- i18next.t("Admin") %></span></a></li>
-	  <% } %>
-	  <% if((navigator.userAgent.toLowerCase().indexOf('android') > -1) && (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)){ %>
+	<% if((navigator.userAgent.toLowerCase().indexOf('android') > -1) && (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)){ %>
 		  <li class="hidden-xs"><a href="#" tittle="<%- i18next.t('Install this webapp to your phone') %>" data-toggle="modal" data-target="#add_home_modal" class="btn btn-default pull-right"><i class="icon-plus"></i></a></li>
+	<% } %>
+	<% if (!_.isUndefined(authuser.user) &&  !_.isEmpty(model.user) && model.user.role_id == 1) { %>
+		<li class="phone-block"><a class="btn btn-primary pull-right js-show-qr-code hidden-xs" id="phone" title="<%- i18next.t('View in iOS App') %>" href=""><i class="icon-mobile-phone lead"></i></a></li>
+	  	<li class="hidden-xs"><a title="<%- i18next.t('Admin CP') %>" class="btn btn-default pull-right admin-cp" href="#/activities"><span class="icon-user lead text-primary"></span><span class="hidden-xs text-primary"><%- i18next.t("Admin") %></span></a></li>
 	  <% } %>
 	  <li class="dropdown">
 	   <a href="#" data-toggle="dropdown" class="dropdown-toggle btn btn-default pull-right" title="<%-model.user.full_name%> (<%-model.user.username%>)">
