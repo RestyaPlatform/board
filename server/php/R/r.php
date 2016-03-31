@@ -1738,7 +1738,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         foreach ($r_post as $key => $value) {
             if (($key == 'LDAP_BIND_PASSWD' || $key == 'IMAP_EMAIL_PASSWORD')) {
                 if (!empty($value)) {
-                    $value = base64_encode(str_rot13($value));
+                    $value_encode = str_rot13($value);
+                    $value = base64_encode($value_encode);
                 } else {
                     break;
                 }
