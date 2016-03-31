@@ -450,7 +450,7 @@ function ldapAuthenticate($p_user_id, $p_password)
         $t_binddn = '';
         if (empty($t_binddn) && empty($t_password)) {
             $t_binddn = $g_ldap_bind_dn;
-            $t_password = $g_ldap_bind_passwd;
+            $t_password = str_rot13(base64_decode($g_ldap_bind_passwd));
         }
         if (!empty($t_binddn) && !empty($t_password)) {
             $t_br = @ldap_bind($t_ds, $t_binddn, $t_password);

@@ -116,7 +116,9 @@
 										<option <% if(v === setting.value) { %>selected <% }%> value="<%- v %>"><%- v %></option>
 									<% }); %>
 									</select>
-								  <% } else {%>
+								  <% } else if(setting.type == 'password') {%>
+									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" />
+								  <% } else { %>
 									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" value="<%- setting.value %>" />
 								  <% } %>
 									<div><span class="help-block"><%= i18next.t(setting.description) %></span></div>
