@@ -26,15 +26,17 @@
 <% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || (((!_.isEmpty(list.collection.board.acl_links.where({slug: "subscribe_list",board_user_role_id: parseInt(list.board_user_role_id)})) && _.isEmpty(subscribe)) || (!_.isEmpty(list.collection.board.acl_links.where({slug: "unsubscribe_list",board_user_role_id: parseInt(list.board_user_role_id)})) && !_.isEmpty(subscribe)))  || (!_.isEmpty(role_links.where({slug: "subscribe_list"})) && list.collection.board.attributes.board_visibility == 2)))){ %>
 	<%
 		var subscribe_disabled = '';
+		var subscribe_title = i18next.t('Subscribe');
 		var subscribed = list.collection.board.board_subscribers.findWhere({
 			user_id: parseInt(authuser.id),
 			is_subscribed: 1
 		});
 		if (subscribed) {
 			subscribe_disabled = 'disabled';
+			subscribe_title = i18next.t('Board wise subscription already enabled');
 		}
 	%>
-	<li class="<%= subscribe_disabled %>"><a href="#" title="<%- i18next.t('Subscribe') %>" class="highlight-icon <%= subscribe_class %>" data-list-id="<%- list.id %>" data-subscribe-id="<%- subscribe_id %>"><span class="js-subscribe-text"><%- i18next.t("Subscribe") %><%if (!_.isEmpty(subscribe) && parseInt(subscribe.attributes.is_subscribed) === 1) {%><%}%></span> <%= is_subscribed %></a></li>
+	<li class="<%= subscribe_disabled %>"><a href="#" title="<%- subscribe_title %>" class="highlight-icon <%= subscribe_class %>" data-list-id="<%- list.id %>" data-subscribe-id="<%- subscribe_id %>"><span class="js-subscribe-text"><%- i18next.t("Subscribe") %><%if (!_.isEmpty(subscribe) && parseInt(subscribe.attributes.is_subscribed) === 1) {%><%}%></span> <%= is_subscribed %></a></li>
 <% } %>	
 <li class="divider"></li>
 <% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>

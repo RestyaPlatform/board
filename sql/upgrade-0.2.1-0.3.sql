@@ -53,10 +53,12 @@ CREATE OR REPLACE VIEW "activities_listing" AS
     checklist1.name AS checklist_name,
     organizations.id AS organization_id,
     organizations.name AS organization_name,
-    organizations.logo_url AS organization_logo_url
-   FROM (((((((((activities activity
+    organizations.logo_url AS organization_logo_url,
+    list1.name AS moved_list_name
+   FROM ((((((((((activities activity
    LEFT JOIN boards board ON ((board.id = activity.board_id)))
    LEFT JOIN lists list ON ((list.id = activity.list_id)))
+   LEFT JOIN lists list1 ON ((list1.id = activity.foreign_id)))
    LEFT JOIN cards card ON ((card.id = activity.card_id)))
    LEFT JOIN labels la ON (((la.id = activity.foreign_id) AND ((activity.type)::text = 'add_card_label'::text))))
    LEFT JOIN checklist_items checklist_item ON ((checklist_item.id = activity.foreign_id)))
