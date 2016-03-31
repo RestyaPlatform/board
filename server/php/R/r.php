@@ -396,6 +396,29 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if ($authUser['role_id'] != 1 && empty($board_ids)) {
                 $sql = false;
             }
+        } else if (!empty($r_resource_filters['page'])) {
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM admin_boards_listing ul ';
+            $order_by = 'name';
+            $direction = 'asc';
+            if (!empty($r_resource_filters['sort'])) {
+                $order_by = $r_resource_filters['sort'];
+                $direction = $r_resource_filters['direction'];
+            } else if (!empty($r_resource_filters['filter'])) {
+                $filter_condition = 'WHERE ';
+                if ($r_resource_filters['filter'] == 'open') {
+                    $filter_condition.= 'is_closed = 0';
+                } else if ($r_resource_filters['filter'] == 'closed') {
+                    $filter_condition.= 'is_closed = 1';
+                } else if ($r_resource_filters['filter'] == 'private') {
+                    $filter_condition.= 'board_visibility = 0';
+                } else if ($r_resource_filters['filter'] == 'public') {
+                    $filter_condition.= 'board_visibility = 2';
+                } else if ($r_resource_filters['filter'] == 'organization') {
+                    $filter_condition.= 'board_visibility = 1';
+                }
+                $sql.= $filter_condition;
+            }
+            $sql.= ' ORDER BY ' . $order_by . ' ' . $direction . ') as d ';
         } else {
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM boards_listing ul ';
             if (!empty($authUser) && $authUser['role_id'] != 1) {
@@ -421,27 +444,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $sql.= 'WHERE ul.id = ANY ($1)';
                 array_push($pg_params, $ids);
             }
-            $order_by = 'name';
-            $direction = 'asc';
-            if (!empty($r_resource_filters['sort'])) {
-                $order_by = $r_resource_filters['sort'];
-                $direction = $r_resource_filters['direction'];
-            } else if (!empty($r_resource_filters['filter'])) {
-                $filter_condition = 'WHERE ';
-                if ($r_resource_filters['filter'] == 'open') {
-                    $filter_condition.= 'is_closed = 0';
-                } else if ($r_resource_filters['filter'] == 'closed') {
-                    $filter_condition.= 'is_closed = 1';
-                } else if ($r_resource_filters['filter'] == 'private') {
-                    $filter_condition.= 'board_visibility = 0';
-                } else if ($r_resource_filters['filter'] == 'public') {
-                    $filter_condition.= 'board_visibility = 2';
-                } else if ($r_resource_filters['filter'] == 'organization') {
-                    $filter_condition.= 'board_visibility = 1';
-                }
-                $sql.= $filter_condition;
-            }
-            $sql.= ' ORDER BY ' . $order_by . ' ' . $direction . ') as d ';
+            $sql.= ' ORDER BY name ASC) as d ';
             if ($authUser['role_id'] != 1 && empty($board_ids)) {
                 $sql = false;
             }

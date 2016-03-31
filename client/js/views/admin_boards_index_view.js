@@ -116,6 +116,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         if (!_.isUndefined(e)) {
             _this.current_page = 1;
         }
+        $('.js-my-boards').html('<tr class="js-loader"><td colspan="12"><span class="cssloader"></span></td></tr>');
         boards.url = api_url + 'boards.json?page=' + _this.current_page + '&filter=' + _this.filterField;
         app.navigate('#/' + 'boards/list?page=' + _this.current_page + '&filter=' + _this.filterField, {
             trigger: false,
@@ -167,6 +168,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         _this.sortField = (!_.isUndefined(e)) ? $(e.currentTarget).data('field') : _this.sortField;
         _this.sortDirection = (!_.isUndefined(e)) ? $(e.currentTarget).data('direction') : _this.sortDirection;
         var boards = new App.BoardCollection();
+        $('.js-my-boards').html('<tr class="js-loader"><td colspan="12"><span class="cssloader"></span></td></tr>');
         if (!_.isUndefined(_this.sortDirection) && !_.isUndefined(_this.sortField)) {
             boards.setSortField(_this.sortField, _this.sortDirection);
             boards.url = api_url + 'boards.json?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection;

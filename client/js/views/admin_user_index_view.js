@@ -35,6 +35,7 @@ App.AdminUserIndexView = Backbone.View.extend({
         var _this = this;
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.users = new App.UserCollection();
+        $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
         _this.users.url = api_url + 'users.json?page=' + _this.current_page;
         app.navigate('#/' + 'users?page=' + _this.current_page, {
             trigger: false,

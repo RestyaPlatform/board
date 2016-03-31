@@ -35,6 +35,7 @@ App.AdminBoardsListView = Backbone.View.extend({
         var _this = this;
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.boards = new App.BoardCollection();
+        $('.js-my-boards').html('<tr class="js-loader"><td colspan="12"><span class="cssloader"></span></td></tr>');
         _this.boards.url = api_url + 'boards.json?page=' + _this.current_page;
         app.navigate('#/' + 'boards/list?page=' + _this.current_page, {
             trigger: false,
