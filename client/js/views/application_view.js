@@ -92,6 +92,7 @@ App.ApplicationView = Backbone.View.extend({
                                 PAGING_COUNT = settings_response.PAGING_COUNT;
                                 APPS = settings_response.apps;
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
+                                DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
                                 var current_language = DEFAULT_LANGUAGE;
                                 if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null) {
                                     current_language = authuser.user.language;
@@ -156,6 +157,7 @@ App.ApplicationView = Backbone.View.extend({
                             PAGING_COUNT = settings_response.PAGING_COUNT;
                             APPS = settings_response.apps;
                             IMAP_EMAIL = settings_response.IMAP_EMAIL;
+                            DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
                             var current_language = DEFAULT_LANGUAGE;
                             if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null && authuser.user.language !== null && authuser.user.language !== undefined) {
                                 current_language = authuser.user.language;

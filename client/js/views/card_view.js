@@ -399,7 +399,8 @@ App.CardView = Backbone.View.extend({
                 trigger_function: false,
             });
         }
-        var initialState = 'docked';
+        console.log(DEFAULT_CARD_VIEW);
+        var initialState = (DEFAULT_CARD_VIEW === 'Dockmodal') ? 'docked' : 'modal';
         if (e.ctrlKey || e.metaKey) {
             initialState = 'modal';
         }

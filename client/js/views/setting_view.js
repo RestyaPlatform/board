@@ -72,6 +72,9 @@ App.SettingView = Backbone.View.extend({
     updateSetting: function(e) {
         var target = $(e.currentTarget);
         var data = target.serializeObject();
+        if (!_.isUndefined(data.DEFAULT_CARD_VIEW)) {
+            DEFAULT_CARD_VIEW = data.DEFAULT_CARD_VIEW;
+        }
         if (!_.isUndefined(data.LDAP_LOGIN_ENABLED) && $('.js-checkbox').is(":checked")) {
             data.LDAP_LOGIN_ENABLED = 'true';
         } else {

@@ -987,3 +987,6 @@ CREATE VIEW "admin_boards_listing" AS
    FROM ((boards board
    LEFT JOIN users users ON ((users.id = board.user_id)))
    LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
+
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
+VALUES ('3', '0', 'DEFAULT_CARD_VIEW', 'Dockmodal', NULL, 'select', 'Dockmodal,Popup', 'Default Card View', '7');
