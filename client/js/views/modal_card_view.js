@@ -108,6 +108,9 @@ App.ModalCardView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function(options) {
+        if ($('.modalChatHistoryView').hasClass('in')) {
+            $('.modalChatHistoryView').modal('hide');
+        }
         this.initialState = options.initialState;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;

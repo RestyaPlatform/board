@@ -16,7 +16,7 @@ if (typeof App === 'undefined') {
 App.ChatHistoryView = Backbone.View.extend({
     template: JST['templates/chat_history'],
     tagName: 'li',
-    className: 'btn-block col-xs-12',
+    className: 'col-xs-12 row',
     /**
      * Constructor
      * initialize default values and actions
@@ -39,7 +39,7 @@ App.ChatHistoryView = Backbone.View.extend({
         var name = this.model.attributes.username;
         this.model.set('name', name);
         var created = this.model.attributes.created.split('-');
-        var cdate = created[2].split(' ');
+        var cdate = created[2].split('T');
         var cmonth = parseInt(created[1]) + 1;
         cmonth = (cmonth > 10) ? cmonth : '0' + cmonth;
         var cyear = created[0];

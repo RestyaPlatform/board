@@ -147,6 +147,8 @@ App.BoardHeaderView = Backbone.View.extend({
         'keyup[return] body': 'keyboardShowCardModal',
         'keyup[k] body': 'keyboardShowPrevCardModal',
         'keyup[j] body': 'keyboardShowNextCardModal',
+        'click .js-show-chat-modal': 'showChatListModal',
+        'click .js-show-chat-history-modal': 'showChatHistoryModal'
     },
     /**
      * loadBoardName()
@@ -2138,5 +2140,35 @@ App.BoardHeaderView = Backbone.View.extend({
             var active_card_id = $('.js-board-list-card.active').attr('id');
             $('#' + active_card_id).trigger('click');
         }
+    },
+    /**
+     * showChatListModal()
+     * display the chat history in the list
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showChatListModal: function(e) {
+        var modalView = new App.ModalBoardView({
+            model: this.model
+        });
+        modalView.show();
+        return false;
+    },
+    /**
+     * showChatHistoryModal()
+     * display the chat history in the list
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showChatHistoryModal: function(e) {
+        var modalView = new App.ModalChatHistoryView({
+            model: this.model
+        });
+        modalView.show();
+        return false;
     },
 });
