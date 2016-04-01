@@ -582,9 +582,10 @@
 					}); 
 					if (subscribed) {
 						subscribe_disabled = 'disabled';
+						subscribe_title = i18next.t('Board wise subscription already enabled');
 					}
 				%>
-			    <li class="<%= subscribe_disabled %>"> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- i18next.t('Subscribe') %> " href=""><%- i18next.t('Subscribe') %>
+			    <li class="<%= subscribe_disabled %>"> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- subscribe_title %> " href=""><%- i18next.t('Subscribe') %>
 		       <% if(!_.isEmpty(cards_subscribers)){ %>
 			    <i class="icon-ok"></i>
 		      <% } %>
