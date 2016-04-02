@@ -21,7 +21,7 @@ if (typeof App === 'undefined') {
 App.ListView = Backbone.View.extend({
     tagName: 'div',
     className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 js-board-list list',
-    converter: new Showdown.converter(),
+    converter: new showdown.Converter(),
     /**
      * Constructor
      * initialize default values and actions

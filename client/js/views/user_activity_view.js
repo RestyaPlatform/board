@@ -25,7 +25,7 @@ App.UserActivityView = Backbone.View.extend({
         this.render();
         emojify.run();
     },
-    converter: new Showdown.converter(),
+    converter: new showdown.Converter(),
     template: JST['templates/user_activity'],
     className: 'list-group-item-text',
     /**

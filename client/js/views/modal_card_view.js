@@ -24,7 +24,7 @@ if (typeof App === 'undefined') {
 App.ModalCardView = Backbone.View.extend({
     id: 'base-modal',
     className: '',
-    converter: new Showdown.converter(),
+    converter: new showdown.Converter(),
     template: JST['templates/modal_card_view'],
     /**
      * Events
