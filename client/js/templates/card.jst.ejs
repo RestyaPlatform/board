@@ -84,9 +84,12 @@
 
         var years = Math.floor(months / 12);
         var week = days - (6 - (today.getDay()));
-		var label = 'label-default';
 		if (years < 0 || months < 0 || days <= -1) {
-			label = 'label-danger';
+			label = 'label-past';
+		} else if (days == 0) {
+			label = 'label-present';
+		} else {
+			label = 'label-future';
 		}
 	%>
 	<li><small title=" <%- i18next.t('Due Date') %>"><span class="label <%- label %>"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
