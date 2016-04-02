@@ -147,6 +147,8 @@ App.BoardHeaderView = Backbone.View.extend({
         'keyup[return] body': 'keyboardShowCardModal',
         'keyup[k] body': 'keyboardShowPrevCardModal',
         'keyup[j] body': 'keyboardShowNextCardModal',
+        'click .js-show-chat-modal': 'showChatListModal',
+        'click .js-show-chat-history-modal': 'showChatHistoryModal'
     },
     /**
      * loadBoardName()
@@ -937,13 +939,29 @@ App.BoardHeaderView = Backbone.View.extend({
                     element.find('.fc-event-skin').addClass('card-archived');
                 }
                 if (card.get('due_date') !== null) {
-                    var today = new Date();
                     card_due_date = card.get('due_date').split('T');
-                    var due_date = new Date(card_due_date[0]);
-                    var days = Math.floor(Math.floor(due_date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-                    if (days < 0) {
-                        element.addClass('card-pastdue');
-                        element.find('.fc-event-skin').addClass('card-pastdue');
+                    var today = new Date();
+                    var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+                    var due_date = new Date(card_due_date);
+                    var diff = Math.floor(due_date.getTime() - today.getTime());
+
+                    var day = 1000 * 60 * 60 * 24;
+                    var days = Math.floor(diff / day);
+                    var months = Math.floor((days + (today.getDate() + 1)) / next_month_last_day.getDate());
+
+                    var years = Math.floor(months / 12);
+                    var week = days - (6 - (today.getDay()));
+
+                    if (years < 0 || months < 0 || days <= -1) {
+                        element.addClass('label-past');
+                        element.find('.fc-event-skin').addClass('label-past');
+                    } else if (days === 0) {
+                        element.addClass('label-present');
+                        element.find('.fc-event-skin').addClass('label-present');
+                    } else {
+                        element.addClass('label-future');
+                        element.find('.fc-event-skin').addClass('label-future');
                     }
                 }
                 content += '<ul class="unstyled hide js-card-labels">';
@@ -2138,5 +2156,35 @@ App.BoardHeaderView = Backbone.View.extend({
             var active_card_id = $('.js-board-list-card.active').attr('id');
             $('#' + active_card_id).trigger('click');
         }
+    },
+    /**
+     * showChatListModal()
+     * display the chat history in the list
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showChatListModal: function(e) {
+        var modalView = new App.ModalBoardView({
+            model: this.model
+        });
+        modalView.show();
+        return false;
+    },
+    /**
+     * showChatHistoryModal()
+     * display the chat history in the list
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showChatHistoryModal: function(e) {
+        var modalView = new App.ModalChatHistoryView({
+            model: this.model
+        });
+        modalView.show();
+        return false;
     },
 });

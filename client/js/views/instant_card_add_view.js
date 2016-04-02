@@ -15,7 +15,7 @@ if (typeof App === 'undefined') {
  */
 App.InstantCardAddView = Backbone.View.extend({
     template: JST['templates/instant_card_add'],
-    converter: new Showdown.converter(),
+    converter: new showdown.Converter(),
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)

@@ -35,7 +35,7 @@ App.CardCheckListItemView = Backbone.View.extend({
             this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
         }
     },
-    converter: new Showdown.converter(),
+    converter: new showdown.Converter(),
     template: JST['templates/card_checklist_item'],
     className: function() {
         var class_name = 'js-checklist-item btn-block pull-left';

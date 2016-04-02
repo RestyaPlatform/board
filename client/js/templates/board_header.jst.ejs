@@ -271,6 +271,7 @@
 							<% }%>
 							<% }%>
 							<li><a href="#" class="js-show-board-modal" data-toggle="modal" data-target="#modalListView"><%- i18next.t('Show Attachments') %></a></li>
+							<li><a href="#" class="js-show-chat-history-modal" data-toggle="modal" data-target="#modalChatHistoryView"><%- i18next.t('Show Chat History') %></a></li>
 							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
 							<li><a href="#" class="js-additional-settings"><%- i18next.t('Additional Settings') %></a></li>
 							<li class="divider"></li>

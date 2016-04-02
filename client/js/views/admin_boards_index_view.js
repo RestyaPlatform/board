@@ -202,11 +202,11 @@ App.AdminBoardsIndexView = Backbone.View.extend({
                 $(e.currentTarget).siblings('span').removeClass('icon-caret-up').addClass('icon-caret-down');
             }
         }
-        $('.js-my-boards').html('');
         boards.fetch({
             cache: false,
             abortPending: true,
             success: function(boards, response) {
+                $('.js-my-boards').html('');
                 boards.each(function(board) {
                     $('.js-my-boards').append(new App.AdminBoardView({
                         model: board,

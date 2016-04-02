@@ -54,7 +54,8 @@ CREATE OR REPLACE VIEW "activities_listing" AS
     organizations.id AS organization_id,
     organizations.name AS organization_name,
     organizations.logo_url AS organization_logo_url,
-    list1.name AS moved_list_name
+    list1.name AS moved_list_name,
+    to_char(activity.created, 'HH24:MI'::text) AS created_time
    FROM ((((((((((activities activity
    LEFT JOIN boards board ON ((board.id = activity.board_id)))
    LEFT JOIN lists list ON ((list.id = activity.list_id)))

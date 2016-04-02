@@ -222,7 +222,7 @@
 					<div class="col-xs-12 row">
 					  <h3 class="pull-left"><%- i18next.t('Actions') %></h3>
 				    </div>
-				<ul class="js-card-actions list-inline well-sm">
+				<ul class="js-card-actions list-inline navbar-btn">
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 					<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-move-card-form js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><i class="icon-folder-close"></i><%- i18next.t('Move') %></a>
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
@@ -582,9 +582,10 @@
 					}); 
 					if (subscribed) {
 						subscribe_disabled = 'disabled';
+						subscribe_title = i18next.t('Board wise subscription already enabled');
 					}
 				%>
-			    <li class="<%= subscribe_disabled %>"> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- i18next.t('Subscribe') %> " href=""><%- i18next.t('Subscribe') %>
+			    <li class="<%= subscribe_disabled %>"> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- subscribe_title %> " href=""><%- i18next.t('Subscribe') %>
 		       <% if(!_.isEmpty(cards_subscribers)){ %>
 			    <i class="icon-ok"></i>
 		      <% } %>
