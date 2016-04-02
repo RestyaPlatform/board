@@ -956,7 +956,7 @@ App.BoardHeaderView = Backbone.View.extend({
                     if (years < 0 || months < 0 || days <= -1) {
                         element.addClass('label-past');
                         element.find('.fc-event-skin').addClass('label-past');
-                    } else if (days == 0) {
+                    } else if (days === 0) {
                         element.addClass('label-present');
                         element.find('.fc-event-skin').addClass('label-present');
                     } else {
