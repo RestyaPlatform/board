@@ -939,12 +939,12 @@ App.BoardHeaderView = Backbone.View.extend({
                     element.find('.fc-event-skin').addClass('card-archived');
                 }
                 if (card.get('due_date') !== null) {
-	                card_due_date = card.get('due_date').split('T');
-	                var today = new Date();
-	                var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-	                var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-	                var due_date = new Date(card_due_date);
-	                var diff = Math.floor(due_date.getTime() - today.getTime());
+                    card_due_date = card.get('due_date').split('T');
+                    var today = new Date();
+                    var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+                    var due_date = new Date(card_due_date);
+                    var diff = Math.floor(due_date.getTime() - today.getTime());
 
                     var day = 1000 * 60 * 60 * 24;
                     var days = Math.floor(diff / day);
