@@ -240,44 +240,49 @@ Backbone.sync = function(method, model, options) {
 var RealXHRSend = XMLHttpRequest.prototype.send;
 var requestCallbacks = [];
 var responseCallbacks = [];
-function fireCallbacks(callbacks,xhr) {
-	for( var i = 0; i < callbacks.length; i++ ) {
-		callbacks[i](xhr);
-	}
+
+function fireCallbacks(callbacks, xhr) {
+    for (var i = 0; i < callbacks.length; i++) {
+        callbacks[i](xhr);
+    }
 }
+
 function addRequestCallback(callback) {
-	requestCallbacks.push(callback);
+    requestCallbacks.push(callback);
 }
+
 function addResponseCallback(callback) {
-	responseCallbacks.push(callback);
+    responseCallbacks.push(callback);
 }
+
 function fireResponseCallbacksIfCompleted(xhr) {
-	if( xhr.readyState === 4 ) {
-		fireCallbacks(responseCallbacks,xhr);
-	}
+    if (xhr.readyState === 4) {
+        fireCallbacks(responseCallbacks, xhr);
+    }
 }
+
 function proxifyOnReadyStateChange(xhr) {
-	var realOnReadyStateChange = xhr.onreadystatechange;
-	if ( realOnReadyStateChange ) {
-		xhr.onreadystatechange = function() {
-			fireResponseCallbacksIfCompleted(xhr);
-			realOnReadyStateChange();
-		};
-	}
+    var realOnReadyStateChange = xhr.onreadystatechange;
+    if (realOnReadyStateChange) {
+        xhr.onreadystatechange = function() {
+            fireResponseCallbacksIfCompleted(xhr);
+            realOnReadyStateChange();
+        };
+    }
 }
 XMLHttpRequest.prototype.send = function() {
-	// Fire request callbacks before sending the request
-	fireCallbacks(requestCallbacks,this);
-	// Wire response callbacks
-	if( this.addEventListener ) {
-		var self = this;
-		this.addEventListener("readystatechange", function() {
-			fireResponseCallbacksIfCompleted(self);
-		}, false);
-	} else {
-		proxifyOnReadyStateChange(this);
-	}
-	RealXHRSend.apply(this, arguments);
+    // Fire request callbacks before sending the request
+    fireCallbacks(requestCallbacks, this);
+    // Wire response callbacks
+    if (this.addEventListener) {
+        var self = this;
+        this.addEventListener("readystatechange", function() {
+            fireResponseCallbacksIfCompleted(self);
+        }, false);
+    } else {
+        proxifyOnReadyStateChange(this);
+    }
+    RealXHRSend.apply(this, arguments);
 };
 var AppRouter = Backbone.Router.extend({
     routes: {
@@ -596,6 +601,6 @@ Backbone.history.start({
 });
 
 Backbone.form = function(schema) {
-	var form = new Backbone.Form(schema).render();
+    var form = new Backbone.Form(schema).render();
     return form.el;
 };

@@ -318,25 +318,31 @@ App.ApplicationView = Backbone.View.extend({
                         });
                         $('#header').html(this.headerView.el);
                     } else {
-						var lists = {};
-						var boards = {};
-						if(response.lists) {
-							$.each(response.lists, function(list_key, list) {
-								if(list) {
-									var cards = {};
-									if(list.cards) {
-										$.each(list.cards, function(card_key, card) {
-											if(card) {
-												cards[card.id] = card.custom_fields;
-											}
-										});
-									}
-									lists[list.id] = {custom_fields : list.custom_fields, cards: cards};
-								}
-							});
-						}
-						boards[response.id] = {custom_fields : response.custom_fields, lists: lists};
-						custom_fields.boards = boards;
+                        var lists = {};
+                        var boards = {};
+                        if (response.lists) {
+                            $.each(response.lists, function(list_key, list) {
+                                if (list) {
+                                    var cards = {};
+                                    if (list.cards) {
+                                        $.each(list.cards, function(card_key, card) {
+                                            if (card) {
+                                                cards[card.id] = card.custom_fields;
+                                            }
+                                        });
+                                    }
+                                    lists[list.id] = {
+                                        custom_fields: list.custom_fields,
+                                        cards: cards
+                                    };
+                                }
+                            });
+                        }
+                        boards[response.id] = {
+                            custom_fields: response.custom_fields,
+                            lists: lists
+                        };
+                        custom_fields.boards = boards;
                         Board.authuser = self.authuser;
                         viewed_board = Board;
                         Board.board_user_roles = response.board_user_roles;

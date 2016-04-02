@@ -3,8 +3,7 @@
  * Task for filling language in JSON
  */
 $app_path = dirname(dirname(__FILE__));
-require_once '../server/php/config.inc.php';
-
+require_once ($app_path. DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'config.inc.php');
 unset($argv[0]);
 $t = array();
 foreach($argv as $folder) {
@@ -78,7 +77,6 @@ $translation_arr = array(
 	'Guest' => 'Guest',
 );
 $database_translation_arr = array_merge($auto_json_arr, $translation_arr, $database_tables_array);
-
 $t = $t + $database_translation_arr;
 ksort($t);
 file_put_contents('client/locales/en_US/translation.json', json_encode($t, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
