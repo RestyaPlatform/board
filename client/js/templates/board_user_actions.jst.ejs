@@ -8,7 +8,7 @@
 	<% } else {%>
 		<i class="avatar avatar-color-194 img-rounded avatar-sm"><%- user.attributes.initials %></i>									
 	<% } %></span>
-	<span class="col-xs-8"><strong><%- user.attributes.full_name %></strong> @<%- user.attributes.username %></span>
+	<span class="col-xs-8"><a title="<%- user.attributes.full_name + '@' + user.attributes.username %>" href="#/user/<%- user.attributes.id %>"><strong><%- user.attributes.full_name %></strong> @<%- user.attributes.username %></a></span>
 		<span class="">
 			<a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
 		</span>
