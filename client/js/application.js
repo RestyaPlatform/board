@@ -410,7 +410,9 @@ var AppRouter = Backbone.Router.extend({
                     replace: true
                 });
                 clearInterval(set_interval_id);
-                converse.user.logout();
+                if (!_.isUndefined(authuser.user) && !_.isEmpty(BOSH_SERVICE_URL)) {
+                    converse.user.logout();
+                }
                 $('#conversejs').remove();
                 var view = new Backbone.View();
                 view.flash('success', i18next.t('Logout successfully.'));
