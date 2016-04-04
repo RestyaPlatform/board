@@ -8,5 +8,11 @@ if (typeof App === 'undefined') {
  * @extends Backbone.Collection
  */
 App.ChatHistoryCollection = Backbone.Collection.extend({
-    model: App.ChatHistory
+    model: App.ChatHistory,
+    parse: function(response) {
+        if (!_.isUndefined(response._metadata)) {
+            return response.data;
+        }
+        return response;
+    }
 });

@@ -22,6 +22,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         'change .js-more-action-user': 'usersMoreActions',
         'click .js-sort': 'sortUser',
         'click .js-filter': 'filterUser',
+        'submit form#UserSearch': 'userSearch'
 
     },
     /**
@@ -128,6 +129,50 @@ App.UserIndexContainerView = Backbone.View.extend({
         });
     },
     /**
+     * userSearch()
+     * @param NULL
+     * @return object
+     *
+     */
+    userSearch: function(e) {
+        var _this = this;
+        _this.searchField = $('#user_search').val();
+        var users = new App.UserCollection();
+        $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
+        users.url = api_url + 'users.json?search=' + _this.searchField;
+        users.fetch({
+            cache: false,
+            abortPending: true,
+            success: function(users, response) {
+                $('.js-user-list').html('');
+                if (users.length !== 0) {
+                    users.each(function(user) {
+                        $('.js-user-list').append(new App.UserIndex({
+                            model: user
+                        }).el);
+                    });
+                } else {
+                    $('.js-user-list').html('<tr><td class="text-center" colspan="15">No record found</td></tr>');
+                }
+                $('.js-user-list').find('.timeago').timeago();
+                $('.pagination-boxes').unbind();
+                $('.pagination-boxes').pagination({
+                    total_pages: response._metadata.noOfPages,
+                    current_page: _this.current_page,
+                    display_max: 4,
+                    callback: function(event, page) {
+                        event.preventDefault();
+                        if (page) {
+                            _this.current_page = page;
+                            _this.sortUser();
+                        }
+                    }
+                });
+            }
+        });
+        return false;
+    },
+    /**
      * sortUser()
      * @param NULL
      * @return object
@@ -165,11 +210,11 @@ App.UserIndexContainerView = Backbone.View.extend({
                 $(e.currentTarget).siblings('span').removeClass('icon-caret-down').addClass('icon-caret-up');
             }
         }
-        $('.js-user-list').html('');
         users.fetch({
             cache: false,
             abortPending: true,
             success: function(users, response) {
+                $('.js-user-list').html('');
                 users.each(function(user) {
                     $('.js-user-list').append(new App.UserIndex({
                         model: user

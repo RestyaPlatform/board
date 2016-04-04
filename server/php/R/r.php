@@ -49,24 +49,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/chat_history':
-        $end = PAGING_COUNT;
-        $offset = 1;
-        if (!empty($r_resource_filters['page'])) {
-            $end = $r_resource_filters['page'] * PAGING_COUNT;
-            $offset = $end - PAGING_COUNT;
-        }
-        $val_arr = array(
-            $r_resource_filters['board_id'],
-            'chat',
-            $end,
-            $offset
-        );
-        $chats = pg_query_params($db_lnk, "SELECT * FROM activities_listing where board_id = $1 AND type = $2 ORDER BY id desc LIMIT $3 OFFSET $4", $val_arr);
-        $chats_history = array();
-        while ($row = pg_fetch_assoc($chats)) {
-            $chats_history[] = $row;
-        }
-        $response = $chats_history;
+        $condition = 'WHERE al.board_id = $1 AND al.type = $2';
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY created DESC) as d ';
+        $c_sql = 'SELECT COUNT(*) FROM activities_listing al ' . $condition;
+        array_push($pg_params, $r_resource_filters['board_id'], 'chat');
         break;
 
     case '/users/me':
@@ -117,6 +103,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             } else {
                 $filter_condition.= 'role_id = ' . $r_resource_filters['filter'];
             }
+        } else if (!empty($r_resource_filters['search'])) {
+            $filter_condition = "WHERE full_name LIKE '%" . $r_resource_filters['search'] . "%' ";
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ') as d ';
         $c_sql = 'SELECT COUNT(*) FROM users_listing ul';
@@ -416,6 +404,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 } else if ($r_resource_filters['filter'] == 'organization') {
                     $filter_condition.= 'board_visibility = 1';
                 }
+                $sql.= $filter_condition;
+            } else if (!empty($r_resource_filters['search'])) {
+                $filter_condition = "WHERE name LIKE '%" . $r_resource_filters['search'] . "%' ";
                 $sql.= $filter_condition;
             }
             $sql.= ' ORDER BY ' . $order_by . ' ' . $direction . ') as d ';
@@ -1015,7 +1006,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/activities',
             '/oauth/clients',
             '/oauth/applications',
-            '/webhooks'
+            '/webhooks',
+            '/chat_history'
         );
         if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
             $data = array();

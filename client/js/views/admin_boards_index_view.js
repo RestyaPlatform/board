@@ -39,6 +39,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         'click .js-delete-board': 'deleteBoard',
         'click .js-sort': 'sortBoard',
         'click .js-filter': 'filterBoard',
+        'submit form#BoardSearch': 'boardSearch'
     },
     /**
      * deleteBoard()
@@ -155,6 +156,54 @@ App.AdminBoardsIndexView = Backbone.View.extend({
                 });
             }
         });
+    },
+    /**
+     * boardSearch()
+     * @param NULL
+     * @return object
+     *
+     */
+    boardSearch: function(e) {
+        var _this = this;
+        _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
+        _this.searchField = $('#board_search').val();
+        var boards = new App.BoardCollection();
+        $('.js-my-boards').html('<tr class="js-loader"><td colspan="12"><span class="cssloader"></span></td></tr>');
+        if (!_.isUndefined(_this.searchField) && !_.isUndefined(_this.searchField)) {
+            boards.url = api_url + 'boards.json?page=' + _this.current_page + '&search=' + _this.searchField;
+        }
+        boards.fetch({
+            cache: false,
+            abortPending: true,
+            success: function(boards, response) {
+                $('.js-my-boards').html('');
+                if (boards.length !== 0) {
+                    boards.each(function(board) {
+                        $('.js-my-boards').append(new App.AdminBoardView({
+                            model: board,
+                            board_user_roles: response.board_user_roles
+                        }).el);
+                    });
+                } else {
+                    $('.js-my-boards').html('<tr><td class="text-center" colspan="15">No record found</td></tr>');
+                }
+                $('.js-my-boards').find('.timeago').timeago();
+                $('.pagination-boxes').unbind();
+                $('.pagination-boxes').pagination({
+                    total_pages: response._metadata.noOfPages,
+                    current_page: _this.current_page,
+                    display_max: 4,
+                    callback: function(event, page) {
+                        event.preventDefault();
+                        if (page) {
+                            _this.current_page = page;
+                            _this.sortBoard();
+                        }
+                    }
+                });
+            }
+        });
+        return false;
     },
     /**
      * sortBoard()
