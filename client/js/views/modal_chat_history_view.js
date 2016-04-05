@@ -60,10 +60,8 @@ App.ModalChatHistoryView = Backbone.View.extend({
                     $('#js-chat-histories-load-more').attr('data-page', page);
                     self.renderChatHistoryCollection(chat_histories, response._metadata.total_records);
                 } else {
-                    var view = new App.ChatHistoryView({
-                        model: null
-                    });
-                    view_user_chats.append(view.render().el);
+                    $('#js-chat-histories-load-more').remove();
+                    $('#js-chat-history-list').html('<div class="media-body">No Chat History available.</div>');
                 }
             }
         });
