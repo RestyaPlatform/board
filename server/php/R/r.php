@@ -4324,22 +4324,6 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
         }
         if ($r_resource_cmd == '/users/?') {
-            $qry_val_arr = array(
-                $r_resource_vars['users']
-            );
-            $user = executeQuery('SELECT boards_users FROM users_listing WHERE id = $1', $qry_val_arr);
-            $board_ids = array();
-            if (!empty($user['boards_users'])) {
-                $boards_users = json_decode($user['boards_users'], true);
-                foreach ($boards_users as $boards_user) {
-                    $board_ids[] = $boards_user['board_id'];
-                }
-            }
-            $board_id = implode(',', $board_ids);
-            $qry_val_arr = array(
-                $board_id
-            );
-            $last_activity_status = executeQuery('SELECT * FROM activities_listing al WHERE board_id IN ( $1 ) ORDER BY id DESC LIMIT 1', $qry_val_arr);
             if ($r_put['is_active'] == false) {
                 $username = executeQuery('SELECT username FROM users WHERE id =' . $r_resource_vars['users']);
                 // ejabberd code
