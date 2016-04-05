@@ -98,6 +98,7 @@ App.BoardUserActionsView = Backbone.View.extend({
         var target = $(e.currentTarget);
         this.model.url = api_url + 'boards_users/' + this.model.attributes.id + '.json';
         this.model.set('board_user_role_id', target.data('board_user_role_id'));
+        this.model.set('board_name', this.model.collection.board.attributes.name);
         this.model.save({
             board_user_role_id: target.data('board_user_role_id')
         }, {
