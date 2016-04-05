@@ -4,13 +4,8 @@ class Ejabberd_Wrapper {
 	private static $ejabberdHost = JABBER_HOST;
 	
 	private static function runCommand($argsString) {
-		if ($GLOBALS['environment'] == 'dev') {
-			er("args to ejabberd: $argsString");
-			return true;
-		}
 		exec('sudo '. JABBER_PATH .' '  . $argsString . ' 2>&1',$output,$status);
 		error_log('sudo '. JABBER_PATH.' '  . $argsString . ' 2>&1' . print_r($output,true). print_r($status,true)."\n", 3, 'ejabberd.log');
-		error_log("command status: $status", 3, ERROR_LOG);
 	    if($status == 0)
 	    {
 	       error_log("'$argsString' ran successfully\n", 3, ERROR_LOG);
@@ -18,7 +13,6 @@ class Ejabberd_Wrapper {
 	    }
 	    else
 	    {
-	        error_log("problem runing command $argsString: " . print_r($output,true), 3, ERROR_LOG);
 	        return false;
 	    }
 	}
@@ -110,10 +104,6 @@ class Ejabberd_Wrapper {
         Send a direct invitation to several destinations 
 	 */
 	public static function send_direct_invitation($room, $password = '',$reason = '', $users = array()) {
-		$uString = '';
-		foreach ($users as $user) {
-			$uString .= escapeshellarg($user) . '@'  . self::$ejabberdHost . ' ';
-		}
 		return self::runCommand("send_direct_invitation " . $room . "@conference." . self::$ejabberdHost . " " . $password . " " . $reason . " " . $users);
 	}
 	/*

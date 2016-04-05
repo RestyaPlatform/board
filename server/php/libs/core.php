@@ -387,8 +387,12 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
 function getRevisiondifference($from_text, $to_text)
 {
     // limit input
-    $from_text = substr($from_text, 0, 1024 * 100);
-    $to_text = substr($to_text, 0, 1024 * 100);
+    if (!empty($from_text)) {
+        $from_text = substr($from_text, 0, 1024 * 100);
+    }
+    if (!empty($to_text)) {
+        $to_text = substr($to_text, 0, 1024 * 100);
+    }
     $granularity = 2; // 0: Paragraph/lines, 1: Sentence, 2: Word, 3: Character
     $granularityStacks = array(
         FineDiff::$paragraphGranularity,

@@ -894,7 +894,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $response['applications'] = array();
         $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_refresh_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) as d ';
         array_push($pg_params, $authUser['username'], '7742632501382313');
-        $c_sql = 'SELECT COUNT(*) FROM oauth_clients oc';
+        $c_sql = 'SELECT COUNT(*) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_refresh_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) As oc';
         break;
 
     case '/webhooks':
@@ -2099,7 +2099,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                 $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][0]['id'];
                 $list = glob($mediadir . '.*');
-                if (file_exists($list[0])) {
+                if (!empty($list) && file_exists($list[0])) {
                     unlink($list[0]);
                 }
             }
@@ -2138,7 +2138,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                             $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
                             $list = glob($imgdir . '.*');
-                            if (file_exists($list[0])) {
+                            if (!empty($list) && file_exists($list[0])) {
                                 unlink($list[0]);
                             }
                         }
@@ -4326,23 +4326,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
         }
         if ($r_resource_cmd == '/users/?') {
-            $qry_val_arr = array(
-                $r_resource_vars['users']
-            );
-            $user = executeQuery('SELECT boards_users FROM users_listing WHERE id = $1', $qry_val_arr);
-            $board_ids = array();
-            if (!empty($user['boards_users'])) {
-                $boards_users = json_decode($user['boards_users'], true);
-                foreach ($boards_users as $boards_user) {
-                    $board_ids[] = $boards_user['board_id'];
-                }
-            }
-            $board_id = implode(',', $board_ids);
-            $qry_val_arr = array(
-                $board_id
-            );
-            $last_activity_status = executeQuery('SELECT * FROM activities_listing al WHERE board_id IN ( $1 ) ORDER BY id DESC LIMIT 1', $qry_val_arr);
-            if ($r_put['is_active'] == false) {
+            if (isset($r_put['is_active']) && $r_put['is_active'] == false) {
                 $username = executeQuery('SELECT username FROM users WHERE id =' . $r_resource_vars['users']);
                 // ejabberd code
                 if (JABBER_HOST) {
@@ -4838,6 +4822,7 @@ if (!empty($_GET['_url']) && $db_lnk) {
     }
     if ($r_resource_cmd == '/users/logout' || checkAclLinks($_SERVER['REQUEST_METHOD'], $r_resource_cmd, $r_resource_vars, $post_data)) {
         // /users/5/products/10 -> array('users' => 5, 'products' => 10) ...
+        $scope = array();
         if (!empty($response['scope'])) {
             $scope = explode(" ", $response['scope']);
         }
