@@ -24,6 +24,7 @@ App.BoardUserActionsView = Backbone.View.extend({
         'click .js-no-action': 'noAction',
         'click .js-edit-board-member-permission': 'editBoardMemberPermission',
         'click .js-close-popup': 'closePopup',
+        'click .js-user-profile': 'redirectToUserProfile',
     },
     /**
      * Constructor
@@ -121,6 +122,21 @@ App.BoardUserActionsView = Backbone.View.extend({
         var el = this.$el;
         var target = el.find(e.target);
         target.parents('div.dropdown:first, li.dropdown:first').removeClass('open');
+        return false;
+    },
+    /**
+     * redirectToUserProfile()
+     * redirect to user profile
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    redirectToUserProfile: function(e) {
+        var user_id = $(e.currentTarget).data('id');
+        app.navigate('#/user/' + user_id, {
+            trigger: true
+        });
         return false;
     }
 });
