@@ -52,18 +52,16 @@ App.ModalChatHistoryView = Backbone.View.extend({
         view_user_chats.html('');
         var chat_histories = new App.ChatHistoryCollection();
         var page = 1;
-        chat_histories.url = api_url + 'chat_history.json?board_id=' + this.model.attributes.id;
+        chat_histories.url = api_url + 'chat_history.json?board_id=' + this.model.attributes.id + '&page=' + page;
         chat_histories.fetch({
-            success: function(response) {
+            success: function(chat_history, response) {
                 if (chat_histories.length > 0) {
                     page = parseInt(page) + 1;
                     $('#js-chat-histories-load-more').attr('data-page', page);
-                    self.renderChatHistoryCollection(chat_histories);
+                    self.renderChatHistoryCollection(chat_histories, response._metadata.total_records);
                 } else {
-                    var view = new App.ChatHistoryView({
-                        model: null
-                    });
-                    view_user_chats.append(view.render().el);
+                    $('#js-chat-histories-load-more').remove();
+                    $('#js-chat-history-list').html('<div class="media-body">No Chat History available.</div>');
                 }
             }
         });
@@ -117,11 +115,11 @@ App.ModalChatHistoryView = Backbone.View.extend({
         var page = $('#js-chat-histories-load-more').attr('data-page');
         chat_histories.url = api_url + 'chat_history.json?board_id=' + this.model.attributes.id + "&page=" + page;
         chat_histories.fetch({
-            success: function(response) {
+            success: function(chat_history, response) {
                 if (chat_histories.length > 0) {
                     page = parseInt(page) + 1;
                     $('#js-chat-histories-load-more').attr('data-page', page);
-                    self.renderChatHistoryCollection(chat_histories);
+                    self.renderChatHistoryCollection(chat_histories, response._metadata.total_records);
                 } else {
                     var view = new App.ChatHistoryView({
                         model: null
@@ -135,10 +133,11 @@ App.ModalChatHistoryView = Backbone.View.extend({
      * renderChatHistoryCollection()
      * render chats
      */
-    renderChatHistoryCollection: function(chat_histories) {
+    renderChatHistoryCollection: function(chat_histories, total_records) {
         var view_user_chats = this.$('#js-chat-history-list');
+        var page = $('#js-chat-histories-load-more').attr('data-page');
         if (chat_histories.length > 0) {
-            if (chat_histories.length < PAGING_COUNT) {
+            if (chat_histories.length < PAGING_COUNT || total_records == (page - 1) * PAGING_COUNT) {
                 $('#js-chat-histories-load-more').remove();
             }
             chat_histories.each(function(chat_history) {

@@ -939,27 +939,19 @@ App.BoardHeaderView = Backbone.View.extend({
                     element.find('.fc-event-skin').addClass('card-archived');
                 }
                 if (card.get('due_date') !== null) {
-                    card_due_date = card.get('due_date').split('T');
                     var today = new Date();
-                    var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-                    var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-                    var due_date = new Date(card_due_date);
+                    card_due_date = card.get('due_date').split('T');
+                    var due_date = new Date(card_due_date[0]);
                     var diff = Math.floor(due_date.getTime() - today.getTime());
-
                     var day = 1000 * 60 * 60 * 24;
                     var days = Math.floor(diff / day);
-                    var months = Math.floor((days + (today.getDate() + 1)) / next_month_last_day.getDate());
-
-                    var years = Math.floor(months / 12);
-                    var week = days - (6 - (today.getDay()));
-
-                    if (years < 0 || months < 0 || days <= -1) {
+                    if (days < -1) {
                         element.addClass('label-past');
                         element.find('.fc-event-skin').addClass('label-past');
-                    } else if (days === 0) {
+                    } else if (days == -1) {
                         element.addClass('label-present');
                         element.find('.fc-event-skin').addClass('label-present');
-                    } else {
+                    } else if (days > -1) {
                         element.addClass('label-future');
                         element.find('.fc-event-skin').addClass('label-future');
                     }

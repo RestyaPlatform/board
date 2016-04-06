@@ -1,7 +1,7 @@
 <% if(!_.isEmpty(chat_history) && chat_history != null){ 
 	if(chat_history.attributes.created_date != previous_date) {
 %>
-<div class="h3 list-group-item-heading"><%=chat_history.attributes.display_date%></div>
+<div class="h3 list-group-item-text navbar-btn well-sm"><%=chat_history.attributes.display_date%></div>
 <hr class="clearfix"/>
 <% } %>
 <div class="media">

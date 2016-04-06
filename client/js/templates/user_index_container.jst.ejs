@@ -15,6 +15,7 @@
 		} %>
 		<% var all = parseInt(filter_count.active) + parseInt(filter_count.inactive); %>
 		<li class="active"><a href="#/users" title="<%- i18next.t('All') %>"><span class="show"><strong><%-  all %></strong></span><%- i18next.t('All') %></a></li>
+		<li class="pull-right h4"><form id="UserSearch" name="UserSearch" class="form-horizontal col-xs-12"><input type="text" placeholder="Search" name="user_search" id="user_search" class="form-control" /></form></li>
 	</ul>
  </div>
 </section>

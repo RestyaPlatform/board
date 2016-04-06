@@ -1080,6 +1080,9 @@ showdown.Converter = function (converterOptions) {
       output: outputModifiers
     };
   };
+  this.colorCode = function(string) {
+    return calcMD5(string).slice(0, 6);
+  };
 };
 
 /**

@@ -11,6 +11,8 @@
 				<li><a class="js-filter cur" data-filter="organization" title="<%- i18next.t('Organization') %>"><span class="show"><strong><%- filter_count.organization %></strong></span><%- i18next.t('Organization') %></a></li>
 				<% var all = parseInt(filter_count.open) + parseInt(filter_count.closed); %>
 				<li class="active"><a href="#/boards/list" title="<%- i18next.t('All') %>"><span class="show"><strong><%-  all %></strong></span><%- i18next.t('All') %></a></li>
+				<li class="pull-right h4"><form id="BoardSearch" name="BoardSearch" class="form-horizontal col-xs-12"><input type="text" placeholder="Search" name="board_search" id="board_search" class="form-control" /></form></li>
+				
 			</ul>
 		 </div>
 	</section>
