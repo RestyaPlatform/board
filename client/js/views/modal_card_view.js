@@ -1806,7 +1806,7 @@ App.ModalCardView = Backbone.View.extend({
                 content_img = '<img src="' + profile_picture_path + '" alt="' + user.get('username') + '" title="' + user.get('full_name') + ' (' + user.get('username') + ')" class="img-rounded img-responsive avatar" data-container="body" data-toggle="tooltip">';
             }
             if (!isNaN(user.attributes.user_id)) {
-                content += '<li class="js-added-card-user-' + user.attributes.user_id + '">' + content_img + '</li>';
+                content += '<li class="js-added-card-user-' + user.attributes.user_id + '"><a href="#/user/' + user.attributes.user_id + '">' + content_img + '</a></li>';
             }
         });
         if (view_user.length > 0) {

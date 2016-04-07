@@ -95,11 +95,11 @@ App.UserIndexContainerView = Backbone.View.extend({
             trigger: false,
             trigger_function: false,
         });
-        $('.js-user-list').html('');
         users.fetch({
             cache: false,
             abortPending: true,
             success: function(users, response) {
+                $('.js-user-list').html('');
                 if (users.length !== 0) {
                     users.each(function(user) {
                         $('.js-user-list').append(new App.UserIndex({

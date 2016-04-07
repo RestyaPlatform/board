@@ -123,11 +123,11 @@ App.AdminBoardsIndexView = Backbone.View.extend({
             trigger: false,
             trigger_function: false,
         });
-        $('.js-my-boards').html('');
         boards.fetch({
             cache: false,
             abortPending: true,
             success: function(boards, response) {
+                $('.js-my-boards').html('');
                 if (boards.length !== 0) {
                     boards.each(function(board) {
                         $('.js-my-boards').append(new App.AdminBoardView({
