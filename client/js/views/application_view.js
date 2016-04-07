@@ -93,22 +93,22 @@ App.ApplicationView = Backbone.View.extend({
                                 APPS = settings_response.apps;
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-                                if (settings_response.todo) {
-                                    var todo = settings_response.todo;
+                                if (settings_response.TODO) {
+                                    var todo = settings_response.TODO;
                                     var todo_split = todo.split(',');
                                     $.each(todo_split, function(todo_key, todo_list) {
                                         todo_lists[todo_key] = todo_list;
                                     });
                                 }
-                                if (settings_response.doing) {
-                                    var doing = settings_response.doing;
+                                if (settings_response.DOING) {
+                                    var doing = settings_response.DOING;
                                     var doing_split = doing.split(',');
                                     $.each(doing_split, function(doing_key, doing_list) {
                                         doing_lists[doing_key] = doing_list;
                                     });
                                 }
-                                if (settings_response.done) {
-                                    var done = settings_response.done;
+                                if (settings_response.DONE) {
+                                    var done = settings_response.DONE;
                                     var done_split = done.split(',');
                                     $.each(done_split, function(done_key, done_list) {
                                         done_lists[done_key] = done_list;
@@ -179,22 +179,22 @@ App.ApplicationView = Backbone.View.extend({
                             APPS = settings_response.apps;
                             IMAP_EMAIL = settings_response.IMAP_EMAIL;
                             DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-                            if (settings_response.todo) {
-                                var todo = settings_response.todo;
+                            if (settings_response.TODO) {
+                                var todo = settings_response.TODO;
                                 var todo_split = todo.split(',');
                                 $.each(todo_split, function(todo_key, todo_list) {
                                     todo_lists[todo_key] = todo_list;
                                 });
                             }
-                            if (settings_response.doing) {
-                                var doing = settings_response.doing;
+                            if (settings_response.DOING) {
+                                var doing = settings_response.DOING;
                                 var doing_split = doing.split(',');
                                 $.each(doing_split, function(doing_key, doing_list) {
                                     doing_lists[doing_key] = doing_list;
                                 });
                             }
-                            if (settings_response.done) {
-                                var done = settings_response.done;
+                            if (settings_response.DONE) {
+                                var done = settings_response.DONE;
                                 var done_split = done.split(',');
                                 $.each(done_split, function(done_key, done_list) {
                                     done_lists[done_key] = done_list;

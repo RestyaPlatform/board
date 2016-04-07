@@ -1003,4 +1003,4 @@ CREATE VIEW "admin_boards_listing" AS
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
 VALUES ('3', '0', 'DEFAULT_CARD_VIEW', 'Dockmodal', NULL, 'select', 'Dockmodal,Popup', 'Default Card View', '7');
 
-INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('3', '0', 'todo', '', '', 'textarea', NULL, 'Todo', '8'), ('3', '0', 'doing', '', '', 'textarea', NULL, 'Doing', '9'), ('3', '0', 'done', '', '', 'textarea', NULL, 'Done', '10');
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('3', '0', 'TODO', '', '', 'textarea', NULL, 'Todo', '8'), ('3', '0', 'DOING', '', '', 'textarea', NULL, 'Doing', '9'), ('3', '0', 'DONE', '', '', 'textarea', NULL, 'Done', '10');
