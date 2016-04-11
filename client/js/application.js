@@ -39,6 +39,9 @@ var APPS = [];
 var load_count = 1;
 var from_url = '';
 var custom_fields = {};
+var todo_lists = {};
+var doing_lists = {};
+var done_lists = {};
 Backbone.View.prototype.flash = function(type, message) {
     $.bootstrapGrowl(message, {
         type: type,
