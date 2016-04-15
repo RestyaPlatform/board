@@ -46,7 +46,7 @@ while ($setting_categories_row = pg_fetch_assoc($setting_categories_result)) {
 	}
 }
 $email_templates_result = pg_query_params($db_lnk, 'select display_name, description from email_templates', array());
-while ($email_templates_row = pg_fetch_assoc($email_templates)) {
+while ($email_templates_row = pg_fetch_assoc($email_templates_result)) {
 	$database_tables_array[$email_templates_row['display_name']] = $email_templates_row['display_name'];
 	if(!empty($email_templates_row['description'])) {
 		$database_tables_array[$email_templates_row['description']] = $email_templates_row['description'];	
