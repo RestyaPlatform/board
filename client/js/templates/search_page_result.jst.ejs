@@ -1,0 +1,193 @@
+<div class="dockmodal-search-page-result" title="<%- i18next.t('View in iOS App') %>" id="search-page-result-block">
+	<div class="clearfix search-page-result-content">
+		<div class="search-page-result-text">
+			<section class="clearfix bg-grey">
+			  <div class="container">
+				<div class="well-lg">
+					<ul class="list-unstyled navbar-btn">
+							<% if(!_.isUndefined(search_result.boards)) { %>
+							<li>
+							    <strong>Matched in <%- search_result.boards.length %> boards</strong>
+								<div class="panel clearfix">
+									<ul class="list-inline panel-body">
+										<% _.each(search_result.boards, function(item, key) { %> 
+											<li class="col-sm-2 navbar-btn"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center pull-left" title="<%- item.board_name %>" href="#/board/<%- item.board_id %>"><%- item.board_name %></a></li>
+										<% }); %> 
+									</ul>
+								</div>
+							  <hr class="col-xs-12">
+							</li>
+							<% } %> 
+							<% if(!_.isUndefined(search_result.lists)) { %>
+							<li>
+							    <strong>Matched in <%- search_result.lists.length %> lists</strong>
+								<div class="panel clearfix">
+									<ul class="list-inline panel-body">
+										<% _.each(search_result.lists, function(item, key) { %> 
+											<li class="col-sm-2"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center pull-left" title="<%- item.list_name %>" href="#/board/<%- item.board_id %>"><%- item.list_name %></a></li>
+										<% }); %> 
+									</ul>
+								</div>
+								<hr class="col-xs-12">
+							</li>
+							<% } %> 
+							<% if(!_.isUndefined(search_result.cards_labels)) { %>
+							  <li class="list-view clearfix">
+							  <strong>Matched in <%- search_result.cards_labels.length %> labels</strong>
+							  <% _.each(search_result.cards_labels, function(item, key) { %> 
+							  <div class="col-xs-12 panel">
+								<ul class="list-inline row panel-body">
+									  <li class="col-md-1"><span title="#<%- item.id %>">#<%- item.id %></span></li>
+									  <li class="col-md-1"><span title="<%- item.board_name %>"><%- item.board_name %></a></li>
+									  <li class="col-md-1"><span title="<%- item.name %>" ><%- item.name %></a></li>
+									  <li><span title="Attachments"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></span> </li>
+									   <li><span title="Comments"><i class="icon-comment"></i><small><%- item.attachment_count %></small></span></li>
+									  <% if(!_.isUndefined(item.due_date) && item.due_date != "null"){ %>
+										  <li><a title="Due date" href="#"><small><span class="label label-danger">
+										  
+										  </span></small></a></li>
+									  <% } %> 
+									  <li class="col-md-6 pull-right"><p class="htruncate"><%- item.board_name + " &raquo; " + item.list_name %></p></li>
+								</ul>
+								</div>
+							  <% }); %> 
+							</li>
+							<hr class="col-xs-12">
+							<% } %> 
+							<% if(!_.isUndefined(search_result.comments)) { %>
+							   <li class="list-view"><strong>Matched in <%- search_result.comments.length %> Comments</strong>
+							    <% _.each(search_result.comments, function(item, key) { %> 
+								  <div class="col-xs-12 panel">
+									<ul class="list-inline row panel-body">
+									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
+									  <li class="col-md-1"><span title="<%- item.board_name %>" ><%- item.board_name %></span></li>
+									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
+									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
+									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
+										  <li><a title="Due date" href="#"><small><span class="label label-danger">
+										  <%
+											card_due_date = item.due_date;
+											var today = new Date();
+											var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+											var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+											var due_date = new Date(card_due_date);
+											var diff = Math.floor(due_date.getTime() - today.getTime());
+											var day = 1000 * 60 * 60 * 24;var days = Math.floor(diff / day);
+											var months = Math.floor((days + (today.getDate() + 1)) / next_month_last_day.getDate());var years = Math.floor(months / 12);var week = days - (6 - (today.getDay()));
+											var label = 'label-default';
+											if (years < 0 || months < 0 || days <= -1) {
+												label = 'label-danger';
+											}
+											var date_time = item.due_date.split('T');
+											date_time = date_time[0].split(' '); 
+										  %>
+										  <%= dateFormat(date_time[0], "mediumDate") %>
+										  </span></small></a></li>
+									  <% } %> 
+									  <li class="col-md-6 pull-right"><p class="htruncate"><%- item.board_name + " &raquo; " + item.list_name %></p></li>
+								</ul>
+							  </div>
+							  <% }); %>
+							 </li>
+							 <hr class="col-xs-12">
+							 <% } %>
+							 <% if(!_.isUndefined(search_result.chats)) { %>
+							 <li class="list-view"><strong>Matched in 50 chats</strong>
+							  <div class="panel clearfix">
+								  <ul class="list-inline panel-body">
+									  <li class="col-md-1"><a title="#750" href="#">#750</a></li>
+									  <li class="col-md-1"><a title="Card3" href="#">Card 3</a></li>
+									  <li><a title="Votes" href="#"><i class="icon-thumbs-up"></i><small>0</small></a> </li>
+									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small>5</small></a> </li>
+									  <li><a title="Comments" href="#"><i class="icon-comment"></i><small>15</small></a></li>
+									  <li><a title="Checklists" href="#"><i class="icon-ok-sign"></i><small>0/2</small></a> </li>
+									  <li><a title="Due date" href="#"><small><span class="label label-default">Feb 10, 2015</span></small></a></li>
+									  <li class="col-md-6 pull-right"><p class="htruncate">Lorem Ipsum is simply <span class="bg-search">dummy</span> text of the printing and typesetting industry</p></li>
+								</ul>
+							  </div>
+							 </li>
+							<hr class="col-xs-12">
+						   <% } %>
+						   <% if(!_.isUndefined(search_result.checklists)) { %>
+							 <li class="list-view"><strong>Matched in  <%- search_result.checklists.length %> Checklists</strong>
+							   <% _.each(search_result.checklists, function(item, key) { %> 
+							    <div class="col-xs-12 panel">
+								   <ul class="list-inline row panel-body">
+									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
+									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
+									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
+									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
+										  <li><a title="Due date" href="#"><small><span class="label label-danger">
+										  <%
+											card_due_date = item.due_date;
+											var today = new Date();
+											var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+											var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+											var due_date = new Date(card_due_date);
+											var diff = Math.floor(due_date.getTime() - today.getTime());
+											var day = 1000 * 60 * 60 * 24;var days = Math.floor(diff / day);
+											var months = Math.floor((days + (today.getDate() + 1)) / next_month_last_day.getDate());var years = Math.floor(months / 12);var week = days - (6 - (today.getDay()));
+											var label = 'label-default';
+											if (years < 0 || months < 0 || days <= -1) {
+												label = 'label-danger';
+											}
+											var date_time = item.due_date.split('T');
+											date_time = date_time[0].split(' '); 
+										  %>
+										  <%= dateFormat(date_time[0], "mediumDate") %>
+										  </span></small></a></li>
+									  <% } %> 
+									  <li class="col-md-6 pull-right"><p class="htruncate"><%- item.board_name + " &raquo; " + item.list_name %></p></li>
+								</ul>
+							  </div>
+							  <% }); %>
+							 </li>
+							  <hr class="col-xs-12">
+							 <% } %>
+							 <% if(!_.isUndefined(search_result.cards)) { %>
+							   <li class="list-view"><strong>Matched in <%- search_result.cards.length %> cards</strong>
+							   <% _.each(search_result.cards, function(item, key) { %> 
+								<div class="col-xs-12 panel">
+								   <ul class="list-inline row panel-body">
+									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
+									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
+									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
+									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
+										  <li><a title="Due date" href="#"><small><span class="label label-danger">
+										  <%
+											card_due_date = item.due_date;
+											var today = new Date();
+											var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+											var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+											var due_date = new Date(card_due_date);
+											var diff = Math.floor(due_date.getTime() - today.getTime());
+											var day = 1000 * 60 * 60 * 24;var days = Math.floor(diff / day);
+											var months = Math.floor((days + (today.getDate() + 1)) / next_month_last_day.getDate());var years = Math.floor(months / 12);var week = days - (6 - (today.getDay()));
+											var label = 'label-default';
+											if (years < 0 || months < 0 || days <= -1) {
+												label = 'label-danger';
+											}
+											var date_time = item.due_date.split('T');
+											date_time = date_time[0].split(' '); 
+										  %>
+										  <%= dateFormat(date_time[0], "mediumDate") %>
+										  </span></small></a></li>
+									  <% } %> 
+									  <li class="col-md-6 pull-right"><p class="htruncate"><%- item.board_name + " &raquo; " + item.list_name %></p></li>
+								</ul>
+							  </div>
+							  <% }); %>  
+							 </li>
+							 <hr class="col-xs-12">
+							<% } %>
+						</ul>
+				</div>
+			  </div>
+			  
+			</section>
+		</div>          
+	</div>
+</div>

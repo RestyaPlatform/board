@@ -1452,107 +1452,48 @@ App.FooterView = Backbone.View.extend({
         e.preventDefault();
         $('.search-container').addClass('search-tab');
         $("#res, #nres").addClass('hide');
-        $('.js-search').autocomplete({
-            create: function(event, ui) {
-                $('.js-search').autocomplete('search', $(e.target).val());
-            },
-            appendTo: "footer",
-            source: function(request, _response) {
-                var elastic_search = new App.ElasticSearchCollection();
-                elastic_search.url = api_url + 'search.json';
-                var q = $(e.target).val();
-                if (q !== '' && e.which !== 38 && e.which !== 40 && e.which !== 39 && e.which !== 47) {
-                    if ($(e.target).val() !== '') {
-                        $("#js-loader-img").removeClass('hide');
-                    }
-                    elastic_search.fetch({
-                        data: {
-                            q: q,
-                            token: api_token
-                        },
-                        success: function(model, response) {
-                            var self = this;
-                            self.result = response;
-                            var content = '';
-                            var cards = new App.CardCollection();
-                            cards.add(response.result);
-                            var card_names = cards.pluck('name');
-                            var res_suggestion = response.suggestion;
-                            if (!_.isEmpty(response.result)) {
-                                $("#js-loader-img").addClass('hide');
-                                $("#res").addClass('hide');
-                                $("#nres").addClass('hide');
-                            } else {
-                                $("#js-loader-img").addClass('hide');
-                                $("#nres").removeClass('hide');
-                                $("#res").addClass('hide');
-                            }
-                            if (!_.isEmpty(response.hits) && !_.isEmpty(response.hits.hits)) {
-                                content = new App.SearchResultView({
-                                    model: response.hits.hits
-                                }).el;
-                            } else {
-                                content = i18next.t('No record found.');
-                            }
-                            $('.js-show-search-result').html(content);
-                            $('.js-boards-list-container-search').addClass('hide');
-
-                            mappedItems = $.map(self.result.result, function(item) {
-                                item.url = '#/board/' + item.board_id;
-                                if (item.type == 'cards') {
-                                    item.url = '#/board/' + item.board_id + '/card/' + item.id;
-                                }
-                                var result = {};
-                                result.label = item.name;
-                                result.value = item.name;
-                                result.id = item.id;
-                                result.board_name = item.board_name;
-                                result.list_name = item.list_name;
-                                result.type = item.type;
-                                result.board_id = item.board_id;
-                                result.url = item.url;
-                                return result;
-                            });
-                            return _response(mappedItems);
-                        }
-                    });
-                }
-            },
-            select: function(event, ui) {
-                var board_id = ui.item.board_id;
-                var card_id = ui.item.id;
-                var current_path = window.location.hash;
-                var current_items = current_path.split('/');
-                if (current_items !== undefined && current_items[2] !== undefined && current_items[2] === board_id) {
-                    if (card_id !== undefined && card_id !== null && ($('#js-card-' + card_id).length !== 0)) {
-                        $('#js-card-' + card_id).trigger('click');
-                    }
-                } else {
-                    window.location.hash = ui.item.url;
-                    window.location.reload();
-                }
-                return false;
-            },
-            position: {
-                my: 'right top',
-                at: 'right bottom'
-            }
-        }).data('autocomplete')._renderItem = function(ul, item) {
-            var inner_text = '';
-            if (item.type == 'cards') {
-                inner_text = '<span class="pull-left"><span class="card-id">#' + item.id + '</span></span><span class="col-xs-6 nav">' + item.label + '</span><span class="text-right pull-right col-xs-4">' + item.board_name + ' &raquo; ' + item.list_name + ' &raquo; Card</span>';
-            }
-            if (item.type == 'lists') {
-                inner_text = '<span class="pull-left"><span class="card-id">#' + item.id + '</span></span><span class="col-xs-6 nav">' + item.label + '</span><span class="text-right pull-right col-xs-4">' + item.board_name + ' &raquo; List</span>';
-            }
-            if (item.type == 'boards') {
-                inner_text = '<span class="pull-left"><span class="card-id">#' + item.id + '</span></span><span class="col-xs-6 nav">' + item.label + '</span><span class="text-right pull-right col-xs-4">Board</span>';
-            }
-            return $('<li></li>')
-                .data('item.autocomplete', item)
-                .append($('<a href="' + item.url + '">' + inner_text + '</a>'))
-                .appendTo(ul);
-        };
+		
+		var elastic_search = new App.ElasticSearchCollection();
+		elastic_search.url = api_url + 'search.json';
+		var q = $(e.target).val();
+		if (q !== '' && e.which !== 38 && e.which !== 40 && e.which !== 39 && e.which !== 47) {
+			if ($(e.target).val() !== '') {
+				$("#js-loader-img").removeClass('hide');
+			}
+			elastic_search.fetch({
+				data: {
+					q: q,
+					token: api_token
+				},
+				success: function(model, response) {
+					var self = this;
+					self.result = response;
+					var content = '';
+					var res_suggestion = response.suggestion;
+					if (!_.isEmpty(response.result)) {
+						$("#js-loader-img").addClass('hide');
+						$("#res").addClass('hide');
+						$("#nres").addClass('hide');
+					} else {
+						$("#js-loader-img").addClass('hide');
+						$("#nres").removeClass('hide');
+						$("#res").addClass('hide');
+					}
+					if (!_.isEmpty(response.hits) && !_.isEmpty(response.hits.hits)) {
+						content = new App.SearchResultView({
+							model: response.hits.hits
+						}).el;
+					} else {
+						content = i18next.t('No record found.');
+					}
+					$('.js-show-search-result').html(content);
+					$('.js-boards-list-container-search').addClass('hide');
+					var search_page_result = new App.SearchPageResultView({
+						model: self.result
+					});
+				}
+			});
+		}
     },
     /**
      * showSearchMsg()
