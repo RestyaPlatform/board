@@ -733,68 +733,62 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if ($authUser['role_id'] != 1) {
                     $q.= ' AND board_users.user_id:' . $authUser['id'];
                 }
-				$data = array();
-				$data['query']['query_string']['query'] = 'board:'.$q;
-				$data['highlight']['fields']['board'] = array();
+                $data = array();
+                $data['query']['query_string']['query'] = 'board:' . $q;
+                $data['highlight']['fields']['board'] = array();
                 $elasticsearch_url = ELASTICSEARCH_URL . ELASTICSEARCH_INDEX . '/cards/_search';
-                
-				$search_response = doPost($elasticsearch_url, $data, 'json');
+                $search_response = doPost($elasticsearch_url, $data, 'json');
                 $response['result'] = array();
-				if (!empty($search_response['hits']['hits'])) {
+                if (!empty($search_response['hits']['hits'])) {
                     foreach ($search_response['hits']['hits'] as $result) {
-						if(check_duplicate($response['result']['boards'], 'board_id', $result['_source']['board_id'])) {
-							$response['result']['boards'][] = bind_elastic($result, 'boards');
-						}
+                        if (check_duplicate($response['result']['boards'], 'board_id', $result['_source']['board_id'])) {
+                            $response['result']['boards'][] = bind_elastic($result, 'boards');
+                        }
                     }
                 }
-				
-				$data['query']['query_string']['query'] = 'list:'.$q;
-				$data['highlight']['fields']['list'] = array();
-                $search_response = doPost($elasticsearch_url, $data, 'json');
-				if (!empty($search_response['hits']['hits'])) {
-                    foreach ($search_response['hits']['hits'] as $result) {
-						if(check_duplicate($response['result']['lists'], 'list_id', $result['_source']['list_id'])) {
-							$response['result']['lists'][] = bind_elastic($result, 'lists');
-						}
-                    }
-                }
-				
-				$data['query']['query_string']['query'] = 'name:' . $q . ' or description:' . $q;
-				$data['highlight']['fields']['name'] = array();
-				$data['highlight']['fields']['description'] = array();
+                $data['query']['query_string']['query'] = 'list:' . $q;
+                $data['highlight']['fields']['list'] = array();
                 $search_response = doPost($elasticsearch_url, $data, 'json');
                 if (!empty($search_response['hits']['hits'])) {
                     foreach ($search_response['hits']['hits'] as $result) {
-						if(check_duplicate($response['result']['cards'], 'id', $result['_source']['id'])) {
-							$response['result']['cards'][] = bind_elastic($result, 'cards');
-						}
+                        if (check_duplicate($response['result']['lists'], 'list_id', $result['_source']['list_id'])) {
+                            $response['result']['lists'][] = bind_elastic($result, 'lists');
+                        }
                     }
                 }
-				
-				$data['query']['query_string']['query'] = 'cards_labels.name:' . $q;
-				$data['highlight']['fields']['cards_labels.name'] = array();
+                $data['query']['query_string']['query'] = 'name:' . $q . ' or description:' . $q;
+                $data['highlight']['fields']['name'] = array();
+                $data['highlight']['fields']['description'] = array();
                 $search_response = doPost($elasticsearch_url, $data, 'json');
                 if (!empty($search_response['hits']['hits'])) {
                     foreach ($search_response['hits']['hits'] as $result) {
-						$response['result']['cards_labels'][] = bind_elastic($result, 'cards_labels');
+                        if (check_duplicate($response['result']['cards'], 'id', $result['_source']['id'])) {
+                            $response['result']['cards'][] = bind_elastic($result, 'cards');
+                        }
                     }
                 }
-				
-				$data['query']['query_string']['query'] = 'activities.comment:' . $q;
-				$data['highlight']['fields']['activities.comment'] = array();
-                $search_response = doPost($elasticsearch_url, $data, 'json');
-				if (!empty($search_response['hits']['hits'])) {
-                    foreach ($search_response['hits']['hits'] as $result) {
-						$response['result']['comments'][] = bind_elastic($result, 'comments');
-                    }
-                }
-				
-				$data['query']['query_string']['query'] = 'cards_checklists.checklist_item_name:' . $q;
-				$data['highlight']['fields']['cards_checklists.checklist_item_name'] = array();
+                $data['query']['query_string']['query'] = 'cards_labels.name:' . $q;
+                $data['highlight']['fields']['cards_labels.name'] = array();
                 $search_response = doPost($elasticsearch_url, $data, 'json');
                 if (!empty($search_response['hits']['hits'])) {
                     foreach ($search_response['hits']['hits'] as $result) {
-						$response['result']['checklists'][] = bind_elastic($result, 'checklists');
+                        $response['result']['cards_labels'][] = bind_elastic($result, 'cards_labels');
+                    }
+                }
+                $data['query']['query_string']['query'] = 'activities.comment:' . $q;
+                $data['highlight']['fields']['activities.comment'] = array();
+                $search_response = doPost($elasticsearch_url, $data, 'json');
+                if (!empty($search_response['hits']['hits'])) {
+                    foreach ($search_response['hits']['hits'] as $result) {
+                        $response['result']['comments'][] = bind_elastic($result, 'comments');
+                    }
+                }
+                $data['query']['query_string']['query'] = 'cards_checklists.checklist_item_name:' . $q;
+                $data['highlight']['fields']['cards_checklists.checklist_item_name'] = array();
+                $search_response = doPost($elasticsearch_url, $data, 'json');
+                if (!empty($search_response['hits']['hits'])) {
+                    foreach ($search_response['hits']['hits'] as $result) {
+                        $response['result']['checklists'][] = bind_elastic($result, 'checklists');
                     }
                 }
             }

@@ -1397,32 +1397,34 @@ function getEjabberdConnection()
  *
  * @return boolean
  */
-function check_duplicate($array, $key, $value) {
-	foreach($array as $arr) {
-		if($arr[$key] == $value) {
-			return false;
-		}
-	}
-	return true;
+function check_duplicate($array, $key, $value)
+{
+    foreach ($array as $arr) {
+        if ($arr[$key] == $value) {
+            return false;
+        }
+    }
+    return true;
 }
 /**
  * bind array from Elastic search Data
  *
  * @return array
  */
-function bind_elastic($result, $type) {
-	$card = array(
-		'id' => $result['_source']['id'],
-		'name' => $result['_source']['name'],
-		'list_id' => $result['_source']['list_id'],
-		'list_name' => $result['_source']['list'],
-		'board_id' => $result['_source']['board_id'],
-		'board_name' => $result['_source']['board'],
-		'name' => $result['_source']['name'],
-		'attachment_count' => $result['_source']['attachment_count'],
-		'due_date' => $result['_source']['due_date'],
-		'comment_count' => count($result['_source']['activities']),
-		'type' => $type,
-	);
-	return $card;
+function bind_elastic($result, $type)
+{
+    $card = array(
+        'id' => $result['_source']['id'],
+        'name' => $result['_source']['name'],
+        'list_id' => $result['_source']['list_id'],
+        'list_name' => $result['_source']['list'],
+        'board_id' => $result['_source']['board_id'],
+        'board_name' => $result['_source']['board'],
+        'name' => $result['_source']['name'],
+        'attachment_count' => $result['_source']['attachment_count'],
+        'due_date' => $result['_source']['due_date'],
+        'comment_count' => count($result['_source']['activities']) ,
+        'type' => $type,
+    );
+    return $card;
 }

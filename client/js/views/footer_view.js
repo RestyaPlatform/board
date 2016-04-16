@@ -1452,48 +1452,48 @@ App.FooterView = Backbone.View.extend({
         e.preventDefault();
         $('.search-container').addClass('search-tab');
         $("#res, #nres").addClass('hide');
-		
-		var elastic_search = new App.ElasticSearchCollection();
-		elastic_search.url = api_url + 'search.json';
-		var q = $(e.target).val();
-		if (q !== '' && e.which !== 38 && e.which !== 40 && e.which !== 39 && e.which !== 47) {
-			if ($(e.target).val() !== '') {
-				$("#js-loader-img").removeClass('hide');
-			}
-			elastic_search.fetch({
-				data: {
-					q: q,
-					token: api_token
-				},
-				success: function(model, response) {
-					var self = this;
-					self.result = response;
-					var content = '';
-					var res_suggestion = response.suggestion;
-					if (!_.isEmpty(response.result)) {
-						$("#js-loader-img").addClass('hide');
-						$("#res").addClass('hide');
-						$("#nres").addClass('hide');
-					} else {
-						$("#js-loader-img").addClass('hide');
-						$("#nres").removeClass('hide');
-						$("#res").addClass('hide');
-					}
-					if (!_.isEmpty(response.hits) && !_.isEmpty(response.hits.hits)) {
-						content = new App.SearchResultView({
-							model: response.hits.hits
-						}).el;
-					} else {
-						content = i18next.t('No record found.');
-					}
-					$('.js-show-search-result').html(content);
-					$('.js-boards-list-container-search').addClass('hide');
-					var search_page_result = new App.SearchPageResultView({
-						model: self.result
-					});
-				}
-			});
-		}
+
+        var elastic_search = new App.ElasticSearchCollection();
+        elastic_search.url = api_url + 'search.json';
+        var q = $(e.target).val();
+        if (q !== '' && e.which !== 38 && e.which !== 40 && e.which !== 39 && e.which !== 47) {
+            if ($(e.target).val() !== '') {
+                $("#js-loader-img").removeClass('hide');
+            }
+            elastic_search.fetch({
+                data: {
+                    q: q,
+                    token: api_token
+                },
+                success: function(model, response) {
+                    var self = this;
+                    self.result = response;
+                    var content = '';
+                    var res_suggestion = response.suggestion;
+                    if (!_.isEmpty(response.result)) {
+                        $("#js-loader-img").addClass('hide');
+                        $("#res").addClass('hide');
+                        $("#nres").addClass('hide');
+                    } else {
+                        $("#js-loader-img").addClass('hide');
+                        $("#nres").removeClass('hide');
+                        $("#res").addClass('hide');
+                    }
+                    if (!_.isEmpty(response.hits) && !_.isEmpty(response.hits.hits)) {
+                        content = new App.SearchResultView({
+                            model: response.hits.hits
+                        }).el;
+                    } else {
+                        content = i18next.t('No record found.');
+                    }
+                    $('.js-show-search-result').html(content);
+                    $('.js-boards-list-container-search').addClass('hide');
+                    var search_page_result = new App.SearchPageResultView({
+                        model: self.result
+                    });
+                }
+            });
+        }
     },
     /**
      * showSearchMsg()

@@ -8,8 +8,8 @@ if (typeof App === 'undefined') {
     App = {};
 }
 /**
- * Qr Code View
- * @class QrCodeView
+ * Search Page Result View
+ * @class SearchPageResultView
  * @constructor
  * @extends Backbone.View
  */
