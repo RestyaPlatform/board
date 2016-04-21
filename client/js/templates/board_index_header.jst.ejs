@@ -5,20 +5,11 @@
                 <h2 class="pull-left navbar-btn list-group-item-text"><span class="pull-left"><a href="#/" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span>
 					<ul class="list-inline pull-left h3 navbar-btn text-center">
 						 <li class="navbar-btn text-muted"><span class="h5">&nbsp;/&nbsp;</span></li>
-						<li><span class="text-muted h4"><%=page_title%></span></li>
+						<li><span class="text-muted h4"><%- i18next.t('Dashboard') %></span></li>
 					</ul>
 				</h2>
             </div>
         </div>
 		<div class="navbar-header"><button data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle" type="button"> <span class="sr-only"><%- i18next.t('Toggle navigation') %></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button></div>
-		<nav class="navbar-collapse collapse mob-no-pad">
-			<div class="navbar-right navbar-btn h4">
-				<ul class="nav nav-pills navbar-left">
-					<li class="<%  var fragment = Backbone.history.fragment; var fragments = fragment.split('/'); if(fragment.indexOf('boards')  != -1 && fragments.length == 1){%>active<%}%>"><a href="#/boards" title="<%- i18next.t('My Boards') %>" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-user"></i></a></li>
-					<li class="<% if(Backbone.history.fragment.indexOf('boards/starred') != -1){%>active<%}%>"><a href="#/boards/starred" title="<%- i18next.t('Starred Boards') %>" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-star"></i></a></li>
-					<li class="<% if(Backbone.history.fragment.indexOf('boards/closed') != -1){%>active<%}%>"><a href="#/boards/closed" title="<%- i18next.t('Closed Boards') %>" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-th-large"></i></a></li>
-				</ul>
-			</div>
-		</nav>
     </div>
 </div>    
