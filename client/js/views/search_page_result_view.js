@@ -32,12 +32,7 @@ App.SearchPageResultView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             search_result: this.model.result
-        })).attr('title', i18next.t('Elastic Search Result'));
-        this.$el.dockmodal({
-            initialState: 'modal',
-            height: 300,
-            width: 400
-        });
+        }));
         this.showTooltip();
         return this;
     }
