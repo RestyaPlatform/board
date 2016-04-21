@@ -1014,6 +1014,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
             $data = array();
+            $board_lists = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 if (isset($obj['board_activities']) && !empty($obj['board_activities'])) {
@@ -1220,6 +1221,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data['_metadata'] = $_metadata;
             }
             if (!empty($board_lists) && $r_resource_cmd == '/boards' && (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'simple')) {
+                $settings = array();
                 $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'TODO\' OR name = \'DOING\' OR name = \'DONE\'', array());
                 while ($row = pg_fetch_assoc($s_sql)) {
                     $settings[$row['name']] = array_map('trim', explode(',', $row['value']));
@@ -1230,9 +1232,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $dashboard_response = array();
                     $week_start_day = date('Y-m-d', strtotime('last monday'));
                     $week_end_day = date('Y-m-d', strtotime('next sunday'));
-                    $previous_week = date('Y-m-d', strtotime("-1 week"));
-                    $last_week_start_day = date($previous_week, strtotime('last monday'));
-                    $last_week_end_day = date($previous_week, strtotime('next sunday'));
                     $dashboard_response['week_start_day'] = date('d', strtotime('last monday'));;
                     $dashboard_response['week_end_day'] = date('d', strtotime('next sunday'));
                     foreach ($board_lists as $list) {
@@ -1265,12 +1264,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             $dashboard_response['last_weekwise'][$key][] = $row['cnt'];
                         }
                     }
+                    $s_sql = pg_query_params($db_lnk, 'SELECT count(id) as cnt FROM cards_listing where cards_user_count = 0 and list_id IN (' . implode($my_lists, ',') . ')', array());
+                    while ($row = pg_fetch_assoc($s_sql)) {
+                        $dashboard_response['unassigned'] = $row['cnt'];
+                    }
+                    $data['_metadata']['dashboard'] = $dashboard_response;
                 }
-                $s_sql = pg_query_params($db_lnk, 'SELECT count(id) as cnt FROM cards_listing where cards_user_count = 0 and list_id IN (' . implode($my_lists, ',') . ')', array());
-                while ($row = pg_fetch_assoc($s_sql)) {
-                    $dashboard_response['unassigned'] = $row['cnt'];
-                }
-                $data['_metadata']['dashboard'] = $dashboard_response;
             }
             echo json_encode($data);
             pg_free_result($result);
