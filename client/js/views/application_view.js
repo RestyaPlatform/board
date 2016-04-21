@@ -696,6 +696,38 @@ App.ApplicationView = Backbone.View.extend({
                                 set_interval_id = setInterval(function() {
                                     board_activities.userActivities(true, 1);
                                 }, 10000);
+								board_response._metadata.dashboard.page_title = page_title;
+								board_index.append(new App.UserDashboardView({
+									model: board_response._metadata.dashboard,
+								}).el);
+								$('.sparklines', (this.el)).each(function (){
+									$(this).sparkline($(this).data('todo').split(','), { enableTagOptions: true, type:'line', fillColor: false, lineColor:'blue', width: '750', height:'200' });
+									$(this).sparkline($(this).data('doing').split(','), { composite: true, fillColor: false, lineColor: 'red', width: '400', height:'150' });
+									$(this).sparkline($(this).data('done').split(','), { composite: true, fillColor: false, lineColor: 'green', width: '400', height:'150' });
+								});
+								
+								
+								var color_codes = ['#DB7093', '#F47564', '#EDA287', '#FAC1AD', '#FFE4E1', '#D3ABF0', '#DC9CDC', '#69BFBA', '#66CDAA', '#8FBC8F', '#CBFDCA', '#EEE8AA', '#BC8F8F', '#CD853F', '#D2B48C', '#F5DEB3', '#64BCF2', '#87CEFA', '#B0C4DE', '#D6E2F7'];
+								var i_chart = 0;
+								$('.js-chart', (this.el)).each(function (){
+									var data_chart = [];
+									$.each($(this).data(), function (index, value) {
+										var _data = {};
+										_data.title = index.toUpperCase();
+										_data.value = parseInt(value);
+										_data.color = color_codes[i_chart];
+										i_chart++;
+										if (i_chart > 20) {
+											i_chart = 0;
+										}
+										if (parseInt(value) > 0) {
+											data_chart.push(_data);
+										}
+									});
+									$(this).html('').drawDoughnutChart(data_chart);
+								});
+								
+								
                                 if (page.model == 'starred_boards_index') {
                                     board_index.append(new App.StarredBoardsIndexView().el);
                                     if (!_.isEmpty(role_links.where({
