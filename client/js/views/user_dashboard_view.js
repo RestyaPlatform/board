@@ -30,19 +30,19 @@ App.UserDashboardView = Backbone.View.extend({
      *
      */
     render: function() {
-		var dashboard_data = {};
-		var profile_picture_path ='';
+        var dashboard_data = {};
+        var profile_picture_path = '';
         if (!_.isEmpty(authuser.user.profile_picture_path)) {
             var hash = calcMD5(SecuritySalt + 'User' + authuser.user.id + 'png' + 'medium_thumb');
             profile_picture_path = window.location.pathname + 'img/medium_thumb/User/' + authuser.user.id + '.' + hash + '.png';
         }
-		dashboard_data.user_profile_picture = profile_picture_path;
-		dashboard_data.user = authuser.user;
-		dashboard_data.organizations = auth_user_organizations.models;
-		dashboard_data.dashboard = this.model;
-		this.$el.html(this.template({
-			data: dashboard_data,
-		}));
+        dashboard_data.user_profile_picture = profile_picture_path;
+        dashboard_data.user = authuser.user;
+        dashboard_data.organizations = auth_user_organizations.models;
+        dashboard_data.dashboard = this.model;
+        this.$el.html(this.template({
+            data: dashboard_data,
+        }));
         this.showTooltip();
         return this;
     }

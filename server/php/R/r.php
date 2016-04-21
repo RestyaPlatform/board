@@ -386,7 +386,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if ($authUser['role_id'] != 1 && empty($board_ids)) {
                 $sql = false;
             }
-			$c_sql = 'SELECT COUNT(*) FROM simple_board_listing bl ' . $filter_condition;
+            $c_sql = 'SELECT COUNT(*) FROM simple_board_listing bl ' . $filter_condition;
         } else if (!empty($r_resource_filters['page'])) {
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM admin_boards_listing ul ';
             $order_by = 'name';
@@ -1192,10 +1192,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $obj['organization_user_roles'][] = json_decode($row['row_to_json'], true);
                     }
                 } else if ($r_resource_cmd == '/boards' && (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'simple')) {
-					foreach($obj['lists'] as  $list) {
-						$board_lists[$list['id']] = $list;	
-					}
-				}
+                    foreach ($obj['lists'] as $list) {
+                        $board_lists[$list['id']] = $list;
+                    }
+                }
                 if (!empty($_metadata)) {
                     $data['data'][] = $obj;
                 } elseif (in_array($r_resource_cmd, $arrayResponse)) {
@@ -1216,76 +1216,63 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (!empty($roles)) {
                 $data['roles'] = $roles;
             }
-			if (!empty($_metadata)) {
+            if (!empty($_metadata)) {
                 $data['_metadata'] = $_metadata;
             }
-			if(!empty($board_lists) && $r_resource_cmd == '/boards' && (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'simple')) {
-				$s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'TODO\' OR name = \'DOING\' OR name = \'DONE\'', array());
-				while ($row = pg_fetch_assoc($s_sql)) {
-					$settings[$row['name']] = array_map('trim', explode(',', $row['value']));
-				}
-				if(!empty($settings)) {
-					$settings_lists = array();
-					$my_lists = array();
-					$dashboard_response = array();
-										
-					$week_start_day = date('Y-m-d',strtotime('last monday'));
-					$week_end_day = date('Y-m-d',strtotime('next sunday'));
-					
-					$previous_week = date('Y-m-d', strtotime("-1 week"));
-					
-					$last_week_start_day = date($previous_week,strtotime('last monday'));
-					$last_week_end_day = date($previous_week ,strtotime('next sunday'));
-					
-					$dashboard_response['week_start_day'] = date('d',strtotime('last monday'));;
-					$dashboard_response['week_end_day'] = date('d',strtotime('next sunday'));
-					
-					foreach($board_lists as $list) {
-						$my_lists[] = $list['id'];
-						foreach($settings as $key => $setting) {
-							if(in_array(strtolower(trim($list['name'])), $setting)) {
-								$settings_lists[$key][] = $list['id'];
-							}
-						}
-					}
-					
-					foreach($settings_lists as $key => $settings_list) {
-						
-						$s_sql = pg_query_params($db_lnk, 'SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = '.$authUser['id'].' and CAST(cl.due_date AS DATE) = current_date::date and cl.list_id IN (' . implode($settings_list, ',') . ')', array());
-						while ($row = pg_fetch_assoc($s_sql)) {
-							$dashboard_response['today'][$key] = $row['cnt'];
-						}
-												
-						$s_sql = pg_query_params($db_lnk, 'SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = '.$authUser['id'].' and cl.list_id IN (' . implode($settings_list, ',') . ')', array());
-						while ($row = pg_fetch_assoc($s_sql)) {
-							$dashboard_response['overall'][$key] = $row['cnt'];
-						}
-						
-						$s_sql = pg_query_params($db_lnk, 'SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = '.$authUser['id'].' and CAST(cl.due_date AS DATE) between \''.$week_start_day.'\' and \''.$week_end_day.'\' and cl.list_id IN (' . implode($settings_list, ',') . ')', array());
-						while ($row = pg_fetch_assoc($s_sql)) {
-							$dashboard_response['current_week'][$key] = $row['cnt'];
-						}
-						
-						$s_sql = pg_query_params($db_lnk, 'select (SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = '.$authUser['id'].' and (CAST(due_date AS DATE) =  cast(date_trunc(\'week\', current_date) as date) + i) and cl.list_id IN (' . implode($settings_list, ',') . ')) from generate_series(0,6) i', array());
-						while ($row = pg_fetch_assoc($s_sql)) {
-							$dashboard_response['current_weekwise'][$key][] = $row['cnt'];
-						}
-						
-						
-						$s_sql = pg_query_params($db_lnk, 'select (SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = '.$authUser['id'].' and (CAST(due_date AS DATE) =  cast(date_trunc(\'week\', current_date - interval \'7 days\') as date) + i) and cl.list_id IN (' . implode($settings_list, ',') . ')) from generate_series(0,6) i', array());
-						while ($row = pg_fetch_assoc($s_sql)) {
-							$dashboard_response['last_weekwise'][$key][] = $row['cnt'];
-						}
-					}
-				}
-				$s_sql = pg_query_params($db_lnk, 'SELECT count(id) as cnt FROM cards_listing where cards_user_count = 0 and list_id IN (' . implode($my_lists, ',') . ')', array());
-				while ($row = pg_fetch_assoc($s_sql)) {
-					$dashboard_response['unassigned'] = $row['cnt'];
-				}
-				$data['_metadata']['dashboard'] = $dashboard_response;
-				
-			}
-			echo json_encode($data);
+            if (!empty($board_lists) && $r_resource_cmd == '/boards' && (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'simple')) {
+                $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'TODO\' OR name = \'DOING\' OR name = \'DONE\'', array());
+                while ($row = pg_fetch_assoc($s_sql)) {
+                    $settings[$row['name']] = array_map('trim', explode(',', $row['value']));
+                }
+                if (!empty($settings)) {
+                    $settings_lists = array();
+                    $my_lists = array();
+                    $dashboard_response = array();
+                    $week_start_day = date('Y-m-d', strtotime('last monday'));
+                    $week_end_day = date('Y-m-d', strtotime('next sunday'));
+                    $previous_week = date('Y-m-d', strtotime("-1 week"));
+                    $last_week_start_day = date($previous_week, strtotime('last monday'));
+                    $last_week_end_day = date($previous_week, strtotime('next sunday'));
+                    $dashboard_response['week_start_day'] = date('d', strtotime('last monday'));;
+                    $dashboard_response['week_end_day'] = date('d', strtotime('next sunday'));
+                    foreach ($board_lists as $list) {
+                        $my_lists[] = $list['id'];
+                        foreach ($settings as $key => $setting) {
+                            if (in_array(strtolower(trim($list['name'])) , $setting)) {
+                                $settings_lists[$key][] = $list['id'];
+                            }
+                        }
+                    }
+                    foreach ($settings_lists as $key => $settings_list) {
+                        $s_sql = pg_query_params($db_lnk, 'SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = ' . $authUser['id'] . ' and CAST(cl.due_date AS DATE) = current_date::date and cl.list_id IN (' . implode($settings_list, ',') . ')', array());
+                        while ($row = pg_fetch_assoc($s_sql)) {
+                            $dashboard_response['today'][$key] = $row['cnt'];
+                        }
+                        $s_sql = pg_query_params($db_lnk, 'SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = ' . $authUser['id'] . ' and cl.list_id IN (' . implode($settings_list, ',') . ')', array());
+                        while ($row = pg_fetch_assoc($s_sql)) {
+                            $dashboard_response['overall'][$key] = $row['cnt'];
+                        }
+                        $s_sql = pg_query_params($db_lnk, 'SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = ' . $authUser['id'] . ' and CAST(cl.due_date AS DATE) between \'' . $week_start_day . '\' and \'' . $week_end_day . '\' and cl.list_id IN (' . implode($settings_list, ',') . ')', array());
+                        while ($row = pg_fetch_assoc($s_sql)) {
+                            $dashboard_response['current_week'][$key] = $row['cnt'];
+                        }
+                        $s_sql = pg_query_params($db_lnk, 'select (SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = ' . $authUser['id'] . ' and (CAST(due_date AS DATE) =  cast(date_trunc(\'week\', current_date) as date) + i) and cl.list_id IN (' . implode($settings_list, ',') . ')) from generate_series(0,6) i', array());
+                        while ($row = pg_fetch_assoc($s_sql)) {
+                            $dashboard_response['current_weekwise'][$key][] = $row['cnt'];
+                        }
+                        $s_sql = pg_query_params($db_lnk, 'select (SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = ' . $authUser['id'] . ' and (CAST(due_date AS DATE) =  cast(date_trunc(\'week\', current_date - interval \'7 days\') as date) + i) and cl.list_id IN (' . implode($settings_list, ',') . ')) from generate_series(0,6) i', array());
+                        while ($row = pg_fetch_assoc($s_sql)) {
+                            $dashboard_response['last_weekwise'][$key][] = $row['cnt'];
+                        }
+                    }
+                }
+                $s_sql = pg_query_params($db_lnk, 'SELECT count(id) as cnt FROM cards_listing where cards_user_count = 0 and list_id IN (' . implode($my_lists, ',') . ')', array());
+                while ($row = pg_fetch_assoc($s_sql)) {
+                    $dashboard_response['unassigned'] = $row['cnt'];
+                }
+                $data['_metadata']['dashboard'] = $dashboard_response;
+            }
+            echo json_encode($data);
             pg_free_result($result);
         } else {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
