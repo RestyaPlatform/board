@@ -54,7 +54,8 @@ App.FooterView = Backbone.View.extend({
         },
         'click .js-all-board-activities': 'showBoardActivities',
         'click .js-notification-menu': 'notificationMenu',
-        'keyup .js-search': 'qSearch',
+        'click .search-icon': 'callQSearch',
+        'submit form.search-container': 'qSearch',
         'click .js-close-popover': 'closePopup',
         'click .js-search': 'showSearchMsg',
         'focusout .js-search': 'searchClose',
@@ -92,6 +93,7 @@ App.FooterView = Backbone.View.extend({
         'click #modal-comments': 'showActivity',
         'click .js-show-shortcuts-modal': 'showShortcutModal',
         'keyup[shift+/] body': 'keyboardShowShortcutModal',
+        'click .js-search-block-close': 'closeSearchBlock',
     },
     /** 
      * Constructor
@@ -1448,52 +1450,43 @@ App.FooterView = Backbone.View.extend({
      * @type Object(DOM event)
      *
      */
+    callQSearch: function(e) {
+        this.qSearch();
+    },
     qSearch: function(e) {
-        e.preventDefault();
-        $('.search-container').addClass('search-tab');
-        $("#res, #nres").addClass('hide');
-
-        var elastic_search = new App.ElasticSearchCollection();
-        elastic_search.url = api_url + 'search.json';
-        var q = $(e.target).val();
-        if (q !== '' && e.which !== 38 && e.which !== 40 && e.which !== 39 && e.which !== 47) {
-            if ($(e.target).val() !== '') {
-                $("#js-loader-img").removeClass('hide');
-            }
+        var q = $('#search-box').val();
+        if (q !== '') {
+            $('.search-container').addClass('search-tab');
+            $("#res, #nres").removeClass('hide');
+            var elastic_search = new App.ElasticSearchCollection();
+            elastic_search.url = api_url + 'search.json';
             elastic_search.fetch({
                 data: {
                     q: q,
                     token: api_token
                 },
                 success: function(model, response) {
-                    var self = this;
-                    self.result = response;
-                    var content = '';
-                    var res_suggestion = response.suggestion;
+                    $("#js-loader-img").addClass('hide');
+                    $("#res").addClass('hide');
+                    $("#nres").addClass('hide');
                     if (!_.isEmpty(response.result)) {
-                        $("#js-loader-img").addClass('hide');
-                        $("#res").addClass('hide');
-                        $("#nres").addClass('hide');
-                    } else {
-                        $("#js-loader-img").addClass('hide');
-                        $("#nres").removeClass('hide');
-                        $("#res").addClass('hide');
+                        app.navigate('#/search/' + q, {
+                            trigger: false,
+                            trigger_function: false,
+                            replace: true
+                        });
+                        $('.js-boards-list-container-search').addClass('hide');
+                        $('#search-page-result-block').html(new App.SearchPageResultView({
+                            model: response
+                        }).el);
+                        $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
+                        var w_height = $(window).height() - 80;
+                        $(".search-block-main-hover").css('height', w_height + 'px');
                     }
-                    if (!_.isEmpty(response.hits) && !_.isEmpty(response.hits.hits)) {
-                        content = new App.SearchResultView({
-                            model: response.hits.hits
-                        }).el;
-                    } else {
-                        content = i18next.t('No record found.');
-                    }
-                    $('.js-show-search-result').html(content);
-                    $('.js-boards-list-container-search').addClass('hide');
-                    var search_page_result = new App.SearchPageResultView({
-                        model: self.result
-                    });
                 }
             });
         }
+        return false;
     },
     /**
      * showSearchMsg()
@@ -1741,5 +1734,9 @@ App.FooterView = Backbone.View.extend({
             });
         }
         return false;
+    },
+    closeSearchBlock: function(e) {
+        $('#search-box').val('');
+        $('#search-page-result-block').html('');
     }
 });

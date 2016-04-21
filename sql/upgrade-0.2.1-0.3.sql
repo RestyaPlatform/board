@@ -1004,3 +1004,57 @@ INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "na
 VALUES ('3', '0', 'DEFAULT_CARD_VIEW', 'Dockmodal', NULL, 'select', 'Dockmodal,Popup', 'Default Card View', '7');
 
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('3', '0', 'TODO', '', '', 'textarea', NULL, 'Todo', '8'), ('3', '0', 'DOING', '', '', 'textarea', NULL, 'Doing', '9'), ('3', '0', 'DONE', '', '', 'textarea', NULL, 'Done', '10');
+
+CREATE VIEW "cards_elasticsearch_listing" AS
+ SELECT card.id, 
+    row_to_json(card.*) AS json
+   FROM ( SELECT cards.id, 
+            cards.board_id, 
+            boards.name AS board, 
+            cards.list_id, 
+            lists.name AS list, 
+            cards.name, 
+            cards.description, 
+            cards.due_date, 
+            to_char(cards.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created, 
+            to_char(cards.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified, 
+            (cards.is_archived)::integer AS is_archived, 
+            cards.attachment_count, 
+            cards.checklist_item_count, 
+            cards.checklist_item_completed_count, 
+            ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
+                   FROM ( SELECT boards_users.user_id
+                           FROM boards_users boards_users
+                          WHERE (boards_users.board_id = cards.board_id)
+                          ORDER BY boards_users.id) cc) AS board_users, 
+            ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
+                   FROM ( SELECT board_stars.user_id
+                           FROM board_stars board_stars
+                          WHERE (board_stars.board_id = cards.board_id)
+                          ORDER BY board_stars.id) cc) AS board_stars, 
+            ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
+                   FROM ( SELECT checklists.name, 
+                            checklist_items.name AS checklist_item_name
+                           FROM (checklists checklists
+                      LEFT JOIN checklist_items checklist_items ON ((checklist_items.checklist_id = checklists.id)))
+                     WHERE (checklists.card_id = cards.id)
+                     ORDER BY checklists.id) cc) AS cards_checklists, 
+            ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
+                   FROM ( SELECT cards_users_listing.username, 
+                            cards_users_listing.user_id
+                           FROM cards_users_listing cards_users_listing
+                          WHERE (cards_users_listing.card_id = cards.id)
+                          ORDER BY cards_users_listing.id) cc) AS cards_users, 
+            ( SELECT array_to_json(array_agg(row_to_json(cl.*))) AS array_to_json
+                   FROM ( SELECT cards_labels.name
+                           FROM cards_labels_listing cards_labels
+                          WHERE (cards_labels.card_id = cards.id)
+                          ORDER BY cards_labels.id) cl) AS cards_labels, 
+            ( SELECT array_to_json(array_agg(row_to_json(cl.*))) AS array_to_json
+                   FROM ( SELECT activities.comment
+                           FROM activities activities
+                          WHERE (((activities.type)::text = 'add_comment'::text) AND (activities.card_id = cards.id))
+                          ORDER BY activities.id) cl) AS activities
+           FROM ((cards cards
+      LEFT JOIN boards boards ON ((boards.id = cards.board_id)))
+   LEFT JOIN lists lists ON ((lists.id = cards.list_id)))) card;

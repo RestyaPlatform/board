@@ -29,6 +29,7 @@ App.ApplicationView = Backbone.View.extend({
         page.page_view_type = options.type;
         page.page_view_id = options.id;
         page.page_view_hash = options.hash;
+        page.page_view_q = options.q;
         last_user_activity_id = load_more_last_board_activity_id = last_board_activity_id = 0;
         if (_.isUndefined(App.music)) {
             App.music = {};
@@ -832,6 +833,28 @@ App.ApplicationView = Backbone.View.extend({
                                                 className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12'
                                             }).el);
                                         }
+                                    }
+                                    if (typeof page.page_view_q !== 'undefined') {
+                                        var elastic_search = new App.ElasticSearchCollection();
+                                        elastic_search.url = api_url + 'search.json';
+                                        elastic_search.fetch({
+                                            cache: false,
+                                            abortPending: true,
+                                            data: {
+                                                q: page.page_view_q,
+                                                token: api_token
+                                            },
+                                            success: function(model, response) {
+                                                if (!_.isEmpty(response.result)) {
+                                                    $('#search-page-result-block').html(new App.SearchPageResultView({
+                                                        model: response
+                                                    }).el);
+                                                    $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
+                                                    var w_height = $(window).height() - 78;
+                                                    $(".search-block-main-hover").css('height', w_height + 'px');
+                                                }
+                                            }
+                                        });
                                     }
                                 }
 

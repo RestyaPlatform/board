@@ -1,8 +1,8 @@
-<div class="dockmodal-search-page-result" title="<%- i18next.t('View in iOS App') %>" id="search-page-result-block">
-	<div class="clearfix search-page-result-content">
-		<div class="search-page-result-text">
-			<section class="clearfix bg-grey">
-			  <div class="container">
+			<div class="clearfix bg-grey search-block row"  id="search-page-result">
+			  <div class="clearfix">
+				<span class="col-xs-12 navbar-btn js-search-block-close">
+				<a href="javascript:void(0)" title="close" class="text-muted pull-right"><i class="icon-remove h2"></i></a>
+				</span>
 				<div class="well-lg">
 					<ul class="list-unstyled navbar-btn">
 							<% if(!_.isUndefined(search_result.boards)) { %>
@@ -42,6 +42,7 @@
 									  <li class="col-md-1"><span title="<%- item.name %>" ><%- item.name %></a></li>
 									  <li><span title="Attachments"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></span> </li>
 									   <li><span title="Comments"><i class="icon-comment"></i><small><%- item.attachment_count %></small></span></li>
+									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
 									  <% if(!_.isUndefined(item.due_date) && item.due_date != "null"){ %>
 										  <li><a title="Due date" href="#"><small><span class="label label-danger">
 										  
@@ -64,6 +65,7 @@
 									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
 									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
 									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
+									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
 									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
 										  <li><a title="Due date" href="#"><small><span class="label label-danger">
 										  <%
@@ -118,6 +120,7 @@
 									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
 									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
 									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
+									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
 									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
 										  <li><a title="Due date" href="#"><small><span class="label label-danger">
 										  <%
@@ -152,9 +155,11 @@
 								<div class="col-xs-12 panel">
 								   <ul class="list-inline row panel-body">
 									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
+									  <li class="col-md-1"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
 									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
 									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
 									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
+									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
 									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
 										  <li><a title="Due date" href="#"><small><span class="label label-danger">
 										  <%
@@ -187,7 +192,4 @@
 				</div>
 			  </div>
 			  
-			</section>
-		</div>          
-	</div>
-</div>
+			</div>
