@@ -15,7 +15,7 @@
 	set -x
 	whoami
 	echo $(cat /etc/issue)
-	OS_REQUIREMENT=$(cat /etc/issue | awk '{print $1}' | sed 's/Kernel//g')
+	OS_REQUIREMENT=$(cat /proc/version | grep 'Ubuntu\|Debian\|Raspbian' | sed 's/^.*Ubuntu.*$/Ubuntu/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Raspbian.*$/Raspbian/g')
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 	then
 		apt-get install -y curl unzip
@@ -154,6 +154,8 @@
 			echo "deb-src http://mirrors.linode.com/debian/ wheezy-updates main" >> /etc/apt/sources.list
 			sed -i -e 's/deb cdrom/#deb cdrom/g' /etc/apt/sources.list
 			
+			apt-key update
+			apt-get update
 			apt-get install debian-keyring debian-archive-keyring
 			
 			apt-get update -y
