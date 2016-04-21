@@ -174,6 +174,8 @@
 					apt-get install -y cron nginx
 					service nginx start
 				esac
+			else
+				echo "nginx already installed error code 1. Open a ticket in https://github.com/RestyaPlatform/board/issues/new?title=nginx already installed (error code 1) and attach restyaboard_install.log file found in current directory."
 			fi
 			
 			echo "Checking PHP..."
@@ -188,6 +190,8 @@
 					echo "Installing PHP..."
 					apt-get install -y php5 php5-common
 				esac
+			else
+				echo "PHP already installed error code 2."
 			fi
 			
 			echo "Installing PHP fpm and cli extension..."
@@ -199,6 +203,8 @@
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-curl..."
 				apt-get install -y php5-curl
+			else
+				echo "PHP curl extension already exist error code 3."
 			fi
 			
 			echo "Checking PHP pgsql extension..."
@@ -206,6 +212,8 @@
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-pgsql..."
 				apt-get install -y php5-pgsql
+			else
+				echo "PHP pgsql extension already exist error code 4."
 			fi
 			
 			echo "Checking PHP mbstring extension..."
@@ -213,6 +221,8 @@
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-mbstring..."
 				apt-get install -y php5-mbstring
+			else
+				echo "PHP mbstring extension already exist error code 5."
 			fi
 			
 			echo "Checking PHP ldap extension..."
@@ -220,6 +230,8 @@
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-ldap..."
 				apt-get install -y php5-ldap
+			else
+				echo "PHP ldap extension already exist error code 6."
 			fi
 			
 			echo "Checking PHP imagick extension..."
@@ -229,6 +241,8 @@
 				apt-get install gcc
 				apt-get install imagemagick
 				apt-get install php5-imagick
+			else
+				echo "PHP imagick extension already exist error code 7."
 			fi
 			
 			echo "Checking PHP imap extension..."
@@ -236,6 +250,8 @@
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-imap..."
 				apt-get install -y php5-imap
+			else
+				echo "PHP imap extension already exist error code 8."
 			fi
 			
 			echo "Setting up timezone..."
@@ -266,6 +282,8 @@
 					mv pg_hba.conf.1 pg_hba.conf
 					service postgresql restart
 				esac
+			else
+				echo "PostgreSQL already installed error code 9."
 			fi
 			
 			echo "Checking ElasticSearch..."
@@ -283,6 +301,8 @@
 					dpkg -i elasticsearch-0.90.7.deb
 					service elasticsearch restart
 				esac
+			else
+				echo "ElasticSearch already exist error code 10."
 			fi
 
 			echo "Downloading Restyaboard script..."
@@ -403,6 +423,8 @@
 					service nginx start
 					chkconfig --levels 35 nginx on
 				esac
+			else
+				echo "nginx already installed error code 11."
 			fi
 
 			echo "Checking PHP..."
@@ -419,6 +441,8 @@
 					yum install -y epel-release
 					yum install -y php
 				esac
+			else
+				echo "php already installed error code 12."
 			fi
 			
 			echo "Installing PHP fpm and cli extension..."
@@ -432,6 +456,8 @@
 			then
 				echo "Installing php-curl..."
 				yum install -y php-curl
+			else
+				echo "php curl extension already exist error code 13."
 			fi
 			
 			echo "Checking PHP pgsql extension..."
@@ -440,6 +466,8 @@
 			then
 				echo "Installing php-pgsql..."
 				yum install -y php-pgsql
+			else
+				echo "php pgsql extension already exist error code 14."
 			fi
 
 			echo "Checking PHP mbstring extension..."
@@ -448,6 +476,8 @@
 			then
 				echo "Installing php-mbstring..."
 				yum install -y php-mbstring
+			else
+				echo "php mbstring extension already exist error code 15."
 			fi
 			
 			echo "Checking PHP ldap extension..."
@@ -456,6 +486,8 @@
 			then
 				echo "Installing php-ldap..."
 				yum install -y php-ldap
+			else
+				echo "php ldap extension already exist error code 16."
 			fi
 			
 			echo "Checking PHP imagick extension..."
@@ -474,6 +506,8 @@
 				make test
 				make install
 				echo "extension=imagick.so" >> /etc/php.ini
+			else
+				echo "php imagick extension already exist error code 17."
 			fi
 			
 			echo "Checking PHP imap extension..."
@@ -482,6 +516,8 @@
 			then
 				echo "Installing php-imap..."
 				yum install -y php-imap
+			else
+				echo "php imap extension already exist error code 18."
 			fi
 			
 			echo "Setting up timezone..."
@@ -536,6 +572,8 @@
                         /etc/init.d/postgresql-9.4 restart
                     fi
 				esac
+			else
+				echo "postgres already installed error code 19."
 			fi
 
 			echo "Checking ElasticSearch..."
@@ -554,6 +592,8 @@
 					nohup rpm -Uvh elasticsearch-0.90.10.noarch.rpm &
 					chkconfig elasticsearch on
 				esac
+			else
+				echo "ElasticSearch already exist error code 20."
 			fi
 
 			echo "Downloading Restyaboard script..."
