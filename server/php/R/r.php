@@ -1232,7 +1232,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $dashboard_response = array();
                     $week_start_day = date('Y-m-d', strtotime('last monday'));
                     $week_end_day = date('Y-m-d', strtotime('next sunday'));
-                    $previous_week = date('Y-m-d', strtotime("-1 week"));
                     $dashboard_response['week_start_day'] = date('d', strtotime('last monday'));;
                     $dashboard_response['week_end_day'] = date('d', strtotime('next sunday'));
                     foreach ($board_lists as $list) {
