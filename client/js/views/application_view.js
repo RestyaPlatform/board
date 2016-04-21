@@ -724,8 +724,6 @@ App.ApplicationView = Backbone.View.extend({
                                         height: '150'
                                     });
                                 });
-
-
                                 var color_codes = ['#DB7093', '#F47564', '#EDA287', '#FAC1AD', '#FFE4E1', '#D3ABF0', '#DC9CDC', '#69BFBA', '#66CDAA', '#8FBC8F', '#CBFDCA', '#EEE8AA', '#BC8F8F', '#CD853F', '#D2B48C', '#F5DEB3', '#64BCF2', '#87CEFA', '#B0C4DE', '#D6E2F7'];
                                 var i_chart = 0;
                                 $('.js-chart', (this.el)).each(function() {
@@ -745,8 +743,6 @@ App.ApplicationView = Backbone.View.extend({
                                     });
                                     $(this).html('').drawDoughnutChart(data_chart);
                                 });
-
-
                                 if (page.model == 'starred_boards_index') {
                                     board_index.append(new App.StarredBoardsIndexView().el);
                                     if (!_.isEmpty(role_links.where({
