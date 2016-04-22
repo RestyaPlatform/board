@@ -326,7 +326,8 @@ var AppRouter = Backbone.Router.extend({
         'settings/:id': 'settings_type',
         'email_templates': 'email_templates',
         'email_templates/:id': 'email_template_type',
-        'activities': 'activity_index'
+        'activities': 'activity_index',
+        'search/:q': '_search'
     },
     initialize: function() {
         $('body').removeAttr('style');
@@ -591,6 +592,12 @@ var AppRouter = Backbone.Router.extend({
     activity_index: function() {
         new App.ApplicationView({
             model: 'activity_index'
+        });
+    },
+    _search: function(q) {
+        new App.ApplicationView({
+            model: 'boards_index',
+            q: q
         });
     }
 });
