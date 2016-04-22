@@ -1270,6 +1270,19 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                     $data['_metadata']['dashboard'] = $dashboard_response;
                 }
+            } else if ($r_resource_cmd == '/boards/?/lists/?/cards/?/activities') {
+                $obj_val_arr = array(
+                    $r_resource_vars['boards'],
+                    'chat',
+                    'BOD#' . $r_resource_vars['cards'],
+                    'EOD#' . $r_resource_vars['cards']
+                );
+                $condition = 'WHERE al.board_id = $1 AND al.type = $2 AND id between (select id + 1 from activities_listing WHERE comment = $3) and (select id - 1 from activities_listing WHERE comment = $4)';
+                $sql = 'SELECT * FROM activities_listing al ' . $condition . ' ORDER BY created DESC';
+                $chat_result = pg_query_params($db_lnk, $sql, $obj_val_arr);
+                while ($row = pg_fetch_assoc($chat_result)) {
+                    $data['data'][] = $row;
+                }
             }
             echo json_encode($data);
             pg_free_result($result);
