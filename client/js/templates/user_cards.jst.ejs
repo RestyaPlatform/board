@@ -21,7 +21,7 @@
 					<div class="panel-body"> 
 						<ul class="list-inline navbar-btn clearfix">
 							<li class="col-md-1 col-xs-2"><span class="card-id">#<%- user_card.id%></span></li>
-							<li class="col-md-4 col-xs-3"><a href="#/board/<%- user_card.attributes.board_id%>/card/<%- user_card.attributes.id%>"><%- user_card.attributes.name %></a></li>
+							<li class="col-md-4 col-xs-3 js-open-model-car-view" data-id="<%- user_card.id%>"><%- user_card.attributes.name %></li> 
 							<li class="col-md-4 col-xs-3"><%- user_card.attributes.list_name %></li>
 							<li class="col-md-3 col-xs-4">
 								<ul class="list-inline text-muted clearfix">

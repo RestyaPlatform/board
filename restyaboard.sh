@@ -372,6 +372,24 @@
 			echo "Setting up cron for every 5 minutes to send email notification to past due..."
 			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
 
+			echo "Do you want to setup SMTP configuration (y/n)?"
+			read -r answer
+			case "${answer}" in
+				[Yy])
+				echo "Enter SMTP server address (e.g., smtp.gmail.com)"
+				read -r smtp_server
+				echo "Enter SMTP port"
+				read -r smtp_port
+				echo "Enter SMTP username"
+				read -r smtp_username
+				echo "Enter SMTP password"
+				read -r smtp_password
+				sed -i "1021 i auth_username = $smtp_username" /etc/php.ini
+				sed -i "1022 i auth_password = $smtp_password" /etc/php.ini
+				sed -i "s/SMTP = localhost/SMTP = $smtp_server/" /etc/php.ini
+				sed -i "s/smtp_port = 25/smtp_port = $smtp_port/" /etc/php.ini
+			esac
+			
 			echo "Starting services..."
 			service cron restart
 			service php5-fpm restart
@@ -639,6 +657,24 @@
 			echo "Reset php-fpm (use unix socket mode)..."
 			sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf
 
+			echo "Do you want to setup SMTP configuration (y/n)?"
+			read -r answer
+			case "${answer}" in
+				[Yy])
+				echo "Enter SMTP server address (e.g., smtp.gmail.com)"
+				read -r smtp_server
+				echo "Enter SMTP port"
+				read -r smtp_port
+				echo "Enter SMTP username"
+				read -r smtp_username
+				echo "Enter SMTP password"
+				read -r smtp_password
+				sed -i "1021 i auth_username = $smtp_username" /etc/php.ini
+				sed -i "1022 i auth_password = $smtp_password" /etc/php.ini
+				sed -i "s/SMTP = localhost/SMTP = $smtp_server/" /etc/php.ini
+				sed -i "s/smtp_port = 25/smtp_port = $smtp_port/" /etc/php.ini
+			esac		
+			
 			# Start services
             ps -q 1 | grep -q -c "systemd"
             if [ "$?" -eq 0 ];
