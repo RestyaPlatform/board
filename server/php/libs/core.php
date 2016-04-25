@@ -1395,7 +1395,7 @@ function getEjabberdConnection()
 /**
  * Check duplicate value is Exist in Array
  *
- * @param array  $array Array list to check Duplicate
+ * @param array  $array Array list to check duplicate
  * @param string $key   Check with this key
  * @param array  $value Check the value is exist
  *
@@ -1411,10 +1411,10 @@ function check_duplicate($array, $key, $value)
     return true;
 }
 /**
- * Bind array from ElasticSearch Data
+ * Bind array from ElasticSearch data
  *
  * @param array  $result Search list to bind elastic
- * @param string $type   fetching type
+ * @param string $type   Fetching type
  *
  * @return array
  */
