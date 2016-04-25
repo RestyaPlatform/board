@@ -1277,7 +1277,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     foreach ($board_lists as $list) {
                         $my_lists[] = $list['id'];
                         foreach ($settings as $key => $setting) {
-                            if (in_array(strtolower(trim($list['name'])), $setting)) {
+                            if (in_array(strtolower(trim($list['name'])) , $setting)) {
                                 $settings_lists[$key][] = $list['id'];
                             }
                         }
