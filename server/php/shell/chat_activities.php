@@ -25,12 +25,29 @@ if ($db_lnk && $ejabberd_db_lnk && !empty($row)) {
     $qry_val_arr = array(
         $row['value']
     );
+    $chat_history = pg_query_params($ejabberd_db_lnk, "SELECT * FROM archive WHERE id > $1 ORDER BY username, id", $qry_val_arr);
     $boards = array();
-    $chat_history = pg_query_params($ejabberd_db_lnk, "SELECT * FROM archive WHERE id > $1", $qry_val_arr);
     while ($chat = pg_fetch_assoc($chat_history)) {
+        $qry_val_arr = array(
+            $chat['username'],
+            'chat',
+        );
+        $previous_data = pg_query_params($db_lnk, "SELECT count(*) FROM activities_listing WHERE board_id = (SELECT id FROM boards WHERE name = $1) AND type = $2 AND now()::date = created_at::timestamp::date", $qry_val_arr);
+        $previous_data_count = pg_fetch_assoc($previous_data);
         $user_name = explode('/', $chat['peer']);
         $user_qry = pg_query($db_lnk, "SELECT id FROM users WHERE username = '" . end($user_name) . "'");
         $user = pg_fetch_assoc($user_qry);
+        if (!array_key_exists($chat['username'], $boards)) {
+            $qry_arr = array(
+                $chat['username'],
+                'chat'
+            );
+            $activity_card_id = pg_query_params($db_lnk, 'SELECT card_id FROM activities WHERE board_id = (SELECT id FROM boards WHERE name = $1) AND type = $2 ORDER BY id DESC', $qry_arr);
+            $activity_card_id = pg_fetch_assoc($activity_card_id);
+            if (!empty($activity_card_id['card_id'])) {
+                $boards[$chat['username']] = $activity_card_id['card_id'];
+            }
+        }
         $qry_val_arr = array(
             $chat['created_at'],
             $user['id'],
@@ -38,17 +55,23 @@ if ($db_lnk && $ejabberd_db_lnk && !empty($row)) {
             $chat['txt'],
             $chat['username']
         );
-        $activity_id = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) SELECT $1, $1, id, $2, $3, $4 FROM boards WHERE name = $5 RETURNING id', $qry_val_arr);
+        $col = '';
+        $val = '';
+        if (strpos($chat['txt'], 'EOD#') !== false) {
+            unset($boards[$chat['username']]);
+        }
+        if (array_key_exists($chat['username'], $boards)) {
+            array_push($qry_val_arr, $boards[$chat['username']]);
+            $col = ', card_id';
+            $val = ', $6';
+        }
+        $activity_id = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment' . $col . ') SELECT $1, $1, id, $2, $3, $4' . $val . ' FROM boards WHERE name = $5 RETURNING id', $qry_val_arr);
         $activity_id = pg_fetch_assoc($activity_id);
         $last_processed_chat_id = $chat['id'];
-        $qry_val_arr = array(
-            $chat['username'],
-            'chat',
-        );
-        $previous_data = pg_query_params($db_lnk, "SELECT count(*) FROM activities_listing WHERE board_id = (SELECT id FROM boards WHERE name = $1)  AND type = $2 AND created_at <= NOW() - '5 minutes'::INTERVAL", $qry_val_arr);
-        $previous_data_count = pg_fetch_assoc($previous_data);
-        if ($previous_data_count[count] == 0 && !in_array($chat['username'], $boards)) {
-            array_push($boards, $chat['username']);
+        if (strpos($chat['txt'], 'BOD#') !== false) {
+            $boards[$chat['username']] = explode('#', $chat['txt']) [1];
+        }
+        if ($previous_data_count[count] == 0) {
             $qry_arr = array(
                 $activity_id['id']
             );
