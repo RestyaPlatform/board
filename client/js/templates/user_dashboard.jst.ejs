@@ -2,7 +2,58 @@
 	var d = new Date();
 	var weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 	var today = weekday[d.getDay()]; 
-	today_count = parseInt(data.dashboard.today.DOING) + parseInt(data.dashboard.today.TODO) + parseInt(data.dashboard.today.DONE);
+	var today_count = 0;
+	
+	var doing_count = 0;
+	var todo_count = 0;
+	var done_count = 0;
+	
+	var current_week_doing_count = 0;
+	var current_week_todo_count = 0;
+	var current_week_done_count = 0;
+	
+	var overall_doing_count = 0;
+	var overall_todo_count = 0;
+	var overall_done_count = 0;
+	
+	var current_weekwise_doing_count = [0,0,0,0,0,0,0];
+	var current_weekwise_todo_count = [0,0,0,0,0,0,0];
+	var current_weekwise_done_count = [0,0,0,0,0,0,0];
+	
+	var last_weekwise_doing_count = [0,0,0,0,0,0,0];
+	var last_weekwise_todo_count = [0,0,0,0,0,0,0];
+	var last_weekwise_done_count = [0,0,0,0,0,0,0];
+	
+	if(data.dashboard.today) {
+		doing_count = (data.dashboard.today.DOING) ? (data.dashboard.today.DOING) : 0;
+		todo_count = (data.dashboard.today.TODO) ? (data.dashboard.today.TODO) : 0;
+		done_count = (data.dashboard.today.DONE) ? (data.dashboard.today.DONE) : 0;
+		today_count = parseInt(doing_count) + parseInt(today_count) + parseInt(done_count);
+	} 
+	
+	if(data.dashboard.current_week) {
+		current_week_doing_count = (data.dashboard.current_week.DOING) ? (data.dashboard.current_week.DOING) : 0;
+		current_week_todo_count = (data.dashboard.current_week.TODO) ? (data.dashboard.current_week.TODO) : 0;
+		current_week_done_count = (data.dashboard.current_week.DONE) ? (data.dashboard.current_week.DONE) : 0;
+	}
+	if(data.dashboard.overall) {
+		overall_doing_count = (data.dashboard.overall.DOING) ? (data.dashboard.overall.DOING) : 0;
+		overall_todo_count = (data.dashboard.overall.TODO) ? (data.dashboard.overall.TODO) : 0;
+		overall_done_count = (data.dashboard.overall.DONE) ? (data.dashboard.overall.DONE) : 0;
+	}
+	
+	if(data.dashboard.current_weekwise) {
+		current_weekwise_doing_count = (data.dashboard.current_weekwise.DOING) ? (data.dashboard.current_weekwise.DOING) : current_weekwise_doing_count;
+		current_weekwise_todo_count = (data.dashboard.current_weekwise.TODO) ? (data.dashboard.current_weekwise.TODO) : current_weekwise_todo_count;
+		current_weekwise_done_count = (data.dashboard.current_weekwise.DONE) ? (data.dashboard.current_weekwise.DONE) : current_weekwise_done_count;
+	}
+	
+	if(data.dashboard.last_weekwise) {
+		last_weekwise_doing_count = (data.dashboard.last_weekwise.DOING) ? (data.dashboard.last_weekwise.DOING) : last_weekwise_doing_count;
+		last_weekwise_todo_count = (data.dashboard.last_weekwise.TODO) ? (data.dashboard.last_weekwise.TODO) : last_weekwise_todo_count;;
+		last_weekwise_done_count = (data.dashboard.last_weekwise.DONE) ? (data.dashboard.last_weekwise.DONE) : last_weekwise_done_count;
+	}
+	
 %>
 <section class="clearfix">
 	 <div class="col-sm-3 text-center dashboard-organization">
@@ -33,7 +84,7 @@
 			<ul class="list-unstyled chart-block list-group-item-text pull-right">
 				<li class="list-group-item clearfix no-bor">
 					<a class="show" href="#">
-						<div id="doughnutChart" class="chart js-chart" data-todo="<%- data.dashboard.today.TODO %>" data-doing="<%- data.dashboard.today.DOING %>" data-done="<%- data.dashboard.today.DONE %>"></div>
+						<div id="doughnutChart" class="chart js-chart" data-todo="<%- todo_count %>" data-doing="<%- doing_count %>" data-done="<%- done_count %>"></div>
 					</a>
 				</li>
 			</ul>
@@ -58,7 +109,7 @@
 			<ul class="list-unstyled chart-block list-group-item-text pull-right">
 				<li class="list-group-item clearfix no-bor">
 					<a class="show" href="#">
-						<div id="doughnutChart" class="chart js-chart" data-todo="<%- data.dashboard.current_week.TODO %>" data-doing="<%- data.dashboard.current_week.DOING %>" data-done="<%- data.dashboard.current_week.DONE %>"></div>
+						<div id="doughnutChart" class="chart js-chart" data-todo="<%- current_week_todo_count %>" data-doing="<%- current_week_doing_count %>" data-done="<%- current_week_done_count %>"></div>
 					</a>
 				</li>
 			</ul>
@@ -72,7 +123,7 @@
 			   <ul class="list-unstyled chart-block list-group-item-text pull-right">
 				<li class="list-group-item clearfix no-bor">
 					<a class="show" href="#">
-						<div id="doughnutChart" class="chart js-chart" data-todo="<%- data.dashboard.overall.TODO %>" data-doing="<%- data.dashboard.overall.DOING %>" data-done="<%- data.dashboard.overall.DONE %>"></div>
+						<div id="doughnutChart" class="chart js-chart" data-todo="<%- overall_todo_count %>" data-doing="<%- overall_doing_count %>" data-done="<%- overall_done_count %>"></div>
 					</a>
 				</li>
 			</ul>
@@ -82,7 +133,7 @@
 			<div class="navbar-btn">
 				<div class="col-sm-2 h4"> <%- i18next.t('This week') %></div> 
 				<div class="col-sm-10">
-					<span class="sparklines" data-todo="<%- (data.dashboard.current_weekwise.TODO).join() %>" data-doing="<%- (data.dashboard.current_weekwise.DOING).join() %>" data-done="<%- (data.dashboard.current_weekwise.DONE).join() %>" ></span>
+					<span class="sparklines" data-todo="<%- (current_weekwise_todo_count).join() %>" data-doing="<%- (current_weekwise_doing_count).join() %>" data-done="<%- (current_weekwise_done_count).join() %>" ></span>
 				</div>
 			</div>
 	   </div>
@@ -90,14 +141,14 @@
 			<div class="navbar-btn"> 
 				<div class="col-sm-2 h4"> <%- i18next.t('Last week') %></div> 
 				<div class="col-sm-10">
-					<span class="sparklines test" data-todo="<%- (data.dashboard.last_weekwise.TODO).join() %>" data-doing="<%- (data.dashboard.last_weekwise.DOING).join() %>" data-done="<%- (data.dashboard.last_weekwise.DONE).join() %>" ></span>
+					<span class="sparklines test" data-todo="<%- (last_weekwise_todo_count).join() %>" data-doing="<%- (last_weekwise_doing_count).join() %>" data-done="<%- (last_weekwise_done_count).join() %>" ></span>
 				</div>
 			</div>
 	   </div>
 	   <div class="col-xs-12 text-center navbar-btn">
 			<ul class="list-inline navbar-btn">
 				<li><%- i18next.t('Unassigned') %> <button class="btn btn-primary"> <%- data.dashboard.unassigned %> </button></li>
-				<li class="navbar-right"><i class="icon-warning-sign text-warning"></i><%- i18next.t('Todo, Doing, Done lists can be configured in') %><a href="#/settings/11" title="settings" class="text-primary"> <%- i18next.t('settings') %> </a></li>
+				<li class="navbar-right"><i class="icon-warning-sign text-warning"></i><%- i18next.t('Todo, Doing, Done lists can be configured in') %><a href="#/settings/8" title="settings" class="text-primary"> <%- i18next.t('settings') %> </a></li>
 			</ul>
 	   </div>
 	</div>

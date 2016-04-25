@@ -706,38 +706,41 @@ App.ApplicationView = Backbone.View.extend({
                                         enableTagOptions: true,
                                         type: 'line',
                                         fillColor: false,
-                                        lineColor: 'blue',
+                                        lineColor: '#65cca9',
                                         width: '750',
                                         height: '200'
                                     });
                                     $(this).sparkline($(this).data('doing').split(','), {
                                         composite: true,
                                         fillColor: false,
-                                        lineColor: 'red',
+                                        lineColor: '#eca186',
                                         width: '400',
                                         height: '150'
                                     });
                                     $(this).sparkline($(this).data('done').split(','), {
                                         composite: true,
                                         fillColor: false,
-                                        lineColor: 'green',
+                                        lineColor: '#fee3e0',
                                         width: '400',
                                         height: '150'
                                     });
                                 });
-                                var color_codes = ['#DB7093', '#F47564', '#EDA287', '#FAC1AD', '#FFE4E1', '#D3ABF0', '#DC9CDC', '#69BFBA', '#66CDAA', '#8FBC8F', '#CBFDCA', '#EEE8AA', '#BC8F8F', '#CD853F', '#D2B48C', '#F5DEB3', '#64BCF2', '#87CEFA', '#B0C4DE', '#D6E2F7'];
-                                var i_chart = 0;
+
                                 $('.js-chart', (this.el)).each(function() {
                                     var data_chart = [];
                                     $.each($(this).data(), function(index, value) {
                                         var _data = {};
                                         _data.title = index.toUpperCase();
                                         _data.value = parseInt(value);
-                                        _data.color = color_codes[i_chart];
-                                        i_chart++;
-                                        if (i_chart > 20) {
-                                            i_chart = 0;
-                                        }
+										
+										if(_data.title == 'TODO') {
+											_data.color = '#65cca9';	
+										} else if(_data.title == 'DOING') {
+											_data.color = '#eca186';	
+										} else if(_data.title == 'DONE') {
+											_data.color = '#fee3e0';	
+										}
+                                        
                                         if (parseInt(value) > 0) {
                                             data_chart.push(_data);
                                         }
