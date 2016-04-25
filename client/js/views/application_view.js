@@ -732,15 +732,15 @@ App.ApplicationView = Backbone.View.extend({
                                         var _data = {};
                                         _data.title = index.toUpperCase();
                                         _data.value = parseInt(value);
-										
-										if(_data.title == 'TODO') {
-											_data.color = '#65cca9';	
-										} else if(_data.title == 'DOING') {
-											_data.color = '#eca186';	
-										} else if(_data.title == 'DONE') {
-											_data.color = '#fee3e0';	
-										}
-                                        
+
+                                        if (_data.title == 'TODO') {
+                                            _data.color = '#65cca9';
+                                        } else if (_data.title == 'DOING') {
+                                            _data.color = '#eca186';
+                                        } else if (_data.title == 'DONE') {
+                                            _data.color = '#fee3e0';
+                                        }
+
                                         if (parseInt(value) > 0) {
                                             data_chart.push(_data);
                                         }

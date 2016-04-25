@@ -1270,26 +1270,22 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $settings_lists = array();
                     $my_lists = array();
                     $dashboard_response = array();
-					
-					$monday = 'last monday';
-					$sunday = 'next sunday';
-					
-					if (1 == date('N')){
-						$monday = 'today';
-					}
-					if (0 == date('N')){
-						$sunday = 'today';
-					}
-
+                    $monday = 'last monday';
+                    $sunday = 'next sunday';
+                    if (1 == date('N')) {
+                        $monday = 'today';
+                    }
+                    if (0 == date('N')) {
+                        $sunday = 'today';
+                    }
                     $week_start_day = date('Y-m-d', strtotime($monday));
                     $week_end_day = date('Y-m-d', strtotime($sunday));
                     $dashboard_response['week_start_day'] = date('d', strtotime($monday));
                     $dashboard_response['week_end_day'] = date('d', strtotime($sunday));
-					
                     foreach ($board_lists as $list) {
                         $my_lists[] = $list['id'];
                         foreach ($settings as $key => $setting) {
-                            if (in_array(strtolower(trim($list['name'])), $setting)) {
+                            if (in_array(strtolower(trim($list['name'])) , $setting)) {
                                 $settings_lists[$key][] = $list['id'];
                             }
                         }
