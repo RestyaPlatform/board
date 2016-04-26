@@ -46,18 +46,44 @@
 					 var prev_category_id = 0;
 					 var current_server_detail_fields_count = 0;
 					 var current_connection_detail_fields_count = 0;
+					  var todo_color = '';
+					  var doing_color = '';
+					  var done_color = '';
+					  var todo_icon = '';
+					  var doing_icon = '';
+					  var done_icon = '';
 					  _.each(settings, function(setting) {  %>
 						<% 
-						  var todo_color = '';
-						  var doing_color = '';
-						  var done_color = '';
-						  var todo_icon = '';
-						  var doing_icon = '';
-						  var done_icon = '';
 						  if(setting.name == 'TODO_COLOR') {
-							todo_color = setting;
+							todo_color = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value;
+							console.log(todo_color);
+							return;
 						  }
-						
+						  if(setting.name == 'DOING_COLOR') {
+							doing_color = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value;
+							console.log(doing_color);
+							return;
+						  }
+						  if(setting.name == 'DONE_COLOR') {
+							done_color = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value;
+							console.log(done_color);
+							return;
+						  }
+						  if(setting.name == 'TODO_ICON') {
+							todo_icon = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value;
+							console.log(todo_icon);
+							return;
+						  }
+						  if(setting.name == 'DOING_ICON') {
+							doing_icon = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value;
+							console.log(doing_icon);
+							return;
+						  }
+						  if(setting.name == 'DONE_ICON') {
+							done_icon = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value;
+							console.log(done_icon);
+							return;
+						  }
 						  if(setting.setting_category_id == 4 && setting.setting_category_parent_id != 0){
 							current_server_detail_fields_count = current_server_detail_fields_count + 1;
 						  }
@@ -129,7 +155,46 @@
 								  <% } else if(setting.type == 'password') {%>
 									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" />
 								  <% } else if(setting.type == 'textarea') {%>
+									<% if(setting.name == 'TODO') { 
+										todo_color = todo_color.split('__');
+										todo_icon = todo_icon.split('__');
+									%>
+										<div class="col-xs-4">
+										<input type="<%- todo_color[0] %>" id="inputSetting<%- todo_color[1] %>" name="<%- i18next.t(todo_color[2]) %>" class="form-control pull-left" value="<%- todo_color[3] %>" />
+										</div>
+										<div class="col-xs-4">
+										<input type="<%- todo_icon[0] %>" id="inputSetting<%- todo_icon[1] %>" name="<%- i18next.t(todo_icon[2]) %>" class="form-control" value="<%- todo_icon[3] %>" />
+										</div>
+									<% } %>
+									<% if(setting.name == 'DOING') { 
+										doing_color = doing_color.split('__');
+										doing_icon = doing_icon.split('__');
+									%>	
+										<div class="col-xs-4">
+										<input type="<%- doing_color[0] %>" id="inputSetting<%- doing_color[1] %>" name="<%- i18next.t(doing_color[2]) %>" class="form-control pull-left" value="<%- doing_color[3] %>" />
+										</div>
+										<div class="col-xs-4">
+										<input type="<%- doing_icon[0] %>" id="inputSetting<%- doing_icon[1] %>" name="<%- i18next.t(doing_icon[2]) %>" class="form-control" value="<%- doing_icon[3] %>" />
+										</div>
+									<% } %>
+									<% if(setting.name == 'DONE') { 
+										done_color = done_color.split('__');
+										done_icon = done_icon.split('__');
+									%>
+										<div class="col-xs-4">
+										<input type="<%- done_color[0] %>" id="inputSetting<%- done_color[1] %>" name="<%- i18next.t(done_color[2]) %>" class="form-control pull-left" value="<%- done_color[3] %>" />
+										</div>
+										<div class="col-xs-4">
+										<input type="<%- done_icon[0] %>" id="inputSetting<%- done_icon[1] %>" name="<%- i18next.t(done_icon[2]) %>" class="form-control" value="<%- done_icon[3] %>" />
+										</div>
+									<% } %>
+									<% if(setting.name == 'TODO' || setting.name == 'DOING' || setting.name == 'DONE') { %> 
+									<div class="col-xs-4">
+									<% } %>
 									<textarea id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" ><%- setting.value %></textarea>
+									<% if(setting.name == 'TODO' || setting.name == 'DOING' || setting.name == 'DONE') { %> 
+									</div>
+									<% } %>
 								  <% } else { %>
 									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" value="<%- setting.value %>" />
 								  <% } %>
