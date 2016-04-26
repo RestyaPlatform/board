@@ -745,21 +745,21 @@ App.ApplicationView = Backbone.View.extend({
                                         fillColor: false,
                                         lineColor: '#65cca9',
                                         width: '750',
-                                        height: '200'
+                                        height: '100'
                                     });
                                     $(this).sparkline($(this).data('doing').split(','), {
                                         composite: true,
                                         fillColor: false,
                                         lineColor: '#eca186',
-                                        width: '400',
-                                        height: '150'
+                                        width: '750',
+                                        height: '100'
                                     });
                                     $(this).sparkline($(this).data('done').split(','), {
                                         composite: true,
                                         fillColor: false,
                                         lineColor: '#fee3e0',
-                                        width: '400',
-                                        height: '150'
+                                        width: '750',
+                                        height: '100'
                                     });
                                 });
 
@@ -769,7 +769,6 @@ App.ApplicationView = Backbone.View.extend({
                                         var _data = {};
                                         _data.title = index.toUpperCase();
                                         _data.value = parseInt(value);
-
                                         if (_data.title == 'TODO') {
                                             _data.color = '#65cca9';
                                         } else if (_data.title == 'DOING') {

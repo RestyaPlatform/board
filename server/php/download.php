@@ -29,15 +29,24 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                 $add_slash = addcslashes($basename, '"\\');
                 $quoted = sprintf('"%s"', $add_slash);
                 $size = filesize($file);
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename=' . $quoted);
-                header('Content-Transfer-Encoding: binary');
-                header('Connection: Keep-Alive');
-                header('Content-length: ' . $size);
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-                header('Pragma: public');
+				if(isset($_GET['view'])) {
+					$path_info = pathinfo($file);
+					if($path_info['extension'] == 'jpg') {
+						header('Content-Type: image/jpeg');	
+					} else {
+						header('Content-Type: image/'.$path_info['extension']);
+					}
+				} else {
+					header('Content-Description: File Transfer');
+					header('Content-Type: application/octet-stream');
+					header('Content-Disposition: attachment; filename=' . $quoted);
+					header('Content-Transfer-Encoding: binary');
+					header('Connection: Keep-Alive');
+					header('Content-length: ' . $size);
+					header('Expires: 0');
+					header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+					header('Pragma: public');
+				}
                 readfile($file);
                 exit;
             }
