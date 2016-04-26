@@ -1068,3 +1068,16 @@ CREATE VIEW "cards_elasticsearch_listing" AS
            FROM ((cards cards
       LEFT JOIN boards boards ON ((boards.id = cards.board_id)))
    LEFT JOIN lists lists ON ((lists.id = cards.list_id)))) card;
+   
+UPDATE "settings" SET "value" = 'Dockmodal Maximize View', "options" = 'Dockmodal Maximize View,DockModal Portable View' WHERE "name" = 'DEFAULT_CARD_VIEW';
+
+SELECT pg_catalog.setval('settings_id_seq', (SELECT MAX(id) FROM settings), true);
+
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") 
+VALUES 
+((select id from setting_categories where name = 'Cards Workflow'), '0', 'TODO_COLOR', '', '', 'text', NULL, 'Todo Color', '1'), 
+((select id from setting_categories where name = 'Cards Workflow'), '0', 'DOING_COLOR', '', '', 'text', NULL, 'Doing Color', '2'), 
+((select id from setting_categories where name = 'Cards Workflow'), '0', 'DONE_COLOR', '', '', 'text', NULL, 'Done Color', '3'),
+((select id from setting_categories where name = 'Cards Workflow'), '0', 'TODO_ICON', '', '', 'text', NULL, 'Todo Icon', '4'), 
+((select id from setting_categories where name = 'Cards Workflow'), '0', 'DOING_ICON', '', '', 'text', NULL, 'Doing Icon', '5'), 
+((select id from setting_categories where name = 'Cards Workflow'), '0', 'DONE_ICON', '', '', 'text', NULL, 'Done Icon', '6');

@@ -48,6 +48,16 @@
 					 var current_connection_detail_fields_count = 0;
 					  _.each(settings, function(setting) {  %>
 						<% 
+						  var todo_color = '';
+						  var doing_color = '';
+						  var done_color = '';
+						  var todo_icon = '';
+						  var doing_icon = '';
+						  var done_icon = '';
+						  if(setting.name == 'TODO_COLOR') {
+							todo_color = setting;
+						  }
+						
 						  if(setting.setting_category_id == 4 && setting.setting_category_parent_id != 0){
 							current_server_detail_fields_count = current_server_detail_fields_count + 1;
 						  }

@@ -136,10 +136,13 @@ App.UserIndexContainerView = Backbone.View.extend({
      */
     userSearch: function(e) {
         var _this = this;
+		_this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.searchField = $('#user_search').val();
         var users = new App.UserCollection();
         $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
-        users.url = api_url + 'users.json?search=' + _this.searchField;
+		if (!_.isUndefined(_this.searchField) && !_.isUndefined(_this.searchField)) {
+			users.url = api_url + 'users.json?page=' + _this.current_page + '&search=' + _this.searchField;
+        }
         users.fetch({
             cache: false,
             abortPending: true,
@@ -184,13 +187,38 @@ App.UserIndexContainerView = Backbone.View.extend({
         _this.sortField = (!_.isUndefined(e)) ? $(e.currentTarget).data('field') : _this.sortField;
         _this.sortDirection = (!_.isUndefined(e)) ? $(e.currentTarget).data('direction') : _this.sortDirection;
         var users = new App.UserCollection();
-        users.setSortField(_this.sortField, _this.sortDirection);
-        $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
-        users.url = api_url + 'users.json?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection;
-        app.navigate('#/' + 'users?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection, {
-            trigger: false,
-            trigger_function: false,
-        });
+		$('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
+		if (!_.isUndefined(_this.sortDirection) && !_.isUndefined(_this.sortField)) {
+            users.setSortField(_this.sortField, _this.sortDirection);
+			if (!_.isUndefined(_this.searchField) && !(_this.searchField === '')) {
+				users.url = api_url + 'users.json?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection + '&search=' + _this.searchField;
+				app.navigate('#/' + 'users?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection + '&search=' + _this.searchField, {
+					trigger: false,
+					trigger_function: false,
+				});
+			} else {
+				users.url = api_url + 'users.json?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection;
+				app.navigate('#/' + 'users?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection, {
+					trigger: false,
+					trigger_function: false,
+				});
+			}
+			
+        } else {
+			if (!_.isUndefined(_this.searchField) && !(_this.searchField === '')) {
+				users.url = api_url + 'users.json?page=' + _this.current_page + '&search=' + _this.searchField;
+				app.navigate('#/' + 'users?page=' + _this.current_page + '&search=' + _this.searchField, {
+					trigger: false,
+					trigger_function: false,
+				});
+			} else {
+				users.url = api_url + 'users.json?page=' + _this.current_page;
+				app.navigate('#/' + 'users?page=' + _this.current_page, {
+					trigger: false,
+					trigger_function: false,
+				});
+			}
+        }
         if (!_.isUndefined(e)) {
             if ($(e.currentTarget).data('direction') == 'desc') {
                 $(e.currentTarget).data('direction', 'asc');

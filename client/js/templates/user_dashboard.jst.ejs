@@ -1,7 +1,9 @@
 <% 
 	var d = new Date();
 	var weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+	var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 	var today = weekday[d.getDay()]; 
+	var current_month = months[d.getMonth()]; 
 	var today_count = 0;
 	
 	var doing_count = 0;
@@ -76,8 +78,11 @@
 		  <div class="col-xs-12">
 		   <div class="pull-left">
 			 <h4 class="list-group-item-heading"><%- i18next.t('Today') %></h4> 
-			 <div class="sep text-center navbar-btn">
-				  <div class="sep-bot"> <%- today_count %> </div>
+			 <div class="thumbnail text-center navbar-btn">
+				  <div class="sep-bot"> 
+					<div class="bg-default h6 text-muted"><%- current_month %></div>
+					<div class="h3"><%- d.getDate() %></div>
+				  </div>
 				  <div><%- today %></div>
 			 </div>
 		   </div>
@@ -95,14 +100,20 @@
 		   <div class="pull-left">
 			   <h4 class="list-group-item-heading"><%- i18next.t('Week') %> </h4>
 			   <ul class="list-inline week-chart-date">
-				   <li class="sep text-center navbar-btn">
-					   <div class="sep-bot"> <%- data.dashboard.week_start_day %> </div>
-					   <div> <%- i18next.t('Mon') %> </div>
+				   <li class="thumbnail text-center navbar-btn">
+				   	  <div class="sep-bot"> 
+						<div class="bg-default h6 text-muted"><%- data.dashboard.week_start_month %></div>
+						<div class="h3"><%- data.dashboard.week_start_day %></div>
+					  </div>
+					  <div><%- i18next.t('Mon') %></div>
 					</li>
 					<li> <%- i18next.t('to') %> </li>
-					<li class="sep text-center navbar-btn">
-						<div class="sep-bot"> <%- data.dashboard.week_end_day %> </div>
-						<div> <%- i18next.t('Sun') %> </div>
+					<li class="thumbnail text-center navbar-btn">
+					  <div class="sep-bot"> 
+						<div class="bg-default h6 text-muted"><%- data.dashboard.week_end_month %></div>
+						<div class="h3"><%- data.dashboard.week_end_day %></div>
+					  </div>
+					  <div><%- i18next.t('Sun') %></div>
 					</li>
 				</ul>
 			</div>
@@ -153,7 +164,7 @@
 	   </div>
 	</div>
 </section>
-<section class="clearfix">
+<section class="clearfix dashboard-header">
 	<div class="col-xs-12">
 		<hr>
 		<span class="pull-left h4"><%=data.dashboard.page_title%></span>
