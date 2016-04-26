@@ -1480,7 +1480,7 @@ App.FooterView = Backbone.View.extend({
                             model: response
                         }).el);
                         $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
-                        var w_height = $(window).height() - 80;
+                        var w_height = $(window).height() - 40;
                         $(".search-block-main-hover").css('height', w_height + 'px');
                     }
                 }
