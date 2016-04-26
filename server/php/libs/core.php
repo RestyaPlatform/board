@@ -1432,6 +1432,7 @@ function bind_elastic($result, $type)
         'due_date' => $result['_source']['due_date'],
         'comment_count' => count($result['_source']['activities']) ,
         'type' => $type,
+        'highlight' => $result['highlight'],
     );
     return $card;
 }

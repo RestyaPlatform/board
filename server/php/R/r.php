@@ -736,7 +736,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
                 $data = array();
                 $data['query']['query_string']['query'] = 'board:' . $q;
-                $data['highlight']['fields']['board'] = array();
+                $data['highlight']['fields']['board'] = new stdClass;
                 $elasticsearch_url = ELASTICSEARCH_URL . ELASTICSEARCH_INDEX . '/cards/_search';
                 $search_response = doPost($elasticsearch_url, $data, 'json');
                 $response['result'] = array();
@@ -748,7 +748,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                 }
                 $data['query']['query_string']['query'] = 'list:' . $q;
-                $data['highlight']['fields']['list'] = array();
+                $data['highlight']['fields']['list'] = new stdClass;
                 $search_response = doPost($elasticsearch_url, $data, 'json');
                 if (!empty($search_response['hits']['hits'])) {
                     foreach ($search_response['hits']['hits'] as $result) {
@@ -757,9 +757,15 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         }
                     }
                 }
+                $data['highlight']['pre_tags'] = array(
+                    "<span class=\"bg-search\">"
+                );
+                $data['highlight']['post_tags'] = array(
+                    "</span>"
+                );
                 $data['query']['query_string']['query'] = 'name:' . $q . ' or description:' . $q;
-                $data['highlight']['fields']['name'] = array();
-                $data['highlight']['fields']['description'] = array();
+                $data['highlight']['fields']['name'] = new stdClass;
+                $data['highlight']['fields']['description'] = new stdClass;
                 $search_response = doPost($elasticsearch_url, $data, 'json');
                 if (!empty($search_response['hits']['hits'])) {
                     foreach ($search_response['hits']['hits'] as $result) {
@@ -769,7 +775,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                 }
                 $data['query']['query_string']['query'] = 'cards_labels.name:' . $q;
-                $data['highlight']['fields']['cards_labels.name'] = array();
+                $data['highlight']['fields']['cards_labels.name'] = new stdClass;
                 $search_response = doPost($elasticsearch_url, $data, 'json');
                 if (!empty($search_response['hits']['hits'])) {
                     foreach ($search_response['hits']['hits'] as $result) {
@@ -777,7 +783,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                 }
                 $data['query']['query_string']['query'] = 'activities.comment:' . $q;
-                $data['highlight']['fields']['activities.comment'] = array();
+                $data['highlight']['fields']['activities.comment'] = new stdClass;
                 $search_response = doPost($elasticsearch_url, $data, 'json');
                 if (!empty($search_response['hits']['hits'])) {
                     foreach ($search_response['hits']['hits'] as $result) {
@@ -785,7 +791,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                 }
                 $data['query']['query_string']['query'] = 'cards_checklists.checklist_item_name:' . $q;
-                $data['highlight']['fields']['cards_checklists.checklist_item_name'] = array();
+                $data['highlight']['fields']['cards_checklists.checklist_item_name'] = new stdClass;
                 $search_response = doPost($elasticsearch_url, $data, 'json');
                 if (!empty($search_response['hits']['hits'])) {
                     foreach ($search_response['hits']['hits'] as $result) {
