@@ -36,7 +36,7 @@
 							  <strong>Matched in <%- search_result.cards_labels.length %> labels</strong>
 							  <% _.each(search_result.cards_labels, function(item, key) { %> 
 							  <div class="col-xs-12 panel">
-								<ul class="list-inline row panel-body js-open-search-model-card-view" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
+								<ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
 									  <li class="col-md-1"><span title="#<%- item.id %>">#<%- item.id %></span></li>
 									  <li class="col-md-1"><span title="<%- item.board_name %>"><%- item.board_name %></a></li>
 									  <li class="col-md-1"><span title="<%- item.name %>" ><%- item.name %></a></li>
@@ -59,7 +59,7 @@
 							   <li class="list-view"><strong>Matched in <%- search_result.comments.length %> Comments</strong>
 							    <% _.each(search_result.comments, function(item, key) { %> 
 								  <div class="col-xs-12 panel">
-									<ul class="list-inline row panel-body js-open-search-model-card-view" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
+									<ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
 									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
 									  <li class="col-md-1"><span title="<%- item.board_name %>" ><%- item.board_name %></span></li>
 									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
@@ -115,7 +115,7 @@
 							 <li class="list-view"><strong>Matched in  <%- search_result.checklists.length %> Checklists</strong>
 							   <% _.each(search_result.checklists, function(item, key) { %> 
 							    <div class="col-xs-12 panel">
-								   <ul class="list-inline row panel-body js-open-search-model-card-view" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
+								   <ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
 									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
 									  <li class="col-md-1"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
 									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
@@ -154,7 +154,7 @@
 							   <li class="list-view"><strong>Matched in <%- search_result.cards.length %> cards</strong>
 							   <% _.each(search_result.cards, function(item, key) { %> 
 								<div class="col-xs-12 panel">
-								   <ul class="list-inline row panel-body js-open-search-model-card-view" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
+								   <ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
 									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
 									  <li class="col-md-1"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
 									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
