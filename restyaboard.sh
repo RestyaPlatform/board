@@ -915,6 +915,52 @@
                 /etc/init.d/nginx restart
 			fi
 
+			yum install GeoIP-devel
+			if [ $? != 0 ]
+			then
+				echo "GeoIP-devel installation failed with error code 46"
+				exit 1
+			fi
+			pecl install geoip
+			if [ $? != 0 ]
+			then
+				echo "pecl geoip installation failed with error code 47"
+				exit 1
+			fi
+			echo "extension=geoip.so" >> /etc/php.ini
+			mkdir -v /usr/share/GeoIP
+			if [ $? != 0 ]
+			then
+				echo "GeoIP folder creation failed with error code 48"
+				exit 1
+			fi
+			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+			gunzip GeoIP.dat.gz
+			sudo mv -v GeoIP.dat /usr/share/GeoIP/GeoIP.dat
+			wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+			gunzip GeoIPv6.dat.gz
+			sudo mv -v GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
+			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+			gunzip GeoLiteCity.dat.gz
+			sudo mv -v GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
+			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+			gunzip GeoLiteCityv6.dat.gz
+			sudo mv -v GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
+			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+			gunzip GeoIPASNum.dat.gz
+			sudo mv -v GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
+			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
+			gunzip GeoIPASNumv6.dat.gz
+			sudo mv -v GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
+			
+			ps -q 1 | grep -q -c "systemd"
+            if [ "$?" -eq 0 ];
+			then
+				systemctl restart php-fpm
+			else
+				/etc/init.d/php-fpm restart
+			fi
+			
 			/bin/echo "$RESTYABOARD_VERSION" > /opt/restyaboard/release
 		esac
 	fi
