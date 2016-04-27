@@ -107,10 +107,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $filter_condition = "WHERE full_name LIKE '%" . $r_resource_filters['search'] . "%' ";
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ') as d ';
-		$c_sql = 'SELECT COUNT(*) FROM users_listing ul ';
-		if (!empty($r_resource_filters['search'])) {
-			$c_sql = 'SELECT COUNT(*) FROM users_listing ul ' . $filter_condition;
-		}
+        $c_sql = 'SELECT COUNT(*) FROM users_listing ul ';
+        if (!empty($r_resource_filters['search'])) {
+            $c_sql = 'SELECT COUNT(*) FROM users_listing ul ' . $filter_condition;
+        }
         break;
 
     case '/users/logout':
@@ -1283,13 +1283,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                     $week_start_day = date('Y-m-d', strtotime($monday));
                     $week_end_day = date('Y-m-d', strtotime($sunday));
-					
                     $dashboard_response['week_start_day'] = date('d', strtotime($monday));
                     $dashboard_response['week_end_day'] = date('d', strtotime($sunday));
-					
-					$dashboard_response['week_start_month'] = date('M', strtotime($monday));
+                    $dashboard_response['week_start_month'] = date('M', strtotime($monday));
                     $dashboard_response['week_end_month'] = date('M', strtotime($sunday));
-					
                     foreach ($board_lists as $list) {
                         $my_lists[] = $list['id'];
                         foreach ($settings as $key => $setting) {

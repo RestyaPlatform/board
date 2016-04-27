@@ -94,25 +94,25 @@ App.ApplicationView = Backbone.View.extend({
                                 APPS = settings_response.apps;
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-								if (settings_response.TODO_COLOR) {
-									TODO_COLOR = settings_response.TODO_COLOR;
-								}
-								if (settings_response.DOING_COLOR) {
-									DOING_COLOR = settings_response.DOING_COLOR;
-								}
-								if (settings_response.DONE_COLOR) {
-									DONE_COLOR = settings_response.DONE_COLOR;
-								}
-								if (settings_response.TODO_ICON) {
-									TODO_ICON = settings_response.TODO_ICON;
-								}
-								if (settings_response.DOING_ICON) {
-									DOING_ICON = settings_response.DOING_ICON;
-								}
-								if (settings_response.DONE_ICON) {
-									DONE_ICON = settings_response.DONE_ICON;
-								}
-								
+                                if (settings_response.TODO_COLOR) {
+                                    TODO_COLOR = settings_response.TODO_COLOR;
+                                }
+                                if (settings_response.DOING_COLOR) {
+                                    DOING_COLOR = settings_response.DOING_COLOR;
+                                }
+                                if (settings_response.DONE_COLOR) {
+                                    DONE_COLOR = settings_response.DONE_COLOR;
+                                }
+                                if (settings_response.TODO_ICON) {
+                                    TODO_ICON = settings_response.TODO_ICON;
+                                }
+                                if (settings_response.DOING_ICON) {
+                                    DOING_ICON = settings_response.DOING_ICON;
+                                }
+                                if (settings_response.DONE_ICON) {
+                                    DONE_ICON = settings_response.DONE_ICON;
+                                }
+
                                 if (settings_response.TODO) {
                                     var todo = settings_response.TODO;
                                     var todo_split = todo.split(',');
@@ -199,24 +199,24 @@ App.ApplicationView = Backbone.View.extend({
                             APPS = settings_response.apps;
                             IMAP_EMAIL = settings_response.IMAP_EMAIL;
                             DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-							if (settings_response.TODO_COLOR) {
-								TODO_COLOR = settings_response.TODO_COLOR;
-							}
-							if (settings_response.DOING_COLOR) {
-								DOING_COLOR = settings_response.DOING_COLOR;
-							}
-							if (settings_response.DONE_COLOR) {
-								DONE_COLOR = settings_response.DONE_COLOR;
-							}
-							if (settings_response.TODO_ICON) {
-								TODO_ICON = settings_response.TODO_ICON;
-							}
-							if (settings_response.DOING_ICON) {
-								DOING_ICON = settings_response.DOING_ICON;
-							}
-							if (settings_response.DONE_ICON) {
-								DONE_ICON = settings_response.DONE_ICON;
-							}
+                            if (settings_response.TODO_COLOR) {
+                                TODO_COLOR = settings_response.TODO_COLOR;
+                            }
+                            if (settings_response.DOING_COLOR) {
+                                DOING_COLOR = settings_response.DOING_COLOR;
+                            }
+                            if (settings_response.DONE_COLOR) {
+                                DONE_COLOR = settings_response.DONE_COLOR;
+                            }
+                            if (settings_response.TODO_ICON) {
+                                TODO_ICON = settings_response.TODO_ICON;
+                            }
+                            if (settings_response.DOING_ICON) {
+                                DOING_ICON = settings_response.DOING_ICON;
+                            }
+                            if (settings_response.DONE_ICON) {
+                                DONE_ICON = settings_response.DONE_ICON;
+                            }
                             if (settings_response.TODO) {
                                 var todo = settings_response.TODO;
                                 var todo_split = todo.split(',');
