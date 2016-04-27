@@ -27,6 +27,13 @@ require_once '../libs/vendors/OAuth2/Autoloader.php';
 require_once '../libs/vendors/xmpp/vendor/autoload.php';
 use Xmpp\Xep\Xep0045 as xmpp;
 use Psr\Log\LoggerInterface;
+include '../libs/vendors/jaxl3/jaxl.php';
+$client = new JAXL(array(
+    'jid' => JABBER_HOST,
+    'strict' => false,
+    'log_level' => JAXL_DEBUG,
+    'port' => 5222
+));
 /** 
  * Common method to handle GET method
  *
@@ -1634,12 +1641,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['full_name'] = ($r_post['email'] == '') ? $r_post['username'] : email2name($r_post['email']);
             // ejabberd code
             if (JABBER_HOST) {
-                include '../libs/vendors/jaxl3/jaxl.php';
-                $client = new JAXL(array(
-                    'jid' => JABBER_HOST,
-                    'strict' => false,
-                    'log_level' => JAXL_DEBUG
-                ));
+                global $client;
                 $client->require_xep(array(
                     '0077'
                 ));
@@ -1655,8 +1657,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     _info("registration " . ($form['type'] == 'result' ? 'succeeded' : 'failed'));
                 });
                 $client->start();
-                $password_hash = md5($r_post['password'] . SECURITYSALT);
-                $register = Ejabberd_Wrapper::register($r_post['username'], $password_hash);
             }
         } else {
             $msg = '';

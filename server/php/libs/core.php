@@ -1467,9 +1467,12 @@ function wait_for_register_form($event, $args)
             echo $instructions->text . PHP_EOL;
         }
         foreach ($query->childrens as $k => $child) {
-            echo $child->name;
             if ($child->name != 'instructions') {
-                $form[$child->name] = readline($child->name . ":");
+                if ($child->name == 'username') {
+                    $form[$child->name] = 'baskargoo';
+                } else {
+                    $form[$child->name] = 'baskar';
+                }
             }
         }
         $client->xeps['0077']->set_form($stanza->attrs['from'], $form);
