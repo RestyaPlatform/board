@@ -56,6 +56,11 @@
 			
 			echo "Connecting database to run SQL changes..."
 			psql -U postgres -c "\q"
+			if [ $? != 0 ]
+			then
+				echo "PostgreSQL database connection failed with error code 32"
+				exit 1
+			fi
 			sleep 1
 			
 			echo "Changing PostgreSQL database name, user and password..."
@@ -113,6 +118,11 @@
 			echo "Updating SQL..."
 			psql -d ${POSTGRES_DBNAME} -f "$dir/sql/${RESTYABOARD_VERSION}.sql" -U ${POSTGRES_DBUSER}
 			/bin/echo "$RESTYABOARD_VERSION" > /opt/restyaboard/release
+			if [ $? != 0 ]
+			then
+				echo "PostgreSQL updation of SQL failed with error code 33"
+				exit 1
+			fi
 		esac
 	}
 	
@@ -157,6 +167,11 @@
 			apt-key update
 			apt-get update
 			apt-get install debian-keyring debian-archive-keyring
+			if [ $? != 0 ]
+			then
+				echo "debian-keyring installation failed with error code 1"
+				exit 1
+			fi
 			
 			apt-get update -y
 			apt-get upgrade -y
@@ -172,10 +187,13 @@
 					[Yy])
 					echo "Installing nginx..."
 					apt-get install -y cron nginx
+					if [ $? != 0 ]
+					then
+						echo "nginx installation failed with error code 2"
+						exit 1
+					fi
 					service nginx start
 				esac
-			else
-				echo "nginx already installed error code 1. Open a ticket in https://github.com/RestyaPlatform/board/issues/new?title=nginx already installed (error code 1) and attach restyaboard_install.log file found in current directory."
 			fi
 			
 			echo "Checking PHP..."
@@ -189,13 +207,21 @@
 					[Yy])
 					echo "Installing PHP..."
 					apt-get install -y php5 php5-common
+					if [ $? != 0 ]
+					then
+						echo "php5-common installation failed with error code 3"
+						exit 1
+					fi
 				esac
-			else
-				echo "PHP already installed error code 2."
 			fi
 			
 			echo "Installing PHP fpm and cli extension..."
 			apt-get install -y php5-fpm php5-cli
+			if [ $? != 0 ]
+			then
+				echo "php5-cli installation failed with error code 4"
+				exit 1
+			fi
 			service php5-fpm start
 			
 			echo "Checking PHP curl extension..."
@@ -203,8 +229,11 @@
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-curl..."
 				apt-get install -y php5-curl
-			else
-				echo "PHP curl extension already exist error code 3."
+				if [ $? != 0 ]
+			    then
+					echo "php5-curl installation failed with error code 5"
+					exit 1
+				fi
 			fi
 			
 			echo "Checking PHP pgsql extension..."
@@ -212,8 +241,11 @@
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-pgsql..."
 				apt-get install -y php5-pgsql
-			else
-				echo "PHP pgsql extension already exist error code 4."
+				if [ $? != 0 ]
+			    then
+					echo "php5-pgsql installation failed with error code 6"
+					exit 1
+			    fi
 			fi
 			
 			echo "Checking PHP mbstring extension..."
@@ -221,17 +253,23 @@
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-mbstring..."
 				apt-get install -y php5-mbstring
-			else
-				echo "PHP mbstring extension already exist error code 5."
-			fi
+				if [ $? != 0 ]
+			    then
+					echo "php5-mbstring installation failed with error code 7"
+					exit 1
+		        fi
+		    fi
 			
 			echo "Checking PHP ldap extension..."
 			php -m | grep ldap
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-ldap..."
 				apt-get install -y php5-ldap
-			else
-				echo "PHP ldap extension already exist error code 6."
+				if [ $? != 0 ]
+			    then
+					echo "php5-ldap installation failed with error code 8"
+					exit 1
+		        fi
 			fi
 			
 			echo "Checking PHP imagick extension..."
@@ -239,10 +277,23 @@
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-imagick..."
 				apt-get install gcc
+				if [ $? != 0 ]
+			    then
+					echo "gcc installation failed with error code 9"
+					exit 1
+		        fi
 				apt-get install imagemagick
+				if [ $? != 0 ]
+			    then
+					echo "imagemagick installation failed with error code 9"
+					exit 1
+		        fi
 				apt-get install php5-imagick
-			else
-				echo "PHP imagick extension already exist error code 7."
+				if [ $? != 0 ]
+			    then
+					echo "php5-imagick installation failed with error code 10"
+					exit 1
+		        fi
 			fi
 			
 			echo "Checking PHP imap extension..."
@@ -250,8 +301,12 @@
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-imap..."
 				apt-get install -y php5-imap
-			else
-				echo "PHP imap extension already exist error code 8."
+				if [ $? != 0 ]
+			    then
+					echo "php5-imap installation failed with error code 11"
+					exit 1
+		        fi
+				
 			fi
 			
 			echo "Setting up timezone..."
@@ -272,18 +327,26 @@
 					echo "Installing PostgreSQL..."
 					sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 					apt-get install wget ca-certificates
+					if [ $? != 0 ]
+			        then
+						echo "ca-certificates installation failed with error code 12"
+						exit 1
+		            fi
 					wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 					apt-key add ACCC4CF8.asc
 					apt-get update
 					apt-get install postgresql-9.4
+					if [ $? != 0 ]
+			        then
+						echo "postgresql-9.4 installation failed with error code 13"
+						exit 1
+		            fi
 					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/9.4/main/pg_hba.conf > /etc/postgresql/9.4/main/pg_hba.conf.1
 					cd /etc/postgresql/9.4/main || exit
 					mv pg_hba.conf pg_hba.conf_old
 					mv pg_hba.conf.1 pg_hba.conf
 					service postgresql restart
 				esac
-			else
-				echo "PostgreSQL already installed error code 9."
 			fi
 			
 			echo "Checking ElasticSearch..."
@@ -297,12 +360,20 @@
 					[Yy])
 					echo "Installing ElasticSearch..."
 					apt-get install openjdk-6-jre
+					if [ $? != 0 ]
+			        then
+						echo "openjdk-6-jre installation failed with error code 14"
+						exit 1
+		            fi
 					wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.7.deb
+					if [ $? != 0 ]
+			        then
+						echo "elasticsearch downloading failed with error code 15"
+						exit 1
+		            fi
 					dpkg -i elasticsearch-0.90.7.deb
 					service elasticsearch restart
 				esac
-			else
-				echo "ElasticSearch already exist error code 10."
 			fi
 
 			echo "Downloading Restyaboard script..."
@@ -346,7 +417,11 @@
 			echo "postfix postfix/main_mailer_type string 'Internet Site'"\
 			| debconf-set-selections &&\
 			apt-get install -y postfix
-			
+			        if [ $? != 0 ]
+					then
+						echo "-y postfix installation failed with error code 16"
+						exit 1
+					fi
 			echo "Changing permission..."
 			chmod -R go+w "$dir/media"
 			chmod -R go+w "$dir/client/img"
@@ -354,17 +429,42 @@
 			chmod -R 0755 $dir/server/php/shell/*.sh
 
 			psql -U postgres -c "\q"
+			if [ $? != 0 ]
+			then
+				echo "PostgreSQL Changing the permission failed with error code 34"
+				exit 1
+			fi
 			sleep 1
 
 			echo "Creating PostgreSQL user and database..."
 			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
+			if [ $? != 0 ]
+			then
+				echo "PostgreSQL user creation failed with error code 35 "
+				exit 1
+			fi
 			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			if [ $? != 0 ]
+			then
+				echo "PostgreSQL database creation failed with error code 36"
+				exit 1
+			fi
 			psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;"
+			if [ $? != 0 ]
+			then
+				echo "PostgreSQL extension creation failed with error code 37"
+				exit 1
+			fi
 			psql -U postgres -c "COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';"
 			if [ "$?" = 0 ];
 			then
 				echo "Importing empty SQL..."
 				psql -d ${POSTGRES_DBNAME} -f "$dir/sql/restyaboard_with_empty_data.sql" -U ${POSTGRES_DBUSER}
+				if [ $? != 0 ]
+				then
+					echo "PostgreSQL Empty SQL importing failed with error code 39"
+					exit 1
+				fi
 			fi
 			
 			echo "Changing PostgreSQL database name, user and password..."
@@ -437,12 +537,20 @@
 					[Yy])
 					echo "Installing nginx..."
 					yum install -y epel-release
+					if [ $? != 0 ]
+			        then
+						echo "epel-release installation failed with error code 17"
+						exit 1
+					fi
 					yum install -y zip cron nginx
+					if [ $? != 0 ]
+			        then
+						echo "cron nginx installation failed with error code 18"
+						exit 1
+					fi
 					service nginx start
 					chkconfig --levels 35 nginx on
 				esac
-			else
-				echo "nginx already installed error code 11."
 			fi
 
 			echo "Checking PHP..."
@@ -457,14 +565,27 @@
 					[Yy])
 					echo "Installing PHP..."
 					yum install -y epel-release
+					if [ $? != 0 ]
+			        then
+						echo "epel-release installation failed with error code 19"
+						exit 1
+					fi
 					yum install -y php
+					if [ $? != 0 ]
+			        then
+						echo "php installation failed with error code 20"
+						exit 1
+					fi
 				esac
-			else
-				echo "php already installed error code 12."
 			fi
 			
 			echo "Installing PHP fpm and cli extension..."
 			yum install -y php-fpm php-devel php-cli
+			if [ $? != 0 ]
+			then
+				echo "php-devel installation failed with error code 21"
+				exit 1
+			fi
 			service php-fpm start
 			chkconfig --levels 35 php-fpm on
 
@@ -474,8 +595,11 @@
 			then
 				echo "Installing php-curl..."
 				yum install -y php-curl
-			else
-				echo "php curl extension already exist error code 13."
+				if [ $? != 0 ]
+			    then
+					echo "php-curl installation failed with error code 22"
+					exit 1
+			    fi
 			fi
 			
 			echo "Checking PHP pgsql extension..."
@@ -484,8 +608,11 @@
 			then
 				echo "Installing php-pgsql..."
 				yum install -y php-pgsql
-			else
-				echo "php pgsql extension already exist error code 14."
+				if [ $? != 0 ]
+			    then
+					echo "php-pgsql installation failed with error code 23"
+					exit 1
+			    fi
 			fi
 
 			echo "Checking PHP mbstring extension..."
@@ -494,8 +621,11 @@
 			then
 				echo "Installing php-mbstring..."
 				yum install -y php-mbstring
-			else
-				echo "php mbstring extension already exist error code 15."
+				if [ $? != 0 ]
+			    then
+					echo "php-mbstring installation failed with error code 24"
+					exit 1
+			    fi
 			fi
 			
 			echo "Checking PHP ldap extension..."
@@ -504,8 +634,11 @@
 			then
 				echo "Installing php-ldap..."
 				yum install -y php-ldap
-			else
-				echo "php ldap extension already exist error code 16."
+				if [ $? != 0 ]
+			    then
+					echo "php-ldap installation failed with error code 25"
+					exit 1
+			    fi
 			fi
 			
 			echo "Checking PHP imagick extension..."
@@ -514,6 +647,11 @@
 			then
 				echo "Installing php-imagick..."
 				yum install ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
+				if [ $? != 0 ]
+			    then
+					echo "Installing php-imagick failed with error code 26"
+					exit 1
+			    fi
 				cd /usr/local/src
 				wget http://pecl.php.net/get/imagick-2.2.2.tgz
 				tar zxvf ./imagick-2.2.2.tgz
@@ -524,8 +662,6 @@
 				make test
 				make install
 				echo "extension=imagick.so" >> /etc/php.ini
-			else
-				echo "php imagick extension already exist error code 17."
 			fi
 			
 			echo "Checking PHP imap extension..."
@@ -534,8 +670,12 @@
 			then
 				echo "Installing php-imap..."
 				yum install -y php-imap
-			else
-				echo "php imap extension already exist error code 18."
+				if [ $? != 0 ]
+			    then
+					echo "php-imap installation failed with error code 26"
+					exit 1
+			    fi
+				
 			fi
 			
 			echo "Setting up timezone..."
@@ -560,11 +700,27 @@
 					echo "Installing PostgreSQL..."
 					if [ $(getconf LONG_BIT) = "32" ]; then
 						yum install -y http://yum.postgresql.org/9.4/redhat/rhel-6.6-i386/pgdg-centos94-9.4-1.noarch.rpm
+						if [ $? != 0 ]
+						then
+							echo "Installing PostgreSQL 32 fail with error code 27"
+							exit 1
+						fi
 					fi
 					if [ $(getconf LONG_BIT) = "64" ]; then
 						yum install -y http://yum.postgresql.org/9.4/redhat/rhel-6.6-x86_64/pgdg-centos94-9.4-1.noarch.rpm
+						if [ $? != 0 ]
+						then
+							echo "Installing PostgreSQL 64 fail with error code 28"
+							exit 1
+						fi
 					fi
 					yum install -y postgresql94-server postgresql04-contrib
+					if [ $? != 0 ]
+			        then
+						echo "postgresql04-contrib installation failed with error code 29"
+						exit 1
+					fi
+					
 
                     ps -q 1 | grep -q -c "systemd"
                     if [ "$?" -eq 0 ]; then
@@ -590,8 +746,6 @@
                         /etc/init.d/postgresql-9.4 restart
                     fi
 				esac
-			else
-				echo "postgres already installed error code 19."
 			fi
 
 			echo "Checking ElasticSearch..."
@@ -606,12 +760,20 @@
 					[Yy])
 					echo "Installing ElasticSearch..."
 					sudo yum install java-1.7.0-openjdk -y
+					if [ $? != 0 ]
+			        then
+						echo "java installation failed with error code 30"
+						exit 1
+					fi
 					wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.10.noarch.rpm
+					if [ $? != 0 ]
+			        then
+						echo " ElasticSearch downloading failed with error code 31"
+						exit 1
+					fi
 					nohup rpm -Uvh elasticsearch-0.90.10.noarch.rpm &
 					chkconfig elasticsearch on
 				esac
-			else
-				echo "ElasticSearch already exist error code 20."
 			fi
 
 			echo "Downloading Restyaboard script..."
@@ -655,18 +817,43 @@
 			chmod -R go+w "$dir/tmp/cache"
 			chmod -R 0755 $dir/server/php/shell/*.sh
 
-			psql -U postgres -c "\q"	
+			psql -U postgres -c "\q"
+			if [ $? != 0 ]
+			then
+				echo "PostgreSQL Changing the permission failed with error code 40"
+				exit 1
+			fi			
 			sleep 1
 
 			echo "Creating PostgreSQL user and database..."
 			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
+			if [ $? != 0 ]
+			then
+				echo "PostgreSQL user creation failed with error code 41"
+				exit 1
+			fi			
 			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			if [ $? != 0 ]
+			then
+				echo "PostgreSQL database creation failed with error code 42"
+				exit 1
+			fi			
 			psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;"
+			if [ $? != 0 ]
+			then
+				echo "PostgreSQL extension creation failed with error code 43"
+				exit 1
+			fi			
 			psql -U postgres -c "COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';"
 			if [ "$?" = 0 ];
 			then
 				echo "Importing empty SQL..."
 				psql -d ${POSTGRES_DBNAME} -f "$dir/sql/restyaboard_with_empty_data.sql" -U ${POSTGRES_DBUSER}
+				if [ $? != 0 ]
+				then
+					echo "PostgreSQL Empty SQL importing failed with error code 45"
+					exit 1
+				fi	
 			fi
 
 			echo "Changing PostgreSQL database name, user and password..."
