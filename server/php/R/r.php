@@ -389,6 +389,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if ($authUser['role_id'] != 1 && empty($board_ids)) {
                 $sql = false;
             }
+            $limit = 'all';
             $c_sql = 'SELECT COUNT(*) FROM simple_board_listing bl ' . $filter_condition;
         } else if (!empty($r_resource_filters['page'])) {
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM admin_boards_listing ul ';
@@ -809,8 +810,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $final.= 'due_date:[* TO now] AND ';
                     } elseif ($key === "due:today") {
                         $final.= 'due_date:[* TO *] AND ';
-                        //$final.= 'due_date:[2016-01-29 00:00:00 TO 2016-01-29 23:59:59] AND ';
-                        
                     } elseif ($key === "due:this_week") {
                         $day = date('w') - 1;
                         $week_start = date('Y-m-d', strtotime('-' . $day . ' days'));
@@ -1080,18 +1079,22 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $c_result = pg_query_params($db_lnk, $c_sql, $pg_params);
             $c_data = pg_fetch_object($c_result, 0);
             $page = (isset($r_resource_filters['page']) && $r_resource_filters['page']) ? $r_resource_filters['page'] : 1;
-            $start = ($page - 1) * PAGING_COUNT;
-            $total_page = ceil($c_data->count / PAGING_COUNT);
-            $showing = (($start + PAGING_COUNT) > $c_data->count) ? ($c_data->count - $start) : PAGING_COUNT;
+            $page_count = PAGING_COUNT;
+            if (!empty($limit) && $limit == 'all') {
+                $page_count = $c_data->count;
+            }
+            $start = ($page - 1) * $page_count;
+            $total_page = ceil($c_data->count / $page_count);
+            $showing = (($start + $page_count) > $c_data->count) ? ($c_data->count - $start) : $page_count;
             $_metadata = array(
                 'noOfPages' => $total_page,
                 'total_records' => $c_data->count,
-                'limit' => PAGING_COUNT,
+                'limit' => $page_count,
                 'offset' => $start,
                 'showing' => $showing,
                 'maxSize' => 5
             );
-            $sql.= ' LIMIT ' . PAGING_COUNT . ' OFFSET ' . $start;
+            $sql.= ' LIMIT ' . $page_count . ' OFFSET ' . $start;
         }
         if ($r_resource_cmd == '/users') {
             $filter_count = array();
@@ -1414,7 +1417,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     foreach ($board_lists as $list) {
                         $my_lists[] = $list['id'];
                         foreach ($settings as $key => $setting) {
-                            if (in_array(strtolower(trim($list['name'])) , $setting)) {
+                            $trim = trim($list['name']);
+                            $str_low = strtolower($trim);
+                            if (in_array($str_low, $setting)) {
                                 $settings_lists[$key][] = $list['id'];
                             }
                         }
