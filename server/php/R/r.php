@@ -107,7 +107,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $filter_condition = "WHERE full_name LIKE '%" . $r_resource_filters['search'] . "%' ";
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ') as d ';
-        $c_sql = 'SELECT COUNT(*) FROM users_listing ul';
+        $c_sql = 'SELECT COUNT(*) FROM users_listing ul ';
+        if (!empty($r_resource_filters['search'])) {
+            $c_sql = 'SELECT COUNT(*) FROM users_listing ul ' . $filter_condition;
+        }
         break;
 
     case '/users/logout':
@@ -859,7 +862,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/settings':
-        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\' or name = \'LDAP_LOGIN_ENABLED\' OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'STANDARD_LOGIN_ENABLED\' OR name = \'BOSH_SERVICE_URL\' OR name = \'PREBIND_URL\' OR name = \'JABBER_HOST\' OR name = \'PAGING_COUNT\' OR name = \'DEFAULT_CARD_VIEW\' OR name = \'TODO\' OR name = \'DOING\' OR name = \'DONE\'', array());
+        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\' or name = \'LDAP_LOGIN_ENABLED\' OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'STANDARD_LOGIN_ENABLED\' OR name = \'BOSH_SERVICE_URL\' OR name = \'PREBIND_URL\' OR name = \'JABBER_HOST\' OR name = \'PAGING_COUNT\' OR name = \'DEFAULT_CARD_VIEW\' OR name = \'TODO\' OR name = \'DOING\' OR name = \'DONE\' OR name = \'TODO_COLOR\' OR name = \'DOING_COLOR\' OR name = \'DONE_COLOR\' OR name = \'TODO_ICON\' OR name = \'DOING_ICON\' OR name = \'DONE_ICON\'', array());
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
@@ -1270,10 +1273,20 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $settings_lists = array();
                     $my_lists = array();
                     $dashboard_response = array();
-                    $week_start_day = date('Y-m-d', strtotime('last monday'));
-                    $week_end_day = date('Y-m-d', strtotime('next sunday'));
-                    $dashboard_response['week_start_day'] = date('d', strtotime('last monday'));;
-                    $dashboard_response['week_end_day'] = date('d', strtotime('next sunday'));
+                    $monday = 'last monday';
+                    $sunday = 'next sunday';
+                    if (1 == date('N')) {
+                        $monday = 'today';
+                    }
+                    if (0 == date('N')) {
+                        $sunday = 'today';
+                    }
+                    $week_start_day = date('Y-m-d', strtotime($monday));
+                    $week_end_day = date('Y-m-d', strtotime($sunday));
+                    $dashboard_response['week_start_day'] = date('d', strtotime($monday));
+                    $dashboard_response['week_end_day'] = date('d', strtotime($sunday));
+                    $dashboard_response['week_start_month'] = date('M', strtotime($monday));
+                    $dashboard_response['week_end_month'] = date('M', strtotime($sunday));
                     foreach ($board_lists as $list) {
                         $my_lists[] = $list['id'];
                         foreach ($settings as $key => $setting) {

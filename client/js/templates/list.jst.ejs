@@ -2,21 +2,27 @@
 	<div class="list-header js-list-head <% if(!_.isUndefined(authuser.user)){%>cur-grab<%}%>">
 	  <div class="clearfix">
 		<a href="#" class="col-xs-8 <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-edit-list-form<% }else{ %> js-no-action<%}%>"><span><span class="clearfix row show">
-		<% _.each(todo_lists, function(todo_list) { %>
-			<% if(list.attributes.name.trim().toLowerCase() == todo_list.trim()) { %>
-				<span><i class="icon-tasks text-primary"></i></span>
-			<% } %>
-		<% }); %>
-		<% _.each(doing_lists, function(doing_list) { %>
-			<% if(list.attributes.name.trim().toLowerCase() == doing_list.trim()) { %>
-				<span><i class="icon-star-half-empty text-primary"></i></span>
-			<% } %>
-		<% }); %>
-		<% _.each(done_lists, function(done_list) { %>
-			<% if(list.attributes.name.trim().toLowerCase() == done_list.trim()) { %>
-				<span><i class="icon-ok text-primary"></i></span>
-			<% } %>
-		<% }); %>
+		<% if(!_.isUndefined(TODO_COLOR) && !_.isUndefined(TODO_ICON)) { %>
+			<% _.each(todo_lists, function(todo_list) { %>
+				<% if(list.attributes.name.trim().toLowerCase() == todo_list.trim()) { %>
+					<span><i class="<%- TODO_ICON %>" style="color:<%- TODO_COLOR %>" ></i></span>
+				<% } %>
+			<% }); %>
+		<% } %>
+		<% if(!_.isUndefined(DOING_COLOR) && !_.isUndefined(DOING_ICON)) { %>
+			<% _.each(doing_lists, function(doing_list) { %>
+				<% if(list.attributes.name.trim().toLowerCase() == doing_list.trim()) { %>
+					<span><i class="<%- DOING_ICON %>" style="color:<%- DOING_COLOR %>"></i></span>
+				<% } %>
+			<% }); %>
+		<% } %>
+		<% if(!_.isUndefined(DONE_COLOR) && !_.isUndefined(DONE_ICON)) { %>
+			<% _.each(done_lists, function(done_list) { %>
+				<% if(list.attributes.name.trim().toLowerCase() == done_list.trim()) { %>
+					<span><i class="<%- DONE_ICON %>" style="color:<%- DONE_COLOR %>"></i></span>
+				<% } %>
+			<% }); %>
+		<% } %>
 		<strong><%- list.attributes.name %></strong></span></span><% var is_sub_class = 'hide'; if(!_.isEmpty(list.subscriber.attributes) && list.subscriber.attributes.is_subscribed == true){ is_sub_class = ''; }%><span class="pull-right"><i class="icon-eye-open js-list-subscribed-<%- list.attributes.id %> <%- is_sub_class %>"></i></span></a>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 		<form role="form" class="form-horizontal js-edit-list hide">

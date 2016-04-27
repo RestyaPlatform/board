@@ -1395,9 +1395,9 @@ function getEjabberdConnection()
 /**
  * Check duplicate value is Exist in Array
  *
- * @param array $array Array list to check duplicate
- * @param array $key   Check with this key
- * @param array $value Check the value is exist
+ * @param array  $array Array list to check duplicate
+ * @param string $key   Check with this key
+ * @param array  $value Check the value is exist
  *
  * @return boolean
  */

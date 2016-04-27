@@ -42,6 +42,12 @@ var custom_fields = {};
 var todo_lists = {};
 var doing_lists = {};
 var done_lists = {};
+var TODO_COLOR = '';
+var DOING_COLOR = '';
+var DONE_COLOR = '';
+var TODO_ICON = '';
+var DOING_ICON = '';
+var DONE_ICON = '';
 Backbone.View.prototype.flash = function(type, message) {
     $.bootstrapGrowl(message, {
         type: type,
