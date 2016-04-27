@@ -1081,3 +1081,11 @@ VALUES
 ((select id from setting_categories where name = 'Cards Workflow'), '0', 'TODO_ICON', '', '', 'text', NULL, 'Todo Icon', '4'), 
 ((select id from setting_categories where name = 'Cards Workflow'), '0', 'DOING_ICON', '', '', 'text', NULL, 'Doing Icon', '5'), 
 ((select id from setting_categories where name = 'Cards Workflow'), '0', 'DONE_ICON', '', '', 'text', NULL, 'Done Icon', '6');
+
+UPDATE "settings" SET "value" = '#f1533e' WHERE "name" = 'TODO_COLOR';
+UPDATE "settings" SET "value" = '#f1533e' WHERE "name" = 'DOING_COLOR';
+UPDATE "settings" SET "value" = '#f1533e' WHERE "name" = 'DONE_COLOR';
+
+UPDATE "settings" SET "value" = 'icon-tasks' WHERE "name" = 'TODO_ICON';
+UPDATE "settings" SET "value" = 'icon-star-half-empty' WHERE "name" = 'DOING_ICON';
+UPDATE "settings" SET "value" = 'icon-ok' WHERE "name" = 'DONE_ICON';
