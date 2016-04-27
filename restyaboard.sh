@@ -510,6 +510,39 @@
 				sed -i "s/smtp_port = 25/smtp_port = $smtp_port/" /etc/php.ini
 			esac
 			
+			set +x
+			echo "Do you want to install Default apps (y/n)?"
+			read -r answer
+			set -x
+			case "${answer}" in
+				[Yy])
+				if ! hash jq 2>&-;
+				then
+					echo "jq is not installed!"
+					set +x
+					echo "Do you want to install jq (y/n)?" 
+					read -r answer
+					set -x
+					case "${answer}" in
+						[Yy])
+						echo "Installing jq..."
+						apt-get install jq
+						if [ $? != 0 ]
+						then
+							echo "jq installation failed with error code 49"
+							exit 1
+						fi
+					esac
+				fi
+				for fid in `jq -r '.[] | .id + "-v" + .version' json_data.json`
+				do
+					mkdir "$dir/client/apps"
+					chmod -R go+w "$dir/client/apps"
+					curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
+					unzip /tmp/$fid.zip -d "$dir/client/apps"
+				done
+			esac
+			
 			echo "Starting services..."
 			service cron restart
 			service php5-fpm restart
@@ -960,6 +993,39 @@
 			else
 				/etc/init.d/php-fpm restart
 			fi
+			
+			set +x
+			echo "Do you want to install Default apps (y/n)?"
+			read -r answer
+			set -x
+			case "${answer}" in
+				[Yy])
+				if ! hash jq 2>&-;
+				then
+					echo "jq is not installed!"
+					set +x
+					echo "Do you want to install jq (y/n)?" 
+					read -r answer
+					set -x
+					case "${answer}" in
+						[Yy])
+						echo "Installing jq..."
+						yum install -y jq
+						if [ $? != 0 ]
+						then
+							echo "jq installation failed with error code 49"
+							exit 1
+						fi
+					esac
+				fi
+				for fid in `jq -r '.[] | .id + "-v" + .version' json_data.json`
+				do
+					mkdir "$dir/client/apps"
+					chmod -R go+w "$dir/client/apps"
+					curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
+					unzip /tmp/$fid.zip -d "$dir/client/apps"
+				done
+			esac
 			
 			/bin/echo "$RESTYABOARD_VERSION" > /opt/restyaboard/release
 		esac
