@@ -1507,7 +1507,7 @@ footer {
 		}
 	}
 }
-footer, header {
+footer, header, .dashboard-header {
 	.nav > li > a, .btn {
 		padding: 4px 7px;
 	}
@@ -1961,6 +1961,7 @@ footer, header {
 .week-chart-date{
 	display: table;
 	li {
+		width: 56px;
 		display: table-cell;
 		vertical-align: middle;
 		text-align: center
@@ -1975,4 +1976,24 @@ footer, header {
 	.dropdown-menu-right {
 		left: 78px;
 	}
+}
+.bg-grey {
+    background-color: #f3f5f7;
+}
+.search-block {
+	height:0;
+	position:absolute;
+}
+.search-block-main {
+	position:relative;	
+}
+.search-block-main-hover {	
+	position:absolute;
+	bottom:38px;
+	overflow-x:hidden;
+	overflow-y:auto; 
+	transition: all 0.5s ease-out;
+}
+.bg-search {
+    background-color: #ffff00;
 }

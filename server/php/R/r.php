@@ -107,7 +107,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $filter_condition = "WHERE full_name LIKE '%" . $r_resource_filters['search'] . "%' ";
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ') as d ';
-        $c_sql = 'SELECT COUNT(*) FROM users_listing ul';
+        $c_sql = 'SELECT COUNT(*) FROM users_listing ul ';
+        if (!empty($r_resource_filters['search'])) {
+            $c_sql = 'SELECT COUNT(*) FROM users_listing ul ' . $filter_condition;
+        }
         break;
 
     case '/users/logout':
@@ -726,30 +729,175 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         if (!empty($r_resource_filters['q'])) {
             $response = array();
             if (!empty($r_resource_filters['q'])) {
-                if (preg_match('/^\".*\"$/', $r_resource_filters['q'])) {
-                    $q = $r_resource_filters['q'];
-                } else {
-                    $q = '*' . $r_resource_filters['q'] . '*';
+                $str = $r_resource_filters['q'];
+                $is_quote_start = '';
+                $colon_arr = $string_arr = array();
+                $space_split_arr = explode(' ', $str);
+                $except = array(
+                    'due',
+                    'has',
+                    'is',
+                    'created',
+                    'edited'
+                );
+                if (!empty($space_split_arr)) {
+                    foreach ($space_split_arr as $space_split) {
+                        if (!empty($is_quote_start)) {
+                            $colon_arr[$is_quote_start].= ' ' . $space_split;
+                            if (strpos($space_split, '"')) {
+                                $is_quote_start = '';
+                            }
+                        } elseif (strpos($space_split, ':')) {
+                            $colon_split = explode(':', $space_split);
+                            if (in_array($colon_split[0], $except)) {
+                                $colon_arr[$colon_split[0] . ':' . $colon_split[1]] = $colon_split[1];
+                            } else {
+                                $colon_arr[$colon_split[0]] = $colon_split[1];
+                            }
+                            if (strpos($colon_split[1], '"') === 0) {
+                                $is_quote_start = $colon_split[0];
+                            }
+                        } else {
+                            $string_arr[] = $space_split;
+                        }
+                    }
                 }
+                $split_str = implode(' ', $string_arr);
+                $split_str = '*' . $split_str . '*';
+                $data = array();
+                $board = $list = $cards_labels = $split_str;
+                $final = '';
+                $admin = '';
                 if ($authUser['role_id'] != 1) {
-                    $q.= ' AND board_users.user_id:' . $authUser['id'];
+                    $admin = ' AND board_users.user_id:' . $authUser['id'];
                 }
-                $elasticsearch_url = ELASTICSEARCH_URL . ELASTICSEARCH_INDEX . '/cards/_search?q=' . urlencode($q);
-                $search_response = doGet($elasticsearch_url);
+                foreach ($colon_arr as $key => $value) {
+                    if ($key === "board") {
+                        $board.= $key . ':' . '*' . $value . '*';
+                        $final.= $board . ' AND ';
+                    } elseif ($key === "list") {
+                        $list = $key . ':' . '*' . $value . '*';
+                        $final = $list . ' AND ';
+                    } elseif ($key === "label") {
+                        $cards_labels = 'cards_labels.name:' . '*' . $value . '*';
+                        $final.= $cards_labels . ' AND ';
+                    } elseif ($key === "has:attachments") {
+                        $final.= 'attachment_count:>0 AND ';
+                    } elseif ($key === "is:archived") {
+                        $final.= 'is_archived:>0 AND ';
+                    } elseif ($key === "is:open") {
+                        $final.= 'is_archived:0 AND ';
+                    } elseif ($key === "is:starred") {
+                        $final.= 'board_stars.user_id:' . $authUser['id'] . ' AND ';
+                    } elseif ($key === "description") {
+                        $final.= 'description.name:' . $value . ' AND ';
+                    } elseif ($key === "checklist") {
+                        $final.= 'cards_checklists.name:' . $value . ' AND ';
+                    } elseif ($key === "comment") {
+                        $final.= 'activities.comment:' . $value . ' AND ';
+                    } elseif ($key === "name") {
+                        $final.= $key . ':' . $value . ' AND ';
+                    } elseif ($key === "due:day") {
+                        $final.= 'due_date:[now TO now+24h] AND ';
+                    } elseif ($key === "due:week") {
+                        $final.= 'due_date:[now TO now+1w] AND ';
+                    } elseif ($key === "due:month") {
+                        $final.= 'due_date:[now TO now+1M] AND ';
+                    } elseif ($key === "due:overdue") {
+                        $final.= 'due_date:[* TO now] AND ';
+                    } elseif ($key === "due:today") {
+                        $final.= 'due_date: ' . date('Y-m-d') . ' AND ';
+                    } elseif ($key === "due:this_week") {
+                        $day = date('w') - 1;
+                        $week_start = date('Y-m-d', strtotime('-' . $day . ' days'));
+                        $week_end = date('Y-m-d', strtotime('+' . (6 - $day) . ' days'));
+                        $final.= 'due_date:[' . $week_start . ' TO ' . $week_end . '] AND ';
+                    } elseif ($key === "due:overall") {
+                        $final.= 'due_date:[* TO *] AND ';
+                    } elseif ($key === "created:day") {
+                        $final.= 'created:[now-24h TO now] AND ';
+                    } elseif ($key === "created:week") {
+                        $final.= 'created:[now-1w TO now] AND ';
+                    } elseif ($key === "created:month") {
+                        $final.= 'created:[now-1M TO now] AND ';
+                    } elseif ($key === "edited:day") {
+                        $final.= 'modified:[now-24h TO now] AND ';
+                    } elseif ($key === "edited:week") {
+                        $final.= 'modified:[now-1w TO now] AND ';
+                    } elseif ($key === "edited:month") {
+                        $final.= 'modified:[now-1M TO now] AND ';
+                    } else {
+                        $due_cre_edi = explode(':', $key);
+                        if ($due_cre_edi[0] === 'due') {
+                            $final.= 'due_date:[now TO now+' . $value . 'd] AND ';
+                        } elseif ($due_cre_edi[0] === 'created') {
+                            $final.= 'created:[now-' . $value . 'd TO now] AND ';
+                        } elseif ($due_cre_edi[0] === 'edited') {
+                            $final.= 'modified:[now-' . $value . 'd TO now] AND ';
+                        }
+                    }
+                }
+                $data['query']['query_string']['query'] = $board . $admin;
+                $data['highlight']['fields']['board'] = new stdClass;
+                $elasticsearch_url = ELASTICSEARCH_URL . ELASTICSEARCH_INDEX . '/cards/_search';
+                $search_response = doPost($elasticsearch_url, $data, 'json');
                 $response['result'] = array();
                 if (!empty($search_response['hits']['hits'])) {
                     foreach ($search_response['hits']['hits'] as $result) {
-                        $card = array(
-                            'id' => $result['_source']['id'],
-                            'name' => $result['_source']['name'],
-                            'list_id' => $result['_source']['list_id'],
-                            'list_name' => $result['_source']['list'],
-                            'board_id' => $result['_source']['board_id'],
-                            'board_name' => $result['_source']['board'],
-                            'name' => $result['_source']['name'],
-                            'type' => 'cards',
-                        );
-                        $response['result'][] = $card;
+                        if (check_duplicate($response['result']['boards'], 'board_id', $result['_source']['board_id'])) {
+                            $response['result']['boards'][] = bind_elastic($result, 'boards');
+                        }
+                    }
+                }
+                $data['query']['query_string']['query'] = $list . $admin;
+                $data['highlight']['fields']['list'] = new stdClass;
+                $search_response = doPost($elasticsearch_url, $data, 'json');
+                if (!empty($search_response['hits']['hits'])) {
+                    foreach ($search_response['hits']['hits'] as $result) {
+                        if (check_duplicate($response['result']['lists'], 'list_id', $result['_source']['list_id'])) {
+                            $response['result']['lists'][] = bind_elastic($result, 'lists');
+                        }
+                    }
+                }
+                $data['highlight']['pre_tags'] = array(
+                    "<span class=\"bg-search\">"
+                );
+                $data['highlight']['post_tags'] = array(
+                    "</span>"
+                );
+                $data['query']['query_string']['query'] = $final . 'name:' . $split_str . ' or description:' . $split_str . $admin;
+                $data['highlight']['fields']['name'] = new stdClass;
+                $data['highlight']['fields']['description'] = new stdClass;
+                $search_response = doPost($elasticsearch_url, $data, 'json');
+                if (!empty($search_response['hits']['hits'])) {
+                    foreach ($search_response['hits']['hits'] as $result) {
+                        if (check_duplicate($response['result']['cards'], 'id', $result['_source']['id'])) {
+                            $response['result']['cards'][] = bind_elastic($result, 'cards');
+                        }
+                    }
+                }
+                $data['query']['query_string']['query'] = $cards_labels . $admin;
+                $data['highlight']['fields']['cards_labels.name'] = new stdClass;
+                $search_response = doPost($elasticsearch_url, $data, 'json');
+                if (!empty($search_response['hits']['hits'])) {
+                    foreach ($search_response['hits']['hits'] as $result) {
+                        $response['result']['cards_labels'][] = bind_elastic($result, 'cards_labels');
+                    }
+                }
+                $data['query']['query_string']['query'] = 'activities.comment:' . $split_str . $admin;
+                $data['highlight']['fields']['activities.comment'] = new stdClass;
+                $search_response = doPost($elasticsearch_url, $data, 'json');
+                if (!empty($search_response['hits']['hits'])) {
+                    foreach ($search_response['hits']['hits'] as $result) {
+                        $response['result']['comments'][] = bind_elastic($result, 'comments');
+                    }
+                }
+                $data['query']['query_string']['query'] = 'cards_checklists.checklist_item_name:' . $split_str . $admin;
+                $data['highlight']['fields']['cards_checklists.checklist_item_name'] = new stdClass;
+                $search_response = doPost($elasticsearch_url, $data, 'json');
+                if (!empty($search_response['hits']['hits'])) {
+                    foreach ($search_response['hits']['hits'] as $result) {
+                        $response['result']['checklists'][] = bind_elastic($result, 'checklists');
                     }
                 }
             }
@@ -819,7 +967,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/settings':
-        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\' or name = \'LDAP_LOGIN_ENABLED\' OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'STANDARD_LOGIN_ENABLED\' OR name = \'BOSH_SERVICE_URL\' OR name = \'PREBIND_URL\' OR name = \'JABBER_HOST\' OR name = \'PAGING_COUNT\' OR name = \'DEFAULT_CARD_VIEW\' OR name = \'TODO\' OR name = \'DOING\' OR name = \'DONE\'', array());
+        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\' or name = \'LDAP_LOGIN_ENABLED\' OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'STANDARD_LOGIN_ENABLED\' OR name = \'BOSH_SERVICE_URL\' OR name = \'PREBIND_URL\' OR name = \'JABBER_HOST\' OR name = \'PAGING_COUNT\' OR name = \'DEFAULT_CARD_VIEW\' OR name = \'TODO\' OR name = \'DOING\' OR name = \'DONE\' OR name = \'TODO_COLOR\' OR name = \'DOING_COLOR\' OR name = \'DONE_COLOR\' OR name = \'TODO_ICON\' OR name = \'DOING_ICON\' OR name = \'DONE_ICON\'', array());
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
@@ -1014,6 +1162,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
             $data = array();
+            $board_lists = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 if (isset($obj['board_activities']) && !empty($obj['board_activities'])) {
@@ -1220,6 +1369,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data['_metadata'] = $_metadata;
             }
             if (!empty($board_lists) && $r_resource_cmd == '/boards' && (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'simple')) {
+                $settings = array();
                 $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'TODO\' OR name = \'DOING\' OR name = \'DONE\'', array());
                 while ($row = pg_fetch_assoc($s_sql)) {
                     $settings[$row['name']] = array_map('trim', explode(',', $row['value']));
@@ -1228,13 +1378,20 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $settings_lists = array();
                     $my_lists = array();
                     $dashboard_response = array();
-                    $week_start_day = date('Y-m-d', strtotime('last monday'));
-                    $week_end_day = date('Y-m-d', strtotime('next sunday'));
-                    $previous_week = date('Y-m-d', strtotime("-1 week"));
-                    $last_week_start_day = date($previous_week, strtotime('last monday'));
-                    $last_week_end_day = date($previous_week, strtotime('next sunday'));
-                    $dashboard_response['week_start_day'] = date('d', strtotime('last monday'));;
-                    $dashboard_response['week_end_day'] = date('d', strtotime('next sunday'));
+                    $monday = 'last monday';
+                    $sunday = 'next sunday';
+                    if (1 == date('N')) {
+                        $monday = 'today';
+                    }
+                    if (0 == date('N')) {
+                        $sunday = 'today';
+                    }
+                    $week_start_day = date('Y-m-d', strtotime($monday));
+                    $week_end_day = date('Y-m-d', strtotime($sunday));
+                    $dashboard_response['week_start_day'] = date('d', strtotime($monday));
+                    $dashboard_response['week_end_day'] = date('d', strtotime($sunday));
+                    $dashboard_response['week_start_month'] = date('M', strtotime($monday));
+                    $dashboard_response['week_end_month'] = date('M', strtotime($sunday));
                     foreach ($board_lists as $list) {
                         $my_lists[] = $list['id'];
                         foreach ($settings as $key => $setting) {
@@ -1265,12 +1422,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             $dashboard_response['last_weekwise'][$key][] = $row['cnt'];
                         }
                     }
+                    $s_sql = pg_query_params($db_lnk, 'SELECT count(id) as cnt FROM cards_listing where cards_user_count = 0 and list_id IN (' . implode($my_lists, ',') . ')', array());
+                    while ($row = pg_fetch_assoc($s_sql)) {
+                        $dashboard_response['unassigned'] = $row['cnt'];
+                    }
+                    $data['_metadata']['dashboard'] = $dashboard_response;
                 }
-                $s_sql = pg_query_params($db_lnk, 'SELECT count(id) as cnt FROM cards_listing where cards_user_count = 0 and list_id IN (' . implode($my_lists, ',') . ')', array());
-                while ($row = pg_fetch_assoc($s_sql)) {
-                    $dashboard_response['unassigned'] = $row['cnt'];
-                }
-                $data['_metadata']['dashboard'] = $dashboard_response;
             }
             echo json_encode($data);
             pg_free_result($result);

@@ -1,36 +1,30 @@
 /**
- * @fileOverview This file has functions related to user cards view. This view calling from user view.
+ * @fileOverview This file has functions related to search page result view. This view calling from footer view.
  * Available Object:
  *	App.boards						: this object contain all boards(Based on logged in user)
- *	this.model						: card model.
+ *	this.model						: undefined.
  */
 if (typeof App === 'undefined') {
     App = {};
 }
 /**
- * UserCards View
- * @class UserCardsView
+ * Search Page Result View
+ * @class SearchPageResultView
  * @constructor
  * @extends Backbone.View
  */
-App.UserCardsView = Backbone.View.extend({
+App.SearchPageResultView = Backbone.View.extend({
+    template: JST['templates/search_page_result'],
     /**
      * Constructor
      * initialize default values and actions
      */
     initialize: function(options) {
-        if (!_.isUndefined(this.model) && this.model !== null) {
-            this.model.showImage = this.showImage;
-        }
-        this.key = options.key;
         this.render();
     },
     events: {
-        'click .js-open-model-car-view': 'showModalCardView'
+        'click .js-open-search-model-card-view': 'showSearchModalCardView'
     },
-    template: JST['templates/user_cards'],
-    tagName: 'section',
-    className: 'clearfix',
     /**
      * render()
      * populate the html to the dom
@@ -40,24 +34,22 @@ App.UserCardsView = Backbone.View.extend({
      */
     render: function() {
         this.$el.html(this.template({
-            card_user: this.model,
-            key: this.key
+            search_result: this.model.result
         }));
         this.showTooltip();
         return this;
     },
-    showModalCardView: function(e) {
+    showSearchModalCardView: function(e) {
         var self = this;
         var cards = new App.Card();
-        var card_id = $(e.currentTarget).data('id');
-        var main_card = self.model.filter(function(model) {
-            return parseInt(model.get('id')) === parseInt(card_id);
-        });
+        var board_id = $(e.currentTarget).data('board_id');
+        var list_id = $(e.currentTarget).data('list_id');
+        var card_id = $(e.currentTarget).data('card_id');
         var board = new App.Board({
-            id: main_card[0].attributes.board_id
+            id: board_id
         });
-        board.url = api_url + 'boards/' + main_card[0].attributes.board_id + '.json';
-        board.id = main_card[0].attributes.board_id;
+        board.url = api_url + 'boards/' + board_id + '.json';
+        board.id = board_id;
         board.fetch({
             cache: false,
             abortPending: true,
@@ -128,7 +120,7 @@ App.UserCardsView = Backbone.View.extend({
                 });
 
                 board.lists.each(function(list) {
-                    if (list.id === main_card[0].attributes.list_id) {
+                    if (list.id === list_id) {
                         list.board_users = board.board_users;
                         list.labels = board.labels;
                         list.activities.add(board.activities, {
@@ -188,7 +180,8 @@ App.UserCardsView = Backbone.View.extend({
                                             silent: true
                                         });
                                     }
-                                    var initialState = (DEFAULT_CARD_VIEW === 'Dockmodal Maximize View') ? 'modal' : 'docked';
+
+                                    var initialState = (DEFAULT_CARD_VIEW === 'Dockmodal') ? 'docked' : 'modal';
                                     if (e.ctrlKey || e.metaKey) {
                                         initialState = 'modal';
                                     }

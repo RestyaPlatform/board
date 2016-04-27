@@ -29,6 +29,7 @@ App.ApplicationView = Backbone.View.extend({
         page.page_view_type = options.type;
         page.page_view_id = options.id;
         page.page_view_hash = options.hash;
+        page.page_view_q = options.q;
         last_user_activity_id = load_more_last_board_activity_id = last_board_activity_id = 0;
         if (_.isUndefined(App.music)) {
             App.music = {};
@@ -93,6 +94,25 @@ App.ApplicationView = Backbone.View.extend({
                                 APPS = settings_response.apps;
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
+                                if (settings_response.TODO_COLOR) {
+                                    TODO_COLOR = settings_response.TODO_COLOR;
+                                }
+                                if (settings_response.DOING_COLOR) {
+                                    DOING_COLOR = settings_response.DOING_COLOR;
+                                }
+                                if (settings_response.DONE_COLOR) {
+                                    DONE_COLOR = settings_response.DONE_COLOR;
+                                }
+                                if (settings_response.TODO_ICON) {
+                                    TODO_ICON = settings_response.TODO_ICON;
+                                }
+                                if (settings_response.DOING_ICON) {
+                                    DOING_ICON = settings_response.DOING_ICON;
+                                }
+                                if (settings_response.DONE_ICON) {
+                                    DONE_ICON = settings_response.DONE_ICON;
+                                }
+
                                 if (settings_response.TODO) {
                                     var todo = settings_response.TODO;
                                     var todo_split = todo.split(',');
@@ -179,6 +199,24 @@ App.ApplicationView = Backbone.View.extend({
                             APPS = settings_response.apps;
                             IMAP_EMAIL = settings_response.IMAP_EMAIL;
                             DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
+                            if (settings_response.TODO_COLOR) {
+                                TODO_COLOR = settings_response.TODO_COLOR;
+                            }
+                            if (settings_response.DOING_COLOR) {
+                                DOING_COLOR = settings_response.DOING_COLOR;
+                            }
+                            if (settings_response.DONE_COLOR) {
+                                DONE_COLOR = settings_response.DONE_COLOR;
+                            }
+                            if (settings_response.TODO_ICON) {
+                                TODO_ICON = settings_response.TODO_ICON;
+                            }
+                            if (settings_response.DOING_ICON) {
+                                DOING_ICON = settings_response.DOING_ICON;
+                            }
+                            if (settings_response.DONE_ICON) {
+                                DONE_ICON = settings_response.DONE_ICON;
+                            }
                             if (settings_response.TODO) {
                                 var todo = settings_response.TODO;
                                 var todo_split = todo.split(',');
@@ -705,38 +743,40 @@ App.ApplicationView = Backbone.View.extend({
                                         enableTagOptions: true,
                                         type: 'line',
                                         fillColor: false,
-                                        lineColor: 'blue',
+                                        lineColor: '#65cca9',
                                         width: '750',
-                                        height: '200'
+                                        height: '100'
                                     });
                                     $(this).sparkline($(this).data('doing').split(','), {
                                         composite: true,
                                         fillColor: false,
-                                        lineColor: 'red',
-                                        width: '400',
-                                        height: '150'
+                                        lineColor: '#eca186',
+                                        width: '750',
+                                        height: '100'
                                     });
                                     $(this).sparkline($(this).data('done').split(','), {
                                         composite: true,
                                         fillColor: false,
-                                        lineColor: 'green',
-                                        width: '400',
-                                        height: '150'
+                                        lineColor: '#fee3e0',
+                                        width: '750',
+                                        height: '100'
                                     });
                                 });
-                                var color_codes = ['#DB7093', '#F47564', '#EDA287', '#FAC1AD', '#FFE4E1', '#D3ABF0', '#DC9CDC', '#69BFBA', '#66CDAA', '#8FBC8F', '#CBFDCA', '#EEE8AA', '#BC8F8F', '#CD853F', '#D2B48C', '#F5DEB3', '#64BCF2', '#87CEFA', '#B0C4DE', '#D6E2F7'];
-                                var i_chart = 0;
+
                                 $('.js-chart', (this.el)).each(function() {
                                     var data_chart = [];
                                     $.each($(this).data(), function(index, value) {
                                         var _data = {};
                                         _data.title = index.toUpperCase();
                                         _data.value = parseInt(value);
-                                        _data.color = color_codes[i_chart];
-                                        i_chart++;
-                                        if (i_chart > 20) {
-                                            i_chart = 0;
+                                        if (_data.title == 'TODO') {
+                                            _data.color = '#65cca9';
+                                        } else if (_data.title == 'DOING') {
+                                            _data.color = '#eca186';
+                                        } else if (_data.title == 'DONE') {
+                                            _data.color = '#fee3e0';
                                         }
+
                                         if (parseInt(value) > 0) {
                                             data_chart.push(_data);
                                         }
@@ -879,6 +919,28 @@ App.ApplicationView = Backbone.View.extend({
                                                 className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12'
                                             }).el);
                                         }
+                                    }
+                                    if (typeof page.page_view_q !== 'undefined') {
+                                        var elastic_search = new App.ElasticSearchCollection();
+                                        elastic_search.url = api_url + 'search.json';
+                                        elastic_search.fetch({
+                                            cache: false,
+                                            abortPending: true,
+                                            data: {
+                                                q: page.page_view_q,
+                                                token: api_token
+                                            },
+                                            success: function(model, response) {
+                                                if (!_.isEmpty(response.result)) {
+                                                    $('#search-page-result-block').html(new App.SearchPageResultView({
+                                                        model: response
+                                                    }).el);
+                                                    $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
+                                                    var w_height = $(window).height() - 78;
+                                                    $(".search-block-main-hover").css('height', w_height + 'px');
+                                                }
+                                            }
+                                        });
                                     }
                                 }
 
