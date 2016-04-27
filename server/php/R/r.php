@@ -805,6 +805,15 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $final.= 'due_date:[now TO now+1M] AND ';
                     } elseif ($key === "due:overdue") {
                         $final.= 'due_date:[* TO now] AND ';
+                    } elseif ($key === "due:today") {
+                        $final.= 'due_date: ' . date('Y-m-d') . ' AND ';
+                    } elseif ($key === "due:this_week") {
+                        $day = date('w') - 1;
+                        $week_start = date('Y-m-d', strtotime('-' . $day . ' days'));
+                        $week_end = date('Y-m-d', strtotime('+' . (6 - $day) . ' days'));
+                        $final.= 'due_date:[' . $week_start . ' TO ' . $week_end . '] AND ';
+                    } elseif ($key === "due:overall") {
+                        $final.= 'due_date:[* TO *] AND ';
                     } elseif ($key === "created:day") {
                         $final.= 'created:[now-24h TO now] AND ';
                     } elseif ($key === "created:week") {

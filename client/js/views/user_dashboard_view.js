@@ -21,6 +21,9 @@ App.UserDashboardView = Backbone.View.extend({
     initialize: function() {
         this.render();
     },
+    events: {
+        'click .dashboard-search': 'dashboardSearch'
+    },
     template: JST['templates/user_dashboard'],
     /**
      * render()
@@ -45,5 +48,34 @@ App.UserDashboardView = Backbone.View.extend({
         }));
         this.showTooltip();
         return this;
+    },
+    dashboardSearch: function(e) {
+        var q = $(e.currentTarget).data('search');
+        if (q == 'today') {
+            q = 'due:today';
+        } else if (q == 'week') {
+            q = 'due:this_week';
+        } else {
+            q = 'due:overall';
+        }
+        var elastic_search = new App.ElasticSearchCollection();
+        elastic_search.url = api_url + 'search.json';
+        elastic_search.fetch({
+            data: {
+                q: q,
+                token: api_token
+            },
+            success: function(model, response) {
+                if (!_.isEmpty(response.result)) {
+                    $('#search-page-result-block').html(new App.SearchPageResultView({
+                        model: response
+                    }).el);
+                    $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
+                    var w_height = $(window).height() - 40;
+                    $(".search-block-main-hover").css('height', w_height + 'px');
+                }
+            }
+        });
+        return false;
     }
 });
