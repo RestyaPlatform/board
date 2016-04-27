@@ -1006,11 +1006,14 @@ VALUES ('3', '0', 'DEFAULT_CARD_VIEW', 'Dockmodal', NULL, 'select', 'Dockmodal,P
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('3', '0', 'TODO', '', '', 'textarea', NULL, 'Todo', '8'), ('3', '0', 'DOING', '', '', 'textarea', NULL, 'Doing', '9'), ('3', '0', 'DONE', '', '', 'textarea', NULL, 'Done', '10');
 
 
-INSERT INTO "setting_categories" ("id", "created", "modified", "parent_id", "name", "description", "order") values ('11', now(), now(), NULL, 'Cards Workflow', NULL, '6');
+INSERT INTO "setting_categories" ("created", "modified", "parent_id", "name", "description", "order") 
+values (now(), now(), NULL, 'Cards Workflow', NULL, '7');
 
-UPDATE "settings" SET "setting_category_id" = '11' WHERE name = 'TODO';
-UPDATE "settings" SET "setting_category_id" = '11' WHERE name = 'DONE';
-UPDATE "settings" SET "setting_category_id" = '11' WHERE name = 'DOING';
+UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'Cards Workflow') WHERE name = 'TODO';
+UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'Cards Workflow') WHERE name = 'DONE';
+UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'Cards Workflow') WHERE name = 'DOING';
+
+DROP VIEW "cards_elasticsearch_listing";
 
 CREATE VIEW "cards_elasticsearch_listing" AS
  SELECT card.id, 
@@ -1065,3 +1068,16 @@ CREATE VIEW "cards_elasticsearch_listing" AS
            FROM ((cards cards
       LEFT JOIN boards boards ON ((boards.id = cards.board_id)))
    LEFT JOIN lists lists ON ((lists.id = cards.list_id)))) card;
+   
+UPDATE "settings" SET "value" = 'Dockmodal Maximize View', "options" = 'Dockmodal Maximize View,DockModal Portable View' WHERE "name" = 'DEFAULT_CARD_VIEW';
+
+SELECT pg_catalog.setval('settings_id_seq', (SELECT MAX(id) FROM settings), true);
+
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") 
+VALUES 
+((select id from setting_categories where name = 'Cards Workflow'), '0', 'TODO_COLOR', '', '', 'text', NULL, 'Todo Color', '1'), 
+((select id from setting_categories where name = 'Cards Workflow'), '0', 'DOING_COLOR', '', '', 'text', NULL, 'Doing Color', '2'), 
+((select id from setting_categories where name = 'Cards Workflow'), '0', 'DONE_COLOR', '', '', 'text', NULL, 'Done Color', '3'),
+((select id from setting_categories where name = 'Cards Workflow'), '0', 'TODO_ICON', '', '', 'text', NULL, 'Todo Icon', '4'), 
+((select id from setting_categories where name = 'Cards Workflow'), '0', 'DOING_ICON', '', '', 'text', NULL, 'Doing Icon', '5'), 
+((select id from setting_categories where name = 'Cards Workflow'), '0', 'DONE_ICON', '', '', 'text', NULL, 'Done Icon', '6');
