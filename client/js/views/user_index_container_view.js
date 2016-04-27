@@ -190,7 +190,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
         if (!_.isUndefined(_this.sortDirection) && !_.isUndefined(_this.sortField)) {
             users.setSortField(_this.sortField, _this.sortDirection);
-            if (!_.isUndefined(_this.searchField) && !(_this.searchField === '')) {
+            if (!_.isUndefined(_this.searchField) && (_this.searchField !== '')) {
                 users.url = api_url + 'users.json?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection + '&search=' + _this.searchField;
                 app.navigate('#/' + 'users?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection + '&search=' + _this.searchField, {
                     trigger: false,
@@ -205,7 +205,7 @@ App.UserIndexContainerView = Backbone.View.extend({
             }
 
         } else {
-            if (!_.isUndefined(_this.searchField) && !(_this.searchField === '')) {
+            if (!_.isUndefined(_this.searchField) && (_this.searchField !== '')) {
                 users.url = api_url + 'users.json?page=' + _this.current_page + '&search=' + _this.searchField;
                 app.navigate('#/' + 'users?page=' + _this.current_page + '&search=' + _this.searchField, {
                     trigger: false,
