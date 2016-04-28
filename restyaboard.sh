@@ -1021,7 +1021,7 @@
 			sudo mv -v GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
 			
 			ps -q 1 | grep -q -c "systemd"
-            if [ "$?" -eq 0 ];
+			if [ "$?" -eq 0 ];
 			then
 				systemctl restart php-fpm
 			else
