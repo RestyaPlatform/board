@@ -696,10 +696,10 @@ function saveIp()
     $ip_row = executeQuery('SELECT id FROM ips WHERE ip = $1', $qry_val_arr);
     if (!$ip_row) {
         $country_id = 0;
-		$_geo = array();
-		if (function_exists('geoip_record_by_name')) {
-			$_geo = geoip_record_by_name($_SERVER['REMOTE_ADDR']);
-		}
+        $_geo = array();
+        if (function_exists('geoip_record_by_name')) {
+            $_geo = geoip_record_by_name($_SERVER['REMOTE_ADDR']);
+        }
         if (!empty($_geo)) {
             $qry_val_arr = array(
                 $_geo['country_code']
