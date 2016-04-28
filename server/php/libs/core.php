@@ -1436,7 +1436,10 @@ function bind_elastic($result, $type)
         'attachment_count' => $result['_source']['attachment_count'],
         'due_date' => $result['_source']['due_date'],
         'comment_count' => count($result['_source']['activities']) ,
-        'type' => $type
+        'type' => $type,
+        'checklist_item_completed_count' => $result['_source']['checklist_item_completed_count'],
+        'checklist_item_count' => $result['_source']['checklist_item_count'],
+        'vote_count' => $result['_source']['card_voter_count']
     );
     if (!empty($result['highlight'])) {
         $card['highlight'] = $result['highlight'];

@@ -66,14 +66,12 @@ App.UserDashboardView = Backbone.View.extend({
                 token: api_token
             },
             success: function(model, response) {
-                if (!_.isEmpty(response.result)) {
-                    $('#search-page-result-block').html(new App.SearchPageResultView({
-                        model: response
-                    }).el);
-                    $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
-                    var w_height = $(window).height() - 38;
-                    $(".search-block-main-hover").css('height', w_height + 'px');
-                }
+                $('#search-page-result-block').html(new App.SearchPageResultView({
+                    model: response
+                }).el);
+                $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
+                var w_height = $(window).height() - 38;
+                $(".search-block-main-hover").css('height', w_height + 'px');
             }
         });
         return false;
