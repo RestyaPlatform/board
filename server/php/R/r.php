@@ -791,6 +791,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $final.= 'cards_labels.name:' . '*' . $value . '*' . ' AND ';
                     } elseif ($key === "has:attachments") {
                         $final.= 'attachment_count:>0 AND ';
+                    } elseif ($key === "has:members") {
+                        $final.= 'cards_user_count:>0 AND ';
+                    } elseif ($key === "has:description") {
+                        $final.= '_exists_:description AND ';
                     } elseif ($key === "is:archived") {
                         $final.= 'is_archived:>0 AND ';
                     } elseif ($key === "is:open") {
@@ -836,6 +840,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $settings = getTDD(strtoupper($today[1]));
                         $final.= 'cards_users.user_id:' . $authUser['id'] . ' AND ' . $settings;
                         $data['sort']['due_date']['order'] = 'desc';
+                    }  elseif ($key === "due:unassigned") {
+                         $final.= 'cards_user_count:0 AND ';
                     } elseif ($key === "created:day") {
                         $final.= 'created:[now-1d TO now] AND ';
                     } elseif ($key === "created:week") {

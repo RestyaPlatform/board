@@ -1166,6 +1166,7 @@ CREATE VIEW "cards_elasticsearch_listing" AS
             cards.checklist_item_count, 
             cards.checklist_item_completed_count, 
             cards.card_voter_count, 
+			cards.cards_user_count, 
             ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
                    FROM ( SELECT boards_users.user_id
                            FROM boards_users boards_users
