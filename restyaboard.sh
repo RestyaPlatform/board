@@ -510,17 +510,23 @@
 				sed -i "s/smtp_port = 25/smtp_port = $smtp_port/" /etc/php.ini
 			esac
 			
-			apt-get install php5-geoip php5-dev libgeoip-dev
-			if [ $? != 0 ]
+			if ! hash GeoIP-devel 2>&-;
 			then
-				echo "php5-geoip php5-dev libgeoip-dev installation failed with error code 50"
-				exit 1
+				apt-get install php5-geoip php5-dev libgeoip-dev
+				if [ $? != 0 ]
+				then
+					echo "php5-geoip php5-dev libgeoip-dev installation failed with error code 50"
+					exit 1
+				fi
 			fi
-			pecl install geoip
-			if [ $? != 0 ]
+			if ! hash pecl/geoip 2>&-;
 			then
-				echo "pecl geoip installation failed with error code 51"
-				exit 1
+				pecl install geoip
+				if [ $? != 0 ]
+				then
+					echo "pecl geoip installation failed with error code 47"
+					exit 1
+				fi
 			fi
 			echo "extension=geoip.so" >> /etc/php.ini
 			mkdir -v /usr/share/GeoIP
@@ -566,9 +572,9 @@
 						exit 1
 					fi
 				fi
-				curl -v -L -G -o /tmp/json_data.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
-				chmod -R go+w "/tmp/json_data.json"
-				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/json_data.json`
+				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
+				chmod -R go+w "/tmp/apps.json"
+				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
 				do
 					mkdir "$dir/client/apps"
 					chmod -R go+w "$dir/client/apps"
@@ -982,17 +988,23 @@
                 /etc/init.d/nginx restart
 			fi
 
-			yum install GeoIP-devel
-			if [ $? != 0 ]
+			if ! hash GeoIP-devel 2>&-;
 			then
-				echo "GeoIP-devel installation failed with error code 46"
-				exit 1
+				yum install GeoIP-devel
+				if [ $? != 0 ]
+				then
+					echo "GeoIP-devel installation failed with error code 46"
+					exit 1
+				fi
 			fi
-			pecl install geoip
-			if [ $? != 0 ]
+			if ! hash pecl/geoip 2>&-;
 			then
-				echo "pecl geoip installation failed with error code 47"
-				exit 1
+				pecl install geoip
+				if [ $? != 0 ]
+				then
+					echo "pecl geoip installation failed with error code 47"
+					exit 1
+				fi
 			fi
 			echo "extension=geoip.so" >> /etc/php.ini
 			mkdir -v /usr/share/GeoIP
@@ -1044,9 +1056,9 @@
 						exit 1
 					fi
 				fi
-				curl -v -L -G -o /tmp/json_data.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
-				chmod -R go+w "/tmp/json_data.json"
-				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/json_data.json`
+				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
+				chmod -R go+w "/tmp/apps.json"
+				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
 				do
 					mkdir "$dir/client/apps"
 					chmod -R go+w "$dir/client/apps"
