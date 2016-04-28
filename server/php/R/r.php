@@ -389,6 +389,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if ($authUser['role_id'] != 1 && empty($board_ids)) {
                 $sql = false;
             }
+            $limit = 'all';
             $c_sql = 'SELECT COUNT(*) FROM simple_board_listing bl ' . $filter_condition;
         } else if (!empty($r_resource_filters['page'])) {
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM admin_boards_listing ul ';
@@ -763,7 +764,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                 }
                 $split_str = implode(' ', $string_arr);
-                $split_str = '*' . $split_str . '*';
+                if (!empty($split_str)) {
+                    $split_str = '*' . $split_str . '*';
+                }
                 $data = array();
                 $board = $list = $cards_labels = $split_str;
                 $final = '';
@@ -773,11 +776,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
                 foreach ($colon_arr as $key => $value) {
                     if ($key === "board") {
-                        $board.= $key . ':' . '*' . $value . '*';
+                        $board = $key . ':' . '*' . $value . '*';
                         $final.= $board . ' AND ';
                     } elseif ($key === "list") {
                         $list = $key . ':' . '*' . $value . '*';
-                        $final = $list . ' AND ';
+                        $final.= $list . ' AND ';
                     } elseif ($key === "label") {
                         $cards_labels = 'cards_labels.name:' . '*' . $value . '*';
                         $final.= $cards_labels . ' AND ';
@@ -798,7 +801,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     } elseif ($key === "name") {
                         $final.= $key . ':' . $value . ' AND ';
                     } elseif ($key === "due:day") {
-                        $final.= 'due_date:[now TO now+24h] AND ';
+                        $final.= 'due_date:[now TO now+1d] AND ';
                     } elseif ($key === "due:week") {
                         $final.= 'due_date:[now TO now+1w] AND ';
                     } elseif ($key === "due:month") {
@@ -806,22 +809,22 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     } elseif ($key === "due:overdue") {
                         $final.= 'due_date:[* TO now] AND ';
                     } elseif ($key === "due:today") {
-                        $final.= 'due_date: ' . date('Y-m-d') . ' AND ';
+                        $final.= 'due_date:[' . date('Y-m-d') . ' TO ' . date('Y-m-d') . '] AND cards_users.user_id:' . $authUser['id'] . ' AND ';
                     } elseif ($key === "due:this_week") {
                         $day = date('w') - 1;
                         $week_start = date('Y-m-d', strtotime('-' . $day . ' days'));
                         $week_end = date('Y-m-d', strtotime('+' . (6 - $day) . ' days'));
-                        $final.= 'due_date:[' . $week_start . ' TO ' . $week_end . '] AND ';
+                        $final.= 'due_date:[' . $week_start . ' TO ' . $week_end . '] AND cards_users.user_id:' . $authUser['id'] . ' AND ';
                     } elseif ($key === "due:overall") {
-                        $final.= 'due_date:[* TO *] AND ';
+                        $final.= 'cards_users.user_id:' . $authUser['id'] . ' AND ';
                     } elseif ($key === "created:day") {
-                        $final.= 'created:[now-24h TO now] AND ';
+                        $final.= 'created:[now-1d TO now] AND ';
                     } elseif ($key === "created:week") {
                         $final.= 'created:[now-1w TO now] AND ';
                     } elseif ($key === "created:month") {
                         $final.= 'created:[now-1M TO now] AND ';
                     } elseif ($key === "edited:day") {
-                        $final.= 'modified:[now-24h TO now] AND ';
+                        $final.= 'modified:[now-1d TO now] AND ';
                     } elseif ($key === "edited:week") {
                         $final.= 'modified:[now-1w TO now] AND ';
                     } elseif ($key === "edited:month") {
@@ -837,25 +840,29 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         }
                     }
                 }
-                $data['query']['query_string']['query'] = $board . $admin;
-                $data['highlight']['fields']['board'] = new stdClass;
                 $elasticsearch_url = ELASTICSEARCH_URL . ELASTICSEARCH_INDEX . '/cards/_search';
-                $search_response = doPost($elasticsearch_url, $data, 'json');
                 $response['result'] = array();
-                if (!empty($search_response['hits']['hits'])) {
-                    foreach ($search_response['hits']['hits'] as $result) {
-                        if (check_duplicate($response['result']['boards'], 'board_id', $result['_source']['board_id'])) {
-                            $response['result']['boards'][] = bind_elastic($result, 'boards');
+                if (!empty($board)) {
+                    $data['query']['query_string']['query'] = $board . $admin;
+                    $data['highlight']['fields']['board'] = new stdClass;
+                    $search_response = doPost($elasticsearch_url, $data, 'json');
+                    if (!empty($search_response['hits']['hits'])) {
+                        foreach ($search_response['hits']['hits'] as $result) {
+                            if (check_duplicate($response['result']['boards'], 'board_id', $result['_source']['board_id'])) {
+                                $response['result']['boards'][] = bind_elastic($result, 'boards');
+                            }
                         }
                     }
                 }
-                $data['query']['query_string']['query'] = $list . $admin;
-                $data['highlight']['fields']['list'] = new stdClass;
-                $search_response = doPost($elasticsearch_url, $data, 'json');
-                if (!empty($search_response['hits']['hits'])) {
-                    foreach ($search_response['hits']['hits'] as $result) {
-                        if (check_duplicate($response['result']['lists'], 'list_id', $result['_source']['list_id'])) {
-                            $response['result']['lists'][] = bind_elastic($result, 'lists');
+                if (!empty($list)) {
+                    $data['query']['query_string']['query'] = $list . $admin;
+                    $data['highlight']['fields']['list'] = new stdClass;
+                    $search_response = doPost($elasticsearch_url, $data, 'json');
+                    if (!empty($search_response['hits']['hits'])) {
+                        foreach ($search_response['hits']['hits'] as $result) {
+                            if (check_duplicate($response['result']['lists'], 'list_id', $result['_source']['list_id'])) {
+                                $response['result']['lists'][] = bind_elastic($result, 'lists');
+                            }
                         }
                     }
                 }
@@ -865,7 +872,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data['highlight']['post_tags'] = array(
                     "</span>"
                 );
-                $data['query']['query_string']['query'] = $final . 'name:' . $split_str . ' or description:' . $split_str . $admin;
+                $str = '';
+                if (!empty($split_str)) {
+                    $str = 'name:' . $split_str . ' or description:' . $split_str;
+                } else {
+                    $final = substr($final, 0, strlen($final) - 4);
+                }
+                $data['query']['query_string']['query'] = $final . $str . $admin;
                 $data['highlight']['fields']['name'] = new stdClass;
                 $data['highlight']['fields']['description'] = new stdClass;
                 $search_response = doPost($elasticsearch_url, $data, 'json');
@@ -876,28 +889,32 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         }
                     }
                 }
-                $data['query']['query_string']['query'] = $cards_labels . $admin;
-                $data['highlight']['fields']['cards_labels.name'] = new stdClass;
-                $search_response = doPost($elasticsearch_url, $data, 'json');
-                if (!empty($search_response['hits']['hits'])) {
-                    foreach ($search_response['hits']['hits'] as $result) {
-                        $response['result']['cards_labels'][] = bind_elastic($result, 'cards_labels');
+                if (!empty($cards_labels)) {
+                    $data['query']['query_string']['query'] = $cards_labels . $admin;
+                    $data['highlight']['fields']['cards_labels.name'] = new stdClass;
+                    $search_response = doPost($elasticsearch_url, $data, 'json');
+                    if (!empty($search_response['hits']['hits'])) {
+                        foreach ($search_response['hits']['hits'] as $result) {
+                            $response['result']['cards_labels'][] = bind_elastic($result, 'cards_labels');
+                        }
+                    }
+                    $data['query']['query_string']['query'] = 'activities.comment:' . $split_str . $admin;
+                    $data['highlight']['fields']['activities.comment'] = new stdClass;
+                    $search_response = doPost($elasticsearch_url, $data, 'json');
+                    if (!empty($search_response['hits']['hits'])) {
+                        foreach ($search_response['hits']['hits'] as $result) {
+                            $response['result']['comments'][] = bind_elastic($result, 'comments');
+                        }
                     }
                 }
-                $data['query']['query_string']['query'] = 'activities.comment:' . $split_str . $admin;
-                $data['highlight']['fields']['activities.comment'] = new stdClass;
-                $search_response = doPost($elasticsearch_url, $data, 'json');
-                if (!empty($search_response['hits']['hits'])) {
-                    foreach ($search_response['hits']['hits'] as $result) {
-                        $response['result']['comments'][] = bind_elastic($result, 'comments');
-                    }
-                }
-                $data['query']['query_string']['query'] = 'cards_checklists.checklist_item_name:' . $split_str . $admin;
-                $data['highlight']['fields']['cards_checklists.checklist_item_name'] = new stdClass;
-                $search_response = doPost($elasticsearch_url, $data, 'json');
-                if (!empty($search_response['hits']['hits'])) {
-                    foreach ($search_response['hits']['hits'] as $result) {
-                        $response['result']['checklists'][] = bind_elastic($result, 'checklists');
+                if (!empty($split_str)) {
+                    $data['query']['query_string']['query'] = 'cards_checklists.checklist_item_name:' . $split_str . $admin;
+                    $data['highlight']['fields']['cards_checklists.checklist_item_name'] = new stdClass;
+                    $search_response = doPost($elasticsearch_url, $data, 'json');
+                    if (!empty($search_response['hits']['hits'])) {
+                        foreach ($search_response['hits']['hits'] as $result) {
+                            $response['result']['checklists'][] = bind_elastic($result, 'checklists');
+                        }
                     }
                 }
             }
@@ -1061,18 +1078,22 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $c_result = pg_query_params($db_lnk, $c_sql, $pg_params);
             $c_data = pg_fetch_object($c_result, 0);
             $page = (isset($r_resource_filters['page']) && $r_resource_filters['page']) ? $r_resource_filters['page'] : 1;
-            $start = ($page - 1) * PAGING_COUNT;
-            $total_page = ceil($c_data->count / PAGING_COUNT);
-            $showing = (($start + PAGING_COUNT) > $c_data->count) ? ($c_data->count - $start) : PAGING_COUNT;
+            $page_count = PAGING_COUNT;
+            if (!empty($limit) && $limit == 'all') {
+                $page_count = $c_data->count;
+            }
+            $start = ($page - 1) * $page_count;
+            $total_page = ceil($c_data->count / $page_count);
+            $showing = (($start + $page_count) > $c_data->count) ? ($c_data->count - $start) : $page_count;
             $_metadata = array(
                 'noOfPages' => $total_page,
                 'total_records' => $c_data->count,
-                'limit' => PAGING_COUNT,
+                'limit' => $page_count,
                 'offset' => $start,
                 'showing' => $showing,
                 'maxSize' => 5
             );
-            $sql.= ' LIMIT ' . PAGING_COUNT . ' OFFSET ' . $start;
+            $sql.= ' LIMIT ' . $page_count . ' OFFSET ' . $start;
         }
         if ($r_resource_cmd == '/users') {
             $filter_count = array();
@@ -1395,7 +1416,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     foreach ($board_lists as $list) {
                         $my_lists[] = $list['id'];
                         foreach ($settings as $key => $setting) {
-                            if (in_array(strtolower(trim($list['name'])) , $setting)) {
+                            $trim = trim($list['name']);
+                            $str_low = strtolower($trim);
+                            if (in_array($str_low, $setting)) {
                                 $settings_lists[$key][] = $list['id'];
                             }
                         }
