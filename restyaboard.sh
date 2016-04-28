@@ -510,31 +510,65 @@
 				sed -i "s/smtp_port = 25/smtp_port = $smtp_port/" /etc/php.ini
 			esac
 			
+			apt-get install php5-geoip php5-dev libgeoip-dev
+			if [ $? != 0 ]
+			then
+				echo "php5-geoip php5-dev libgeoip-dev installation failed with error code 50"
+				exit 1
+			fi
+			pecl install geoip
+			if [ $? != 0 ]
+			then
+				echo "pecl geoip installation failed with error code 51"
+				exit 1
+			fi
+			echo "extension=geoip.so" >> /etc/php.ini
+			mkdir -v /usr/share/GeoIP
+			if [ $? != 0 ]
+			then
+				echo "GeoIP folder creation failed with error code 52"
+				exit 1
+			fi
+			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+			gunzip GeoIP.dat.gz
+			sudo mv -v GeoIP.dat /usr/share/GeoIP/GeoIP.dat
+			wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+			gunzip GeoIPv6.dat.gz
+			sudo mv -v GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
+			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+			gunzip GeoLiteCity.dat.gz
+			sudo mv -v GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
+			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+			gunzip GeoLiteCityv6.dat.gz
+			sudo mv -v GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
+			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+			gunzip GeoIPASNum.dat.gz
+			sudo mv -v GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
+			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
+			gunzip GeoIPASNumv6.dat.gz
+			sudo mv -v GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
+			
+			service php5-fpm restart
+			
 			set +x
-			echo "Do you want to install Default apps (y/n)?"
+			echo "Do you want to install Restyaboard apps (y/n)?"
 			read -r answer
 			set -x
 			case "${answer}" in
 				[Yy])
 				if ! hash jq 2>&-;
 				then
-					echo "jq is not installed!"
-					set +x
-					echo "Do you want to install jq (y/n)?" 
-					read -r answer
-					set -x
-					case "${answer}" in
-						[Yy])
-						echo "Installing jq..."
-						apt-get install jq
-						if [ $? != 0 ]
-						then
-							echo "jq installation failed with error code 49"
-							exit 1
-						fi
-					esac
+					echo "Installing jq..."
+					apt-get install jq
+					if [ $? != 0 ]
+					then
+						echo "jq installation failed with error code 53"
+						exit 1
+					fi
 				fi
-				for fid in `jq -r '.[] | .id + "-v" + .version' json_data.json`
+				curl -v -L -G -o /tmp/json_data.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
+				chmod -R go+w "/tmp/json_data.json"
+				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/json_data.json`
 				do
 					mkdir "$dir/client/apps"
 					chmod -R go+w "$dir/client/apps"
@@ -995,30 +1029,24 @@
 			fi
 			
 			set +x
-			echo "Do you want to install Default apps (y/n)?"
+			echo "Do you want to install Restyaboard apps (y/n)?"
 			read -r answer
 			set -x
 			case "${answer}" in
 				[Yy])
 				if ! hash jq 2>&-;
 				then
-					echo "jq is not installed!"
-					set +x
-					echo "Do you want to install jq (y/n)?" 
-					read -r answer
-					set -x
-					case "${answer}" in
-						[Yy])
-						echo "Installing jq..."
-						yum install -y jq
-						if [ $? != 0 ]
-						then
-							echo "jq installation failed with error code 49"
-							exit 1
-						fi
-					esac
+					echo "Installing jq..."
+					yum install -y jq
+					if [ $? != 0 ]
+					then
+						echo "jq installation failed with error code 49"
+						exit 1
+					fi
 				fi
-				for fid in `jq -r '.[] | .id + "-v" + .version' json_data.json`
+				curl -v -L -G -o /tmp/json_data.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
+				chmod -R go+w "/tmp/json_data.json"
+				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/json_data.json`
 				do
 					mkdir "$dir/client/apps"
 					chmod -R go+w "$dir/client/apps"
