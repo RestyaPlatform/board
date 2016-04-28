@@ -48,7 +48,7 @@
 										  
 										  </span></small></a></li>
 									  <% } %> 
-									  <li class="col-md-6 pull-right"><% if (item.highlight !== null) { %><p class="htruncate"><%= item.highlight['cards_labels.name'] %></p><% } %></li>
+									  <li class="col-md-6 pull-right"><% if (!_.isUndefined(item.highlight)) { %><p class="htruncate"><%= item.highlight['cards_labels.name'] %></p><% } %></li>
 								</ul>
 								</div>
 							  <% }); %> 
@@ -87,7 +87,7 @@
 										  <%= dateFormat(date_time[0], "mediumDate") %>
 										  </span></small></a></li>
 									  <% } %>
-									  <li class="col-md-6 pull-right"><% if (item.highlight !== null) { %><p class="htruncate"><%= item.highlight['activities.comment'] %></p><% } %></li>
+									  <li class="col-md-6 pull-right"><% if (!_.isUndefined(item.highlight)) { %><p class="htruncate"><%= item.highlight['activities.comment'] %></p><% } %></li>
 								</ul>
 							  </div>
 							  <% }); %>
@@ -143,7 +143,7 @@
 										  <%= dateFormat(date_time[0], "mediumDate") %>
 										  </span></small></a></li>
 									  <% } %> 
-									  <li class="col-md-6 pull-right"><% if (item.highlight !== null) { %><p class="htruncate"><%= item.highlight['cards_checklists.checklist_item_name'] %></p><% } %></li>
+									  <li class="col-md-6 pull-right"><% if (!_.isUndefined(item.highlight)) { %><p class="htruncate"><%= item.highlight['cards_checklists.checklist_item_name'] %></p><% } %></li>
 								</ul>
 							  </div>
 							  <% }); %>
@@ -182,7 +182,7 @@
 										  <%= dateFormat(date_time[0], "mediumDate") %>
 										  </span></small></a></li>
 									  <% } %> 
-									  <li class="col-md-6 pull-right"><% if (item.highlight !== null) { %><p class="htruncate"><%= 
+									  <li class="col-md-6 pull-right"><% if (!_.isUndefined(item.highlight)) { %><p class="htruncate"><%= 
 									  (!_.isUndefined(item.highlight.description))? item.highlight.description : item.highlight.name %></p> <% } %></li>
 								</ul>
 							  </div>

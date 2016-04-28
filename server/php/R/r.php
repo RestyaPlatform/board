@@ -776,11 +776,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
                 foreach ($colon_arr as $key => $value) {
                     if ($key === "board") {
-                        $board.= $key . ':' . '*' . $value . '*';
+                        $board = $key . ':' . '*' . $value . '*';
                         $final.= $board . ' AND ';
                     } elseif ($key === "list") {
                         $list = $key . ':' . '*' . $value . '*';
-                        $final = $list . ' AND ';
+                        $final.= $list . ' AND ';
                     } elseif ($key === "label") {
                         $cards_labels = 'cards_labels.name:' . '*' . $value . '*';
                         $final.= $cards_labels . ' AND ';
@@ -809,7 +809,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     } elseif ($key === "due:overdue") {
                         $final.= 'due_date:[* TO now] AND ';
                     } elseif ($key === "due:today") {
-                        $final.= 'due_date:[* TO *] AND ';
+                        $final.= 'due_date:[' . date('Y-m-d') . ' TO ' . date('Y-m-d') . '] AND ';
                     } elseif ($key === "due:this_week") {
                         $day = date('w') - 1;
                         $week_start = date('Y-m-d', strtotime('-' . $day . ' days'));
@@ -840,12 +840,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         }
                     }
                 }
+                $elasticsearch_url = ELASTICSEARCH_URL . ELASTICSEARCH_INDEX . '/cards/_search';
+                $response['result'] = array();
                 if (!empty($board)) {
                     $data['query']['query_string']['query'] = $board . $admin;
                     $data['highlight']['fields']['board'] = new stdClass;
-                    $elasticsearch_url = ELASTICSEARCH_URL . ELASTICSEARCH_INDEX . '/cards/_search';
                     $search_response = doPost($elasticsearch_url, $data, 'json');
-                    $response['result'] = array();
                     if (!empty($search_response['hits']['hits'])) {
                         foreach ($search_response['hits']['hits'] as $result) {
                             if (check_duplicate($response['result']['boards'], 'board_id', $result['_source']['board_id'])) {
@@ -872,21 +872,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data['highlight']['post_tags'] = array(
                     "</span>"
                 );
-                $str = '';
                 if (!empty($split_str)) {
-                    $str = 'name:' . $split_str . ' or description:' . $split_str;
-                } else {
-                    $final = substr($final, 0, strlen($final) - 4);
-                }
-                echo $final . $str . $admin;
-                $data['query']['query_string']['query'] = $final . $str . $admin;
-                $data['highlight']['fields']['name'] = new stdClass;
-                $data['highlight']['fields']['description'] = new stdClass;
-                $search_response = doPost($elasticsearch_url, $data, 'json');
-                if (!empty($search_response['hits']['hits'])) {
-                    foreach ($search_response['hits']['hits'] as $result) {
-                        if (check_duplicate($response['result']['cards'], 'id', $result['_source']['id'])) {
-                            $response['result']['cards'][] = bind_elastic($result, 'cards');
+                    $data['query']['query_string']['query'] = $final . 'name:' . $split_str . ' or description:' . $split_str . $admin;
+                    $data['highlight']['fields']['name'] = new stdClass;
+                    $data['highlight']['fields']['description'] = new stdClass;
+                    $search_response = doPost($elasticsearch_url, $data, 'json');
+                    if (!empty($search_response['hits']['hits'])) {
+                        foreach ($search_response['hits']['hits'] as $result) {
+                            if (check_duplicate($response['result']['cards'], 'id', $result['_source']['id'])) {
+                                $response['result']['cards'][] = bind_elastic($result, 'cards');
+                            }
                         }
                     }
                 }
