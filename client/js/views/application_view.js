@@ -742,24 +742,24 @@ App.ApplicationView = Backbone.View.extend({
                                     $(this).sparkline($(this).data('todo').split(','), {
                                         enableTagOptions: true,
                                         type: 'line',
-                                        fillColor: false,
+                                        fillColor: '#65cca9',
                                         lineColor: '#65cca9',
-                                        width: '750',
-                                        height: '100'
+                                        width: '250',
+                                        height: '25'
                                     });
                                     $(this).sparkline($(this).data('doing').split(','), {
                                         composite: true,
-                                        fillColor: false,
+                                        fillColor: '#eca186',
                                         lineColor: '#eca186',
-                                        width: '750',
-                                        height: '100'
+                                        width: '250',
+                                        height: '25'
                                     });
                                     $(this).sparkline($(this).data('done').split(','), {
                                         composite: true,
-                                        fillColor: false,
+                                        fillColor: '#fee3e0',
                                         lineColor: '#fee3e0',
-                                        width: '750',
-                                        height: '100'
+                                        width: '250',
+                                        height: '25'
                                     });
                                 });
 

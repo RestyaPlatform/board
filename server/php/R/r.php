@@ -390,7 +390,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $sql = false;
             }
             $limit = 'all';
-            $c_sql = 'SELECT COUNT(*) FROM simple_board_listing bl ' . $filter_condition;
+			if(!empty($pg_params)) {
+				$c_sql = 'SELECT COUNT(*) FROM simple_board_listing ul WHERE ul.id =ANY($1)' . $filter_condition;	
+			} else {
+				$c_sql = 'SELECT COUNT(*) FROM simple_board_listing ul ' . $filter_condition;	
+			}
+            
         } else if (!empty($r_resource_filters['page'])) {
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM admin_boards_listing ul ';
             $order_by = 'name';
@@ -1366,9 +1371,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $obj['organization_user_roles'][] = json_decode($row['row_to_json'], true);
                     }
                 } else if ($r_resource_cmd == '/boards' && (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'simple')) {
-                    foreach ($obj['lists'] as $list) {
-                        $board_lists[$list['id']] = $list;
-                    }
+					if(!empty($obj['lists'])) {
+						foreach ($obj['lists'] as $list) {
+							$board_lists[$list['id']] = $list;
+						}
+					}
                 }
                 if (!empty($_metadata)) {
                     $data['data'][] = $obj;
@@ -1578,8 +1585,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $conditions = array(
                         $board['name']
                     );
-                    $chat_db_lnk = getEjabberdConnection();
-                    pg_query_params($chat_db_lnk, 'DELETE FROM muc_room WHERE name= $1', $conditions);
+					if(CHAT_DB_HOST) {
+						$chat_db_lnk = getEjabberdConnection();
+						pg_query_params($chat_db_lnk, 'DELETE FROM muc_room WHERE name= $1', $conditions);
+					}
                 }
             }
             $response = array(
