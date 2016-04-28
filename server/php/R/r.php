@@ -809,14 +809,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     } elseif ($key === "due:overdue") {
                         $final.= 'due_date:[* TO now] AND ';
                     } elseif ($key === "due:today") {
-                        $final.= 'due_date:[' . date('Y-m-d') . ' TO ' . date('Y-m-d') . '] AND ';
+                        $final.= 'due_date:[' . date('Y-m-d') . ' TO ' . date('Y-m-d') . '] AND cards_users.user_id:' . $authUser['id'] . ' AND ';
                     } elseif ($key === "due:this_week") {
                         $day = date('w') - 1;
                         $week_start = date('Y-m-d', strtotime('-' . $day . ' days'));
                         $week_end = date('Y-m-d', strtotime('+' . (6 - $day) . ' days'));
-                        $final.= 'due_date:[' . $week_start . ' TO ' . $week_end . '] AND ';
+                        $final.= 'due_date:[' . $week_start . ' TO ' . $week_end . '] AND cards_users.user_id:' . $authUser['id'] . ' AND ';
                     } elseif ($key === "due:overall") {
-                        $final.= 'due_date:[* TO *] AND ';
+                        $final.= 'cards_users.user_id:' . $authUser['id'] . ' AND ';
                     } elseif ($key === "created:day") {
                         $final.= 'created:[now-1d TO now] AND ';
                     } elseif ($key === "created:week") {
