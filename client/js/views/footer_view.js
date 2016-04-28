@@ -1469,20 +1469,18 @@ App.FooterView = Backbone.View.extend({
                     $("#js-loader-img").addClass('hide');
                     $("#res").addClass('hide');
                     $("#nres").addClass('hide');
-                    if (!_.isEmpty(response.result)) {
-                        app.navigate('#/search/' + q, {
-                            trigger: false,
-                            trigger_function: false,
-                            replace: true
-                        });
-                        $('.js-boards-list-container-search').addClass('hide');
-                        $('#search-page-result-block').html(new App.SearchPageResultView({
-                            model: response
-                        }).el);
-                        $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
-                        var w_height = $(window).height() - 38;
-                        $(".search-block-main-hover").css('height', w_height + 'px');
-                    }
+                    app.navigate('#/search/' + q, {
+                        trigger: false,
+                        trigger_function: false,
+                        replace: true
+                    });
+                    $('.js-boards-list-container-search').addClass('hide');
+                    $('#search-page-result-block').html(new App.SearchPageResultView({
+                        model: response
+                    }).el);
+                    $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
+                    var w_height = $(window).height() - 38;
+                    $(".search-block-main-hover").css('height', w_height + 'px');
                 }
             });
         }

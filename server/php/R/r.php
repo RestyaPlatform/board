@@ -769,8 +769,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
                 $data = array();
                 if (!empty($split_str)) {
-                    $board = 'board:' . $split_str;
                     $list = 'list:' . $split_str;
+                    $board = 'board:' . $split_str;
                     $cards_labels = 'cards_labels.name:' . $split_str;
                 }
                 $final = '';
@@ -878,7 +878,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 );
                 $str = '';
                 if (!empty($split_str)) {
-                    $str = 'name:' . $split_str . ' or description:' . $split_str;
+                    $str = 'name:' . $split_str . ' OR description:' . $split_str;
                 } else {
                     $final = substr($final, 0, strlen($final) - 4);
                 }
