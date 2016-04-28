@@ -57,11 +57,17 @@
 	}
 	
 %>
-<section class="clearfix">
-	 <div class="col-sm-3 text-center dashboard-organization">
+<div class="clearfix">
+	<div class="row">
+	 <div class="col-sm-2 text-center dashboard-organization">
 		<div class="navbar-btn">
-			<% if(!_.isUndefined(data.user_profile_picture)) { %>
+			<label class="clearfix"><a title="<%- data.user.full_name %> (<%- data.user.username %>)" href="#/user/<%- data.user.id %>"><%- data.user.full_name %> (<%- data.user.username %>)</a></label>
+		</div>
+		<div class="navbar-btn">
+			<% if(!_.isEmpty(data.user_profile_picture)) { %>
 				<img title="<%- data.user.full_name %> (<%- data.user.username %>)" alt="<%- data.user.username %>" src="<%- data.user_profile_picture %>" width="147" height="145" class="thumbnail center-block">
+			<% } else { %>
+				<i class="avatar avatar-color-194 avatar-lg img-rounded"><%= (data.user.initials) %></i>
 			<% } %>
 		</div>
 		<div class="clearfix dropdown navbar-btn">
@@ -73,9 +79,9 @@
 			 </ul>
 		</div>
 	 </div>
-	<div class="col-sm-9 clearfix">
-	  <div class="col-sm-4 col-xs-12">
-		  <div class="col-xs-12 thumbnail">
+	<div class="col-sm-10 clearfix">
+	  <div class="col-sm-3 col-xs-12">
+		  <div class="row thumbnail">
 		   <div class="pull-left col-xs-4">
 			 <h4 class="clearfix"><span class="pull-left"><%- i18next.t('Today') %></span><span class="pull-right"><a href="javascript:void(0)"><i class="icon-search dashboard-search h6" data-search="today"></i></a></span></h4> 
 			 <div class="thumbnail text-center navbar-btn">
@@ -126,8 +132,8 @@
 			</ul>
 		 </div>
 	  </div>
-	  <div class="col-sm-4 col-xs-12">
-		  <div class="col-xs-12 thumbnail">
+	  <div class="col-sm-3 col-xs-12">
+		  <div class="row thumbnail">
 			   <div class="pull-left col-xs-5">
 					<h4 class="clearfix"><span class="pull-left"><%- i18next.t('Overall') %> &nbsp;</span><span><a href="javascript:void(0)"><i class="icon-search dashboard-search h6" data-search="overall"></i></a></span></h4>
 			   </div>
@@ -140,31 +146,41 @@
 			</ul>
 		 </div>
 	   </div>
+		<div class="clearfix col-sm-2 pull-right text-center">
+			<div class="clearfix col-xs-12 thumbnail">
+				<div class="well-sm navbar-btn"></div>
+				<div class="clearfix h4">
+					<h4><%- i18next.t('Unassigned') %></h4>
+					<div class="btn btn-primary"><%- data.dashboard.unassigned %></div>
+				</div>
+				<div class="well-sm navbar-btn"></div>
+			</div>
+		</div>
 	   <div class="col-xs-12 clearfix navbar-btn">
-			<div class="navbar-btn">
-				<div class="col-sm-2 h4"> <%- i18next.t('This week') %></div> 
-				<div class="col-sm-10">
+			<div class="col-xs-6 clearfix navbar-btn">
+				<div class="col-sm-4 h4"> <%- i18next.t('This week') %></div> 
+				<div class="col-sm-8">
 					<span class="sparklines" data-todo="<%- (current_weekwise_todo_count).join() %>" data-doing="<%- (current_weekwise_doing_count).join() %>" data-done="<%- (current_weekwise_done_count).join() %>" ></span>
 				</div>
 			</div>
-	   </div>
-	   <div class="col-xs-12 clearfix navbar-btn">
-			<div class="navbar-btn"> 
-				<div class="col-sm-2 h4"> <%- i18next.t('Last week') %></div> 
-				<div class="col-sm-10">
+			<div class="col-xs-6 clearfix navbar-btn"> 
+				<div class="col-sm-4 h4"> <%- i18next.t('Last week') %></div> 
+				<div class="col-sm-8">
 					<span class="sparklines test" data-todo="<%- (last_weekwise_todo_count).join() %>" data-doing="<%- (last_weekwise_doing_count).join() %>" data-done="<%- (last_weekwise_done_count).join() %>" ></span>
 				</div>
 			</div>
 	   </div>
 	   <div class="col-xs-12 text-center navbar-btn">
 			<ul class="list-inline navbar-btn">
-				<li><%- i18next.t('Unassigned') %> <button class="btn btn-primary"> <%- data.dashboard.unassigned %> </button></li>
+				<% if(!_.isUndefined(data.user.role_id) && data.user.role_id === "1") { %>
 				<li class="navbar-right"><i class="icon-warning-sign text-warning"></i><%- i18next.t('Todo, Doing, Done lists can be configured in') %><a href="#/settings/8" title="settings" class="text-primary"> <%- i18next.t('settings') %> </a></li>
+				<% } %>
 			</ul>
 	   </div>
 	</div>
-</section>
-<section class="clearfix dashboard-header">
+  </div>
+</div>
+<div class="clearfix dashboard-header">
 	<div class="col-xs-12">
 		<hr>
 		<span class="pull-left h4"><%=data.dashboard.page_title%></span>
@@ -174,4 +190,4 @@
 			<li class="<% if(Backbone.history.fragment.indexOf('boards/closed') != -1){%>active<%}%>"><a href="#/boards/closed" title="<%- i18next.t('Closed Boards') %>" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-th-large"></i></a></li>
 		</ul>
 	</div>
-</section>
+</div>
