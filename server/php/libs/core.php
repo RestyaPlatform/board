@@ -1403,9 +1403,11 @@ function getEjabberdConnection()
  */
 function check_duplicate($array, $key, $value)
 {
-    foreach ($array as $arr) {
-        if ($arr[$key] == $value) {
-            return false;
+    if (is_array($array)) {
+        foreach ($array as $arr) {
+            if ($arr[$key] == $value) {
+                return false;
+            }
         }
     }
     return true;
@@ -1431,9 +1433,11 @@ function bind_elastic($result, $type)
         'attachment_count' => $result['_source']['attachment_count'],
         'due_date' => $result['_source']['due_date'],
         'comment_count' => count($result['_source']['activities']) ,
-        'type' => $type,
-        'highlight' => $result['highlight'],
+        'type' => $type
     );
+    if (!empty($result['highlight'])) {
+        $card['highlight'] = $result['highlight'];
+    }
     return $card;
 }
 function wait_for_register_response($event, $args)

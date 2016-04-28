@@ -936,7 +936,7 @@ App.ApplicationView = Backbone.View.extend({
                                                         model: response
                                                     }).el);
                                                     $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
-                                                    var w_height = $(window).height() - 78;
+                                                    var w_height = $(window).height() - 38;
                                                     $(".search-block-main-hover").css('height', w_height + 'px');
                                                 }
                                             }
