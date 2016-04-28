@@ -872,19 +872,23 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data['highlight']['post_tags'] = array(
                     "</span>"
                 );
+				$str = '';
                 if (!empty($split_str)) {
-                    $data['query']['query_string']['query'] = $final . 'name:' . $split_str . ' or description:' . $split_str . $admin;
-                    $data['highlight']['fields']['name'] = new stdClass;
-                    $data['highlight']['fields']['description'] = new stdClass;
-                    $search_response = doPost($elasticsearch_url, $data, 'json');
-                    if (!empty($search_response['hits']['hits'])) {
-                        foreach ($search_response['hits']['hits'] as $result) {
-                            if (check_duplicate($response['result']['cards'], 'id', $result['_source']['id'])) {
-                                $response['result']['cards'][] = bind_elastic($result, 'cards');
-                            }
-                        }
-                    }
+                    $str = 'name:' . $split_str . ' or description:' . $split_str;
+                } else {
+                    $final = substr($final, 0, strlen($final) - 4);
                 }
+				$data['query']['query_string']['query'] = $data['query']['query_string']['query'] = $final . $str . $admin;
+				$data['highlight']['fields']['name'] = new stdClass;
+				$data['highlight']['fields']['description'] = new stdClass;
+				$search_response = doPost($elasticsearch_url, $data, 'json');
+				if (!empty($search_response['hits']['hits'])) {
+					foreach ($search_response['hits']['hits'] as $result) {
+						if (check_duplicate($response['result']['cards'], 'id', $result['_source']['id'])) {
+							$response['result']['cards'][] = bind_elastic($result, 'cards');
+						}
+					}
+				}
                 if (!empty($cards_labels)) {
                     $data['query']['query_string']['query'] = $cards_labels . $admin;
                     $data['highlight']['fields']['cards_labels.name'] = new stdClass;
