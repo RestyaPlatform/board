@@ -16,26 +16,6 @@ $(window).resize(function() {
 });
 var $dc = $(document);
 $dc.ready(function() {
-    if ($.cookie('_geo') === null) {
-        $.ajax({
-            type: 'GET',
-            url: '//freegeoip.net/json/',
-            dataType: 'JSONP',
-            cache: true,
-            success: function(data) {
-                data.country_code = (data.country_code !== undefined && data.country_code !== null) ? data.country_code : "";
-                data.region = (data.region_name !== undefined && data.region_name !== null) ? data.region_name : "";
-                data.city = (data.city !== undefined && data.city !== null) ? data.city : "";
-                data.latitude = (data.latitude !== undefined && data.latitude !== null) ? data.latitude : "";
-                data.longitude = (data.longitude !== undefined && data.longitude !== null) ? data.longitude : "";
-                var geo = data.country_code + '|' + data.region + '|' + data.city + '|' + data.latitude + '|' + data.longitude;
-                $.cookie('_geo', geo, {
-                    expires: 100,
-                    path: '/'
-                });
-            }
-        });
-    }
     $dc.on('click', '.js-cancel-organization', function(e) {
         var target = $(e.target);
         target.parents('li.dropdown').removeClass('open');
