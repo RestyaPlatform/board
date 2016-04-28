@@ -61,7 +61,7 @@
 	<div class="row">
 	 <div class="col-sm-2 text-center dashboard-organization">
 		<div class="navbar-btn">
-			<label class="clearfix"><%- data.user.full_name %> (<%- data.user.username %>)</label>
+			<label class="clearfix"><a title="<%- data.user.full_name %> (<%- data.user.username %>)" href="#/user/<%- data.user.id %>"><%- data.user.full_name %> (<%- data.user.username %>)</a></label>
 		</div>
 		<div class="navbar-btn">
 			<% if(!_.isEmpty(data.user_profile_picture)) { %>
