@@ -51,13 +51,7 @@ App.UserDashboardView = Backbone.View.extend({
     },
     dashboardSearch: function(e) {
         var q = $(e.currentTarget).data('search');
-        if (q == 'today') {
-            q = 'due:today';
-        } else if (q == 'week') {
-            q = 'due:this_week';
-        } else {
-            q = 'due:overall';
-        }
+        q = 'due:' + q;
         var elastic_search = new App.ElasticSearchCollection();
         elastic_search.url = api_url + 'search.json';
         elastic_search.fetch({
@@ -66,6 +60,8 @@ App.UserDashboardView = Backbone.View.extend({
                 token: api_token
             },
             success: function(model, response) {
+                var response = response;
+                response.result.search_term = q;
                 $('#search-page-result-block').html(new App.SearchPageResultView({
                     model: response
                 }).el);

@@ -104,7 +104,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $filter_condition.= 'role_id = ' . $r_resource_filters['filter'];
             }
         } else if (!empty($r_resource_filters['search'])) {
-            $filter_condition = "WHERE full_name LIKE '%" . $r_resource_filters['search'] . "%' ";
+            $filter_condition = "WHERE LOWER(full_name) LIKE '%" . strtolower($r_resource_filters['search']) . "%' OR LOWER(email) LIKE '%" . strtolower($r_resource_filters['search']) . "%' ";
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ') as d ';
         $c_sql = 'SELECT COUNT(*) FROM users_listing ul ';
@@ -772,6 +772,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $list = 'list:' . $split_str;
                     $board = 'board:' . $split_str;
                     $cards_labels = 'cards_labels.name:' . $split_str;
+                    $cards_comments = 'activities.comment:' . $split_str;
+                    $cards_checklists = 'cards_checklists.checklist_item_name:' . $split_str;
                 }
                 $final = '';
                 $admin = '';
@@ -786,8 +788,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $list = $key . ':' . '*' . $value . '*';
                         $final.= $list . ' AND ';
                     } elseif ($key === "label") {
-                        $cards_labels = 'cards_labels.name:' . '*' . $value . '*';
-                        $final.= $cards_labels . ' AND ';
+                        $final.= 'cards_labels.name:' . '*' . $value . '*' . ' AND ';
                     } elseif ($key === "has:attachments") {
                         $final.= 'attachment_count:>0 AND ';
                     } elseif ($key === "is:archived") {
@@ -799,39 +800,57 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     } elseif ($key === "description") {
                         $final.= 'description.name:' . $value . ' AND ';
                     } elseif ($key === "checklist") {
-                        $final.= 'cards_checklists.name:' . $value . ' AND ';
+                        $final.= 'cards_checklists.name:' . '*' . $value . '*' . ' AND ';
                     } elseif ($key === "comment") {
-                        $final.= 'activities.comment:' . $value . ' AND ';
+                        $final.= 'activities.comment:' . '*' . $value . '*' . ' AND ';
                     } elseif ($key === "name") {
                         $final.= $key . ':' . $value . ' AND ';
                     } elseif ($key === "due:day") {
                         $final.= 'due_date:[now TO now+1d] AND ';
                     } elseif ($key === "due:week") {
                         $final.= 'due_date:[now TO now+1w] AND ';
+                        $data['sort']['due_date']['order'] = 'desc';
                     } elseif ($key === "due:month") {
                         $final.= 'due_date:[now TO now+1M] AND ';
+                        $data['sort']['due_date']['order'] = 'desc';
                     } elseif ($key === "due:overdue") {
                         $final.= 'due_date:[* TO now] AND ';
-                    } elseif ($key === "due:today") {
-                        $final.= 'due_date:[' . date('Y-m-d') . ' TO ' . date('Y-m-d') . '] AND cards_users.user_id:' . $authUser['id'] . ' AND ';
-                    } elseif ($key === "due:this_week") {
+                        $data['sort']['due_date']['order'] = 'desc';
+                    } elseif ($key === "due:today_todo" || $key === "due:today_doing" || $key === "due:today_done") {
+                        $due = explode(':', $key);
+                        $today = explode('_', $due[1]);
+                        $settings = getTDD(strtoupper($today[1]));
+                        $final.= 'due_date:[' . date('Y-m-d') . ' TO ' . date('Y-m-d') . '] AND cards_users.user_id:' . $authUser['id'] . ' AND ' . $settings;
+                    } elseif ($key === "due:week_todo" || $key === "due:week_doing" || $key === "due:week_done") {
+                        $due = explode(':', $key);
+                        $today = explode('_', $due[1]);
+                        $settings = getTDD(strtoupper($today[1]));
                         $day = date('w') - 1;
                         $week_start = date('Y-m-d', strtotime('-' . $day . ' days'));
                         $week_end = date('Y-m-d', strtotime('+' . (6 - $day) . ' days'));
-                        $final.= 'due_date:[' . $week_start . ' TO ' . $week_end . '] AND cards_users.user_id:' . $authUser['id'] . ' AND ';
-                    } elseif ($key === "due:overall") {
-                        $final.= 'cards_users.user_id:' . $authUser['id'] . ' AND ';
+                        $final.= 'due_date:[' . $week_start . ' TO ' . $week_end . '] AND cards_users.user_id:' . $authUser['id'] . ' AND ' . $settings;
+                        $data['sort']['due_date']['order'] = 'desc';
+                    } elseif ($key === "due:overall_todo" || $key === "due:overall_doing" || $key === "due:overall_done") {
+                        $due = explode(':', $key);
+                        $today = explode('_', $due[1]);
+                        $settings = getTDD(strtoupper($today[1]));
+                        $final.= 'cards_users.user_id:' . $authUser['id'] . ' AND ' . $settings;
+                        $data['sort']['due_date']['order'] = 'desc';
                     } elseif ($key === "created:day") {
                         $final.= 'created:[now-1d TO now] AND ';
                     } elseif ($key === "created:week") {
+                        $data['sort']['created']['order'] = 'desc';
                         $final.= 'created:[now-1w TO now] AND ';
                     } elseif ($key === "created:month") {
+                        $data['sort']['created']['order'] = 'desc';
                         $final.= 'created:[now-1M TO now] AND ';
                     } elseif ($key === "edited:day") {
                         $final.= 'modified:[now-1d TO now] AND ';
                     } elseif ($key === "edited:week") {
+                        $data['sort']['modified']['order'] = 'desc';
                         $final.= 'modified:[now-1w TO now] AND ';
                     } elseif ($key === "edited:month") {
+                        $data['sort']['modified']['order'] = 'desc';
                         $final.= 'modified:[now-1M TO now] AND ';
                     } else {
                         $due_cre_edi = explode(':', $key);
@@ -902,7 +921,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             $response['result']['cards_labels'][] = bind_elastic($result, 'cards_labels');
                         }
                     }
-                    $data['query']['query_string']['query'] = 'activities.comment:' . $split_str . $admin;
+                }
+                if (!empty($cards_comments)) {
+                    $data['query']['query_string']['query'] = $cards_comments . $admin;
                     $data['highlight']['fields']['activities.comment'] = new stdClass;
                     $search_response = doPost($elasticsearch_url, $data, 'json');
                     if (!empty($search_response['hits']['hits'])) {
@@ -911,8 +932,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         }
                     }
                 }
-                if (!empty($split_str)) {
-                    $data['query']['query_string']['query'] = 'cards_checklists.checklist_item_name:' . $split_str . $admin;
+                if (!empty($cards_checklists)) {
+                    $data['query']['query_string']['query'] = $cards_checklists . $admin;
                     $data['highlight']['fields']['cards_checklists.checklist_item_name'] = new stdClass;
                     $search_response = doPost($elasticsearch_url, $data, 'json');
                     if (!empty($search_response['hits']['hits'])) {

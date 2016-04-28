@@ -931,6 +931,8 @@ App.ApplicationView = Backbone.View.extend({
                                                 token: api_token
                                             },
                                             success: function(model, response) {
+                                                var response = response;
+                                                response.result.search_term = page.page_view_q;
                                                 $('#search-page-result-block').html(new App.SearchPageResultView({
                                                     model: response
                                                 }).el);

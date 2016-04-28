@@ -1,9 +1,19 @@
 			<div class="clearfix bg-grey search-block row"  id="search-page-result">
 			  <div class="clearfix">
-				<span class="col-xs-12 navbar-btn js-search-block-close">
-				<a href="javascript:void(0)" title="close" class="text-muted pull-right"><i class="icon-remove h2"></i></a>
-				</span>
-				<div class="well-lg">
+				<ul class="list-inline text-right navbar-btn">
+					<li>
+						<a href="http://restya.com/board/docs/search" title="Search Help" target="_blank">Search Help</a>
+					</li>
+					<li class="js-search-block-close">
+						<a href="javascript:void(0)" class="text-muted" title="Close"><i class="icon-remove text-muted h2"></i></a>
+					</li>
+				</ul>
+				<% if(!_.isEmpty(search_result)) { %>
+				<div class="well-sm col-xs-12">
+				&nbsp;Search results for <strong><%- search_result.search_term %></strong>
+				</div>
+				<% } %>
+				<div class="col-xs-12 navbar-btn">
 					<ul class="list-unstyled navbar-btn">
 							<% if(!_.isUndefined(search_result.boards)) { %>
 							<li>
@@ -24,7 +34,7 @@
 								<div class="panel clearfix">
 									<ul class="list-inline panel-body">
 										<% _.each(search_result.lists, function(item, key) { %> 
-											<li class="col-sm-2"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center pull-left" title="<%- item.list_name %>" href="#/board/<%- item.board_id %>"><%- item.list_name %></a></li>
+											<li class="col-sm-2"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center pull-left" title="<%- item.list_name %>" href="#/board/<%- item.board_id %>"><%- item.board_name + ' >> ' + item.list_name %></a></li>
 										<% }); %> 
 									</ul>
 								</div>
@@ -38,8 +48,8 @@
 							  <div class="col-xs-12 panel">
 								<ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
 									  <li class="col-md-1"><span title="#<%- item.id %>">#<%- item.id %></span></li>
-									  <li class="col-md-1"><span title="<%- item.board_name %>"><%- item.board_name %></a></li>
-									  <li class="col-md-1"><span title="<%- item.name %>" ><%- item.name %></a></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.board_name %>"><%- item.board_name %></a></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.name %>" ><%- item.name %></a></li>
 									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
 									  <li><span title="Attachments"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></span> </li>
 									   <li><span title="Comments"><i class="icon-comment"></i><small><%- item.attachment_count %></small></span></li>
@@ -78,8 +88,8 @@
 								  <div class="col-xs-12 panel">
 									<ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
 									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
-									  <li class="col-md-1"><span title="<%- item.board_name %>" ><%- item.board_name %></span></li>
-									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.board_name %>" ><%- item.board_name %></span></li>
+									  <li class="col-md-1 htruncate"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
 									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
 									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
 									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
@@ -136,8 +146,8 @@
 							    <div class="col-xs-12 panel">
 								   <ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
 									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
-									  <li class="col-md-1"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
-									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li class="col-md-1 htruncate"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
+									  <li class="col-md-1 htruncate"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
 									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
 									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
 									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
@@ -176,8 +186,8 @@
 								<div class="col-xs-12 panel">
 								   <ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
 									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
-									  <li class="col-md-1"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
-									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li class="col-md-1 htruncate"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
+									  <li class="col-md-1 htruncate"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
 									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
 									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
 									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
