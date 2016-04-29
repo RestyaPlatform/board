@@ -1446,3 +1446,18 @@ function bind_elastic($result, $type)
     }
     return $card;
 }
+function getWorkFlow($name)
+{
+    global $db_lnk;
+    $settings = '';
+    $qry_val_arr = array(
+        $name
+    );
+    $s_sql = pg_query_params($db_lnk, 'SELECT value FROM settings WHERE name = $1', $qry_val_arr);
+    $row = pg_fetch_assoc($s_sql);
+    $data = explode(',', $row['value']);
+    foreach ($data as $row) {
+        $settings.= 'list:' . $row . ' OR ';
+    }
+    return $settings;
+}

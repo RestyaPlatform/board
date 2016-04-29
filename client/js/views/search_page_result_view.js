@@ -23,7 +23,8 @@ App.SearchPageResultView = Backbone.View.extend({
         this.render();
     },
     events: {
-        'click .js-open-search-model-card-view': 'showSearchModalCardView'
+        'click .js-open-search-model-card-view': 'showSearchModalCardView',
+        'click .js-load-more-search': 'loadMoreSearch'
     },
     /**
      * render()
@@ -200,5 +201,36 @@ App.SearchPageResultView = Backbone.View.extend({
                 });
             }
         });
+    },
+    loadMoreSearch: function(e) {
+        var q = $(e.currentTarget).data('search');
+        var page = $(e.currentTarget).data('page');
+        var data_for = $(e.currentTarget).data('for');
+        var elastic_search = new App.ElasticSearchCollection();
+        elastic_search.url = api_url + 'search.json';
+        elastic_search.fetch({
+            data: {
+                q: q,
+                page: page,
+                data_for: data_for,
+                token: api_token
+            },
+            success: function(model, response) {
+                response = response;
+                response.result.search_term = q;
+                app.navigate('#/search/' + data_for + ':' + q, {
+                    trigger: false,
+                    trigger_function: false,
+                    replace: true
+                });
+                $('#search-page-result-block').html(new App.SearchPageResultView({
+                    model: response
+                }).el);
+                $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
+                var w_height = $(window).height() - 38;
+                $(".search-block-main-hover").css('height', w_height + 'px');
+            }
+        });
+        return false;
     }
 });

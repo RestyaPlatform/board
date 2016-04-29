@@ -738,31 +738,55 @@ App.ApplicationView = Backbone.View.extend({
                                 board_index.append(new App.UserDashboardView({
                                     model: board_response._metadata.dashboard,
                                 }).el);
-                                $('.sparklines', (this.el)).each(function() {
+                                var curr = new Date();
+                                var this_week = (curr.getDate() + 1) - curr.getDay();
+                                var last_week = (curr.getDate() - 6) - curr.getDay();
+                                var selected_day = '';
+                                $('.sparklines', (this.el)).each(function(key) {
                                     $(this).sparkline($(this).data('todo').split(','), {
                                         enableTagOptions: true,
                                         type: 'line',
                                         fillColor: '#65cca9',
                                         lineColor: '#65cca9',
                                         width: '250',
-                                        height: '25'
+                                        height: '25',
+                                        tooltipFormatter: function(sparkline, options, fields) {
+                                            selected_day = this_week + fields.offset;
+                                            if (key === 1) {
+                                                selected_day = last_week + fields.offset;
+                                            }
+                                            var day = new Date(curr.setDate(selected_day));
+                                            var current_date = day.toString().split(' ');
+                                            var today = current_date[0] + ', ' + current_date[1] + ' ' + current_date[2] + ', ' + current_date[3];
+                                            return "<span>" + today + " <span><br>Todo: " + fields.y;
+                                        }
                                     });
                                     $(this).sparkline($(this).data('doing').split(','), {
                                         composite: true,
                                         fillColor: '#eca186',
                                         lineColor: '#eca186',
                                         width: '250',
-                                        height: '25'
+                                        height: '25',
+                                        tooltipFormatter: function(sparkline, options, fields) {
+                                            return ",&nbsp;Doing: " + fields.y;
+                                        }
                                     });
                                     $(this).sparkline($(this).data('done').split(','), {
                                         composite: true,
                                         fillColor: '#fee3e0',
                                         lineColor: '#fee3e0',
                                         width: '250',
-                                        height: '25'
+                                        height: '25',
+                                        tooltipFormatter: function(sparkline, options, fields) {
+                                            selected_day = this_week + fields.offset;
+                                            if (key === 1) {
+                                                selected_day = last_week + fields.offset;
+                                            }
+                                            var day = new Date(curr.setDate(selected_day)).toUTCString();
+                                            return ",&nbsp;Done: " + fields.y;
+                                        }
                                     });
                                 });
-
                                 $('.js-chart', (this.el)).each(function() {
                                     var data_chart = [];
                                     $.each($(this).data(), function(index, value) {
@@ -931,6 +955,8 @@ App.ApplicationView = Backbone.View.extend({
                                                 token: api_token
                                             },
                                             success: function(model, response) {
+                                                response = response;
+                                                response.result.search_term = page.page_view_q;
                                                 $('#search-page-result-block').html(new App.SearchPageResultView({
                                                     model: response
                                                 }).el);
