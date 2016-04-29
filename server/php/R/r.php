@@ -869,7 +869,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $final.= 'cards_users.user_id:' . $authUser['id'] . ' AND ' . $settings;
                         $data['sort']['due_date']['order'] = 'desc';
                     } elseif ($key === "due:unassigned") {
-                        $final.= 'cards_user_count:0 AND ';
+						$settings_todo = getTDD('TODO');
+						$settings_doing = getTDD('DOING');
+						$settings_done = getTDD('DONE');
+                        $final.= 'cards_user_count:0 AND (' + $settings_todo + $settings_doing + $settings_done + ') AND ';
                     } elseif ($key === "created:day") {
                         $final.= 'created:[now-1d TO now] AND ';
                     } elseif ($key === "created:week") {
