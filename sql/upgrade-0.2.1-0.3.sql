@@ -1082,13 +1082,13 @@ VALUES
 ((select id from setting_categories where name = 'Cards Workflow'), '0', 'DOING_ICON', '', '', 'text', NULL, 'Doing Icon', '5'), 
 ((select id from setting_categories where name = 'Cards Workflow'), '0', 'DONE_ICON', '', '', 'text', NULL, 'Done Icon', '6');
 
-UPDATE "settings" SET "value" = '#f1533e' WHERE "name" = 'TODO_COLOR';
-UPDATE "settings" SET "value" = '#f1533e' WHERE "name" = 'DOING_COLOR';
-UPDATE "settings" SET "value" = '#f1533e' WHERE "name" = 'DONE_COLOR';
+UPDATE "settings" SET "value" = '#f47564' WHERE "name" = 'TODO_COLOR';
+UPDATE "settings" SET "value" = '#27c5c3' WHERE "name" = 'DOING_COLOR';
+UPDATE "settings" SET "value" = '#8dca35' WHERE "name" = 'DONE_COLOR';
 
-UPDATE "settings" SET "value" = 'icon-tasks' WHERE "name" = 'TODO_ICON';
-UPDATE "settings" SET "value" = 'icon-star-half-empty' WHERE "name" = 'DOING_ICON';
-UPDATE "settings" SET "value" = 'icon-ok' WHERE "name" = 'DONE_ICON';
+UPDATE "settings" SET "value" = 'icon-tasks icon-large' WHERE "name" = 'TODO_ICON';
+UPDATE "settings" SET "value" = 'icon-spinner icon-large' WHERE "name" = 'DOING_ICON';
+UPDATE "settings" SET "value" = 'icon-ok-circle icon-large' WHERE "name" = 'DONE_ICON';
 
 DROP VIEW "cards_elasticsearch_listing";
 
@@ -1166,6 +1166,7 @@ CREATE VIEW "cards_elasticsearch_listing" AS
             cards.checklist_item_count, 
             cards.checklist_item_completed_count, 
             cards.card_voter_count, 
+			cards.cards_user_count, 
             ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
                    FROM ( SELECT boards_users.user_id
                            FROM boards_users boards_users

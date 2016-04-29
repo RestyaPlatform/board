@@ -90,7 +90,6 @@ class Xep0045 extends AbstractXep
             ),
             $reason
         );
-print_r($iq);exit;
         $this->connection->getStream()->send($iq);
         $response = $this->connection->waitForServer('iq');
         $this->connection->logResponse($response, 'Response when granting member');

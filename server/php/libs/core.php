@@ -1493,3 +1493,25 @@ function wait_for_register_form($event, $args)
         return "logged_out";
     }
 }
+/**
+ * Get list name of TODO, DOING, DONE
+ *
+ * @param string $name Fetching work flow
+ *
+ * @return array
+ */
+function getWorkFlow($name)
+{
+    global $db_lnk;
+    $settings = '';
+    $qry_val_arr = array(
+        $name
+    );
+    $s_sql = pg_query_params($db_lnk, 'SELECT value FROM settings WHERE name = $1', $qry_val_arr);
+    $row = pg_fetch_assoc($s_sql);
+    $data = explode(',', $row['value']);
+    foreach ($data as $row) {
+        $settings.= 'list:' . $row . ' OR ';
+    }
+    return $settings;
+}

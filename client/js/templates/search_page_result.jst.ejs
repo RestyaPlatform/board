@@ -1,13 +1,23 @@
 			<div class="clearfix bg-grey search-block row"  id="search-page-result">
 			  <div class="clearfix">
-				<span class="col-xs-12 navbar-btn js-search-block-close">
-				<a href="javascript:void(0)" title="close" class="text-muted pull-right"><i class="icon-remove h2"></i></a>
-				</span>
-				<div class="well-lg">
+				<ul class="list-inline text-right navbar-btn">
+					<li>
+						<a href="http://restya.com/board/docs/search" title="Search Help" target="_blank">Search Help</a>
+					</li>
+					<li class="js-search-block-close">
+						<a href="javascript:void(0)" class="text-muted" title="Close"><i class="icon-remove text-muted h2"></i></a>
+					</li>
+				</ul>
+				<% if(!_.isEmpty(search_result)) { %>
+				<div class="well-sm col-xs-12">
+				&nbsp;Search results for <strong><%- search_result.search_term %></strong>
+				</div>
+				<% } %>
+				<div class="col-xs-12 navbar-btn">
 					<ul class="list-unstyled navbar-btn">
 							<% if(!_.isUndefined(search_result.boards)) { %>
 							<li>
-							    <strong>Matched in <%- search_result.boards.length %> boards</strong>
+							    <strong>Matched in <%- search_result.metadata.boards.count %> boards</strong>
 								<div class="panel clearfix">
 									<ul class="list-inline panel-body">
 										<% _.each(search_result.boards, function(item, key) { %> 
@@ -15,31 +25,49 @@
 										<% }); %> 
 									</ul>
 								</div>
-							  <hr class="col-xs-12">
 							</li>
+							<%
+							 if (search_result.metadata.boards.count > 10 && search_result.metadata.boards.count > ((search_result.metadata.boards.page == 2)? (search_result.metadata.boards.page + 1) * 10 : search_result.metadata.boards.page * 10)) {
+							 %>
+							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- search_result.metadata.boards.page + 1 %>" data-for="boards">
+							 <a href="javascript:void(0)" class="Load More Boards">Load More Boards</a>
+							 </li>
+							 <%
+							 }
+							 %>
+							 <hr class="col-xs-12">
 							<% } %> 
 							<% if(!_.isUndefined(search_result.lists)) { %>
 							<li>
-							    <strong>Matched in <%- search_result.lists.length %> lists</strong>
+							    <strong>Matched in <%- search_result.metadata.lists.count %> lists</strong>
 								<div class="panel clearfix">
 									<ul class="list-inline panel-body">
 										<% _.each(search_result.lists, function(item, key) { %> 
-											<li class="col-sm-2"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center pull-left" title="<%- item.list_name %>" href="#/board/<%- item.board_id %>"><%- item.list_name %></a></li>
+											<li class="col-sm-2"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center pull-left" title="<%- item.list_name %>" href="#/board/<%- item.board_id %>"><%- item.board_name + ' >> ' + item.list_name %></a></li>
 										<% }); %> 
 									</ul>
 								</div>
 								<hr class="col-xs-12">
 							</li>
+							<%
+							 if (search_result.metadata.lists.count > 10 && search_result.metadata.lists.count > ((search_result.metadata.lists.page == 2)? (search_result.metadata.lists.page + 1) * 10 : search_result.metadata.lists.page * 10)) {
+							 %>
+							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- search_result.metadata.lists.page + 1 %>" data-for="lists">
+							 <a href="javascript:void(0)" class="Load More Lists">Load More Lists</a>
+							 </li>
+							 <%
+							 }
+							 %>
 							<% } %> 
 							<% if(!_.isUndefined(search_result.cards_labels)) { %>
 							  <li class="list-view clearfix">
-							  <strong>Matched in <%- search_result.cards_labels.length %> labels</strong>
+							  <strong>Matched in <%- search_result.metadata.cards_labels.count %> labels</strong>
 							  <% _.each(search_result.cards_labels, function(item, key) { %> 
 							  <div class="col-xs-12 panel">
 								<ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
 									  <li class="col-md-1"><span title="#<%- item.id %>">#<%- item.id %></span></li>
-									  <li class="col-md-1"><span title="<%- item.board_name %>"><%- item.board_name %></a></li>
-									  <li class="col-md-1"><span title="<%- item.name %>" ><%- item.name %></a></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.board_name %>"><%- item.board_name %></a></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.name %>" ><%- item.name %></a></li>
 									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
 									  <li><span title="Attachments"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></span> </li>
 									   <li><span title="Comments"><i class="icon-comment"></i><small><%- item.attachment_count %></small></span></li>
@@ -70,16 +98,25 @@
 								</div>
 							  <% }); %> 
 							</li>
+							<%
+							 if (search_result.metadata.cards_labels.count > 10 && search_result.metadata.cards_labels.count > ((search_result.metadata.cards_labels.page == 2)? (search_result.metadata.cards_labels.page + 1) * 10 : search_result.metadata.cards_labels.page * 10)) {
+							 %>
+							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- search_result.metadata.cards_labels.page + 1 %>" data-for="cards_labels">
+							 <a href="javascript:void(0)" class="Load More Labels">Load More Labels</a>
+							 </li>
+							 <%
+							 }
+							 %>
 							<hr class="col-xs-12">
 							<% } %> 
 							<% if(!_.isUndefined(search_result.comments)) { %>
-							   <li class="list-view"><strong>Matched in <%- search_result.comments.length %> Comments</strong>
+							   <li class="list-view"><strong>Matched in <%- search_result.metadata.comments.count %> Comments</strong>
 							    <% _.each(search_result.comments, function(item, key) { %> 
 								  <div class="col-xs-12 panel">
 									<ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
 									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
-									  <li class="col-md-1"><span title="<%- item.board_name %>" ><%- item.board_name %></span></li>
-									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.board_name %>" ><%- item.board_name %></span></li>
+									  <li class="col-md-1 htruncate"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
 									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
 									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
 									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
@@ -110,6 +147,15 @@
 							  </div>
 							  <% }); %>
 							 </li>
+							 <%
+							 if (search_result.metadata.comments.count > 10 && search_result.metadata.comments.count > ((search_result.metadata.comments.page == 2)? (search_result.metadata.comments.page + 1) * 10 : search_result.metadata.comments.page * 10)) {
+							 %>
+							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- search_result.metadata.comments.page + 1 %>" data-for="cards_comments">
+							 <a href="javascript:void(0)" class="Load More Comments">Load More Comments</a>
+							 </li>
+							 <%
+							 }
+							 %>
 							 <hr class="col-xs-12">
 							 <% } %>
 							 <% if(!_.isUndefined(search_result.chats)) { %>
@@ -131,13 +177,13 @@
 							<hr class="col-xs-12">
 						   <% } %>
 						   <% if(!_.isUndefined(search_result.checklists)) { %>
-							 <li class="list-view"><strong>Matched in  <%- search_result.checklists.length %> Checklists</strong>
+							 <li class="list-view"><strong>Matched in  <%- search_result.metadata.checklists.count %> Checklists</strong>
 							   <% _.each(search_result.checklists, function(item, key) { %> 
 							    <div class="col-xs-12 panel">
 								   <ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
 									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
-									  <li class="col-md-1"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
-									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li class="col-md-1 htruncate"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
+									  <li class="col-md-1 htruncate"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
 									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
 									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
 									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
@@ -168,16 +214,25 @@
 							  </div>
 							  <% }); %>
 							 </li>
+							 <%
+							 if (search_result.metadata.checklists.count > 10 && search_result.metadata.checklists.count > ((search_result.metadata.checklists.page == 2)? (search_result.metadata.checklists.page + 1) * 10 : search_result.metadata.checklists.page * 10)) {
+							 %>
+							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- search_result.metadata.checklists.page + 1 %>" data-for="cards_checklists">
+							 <a href="javascript:void(0)" class="Load More Checklists">Load More Checklists</a>
+							 </li>
+							 <%
+							 }
+							 %>
 							  <hr class="col-xs-12">
 							 <% } %>
 							 <% if(!_.isUndefined(search_result.cards)) { %>
-							   <li class="list-view"><strong>Matched in <%- search_result.cards.length %> cards</strong>
+							   <li class="list-view"><strong>Matched in <%- search_result.metadata.cards.count %> cards</strong>
 							   <% _.each(search_result.cards, function(item, key) { %> 
 								<div class="col-xs-12 panel">
 								   <ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
 									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
-									  <li class="col-md-1"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
-									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li class="col-md-1 htruncate"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
+									  <li class="col-md-1 htruncate"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
 									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
 									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
 									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
@@ -209,6 +264,15 @@
 							  </div>
 							  <% }); %>  
 							 </li>
+							 <%							 
+							 if (search_result.metadata.cards.count > 10 && search_result.metadata.cards.count > ((search_result.metadata.cards.page == 2)? (search_result.metadata.cards.page + 1) * 10 : search_result.metadata.cards.page * 10)) {
+							 %>
+							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- search_result.metadata.cards.page + 1 %>" data-for="cards">
+							 <a href="javascript:void(0)" class="Load More Cards">Load More Cards</a>
+							 </li>
+							 <%
+							 }
+							 %>
 							 <hr class="col-xs-12">
 							<% } %>
 						</ul>
