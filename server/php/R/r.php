@@ -851,12 +851,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     } elseif ($key === "due:today_todo" || $key === "due:today_doing" || $key === "due:today_done") {
                         $due = explode(':', $key);
                         $today = explode('_', $due[1]);
-                        $settings = getTDD(strtoupper($today[1]));
+                        $settings = getWorkFlow(strtoupper($today[1]));
                         $final.= 'due_date:[' . date('Y-m-d') . ' TO ' . date('Y-m-d') . '] AND cards_users.user_id:' . $authUser['id'] . ' AND ' . $settings;
                     } elseif ($key === "due:week_todo" || $key === "due:week_doing" || $key === "due:week_done") {
                         $due = explode(':', $key);
                         $today = explode('_', $due[1]);
-                        $settings = getTDD(strtoupper($today[1]));
+                        $settings = getWorkFlow(strtoupper($today[1]));
                         $day = date('w') - 1;
                         $week_start = date('Y-m-d', strtotime('-' . $day . ' days'));
                         $week_end = date('Y-m-d', strtotime('+' . (6 - $day) . ' days'));
@@ -865,13 +865,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     } elseif ($key === "due:overall_todo" || $key === "due:overall_doing" || $key === "due:overall_done") {
                         $due = explode(':', $key);
                         $today = explode('_', $due[1]);
-                        $settings = getTDD(strtoupper($today[1]));
+                        $settings = getWorkFlow(strtoupper($today[1]));
                         $final.= 'cards_users.user_id:' . $authUser['id'] . ' AND ' . $settings;
                         $data['sort']['due_date']['order'] = 'desc';
                     } elseif ($key === "due:unassigned") {
-						$settings_todo = getTDD('TODO');
-						$settings_doing = getTDD('DOING');
-						$settings_done = getTDD('DONE');
+						$settings_todo = getWorkFlow('TODO');
+						$settings_doing = getWorkFlow('DOING');
+						$settings_done = getWorkFlow('DONE');
                         $final.= 'cards_user_count:0 AND (' + $settings_todo + $settings_doing + $settings_done + ') AND ';
                     } elseif ($key === "created:day") {
                         $final.= 'created:[now-1d TO now] AND ';

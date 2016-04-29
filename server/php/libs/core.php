@@ -1446,7 +1446,7 @@ function bind_elastic($result, $type)
     }
     return $card;
 }
-function getTDD($name)
+function getWorkFlow($name)
 {
     global $db_lnk;
     $settings = '';
