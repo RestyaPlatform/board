@@ -400,7 +400,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $sql = false;
             }
             $limit = 'all';
-            $c_sql = 'SELECT COUNT(*) FROM simple_board_listing bl ' . $filter_condition;
+            if (!empty($pg_params)) {
+                $c_sql = 'SELECT COUNT(*) FROM simple_board_listing ul WHERE ul.id =ANY($1)' . $filter_condition;
+            } else {
+                $c_sql = 'SELECT COUNT(*) FROM simple_board_listing ul ' . $filter_condition;
+            }
         } else if (!empty($r_resource_filters['page'])) {
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM admin_boards_listing ul ';
             $order_by = 'name';
@@ -778,7 +782,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $split_str = '*' . $split_str . '*';
                 }
                 $data = array();
-                $board = $list = $cards_labels = $split_str;
+                if (!empty($split_str)) {
+                    $list = 'list:' . $split_str;
+                    $board = 'board:' . $split_str;
+                    $cards_labels = 'cards_labels.name:' . $split_str;
+                }
                 $final = '';
                 $admin = '';
                 if ($authUser['role_id'] != 1) {
@@ -884,7 +892,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 );
                 $str = '';
                 if (!empty($split_str)) {
-                    $str = 'name:' . $split_str . ' or description:' . $split_str;
+                    $str = 'name:' . $split_str . ' OR description:' . $split_str;
                 } else {
                     $final = substr($final, 0, strlen($final) - 4);
                 }
@@ -1372,8 +1380,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $obj['organization_user_roles'][] = json_decode($row['row_to_json'], true);
                     }
                 } else if ($r_resource_cmd == '/boards' && (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'simple')) {
-                    foreach ($obj['lists'] as $list) {
-                        $board_lists[$list['id']] = $list;
+                    if (!empty($obj['lists'])) {
+                        foreach ($obj['lists'] as $list) {
+                            $board_lists[$list['id']] = $list;
+                        }
                     }
                 }
                 if (!empty($_metadata)) {

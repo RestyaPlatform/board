@@ -742,24 +742,24 @@ App.ApplicationView = Backbone.View.extend({
                                     $(this).sparkline($(this).data('todo').split(','), {
                                         enableTagOptions: true,
                                         type: 'line',
-                                        fillColor: false,
+                                        fillColor: '#65cca9',
                                         lineColor: '#65cca9',
-                                        width: '750',
-                                        height: '100'
+                                        width: '250',
+                                        height: '25'
                                     });
                                     $(this).sparkline($(this).data('doing').split(','), {
                                         composite: true,
-                                        fillColor: false,
+                                        fillColor: '#eca186',
                                         lineColor: '#eca186',
-                                        width: '750',
-                                        height: '100'
+                                        width: '250',
+                                        height: '25'
                                     });
                                     $(this).sparkline($(this).data('done').split(','), {
                                         composite: true,
-                                        fillColor: false,
+                                        fillColor: '#fee3e0',
                                         lineColor: '#fee3e0',
-                                        width: '750',
-                                        height: '100'
+                                        width: '250',
+                                        height: '25'
                                     });
                                 });
 
@@ -931,14 +931,12 @@ App.ApplicationView = Backbone.View.extend({
                                                 token: api_token
                                             },
                                             success: function(model, response) {
-                                                if (!_.isEmpty(response.result)) {
-                                                    $('#search-page-result-block').html(new App.SearchPageResultView({
-                                                        model: response
-                                                    }).el);
-                                                    $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
-                                                    var w_height = $(window).height() - 38;
-                                                    $(".search-block-main-hover").css('height', w_height + 'px');
-                                                }
+                                                $('#search-page-result-block').html(new App.SearchPageResultView({
+                                                    model: response
+                                                }).el);
+                                                $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
+                                                var w_height = $(window).height() - 38;
+                                                $(".search-block-main-hover").css('height', w_height + 'px');
                                             }
                                         });
                                     }

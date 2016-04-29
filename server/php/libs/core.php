@@ -696,38 +696,41 @@ function saveIp()
     $ip_row = executeQuery('SELECT id FROM ips WHERE ip = $1', $qry_val_arr);
     if (!$ip_row) {
         $country_id = 0;
-        if (!empty($_COOKIE['_geo'])) {
-            $_geo = explode('|', $_COOKIE['_geo']);
+        $_geo = array();
+        if (function_exists('geoip_record_by_name')) {
+            $_geo = geoip_record_by_name($_SERVER['REMOTE_ADDR']);
+        }
+        if (!empty($_geo)) {
             $qry_val_arr = array(
-                $_geo[0]
+                $_geo['country_code']
             );
             $country_row = executeQuery('SELECT id FROM countries WHERE iso_alpha2 = $1', $qry_val_arr);
             if ($country_row) {
                 $country_id = $country_row['id'];
             }
             $qry_val_arr = array(
-                $_geo[1]
+                $_geo['region']
             );
             $state_row = executeQuery('SELECT id FROM states WHERE name = $1', $qry_val_arr);
             if (!$state_row) {
                 $qry_val_arr = array(
-                    $_geo[1],
+                    $_geo['region'],
                     $country_id
                 );
                 $result = pg_query_params($db_lnk, 'INSERT INTO states (created, modified, name, country_id) VALUES (now(), now(), $1, $2) RETURNING id', $qry_val_arr);
                 $state_row = pg_fetch_assoc($result);
             }
             $qry_val_arr = array(
-                $_geo[2]
+                $_geo['city']
             );
             $city_row = executeQuery('SELECT id FROM cities WHERE name = $1', $qry_val_arr);
             if (!$city_row) {
                 $qry_val_arr = array(
-                    $_geo[2],
+                    $_geo['city'],
                     $state_row['id'],
                     $country_id,
-                    $_geo[3],
-                    $_geo[4]
+                    $_geo['latitude'],
+                    $_geo['longitude']
                 );
                 $result = pg_query_params($db_lnk, 'INSERT INTO cities (created, modified, name, state_id, country_id, latitude, longitude) VALUES (now(), now(), $1, $2, $3, $4, $5) RETURNING id ', $qry_val_arr);
                 $city_row = pg_fetch_assoc($result);
@@ -736,8 +739,8 @@ function saveIp()
         $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
         $state_id = (!empty($state_row['id'])) ? $state_row['id'] : 0;
         $city_id = (!empty($city_row['id'])) ? $city_row['id'] : 0;
-        $lat = (!empty($_geo[3])) ? $_geo[3] : 0.00;
-        $lng = (!empty($_geo[4])) ? $_geo[4] : 0.00;
+        $lat = (!empty($_geo['latitude'])) ? $_geo['latitude'] : 0.00;
+        $lng = (!empty($_geo['longitude'])) ? $_geo['longitude'] : 0.00;
         $qry_val_arr = array(
             $_SERVER['REMOTE_ADDR'],
             gethostbyaddr($_SERVER['REMOTE_ADDR']) ,
@@ -1433,7 +1436,10 @@ function bind_elastic($result, $type)
         'attachment_count' => $result['_source']['attachment_count'],
         'due_date' => $result['_source']['due_date'],
         'comment_count' => count($result['_source']['activities']) ,
-        'type' => $type
+        'type' => $type,
+        'checklist_item_completed_count' => $result['_source']['checklist_item_completed_count'],
+        'checklist_item_count' => $result['_source']['checklist_item_count'],
+        'vote_count' => $result['_source']['card_voter_count']
     );
     if (!empty($result['highlight'])) {
         $card['highlight'] = $result['highlight'];

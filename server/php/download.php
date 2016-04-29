@@ -29,8 +29,14 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                 $add_slash = addcslashes($basename, '"\\');
                 $quoted = sprintf('"%s"', $add_slash);
                 $size = filesize($file);
-                if (isset($_GET['view'])) {
-                    $path_info = pathinfo($file);
+                $path_info = pathinfo($file);
+                $image_extensions = array(
+                    'gif',
+                    'jpeg',
+                    'jpg',
+                    'png'
+                );
+                if (isset($_GET['view']) && in_array($path_info['extension'], $image_extensions)) {
                     if ($path_info['extension'] == 'jpg') {
                         header('Content-Type: image/jpeg');
                     } else {

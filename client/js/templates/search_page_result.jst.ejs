@@ -40,12 +40,29 @@
 									  <li class="col-md-1"><span title="#<%- item.id %>">#<%- item.id %></span></li>
 									  <li class="col-md-1"><span title="<%- item.board_name %>"><%- item.board_name %></a></li>
 									  <li class="col-md-1"><span title="<%- item.name %>" ><%- item.name %></a></li>
+									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
 									  <li><span title="Attachments"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></span> </li>
 									   <li><span title="Comments"><i class="icon-comment"></i><small><%- item.attachment_count %></small></span></li>
 									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
-									  <% if(!_.isUndefined(item.due_date) && item.due_date != "null"){ %>
+									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
 										  <li><a title="Due date" href="#"><small><span class="label label-danger">
-										  
+										  <%
+											card_due_date = item.due_date;
+											var today = new Date();
+											var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+											var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+											var due_date = new Date(card_due_date);
+											var diff = Math.floor(due_date.getTime() - today.getTime());
+											var day = 1000 * 60 * 60 * 24;var days = Math.floor(diff / day);
+											var months = Math.floor((days + (today.getDate() + 1)) / next_month_last_day.getDate());var years = Math.floor(months / 12);var week = days - (6 - (today.getDay()));
+											var label = 'label-default';
+											if (years < 0 || months < 0 || days <= -1) {
+												label = 'label-danger';
+											}
+											var date_time = item.due_date.split('T');
+											date_time = date_time[0].split(' '); 
+										  %>
+										  <%= dateFormat(date_time[0], "mediumDate") %>
 										  </span></small></a></li>
 									  <% } %> 
 									  <li class="col-md-6 pull-right"><% if (!_.isUndefined(item.highlight)) { %><p class="htruncate"><%= item.highlight['cards_labels.name'] %></p><% } %></li>
@@ -63,6 +80,7 @@
 									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
 									  <li class="col-md-1"><span title="<%- item.board_name %>" ><%- item.board_name %></span></li>
 									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
 									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
 									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
 									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
@@ -101,6 +119,7 @@
 									  <li class="col-md-1"><a title="#750" href="#">#750</a></li>
 									  <li class="col-md-1"><a title="Card3" href="#">Card 3</a></li>
 									  <li><a title="Votes" href="#"><i class="icon-thumbs-up"></i><small>0</small></a> </li>
+									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
 									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small>5</small></a> </li>
 									  <li><a title="Comments" href="#"><i class="icon-comment"></i><small>15</small></a></li>
 									  <li><a title="Checklists" href="#"><i class="icon-ok-sign"></i><small>0/2</small></a> </li>
@@ -119,6 +138,7 @@
 									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
 									  <li class="col-md-1"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
 									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
 									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
 									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
 									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
@@ -158,6 +178,7 @@
 									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
 									  <li class="col-md-1"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
 									  <li class="col-md-1"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
 									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
 									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
 									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
@@ -193,5 +214,10 @@
 						</ul>
 				</div>
 			  </div>
-			  
+				<% if(_.isEmpty(search_result)) { %>
+				<div class="well-lg"></div>
+				<div class="well-lg"></div>
+				<div class="well-lg"></div>
+				<div class="text-center well text-danger col-sm-6 col-sm-offset-3">No Records Found !!!</div>
+				<% } %>
 			</div>
