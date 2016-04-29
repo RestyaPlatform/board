@@ -2,7 +2,7 @@
 			  <div class="clearfix">
 				<ul class="list-inline text-right navbar-btn">
 					<li>
-						<a href="http://restya.com/board/docs/search" title="Search Help" target="_blank">Search Help</a>
+						<a href="http://restya.com/board/docs/search?utm_source=Restyaboard&utm_medium=web&utm_campaign=search" title="Search Help" target="_blank">Search Help</a>
 					</li>
 					<li class="js-search-block-close">
 						<a href="javascript:void(0)" class="text-muted" title="Close"><i class="icon-remove text-muted h2"></i></a>
@@ -43,7 +43,7 @@
 								<div class="panel clearfix">
 									<ul class="list-inline panel-body">
 										<% _.each(search_result.lists, function(item, key) { %> 
-											<li class="col-sm-2"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center pull-left" title="<%- item.list_name %>" href="#/board/<%- item.board_id %>"><%- item.board_name + ' >> ' + item.list_name %></a></li>
+											<li class="col-sm-2"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center pull-left" title="<%- item.list_name %>" href="#/board/<%- item.board_id %>"><%= item.board_name + ' &raquo; ' + item.list_name %></a></li>
 										<% }); %> 
 									</ul>
 								</div>
@@ -73,7 +73,7 @@
 									   <li><span title="Comments"><i class="icon-comment"></i><small><%- item.attachment_count %></small></span></li>
 									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
 									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
-										  <li><a title="Due date" href="#"><small><span class="label label-danger">
+										  <li><a title="Due date" href="javascript:void(0)"><small><span class="label label-danger">
 										  <%
 											card_due_date = item.due_date;
 											var today = new Date();
@@ -114,15 +114,15 @@
 							    <% _.each(search_result.comments, function(item, key) { %> 
 								  <div class="col-xs-12 panel">
 									<ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
-									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
+									  <li class="col-md-1"><span title="#<%- item.id %>">#<%- item.id %></span></li>
 									  <li class="col-md-1 htruncate"><span title="<%- item.board_name %>" ><%- item.board_name %></span></li>
-									  <li class="col-md-1 htruncate"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.name %>"><%- item.name %></span></li>
 									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
-									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
-									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
+									  <li><a title="Attachments" href="javascript:void(0)"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
+									   <li><a title="Comments" href="javascript:void(0)"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
 									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
 									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
-										  <li><a title="Due date" href="#"><small><span class="label label-danger">
+										  <li><a title="Due date" href="javascript:void(0)"><small><span class="label label-danger">
 										  <%
 											card_due_date = item.due_date;
 											var today = new Date();
@@ -162,14 +162,14 @@
 							 <li class="list-view"><strong>Matched in 50 chats</strong>
 							  <div class="panel clearfix">
 								  <ul class="list-inline panel-body">
-									  <li class="col-md-1"><a title="#750" href="#">#750</a></li>
-									  <li class="col-md-1"><a title="Card3" href="#">Card 3</a></li>
-									  <li><a title="Votes" href="#"><i class="icon-thumbs-up"></i><small>0</small></a> </li>
+									  <li class="col-md-1"><a title="#750" href="javascript:void(0)">#750</a></li>
+									  <li class="col-md-1"><a title="Card3" href="javascript:void(0)">Card 3</a></li>
+									  <li><a title="Votes" href="javascript:void(0)"><i class="icon-thumbs-up"></i><small>0</small></a> </li>
 									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
-									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small>5</small></a> </li>
-									  <li><a title="Comments" href="#"><i class="icon-comment"></i><small>15</small></a></li>
-									  <li><a title="Checklists" href="#"><i class="icon-ok-sign"></i><small>0/2</small></a> </li>
-									  <li><a title="Due date" href="#"><small><span class="label label-default">Feb 10, 2015</span></small></a></li>
+									  <li><a title="Attachments" href="javascript:void(0)"><i class="icon-paper-clip"></i><small>5</small></a> </li>
+									  <li><a title="Comments" href="javascript:void(0)"><i class="icon-comment"></i><small>15</small></a></li>
+									  <li><a title="Checklists" href="javascript:void(0)"><i class="icon-ok-sign"></i><small>0/2</small></a> </li>
+									  <li><a title="Due date" href="javascript:void(0)"><small><span class="label label-default">Feb 10, 2015</span></small></a></li>
 									  <li class="col-md-6 pull-right"><p class="htruncate">Lorem Ipsum is simply <span class="bg-search">dummy</span> text of the printing and typesetting industry</p></li>
 								</ul>
 							  </div>
@@ -181,15 +181,15 @@
 							   <% _.each(search_result.checklists, function(item, key) { %> 
 							    <div class="col-xs-12 panel">
 								   <ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
-									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
-									  <li class="col-md-1 htruncate"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
-									  <li class="col-md-1 htruncate"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li class="col-md-1"><span title="#<%- item.id %>">#<%- item.id %></span></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.board_name %>"><%- item.board_name %></span></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.name %>"><%- item.name %></span></li>
 									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
-									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
-									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
+									  <li><a title="Attachments" href="javascript:void(0)"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
+									   <li><a title="Comments" href="javascript:void(0)"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
 									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
 									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
-										  <li><a title="Due date" href="#"><small><span class="label label-danger">
+										  <li><a title="Due date" href="javascript:void(0)"><small><span class="label label-danger">
 										  <%
 											card_due_date = item.due_date;
 											var today = new Date();
@@ -230,15 +230,15 @@
 							   <% _.each(search_result.cards, function(item, key) { %> 
 								<div class="col-xs-12 panel">
 								   <ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
-									  <li class="col-md-1"><a title="#<%- item.id %>" href="#">#<%- item.id %></a></li>
-									  <li class="col-md-1 htruncate"><a title="<%- item.board_name %>" href="#"><%- item.board_name %></a></li>
-									  <li class="col-md-1 htruncate"><a title="<%- item.name %>" href="#"><%- item.name %></a></li>
+									  <li class="col-md-1"><span title="#<%- item.id %>">#<%- item.id %></span></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.board_name %>"><%- item.board_name %></span></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.name %>"><%- item.name %></span></li>
 									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
-									  <li><a title="Attachments" href="#"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
-									   <li><a title="Comments" href="#"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
+									  <li><a title="Attachments" href="javascript:void(0)"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
+									   <li><a title="Comments" href="javascript:void(0)"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
 									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
 									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
-										  <li><a title="Due date" href="#"><small><span class="label label-danger">
+										  <li><a title="Due date" href="javascript:void(0)"><small><span class="label label-danger">
 										  <%
 											card_due_date = item.due_date;
 											var today = new Date();

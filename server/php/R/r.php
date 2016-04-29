@@ -954,7 +954,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $final = substr($final, 0, strlen($final) - 4);
                 }
                 if ((!empty($data_for) && $data_for === 'cards') || empty($data_for)) {
-                    $data['query']['query_string']['query'] = 'due_date:[2016-04-28 TO 2016-04-28]';
+                    $data['query']['query_string']['query'] = $final . $str . $admin;
                     $data['highlight']['fields']['name'] = new stdClass;
                     $data['highlight']['fields']['description'] = new stdClass;
                     $search_response = doPost($elasticsearch_url, $data, 'json');
