@@ -34,6 +34,7 @@ $client = new JAXL(array(
     'log_level' => JAXL_DEBUG,
     'port' => 5222
 ));
+$j_username = $j_password = '';
 /** 
  * Common method to handle GET method
  *
@@ -1674,7 +1675,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['full_name'] = ($r_post['email'] == '') ? $r_post['username'] : email2name($r_post['email']);
             // ejabberd code
             if (JABBER_HOST) {
-                global $client;
+                global $client, $j_username, $j_password;
+                $j_username = $r_post['username'];
+                $j_password = md5($r_post['password'] . SECURITYSALT);
                 $client->require_xep(array(
                     '0077'
                 ));
@@ -5013,9 +5016,15 @@ if (!empty($_GET['_url']) && $db_lnk) {
             }
             $authUser = array_merge($role_links, $user);
             if (JABBER_HOST && $authUser) {
+                $conditions = array(
+                    $authUser['username']
+                );
+                $chat_db_lnk = getEjabberdConnection();
+                $user_password = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1', $conditions);
+                $user_password = pg_fetch_assoc($user_password);
                 $xmpp_user = array(
                     'username' => $authUser['username'] . '@' . JABBER_HOST,
-                    'password' => '262fd3711c5bd1aa8188264b26f51524',
+                    'password' => $user_password['password'],
                     'host' => JABBER_HOST,
                     'ssl' => false,
                     'port' => 5222,

@@ -1468,20 +1468,21 @@ function wait_for_register_response($event, $args)
 }
 function wait_for_register_form($event, $args)
 {
-    global $client, $form;
+    global $client, $form, $j_username, $j_password;
     $stanza = $args[0];
     $query = $stanza->exists('query', NS_INBAND_REGISTER);
     if ($query) {
         $instructions = $query->exists('instructions');
         if ($instructions) {
-            echo $instructions->text . PHP_EOL;
+            //echo $instructions->text . PHP_EOL;
+            
         }
         foreach ($query->childrens as $k => $child) {
             if ($child->name != 'instructions') {
                 if ($child->name == 'username') {
-                    $form[$child->name] = 'baskargoo';
+                    $form[$child->name] = $j_username;
                 } else {
-                    $form[$child->name] = 'baskar';
+                    $form[$child->name] = $j_password;
                 }
             }
         }
