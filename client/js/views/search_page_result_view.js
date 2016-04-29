@@ -204,7 +204,7 @@ App.SearchPageResultView = Backbone.View.extend({
     },
     loadMoreSearch: function(e) {
         var q = $(e.currentTarget).data('search');
-        var page = $(e.currentTarget).data('page');
+        var page = parseInt($(e.currentTarget).data('page'));
         var data_for = $(e.currentTarget).data('for');
         var elastic_search = new App.ElasticSearchCollection();
         elastic_search.url = api_url + 'search.json';
