@@ -537,22 +537,22 @@
 			fi
 			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
 			gunzip GeoIP.dat.gz
-			sudo mv -v GeoIP.dat /usr/share/GeoIP/GeoIP.dat
+			mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
 			wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
 			gunzip GeoIPv6.dat.gz
-			sudo mv -v GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
+			mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
 			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
 			gunzip GeoLiteCity.dat.gz
-			sudo mv -v GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
+			mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
 			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
 			gunzip GeoLiteCityv6.dat.gz
-			sudo mv -v GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
+			mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
 			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
 			gunzip GeoIPASNum.dat.gz
-			sudo mv -v GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
+			mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
 			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
 			gunzip GeoIPASNumv6.dat.gz
-			sudo mv -v GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
+			mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
 			
 			service php5-fpm restart
 			
@@ -1015,22 +1015,22 @@
 			fi
 			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
 			gunzip GeoIP.dat.gz
-			sudo mv -v GeoIP.dat /usr/share/GeoIP/GeoIP.dat
+			mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
 			wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
 			gunzip GeoIPv6.dat.gz
-			sudo mv -v GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
+			mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
 			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
 			gunzip GeoLiteCity.dat.gz
-			sudo mv -v GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
+			mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
 			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
 			gunzip GeoLiteCityv6.dat.gz
-			sudo mv -v GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
+			mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
 			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
 			gunzip GeoIPASNum.dat.gz
-			sudo mv -v GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
+			mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
 			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
 			gunzip GeoIPASNumv6.dat.gz
-			sudo mv -v GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
+			mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
 			
 			ps -q 1 | grep -q -c "systemd"
 			if [ "$?" -eq 0 ];
@@ -1066,6 +1066,52 @@
 					unzip /tmp/$fid.zip -d "$dir/client/apps"
 				done
 			esac
+			
+			cd /opt
+			wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
+			wget https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_18.3-1~centos~6_i386.rpm
+			rpm -ivh esl-erlang_18.3-1~centos~6_i386.rpm
+			if [ $? != 0 ]
+			then
+				echo "erlang/otp installation failed with error code 54"
+				exit 1
+			fi
+			yum install libyaml*
+			if [ $? != 0 ]
+			then
+				echo "libyaml installation failed with error code 55"
+				exit 1
+			fi
+			tar -zvxf ejabberd-15.07.tgz
+			cd ejabberd-15.07
+			./autogen.sh
+			./configure --enable-pgsql
+			make
+			make install
+			if [ $? != 0 ]
+			then
+				echo "make Install failed with error code 56"
+				exit 1
+			fi
+			cd /etc/ejabberd
+			psql -U postgres -c "CREATE DATABASE ejabberd15"
+			if [ $? != 0 ]
+			then
+				echo "ejabberd Database creation failed with error code 57"
+				exit 1
+			fi
+			psql -d ejabberd15 -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
+			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
+			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
+			sed -i 's/phabricator.ahsan.in/$webdir/g' /etc/ejabberd/ejabberd.yml
+			ejabberdctl change_password admin $webdir admin
+			if [ $? != 0 ]
+			then
+				echo "ejabberdctl password changing failed with error code 58"
+				exit 1
+			fi
+			ejabberdctl stop
+			ejabberdctl start
 			
 			/bin/echo "$RESTYABOARD_VERSION" > /opt/restyaboard/release
 		esac
