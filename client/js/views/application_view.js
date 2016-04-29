@@ -738,7 +738,7 @@ App.ApplicationView = Backbone.View.extend({
                                 board_index.append(new App.UserDashboardView({
                                     model: board_response._metadata.dashboard,
                                 }).el);
-                                var curr = new Date;
+                                var curr = new Date();
                                 var this_week = (curr.getDate() + 1) - curr.getDay();
                                 var last_week = (curr.getDate() - 6) - curr.getDay();
                                 var selected_day = '';
@@ -955,7 +955,7 @@ App.ApplicationView = Backbone.View.extend({
                                                 token: api_token
                                             },
                                             success: function(model, response) {
-                                                var response = response;
+                                                response = response;
                                                 response.result.search_term = page.page_view_q;
                                                 $('#search-page-result-block').html(new App.SearchPageResultView({
                                                     model: response

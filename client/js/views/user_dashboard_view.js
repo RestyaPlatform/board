@@ -60,7 +60,7 @@ App.UserDashboardView = Backbone.View.extend({
                 token: api_token
             },
             success: function(model, response) {
-                var response = response;
+                response = response;
                 response.result.search_term = q;
                 $('#search-page-result-block').html(new App.SearchPageResultView({
                     model: response

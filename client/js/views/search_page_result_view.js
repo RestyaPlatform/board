@@ -216,7 +216,7 @@ App.SearchPageResultView = Backbone.View.extend({
                 token: api_token
             },
             success: function(model, response) {
-                var response = response;
+                response = response;
                 response.result.search_term = q;
                 app.navigate('#/search/' + data_for + ':' + q, {
                     trigger: false,
