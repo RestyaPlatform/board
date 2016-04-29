@@ -3874,9 +3874,24 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $comment = '##USER_NAME## added member to board';
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board_user', $foreign_ids, '', $response['id']);
                 if (JABBER_HOST) {
-                    include '../libs/vendors/Ejabberd_Wrapper.php';
+                    /* include '../libs/vendors/Ejabberd_Wrapper.php';
                     Ejabberd_Wrapper::send_direct_invitation($previous_value['name'], 'none', 'none', $r_post['username']);
-                    Ejabberd_Wrapper::set_room_affiliation($previous_value['name'], $r_post['username'], 'member');
+                    Ejabberd_Wrapper::set_room_affiliation($previous_value['name'], $r_post['username'], 'member'); */
+					$client = new JAXL(array(
+						'bosh_url' => BOSH_SERVICE_URL,
+						'jid' => 'admin@phabricator.ahsan.in',
+						'pass' => 'ahsan123',
+						'port' => '5280',
+						'log_level' => JAXL_INFO
+					));
+					$client->require_xep(array(
+						'0206',
+						'0249',
+					));
+					$client->add_cb('on_auth_success', function() {
+						$client->xeps['0249']->invite($r_post['username']. '@' . JABBER_HOST, $previous_value['name'] . '@conference.' . JABBER_HOST);
+					});
+					$client->start();
                 }
             } else if ($r_resource_cmd == '/organizations/?/users/?') {
                 $qry_val_arr = array(
@@ -5016,12 +5031,13 @@ if (!empty($_GET['_url']) && $db_lnk) {
             }
             $authUser = array_merge($role_links, $user);
             if (JABBER_HOST && $authUser) {
-                $conditions = array(
+                /* $conditions = array(
                     $authUser['username']
                 );
                 $chat_db_lnk = getEjabberdConnection();
                 $user_password = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1', $conditions);
-                $user_password = pg_fetch_assoc($user_password);
+                $user_password = pg_fetch_assoc($user_password); */
+				$user_password['password'] = '262fd3711c5bd1aa8188264b26f51524';
                 $xmpp_user = array(
                     'username' => $authUser['username'] . '@' . JABBER_HOST,
                     'password' => $user_password['password'],
