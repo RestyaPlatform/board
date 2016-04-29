@@ -844,8 +844,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $settings = getTDD(strtoupper($today[1]));
                         $final.= 'cards_users.user_id:' . $authUser['id'] . ' AND ' . $settings;
                         $data['sort']['due_date']['order'] = 'desc';
-                    }  elseif ($key === "due:unassigned") {
-                         $final.= 'cards_user_count:0 AND ';
+                    } elseif ($key === "due:unassigned") {
+                        $final.= 'cards_user_count:0 AND ';
                     } elseif ($key === "created:day") {
                         $final.= 'created:[now-1d TO now] AND ';
                     } elseif ($key === "created:week") {
@@ -862,6 +862,17 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     } elseif ($key === "edited:month") {
                         $data['sort']['modified']['order'] = 'desc';
                         $final.= 'modified:[now-1M TO now] AND ';
+                    } elseif ($key === "user") {
+                        if ($value === "me") {
+                            $final.= 'board_users.user_id:' . $authUser['id'] . ' AND ';
+                        } else {
+                            $conditions = array(
+                                $value
+                            );
+                            $user_result = pg_query_params($db_lnk, 'SELECT id FROM users WHERE username = $1', $conditions);
+                            $user = pg_fetch_assoc($user_result);
+                            $final.= 'board_users.user_id:' . $user['id'] . ' AND ';
+                        }
                     } else {
                         $due_cre_edi = explode(':', $key);
                         if ($due_cre_edi[0] === 'due') {
