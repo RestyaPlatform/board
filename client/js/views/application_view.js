@@ -738,10 +738,10 @@ App.ApplicationView = Backbone.View.extend({
                                 board_index.append(new App.UserDashboardView({
                                     model: board_response._metadata.dashboard,
                                 }).el);
-								var curr = new Date;
-								var this_week = (curr.getDate() + 1) - curr.getDay(); 
-								var last_week = (curr.getDate() - 6) - curr.getDay(); 
-								var selected_day = '';
+                                var curr = new Date;
+                                var this_week = (curr.getDate() + 1) - curr.getDay();
+                                var last_week = (curr.getDate() - 6) - curr.getDay();
+                                var selected_day = '';
                                 $('.sparklines', (this.el)).each(function(key) {
                                     $(this).sparkline($(this).data('todo').split(','), {
                                         enableTagOptions: true,
@@ -750,16 +750,16 @@ App.ApplicationView = Backbone.View.extend({
                                         lineColor: '#65cca9',
                                         width: '250',
                                         height: '25',
-										tooltipFormatter: function (sparkline, options, fields) {
-											selected_day = this_week + fields.offset;	
-											if(key === 1) {
-												selected_day = last_week + fields.offset;	
-											}
-											var day = new Date(curr.setDate(selected_day));
-											var current_date = day.toString().split(' ');
-											var today = current_date[0] + ', ' + current_date[1] + ' ' + current_date[2] + ', ' + current_date[3];
-											return "<span>" + today + " <span><br>Todo: " + fields.y;
-										}
+                                        tooltipFormatter: function(sparkline, options, fields) {
+                                            selected_day = this_week + fields.offset;
+                                            if (key === 1) {
+                                                selected_day = last_week + fields.offset;
+                                            }
+                                            var day = new Date(curr.setDate(selected_day));
+                                            var current_date = day.toString().split(' ');
+                                            var today = current_date[0] + ', ' + current_date[1] + ' ' + current_date[2] + ', ' + current_date[3];
+                                            return "<span>" + today + " <span><br>Todo: " + fields.y;
+                                        }
                                     });
                                     $(this).sparkline($(this).data('doing').split(','), {
                                         composite: true,
@@ -767,9 +767,9 @@ App.ApplicationView = Backbone.View.extend({
                                         lineColor: '#eca186',
                                         width: '250',
                                         height: '25',
-										tooltipFormatter: function (sparkline, options, fields) {
-											return ",&nbsp;Doing: " + fields.y;
-										}
+                                        tooltipFormatter: function(sparkline, options, fields) {
+                                            return ",&nbsp;Doing: " + fields.y;
+                                        }
                                     });
                                     $(this).sparkline($(this).data('done').split(','), {
                                         composite: true,
@@ -777,14 +777,14 @@ App.ApplicationView = Backbone.View.extend({
                                         lineColor: '#fee3e0',
                                         width: '250',
                                         height: '25',
-										tooltipFormatter: function (sparkline, options, fields) {
-											selected_day = this_week + fields.offset;	
-											if(key === 1) {
-												selected_day = last_week + fields.offset;	
-											}
-											var day = new Date(curr.setDate(selected_day)).toUTCString();
-											return ",&nbsp;Done: " + fields.y;
-										}
+                                        tooltipFormatter: function(sparkline, options, fields) {
+                                            selected_day = this_week + fields.offset;
+                                            if (key === 1) {
+                                                selected_day = last_week + fields.offset;
+                                            }
+                                            var day = new Date(curr.setDate(selected_day)).toUTCString();
+                                            return ",&nbsp;Done: " + fields.y;
+                                        }
                                     });
                                 });
                                 $('.js-chart', (this.el)).each(function() {

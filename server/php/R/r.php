@@ -869,9 +869,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $final.= 'cards_users.user_id:' . $authUser['id'] . ' AND ' . $settings;
                         $data['sort']['due_date']['order'] = 'desc';
                     } elseif ($key === "due:unassigned") {
-						$settings_todo = getWorkFlow('TODO');
-						$settings_doing = getWorkFlow('DOING');
-						$settings_done = getWorkFlow('DONE');
+                        $settings_todo = getWorkFlow('TODO');
+                        $settings_doing = getWorkFlow('DOING');
+                        $settings_done = getWorkFlow('DONE');
                         $final.= 'cards_user_count:0 AND (' + $settings_todo + $settings_doing + $settings_done + ') AND ';
                     } elseif ($key === "created:day") {
                         $final.= 'created:[now-1d TO now] AND ';
