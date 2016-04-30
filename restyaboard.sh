@@ -28,6 +28,11 @@
 	POSTGRES_DBUSER=restya
 	POSTGRES_DBPASS=hjVl2!rGd
 	POSTGRES_DBPORT=5432
+	EJABBERD_DBHOST=localhost
+	EJABBERD_DBNAME=ejabberd
+	EJABBERD_DBUSER=ejabb
+	EJABBERD_DBPASS=ftfnVgYl2
+	EJABBERD_DBPORT=5432
 	DOWNLOAD_DIR=/opt/restyaboard
 	
 	update_version()
@@ -69,6 +74,13 @@
 			sed -i "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_DBPASS}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
+			
+			echo "Changing ejabberd database name, user and password..."
+			sed -i "s/^.*'CHAT_DB_NAME'.*$/define('CHAT_DB_NAME', '${EJABBERD_DBNAME}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'CHAT_DB_USER'.*$/define('CHAT_DB_USER', '${EJABBERD_DBUSER}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'CHAT_DB_PASSWORD'.*$/define('CHAT_DB_PASSWORD', '${EJABBERD_DBPASS}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'CHAT_DB_HOST'.*$/define('CHAT_DB_HOST', '${EJABBERD_DBHOST}');/g" "$dir/server/php/config.inc.php"
+			sed -i "s/^.*'CHAT_DB_PORT'.*$/define('CHAT_DB_PORT', '${EJABBERD_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
 			sed -i "s/server\/php\/R\/oauth_callback.php/server\/php\/oauth_callback.php/" /etc/nginx/conf.d/restyaboard.conf
 			sed -i "s/server\/php\/R\/download.php/server\/php\/download.php/" /etc/nginx/conf.d/restyaboard.conf
@@ -1093,17 +1105,25 @@
 				echo "make Install failed with error code 56"
 				exit 1
 			fi
-			cd /etc/ejabberd
-			psql -U postgres -c "CREATE DATABASE ejabberd15"
+			echo "Creating ejabberd user and database..."
+			psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
 			if [ $? != 0 ]
 			then
-				echo "ejabberd Database creation failed with error code 57"
+				echo "ejabberd user creation failed with error code 57"
 				exit 1
 			fi
-			psql -d ejabberd15 -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
+			cd /etc/ejabberd
+			psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
+			if [ $? != 0 ]
+			then
+				echo "ejabberd Database creation failed with error code 58"
+				exit 1
+			fi
+			psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
 			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
 			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
 			sed -i 's/phabricator.ahsan.in/$webdir/g' /etc/ejabberd/ejabberd.yml
+			sed -i 's/ejabberd15/${EJABBERD_DBNAME}/g' /etc/ejabberd/ejabberd.yml
 			ejabberdctl change_password admin $webdir admin
 			if [ $? != 0 ]
 			then
