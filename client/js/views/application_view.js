@@ -595,6 +595,7 @@ App.ApplicationView = Backbone.View.extend({
         if (page.model !== 'boards_view' && page.model !== 'users_index') {
             $('#header').html(this.headerView.el);
         }
+        window.sessionStorage.setItem('previous_url', Backbone.history.getFragment());
     },
     populateLists: function() {
         App.boards.each(function(board) {
