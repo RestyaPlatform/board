@@ -763,7 +763,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($r_resource_filters['page'])) {
                     $page = $r_resource_filters['page'];
                     $from = '&from=';
-                    $from.= ($page == 2) ? ($page - 1) * 10 : ($page) * 10;
+                    $from.= ($page > 1) ? (($page - 1) * 20) - 10 : ($page) * 10;
                     $size = 20;
                 }
                 if (!empty($space_split_arr)) {
@@ -872,7 +872,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $settings_todo = getWorkFlow('TODO');
                         $settings_doing = getWorkFlow('DOING');
                         $settings_done = getWorkFlow('DONE');
-                        $final.= 'cards_user_count:0 AND (' + $settings_todo + $settings_doing + $settings_done + ') AND ';
+                        $_str = $settings_todo . $settings_doing . $settings_done;
+                        $_str = substr($_str, 0, strlen($_str) - 4);
+                        $final.= 'cards_user_count:0 AND (' . $_str . ') AND ';
                     } elseif ($key === "created:day") {
                         $final.= 'created:[now-1d TO now] AND ';
                     } elseif ($key === "created:week") {
@@ -916,29 +918,51 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($board) && ((!empty($data_for) && $data_for === 'boards') || empty($data_for))) {
                     $data['query']['query_string']['query'] = $board . $admin;
                     $data['highlight']['fields']['board'] = new stdClass;
+                    $data['aggs']['board']['terms']['field'] = 'board_id';
+                    $data['aggs']['board']['terms']['size'] = '0';
                     $search_response = doPost($elasticsearch_url, $data, 'json');
-                    if (!empty($search_response['hits']['hits'])) {
-                        $response['result']['metadata']['boards']['count'] = $search_response['hits']['total'];
-                        $response['result']['metadata']['boards']['page'] = $page;
-                        foreach ($search_response['hits']['hits'] as $result) {
-                            if (check_duplicate($response['result']['boards'], 'board_id', $result['_source']['board_id'])) {
-                                $response['result']['boards'][] = bind_elastic($result, 'boards');
-                            }
-                        }
+                    $board_count = count($search_response['aggregations']['board']['buckets']);
+                    $board_ids = array();
+                    foreach ($search_response['aggregations']['board']['buckets'] as $board) {
+                        $board_ids[] = $board['key'];
+                    }
+                    $conditions = array(
+                        '{' . implode($board_ids, ',') . '}'
+                    );
+                    $boards_result = pg_query_params($db_lnk, 'SELECT id,name FROM boards WHERE id = ANY($1)', $conditions);
+                    $response['result']['metadata']['boards']['count'] = $board_count;
+                    $response['result']['metadata']['boards']['page'] = $page;
+                    $result = array();
+                    while ($board = pg_fetch_assoc($boards_result)) {
+                        $result['_source']['board_id'] = $board['id'];
+                        $result['_source']['board'] = $board['name'];
+                        $response['result']['boards'][] = bind_elastic($result, 'boards');
                     }
                 }
                 if (!empty($list) && ((!empty($data_for) && $data_for === 'lists') || empty($data_for))) {
                     $data['query']['query_string']['query'] = $list . $admin;
                     $data['highlight']['fields']['list'] = new stdClass;
+                    $data['aggs']['list']['terms']['field'] = 'list_id';
+                    $data['aggs']['list']['terms']['size'] = '0';
                     $search_response = doPost($elasticsearch_url, $data, 'json');
-                    if (!empty($search_response['hits']['hits'])) {
-                        $response['result']['metadata']['lists']['count'] = $search_response['hits']['total'];
-                        $response['result']['metadata']['lists']['page'] = $page;
-                        foreach ($search_response['hits']['hits'] as $result) {
-                            if (check_duplicate($response['result']['lists'], 'list_id', $result['_source']['list_id'])) {
-                                $response['result']['lists'][] = bind_elastic($result, 'lists');
-                            }
-                        }
+                    $list_count = count($search_response['aggregations']['list']['buckets']);
+                    $list_ids = array();
+                    foreach ($search_response['aggregations']['list']['buckets'] as $list) {
+                        $list_ids[] = $list['key'];
+                    }
+                    $conditions = array(
+                        '{' . implode($list_ids, ',') . '}'
+                    );
+                    $list_result = pg_query_params($db_lnk, 'SELECT id,name,board_id,(select name from boards where id = l.board_id) as board FROM lists l WHERE id = ANY($1)', $conditions);
+                    $response['result']['metadata']['lists']['count'] = $list_count;
+                    $response['result']['metadata']['lists']['page'] = $page;
+                    $result = array();
+                    while ($list = pg_fetch_assoc($list_result)) {
+                        $result['_source']['list_id'] = $list['id'];
+                        $result['_source']['list'] = $list['name'];
+                        $result['_source']['board_id'] = $list['board_id'];
+                        $result['_source']['board'] = $list['board'];
+                        $response['result']['lists'][] = bind_elastic($result, 'lists');
                     }
                 }
                 $data['highlight']['pre_tags'] = array(
@@ -951,7 +975,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($split_str)) {
                     $str = 'name:' . $split_str . ' OR description:' . $split_str;
                 } else {
-                    $final = substr($final, 0, strlen($final) - 4);
+                    $final = substr($final, 0, strlen($final) - 5);
                 }
                 if ((!empty($data_for) && $data_for === 'cards') || empty($data_for)) {
                     $data['query']['query_string']['query'] = $final . $str . $admin;
@@ -1503,11 +1527,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $dashboard_response['week_start_month'] = date('M', strtotime($monday));
                     $dashboard_response['week_end_month'] = date('M', strtotime($sunday));
                     foreach ($board_lists as $list) {
-                        $my_lists[] = $list['id'];
                         foreach ($settings as $key => $setting) {
-                            $trim = trim($list['name']);
-                            $str_low = strtolower($trim);
+                            $str_low = trim($list['name']);
                             if (in_array($str_low, $setting)) {
+                                $my_lists[] = $list['id'];
                                 $settings_lists[$key][] = $list['id'];
                             }
                         }

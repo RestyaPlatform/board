@@ -27,7 +27,7 @@
 								</div>
 							</li>
 							<%
-							 if (search_result.metadata.boards.count > 10 && search_result.metadata.boards.count > ((search_result.metadata.boards.page == 2)? (parseInt(search_result.metadata.boards.page) + 1) * 10 : search_result.metadata.boards.page * 10)) {
+							 if (search_result.metadata.boards.count > 10 && search_result.metadata.boards.count > ((search_result.metadata.boards.page > 1)? (parseInt(search_result.metadata.boards.page) * 20) - 10 : search_result.metadata.boards.page * 10)) {
 							 %>
 							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- parseInt(search_result.metadata.boards.page) + 1 %>" data-for="boards">
 							 <a href="javascript:void(0)" class="Load More Boards">Load More Boards</a>
@@ -50,7 +50,7 @@
 								<hr class="col-xs-12">
 							</li>
 							<%
-							 if (search_result.metadata.lists.count > 10 && search_result.metadata.lists.count > ((search_result.metadata.lists.page == 2)? (parseInt(search_result.metadata.lists.page) + 1) * 10 : search_result.metadata.lists.page * 10)) {
+							 if (search_result.metadata.lists.count > 10 && search_result.metadata.lists.count > ((search_result.metadata.lists.page > 1)? (parseInt(search_result.metadata.lists.page) * 20) - 10 : search_result.metadata.lists.page * 10)) {
 							 %>
 							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- parseInt(search_result.metadata.lists.page) + 1 %>" data-for="lists">
 							 <a href="javascript:void(0)" class="Load More Lists">Load More Lists</a>
@@ -99,7 +99,7 @@
 							  <% }); %> 
 							</li>
 							<%
-							 if (search_result.metadata.cards_labels.count > 10 && search_result.metadata.cards_labels.count > ((search_result.metadata.cards_labels.page == 2)? (parseInt(search_result.metadata.cards_labels.page) + 1) * 10 : search_result.metadata.cards_labels.page * 10)) {
+							 if (search_result.metadata.cards_labels.count > 10 && search_result.metadata.cards_labels.count > ((search_result.metadata.cards_labels.page > 1)? (parseInt(search_result.metadata.cards_labels.page) * 20) - 10 : search_result.metadata.cards_labels.page * 10)) {
 							 %>
 							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- parseInt(search_result.metadata.cards_labels.page) + 1 %>" data-for="cards_labels">
 							 <a href="javascript:void(0)" class="Load More Labels">Load More Labels</a>
@@ -148,7 +148,7 @@
 							  <% }); %>
 							 </li>
 							 <%
-							 if (search_result.metadata.comments.count > 10 && search_result.metadata.comments.count > ((search_result.metadata.comments.page == 2)? (parseInt(search_result.metadata.comments.page) + 1) * 10 : search_result.metadata.comments.page * 10)) {
+							 if (search_result.metadata.comments.count > 10 && search_result.metadata.comments.count > ((search_result.metadata.comments.page > 1)? (parseInt(search_result.metadata.comments.page) * 20) - 10 : search_result.metadata.comments.page * 10)) {
 							 %>
 							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- parseInt(search_result.metadata.comments.page) + 1 %>" data-for="cards_comments">
 							 <a href="javascript:void(0)" class="Load More Comments">Load More Comments</a>
@@ -214,8 +214,8 @@
 							  </div>
 							  <% }); %>
 							 </li>
-							 <%
-							 if (search_result.metadata.checklists.count > 10 && search_result.metadata.checklists.count > ((search_result.metadata.checklists.page == 2)? (parseInt(search_result.metadata.checklists.page) + 1) * 10 : search_result.metadata.checklists.page * 10)) {
+							 <%							 
+							 if (search_result.metadata.checklists.count > 10 && search_result.metadata.checklists.count > ((search_result.metadata.checklists.page > 1)? (parseInt(search_result.metadata.checklists.page) * 20) - 10 : search_result.metadata.checklists.page * 10)) {
 							 %>
 							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- parseInt(search_result.metadata.checklists.page) + 1 %>" data-for="cards_checklists">
 							 <a href="javascript:void(0)" class="Load More Checklists">Load More Checklists</a>
@@ -259,13 +259,18 @@
 										  </span></small></a></li>
 									  <% } %> 
 									  <li class="col-md-6 pull-right"><% if (!_.isUndefined(item.highlight)) { %><p class="htruncate"><%= 
-									  (!_.isUndefined(item.highlight.description))? item.highlight.description : item.highlight.name %></p> <% } %></li>
+									  (!_.isUndefined(item.highlight.description))? item.highlight.description : item.highlight.name %></p> <% } else if (!_.isUndefined(item.description) && item.description != null) {
+									  %>
+									  <p class="htruncate"><%= 
+									  item.description %></p>
+									  <%
+									  } %></li>
 								</ul>
 							  </div>
 							  <% }); %>  
 							 </li>
-							 <%							 
-							 if (search_result.metadata.cards.count > 10 && search_result.metadata.cards.count > ((search_result.metadata.cards.page == 2)? (parseInt(search_result.metadata.cards.page) + 1) * 10 : search_result.metadata.cards.page * 10)) {
+							 <%
+							 if (search_result.metadata.cards.count > 10 && search_result.metadata.cards.count > ((search_result.metadata.cards.page > 1)? (parseInt(search_result.metadata.cards.page) * 20) - 10 : search_result.metadata.cards.page * 10)) {
 							 %>
 							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- parseInt(search_result.metadata.cards.page) + 1 %>" data-for="cards">
 							 <a href="javascript:void(0)" class="Load More Cards">Load More Cards</a>
