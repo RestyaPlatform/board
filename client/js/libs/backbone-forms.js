@@ -1775,7 +1775,7 @@ Form.editors.Select = Form.editors.Base.extend({
 
     //Insert options
     $select.html(html);
-
+	$select.prepend("<option value=\"\">Please Select</option>");
     //Select correct option
     this.setValue(this.value);
   },
