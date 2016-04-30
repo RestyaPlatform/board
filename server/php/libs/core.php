@@ -1426,20 +1426,21 @@ function check_duplicate($array, $key, $value)
 function bind_elastic($result, $type)
 {
     $card = array(
-        'id' => $result['_source']['id'],
-        'name' => $result['_source']['name'],
-        'list_id' => $result['_source']['list_id'],
-        'list_name' => $result['_source']['list'],
-        'board_id' => $result['_source']['board_id'],
-        'board_name' => $result['_source']['board'],
-        'name' => $result['_source']['name'],
-        'attachment_count' => $result['_source']['attachment_count'],
-        'due_date' => $result['_source']['due_date'],
-        'comment_count' => count($result['_source']['activities']) ,
+        'id' => !empty($result['_source']['id']) ? $result['_source']['id'] : null,
+        'name' => !empty($result['_source']['name']) ? $result['_source']['name'] : null,
+        'list_id' => !empty($result['_source']['list_id']) ? $result['_source']['list_id'] : null,
+        'list_name' => !empty($result['_source']['list']) ? $result['_source']['list'] : null,
+        'board_id' => !empty($result['_source']['board_id']) ? $result['_source']['board_id'] : null,
+        'board_name' => !empty($result['_source']['board']) ? $result['_source']['board'] : null,
+        'name' => !empty($result['_source']['name']) ? $result['_source']['name'] : null,
+        'attachment_count' => !empty($result['_source']['attachment_count']) ? $result['_source']['attachment_count'] : 0,
+        'due_date' => !empty($result['_source']['due_date']) ? $result['_source']['due_date'] : null,
+        'comment_count' => !empty($result['_source']['activities']) ? count($result['_source']['activities']) : 0,
         'type' => $type,
-        'checklist_item_completed_count' => $result['_source']['checklist_item_completed_count'],
-        'checklist_item_count' => $result['_source']['checklist_item_count'],
-        'vote_count' => $result['_source']['card_voter_count']
+        'checklist_item_completed_count' => !empty($result['_source']['checklist_item_completed_count']) ? $result['_source']['checklist_item_completed_count'] : 0,
+        'checklist_item_count' => !empty($result['_source']['checklist_item_count']) ? $result['_source']['checklist_item_count'] : 0,
+        'vote_count' => !empty($result['_source']['card_voter_count']) ? $result['_source']['card_voter_count'] : 0,
+        'description' => !empty($result['_source']['description']) ? $result['_source']['description'] : null
     );
     if (!empty($result['highlight'])) {
         $card['highlight'] = $result['highlight'];

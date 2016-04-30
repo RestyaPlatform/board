@@ -595,6 +595,7 @@ App.ApplicationView = Backbone.View.extend({
         if (page.model !== 'boards_view' && page.model !== 'users_index') {
             $('#header').html(this.headerView.el);
         }
+        window.sessionStorage.setItem('previous_url', Backbone.history.getFragment());
     },
     populateLists: function() {
         App.boards.each(function(board) {
@@ -738,21 +739,21 @@ App.ApplicationView = Backbone.View.extend({
                                 board_index.append(new App.UserDashboardView({
                                     model: board_response._metadata.dashboard,
                                 }).el);
-                                var curr = new Date();
-                                var this_week = (curr.getDate() + 1) - curr.getDay();
-                                var last_week = (curr.getDate() - 6) - curr.getDay();
-                                var selected_day = '';
+
                                 $('.sparklines', (this.el)).each(function(key) {
                                     $(this).sparkline($(this).data('todo').split(','), {
                                         enableTagOptions: true,
                                         type: 'line',
-                                        fillColor: '#65cca9',
-                                        lineColor: '#65cca9',
+                                        fillColor: '#eca186',
+                                        lineColor: '#eca186',
                                         width: '250',
                                         height: '25',
                                         tooltipFormatter: function(sparkline, options, fields) {
-                                            selected_day = this_week + fields.offset;
+                                            var curr = new Date();
+                                            var this_week = (curr.getDate() + 1) - curr.getDay();
+                                            var selected_day = this_week + fields.offset;
                                             if (key === 1) {
+                                                var last_week = (curr.getDate() - 6) - curr.getDay();
                                                 selected_day = last_week + fields.offset;
                                             }
                                             var day = new Date(curr.setDate(selected_day));
@@ -763,8 +764,8 @@ App.ApplicationView = Backbone.View.extend({
                                     });
                                     $(this).sparkline($(this).data('doing').split(','), {
                                         composite: true,
-                                        fillColor: '#eca186',
-                                        lineColor: '#eca186',
+                                        fillColor: '#fee3e0',
+                                        lineColor: '#fee3e0',
                                         width: '250',
                                         height: '25',
                                         tooltipFormatter: function(sparkline, options, fields) {
@@ -773,16 +774,11 @@ App.ApplicationView = Backbone.View.extend({
                                     });
                                     $(this).sparkline($(this).data('done').split(','), {
                                         composite: true,
-                                        fillColor: '#fee3e0',
-                                        lineColor: '#fee3e0',
+                                        fillColor: '#65cca9',
+                                        lineColor: '#65cca9',
                                         width: '250',
                                         height: '25',
                                         tooltipFormatter: function(sparkline, options, fields) {
-                                            selected_day = this_week + fields.offset;
-                                            if (key === 1) {
-                                                selected_day = last_week + fields.offset;
-                                            }
-                                            var day = new Date(curr.setDate(selected_day)).toUTCString();
                                             return ",&nbsp;Done: " + fields.y;
                                         }
                                     });
@@ -794,11 +790,11 @@ App.ApplicationView = Backbone.View.extend({
                                         _data.title = index.toUpperCase();
                                         _data.value = parseInt(value);
                                         if (_data.title == 'TODO') {
-                                            _data.color = '#65cca9';
-                                        } else if (_data.title == 'DOING') {
                                             _data.color = '#eca186';
-                                        } else if (_data.title == 'DONE') {
+                                        } else if (_data.title == 'DOING') {
                                             _data.color = '#fee3e0';
+                                        } else if (_data.title == 'DONE') {
+                                            _data.color = '#65cca9';
                                         }
 
                                         if (parseInt(value) > 0) {

@@ -30,7 +30,7 @@
 					<p class="alert alert-info "><%- i18next.t('To add/reply cards via email you must set up a secret email account with IMAP access. This should support plus addressing and has to be dedicated to handle replying through email feature. Suggested email address is rbreply@yourdomain.tld') %></p>
 					<% } %>
 					<% if(settingCategory.get('id') == 8){ %>
-					<p class="alert alert-info "><%- i18next.t('Different people may use different naming for Todo, Doing and Done. Similarly, people may use different approaches. Possible approaches are: 1. Using list for workflow (say, having a list "Todo"), 2. Using labels for workflow (say, adding a label "Done"). So, it is usually difficult to identify what are actually in Todo, Doing and Done. Below, you can configure how the lists and labels to be recognized. For a list, you can configure its indicator icon and its color too.') %></p>
+					<p class="alert alert-info "><%- i18next.t('Different people may use different naming for Todo, Doing and Done. So, it is usually difficult to identify what are actually in Todo, Doing and Done. Below, you can configure how the lists have to be recognized. For a list, you can configure its indicator icon and its color too.') %></p>
 					<form class="col-md-9 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
 					<% } else { %>
 					<form class="form-horizontal clearfix <% if(settingCategory.get('id') == 2){ %>col-lg-8<% } else { %>col-lg-6<% } %> col-md-8 col-sm-12 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">

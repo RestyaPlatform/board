@@ -1736,6 +1736,12 @@ App.FooterView = Backbone.View.extend({
         return false;
     },
     closeSearchBlock: function(e) {
+        var url = window.sessionStorage.getItem('previous_url');
+        app.navigate('#/' + url, {
+            trigger: false,
+            trigger_function: false,
+            replace: true
+        });
         $('#search-box').val('');
         $('#search-page-result-block').html('');
     }
