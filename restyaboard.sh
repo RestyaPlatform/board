@@ -595,6 +595,82 @@
 				done
 			esac
 			
+			apt-get install autotools-dev
+			if [ $? != 0 ]
+			then
+				echo "autotools-dev installation failed with error code 59"
+				exit 1
+			fi
+			apt-get install automake
+			if [ $? != 0 ]
+			then
+				echo "automake installation failed with error code 60"
+				exit 1
+			fi
+			apt-get install erlang
+			if [ $? != 0 ]
+			then
+				echo "erlang installation failed with error code 61"
+				exit 1
+			fi
+			apt-get install libyaml-dev
+			if [ $? != 0 ]
+			then
+				echo "libyaml-dev installation failed with error code 62"
+				exit 1
+			fi
+			cd /opt
+			wget http://liquidtelecom.dl.sourceforge.net/project/expat/expat/2.1.1/expat-2.1.1.tar.bz2
+			tar -jvxf expat-2.1.1.tar.bz2
+			cd expat-2.1.1/
+			./configure
+			make
+			make install
+			if [ $? != 0 ]
+			then
+				echo "make installation failed with error code 63"
+				exit 1
+			fi
+			cd /opt
+			wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
+			tar -zvxf ejabberd-15.07.tgz
+			cd ejabberd-15.07
+			./autogen.sh
+			./configure --enable-pgsql
+			make
+			make install
+
+			cd /etc/ejabberd
+			echo "Creating ejabberd user and database..."
+			psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
+			if [ $? != 0 ]
+			then
+				echo "ejabberd user creation failed with error code 64"
+				exit 1
+			fi
+			cd /etc/ejabberd
+			psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
+			if [ $? != 0 ]
+			then
+				echo "ejabberd Database creation failed with error code 65"
+				exit 1
+			fi
+			psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
+			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
+			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
+			ejabberdctl stop
+			ejabberdctl start
+			sed -i 's/restya.com/$webdir/g' /etc/ejabberd/ejabberd.yml
+			sed -i 's/ejabberd15/${EJABBERD_DBNAME}/g' /etc/ejabberd/ejabberd.yml
+			ejabberdctl change_password admin $webdir admin
+			if [ $? != 0 ]
+			then
+				echo "ejabberdctl password changing failed with error code 66"
+				exit 1
+			fi
+			ejabberdctl stop
+			ejabberdctl start
+			
 			echo "Starting services..."
 			service cron restart
 			service php5-fpm restart
@@ -1122,7 +1198,7 @@
 			psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
 			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
 			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-			sed -i 's/phabricator.ahsan.in/$webdir/g' /etc/ejabberd/ejabberd.yml
+			sed -i 's/restya.com/$webdir/g' /etc/ejabberd/ejabberd.yml
 			sed -i 's/ejabberd15/${EJABBERD_DBNAME}/g' /etc/ejabberd/ejabberd.yml
 			ejabberdctl change_password admin $webdir admin
 			if [ $? != 0 ]
