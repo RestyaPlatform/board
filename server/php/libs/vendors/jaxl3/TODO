@@ -1,0 +1,8 @@
+- http_bind.php example is broken as in JAXLLoop doesn't terminates with HTTP request termination
+
+- move http pkt parsing logic to http_server from http_request
+  this should do a better fix for multi-part form parsing, websocket upgrades in future etc etc
+
+- create separate repo for /core, /xmpp + /xep, /http
+
+- more tests, full test suits, ci and built reports on github

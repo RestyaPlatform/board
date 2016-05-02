@@ -1393,7 +1393,7 @@ function isClientSecretAvailable()
  */
 function getEjabberdConnection()
 {
-    return pg_connect('host=' . CHAT_DB_HOST . ' port=' . CHAT_DB_PORT . ' dbname=' . CHAT_DB_NAME . ' user=' . CHAT_DB_USER . ' password=' . CHAT_DB_PASSWORD . ' options=--client_encoding=UTF8') or die('Database could not connect');
+    return pg_connect('host=' . CHAT_DB_HOST . ' port=' . CHAT_DB_PORT . ' dbname=' . CHAT_DB_NAME . ' user=' . CHAT_DB_USER . ' password=' . CHAT_DB_PASSWORD . ' options=--client_encoding=UTF8');
 }
 /**
  * Check duplicate value is Exist in Array
@@ -1447,6 +1447,72 @@ function bind_elastic($result, $type)
     }
     return $card;
 }
+/**
+ * Wait for register response
+ *
+ * @param array  $event events
+ * @param string $args  arguments
+ *
+ * @return array
+ */
+function wait_for_register_response($event, $args)
+{
+    global $client, $form;
+    if ($event == 'stanza_cb') {
+        $stanza = $args[0];
+        if ($stanza->name == 'iq') {
+            $form['type'] = $stanza->attrs['type'];
+            if ($stanza->attrs['type'] == 'result') {
+                $client->send_end_stream();
+                return "logged_out";
+            } else if ($stanza->attrs['type'] == 'error') {
+                $stanza->exists('error');
+                $client->send_end_stream();
+                return "logged_out";
+            }
+        }
+    } else {
+        _notice("unhandled event $event rcvd");
+    }
+}
+/**
+ * Wait for register form
+ *
+ * @param array  $event events
+ * @param string $args  arguments
+ *
+ * @return array
+ */
+function wait_for_register_form($event, $args)
+{
+    global $client, $form, $j_username, $j_password;
+    $stanza = $args[0];
+    $query = $stanza->exists('query', NS_INBAND_REGISTER);
+    if ($query) {
+        $instructions = $query->exists('instructions');
+        foreach ($query->childrens as $k => $child) {
+            if ($child->name != 'instructions') {
+                if ($child->name == 'username') {
+                    $form[$child->name] = $j_username;
+                } else {
+                    $form[$child->name] = $j_password;
+                }
+            }
+        }
+        $client->xeps['0077']->set_form($stanza->attrs['from'], $form);
+        return "wait_for_register_response";
+    } else {
+        $client->end_stream();
+        return "logged_out";
+    }
+}
+/**
+ * Get list name of TODO, DOING, DONE
+ *
+ * @param string $name Fetching work flow
+ *
+ * @return array
+ */
 function getWorkFlow($name)
 {
     global $db_lnk;
@@ -1461,4 +1527,27 @@ function getWorkFlow($name)
         $settings.= 'list:' . $row . ' OR ';
     }
     return $settings;
+}
+/**
+ * Get xmpp user object to process create, delete board etc.
+ *
+ * @return array
+ */
+function getXmppUser()
+{
+    global $authUser;
+    $conditions = array(
+        $authUser['username']
+    );
+    $chat_db_lnk = getEjabberdConnection();
+    $user_password = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1', $conditions);
+    $user_password = pg_fetch_assoc($user_password);
+    return array(
+        'username' => $authUser['username'] . '@' . JABBER_HOST,
+        'password' => $user_password['password'],
+        'host' => JABBER_HOST,
+        'ssl' => false,
+        'port' => 5222,
+        'resource' => uniqid('', true)
+    );
 }

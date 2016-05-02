@@ -15,7 +15,7 @@
  * @since      2013-08-23
  */
 $r_debug = '';
-$authUser = array();
+$authUser = $client = $form = array();
 $_server_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
 $_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST']; // http://localhost
 header('Access-Control-Allow-Origin: ' . $_server_domain_url);
@@ -24,6 +24,11 @@ require_once '../config.inc.php';
 require_once '../libs/vendors/finediff.php';
 require_once '../libs/core.php';
 require_once '../libs/vendors/OAuth2/Autoloader.php';
+require_once '../libs/vendors/xmpp/vendor/autoload.php';
+use Xmpp\Xep\Xep0045 as xmpp;
+use Psr\Log\LoggerInterface;
+include '../libs/vendors/jaxl3/jaxl.php';
+$j_username = $j_password = '';
 /** 
  * Common method to handle GET method
  *
@@ -257,15 +262,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             );
             $s_result = pg_query_params($db_lnk, 'SELECT o.id as organization_id, o.name as organization_name, bu.board_id FROM boards_users  bu LEFT JOIN boards b ON b.id = bu.board_id LEFT JOIN organizations o ON o.id = b.organization_id  WHERE bu.user_id = $1', $val_array);
             $response['user_boards'] = array();
-            $user_boards = array();
             while ($row = pg_fetch_assoc($s_result)) {
                 $response['user_boards'][] = $row;
-            }
-            // ejabberd code
-            if (JABBER_HOST) {
-                include '../libs/vendors/Ejabberd_Wrapper.php';
-                $user_jid = $authUser['username'] . '@' . JABBER_HOST;
-                Ejabberd_Wrapper::get_user_rooms($user_jid);
             }
         }
         break;
@@ -930,13 +928,15 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         '{' . implode($board_ids, ',') . '}'
                     );
                     $boards_result = pg_query_params($db_lnk, 'SELECT id,name FROM boards WHERE id = ANY($1)', $conditions);
-                    $response['result']['metadata']['boards']['count'] = $board_count;
-                    $response['result']['metadata']['boards']['page'] = $page;
                     $result = array();
                     while ($board = pg_fetch_assoc($boards_result)) {
                         $result['_source']['board_id'] = $board['id'];
                         $result['_source']['board'] = $board['name'];
                         $response['result']['boards'][] = bind_elastic($result, 'boards');
+                    }
+                    if (!empty($response['result']['boards'])) {
+                        $response['result']['metadata']['boards']['count'] = $board_count;
+                        $response['result']['metadata']['boards']['page'] = $page;
                     }
                 }
                 if (!empty($list) && ((!empty($data_for) && $data_for === 'lists') || empty($data_for))) {
@@ -954,8 +954,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         '{' . implode($list_ids, ',') . '}'
                     );
                     $list_result = pg_query_params($db_lnk, 'SELECT id,name,board_id,(select name from boards where id = l.board_id) as board FROM lists l WHERE id = ANY($1)', $conditions);
-                    $response['result']['metadata']['lists']['count'] = $list_count;
-                    $response['result']['metadata']['lists']['page'] = $page;
                     $result = array();
                     while ($list = pg_fetch_assoc($list_result)) {
                         $result['_source']['list_id'] = $list['id'];
@@ -963,6 +961,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $result['_source']['board_id'] = $list['board_id'];
                         $result['_source']['board'] = $list['board'];
                         $response['result']['lists'][] = bind_elastic($result, 'lists');
+                    }
+                    if (!empty($response['result']['lists'])) {
+                        $response['result']['metadata']['lists']['count'] = $list_count;
+                        $response['result']['metadata']['lists']['page'] = $page;
                     }
                 }
                 $data['highlight']['pre_tags'] = array(
@@ -1557,9 +1559,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             $dashboard_response['last_weekwise'][$key][] = $row['cnt'];
                         }
                     }
-                    $s_sql = pg_query_params($db_lnk, 'SELECT count(id) as cnt FROM cards_listing where cards_user_count = 0 and list_id IN (' . implode($my_lists, ',') . ')', array());
-                    while ($row = pg_fetch_assoc($s_sql)) {
-                        $dashboard_response['unassigned'] = $row['cnt'];
+                    if (!empty($my_lists)) {
+                        $s_sql = pg_query_params($db_lnk, 'SELECT count(id) as cnt FROM cards_listing where cards_user_count = 0 and list_id IN (' . implode($my_lists, ',') . ')', array());
+                        while ($row = pg_fetch_assoc($s_sql)) {
+                            $dashboard_response['unassigned'] = $row['cnt'];
+                        }
                     }
                     $data['_metadata']['dashboard'] = $dashboard_response;
                 }
@@ -1628,16 +1632,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'success' => 'Checked users are unblocked successfully.'
             );
         } else if ($action_id == 3) {
-            include '../libs/vendors/Ejabberd_Wrapper.php';
             foreach ($user_ids as $user_id) {
                 $conditions = array(
                     $user_id['user_id']
                 );
                 $users = pg_query_params($db_lnk, 'DELETE FROM users WHERE id= $1 RETURNING username', $conditions);
-                if (JABBER_HOST && $users) {
-                    $user = pg_fetch_assoc($users);
-                    $destroy_room = Ejabberd_Wrapper::unregister($user['username']);
-                }
+                // Todo handle with jaxl for unregister
+                
             }
             $response = array(
                 'success' => 'Checked users are deleted successfully.'
@@ -1674,7 +1675,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'success' => 'Checked boards are reopened successfully.'
             );
         } else if ($action_id == 3) {
-            include '../libs/vendors/Ejabberd_Wrapper.php';
+            if (JABBER_HOST) {
+                $xmpp_user = getXmppUser();
+                $xmpp = new xmpp($xmpp_user);
+            }
             foreach ($board_ids as $board_id) {
                 $conditions = array(
                     $board_id['board_id']
@@ -1682,14 +1686,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $boards = pg_query_params($db_lnk, 'DELETE FROM boards WHERE id= $1 RETURNING name', $conditions);
                 if (JABBER_HOST && $boards) {
                     $board = pg_fetch_assoc($boards);
-                    $destroy_room = Ejabberd_Wrapper::destroy_room($board['name']);
-                    $conditions = array(
-                        $board['name']
-                    );
-                    if (CHAT_DB_HOST) {
-                        $chat_db_lnk = getEjabberdConnection();
-                        pg_query_params($chat_db_lnk, 'DELETE FROM muc_room WHERE name= $1', $conditions);
-                    }
+                    $xmpp->destroyRoom($board['name']);
                 }
             }
             $response = array(
@@ -1773,9 +1770,30 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['full_name'] = ($r_post['email'] == '') ? $r_post['username'] : email2name($r_post['email']);
             // ejabberd code
             if (JABBER_HOST) {
-                include '../libs/vendors/Ejabberd_Wrapper.php';
-                $password_hash = md5($r_post['password'] . SECURITYSALT);
-                $register = Ejabberd_Wrapper::register($r_post['username'], $password_hash);
+                global $j_username, $j_password;
+                $GLOBALS['client'] = new JAXL(array(
+                    'jid' => JABBER_HOST,
+                    'strict' => false,
+                    'log_level' => JAXL_DEBUG,
+                    'port' => 5222
+                ));
+                $j_username = $r_post['username'];
+                $j_password = md5($r_post['password'] . SECURITYSALT);
+                $GLOBALS['client']->require_xep(array(
+                    '0077'
+                ));
+                $GLOBALS['client']->add_cb('on_stream_features', function ($stanza)
+                {
+                    global $argv;
+                    $GLOBALS['client']->xeps['0077']->get_form(JABBER_HOST);
+                    return "wait_for_register_form";
+                });
+                $GLOBALS['client']->add_cb('on_disconnect', function ()
+                {
+                    global $form;
+                    _info("registration " . ($form['type'] == 'result' ? 'succeeded' : 'failed'));
+                });
+                $GLOBALS['client']->start();
             }
         } else {
             $msg = '';
@@ -1912,13 +1930,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         getCryptHash($r_post['password']) ,
                         $r_resource_vars['users']
                     );
-                    $result = pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
-                    // ejabberd code
-                    if (JABBER_HOST) {
-                        include '../libs/vendors/Ejabberd_Wrapper.php';
-                        $password_hash = md5($r_post['password'] . SECURITYSALT);
-                        $change_password = Ejabberd_Wrapper::change_password($user['username'], $password_hash);
-                    }
+                    pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
+                    // Todo handle with jaxl for change password
                     $conditions = array(
                         $authUser['username']
                     );
@@ -2128,7 +2141,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $qry_val_arr = array(
                 $r_post['name']
             );
-            $board = executeQuery('SELECT id, name FROM ' . $table_name . ' WHERE name = $1', $qry_val_arr);
+            executeQuery('SELECT id, name FROM ' . $table_name . ' WHERE name = $1', $qry_val_arr);
             if (isset($r_post['template']) && !empty($r_post['template'])) {
                 $lists = explode(',', $r_post['template']);
             }
@@ -2137,10 +2150,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['user_id'] = (!empty($authUser['id'])) ? $authUser['id'] : 1;
             // ejabberd code
             if (JABBER_HOST) {
-                include '../libs/vendors/Ejabberd_Wrapper.php';
-                $create_room = Ejabberd_Wrapper::create_room($r_post['name']);
-                $send_direct_invitation = Ejabberd_Wrapper::send_direct_invitation($r_post['name'], 'none', 'none', $authUser['username']);
-                $set_room_affiliation = Ejabberd_Wrapper::set_room_affiliation($r_post['name'], $authUser['username'], 'admin');
+                $xmpp_user = getXmppUser();
+                $xmpp = new xmpp($xmpp_user);
+                $xmpp->createRoom($r_post['name']);
             }
         }
         break;
@@ -2504,7 +2516,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             if (!empty($r_post['image_link']) && is_array($r_post['image_link'])) {
                 $i = 0;
                 foreach ($r_post['image_link'] as $image_link) {
-                    $attachment_url_host = parse_url($image_link, PHP_URL_HOST);
                     $r_post['name'] = $r_post['link'] = $image_link;
                     $qry_val_arr = array(
                         $r_post['card_id'],
@@ -2772,7 +2783,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     case '/organizations/?/upload_logo': // organizations logo upload
         $sql = false;
         $json = true;
-        $organization_id = $r_resource_vars['organizations'];
         if (!empty($_FILES['file'])) {
             $_FILES['attachment'] = $_FILES['file'];
         }
@@ -3958,9 +3968,33 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $comment = '##USER_NAME## added member to board';
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board_user', $foreign_ids, '', $response['id']);
                 if (JABBER_HOST) {
-                    include '../libs/vendors/Ejabberd_Wrapper.php';
-                    Ejabberd_Wrapper::send_direct_invitation($previous_value['name'], 'none', 'none', $r_post['username']);
-                    Ejabberd_Wrapper::set_room_affiliation($previous_value['name'], $r_post['username'], 'member');
+                    $conditions = array(
+                        $authUser['username']
+                    );
+                    $chat_db_lnk = getEjabberdConnection();
+                    $user_password = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1', $conditions);
+                    $user_password = pg_fetch_assoc($user_password);
+                    $GLOBALS['previous_board_name'] = $previous_value['name'];
+                    $GLOBALS['client1'] = new JAXL(array(
+                        'bosh_url' => BOSH_SERVICE_URL,
+                        'jid' => $authUser['username'] . '@' . JABBER_HOST,
+                        'pass' => $user_password['password'],
+                        'port' => '5280',
+                        'log_level' => JAXL_INFO
+                    ));
+                    $GLOBALS['client1']->require_xep(array(
+                        '0206',
+                        '0249',
+                    ));
+                    $GLOBALS['client1']->add_cb('on_auth_success', function ()
+                    {
+                        global $r_post;
+                        $GLOBALS['client1']->xeps['0249']->invite($r_post['username'] . '@' . JABBER_HOST, $GLOBALS['previous_board_name'] . '@conference.' . JABBER_HOST);
+                    });
+                    $GLOBALS['client1']->start();
+                    $xmpp_user = getXmppUser();
+                    $xmpp = new xmpp($xmpp_user);
+                    $xmpp->grantMember($r_post['username'], $previous_value['name'], 'member');
                 }
             } else if ($r_resource_cmd == '/organizations/?/users/?') {
                 $qry_val_arr = array(
@@ -4040,8 +4074,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         'now()'
     );
     $sfields = $table_name = $id = $activity_type = '';
-    $emailFindReplace = $response = $diff = $pg_params = $foreign_id = $foreign_ids = $revisions = $previous_value = $srow = $obj = array();
-    $res_status = true;
+    $response = $diff = $pg_params = $foreign_id = $foreign_ids = $revisions = $previous_value = $obj = array();
     $sql = $json = false;
     unset($r_put['temp_id']);
     switch ($r_resource_cmd) {
@@ -4129,7 +4162,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $qry_val_arr = array(
             $r_resource_vars['boards_users']
         );
-        $boards_users = executeQuery('SELECT id FROM ' . $table_name . ' WHERE id =  $1', $qry_val_arr);
+        executeQuery('SELECT id FROM ' . $table_name . ' WHERE id =  $1', $qry_val_arr);
         break;
 
     case '/boards/?':
@@ -4565,7 +4598,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $qry_val_arr = array(
             $r_resource_vars['organizations']
         );
-        $organization = executeQuery('SELECT id FROM ' . $table_name . ' WHERE id = $1', $qry_val_arr);
+        executeQuery('SELECT id FROM ' . $table_name . ' WHERE id = $1', $qry_val_arr);
         break;
 
     case '/organizations_users/?':
@@ -4575,7 +4608,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $qry_val_arr = array(
             $r_resource_vars['organizations_users']
         );
-        $organizations_user = executeQuery('SELECT id FROM ' . $table_name . ' WHERE id =  $1', $qry_val_arr);
+        executeQuery('SELECT id FROM ' . $table_name . ' WHERE id =  $1', $qry_val_arr);
         break;
 
     case '/webhooks/?':
@@ -4682,19 +4715,17 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         }
         if ($r_resource_cmd == '/users/?') {
             if (isset($r_put['is_active']) && $r_put['is_active'] == false) {
-                $username = executeQuery('SELECT username FROM users WHERE id =' . $r_resource_vars['users']);
-                // ejabberd code
-                if (JABBER_HOST) {
-                    include '../libs/vendors/Ejabberd_Wrapper.php';
-                    Ejabberd_Wrapper::ban_account($username['username'], 'Admin deactivated account');
-                }
+                executeQuery('SELECT username FROM users WHERE id =' . $r_resource_vars['users']);
+                // Todo handle with jaxl for ban_account
+                
             }
         }
         if ($r_resource_cmd == '/boards_users/?') {
             if (JABBER_HOST) {
                 $affiliation = ($r_put['board_user_role_id'] == 1) ? 'admin' : 'member';
-                include '../libs/vendors/Ejabberd_Wrapper.php';
-                Ejabberd_Wrapper::set_room_affiliation($r_put['board_name'], $r_put['username'], $affiliation);
+                $xmpp_user = getXmppUser();
+                $xmpp = new xmpp($xmpp_user);
+                $xmpp->grantMember($r_put['username'], $r_put['board_name'], $affiliation);
             }
         }
         $val = '';
@@ -4776,11 +4807,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_user', $foreign_id);
         $sql = 'DELETE FROM users WHERE id= $1';
         array_push($pg_params, $r_resource_vars['users']);
-        // ejabberd code
-        if (JABBER_HOST) {
-            include '../libs/vendors/Ejabberd_Wrapper.php';
-            Ejabberd_Wrapper::unregister($username['username']);
-        }
+        // Todo handle with jaxl for unregister
         break;
 
     case '/organizations/?/organizations_users/?': // delete organization user
@@ -4829,8 +4856,9 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         array_push($pg_params, $r_resource_vars['boards_users']);
         if (JABBER_HOST) {
-            include '../libs/vendors/Ejabberd_Wrapper.php';
-            Ejabberd_Wrapper::set_room_affiliation($previous_value['board_name'], $previous_value['username'], 'outcast');
+            $xmpp_user = getXmppUser();
+            $xmpp = new xmpp($xmpp_user);
+            $xmpp->revokeMember($previous_value['board_name'], $previous_value['username']);
         }
         break;
 

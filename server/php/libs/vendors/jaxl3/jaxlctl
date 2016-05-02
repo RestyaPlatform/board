@@ -1,0 +1,190 @@
+#!/usr/bin/env php
+<?php 
+/**
+ * Jaxl (Jabber XMPP Library)
+ *
+ * Copyright (c) 2009-2012, Abhinav Singh <me@abhinavsingh.com>.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
+ *
+ * * Neither the name of Abhinav Singh nor the names of his
+ * contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRIC
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+$params = $argv;
+$exe = array_shift($params);
+$command = array_shift($params);
+
+require_once 'jaxl.php';
+JAXLLogger::$level = JAXL_INFO;
+
+// TODO: an abstract JAXLCtlCommand class
+// with seperate class per command
+// a mechanism to register new commands
+class JAXLCtl {
+	
+	protected $ipc = null;
+	
+	protected $buffer = '';
+	protected $buffer_cb = null;
+	protected $cli = null;
+	public $dots = "....... ";
+	
+	protected $symbols = array();
+	
+	public function __construct($command, $params) {
+		global $exe;
+		
+		if(method_exists($this, $command)) {
+			$r = call_user_func_array(array(&$this, $command), $params);
+			if(sizeof($r) == 2) {
+				list($buffer_cb, $quit_cb) = $r;
+				$this->buffer_cb = $buffer_cb;
+				$this->cli = new JAXLCli(array(&$this, 'on_terminal_input'), $quit_cb);
+				$this->run();
+			}
+			else {
+				_colorize("oops! internal command error", JAXL_ERROR);
+				exit;
+			}
+		}
+		else {
+			_colorize("error: invalid command '$command' received", JAXL_ERROR);
+			_colorize("type '$exe help' for list of available commands", JAXL_NOTICE);
+			exit;
+		}
+	}
+	
+	public function run() {
+		JAXLCli::prompt();
+		JAXLLoop::run();
+	}
+	
+	public function on_terminal_input($raw) {
+		$raw = trim($raw);
+		$last = substr($raw, -1, 1);
+		
+		if($last == ";") {
+			// dispatch to buffer callback
+			call_user_func($this->buffer_cb, $this->buffer.$raw);
+			$this->buffer = '';
+		}
+		else if($last == '\\') {
+			$this->buffer .= substr($raw, 0, -1);
+			echo $this->dots;
+		}
+		else {
+			// buffer command
+			$this->buffer .= $raw."; ";
+			echo $this->dots;
+		}
+	}
+	
+	public static function print_help() {
+		global $exe;
+		_colorize("Usage: $exe command [options...]\n", JAXL_INFO);
+		_colorize("Commands:", JAXL_NOTICE);
+		_colorize("    help      This help text", JAXL_DEBUG);
+		_colorize("    debug     Attach a debug console to a running JAXL daemon", JAXL_DEBUG);
+		_colorize("    shell     Open up Jaxl shell emulator", JAXL_DEBUG);
+		echo "\n";
+	}
+	
+	protected function help() {
+		JAXLCtl::print_help();
+		exit;
+	}
+	
+	//
+	// shell command
+	//
+	
+	protected function shell() {
+		return array(array(&$this, 'on_shell_input'), array(&$this, 'on_shell_quit'));
+	}
+	
+	private function _eval($raw, $symbols) {
+		extract($symbols);
+		
+		eval($raw);
+		$g = get_defined_vars();
+		
+		unset($g['raw']);
+		unset($g['symbols']);
+		return $g;
+	}
+	
+	public function on_shell_input($raw) {
+		$this->symbols = $this->_eval($raw, $this->symbols);
+		JAXLCli::prompt();
+	}
+	
+	public function on_shell_quit() {
+		exit;
+	}
+	
+	//
+	// debug command
+	//
+	
+	protected function debug($sock_path) {
+		$this->ipc = new JAXLSocketClient();
+		$this->ipc->set_callback(array(&$this, 'on_debug_response'));
+		$this->ipc->connect('unix://'.$sock_path);
+		return array(array(&$this, 'on_debug_input'), array(&$this, 'on_debug_quit'));
+	}
+	
+	public function on_debug_response($raw) {
+		$ret = unserialize($raw);
+		print_r($ret);
+		echo "\n";
+		JAXLCli::prompt();
+	}
+	
+	public function on_debug_input($raw) {
+		$this->ipc->send($this->buffer.$raw);
+	}
+	
+	public function on_debug_quit() {
+		$this->ipc->disconnect();
+		exit;
+	}
+	
+}
+
+// we atleast need a command argument
+if($argc < 2) {
+	JAXLCtl::print_help();
+	exit;
+}
+
+$ctl = new JAXLCtl($command, $params);
+echo "done\n";
+
+?>
