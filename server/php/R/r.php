@@ -262,7 +262,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             );
             $s_result = pg_query_params($db_lnk, 'SELECT o.id as organization_id, o.name as organization_name, bu.board_id FROM boards_users  bu LEFT JOIN boards b ON b.id = bu.board_id LEFT JOIN organizations o ON o.id = b.organization_id  WHERE bu.user_id = $1', $val_array);
             $response['user_boards'] = array();
-            $user_boards = array();
             while ($row = pg_fetch_assoc($s_result)) {
                 $response['user_boards'][] = $row;
             }
@@ -929,13 +928,15 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         '{' . implode($board_ids, ',') . '}'
                     );
                     $boards_result = pg_query_params($db_lnk, 'SELECT id,name FROM boards WHERE id = ANY($1)', $conditions);
-                    $response['result']['metadata']['boards']['count'] = $board_count;
-                    $response['result']['metadata']['boards']['page'] = $page;
                     $result = array();
                     while ($board = pg_fetch_assoc($boards_result)) {
                         $result['_source']['board_id'] = $board['id'];
                         $result['_source']['board'] = $board['name'];
                         $response['result']['boards'][] = bind_elastic($result, 'boards');
+                    }
+                    if (!empty($response['result']['boards'])) {
+                        $response['result']['metadata']['boards']['count'] = $board_count;
+                        $response['result']['metadata']['boards']['page'] = $page;
                     }
                 }
                 if (!empty($list) && ((!empty($data_for) && $data_for === 'lists') || empty($data_for))) {
@@ -953,8 +954,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         '{' . implode($list_ids, ',') . '}'
                     );
                     $list_result = pg_query_params($db_lnk, 'SELECT id,name,board_id,(select name from boards where id = l.board_id) as board FROM lists l WHERE id = ANY($1)', $conditions);
-                    $response['result']['metadata']['lists']['count'] = $list_count;
-                    $response['result']['metadata']['lists']['page'] = $page;
                     $result = array();
                     while ($list = pg_fetch_assoc($list_result)) {
                         $result['_source']['list_id'] = $list['id'];
@@ -962,6 +961,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $result['_source']['board_id'] = $list['board_id'];
                         $result['_source']['board'] = $list['board'];
                         $response['result']['lists'][] = bind_elastic($result, 'lists');
+                    }
+                    if (!empty($response['result']['lists'])) {
+                        $response['result']['metadata']['lists']['count'] = $list_count;
+                        $response['result']['metadata']['lists']['page'] = $page;
                     }
                 }
                 $data['highlight']['pre_tags'] = array(
@@ -1629,16 +1632,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'success' => 'Checked users are unblocked successfully.'
             );
         } else if ($action_id == 3) {
-            include '../libs/vendors/Ejabberd_Wrapper.php';
             foreach ($user_ids as $user_id) {
                 $conditions = array(
                     $user_id['user_id']
                 );
                 $users = pg_query_params($db_lnk, 'DELETE FROM users WHERE id= $1 RETURNING username', $conditions);
-                if (JABBER_HOST && $users) {
-                    $user = pg_fetch_assoc($users);
-                    $destroy_room = Ejabberd_Wrapper::unregister($user['username']);
-                }
+                // Todo handle with jaxl for unregister
+                
             }
             $response = array(
                 'success' => 'Checked users are deleted successfully.'
@@ -1930,7 +1930,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         getCryptHash($r_post['password']) ,
                         $r_resource_vars['users']
                     );
-                    $result = pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
+                    pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
                     // Todo handle with jaxl for change password
                     $conditions = array(
                         $authUser['username']
@@ -2141,7 +2141,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $qry_val_arr = array(
                 $r_post['name']
             );
-            $board = executeQuery('SELECT id, name FROM ' . $table_name . ' WHERE name = $1', $qry_val_arr);
+            executeQuery('SELECT id, name FROM ' . $table_name . ' WHERE name = $1', $qry_val_arr);
             if (isset($r_post['template']) && !empty($r_post['template'])) {
                 $lists = explode(',', $r_post['template']);
             }
@@ -2516,7 +2516,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             if (!empty($r_post['image_link']) && is_array($r_post['image_link'])) {
                 $i = 0;
                 foreach ($r_post['image_link'] as $image_link) {
-                    $attachment_url_host = parse_url($image_link, PHP_URL_HOST);
                     $r_post['name'] = $r_post['link'] = $image_link;
                     $qry_val_arr = array(
                         $r_post['card_id'],
@@ -2784,7 +2783,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     case '/organizations/?/upload_logo': // organizations logo upload
         $sql = false;
         $json = true;
-        $organization_id = $r_resource_vars['organizations'];
         if (!empty($_FILES['file'])) {
             $_FILES['attachment'] = $_FILES['file'];
         }
@@ -4076,8 +4074,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         'now()'
     );
     $sfields = $table_name = $id = $activity_type = '';
-    $emailFindReplace = $response = $diff = $pg_params = $foreign_id = $foreign_ids = $revisions = $previous_value = $srow = $obj = array();
-    $res_status = true;
+    $response = $diff = $pg_params = $foreign_id = $foreign_ids = $revisions = $previous_value = $obj = array();
     $sql = $json = false;
     unset($r_put['temp_id']);
     switch ($r_resource_cmd) {
@@ -4165,7 +4162,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $qry_val_arr = array(
             $r_resource_vars['boards_users']
         );
-        $boards_users = executeQuery('SELECT id FROM ' . $table_name . ' WHERE id =  $1', $qry_val_arr);
+        executeQuery('SELECT id FROM ' . $table_name . ' WHERE id =  $1', $qry_val_arr);
         break;
 
     case '/boards/?':
@@ -4601,7 +4598,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $qry_val_arr = array(
             $r_resource_vars['organizations']
         );
-        $organization = executeQuery('SELECT id FROM ' . $table_name . ' WHERE id = $1', $qry_val_arr);
+        executeQuery('SELECT id FROM ' . $table_name . ' WHERE id = $1', $qry_val_arr);
         break;
 
     case '/organizations_users/?':
@@ -4611,7 +4608,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $qry_val_arr = array(
             $r_resource_vars['organizations_users']
         );
-        $organizations_user = executeQuery('SELECT id FROM ' . $table_name . ' WHERE id =  $1', $qry_val_arr);
+        executeQuery('SELECT id FROM ' . $table_name . ' WHERE id =  $1', $qry_val_arr);
         break;
 
     case '/webhooks/?':
@@ -4718,7 +4715,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         }
         if ($r_resource_cmd == '/users/?') {
             if (isset($r_put['is_active']) && $r_put['is_active'] == false) {
-                $username = executeQuery('SELECT username FROM users WHERE id =' . $r_resource_vars['users']);
+                executeQuery('SELECT username FROM users WHERE id =' . $r_resource_vars['users']);
                 // Todo handle with jaxl for ban_account
                 
             }

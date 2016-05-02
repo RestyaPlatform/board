@@ -222,8 +222,10 @@ Backbone.sync = function(method, model, options) {
             options.data.token = api_token;
         }
     }
-    options.error = callbackTranslator.forBackboneCaller(options.error);
-    options.success = callbackTranslator.forBackboneCaller(options.success);
+    if (typeof model.url === 'string' && model.url.indexOf('.json') !== -1) {
+        options.error = callbackTranslator.forBackboneCaller(options.error);
+        options.success = callbackTranslator.forBackboneCaller(options.success);
+    }
     if (method === 'read') {
         if (options.abortPending === true) {
             for (var i = 0; i < xhrPool.length; i++) {

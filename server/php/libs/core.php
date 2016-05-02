@@ -1466,7 +1466,7 @@ function wait_for_register_response($event, $args)
                 $client->send_end_stream();
                 return "logged_out";
             } else if ($stanza->attrs['type'] == 'error') {
-                $error = $stanza->exists('error');
+                $stanza->exists('error');
                 $client->send_end_stream();
                 return "logged_out";
             }
@@ -1490,10 +1490,6 @@ function wait_for_register_form($event, $args)
     $query = $stanza->exists('query', NS_INBAND_REGISTER);
     if ($query) {
         $instructions = $query->exists('instructions');
-        if ($instructions) {
-            //echo $instructions->text . PHP_EOL;
-            
-        }
         foreach ($query->childrens as $k => $child) {
             if ($child->name != 'instructions') {
                 if ($child->name == 'username') {
