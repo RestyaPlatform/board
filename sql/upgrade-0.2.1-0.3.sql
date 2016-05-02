@@ -1,3 +1,6 @@
+SELECT pg_catalog.setval('settings_id_seq', (SELECT MAX(id) FROM settings), true);
+SELECT pg_catalog.setval('setting_categories_id_seq', (SELECT MAX(id) FROM setting_categories), true);
+
 UPDATE "settings" SET "description" = 'It is used in all outgoing emails' WHERE "name" = 'DEFAULT_CONTACT_EMAIL_ADDRESS';
 
 UPDATE "countries" SET "name" = 'United States' WHERE "name" = 'UnitedStates';
@@ -1005,6 +1008,7 @@ VALUES ('3', '0', 'DEFAULT_CARD_VIEW', 'Dockmodal', NULL, 'select', 'Dockmodal,P
 
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ('3', '0', 'TODO', '', '', 'textarea', NULL, 'Todo', '8'), ('3', '0', 'DOING', '', '', 'textarea', NULL, 'Doing', '9'), ('3', '0', 'DONE', '', '', 'textarea', NULL, 'Done', '10');
 
+SELECT pg_catalog.setval('setting_categories_id_seq', (SELECT MAX(id) FROM setting_categories), true);
 
 INSERT INTO "setting_categories" ("created", "modified", "parent_id", "name", "description", "order") 
 values (now(), now(), NULL, 'Cards Workflow', NULL, '7');

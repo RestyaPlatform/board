@@ -27,7 +27,7 @@ require_once '../libs/vendors/OAuth2/Autoloader.php';
 require_once '../libs/vendors/xmpp/vendor/autoload.php';
 use Xmpp\Xep\Xep0045 as xmpp;
 use Psr\Log\LoggerInterface;
-include '../libs/vendors/jaxl3/jaxl.php';
+require '../libs/vendors/jaxl3/jaxl.php';
 $j_username = $j_password = '';
 /** 
  * Common method to handle GET method
@@ -917,7 +917,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['query']['query_string']['query'] = $board . $admin;
                     $data['highlight']['fields']['board'] = new stdClass;
                     $data['aggs']['board']['terms']['field'] = 'board_id';
-                    $data['aggs']['board']['terms']['size'] = '0';
+                    $data['aggs']['board']['terms']['size'] = 0;
                     $search_response = doPost($elasticsearch_url, $data, 'json');
                     $board_count = count($search_response['aggregations']['board']['buckets']);
                     $board_ids = array();
@@ -943,7 +943,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['query']['query_string']['query'] = $list . $admin;
                     $data['highlight']['fields']['list'] = new stdClass;
                     $data['aggs']['list']['terms']['field'] = 'list_id';
-                    $data['aggs']['list']['terms']['size'] = '0';
+                    $data['aggs']['list']['terms']['size'] = 0;
                     $search_response = doPost($elasticsearch_url, $data, 'json');
                     $list_count = count($search_response['aggregations']['list']['buckets']);
                     $list_ids = array();
@@ -1771,17 +1771,19 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             // ejabberd code
             if (JABBER_HOST) {
                 global $j_username, $j_password;
-                $GLOBALS['client'] = new JAXL(array(
+                $jaxl_initialize = array(
                     'jid' => JABBER_HOST,
                     'strict' => false,
                     'log_level' => JAXL_DEBUG,
                     'port' => 5222
-                ));
+                );
+                $GLOBALS['client'] = new JAXL($jaxl_initialize);
                 $j_username = $r_post['username'];
                 $j_password = md5($r_post['password'] . SECURITYSALT);
-                $GLOBALS['client']->require_xep(array(
+                $xeps = array(
                     '0077'
-                ));
+                );
+                $GLOBALS['client']->require_xep($xeps);
                 $GLOBALS['client']->add_cb('on_stream_features', function ($stanza)
                 {
                     global $argv;
@@ -3975,17 +3977,19 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $user_password = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1', $conditions);
                     $user_password = pg_fetch_assoc($user_password);
                     $GLOBALS['previous_board_name'] = $previous_value['name'];
-                    $GLOBALS['client1'] = new JAXL(array(
+                    $jaxl_initialize = array(
                         'bosh_url' => BOSH_SERVICE_URL,
                         'jid' => $authUser['username'] . '@' . JABBER_HOST,
                         'pass' => $user_password['password'],
                         'port' => '5280',
                         'log_level' => JAXL_INFO
-                    ));
-                    $GLOBALS['client1']->require_xep(array(
+                    );
+                    $GLOBALS['client1'] = new JAXL($jaxl_initialize);
+                    $xeps = array(
                         '0206',
                         '0249',
-                    ));
+                    );
+                    $GLOBALS['client1']->require_xep($xeps);
                     $GLOBALS['client1']->add_cb('on_auth_success', function ()
                     {
                         global $r_post;

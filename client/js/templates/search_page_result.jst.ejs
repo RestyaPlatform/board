@@ -43,7 +43,7 @@
 								<div class="panel clearfix">
 									<ul class="list-inline panel-body">
 										<% _.each(search_result.lists, function(item, key) { %> 
-											<li class="col-sm-2"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center pull-left" title="<%- item.list_name %>" href="#/board/<%- item.board_id %>"><%= item.board_name + ' &raquo; ' + item.list_name %></a></li>
+											<li class="col-sm-2"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center htruncate" title="<%- item.list_name %>" href="#/board/<%- item.board_id %>"><%= item.board_name + ' &raquo; ' + item.list_name %></a></li>
 										<% }); %> 
 									</ul>
 								</div>
