@@ -988,9 +988,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $response['result']['metadata']['cards']['count'] = $search_response['hits']['total'];
                         $response['result']['metadata']['cards']['page'] = $page;
                         foreach ($search_response['hits']['hits'] as $result) {
-                            if (check_duplicate($response['result']['cards'], 'id', $result['_source']['id'])) {
-                                $response['result']['cards'][] = bind_elastic($result, 'cards');
-                            }
+                            $response['result']['cards'][] = bind_elastic($result, 'cards');
                         }
                     }
                 }

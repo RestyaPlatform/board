@@ -1396,26 +1396,6 @@ function getEjabberdConnection()
     return pg_connect('host=' . CHAT_DB_HOST . ' port=' . CHAT_DB_PORT . ' dbname=' . CHAT_DB_NAME . ' user=' . CHAT_DB_USER . ' password=' . CHAT_DB_PASSWORD . ' options=--client_encoding=UTF8');
 }
 /**
- * Check duplicate value is Exist in Array
- *
- * @param array  $array Array list to check duplicate
- * @param string $key   Check with this key
- * @param array  $value Check the value is exist
- *
- * @return boolean
- */
-function check_duplicate($array, $key, $value)
-{
-    if (is_array($array)) {
-        foreach ($array as $arr) {
-            if ($arr[$key] == $value) {
-                return false;
-            }
-        }
-    }
-    return true;
-}
-/**
  * Bind array from ElasticSearch data
  *
  * @param array  $result Search list to bind elastic
