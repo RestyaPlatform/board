@@ -62,6 +62,11 @@ App.UserDashboardView = Backbone.View.extend({
             success: function(model, response) {
                 response = response;
                 response.result.search_term = q;
+                app.navigate('#/search/' + q, {
+                    trigger: false,
+                    trigger_function: false,
+                    replace: true
+                });
                 $('#search-page-result-block').html(new App.SearchPageResultView({
                     model: response
                 }).el);
