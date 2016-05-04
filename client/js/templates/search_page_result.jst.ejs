@@ -21,7 +21,7 @@
 								<div class="panel clearfix">
 									<ul class="list-inline panel-body">
 										<% _.each(search_result.boards, function(item, key) { %> 
-											<li class="col-sm-2 navbar-btn"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center pull-left" title="<%- item.board_name %>" href="#/board/<%- item.board_id %>"><%- item.board_name %></a></li>
+											<li class="col-sm-2 navbar-btn"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center htruncate" title="<%- item.board_name %>" href="#/board/<%- item.board_id %>"><%- item.board_name %></a></li>
 										<% }); %> 
 									</ul>
 								</div>
