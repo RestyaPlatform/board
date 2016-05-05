@@ -1504,7 +1504,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             if (!empty($board_lists) && $r_resource_cmd == '/boards' && (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'simple')) {
                 $settings = array();
-                $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'TODO\' OR name = \'DOING\' OR name = \'DONE\'', array());
+                $s_sql = pg_query_params($db_lnk, 'SELECT name, LOWER(value) as value FROM settings WHERE name = \'TODO\' OR name = \'DOING\' OR name = \'DONE\'', array());
                 while ($row = pg_fetch_assoc($s_sql)) {
                     $settings[$row['name']] = array_map('trim', explode(',', $row['value']));
                 }
@@ -1528,7 +1528,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $dashboard_response['week_end_month'] = date('M', strtotime($sunday));
                     foreach ($board_lists as $list) {
                         foreach ($settings as $key => $setting) {
-                            $str_low = trim($list['name']);
+                            $trim = trim($list['name']);
+                            $str_low = strtolower($trim);
                             if (in_array($str_low, $setting)) {
                                 $my_lists[] = $list['id'];
                                 $settings_lists[$key][] = $list['id'];
