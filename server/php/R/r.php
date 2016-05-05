@@ -850,7 +850,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $due = explode(':', $key);
                         $today = explode('_', $due[1]);
                         $settings = getWorkFlow(strtoupper($today[1]));
-                        $final.= 'due_date:[' . date('Y-m-d') . ' TO ' . date('Y-m-d') . '] AND cards_users.user_id:' . $authUser['id'] . ' AND ' . $settings;
+                        $user_con = ($authUser['role_id'] == 1) ? '' : 'cards_users.user_id:' . $authUser['id'] . ' AND ';
+                        $final.= 'due_date:[' . date('Y-m-d') . ' TO ' . date('Y-m-d') . '] AND ' . $user_con . $settings;
                     } elseif ($key === "due:week_todo" || $key === "due:week_doing" || $key === "due:week_done") {
                         $due = explode(':', $key);
                         $today = explode('_', $due[1]);
@@ -858,13 +859,15 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $day = date('w') - 1;
                         $week_start = date('Y-m-d', strtotime('-' . $day . ' days'));
                         $week_end = date('Y-m-d', strtotime('+' . (6 - $day) . ' days'));
-                        $final.= 'due_date:[' . $week_start . ' TO ' . $week_end . '] AND cards_users.user_id:' . $authUser['id'] . ' AND ' . $settings;
+                        $user_con = ($authUser['role_id'] == 1) ? '' : 'cards_users.user_id:' . $authUser['id'] . ' AND ';
+                        $final.= 'due_date:[' . $week_start . ' TO ' . $week_end . '] AND ' . $user_con . $settings;
                         $data['sort']['due_date']['order'] = 'desc';
                     } elseif ($key === "due:overall_todo" || $key === "due:overall_doing" || $key === "due:overall_done") {
                         $due = explode(':', $key);
                         $today = explode('_', $due[1]);
                         $settings = getWorkFlow(strtoupper($today[1]));
-                        $final.= 'cards_users.user_id:' . $authUser['id'] . ' AND ' . $settings;
+                        $user_con = ($authUser['role_id'] == 1) ? '' : 'cards_users.user_id:' . $authUser['id'] . ' AND ';
+                        $final.= $user_con . $settings;
                         $data['sort']['due_date']['order'] = 'desc';
                     } elseif ($key === "due:unassigned") {
                         $settings_todo = getWorkFlow('TODO');
@@ -977,7 +980,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($split_str)) {
                     $str = 'name:' . $split_str . ' OR description:' . $split_str;
                 } else {
-                    $final = substr($final, 0, strlen($final) - 5);
+                    $final = substr($final, 0, strlen($final) - 4);
                 }
                 if ((!empty($data_for) && $data_for === 'cards') || empty($data_for)) {
                     $data['query']['query_string']['query'] = $final . $str . $admin;
@@ -1536,24 +1539,25 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                         }
                     }
+                    $user_con = ($authUser['role_id'] == 1) ? '' : 'cu.user_id = ' . $authUser['id'] . ' and ';
                     foreach ($settings_lists as $key => $settings_list) {
-                        $s_sql = pg_query_params($db_lnk, 'SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = ' . $authUser['id'] . ' and CAST(cl.due_date AS DATE) = current_date::date and cl.list_id IN (' . implode($settings_list, ',') . ')', array());
+                        $s_sql = pg_query_params($db_lnk, 'SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where ' . $user_con . 'CAST(cl.due_date AS DATE) = current_date::date and cl.list_id IN (' . implode($settings_list, ',') . ')', array());
                         while ($row = pg_fetch_assoc($s_sql)) {
                             $dashboard_response['today'][$key] = $row['cnt'];
                         }
-                        $s_sql = pg_query_params($db_lnk, 'SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = ' . $authUser['id'] . ' and cl.list_id IN (' . implode($settings_list, ',') . ')', array());
+                        $s_sql = pg_query_params($db_lnk, 'SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where ' . $user_con . 'cl.list_id IN (' . implode($settings_list, ',') . ')', array());
                         while ($row = pg_fetch_assoc($s_sql)) {
                             $dashboard_response['overall'][$key] = $row['cnt'];
                         }
-                        $s_sql = pg_query_params($db_lnk, 'SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = ' . $authUser['id'] . ' and CAST(cl.due_date AS DATE) between \'' . $week_start_day . '\' and \'' . $week_end_day . '\' and cl.list_id IN (' . implode($settings_list, ',') . ')', array());
+                        $s_sql = pg_query_params($db_lnk, 'SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where ' . $user_con . 'CAST(cl.due_date AS DATE) between \'' . $week_start_day . '\' and \'' . $week_end_day . '\' and cl.list_id IN (' . implode($settings_list, ',') . ')', array());
                         while ($row = pg_fetch_assoc($s_sql)) {
                             $dashboard_response['current_week'][$key] = $row['cnt'];
                         }
-                        $s_sql = pg_query_params($db_lnk, 'select (SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = ' . $authUser['id'] . ' and (CAST(due_date AS DATE) =  cast(date_trunc(\'week\', current_date) as date) + i) and cl.list_id IN (' . implode($settings_list, ',') . ')) from generate_series(0,6) i', array());
+                        $s_sql = pg_query_params($db_lnk, 'select (SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where ' . $user_con . '(CAST(due_date AS DATE) =  cast(date_trunc(\'week\', current_date) as date) + i) and cl.list_id IN (' . implode($settings_list, ',') . ')) from generate_series(0,6) i', array());
                         while ($row = pg_fetch_assoc($s_sql)) {
                             $dashboard_response['current_weekwise'][$key][] = $row['cnt'];
                         }
-                        $s_sql = pg_query_params($db_lnk, 'select (SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where cu.user_id = ' . $authUser['id'] . ' and (CAST(due_date AS DATE) =  cast(date_trunc(\'week\', current_date - interval \'7 days\') as date) + i) and cl.list_id IN (' . implode($settings_list, ',') . ')) from generate_series(0,6) i', array());
+                        $s_sql = pg_query_params($db_lnk, 'select (SELECT count(cl.id) as cnt FROM cards_listing cl left join cards_users cu on cu.card_id = cl.id where ' . $user_con . '(CAST(due_date AS DATE) =  cast(date_trunc(\'week\', current_date - interval \'7 days\') as date) + i) and cl.list_id IN (' . implode($settings_list, ',') . ')) from generate_series(0,6) i', array());
                         while ($row = pg_fetch_assoc($s_sql)) {
                             $dashboard_response['last_weekwise'][$key][] = $row['cnt'];
                         }
