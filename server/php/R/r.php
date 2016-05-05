@@ -53,11 +53,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $response = $xmppPrebind->getSessionInfo();
         break;
 
-    case '/chat_history':
+    case '/boards/?/chat_history':
         $condition = 'WHERE al.board_id = $1 AND al.type = $2';
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY created DESC) as d ';
         $c_sql = 'SELECT COUNT(*) FROM activities_listing al ' . $condition;
-        array_push($pg_params, $r_resource_filters['board_id'], 'chat');
+        array_push($pg_params, $r_resource_vars['boards'], 'chat');
         break;
 
     case '/users/me':
@@ -1290,7 +1290,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/oauth/clients',
             '/oauth/applications',
             '/webhooks',
-            '/chat_history'
+            '/boards/?/chat_history'
         );
         if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
             $data = array();

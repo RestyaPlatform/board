@@ -1265,3 +1265,5 @@ CREATE VIEW "cards_elasticsearch_listing" AS
            FROM ((cards cards
       LEFT JOIN boards boards ON ((boards.id = cards.board_id)))
    LEFT JOIN lists lists ON ((lists.id = cards.list_id))) WHERE boards.name IS NOT NULL) card;
+   
+   UPDATE "acl_links" SET "url" = '/boards/?/chat_history' WHERE "name" = 'Chat History';
