@@ -135,6 +135,8 @@
 				echo "PostgreSQL updation of SQL failed with error code 33"
 				exit 1
 			fi
+			
+			php $dir/server/php/R/shell/upgrade_v0.2.1_v0.3.php
 		esac
 	}
 	

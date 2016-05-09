@@ -52,7 +52,7 @@ App.ModalChatHistoryView = Backbone.View.extend({
         view_user_chats.html('');
         var chat_histories = new App.ChatHistoryCollection();
         var page = 1;
-        chat_histories.url = api_url + 'chat_history.json?board_id=' + this.model.attributes.id + '&page=' + page;
+        chat_histories.url = api_url + 'boards/' + this.model.attributes.id + '/chat_history.json?page=' + page;
         chat_histories.fetch({
             success: function(chat_history, response) {
                 if (chat_histories.length > 0) {
@@ -113,7 +113,7 @@ App.ModalChatHistoryView = Backbone.View.extend({
         var self = this;
         var chat_histories = new App.ChatHistoryCollection();
         var page = $('#js-chat-histories-load-more').attr('data-page');
-        chat_histories.url = api_url + 'chat_history.json?board_id=' + this.model.attributes.id + "&page=" + page;
+        chat_histories.url = api_url + 'boards/' + this.model.attributes.id + '/chat_history.json&page=' + page;
         chat_histories.fetch({
             success: function(chat_history, response) {
                 if (chat_histories.length > 0) {
