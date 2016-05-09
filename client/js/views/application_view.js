@@ -735,11 +735,12 @@ App.ApplicationView = Backbone.View.extend({
                                 set_interval_id = setInterval(function() {
                                     board_activities.userActivities(true, 1);
                                 }, 10000);
-                                board_response._metadata.dashboard.page_title = page_title;
-                                board_index.append(new App.UserDashboardView({
-                                    model: board_response._metadata.dashboard,
-                                }).el);
-
+                                if (!_.isUndefined(board_response._metadata)) {
+                                    board_response._metadata.dashboard.page_title = page_title;
+                                    board_index.append(new App.UserDashboardView({
+                                        model: board_response._metadata.dashboard,
+                                    }).el);
+                                }
                                 $('.sparklines', (this.el)).each(function(key) {
                                     $(this).sparkline($(this).data('todo').split(','), {
                                         enableTagOptions: true,
