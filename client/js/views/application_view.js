@@ -735,7 +735,7 @@ App.ApplicationView = Backbone.View.extend({
                                 set_interval_id = setInterval(function() {
                                     board_activities.userActivities(true, 1);
                                 }, 10000);
-                                if (!_.isUndefined(board_response._metadata)) {
+                                if (!_.isUndefined(board_response._metadata) && !_.isUndefined(board_response._metadata.dashboard)) {
                                     board_response._metadata.dashboard.page_title = page_title;
                                     board_index.append(new App.UserDashboardView({
                                         model: board_response._metadata.dashboard,
