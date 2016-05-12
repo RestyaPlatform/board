@@ -1094,12 +1094,12 @@ function importTrelloBoard($board = array())
                 if (!empty($card['labels'])) {
                     foreach ($card['labels'] as $label) {
                         $qry_val_arr = array(
-                            $label['color']
+                            $label['name']
                         );
                         $check_label = executeQuery('SELECT id FROM labels WHERE name = $1', $qry_val_arr);
                         if (empty($check_label)) {
                             $qry_val_arr = array(
-                                $label['color']
+                                $label['name']
                             );
                             $check_label = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO labels (created, modified, name) VALUES (now(), now(), $1) RETURNING id', $qry_val_arr));
                         }
