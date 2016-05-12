@@ -178,6 +178,7 @@ callbackTranslator = {
                         success: function(model, response) {
                             if (!_.isUndefined(response.access_token)) {
                                 Auth.access_token = response.access_token;
+                                Auth.refresh_token = response.refresh_token;
                                 api_token = response.access_token;
                                 window.sessionStorage.setItem('auth', JSON.stringify(Auth));
                                 if (from_url !== 'board_view') {
