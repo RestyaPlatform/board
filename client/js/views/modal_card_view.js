@@ -715,10 +715,15 @@ App.ModalCardView = Backbone.View.extend({
                     autoUpload: true,
                     singleFileUploads: false,
                     formData: $('form.js-user-profile-edit').serialize(),
-                    dropZone: $('#dropzone' + self.model.id)
+                    dropZone: $('#dropzone' + self.model.id),
+                    pasteZone: $('#dropzone' + self.model.id)
                 });
                 var loader_id = '';
                 uploadManager.on('fileadd', function(file) {
+                    if (!file.attributes.data.name) {
+                        var currentdate = new Date();
+                        file.attributes.data.name = 'upload_' + (currentdate.getMonth() + 1) + '_' + currentdate.getDate() + '_' + currentdate.getFullYear() + '_at_' + ((currentdate.getHours() + 11) % 12 + 1) + '_' + currentdate.getMinutes() + '_' + currentdate.getSeconds() + '_' + ((currentdate.getHours() >= 12) ? 'PM' : 'AM') + '.' + file.attributes.data.type.split('/')[1];
+                    }
                     loader_id = new Date().getTime();
                     $('#js-card-modal-' + self.model.id).parent('.dockmodal-body').prev('.dockmodal-header').find('.cssloader').remove();
                     $('#js-card-modal-' + self.model.id).parent('.dockmodal-body').prev('.dockmodal-header').append('<span id="' + loader_id + '" class="cssloader"></span>');
@@ -895,7 +900,8 @@ App.ModalCardView = Backbone.View.extend({
                 autoUpload: true,
                 singleFileUploads: false,
                 formData: $('form.js-user-profile-edit').serialize(),
-                dropZone: $('#dropzone' + self.model.id)
+                dropZone: $('#dropzone' + self.model.id),
+                pasteZone: $('#dropzone' + self.model.id)
             });
             var loader_id = '';
             uploadManager.on('fileadd', function(file) {

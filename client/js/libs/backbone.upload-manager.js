@@ -60,6 +60,7 @@
                 singleFileUploads: this.options.singleFileUploads,
 				maxNumberOfFiles: this.options.maxNumberOfFiles,
 				dropZone : this.options.dropZone,
+				pasteZone : this.options.pasteZone,
 				acceptFileTypes: this.options.acceptFileTypes,
             });
 
