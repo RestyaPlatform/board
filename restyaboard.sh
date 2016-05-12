@@ -244,7 +244,7 @@
 				echo "Installing php5-curl..."
 				apt-get install -y php5-curl
 				if [ $? != 0 ]
-			    then
+				then
 					echo "php5-curl installation failed with error code 5"
 					exit 1
 				fi
@@ -256,10 +256,10 @@
 				echo "Installing php5-pgsql..."
 				apt-get install -y php5-pgsql
 				if [ $? != 0 ]
-			    then
+				then
 					echo "php5-pgsql installation failed with error code 6"
 					exit 1
-			    fi
+				fi
 			fi
 			
 			echo "Checking PHP mbstring extension..."
@@ -268,11 +268,11 @@
 				echo "Installing php5-mbstring..."
 				apt-get install -y php5-mbstring
 				if [ $? != 0 ]
-			    then
+				then
 					echo "php5-mbstring installation failed with error code 7"
 					exit 1
-		        fi
-		    fi
+				fi
+			fi
 			
 			echo "Checking PHP ldap extension..."
 			php -m | grep ldap
@@ -280,10 +280,10 @@
 				echo "Installing php5-ldap..."
 				apt-get install -y php5-ldap
 				if [ $? != 0 ]
-			    then
+				then
 					echo "php5-ldap installation failed with error code 8"
 					exit 1
-		        fi
+				fi
 			fi
 			
 			echo "Checking PHP imagick extension..."
@@ -292,22 +292,22 @@
 				echo "Installing php5-imagick..."
 				apt-get install gcc
 				if [ $? != 0 ]
-			    then
+				then
 					echo "gcc installation failed with error code 9"
 					exit 1
-		        fi
+				fi
 				apt-get install imagemagick
 				if [ $? != 0 ]
-			    then
+				then
 					echo "imagemagick installation failed with error code 9"
 					exit 1
-		        fi
+				fi
 				apt-get install php5-imagick
 				if [ $? != 0 ]
-			    then
+				then
 					echo "php5-imagick installation failed with error code 10"
 					exit 1
-		        fi
+				fi
 			fi
 			
 			echo "Checking PHP imap extension..."
@@ -316,11 +316,10 @@
 				echo "Installing php5-imap..."
 				apt-get install -y php5-imap
 				if [ $? != 0 ]
-			    then
+				then
 					echo "php5-imap installation failed with error code 11"
 					exit 1
-		        fi
-				
+				fi
 			fi
 			
 			echo "Setting up timezone..."
@@ -342,19 +341,19 @@
 					sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 					apt-get install wget ca-certificates
 					if [ $? != 0 ]
-			        then
+					then
 						echo "ca-certificates installation failed with error code 12"
 						exit 1
-		            fi
+					fi
 					wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 					apt-key add ACCC4CF8.asc
 					apt-get update
 					apt-get install postgresql-9.4
 					if [ $? != 0 ]
-			        then
+					then
 						echo "postgresql-9.4 installation failed with error code 13"
 						exit 1
-		            fi
+					fi
 					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/9.4/main/pg_hba.conf > /etc/postgresql/9.4/main/pg_hba.conf.1
 					cd /etc/postgresql/9.4/main || exit
 					mv pg_hba.conf pg_hba.conf_old
@@ -375,16 +374,16 @@
 					echo "Installing ElasticSearch..."
 					apt-get install openjdk-6-jre
 					if [ $? != 0 ]
-			        then
+					then
 						echo "openjdk-6-jre installation failed with error code 14"
 						exit 1
-		            fi
+					fi
 					wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.7.deb
 					if [ $? != 0 ]
-			        then
+					then
 						echo "elasticsearch downloading failed with error code 15"
 						exit 1
-		            fi
+					fi
 					dpkg -i elasticsearch-0.90.7.deb
 					service elasticsearch restart
 				esac
@@ -432,10 +431,10 @@
 			| debconf-set-selections &&\
 			apt-get install -y postfix
 			        if [ $? != 0 ]
-					then
-						echo "-y postfix installation failed with error code 16"
-						exit 1
-					fi
+				then
+					echo "-y postfix installation failed with error code 16"
+					exit 1
+				fi
 			echo "Changing permission..."
 			chmod -R go+w "$dir/media"
 			chmod -R go+w "$dir/client/img"
@@ -701,13 +700,13 @@
 					echo "Installing nginx..."
 					yum install -y epel-release
 					if [ $? != 0 ]
-			        then
+					then
 						echo "epel-release installation failed with error code 17"
 						exit 1
 					fi
 					yum install -y zip cron nginx
 					if [ $? != 0 ]
-			        then
+					then
 						echo "cron nginx installation failed with error code 18"
 						exit 1
 					fi
@@ -729,13 +728,13 @@
 					echo "Installing PHP..."
 					yum install -y epel-release
 					if [ $? != 0 ]
-			        then
+					then
 						echo "epel-release installation failed with error code 19"
 						exit 1
 					fi
 					yum install -y php
 					if [ $? != 0 ]
-			        then
+					then
 						echo "php installation failed with error code 20"
 						exit 1
 					fi
@@ -759,10 +758,10 @@
 				echo "Installing php-curl..."
 				yum install -y php-curl
 				if [ $? != 0 ]
-			    then
+				then
 					echo "php-curl installation failed with error code 22"
 					exit 1
-			    fi
+				fi
 			fi
 			
 			echo "Checking PHP pgsql extension..."
@@ -772,10 +771,10 @@
 				echo "Installing php-pgsql..."
 				yum install -y php-pgsql
 				if [ $? != 0 ]
-			    then
+				then
 					echo "php-pgsql installation failed with error code 23"
 					exit 1
-			    fi
+				fi
 			fi
 
 			echo "Checking PHP mbstring extension..."
@@ -785,10 +784,10 @@
 				echo "Installing php-mbstring..."
 				yum install -y php-mbstring
 				if [ $? != 0 ]
-			    then
+				then
 					echo "php-mbstring installation failed with error code 24"
 					exit 1
-			    fi
+				fi
 			fi
 			
 			echo "Checking PHP ldap extension..."
@@ -798,10 +797,10 @@
 				echo "Installing php-ldap..."
 				yum install -y php-ldap
 				if [ $? != 0 ]
-			    then
+				then
 					echo "php-ldap installation failed with error code 25"
 					exit 1
-			    fi
+				fi
 			fi
 			
 			echo "Checking PHP imagick extension..."
@@ -811,10 +810,10 @@
 				echo "Installing php-imagick..."
 				yum install ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
 				if [ $? != 0 ]
-			    then
+				then
 					echo "Installing php-imagick failed with error code 26"
 					exit 1
-			    fi
+				fi
 				cd /usr/local/src
 				wget http://pecl.php.net/get/imagick-2.2.2.tgz
 				tar zxvf ./imagick-2.2.2.tgz
@@ -834,10 +833,10 @@
 				echo "Installing php-imap..."
 				yum install -y php-imap
 				if [ $? != 0 ]
-			    then
+				then
 					echo "php-imap installation failed with error code 26"
 					exit 1
-			    fi
+				fi
 				
 			fi
 			
@@ -879,35 +878,34 @@
 					fi
 					yum install -y postgresql94-server postgresql04-contrib
 					if [ $? != 0 ]
-			        then
+					then
 						echo "postgresql04-contrib installation failed with error code 29"
 						exit 1
 					fi
 					
-
-                    ps -q 1 | grep -q -c "systemd"
-                    if [ "$?" -eq 0 ]; then
-                        if [ -f /usr/pgsql-9.4/bin/postgresql94-setup ]; then
-                            /usr/pgsql-9.4/bin/postgresql94-setup initdb
-                        fi
-                        systemctl start postgresql-9.4.service
-                        systemctl enable postgresql-9.4.service
-                    else
-                        service postgresql-9.4 initdb
-                        /etc/init.d/postgresql-9.4 start
-                        chkconfig --levels 35 postgresql-9.4 on
-                    fi
+					ps -q 1 | grep -q -c "systemd"
+					if [ "$?" -eq 0 ]; then
+						if [ -f /usr/pgsql-9.4/bin/postgresql94-setup ]; then
+							/usr/pgsql-9.4/bin/postgresql94-setup initdb
+						fi
+						systemctl start postgresql-9.4.service
+						systemctl enable postgresql-9.4.service
+					else
+						service postgresql-9.4 initdb
+						/etc/init.d/postgresql-9.4 start
+						chkconfig --levels 35 postgresql-9.4 on
+					fi
 					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /var/lib/pgsql/9.4/data/pg_hba.conf > /var/lib/pgsql/9.4/data/pg_hba.conf.1
 					cd /var/lib/pgsql/9.4/data || exit
 					mv pg_hba.conf pg_hba.conf_old
 					mv pg_hba.conf.1 pg_hba.conf
-                    
-                    ps -q 1 | grep -q -c "systemd"
-                    if [ "$?" -eq 0 ]; then
-                        systemctl restart postgresql-9.4.service
-                    else
-                        /etc/init.d/postgresql-9.4 restart
-                    fi
+					
+					ps -q 1 | grep -q -c "systemd"
+					if [ "$?" -eq 0 ]; then
+						systemctl restart postgresql-9.4.service
+					else
+						/etc/init.d/postgresql-9.4 restart
+					fi
 				esac
 			fi
 
@@ -924,13 +922,13 @@
 					echo "Installing ElasticSearch..."
 					sudo yum install java-1.7.0-openjdk -y
 					if [ $? != 0 ]
-			        then
+					then
 						echo "java installation failed with error code 30"
 						exit 1
 					fi
 					wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.10.noarch.rpm
 					if [ $? != 0 ]
-			        then
+					then
 						echo " ElasticSearch downloading failed with error code 31"
 						exit 1
 					fi
@@ -1066,16 +1064,16 @@
 			esac		
 			
 			# Start services
-            ps -q 1 | grep -q -c "systemd"
-            if [ "$?" -eq 0 ];
+			ps -q 1 | grep -q -c "systemd"
+			if [ "$?" -eq 0 ];
 			then
 				echo "Starting services with systemd..."
 				systemctl start nginx
 				systemctl start php-fpm
 			else
 				echo "Starting services..."
-                /etc/init.d/php-fpm restart
-                /etc/init.d/nginx restart
+				/etc/init.d/php-fpm restart
+				/etc/init.d/nginx restart
 			fi
 
 			if ! hash GeoIP-devel 2>&-;
@@ -1087,6 +1085,7 @@
 					exit 1
 				fi
 			fi
+
 			if ! hash pecl/geoip 2>&-;
 			then
 				pecl install geoip
