@@ -1686,10 +1686,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $conditions = array(
                     $board_id['board_id']
                 );
-                $boards = pg_query_params($db_lnk, 'DELETE FROM boards WHERE id= $1 RETURNING name', $conditions);
+                $boards = pg_query_params($db_lnk, 'DELETE FROM boards WHERE id= $1', $conditions);
                 if (JABBER_HOST && $boards) {
                     $board = pg_fetch_assoc($boards);
-                    $xmpp->destroyRoom($board['name']);
+                    $xmpp->destroyRoom('board-' . $board_id['board_id']);
                 }
             }
             $response = array(
@@ -1777,7 +1777,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $jaxl_initialize = array(
                     'jid' => JABBER_HOST,
                     'strict' => false,
-                    'log_level' => JAXL_DEBUG,
+                    'log_level' => JAXL_INFO,
                     'port' => 5222
                 );
                 $GLOBALS['client'] = new JAXL($jaxl_initialize);
@@ -2153,12 +2153,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             unset($r_post['template']);
             $sql = true;
             $r_post['user_id'] = (!empty($authUser['id'])) ? $authUser['id'] : 1;
-            // ejabberd code
-            if (JABBER_HOST) {
-                $xmpp_user = getXmppUser();
-                $xmpp = new xmpp($xmpp_user);
-                $xmpp->createRoom($r_post['name']);
-            }
         }
         break;
 
@@ -3106,6 +3100,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $emailFindReplace['##ACTIVATION_URL##'] = 'http://' . $_SERVER['HTTP_HOST'] . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
                 sendMail('activation', $emailFindReplace, $r_post['email']);
             } else if ($r_resource_cmd == '/boards') {
+                if (JABBER_HOST) {
+                    $xmpp_user = getXmppUser();
+                    $xmpp = new xmpp($xmpp_user);
+                    $xmpp->createRoom('board-' . $response['id'], $r_post['name']);
+                }
                 if (!$is_import_board) {
                     $foreign_id['board_id'] = $response['id'];
                     $comment = '##USER_NAME## created board';
@@ -3953,7 +3952,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $qry_val_arr = array(
                     $r_post['board_id']
                 );
-                $s_result = pg_query_params($db_lnk, 'SELECT name FROM boards WHERE id = $1', $qry_val_arr);
+                $s_result = pg_query_params($db_lnk, 'SELECT id, name FROM boards WHERE id = $1', $qry_val_arr);
                 $previous_value = pg_fetch_assoc($s_result);
                 $foreign_ids['board_id'] = $r_resource_vars['boards'];
                 $foreign_ids['board_id'] = $r_post['board_id'];
@@ -3973,35 +3972,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $comment = '##USER_NAME## added member to board';
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board_user', $foreign_ids, '', $response['id']);
                 if (JABBER_HOST) {
-                    $conditions = array(
-                        $authUser['username']
-                    );
-                    $chat_db_lnk = getEjabberdConnection();
-                    $user_password = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1', $conditions);
-                    $user_password = pg_fetch_assoc($user_password);
-                    $GLOBALS['previous_board_name'] = $previous_value['name'];
-                    $jaxl_initialize = array(
-                        'bosh_url' => BOSH_SERVICE_URL,
-                        'jid' => $authUser['username'] . '@' . JABBER_HOST,
-                        'pass' => $user_password['password'],
-                        'port' => '5280',
-                        'log_level' => JAXL_INFO
-                    );
-                    $GLOBALS['client1'] = new JAXL($jaxl_initialize);
-                    $xeps = array(
-                        '0206',
-                        '0249',
-                    );
-                    $GLOBALS['client1']->require_xep($xeps);
-                    $GLOBALS['client1']->add_cb('on_auth_success', function ()
-                    {
-                        global $r_post;
-                        $GLOBALS['client1']->xeps['0249']->invite($r_post['username'] . '@' . JABBER_HOST, $GLOBALS['previous_board_name'] . '@conference.' . JABBER_HOST);
-                    });
-                    $GLOBALS['client1']->start();
                     $xmpp_user = getXmppUser();
                     $xmpp = new xmpp($xmpp_user);
-                    $xmpp->grantMember($r_post['username'], $previous_value['name'], 'member');
+                    $xmpp->grantMember('board-' . $previous_value['id'], $r_post['username'], 'member');
                 }
             } else if ($r_resource_cmd == '/organizations/?/users/?') {
                 $qry_val_arr = array(
@@ -4732,7 +4705,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $affiliation = ($r_put['board_user_role_id'] == 1) ? 'admin' : 'member';
                 $xmpp_user = getXmppUser();
                 $xmpp = new xmpp($xmpp_user);
-                $xmpp->grantMember($r_put['username'], $r_put['board_name'], $affiliation);
+                $xmpp->grantMember('board-' . $r_put['board_id'], $r_put['username'], $affiliation);
             }
         }
         $val = '';
@@ -4865,7 +4838,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         if (JABBER_HOST) {
             $xmpp_user = getXmppUser();
             $xmpp = new xmpp($xmpp_user);
-            $xmpp->revokeMember($previous_value['board_name'], $previous_value['username']);
+            $xmpp->revokeMember('board-' . $previous_value['board_id'], $previous_value['username']);
         }
         break;
 

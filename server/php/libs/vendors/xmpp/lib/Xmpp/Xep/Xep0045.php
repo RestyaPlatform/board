@@ -24,7 +24,7 @@ class Xep0045 extends AbstractXep
         $presence = new Presence();
         $presence
             ->setFrom($this->options['from'])
-            ->setTo($this->getFullRoomId($roomId))
+            ->setTo($this->getFullRoomId($roomId, $roomNickname))
             ->initDom(new DOMElement('x', null, 'http://jabber.org/protocol/muc'))
         ;
 
