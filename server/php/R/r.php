@@ -48,7 +48,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/xmpp_login':
         include '../libs/vendors/xmpp-prebind-php/XmppPrebind.php';
         $xmppPrebind = new XmppPrebind(JABBER_HOST, BOSH_SERVICE_URL, XMPP_CLIENT_RESOURCE_NAME, false, true);
-        $xmppPrebind->connect($authUser['username'], md5($authUser['password'] . SECURITYSALT));
+        $xmppPrebind->connect($authUser['username'], $authUser['password']);
         $xmppPrebind->auth();
         $response = $xmppPrebind->getSessionInfo();
         break;
@@ -1640,8 +1640,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $user_id['user_id']
                 );
                 $users = pg_query_params($db_lnk, 'DELETE FROM users WHERE id= $1 RETURNING username', $conditions);
-                // Todo handle with jaxl for unregister
-                
+                if (JABBER_HOST) {
+                    $user = pg_fetch_assoc($users);
+                    $xmpp_user = getXmppUser();
+                    $xmpp = new xmpp($xmpp_user);
+                    $xmpp->deleteUser('<iq from="' . $authUser['username'] . '@' . JABBER_HOST . '" id="delete-user-2" to="' . JABBER_HOST . '" type="set" xml:lang="en"><command xmlns="http://jabber.org/protocol/commands" node="http://jabber.org/protocol/admin#delete-user"><x xmlns="jabber:x:data" type="submit"><field type="hidden" var="FORM_TYPE"><value>http://jabber.org/protocol/admin</value></field><field var="accountjids"><value>' . $user['username'] . '@' . JABBER_HOST . '</value></field></x></command></iq>');
+                }
             }
             $response = array(
                 'success' => 'Checked users are deleted successfully.'
@@ -1771,18 +1775,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
             $r_post['full_name'] = ($r_post['email'] == '') ? $r_post['username'] : email2name($r_post['email']);
-            // ejabberd code
             if (JABBER_HOST) {
                 global $j_username, $j_password;
                 $jaxl_initialize = array(
                     'jid' => JABBER_HOST,
                     'strict' => false,
-                    'log_level' => JAXL_INFO,
-                    'port' => 5222
+                    'log_level' => JAXL_DEBUG,
+                    'port' => 5222,
+                    'log_path' => 'jaxl.log'
                 );
                 $GLOBALS['client'] = new JAXL($jaxl_initialize);
                 $j_username = $r_post['username'];
-                $j_password = md5($r_post['password'] . SECURITYSALT);
+                $j_password = $r_post['password'];
                 $xeps = array(
                     '0077'
                 );
@@ -1936,7 +1940,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $r_resource_vars['users']
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
-                    // Todo handle with jaxl for change password
+                    if (JABBER_HOST) {
+                        $xmpp_user = getXmppUser();
+                        $xmpp = new xmpp($xmpp_user);
+                        $xmpp->changePassword('<iq xmlns="jabber:client" to="' . JABBER_HOST . '" type="set" id="2"><query 
+						xmlns="jabber:iq:register"><username>' . $user['username'] . '</username><password>' . $r_post['password'] . '</password></query></iq>');
+                    }
                     $conditions = array(
                         $authUser['username']
                     );
@@ -4787,7 +4796,11 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_user', $foreign_id);
         $sql = 'DELETE FROM users WHERE id= $1';
         array_push($pg_params, $r_resource_vars['users']);
-        // Todo handle with jaxl for unregister
+        if (JABBER_HOST) {
+            $xmpp_user = getXmppUser();
+            $xmpp = new xmpp($xmpp_user);
+            $xmpp->deleteUser('<iq from="' . $authUser['username'] . '@' . JABBER_HOST . '" id="delete-user-2" to="' . JABBER_HOST . '" type="set" xml:lang="en"><command xmlns="http://jabber.org/protocol/commands" node="http://jabber.org/protocol/admin#delete-user"><x xmlns="jabber:x:data" type="submit"><field type="hidden" var="FORM_TYPE"><value>http://jabber.org/protocol/admin</value></field><field var="accountjids"><value>' . $username['username'] . '@' . JABBER_HOST . '</value></field></x></command></iq>');
+        }
         break;
 
     case '/organizations/?/organizations_users/?': // delete organization user

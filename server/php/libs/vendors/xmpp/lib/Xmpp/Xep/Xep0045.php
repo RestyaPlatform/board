@@ -167,4 +167,24 @@ class Xep0045 extends AbstractXep
 
         return $members;
     }
+
+	/**
+     * @param xml $iq
+     * @return boolean
+     */
+	public function changePassword($iq)
+    {
+        $this->connection->getStream()->send($iq);
+        $response = $this->connection->waitForServer('*');
+    }
+
+	/**
+     * @param xml $iq
+     * @return boolean
+     */
+	public function deleteUser($iq)
+    {
+        $this->connection->getStream()->send($iq);
+        $response = $this->connection->waitForServer('*');
+    }
 }
