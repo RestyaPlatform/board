@@ -43,7 +43,7 @@ define('CHAT_DB_PASSWORD', '');
 define('CHAT_DB_NAME', '');
 define('CHAT_DB_PORT', '');
 define('SECURITYSALT', 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf');
-if (!file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
+if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php') && !empty($_server_domain_url)) {
     $fh = fopen(APP_PATH . '/tmp/cache/site_url_for_shell.php', 'a');
     fwrite($fh, '<?php' . "\n");
     fwrite($fh, '$_server_domain_url = \'' . $_server_domain_url . '\';');
