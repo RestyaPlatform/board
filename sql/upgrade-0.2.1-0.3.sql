@@ -1073,7 +1073,7 @@ CREATE VIEW "cards_elasticsearch_listing" AS
       LEFT JOIN boards boards ON ((boards.id = cards.board_id)))
    LEFT JOIN lists lists ON ((lists.id = cards.list_id)))) card;
    
-UPDATE "settings" SET "value" = 'Dockmodal Maximize View', "options" = 'Dockmodal Maximize View,DockModal Portable View' WHERE "name" = 'DEFAULT_CARD_VIEW';
+UPDATE "settings" SET "label" = 'Default Card Open' "value" = 'Maximized', "options" = 'Maximized,Normal Dockmodal' WHERE "name" = 'DEFAULT_CARD_VIEW';
 
 SELECT pg_catalog.setval('settings_id_seq', (SELECT MAX(id) FROM settings), true);
 

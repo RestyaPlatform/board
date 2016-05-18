@@ -182,7 +182,7 @@ App.SearchPageResultView = Backbone.View.extend({
                                         });
                                     }
 
-                                    var initialState = (DEFAULT_CARD_VIEW === 'Dockmodal') ? 'docked' : 'modal';
+                                    var initialState = (DEFAULT_CARD_VIEW === 'Normal Dockmodal') ? 'docked' : 'modal';
                                     if (e.ctrlKey || e.metaKey) {
                                         initialState = 'modal';
                                     }

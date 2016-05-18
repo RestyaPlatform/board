@@ -102,6 +102,156 @@
 				
 				echo "Setting up cron for every 5 minutes to send email notification to past due..."
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
+				
+				if ! hash GeoIP-devel 2>&-;
+				then
+					apt-get install php5-geoip php5-dev libgeoip-dev
+					if [ $? != 0 ]
+					then
+						echo "php5-geoip php5-dev libgeoip-dev installation failed with error code 50"
+						exit 1
+					fi
+				fi
+				if ! hash pecl/geoip 2>&-;
+				then
+					pecl install geoip
+					if [ $? != 0 ]
+					then
+						echo "pecl geoip installation failed with error code 47"
+						exit 1
+					fi
+				fi
+				echo "extension=geoip.so" >> /etc/php.ini
+				mkdir -v /usr/share/GeoIP
+				if [ $? != 0 ]
+				then
+					echo "GeoIP folder creation failed with error code 52"
+					exit 1
+				fi
+				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+				gunzip GeoIP.dat.gz
+				mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
+				wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+				gunzip GeoIPv6.dat.gz
+				mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
+				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+				gunzip GeoLiteCity.dat.gz
+				mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
+				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+				gunzip GeoLiteCityv6.dat.gz
+				mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
+				wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+				gunzip GeoIPASNum.dat.gz
+				mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
+				wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
+				gunzip GeoIPASNumv6.dat.gz
+				mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
+				
+				service php5-fpm restart
+				
+				set +x
+				echo "Do you want to install Restyaboard apps (y/n)?"
+				read -r answer
+				set -x
+				case "${answer}" in
+					[Yy])
+					if ! hash jq 2>&-;
+					then
+						echo "Installing jq..."
+						apt-get install jq
+						if [ $? != 0 ]
+						then
+							echo "jq installation failed with error code 53"
+							exit 1
+						fi
+					fi
+					curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
+					chmod -R go+w "/tmp/apps.json"
+					for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
+					do
+						mkdir "$dir/client/apps"
+						chmod -R go+w "$dir/client/apps"
+						curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
+						unzip /tmp/$fid.zip -d "$dir/client/apps"
+					done
+				esac
+				
+				apt-get install autotools-dev
+				if [ $? != 0 ]
+				then
+					echo "autotools-dev installation failed with error code 59"
+					exit 1
+				fi
+				apt-get install automake
+				if [ $? != 0 ]
+				then
+					echo "automake installation failed with error code 60"
+					exit 1
+				fi
+				apt-get install erlang
+				if [ $? != 0 ]
+				then
+					echo "erlang installation failed with error code 61"
+					exit 1
+				fi
+				apt-get install libyaml-dev
+				if [ $? != 0 ]
+				then
+					echo "libyaml-dev installation failed with error code 62"
+					exit 1
+				fi
+				cd /opt
+				wget http://liquidtelecom.dl.sourceforge.net/project/expat/expat/2.1.1/expat-2.1.1.tar.bz2
+				tar -jvxf expat-2.1.1.tar.bz2
+				cd expat-2.1.1/
+				./configure
+				make
+				make install
+				if [ $? != 0 ]
+				then
+					echo "make installation failed with error code 63"
+					exit 1
+				fi
+				cd /opt
+				wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
+				tar -zvxf ejabberd-15.07.tgz
+				cd ejabberd-15.07
+				./autogen.sh
+				./configure --enable-pgsql
+				make
+				make install
+
+				cd /etc/ejabberd
+				echo "Creating ejabberd user and database..."
+				psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
+				if [ $? != 0 ]
+				then
+					echo "ejabberd user creation failed with error code 64"
+					exit 1
+				fi
+				cd /etc/ejabberd
+				psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
+				if [ $? != 0 ]
+				then
+					echo "ejabberd Database creation failed with error code 65"
+					exit 1
+				fi
+				psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
+				mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
+				chmod -R go+w "/etc/ejabberd/ejabberd.yml"
+				ejabberdctl stop
+				ejabberdctl start
+				sed -i 's/restya.com/$webdir/g' /etc/ejabberd/ejabberd.yml
+				sed -i 's/ejabberd15/${EJABBERD_DBNAME}/g' /etc/ejabberd/ejabberd.yml
+				ejabberdctl change_password admin $webdir admin
+				if [ $? != 0 ]
+				then
+					echo "ejabberdctl password changing failed with error code 66"
+					exit 1
+				fi
+				ejabberdctl stop
+				ejabberdctl start
+				
 			else
 				echo "Changing files path for existing cron..."
 				sed -i "s/server\/php\/R\/cron.sh/server\/php\/shell\/indexing_to_elasticsearch.sh/" /var/spool/cron/root
@@ -116,6 +266,141 @@
 				
 				echo "Setting up cron for every 5 minutes to send email notification to past due..."
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
+				
+				if ! hash GeoIP-devel 2>&-;
+				then
+					yum install GeoIP-devel
+					if [ $? != 0 ]
+					then
+						echo "GeoIP-devel installation failed with error code 46"
+						exit 1
+					fi
+				fi
+
+				if ! hash pecl/geoip 2>&-;
+				then
+					pecl install geoip
+					if [ $? != 0 ]
+					then
+						echo "pecl geoip installation failed with error code 47"
+						exit 1
+					fi
+				fi
+				echo "extension=geoip.so" >> /etc/php.ini
+				mkdir -v /usr/share/GeoIP
+				if [ $? != 0 ]
+				then
+					echo "GeoIP folder creation failed with error code 48"
+					exit 1
+				fi
+				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+				gunzip GeoIP.dat.gz
+				mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
+				wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+				gunzip GeoIPv6.dat.gz
+				mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
+				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+				gunzip GeoLiteCity.dat.gz
+				mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
+				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+				gunzip GeoLiteCityv6.dat.gz
+				mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
+				wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+				gunzip GeoIPASNum.dat.gz
+				mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
+				wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
+				gunzip GeoIPASNumv6.dat.gz
+				mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
+				
+				ps -q 1 | grep -q -c "systemd"
+				if [ "$?" -eq 0 ];
+				then
+					systemctl restart php-fpm
+				else
+					/etc/init.d/php-fpm restart
+				fi
+				
+				set +x
+				echo "Do you want to install Restyaboard apps (y/n)?"
+				read -r answer
+				set -x
+				case "${answer}" in
+					[Yy])
+					if ! hash jq 2>&-;
+					then
+						echo "Installing jq..."
+						yum install -y jq
+						if [ $? != 0 ]
+						then
+							echo "jq installation failed with error code 49"
+							exit 1
+						fi
+					fi
+					curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
+					chmod -R go+w "/tmp/apps.json"
+					for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
+					do
+						mkdir "$dir/client/apps"
+						chmod -R go+w "$dir/client/apps"
+						curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
+						unzip /tmp/$fid.zip -d "$dir/client/apps"
+					done
+				esac
+				
+				cd /opt
+				wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
+				wget https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_18.3-1~centos~6_i386.rpm
+				rpm -ivh esl-erlang_18.3-1~centos~6_i386.rpm
+				if [ $? != 0 ]
+				then
+					echo "erlang/otp installation failed with error code 54"
+					exit 1
+				fi
+				yum install libyaml*
+				if [ $? != 0 ]
+				then
+					echo "libyaml installation failed with error code 55"
+					exit 1
+				fi
+				tar -zvxf ejabberd-15.07.tgz
+				cd ejabberd-15.07
+				./autogen.sh
+				./configure --enable-pgsql
+				make
+				make install
+				if [ $? != 0 ]
+				then
+					echo "make Install failed with error code 56"
+					exit 1
+				fi
+				echo "Creating ejabberd user and database..."
+				psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
+				if [ $? != 0 ]
+				then
+					echo "ejabberd user creation failed with error code 57"
+					exit 1
+				fi
+				cd /etc/ejabberd
+				psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
+				if [ $? != 0 ]
+				then
+					echo "ejabberd Database creation failed with error code 58"
+					exit 1
+				fi
+				psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
+				mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
+				chmod -R go+w "/etc/ejabberd/ejabberd.yml"
+				sed -i 's/restya.com/$webdir/g' /etc/ejabberd/ejabberd.yml
+				sed -i 's/ejabberd15/${EJABBERD_DBNAME}/g' /etc/ejabberd/ejabberd.yml
+				ejabberdctl change_password admin $webdir admin
+				if [ $? != 0 ]
+				then
+					echo "ejabberdctl password changing failed with error code 58"
+					exit 1
+				fi
+				ejabberdctl stop
+				ejabberdctl start
+				
 			fi
 			
 			set +x
