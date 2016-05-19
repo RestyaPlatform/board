@@ -201,6 +201,14 @@
 				make
 				make install
 
+				set +x
+				echo "To configure ejabberd, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
+				read -r webdir
+				while [[ -z "$webdir" ]]
+				do
+					read -r -p "To configure ejabberd, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+				done
+				
 				cd /etc/ejabberd
 				echo "Creating ejabberd user and database..."
 				psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
