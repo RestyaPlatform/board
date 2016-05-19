@@ -146,7 +146,7 @@
 				wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
 				gunzip GeoIPASNumv6.dat.gz
 				mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
-				
+
 				service php5-fpm restart
 				
 				set +x
@@ -177,29 +177,13 @@
 				esac
 				
 				apt-get install autotools-dev
-				if [ $? != 0 ]
-				then
-					echo "autotools-dev installation failed with error code 59"
-					exit 1
-				fi
+
 				apt-get install automake
-				if [ $? != 0 ]
-				then
-					echo "automake installation failed with error code 60"
-					exit 1
-				fi
+
 				apt-get install erlang
-				if [ $? != 0 ]
-				then
-					echo "erlang installation failed with error code 61"
-					exit 1
-				fi
+
 				apt-get install libyaml-dev
-				if [ $? != 0 ]
-				then
-					echo "libyaml-dev installation failed with error code 62"
-					exit 1
-				fi
+
 				cd /opt
 				wget http://liquidtelecom.dl.sourceforge.net/project/expat/expat/2.1.1/expat-2.1.1.tar.bz2
 				tar -jvxf expat-2.1.1.tar.bz2
@@ -207,11 +191,7 @@
 				./configure
 				make
 				make install
-				if [ $? != 0 ]
-				then
-					echo "make installation failed with error code 63"
-					exit 1
-				fi
+
 				cd /opt
 				wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
 				tar -zvxf ejabberd-15.07.tgz
@@ -224,31 +204,23 @@
 				cd /etc/ejabberd
 				echo "Creating ejabberd user and database..."
 				psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
-				if [ $? != 0 ]
-				then
-					echo "ejabberd user creation failed with error code 64"
-					exit 1
-				fi
+
 				cd /etc/ejabberd
 				psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
-				if [ $? != 0 ]
-				then
-					echo "ejabberd Database creation failed with error code 65"
-					exit 1
-				fi
+
 				psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
 				mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
 				chmod -R go+w "/etc/ejabberd/ejabberd.yml"
 				ejabberdctl stop
 				ejabberdctl start
-				sed -i 's/restya.com/$webdir/g' /etc/ejabberd/ejabberd.yml
-				sed -i 's/ejabberd15/${EJABBERD_DBNAME}/g' /etc/ejabberd/ejabberd.yml
-				ejabberdctl change_password admin $webdir admin
-				if [ $? != 0 ]
-				then
-					echo "ejabberdctl password changing failed with error code 66"
-					exit 1
-				fi
+				sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
+				sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
+				
+				ejabberdctl stop
+				ejabberdctl start
+
+				ejabberdctl change_password admin $webdir restya
+				
 				ejabberdctl stop
 				ejabberdctl start
 				
@@ -311,7 +283,7 @@
 				wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
 				gunzip GeoIPASNumv6.dat.gz
 				mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
-				
+
 				ps -q 1 | grep -q -c "systemd"
 				if [ "$?" -eq 0 ];
 				then
@@ -346,61 +318,61 @@
 						unzip /tmp/$fid.zip -d "$dir/client/apps"
 					done
 				esac
-				
+
 				cd /opt
 				wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
 				wget https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_18.3-1~centos~6_i386.rpm
 				rpm -ivh esl-erlang_18.3-1~centos~6_i386.rpm
-				if [ $? != 0 ]
-				then
-					echo "erlang/otp installation failed with error code 54"
-					exit 1
-				fi
 				yum install libyaml*
-				if [ $? != 0 ]
-				then
-					echo "libyaml installation failed with error code 55"
-					exit 1
-				fi
 				tar -zvxf ejabberd-15.07.tgz
 				cd ejabberd-15.07
 				./autogen.sh
 				./configure --enable-pgsql
 				make
 				make install
-				if [ $? != 0 ]
-				then
-					echo "make Install failed with error code 56"
-					exit 1
-				fi
+				yum install php-xml
+				set +x
+				echo "To configure ejabberd, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
+				read -r webdir
+				while [[ -z "$webdir" ]]
+				do
+					read -r -p "To configure ejabberd, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+				done
+
 				echo "Creating ejabberd user and database..."
 				psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
-				if [ $? != 0 ]
-				then
-					echo "ejabberd user creation failed with error code 57"
-					exit 1
-				fi
+
 				cd /etc/ejabberd
 				psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
-				if [ $? != 0 ]
-				then
-					echo "ejabberd Database creation failed with error code 58"
-					exit 1
-				fi
+				
 				psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
 				mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
 				chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-				sed -i 's/restya.com/$webdir/g' /etc/ejabberd/ejabberd.yml
-				sed -i 's/ejabberd15/${EJABBERD_DBNAME}/g' /etc/ejabberd/ejabberd.yml
-				ejabberdctl change_password admin $webdir admin
-				if [ $? != 0 ]
-				then
-					echo "ejabberdctl password changing failed with error code 58"
-					exit 1
-				fi
 				ejabberdctl stop
 				ejabberdctl start
+				sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
+				sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
+
+				ejabberdctl stop
+				ejabberdctl start
+
+				ejabberdctl change_password admin $webdir restya
 				
+				ejabberdctl stop
+				ejabberdctl start
+
+				ps -q 1 | grep -q -c "systemd"
+				if [ "$?" -eq 0 ];
+				then
+					echo "Starting services with systemd..."
+					systemctl start nginx
+					systemctl start php-fpm
+				else
+					echo "Starting services..."
+					/etc/init.d/php-fpm restart
+					/etc/init.d/nginx restart
+				fi
+
 			fi
 			
 			set +x
@@ -882,29 +854,13 @@
 			esac
 			
 			apt-get install autotools-dev
-			if [ $? != 0 ]
-			then
-				echo "autotools-dev installation failed with error code 59"
-				exit 1
-			fi
+
 			apt-get install automake
-			if [ $? != 0 ]
-			then
-				echo "automake installation failed with error code 60"
-				exit 1
-			fi
+
 			apt-get install erlang
-			if [ $? != 0 ]
-			then
-				echo "erlang installation failed with error code 61"
-				exit 1
-			fi
+
 			apt-get install libyaml-dev
-			if [ $? != 0 ]
-			then
-				echo "libyaml-dev installation failed with error code 62"
-				exit 1
-			fi
+
 			cd /opt
 			wget http://liquidtelecom.dl.sourceforge.net/project/expat/expat/2.1.1/expat-2.1.1.tar.bz2
 			tar -jvxf expat-2.1.1.tar.bz2
@@ -912,11 +868,7 @@
 			./configure
 			make
 			make install
-			if [ $? != 0 ]
-			then
-				echo "make installation failed with error code 63"
-				exit 1
-			fi
+
 			cd /opt
 			wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
 			tar -zvxf ejabberd-15.07.tgz
@@ -929,31 +881,23 @@
 			cd /etc/ejabberd
 			echo "Creating ejabberd user and database..."
 			psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
-			if [ $? != 0 ]
-			then
-				echo "ejabberd user creation failed with error code 64"
-				exit 1
-			fi
+
 			cd /etc/ejabberd
 			psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
-			if [ $? != 0 ]
-			then
-				echo "ejabberd Database creation failed with error code 65"
-				exit 1
-			fi
+
 			psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
 			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
 			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
 			ejabberdctl stop
 			ejabberdctl start
-			sed -i 's/restya.com/$webdir/g' /etc/ejabberd/ejabberd.yml
-			sed -i 's/ejabberd15/${EJABBERD_DBNAME}/g' /etc/ejabberd/ejabberd.yml
-			ejabberdctl change_password admin $webdir admin
-			if [ $? != 0 ]
-			then
-				echo "ejabberdctl password changing failed with error code 66"
-				exit 1
-			fi
+			sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
+			sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
+			
+			ejabberdctl stop
+			ejabberdctl start
+
+			ejabberdctl change_password admin $webdir restya
+			
 			ejabberdctl stop
 			ejabberdctl start
 			
@@ -1445,55 +1389,47 @@
 			wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
 			wget https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_18.3-1~centos~6_i386.rpm
 			rpm -ivh esl-erlang_18.3-1~centos~6_i386.rpm
-			if [ $? != 0 ]
-			then
-				echo "erlang/otp installation failed with error code 54"
-				exit 1
-			fi
 			yum install libyaml*
-			if [ $? != 0 ]
-			then
-				echo "libyaml installation failed with error code 55"
-				exit 1
-			fi
 			tar -zvxf ejabberd-15.07.tgz
 			cd ejabberd-15.07
 			./autogen.sh
 			./configure --enable-pgsql
 			make
 			make install
-			if [ $? != 0 ]
-			then
-				echo "make Install failed with error code 56"
-				exit 1
-			fi
+			yum install php-xml
 			echo "Creating ejabberd user and database..."
 			psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
-			if [ $? != 0 ]
-			then
-				echo "ejabberd user creation failed with error code 57"
-				exit 1
-			fi
+
 			cd /etc/ejabberd
 			psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
-			if [ $? != 0 ]
-			then
-				echo "ejabberd Database creation failed with error code 58"
-				exit 1
-			fi
+			
 			psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
 			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
 			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-			sed -i 's/restya.com/$webdir/g' /etc/ejabberd/ejabberd.yml
-			sed -i 's/ejabberd15/${EJABBERD_DBNAME}/g' /etc/ejabberd/ejabberd.yml
-			ejabberdctl change_password admin $webdir admin
-			if [ $? != 0 ]
-			then
-				echo "ejabberdctl password changing failed with error code 58"
-				exit 1
-			fi
 			ejabberdctl stop
 			ejabberdctl start
+			sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
+			sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
+
+			ejabberdctl stop
+			ejabberdctl start
+
+			ejabberdctl change_password admin $webdir restya
+			
+			ejabberdctl stop
+			ejabberdctl start
+
+			ps -q 1 | grep -q -c "systemd"
+			if [ "$?" -eq 0 ];
+			then
+				echo "Starting services with systemd..."
+				systemctl start nginx
+				systemctl start php-fpm
+			else
+				echo "Starting services..."
+				/etc/init.d/php-fpm restart
+				/etc/init.d/nginx restart
+			fi
 			
 			/bin/echo "$RESTYABOARD_VERSION" > /opt/restyaboard/release
 		esac
