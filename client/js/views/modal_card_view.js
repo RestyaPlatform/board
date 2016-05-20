@@ -807,6 +807,7 @@ App.ModalCardView = Backbone.View.extend({
                 initialState: initialState,
                 height: 450,
                 width: 600,
+                animationSpeed: ANIMATION_SPEED,
                 title: '<div class="card-id pull-left"><strong>#' + this.model.id + '</strong></div><span class="title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + title + '</span>',
                 beforePopout: function(event) {
                     if (!_.isUndefined(authuser.user)) {

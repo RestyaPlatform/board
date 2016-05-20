@@ -151,6 +151,7 @@ App.InstantCardAddView = Backbone.View.extend({
             initialState: 'docked',
             height: 300,
             width: 400,
+            animationSpeed: ANIMATION_SPEED,
             open: function(event, dialog) {
                 $('.dockmodal').removeClass('active');
                 event.parent().parent().addClass('active');

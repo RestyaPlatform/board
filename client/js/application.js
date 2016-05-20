@@ -21,6 +21,7 @@ var LDAP_LOGIN_ENABLED = '';
 var DEFAULT_LANGUAGE = '';
 var STANDARD_LOGIN_ENABLED = '';
 var IMAP_EMAIL = '';
+var ANIMATION_SPEED = 300;
 var last_activity = '';
 var SecuritySalt = 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf';
 var last_user_activity_id = 0,
