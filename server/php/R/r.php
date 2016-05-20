@@ -47,8 +47,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     switch ($r_resource_cmd) {
     case '/xmpp_login':
         include '../libs/vendors/xmpp-prebind-php/XmppPrebind.php';
+		$conditions = array(
+			$authUser['username']
+		);
+		$chat_db_lnk = getEjabberdConnection();
+		$user_password = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1', $conditions);
+		$user_password = pg_fetch_assoc($user_password);
         $xmppPrebind = new XmppPrebind(JABBER_HOST, BOSH_SERVICE_URL, XMPP_CLIENT_RESOURCE_NAME, false, true);
-        $xmppPrebind->connect($authUser['username'], 'restya');
+        $xmppPrebind->connect($authUser['username'], $user_password['password']);
         $xmppPrebind->auth();
         $response = $xmppPrebind->getSessionInfo();
         break;
