@@ -47,8 +47,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     switch ($r_resource_cmd) {
     case '/xmpp_login':
         include '../libs/vendors/xmpp-prebind-php/XmppPrebind.php';
+        $conditions = array(
+            $authUser['username']
+        );
+        $chat_db_lnk = getEjabberdConnection();
+        $user_password = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1', $conditions);
+        $user_password = pg_fetch_assoc($user_password);
         $xmppPrebind = new XmppPrebind(JABBER_HOST, BOSH_SERVICE_URL, XMPP_CLIENT_RESOURCE_NAME, false, true);
-        $xmppPrebind->connect($authUser['username'], $authUser['password']);
+        $xmppPrebind->connect($authUser['username'], $user_password['password']);
         $xmppPrebind->auth();
         $response = $xmppPrebind->getSessionInfo();
         break;
@@ -731,6 +737,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/search':
         if (!empty($r_resource_filters['q'])) {
             $response = array();
+            $data_for = '';
             if (!empty($r_resource_filters['q'])) {
                 $str = $r_resource_filters['q'];
                 $data_for_except = array(
@@ -1103,23 +1110,25 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $response[$row['name']] = $row['value'];
         }
         $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
-        foreach ($files as $file) {
-            $content = file_get_contents($file);
-            $data = json_decode($content, true);
-            if ($data['enabled'] === true) {
-                if (!empty($data['settings'])) {
-                    foreach ($data['settings'] as $key => $value) {
-                        if ($value['is_public']) {
-                            $value['name'] = $key;
-                            $response['apps']['settings'][] = $value;
+        if (!empty($files)) {
+            foreach ($files as $file) {
+                $content = file_get_contents($file);
+                $data = json_decode($content, true);
+                if ($data['enabled'] === true) {
+                    if (!empty($data['settings'])) {
+                        foreach ($data['settings'] as $key => $value) {
+                            if ($value['is_public']) {
+                                $value['name'] = $key;
+                                $response['apps']['settings'][] = $value;
+                            }
                         }
                     }
-                }
-                foreach ($data['assets']['js'] as $jsfiles) {
-                    $response['apps']['js'][] = $jsfiles;
-                }
-                foreach ($data['assets']['css'] as $cssfiles) {
-                    $response['apps']['css'][] = $cssfiles;
+                    foreach ($data['assets']['js'] as $jsfiles) {
+                        $response['apps']['js'][] = $jsfiles;
+                    }
+                    foreach ($data['assets']['css'] as $cssfiles) {
+                        $response['apps']['css'][] = $cssfiles;
+                    }
                 }
             }
         }
@@ -1127,12 +1136,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/apps':
         $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
-        foreach ($files as $file) {
-            $folder = explode('/', $file);
-            $content = file_get_contents($file);
-            $data = json_decode($content, true);
-            $data['folder'] = $folder[count($folder) - 2];
-            $response[] = $data;
+        if (!empty($files)) {
+            foreach ($files as $file) {
+                $folder = explode('/', $file);
+                $content = file_get_contents($file);
+                $data = json_decode($content, true);
+                $data['folder'] = $folder[count($folder) - 2];
+                $response[] = $data;
+            }
         }
         break;
 
@@ -5168,14 +5179,16 @@ if (!empty($_GET['_url']) && $db_lnk) {
             }
             $response['languages'] = json_encode($languages);
             $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
-            foreach ($files as $file) {
-                $content = file_get_contents($file);
-                $data = json_decode($content, true);
-                $folder = explode('/', $file);
-                if ($data['enabled'] === true) {
-                    foreach ($data as $key => $value) {
-                        if ($key != 'settings') {
-                            $response['apps'][$folder[count($folder) - 2]][$key] = $value;
+            if (!empty($files)) {
+                foreach ($files as $file) {
+                    $content = file_get_contents($file);
+                    $data = json_decode($content, true);
+                    $folder = explode('/', $file);
+                    if ($data['enabled'] === true) {
+                        foreach ($data as $key => $value) {
+                            if ($key != 'settings') {
+                                $response['apps'][$folder[count($folder) - 2]][$key] = $value;
+                            }
                         }
                     }
                 }

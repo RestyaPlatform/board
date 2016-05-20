@@ -135,7 +135,7 @@ function getCryptHash($str)
         $char1 = chr(33);
         $char2 = chr(127);
         $range = range($char1, $char2);
-        $salt = $algo_selector . $workload_factor . getRandomStr($range, 16); // actually chr(0) - chr(255)
+        $salt = $algo_selector . $workload_factor . getRandomStr($range, 16); // actually chr(0) - chr(255), but used ASCII only
         
     } else if (CRYPT_SHA256) {
         $algo_selector = '$5$';
@@ -143,7 +143,7 @@ function getCryptHash($str)
         $char1 = chr(33);
         $char2 = chr(127);
         $range = range($char1, $char2);
-        $salt = $algo_selector . $workload_factor . getRandomStr($range, 16); // actually chr(0) - chr(255)
+        $salt = $algo_selector . $workload_factor . getRandomStr($range, 16); // actually chr(0) - chr(255), but used ASCII only
         
     } else if (CRYPT_EXT_DES) {
         $algo_selector = '_';

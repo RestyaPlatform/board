@@ -340,7 +340,7 @@ class JAXL extends XMPPStream {
 
 	public function get_socket_path() {
 		$protocol = ($this->cfg['port'] == 5223 ? "ssl" : "tcp");
-		if ($this->cfg['protocol'])
+		if (!empty($this->cfg['protocol']))
 			$protocol = $this->cfg['protocol'];
 		return $protocol."://".$this->cfg['host'].":".$this->cfg['port'];
 	}
