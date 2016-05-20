@@ -34,7 +34,8 @@ App.ChatView = Backbone.View.extend({
         this.$el.dockmodal({
             initialState: 'docked',
             height: 300,
-            width: 400
+            width: 400,
+            animationSpeed: ANIMATION_SPEED
         });
         this.showTooltip();
         return this;
