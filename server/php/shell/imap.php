@@ -82,6 +82,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                     $card = pg_fetch_assoc($card_query);
                     $card_id = $card['id'];
                 } else {
+                    $body = imap_fetchbody($connection, $counter, 1.1);
                     // To email address is for specific card then insert the email as card comment
                     $val_arr = array(
                         $card_id
@@ -183,12 +184,25 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                         $i++;
                     }
                     if (empty($file_attachments)) {
-                        $body = imap_fetchbody($connection, $counter, 1);
+                        $body = imap_fetchbody($connection, $counter, 1.1);
+                        // To email address is for specific card then insert the email as card comment
                         $val_arr = array(
-                            $body,
                             $card_id
                         );
-                        $card_query = pg_query_params('UPDATE cards SET description = $1 WHERE id = $2', $val_arr);
+                        // Fetching list_id to update in card comment
+                        $card_query = pg_query_params('SELECT list_id FROM cards WHERE id = $1', $val_arr);
+                        $card = pg_fetch_assoc($card_query);
+                        $list_id = $card['list_id'];
+                        $val_arr = array(
+                            $card_id,
+                            $board['user_id'],
+                            $list_id,
+                            $board_id,
+                            'add_comment',
+                            $body
+                        );
+                        // Insert email content as comment in respective card
+                        pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
                     }
                 }
             }
