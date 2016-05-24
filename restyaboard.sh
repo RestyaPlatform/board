@@ -1046,6 +1046,7 @@
 			then
 				echo "Installing php-imagick..."
 				yum install ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
+				yum install php-pear
 				if [ $? != 0 ]
 				then
 					echo "Installing php-imagick failed with error code 26"
