@@ -94,7 +94,7 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-checklist-item-add-emoji': 'addChecklistItemEmoji',
         'click #modal-comments': 'showActivity',
         'click #modal-activities': 'showActivity',
-        'keyup[c] .dockmodal': 'keyboardArchiveCard',
+        'keypress[c] .dockmodal': 'keyboardArchiveCard',
         'keyup[d] .dockmodal': 'keyboardShowCardDueDateForm',
         'keyup[t] .dockmodal': 'keyboardShowCardTitleEditForm',
         'keyup[v] .dockmodal': 'keyboardAddCardVote',
