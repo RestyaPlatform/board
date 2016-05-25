@@ -1,8 +1,11 @@
+<% 
+	var port = (window.location.port) ? ':'+window.location.port : '';
+%>
 <div class="dockmodal-phone" title="<%- i18next.t('View in iOS App') %>" id="phone-block">
       <div class="clearfix phone-content">
 	<div class="phone-text">
 	        <p class="pull-left col-sm-9 col-xs-12"><%- i18next.t('Single unified notifier app to track many Restyaboards. Available in AppStore.') %></p>
-	        <div class="pull-right"><a title="<%- i18next.t('QR code') %>" href=""><img width="80" height="80" src="https://chart.googleapis.com/chart?cht=qr&chs=100x100&chl=http://restya.com/board/launch_mobile_app?board=<%- window.location.hostname+window.location.port%>" title="<%- i18next.t('QR code') %>" alt="[Image: QR code]" class="img-responsive"></a></div>
+	        <div class="pull-right"><a title="<%- i18next.t('QR code') %>" href=""><img width="80" height="80" src="https://chart.googleapis.com/chart?cht=qr&chs=100x100&chl=http://restya.com/board/launch_mobile_app?board=<%- window.location.protocol+'//'+window.location.hostname+port%>" title="<%- i18next.t('QR code') %>" alt="[Image: QR code]" class="img-responsive"></a></div>
 	        <div class="col-xs-12 text-center h2">
 	             <a title="<%- i18next.t('Available in AppStore') %>" href="javascript:void(0);"><img width="140" height="48" src="img/appstore.png" title="Available in AppStore" alt="[Image: Available in AppStore]"></a>
 	          </div>
