@@ -219,17 +219,14 @@
 				psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
 				mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
 				chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-				ejabberdctl stop
-				ejabberdctl start
 				sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
 				sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
 				
-				ejabberdctl stop
 				ejabberdctl start
-
+				sleep 15
 				ejabberdctl change_password admin $webdir restya
-				
 				ejabberdctl stop
+				sleep 15
 				ejabberdctl start
 				
 			else
@@ -356,17 +353,14 @@
 				psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
 				mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
 				chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-				ejabberdctl stop
-				ejabberdctl start
 				sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
 				sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
 
-				ejabberdctl stop
 				ejabberdctl start
-
+				sleep 15
 				ejabberdctl change_password admin $webdir restya
-				
 				ejabberdctl stop
+				sleep 15
 				ejabberdctl start
 
 				ps -q 1 | grep -q -c "systemd"
@@ -896,17 +890,14 @@
 			psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
 			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
 			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-			ejabberdctl stop
-			ejabberdctl start
 			sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
 			sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
 			
-			ejabberdctl stop
 			ejabberdctl start
-
+			sleep 15
 			ejabberdctl change_password admin $webdir restya
-			
 			ejabberdctl stop
+			sleep 15
 			ejabberdctl start
 			
 			echo "Starting services..."
@@ -1415,17 +1406,14 @@
 			psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
 			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
 			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-			ejabberdctl stop
-			ejabberdctl start
 			sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
 			sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
 
-			ejabberdctl stop
 			ejabberdctl start
-
+			sleep 15
 			ejabberdctl change_password admin $webdir restya
-			
 			ejabberdctl stop
+			sleep 15
 			ejabberdctl start
 
 			ps -q 1 | grep -q -c "systemd"
