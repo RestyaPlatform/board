@@ -37,11 +37,11 @@ define('R_DB_USER', 'restya');
 define('R_DB_PASSWORD', 'hjVl2!rGd');
 define('R_DB_NAME', 'restyaboard');
 define('R_DB_PORT', 5432);
-define('CHAT_DB_HOST', '');
-define('CHAT_DB_USER', '');
-define('CHAT_DB_PASSWORD', '');
-define('CHAT_DB_NAME', '');
-define('CHAT_DB_PORT', '');
+define('CHAT_DB_HOST', 'localhost');
+define('CHAT_DB_USER', 'ejabberd');
+define('CHAT_DB_PASSWORD', 'ftfnVgYl2');
+define('CHAT_DB_NAME', 'ejabb');
+define('CHAT_DB_PORT', '5432');
 define('SECURITYSALT', 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf');
 if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php') && !empty($_server_domain_url)) {
     $fh = fopen(APP_PATH . '/tmp/cache/site_url_for_shell.php', 'a');

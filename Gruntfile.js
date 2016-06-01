@@ -141,6 +141,26 @@ module.exports = function(grunt) {
                     search: '<html class="no-js" lang="en">',
                     replace: '<html class="no-js" lang="en" manifest="default.appcache">',
                     flags: 'g'
+                }, {
+                    name: 'Chat DB Host',
+                    search: '\'CHAT_DB_HOST\', \'localhost\'',
+                    replace: '\'CHAT_DB_HOST\', \'<%= config.chat_db_host %>\'',
+                    flags: 'g'
+                }, {
+                    name: 'Chat DB User',
+                    search: '\'ejabb\'',
+                    replace: '\'<%= config.chat_db_user %>\'',
+                    flags: 'g'
+                }, {
+                    name: 'Chat DB Password',
+                    search: 'ftfnVgYl2',
+                    replace: '<%= config.chat_db_password %>',
+                    flags: 'g'
+                }, {
+                    name: 'Chat DB Name',
+                    search: '\'ejabberd\'',
+                    replace: '\'<%= config.chat_db_name %>\'',
+                    flags: 'g'
                 }]
             }
         },
