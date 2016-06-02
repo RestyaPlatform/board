@@ -82,7 +82,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                     $card = pg_fetch_assoc($card_query);
                     $card_id = $card['id'];
                 } else {
-                    $body = imap_fetchbody($connection, $counter, 1.1);
+                    $body = imap_fetchbody($connection, $counter, 1);
                     // To email address is for specific card then insert the email as card comment
                     $val_arr = array(
                         $card_id
@@ -184,7 +184,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                         $i++;
                     }
                     if (empty($file_attachments)) {
-                        $body = imap_fetchbody($connection, $counter, 1.1);
+                        $body = imap_fetchbody($connection, $counter, 1);
                         // To email address is for specific card then insert the email as card comment
                         $val_arr = array(
                             $card_id
