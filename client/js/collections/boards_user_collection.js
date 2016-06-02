@@ -17,7 +17,7 @@ App.BoardsUserCollection = Backbone.Collection.extend({
 
         var pattern = new RegExp(letters, "gi");
         return _(this.filter(function(data) {
-            return pattern.test(data.get("name")) || pattern.test(data.get("email"));
+            return pattern.test(data.get("username")) || pattern.test(data.get("email"));
         }));
     },
     saved: function() {
