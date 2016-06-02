@@ -187,4 +187,16 @@ class Xep0045 extends AbstractXep
         $this->connection->getStream()->send($iq);
         $response = $this->connection->waitForServer('*');
     }
+	
+	/**
+     * @param xml $iq
+     * @return boolean
+     */
+	public function disableUser($iq)
+    {
+		echo "Here";
+        $this->connection->getStream()->send($iq);
+        $response = $this->connection->waitForServer('*');
+		print_r($response);
+    }
 }
