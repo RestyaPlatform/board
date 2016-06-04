@@ -461,7 +461,7 @@
 			if [ "$?" -gt 0 ];
 			then
 				echo "Installing php-imagick..."
-				yum install ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
+				yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
 				cd /usr/local/src
 				wget http://pecl.php.net/get/imagick-2.2.2.tgz
 				tar zxvf ./imagick-2.2.2.tgz
@@ -508,7 +508,7 @@
 					if [ $(getconf LONG_BIT) = "64" ]; then
 						yum install -y http://yum.postgresql.org/9.4/redhat/rhel-6.6-x86_64/pgdg-centos94-9.4-1.noarch.rpm
 					fi
-					yum install -y postgresql94-server postgresql04-contrib
+					yum install -y postgresql94-server postgresql94-contrib
 
                     ps -q 1 | grep -q -c "systemd"
                     if [ "$?" -eq 0 ]; then
@@ -654,4 +654,5 @@
 		esac
 	fi
 	set +x
+	echo "Login with username admin and password restya"
 } 2>&1 | tee -a restyaboard_install.log
