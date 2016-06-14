@@ -21,7 +21,6 @@ require_once $app_path . '/libs/vendors/xmpp/vendor/autoload.php';
 use Xmpp\Xep\Xep0045 as xmpp;
 use Psr\Log\LoggerInterface;
 require $app_path . '/libs/vendors/jaxl3/jaxl.php';
-
 // Delete ElasticSearch index
 $ch = curl_init(ELASTICSEARCH_URL . ELASTICSEARCH_INDEX);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
@@ -32,17 +31,15 @@ $qry_val_arr = array(
     'elasticsearch.last_processed_activity_id'
 );
 pg_query_params($db_lnk, 'UPDATE settings SET value = $1 WHERE name = $2', $qry_val_arr);
-
 $j_username = $j_password = '';
 $users = pg_query_params($db_lnk, 'SELECT * FROM users', array());
 while ($user = pg_fetch_assoc($users)) {
 	if (JABBER_HOST) {
 		$conditions = array(
-			$user['username'],
-			$user['password']
+			$user['username']
 		);
 		$chat_db_lnk = getEjabberdConnection();
-		$check_user = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1 and password = $2', $conditions);
+		$check_user = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1', $conditions);
 		if (!($check_user && pg_num_rows($check_user))) {
 			global $j_username, $j_password;
 			$jaxl_initialize = array(
@@ -86,14 +83,14 @@ while ($user = pg_fetch_assoc($users)) {
 			);
 			$boards = pg_query_params($db_lnk, 'SELECT id,name FROM boards WHERE user_id = $1 and is_closed = $2', $board_conditions);
 			if ($boards && pg_num_rows($boards)) {
-                while ($board = pg_fetch_object($boards)) {
+                while ($board = pg_fetch_assoc($boards)) {
 					$xmpp->createRoom('board-' . $board['id'], $board['name']);
 					$board_members_conditions = array(
 						$board['id']
 					);
 					$board_members = pg_query_params($db_lnk, 'SELECT u.username FROM boards_users bu left join users u on u.id = bu.user_id WHERE board_id = $1', $board_members_conditions);
 					if ($board_members && pg_num_rows($board_members)) {
-						while ($board_member = pg_fetch_object($board_members)) {
+						while ($board_member = pg_fetch_assoc($board_members)) {
 							$xmpp->grantMember('board-' . $board['id'], $board_member['username'], 'member');
 						}
 					}
