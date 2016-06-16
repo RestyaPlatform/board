@@ -2953,7 +2953,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         if ($t_ds > 0) {
             ldap_set_option($ldap_connection, LDAP_OPT_PROTOCOL_VERSION, LDAP_PROTOCOL_VERSION) or die('Unable to set LDAP protocol version');
             ldap_set_option($ldap_connection, LDAP_OPT_REFERRALS, 0);
-            if (true === ldap_bind($ldap_connection, LDAP_BIND_DN, LDAP_BIND_PASSWD)) {
+			$t_password = '';
+			$t_binddn = '';
+			if (empty($t_binddn) && empty($t_password)) {
+				$t_binddn = LDAP_BIND_DN;
+				$ldap_bind_passwd_decode = base64_decode(LDAP_BIND_PASSWD);
+				$t_password = str_rot13($ldap_bind_passwd_decode);
+			}
+            if (true === ldap_bind($ldap_connection, $t_binddn, $t_password)) {
                 $search_filter = '(&(objectCategory=person)(' . LDAP_UID_FIELD . '=*))';
                 $attributes = array(
                     'samaccountname',
@@ -2967,30 +2974,32 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $entries = ldap_get_entries($ldap_connection, $result);
                     $users = array();
                     for ($x = 0; $x < $entries['count']; $x++) {
-                        if ($_POST['is_import_organizations'] != 'true') {
-                            $users[] = array(
-                                'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
-                                'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
-                                'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
-                                'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
-                            );
-                        } else {
-                            if (!empty($entries[$x]['memberof'][0])) {
-                                $users[trim($entries[$x]['memberof'][0]) ][] = array(
-                                    'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
-                                    'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
-                                    'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
-                                    'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
-                                );
-                            } else {
-                                $no_organization_users[] = array(
-                                    'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
-                                    'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
-                                    'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
-                                    'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
-                                );
-                            }
-                        }
+						if(!empty($entries[$x]['mail'][0])) {
+							if ($_POST['is_import_organizations'] != 'true') {
+								$users[] = array(
+									'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
+									'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
+									'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
+									'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
+								);
+							} else {
+								if (!empty($entries[$x]['memberof'][0])) {
+									$users[trim($entries[$x]['memberof'][0]) ][] = array(
+										'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
+										'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
+										'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
+										'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
+									);
+								} else {
+									$no_organization_users[] = array(
+										'username' => !empty($entries[$x]['samaccountname'][0]) ? trim($entries[$x]['samaccountname'][0]) : '',
+										'email' => !empty($entries[$x]['mail'][0]) ? trim($entries[$x]['mail'][0]) : '',
+										'name' => !empty($entries[$x]['name'][0]) ? trim($entries[$x]['name'][0]) : '',
+										'admincount' => !empty($entries[$x]['admincount']['count']) ? trim($entries[$x]['admincount']['count']) : '',
+									);
+								}
+							}
+						}
                     }
                 }
                 ldap_unbind($ldap_connection);
