@@ -1629,13 +1629,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     0,
                     $user_id['user_id']
                 );
-                $users = pg_query_params($db_lnk, 'UPDATE users SET is_active = $1 WHERE id = $2 RETURNING username', $data);
-                if (JABBER_HOST) {
-                    $user = pg_fetch_assoc($users);
-                    $xmpp_user = getXmppUser();
-                    $xmpp = new xmpp($xmpp_user);
-                    $xmpp->disableUser('<iq from="' . $authUser['username'] . '@' . JABBER_HOST . '" id="disable-user-2" to="' . JABBER_HOST . '" type="set" xml:lang="en"><command xmlns="http://jabber.org/protocol/commands" node="http://jabber.org/protocol/admin#disable-user"><x xmlns="jabber:x:data" type="submit"><field type="hidden" var="FORM_TYPE"><value>http://jabber.org/protocol/admin</value></field><field var="accountjids"><value>' . $user['username'] . '@' . JABBER_HOST . '</value></field></x></command></iq>');
-                }
+                pg_query_params($db_lnk, 'UPDATE users SET is_active = $1 WHERE id = $2', $data);
             }
             $response = array(
                 'success' => 'Checked users are blocked successfully.'
