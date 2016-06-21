@@ -65,7 +65,7 @@ if (CHAT_DB_HOST) {
                 );
                 $col = $val = '';
                 if (strpos($chat['txt'], 'BOD#') !== false) {
-					$chat_text = explode('#', $chat['txt']);
+                    $chat_text = explode('#', $chat['txt']);
                     $board_ids[$board_id] = $chat_text[1];
                 }
                 if (array_key_exists($board_id, $board_ids)) {
