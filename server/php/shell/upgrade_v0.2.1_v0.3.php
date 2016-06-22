@@ -36,7 +36,7 @@ $users = pg_query_params($db_lnk, 'SELECT * FROM users', array());
 while ($user = pg_fetch_assoc($users)) {
     if (JABBER_HOST) {
         $conditions = array(
-            $user['username']
+            trim($user['username'])
         );
         $chat_db_lnk = getEjabberdConnection();
         $check_user = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1', $conditions);
@@ -50,8 +50,8 @@ while ($user = pg_fetch_assoc($users)) {
                 'log_path' => 'jaxl.log'
             );
             $GLOBALS['client'] = new JAXL($jaxl_initialize);
-            $j_username = $user['username'];
-            $j_password = $user['password'];
+            $j_username = trim($user['username']);
+            $j_password = trim($user['password']);
             $xeps = array(
                 '0077'
             );
@@ -69,8 +69,8 @@ while ($user = pg_fetch_assoc($users)) {
             });
             $GLOBALS['client']->start();
             $xmpp_user = array(
-                'username' => $user['username'] . '@' . JABBER_HOST,
-                'password' => $user['password'],
+                'username' => $j_username . '@' . JABBER_HOST,
+                'password' => $j_password,
                 'host' => JABBER_HOST,
                 'ssl' => false,
                 'port' => 5222,
