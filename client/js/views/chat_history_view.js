@@ -40,7 +40,7 @@ App.ChatHistoryView = Backbone.View.extend({
         this.model.set('name', name);
         var created = this.model.attributes.created.split('-');
         var cdate = created[2].split('T');
-        var cmonth = parseInt(created[1]) + 1;
+        var cmonth = parseInt(created[1]);
         cmonth = (cmonth > 10) ? cmonth : '0' + cmonth;
         var cyear = created[0];
         created = cyear + "-" + cmonth + "-" + cdate[0];
