@@ -38,7 +38,7 @@ if (CHAT_DB_HOST) {
                     $board_id,
                     'chat'
                 );
-                $previous_data = pg_query_params($db_lnk, "SELECT count(*) FROM activities_listing WHERE board_id = $1 AND type = $2 AND now()::date = created_at::timestamp::date", $qry_val_arr);
+                $previous_data = pg_query_params($db_lnk, "SELECT count(*) FROM activities_listing WHERE board_id = $1 AND type = $2 AND now()::date = created::timestamp::date", $qry_val_arr);
                 $previous_data_count = pg_fetch_assoc($previous_data);
                 $qry_val_arr = array(
                     $username
@@ -76,32 +76,21 @@ if (CHAT_DB_HOST) {
                 if (strpos($chat['txt'], 'EOD#') !== false) {
                     unset($board_ids[$board_id]);
                 }
-                $activity_id = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment' . $col . ') VALUES ($1, $1, $5, $2, $3, $4' . $val . ')', $data);
+                $activity_id = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment' . $col . ') VALUES ($1, $1, $5, $2, $3, $4' . $val . ') RETURNING id', $data);
                 $activity_id = pg_fetch_assoc($activity_id);
                 $last_processed_chat_id = $chat['id'];
-                if ($previous_data_count[count] == 0) {
+                if ($previous_data_count['count'] == 0) {
                     $qry_arr = array(
                         $activity_id['id']
                     );
                     $activities_result = pg_query_params($db_lnk, 'SELECT * FROM activities_listing WHERE id = $1', $qry_arr);
                     $activity = pg_fetch_assoc($activities_result);
-                    if (!empty($activity['profile_picture_path'])) {
-                        $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb');
-                        $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
-                        $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
-                    } else if (!empty($activity['initials'])) {
-                        $user_avatar = '<i style="border-radius:4px;text-shadow:#6f6f6f 0.02em 0.02em 0.02em;width:32px;height:32px;line-height:32px;font-size:16px;display:inline-block;font-style:normal;text-align:center;text-transform:uppercase;color:#f47564 !important;background-color:#ffffff !important;border:1px solid #d7d9db;margin-right: 10px;">' . $activity['initials'] . '</i>' . "\n";
-                    }
-                    preg_match_all('/@([^ ]*)/', $activity['comment'], $matches);
-                    if (in_array($user['username'], $matches[1])) {
-                        $activity['comment'] = '##USER_NAME## has mentioned you in card ##CARD_NAME## on ##BOARD_NAME##<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
-                    } else {
-                        $activity['comment'] = '##USER_NAME## commented to the card ##CARD_NAME## on ##BOARD_NAME##<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
-                    }
+
+                    $activity['comment'] = '##BOARD_NAME## chat conversation<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['created_time']. ' &lt;'. $activity['username'] .'&gt; : ' . $activity['comment'] . '</div></div></div>';
+				
                     $br = '<div style="line-height:20px;">&nbsp;</div>';
                     $comment = findAndReplaceVariables($activity);
                     $mail_content = '<div>' . "\n";
-                    $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
                     $mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
                     $mail_content.= '</div>' . "\n";
                     $mail_content.= $br . "\n";
@@ -112,7 +101,7 @@ if (CHAT_DB_HOST) {
                     while ($board_user = pg_fetch_assoc($board_users)) {
                         $emailFindReplace['##CONTENT##'] = $mail_content;
                         $emailFindReplace['##NAME##'] = $user['full_name'];
-                        $emailFindReplace['##NOTIFICATION_COUNT##'] = $notification_count;
+                        $emailFindReplace['##NOTIFICATION_COUNT##'] = '1';
                         $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)");
                         $emailFindReplace['##USER_ID##'] = $user['id'];
                         sendMail('email_notification', $emailFindReplace, $board_user['email'], '');
