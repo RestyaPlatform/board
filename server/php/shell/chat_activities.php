@@ -16,7 +16,7 @@ $app_path = dirname(dirname(__FILE__));
 require_once $app_path . '/config.inc.php';
 require_once $app_path . '/libs/core.php';
 $qry_arr = array(
-	'USER_TIMEZONE'
+    'USER_TIMEZONE'
 );
 $user_timezone = pg_query_params($db_lnk, 'SELECT value FROM settings WHERE name = $1', $qry_arr);
 $user_timezone = pg_fetch_assoc($user_timezone);
@@ -90,9 +90,7 @@ if (CHAT_DB_HOST) {
                     );
                     $activities_result = pg_query_params($db_lnk, 'SELECT * FROM activities_listing WHERE id = $1', $qry_arr);
                     $activity = pg_fetch_assoc($activities_result);
-
-                    $activity['comment'] = '##BOARD_NAME## chat conversation<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['created_time']. ' &lt;'. $activity['username'] .'&gt; : ' . $activity['comment'] . '</div></div></div>';
-				
+                    $activity['comment'] = '##BOARD_NAME## chat conversation<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['created_time'] . ' &lt;' . $activity['username'] . '&gt; : ' . $activity['comment'] . '</div></div></div>';
                     $br = '<div style="line-height:20px;">&nbsp;</div>';
                     $comment = findAndReplaceVariables($activity);
                     $mail_content = '<div>' . "\n";
@@ -107,7 +105,7 @@ if (CHAT_DB_HOST) {
                         $emailFindReplace['##CONTENT##'] = $mail_content;
                         $emailFindReplace['##NAME##'] = $user['full_name'];
                         $emailFindReplace['##NOTIFICATION_COUNT##'] = '1';
-						$emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($user_timezone['value']));
+                        $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($user_timezone['value']));
                         $emailFindReplace['##USER_ID##'] = $user['id'];
                         sendMail('email_notification', $emailFindReplace, $board_user['email'], '');
                     }

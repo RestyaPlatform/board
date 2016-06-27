@@ -1506,8 +1506,8 @@ function getWorkFlow($name)
     foreach ($data as $row) {
         $settings.= 'list:' . $row . ' OR ';
     }
-	$settings = substr($settings, 0, -4);
-	$settings_query =  '('. $settings . ') OR ';
+    $settings = substr($settings, 0, -4);
+    $settings_query = '(' . $settings . ') OR ';
     return $settings_query;
 }
 /**

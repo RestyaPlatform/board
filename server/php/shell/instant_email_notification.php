@@ -18,7 +18,7 @@ require_once $app_path . '/libs/vendors/finediff.php';
 require_once $app_path . '/libs/core.php';
 global $_server_domain_url;
 $qry_arr = array(
-	'USER_TIMEZONE'
+    'USER_TIMEZONE'
 );
 $user_timezone = pg_query_params($db_lnk, 'SELECT value FROM settings WHERE name = $1', $qry_arr);
 $user_timezone = pg_fetch_assoc($user_timezone);
