@@ -103,6 +103,12 @@
 				echo "Setting up cron for every 5 minutes to send email notification to past due..."
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
 				
+				echo "Setting up cron for every 5 minutes to send chat conversation as email notification to user..."
+				echo "*/5 * * * * $dir/server/php/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
+				
+				echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
+				echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
+				
 				if ! hash GeoIP-devel 2>&-;
 				then
 					apt-get install php5-geoip php5-dev libgeoip-dev
@@ -763,6 +769,12 @@
 			
 			echo "Setting up cron for every 5 minutes to send email notification to past due..."
 			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
+			
+			echo "Setting up cron for every 5 minutes to send chat conversation as email notification to user..."
+			echo "*/5 * * * * $dir/server/php/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
+			
+			echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
+			echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
 
 			echo "Do you want to setup SMTP configuration (y/n)?"
 			read -r answer
