@@ -60,6 +60,8 @@ if (!empty($_POST['email'])) {
         unset($_POST['password']);
         $error_msg = "Sorry, login failed. Either your username or password are incorrect.";
     }
+} else {
+	$error_msg = "1";
 }
 ?>
 <!DOCTYPE html>
@@ -126,10 +128,10 @@ if (empty($_POST['password']) && (empty($_POST['authorized']) || (!empty($_POST[
 							  <input type="submit" class="btn btn-primary col-xs-12" value="Login" id="submitLogin" />
 							</div>
 							<?php
-    if (!empty($error_msg)) { ?>
+								if (!empty($error_msg) && $error_msg != 1) {
+							?>
 								<div><script>flashMesssage('danger', 'Sorry, login failed. Either your username or password are incorrect.');</script></div>
-							<?php
-    } ?>
+							<?php } ?>
 						</form>
 					</div>
 				</div>
