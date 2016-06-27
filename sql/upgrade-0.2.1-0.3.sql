@@ -1269,3 +1269,6 @@ CREATE VIEW "cards_elasticsearch_listing" AS
    UPDATE "acl_links" SET "url" = '/boards/?/chat_history' WHERE "name" = 'Chat History';
    
 DELETE from settings where name = 'JABBER_PATH';
+
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES
+(3,	0,	'USER_TIMEZONE',	'+0530',	NULL,	'text',	NULL,	'User Timezone',	6);

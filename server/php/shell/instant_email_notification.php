@@ -17,6 +17,11 @@ require_once $app_path . '/config.inc.php';
 require_once $app_path . '/libs/vendors/finediff.php';
 require_once $app_path . '/libs/core.php';
 global $_server_domain_url;
+$qry_arr = array(
+	'USER_TIMEZONE'
+);
+$user_timezone = pg_query_params($db_lnk, 'SELECT value FROM settings WHERE name = $1', $qry_arr);
+$user_timezone = pg_fetch_assoc($user_timezone);
 if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
     include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
 }
@@ -334,12 +339,6 @@ if ($db_lnk) {
             }
         }
         if (!empty($mail_content)) {
-			$qry_arr = array(
-				'SITE_TIMEZONE'
-			);
-			$site_timezone = pg_query_params($db_lnk, 'SELECT value FROM settings WHERE name = $1', $qry_arr);
-			$site_timezone = pg_fetch_assoc($site_timezone);
-					
             $qry_arr = array(
                 max($activity_id) ,
                 $user['id']
@@ -348,7 +347,7 @@ if ($db_lnk) {
             $emailFindReplace['##CONTENT##'] = $mail_content;
             $emailFindReplace['##NAME##'] = $user['full_name'];
             $emailFindReplace['##NOTIFICATION_COUNT##'] = $notification_count;
-            $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($site_timezone['value']));
+            $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($user_timezone['value']));
             $emailFindReplace['##USER_ID##'] = $user['id'];
             sendMail('email_notification', $emailFindReplace, $user['email'], $reply_to_mail);
         }

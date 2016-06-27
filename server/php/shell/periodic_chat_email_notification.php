@@ -16,7 +16,11 @@ $app_path = dirname(dirname(__FILE__));
 require_once $app_path . '/config.inc.php';
 require_once $app_path . '/libs/vendors/finediff.php';
 require_once $app_path . '/libs/core.php';
-global $_server_domain_url;
+$qry_arr = array(
+	'USER_TIMEZONE'
+);
+$user_timezone = pg_query_params($db_lnk, 'SELECT value FROM settings WHERE name = $1', $qry_arr);
+$user_timezone = pg_fetch_assoc($user_timezone);
 if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
     include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
 }
@@ -44,7 +48,7 @@ if ($db_lnk) {
                 $user['id'],
                 $board_id
             );
-            $activities_result = pg_query_params($db_lnk, 'SELECT * FROM activities_listing WHERE created::date >= ( NOW()::date - INTERVAL \'1 hour\' ) AND type = $1 AND user_id != $2 AND board_id = $3 ORDER BY board_name, created DESC', $qry_arr);
+            $activities_result = pg_query_params($db_lnk, 'SELECT * FROM activities_listing WHERE created::timestamp >= ( NOW() - INTERVAL \'1 hour\' ) AND type = $1 AND user_id != $2 AND board_id = $3 ORDER BY board_name, created DESC', $qry_arr);
             $i = 0;
 			$comment = '';
 			$comment_data = '';
@@ -62,17 +66,19 @@ if ($db_lnk) {
 				$i++;
                 $notification_count++;
             }
-			$br = '<div style="line-height:20px;">&nbsp;</div>';
-			$mail_content.= '<div>' . "\n";
-			$mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
-			$mail_content.= '</div>' . "\n";
-			$mail_content.= $br . "\n";
+			if(!empty($i)) {
+				$br = '<div style="line-height:20px;">&nbsp;</div>';
+				$mail_content.= '<div>' . "\n";
+				$mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
+				$mail_content.= '</div>' . "\n";
+				$mail_content.= $br . "\n";
+			}
         }
         if (!empty($mail_content) && !empty($notification_count)) {
             $emailFindReplace['##CONTENT##'] = $mail_content;
             $emailFindReplace['##NAME##'] = $user['full_name'];
             $emailFindReplace['##NOTIFICATION_COUNT##'] = $notification_count;
-            $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)");
+			$emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($user_timezone['value']));
             $emailFindReplace['##USER_ID##'] = $user['id'];
             sendMail('email_notification', $emailFindReplace, $user['email'], $reply_to_mail);
         }
