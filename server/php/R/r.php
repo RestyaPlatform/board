@@ -2053,7 +2053,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $_POST['about_me'],
                     $_POST['initials'],
                     $_POST['is_send_newsletter'],
-                    $_POST['user_timezone'],
+                    $_POST['timezone'],
                     $r_resource_vars['users']
                 );
                 $comment = '##USER_NAME## updated the profile.';
@@ -2109,7 +2109,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         }
                     }
                 }
-                pg_query_params($db_lnk, 'UPDATE users SET full_name = $1, about_me = $2, initials = $3, is_send_newsletter = $4, user_timezone = $5 WHERE id = $6', $qry_val_arr);
+                pg_query_params($db_lnk, 'UPDATE users SET full_name = $1, about_me = $2, initials = $3, is_send_newsletter = $4, timezone = $5 WHERE id = $6', $qry_val_arr);
                 if (!empty($_POST['email'])) {
                     $qry_val_arr = array(
                         $_POST['email'],
