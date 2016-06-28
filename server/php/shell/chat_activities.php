@@ -15,11 +15,6 @@
 $app_path = dirname(dirname(__FILE__));
 require_once $app_path . '/config.inc.php';
 require_once $app_path . '/libs/core.php';
-$qry_arr = array(
-    'USER_TIMEZONE'
-);
-$user_timezone = pg_query_params($db_lnk, 'SELECT value FROM settings WHERE name = $1', $qry_arr);
-$user_timezone = pg_fetch_assoc($user_timezone);
 if (CHAT_DB_HOST) {
     $ejabberd_db_lnk = pg_connect('host=' . CHAT_DB_HOST . ' port=' . CHAT_DB_PORT . ' dbname=' . CHAT_DB_NAME . ' user=' . CHAT_DB_USER . ' password=' . CHAT_DB_PASSWORD . ' options=--client_encoding=UTF8') or die('Ejabberd database could not connect');
     $qry_val_arr = array(
@@ -48,7 +43,7 @@ if (CHAT_DB_HOST) {
                 $qry_val_arr = array(
                     $username
                 );
-                $user_qry = pg_query_params($db_lnk, "SELECT id FROM users WHERE username = $1", $qry_val_arr);
+                $user_qry = pg_query_params($db_lnk, "SELECT id, full_name FROM users WHERE username = $1", $qry_val_arr);
                 $user = pg_fetch_assoc($user_qry);
                 if (!array_key_exists($board_id, $board_ids)) {
                     $qry_val_arr = array(
@@ -102,10 +97,15 @@ if (CHAT_DB_HOST) {
                     );
                     $board_users = pg_query_params($db_lnk, "SELECT username, email FROM boards_users_listing WHERE board_id = $1", $qry_val_arr);
                     while ($board_user = pg_fetch_assoc($board_users)) {
+						$qry_val_arr = array(
+							$board_user['username']
+						);
+						$user_timezone = pg_query_params($db_lnk, "SELECT user_timezone FROM users WHERE username = $1", $qry_val_arr);
+						$user_timezone = pg_fetch_assoc($user_timezone);
                         $emailFindReplace['##CONTENT##'] = $mail_content;
                         $emailFindReplace['##NAME##'] = $user['full_name'];
                         $emailFindReplace['##NOTIFICATION_COUNT##'] = '1';
-                        $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($user_timezone['value']));
+                        $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($user_timezone['user_timezone']));
                         $emailFindReplace['##USER_ID##'] = $user['id'];
                         sendMail('email_notification', $emailFindReplace, $board_user['email'], '');
                     }
