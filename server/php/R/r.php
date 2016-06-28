@@ -2053,7 +2053,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $_POST['about_me'],
                     $_POST['initials'],
                     $_POST['is_send_newsletter'],
-					$_POST['user_timezone'],
+                    $_POST['user_timezone'],
                     $r_resource_vars['users']
                 );
                 $comment = '##USER_NAME## updated the profile.';
