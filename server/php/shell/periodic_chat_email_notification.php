@@ -16,11 +16,6 @@ $app_path = dirname(dirname(__FILE__));
 require_once $app_path . '/config.inc.php';
 require_once $app_path . '/libs/vendors/finediff.php';
 require_once $app_path . '/libs/core.php';
-$qry_arr = array(
-    'USER_TIMEZONE'
-);
-$user_timezone = pg_query_params($db_lnk, 'SELECT value FROM settings WHERE name = $1', $qry_arr);
-$user_timezone = pg_fetch_assoc($user_timezone);
 if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
     include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
 }
