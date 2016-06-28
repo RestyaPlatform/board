@@ -1270,7 +1270,7 @@ CREATE VIEW "cards_elasticsearch_listing" AS
    
 DELETE from settings where name = 'JABBER_PATH';
 
-ALTER TABLE "users" ADD "user_timezone" character varying NULL; COMMENT ON TABLE "users" IS '';
+ALTER TABLE "users" ADD "timezone" character varying NULL; COMMENT ON TABLE "users" IS '';
 
 DROP VIEW "users_listing";
 CREATE VIEW "users_listing" AS
@@ -1354,7 +1354,7 @@ CREATE VIEW "users_listing" AS
     users.member_organization_count,
     users.language,
     (users.is_ldap)::integer AS is_ldap,
-	users.user_timezone
+	users.timezone
    FROM (((((((((users users
      LEFT JOIN ips i ON ((i.id = users.ip_id)))
      LEFT JOIN cities rci ON ((rci.id = i.city_id)))
