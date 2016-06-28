@@ -82,27 +82,8 @@
 			sed -i "s/^.*'CHAT_DB_HOST'.*$/define('CHAT_DB_HOST', '${EJABBERD_DBHOST}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'CHAT_DB_PORT'.*$/define('CHAT_DB_PORT', '${EJABBERD_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
-			sed -i "s/server\/php\/R\/oauth_callback.php/server\/php\/oauth_callback.php/" /etc/nginx/conf.d/restyaboard.conf
-			sed -i "s/server\/php\/R\/download.php/server\/php\/download.php/" /etc/nginx/conf.d/restyaboard.conf
-			sed -i "s/server\/php\/R\/ical.php/server\/php\/ical.php/" /etc/nginx/conf.d/restyaboard.conf
-			sed -i "s/server\/php\/R\/image.php/server\/php\/image.php/" /etc/nginx/conf.d/restyaboard.conf
-			
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
-				echo "Changing files path for existing cron..."
-				sed -i "s/server\/php\/R\/cron.sh/server\/php\/shell\/indexing_to_elasticsearch.sh/" /var/spool/cron/crontabs/root
-				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/shell\/instant_email_notification.sh/" /var/spool/cron/crontabs/root
-				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/shell\/periodic_email_notification.sh/" /var/spool/cron/crontabs/root
-			
-				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
-				echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/crontabs/root
-				
-				echo "Setting up cron for every 5 minutes to send activities to webhook..."
-				echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/crontabs/root
-				
-				echo "Setting up cron for every 5 minutes to send email notification to past due..."
-				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
-				
 				echo "Setting up cron for every 5 minutes to send chat conversation as email notification to user..."
 				echo "*/5 * * * * $dir/server/php/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
 				
@@ -236,19 +217,12 @@
 				ejabberdctl start
 				
 			else
-				echo "Changing files path for existing cron..."
-				sed -i "s/server\/php\/R\/cron.sh/server\/php\/shell\/indexing_to_elasticsearch.sh/" /var/spool/cron/root
-				sed -i "s/server\/php\/R\/instant_email_notification.sh/server\/php\/shell\/instant_email_notification.sh/" /var/spool/cron/root
-				sed -i "s/server\/php\/R\/periodic_email_notification.sh/server\/php\/shell\/periodic_email_notification.sh/" /var/spool/cron/root
-			
-				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
-				echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/root
 				
-				echo "Setting up cron for every 5 minutes to send activities to webhook..."
-				echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/root
+				echo "Setting up cron for every 5 minutes to send chat conversation as email notification to user..."
+				echo "*/5 * * * * $dir/server/php/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
 				
-				echo "Setting up cron for every 5 minutes to send email notification to past due..."
-				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
+				echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
+				echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
 				
 				if ! hash GeoIP-devel 2>&-;
 				then
@@ -401,7 +375,7 @@
 				exit 1
 			fi
 			
-			php $dir/server/php/R/shell/upgrade_v0.2.1_v0.3.php
+			php $dir/server/php/shell/upgrade_v0.2.1_v0.3.php
 		esac
 	}
 	
@@ -1282,6 +1256,12 @@
 			
 			echo "Setting up cron for every 5 minutes to send email notification to past due..."
 			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
+			
+			echo "Setting up cron for every 5 minutes to send chat conversation as email notification to user..."
+			echo "*/5 * * * * $dir/server/php/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
+			
+			echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
+			echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
 			
 			echo "Reset php-fpm (use unix socket mode)..."
 			sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf
