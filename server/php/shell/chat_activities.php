@@ -100,12 +100,12 @@ if (CHAT_DB_HOST) {
                         $qry_val_arr = array(
                             $board_user['username']
                         );
-                        $user_timezone = pg_query_params($db_lnk, "SELECT user_timezone FROM users WHERE username = $1", $qry_val_arr);
+                        $user_timezone = pg_query_params($db_lnk, "SELECT timezone FROM users WHERE username = $1", $qry_val_arr);
                         $user_timezone = pg_fetch_assoc($user_timezone);
                         $emailFindReplace['##CONTENT##'] = $mail_content;
                         $emailFindReplace['##NAME##'] = $user['full_name'];
                         $emailFindReplace['##NOTIFICATION_COUNT##'] = '1';
-                        $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($user_timezone['user_timezone']));
+                        $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($user_timezone['timezone']));
                         $emailFindReplace['##USER_ID##'] = $user['id'];
                         sendMail('email_notification', $emailFindReplace, $board_user['email'], '');
                     }
