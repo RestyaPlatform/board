@@ -1,15 +1,15 @@
 <% if(user != null && _.isUndefined(q)){ %>
-	<a title="<%- user.attributes.username %>" href="#" class="js-add-organization-member" data-user-id="<%- user.id %>"><span>
+	<a title="<%- user.attributes.full_name %> (<%- user.attributes.username %>)" href="#" class="js-add-organization-member row" data-user-id="<%- user.id %>"><span>
 <% if(!_.isEmpty(user.attributes.profile_picture_path)) { 
 	var profile_picture_path = user.showImage('User', user.attributes.id, 'micro_thumb' );
 %>
-	<img src="<%-profile_picture_path %>" alt="[Image: <%-user.attributes.username %>]" title="<%-user.attributes.username %>" class="img-rounded img-responsive avatar avatar-sm">
+	<img src="<%-profile_picture_path %>" alt="[Image: <%-user.attributes.username %>]" title="<%- user.attributes.full_name %> (<%- user.attributes.username %>)" class="img-rounded img-responsive avatar avatar-sm">
 <% } else {%>
 	<i class="avatar avatar-color-194 avatar-sm img-rounded"><%- user.attributes.initials %></i>									
 <% } %>
-</span> <span><%- user.attributes.username %></span></a>
+</span> <span><%- user.attributes.full_name %> (<%- user.attributes.username %>)</span></a>
 <% }else if(user == null && _.isUndefined(q)){ %>	
-<span class="alert alert-info">
+<span class="small">
 	<%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('users')] }) %>
 </span>
 <% } else{ %>

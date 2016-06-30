@@ -4,7 +4,7 @@
  *	App.boards						: this object contain all boards(Based on logged in user)
  *	this.model						: board model. It contain all board based object @see Available Object in App.BoardView
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -26,8 +26,8 @@ App.BoardMemberAddSearchResultView = Backbone.View.extend({
         this.render();
     },
     template: JST['templates/board_member_add_search_result'],
-    tagName: 'li',
-    className: 'js-add-board-member clearfix',
+    tagName: 'a',
+    className: 'js-add-board-member cur row clearfix',
     events: {
         'click': 'addBoardMember',
     },

@@ -28,7 +28,7 @@
 		if (url && url.length > 1) {
 			url = decodeURIComponent(url[1]);
 		} else {
-			url = "/api_explorer/api.json";
+			url = "/api_explorer/swagger.json";
 		}
 		window.swaggerUi = new SwaggerUi({
 			url: url,
@@ -36,6 +36,7 @@
 			supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
 			onComplete: function(swaggerApi, swaggerUi) {
 				window.swaggerUi.api.setBasePath('/api');
+				window.swaggerUi.api.schemes = location.protocol.replace(':', '');
 				$('pre code').each(function(i, e) {
 					hljs.highlightBlock(e)
 				});
@@ -82,7 +83,7 @@
 			return output;
 		}
 		function addApiKeyAuthorization() {
-			var key = encodeURIComponent($('#input_apiKey')[0].value);
+			var key = $('#input_apiKey')[0].value;
 			if (key && key.trim() != "") {
 				key = "Basic " + encode(key);
 				window.swaggerUi.api.clientAuthorizations.add("key", new SwaggerClient.ApiKeyAuthorization("Authorization", key, "header"));

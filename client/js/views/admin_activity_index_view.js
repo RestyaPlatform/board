@@ -4,7 +4,7 @@
  *	App.boards						: this object contain all boards(Based on logged in user)
  *	this.model						: activity model and it's related values
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 App.AdminActivityIndexView = Backbone.View.extend({
@@ -20,7 +20,7 @@ App.AdminActivityIndexView = Backbone.View.extend({
         emojify.run();
     },
     template: JST['templates/admin_activity_index'],
-    converter: new Showdown.converter(),
+    converter: new showdown.Converter(),
     tagName: 'li',
     className: 'row col-xs-12',
     /**

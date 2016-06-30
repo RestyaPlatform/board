@@ -1,4 +1,4 @@
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -41,6 +41,17 @@ App.UserCollection = Backbone.Collection.extend({
                 }
             });
             return str;
+        } else if (this.sortField === 'created' || this.sortField === 'last_login_date') {
+            if (item.get(this.sortField) !== null) {
+                var date = item.get(this.sortField).split(' ');
+                if (!_.isUndefined(date[1])) {
+                    _date = date[0] + 'T' + date[1];
+                } else {
+                    _date = date[0];
+                }
+                sort_date = new Date(_date);
+                return self.sortDirection.toLowerCase() === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+            }
         } else {
             if (self.sortDirection.toLowerCase() === 'desc') {
                 return -item.get(this.sortField);

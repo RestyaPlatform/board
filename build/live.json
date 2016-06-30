@@ -1,5 +1,9 @@
 {
 	"db_user": "REPLACE_ME",
 	"db_password": "REPLACE_ME",
-	"db_name": "REPLACE_ME"
+	"db_name": "REPLACE_ME",
+	"chat_db_host": "REPLACE_ME",
+	"chat_db_user": "REPLACE_ME",
+	"chat_db_password": "REPLACE_ME",
+	"chat_db_name": "REPLACE_ME"
 }

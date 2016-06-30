@@ -1,0 +1,29 @@
+{
+    "name": "deminy/xmpp",
+    "description": "A client library for talking to XMPP servers.",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "xmpp",
+        "jabber",
+        "im"
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "deminy/streamer": "~0.0.1",
+        "psr/log": "~1.0"
+    },
+    "authors": [
+        {
+            "name": "Demin Yin",
+            "email": "deminy@deminy.net",
+            "homepage": "http://deminy.net"
+        }
+    ],
+    "autoload" : {
+        "psr-4" : {
+            "Xmpp\\" : "lib/Xmpp/"
+        }
+    },
+    "minimum-stability": "dev"
+}

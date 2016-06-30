@@ -24,25 +24,25 @@ if ($db_lnk) {
     $qry_val_arr = array(
         2
     );
-    $users_result = pg_query_params($db_lnk, 'SELECT users.id, users.username, users.email, users.full_name, users.last_email_notified_activity_id, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT bs.board_id FROM board_subscribers bs WHERE bs.user_id = users.id) d) AS board_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ls.list_id, l.board_id FROM list_subscribers ls, lists l WHERE ls.user_id = users.id AND l.id = ls.list_id) d) AS list_ids,(SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT cs.card_id, c.list_id, c.board_id FROM card_subscribers cs, cards c WHERE cs.user_id = users.id AND c.id = cs.card_id) d) AS card_ids FROM users WHERE is_send_newsletter = $1', $qry_val_arr);
+    $users_result = pg_query_params($db_lnk, 'SELECT users.id, users.username, users.email, users.full_name, users.last_email_notified_activity_id, users.timezone, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT bs.board_id FROM board_subscribers bs WHERE bs.user_id = users.id) d) AS board_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ls.list_id, l.board_id FROM list_subscribers ls, lists l WHERE ls.user_id = users.id AND l.id = ls.list_id) d) AS list_ids,(SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT cs.card_id, c.list_id, c.board_id FROM card_subscribers cs, cards c WHERE cs.user_id = users.id AND c.id = cs.card_id) d) AS card_ids FROM users WHERE is_send_newsletter = $1', $qry_val_arr);
     while ($user = pg_fetch_assoc($users_result)) {
         $board_ids = $list_ids = $card_ids = array();
         $board_arr = (!empty($user['board_ids'])) ? array_filter(json_decode($user['board_ids'], true)) : '';
         $list_arr = (!empty($user['list_ids'])) ? array_filter(json_decode($user['list_ids'], true)) : '';
         $card_arr = (!empty($user['card_ids'])) ? array_filter(json_decode($user['card_ids'], true)) : '';
-        if (!empty($board_arr)) {
+        if (!empty($board_arr) && is_array($board_arr)) {
             foreach ($board_arr as $boards) {
                 $board_ids[] = $boards['board_id'];
             }
         }
-        if (!empty($list_arr)) {
+        if (!empty($list_arr) && is_array($list_arr)) {
             foreach ($list_arr as $lists) {
                 if (!in_array($lists['board_id'], $board_ids)) {
                     $list_ids[] = $lists['list_id'];
                 }
             }
         }
-        if (!empty($card_arr)) {
+        if (!empty($card_arr) && is_array($card_arr)) {
             foreach ($card_arr as $cards) {
                 if (!in_array($cards['board_id'], $board_ids) && !in_array($cards['list_id'], $list_ids)) {
                     $card_ids[] = $cards['card_id'];
@@ -53,6 +53,7 @@ if ($db_lnk) {
         $activities_result = '';
         $notification_count = 0;
         $reply_to_mail = '';
+        $reply_to = '';
         if (!empty($board_ids)) {
             $qry_arr = array(
                 $user['last_email_notified_activity_id'],
@@ -86,7 +87,7 @@ if ($db_lnk) {
                     $activity['comment'].= ' on ##BOARD_NAME##';
                     $br = '<div style="line-height:40px;">&nbsp;</div>';
                 }
-                if (!empty($activity['card_id'])) {
+                if (!empty($activity['card_id']) && IMAP_EMAIL) {
                     $imap_email = split("@", IMAP_EMAIL);
                     $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
@@ -179,7 +180,7 @@ if ($db_lnk) {
                     $activity['comment'].= ' on ##BOARD_NAME##';
                     $br = '<div style="line-height:40px;">&nbsp;</div>';
                 }
-                if (!empty($activity['card_id'])) {
+                if (!empty($activity['card_id']) && IMAP_EMAIL) {
                     $imap_email = split("@", IMAP_EMAIL);
                     $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
@@ -272,7 +273,7 @@ if ($db_lnk) {
                     $activity['comment'].= ' on ##BOARD_NAME##';
                     $br = '<div style="line-height:40px;">&nbsp;</div>';
                 }
-                if (!empty($activity['card_id'])) {
+                if (!empty($activity['card_id']) && IMAP_EMAIL) {
                     $imap_email = split("@", IMAP_EMAIL);
                     $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
@@ -341,7 +342,7 @@ if ($db_lnk) {
             $emailFindReplace['##CONTENT##'] = $mail_content;
             $emailFindReplace['##NAME##'] = $user['full_name'];
             $emailFindReplace['##NOTIFICATION_COUNT##'] = $notification_count;
-            $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)");
+            $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($user['timezone']));
             $emailFindReplace['##USER_ID##'] = $user['id'];
             sendMail('email_notification', $emailFindReplace, $user['email'], $reply_to_mail);
         }

@@ -4,7 +4,7 @@
  *	App.boards						: this object contain all boards(Based on logged in user)
  *	this.model						: user model.
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -27,6 +27,7 @@ App.UserSearchResultView = Backbone.View.extend({
     },
     template: JST['templates/user_search_result'],
     tagName: 'li',
+    className: 'col-xs-12',
     /**
      * render()
      * populate the html to the dom

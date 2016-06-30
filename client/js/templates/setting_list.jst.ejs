@@ -27,9 +27,14 @@
 				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%}%>" id="settingTab<%- settingCategory.get('id') %>">
 					<% if(!_.isEmpty(settings)){ %>
 					<% if(settingCategory.get('id') == 10){ %>
-					<p class="alert alert-info "><%- i18next.t('To add/reply cards via email you must set up a secret email account with IMAP access.') %></p>
+					<p class="alert alert-info "><%- i18next.t('To add/reply cards via email you must set up a secret email account with IMAP access. This should support plus addressing and has to be dedicated to handle replying through email feature. Suggested email address is rbreply@yourdomain.tld') %></p>
 					<% } %>
+					<% if(settingCategory.get('id') == 8){ %>
+					<p class="alert alert-info "><%- i18next.t('Different people may use different naming for Todo, Doing and Done. So, it is usually difficult to identify what are actually in Todo, Doing and Done. Below, you can configure how the lists have to be recognized. For a list, you can configure its indicator icon and its color too.') %></p>
+					<form class="col-md-9 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
+					<% } else { %>
 					<form class="form-horizontal clearfix <% if(settingCategory.get('id') == 2){ %>col-lg-8<% } else { %>col-lg-6<% } %> col-md-8 col-sm-12 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
+					<% } %>
 					<%
 					 var server_detail_fields_count = 0;
 					 var connection_detail_fields_count = 0;
@@ -46,8 +51,38 @@
 					 var prev_category_id = 0;
 					 var current_server_detail_fields_count = 0;
 					 var current_connection_detail_fields_count = 0;
+					  var todo_color = '';
+					  var doing_color = '';
+					  var done_color = '';
+					  var todo_icon = '';
+					  var doing_icon = '';
+					  var done_icon = '';
 					  _.each(settings, function(setting) {  %>
 						<% 
+						  if(setting.name == 'TODO_COLOR') {
+							todo_color = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
+							return;
+						  }
+						  if(setting.name == 'DOING_COLOR') {
+							doing_color = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
+							return;
+						  }
+						  if(setting.name == 'DONE_COLOR') {
+							done_color = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
+							return;
+						  }
+						  if(setting.name == 'TODO_ICON') {
+							todo_icon = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
+							return;
+						  }
+						  if(setting.name == 'DOING_ICON') {
+							doing_icon = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
+							return;
+						  }
+						  if(setting.name == 'DONE_ICON') {
+							done_icon = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
+							return;
+						  }
 						  if(setting.setting_category_id == 4 && setting.setting_category_parent_id != 0){
 							current_server_detail_fields_count = current_server_detail_fields_count + 1;
 						  }
@@ -106,10 +141,68 @@
 								  </div>
 								</div>
 							<% } else {%>
-								<div class="form-group">
+								  <% if(setting.name == 'TODO' || setting.name == 'DOING' || setting.name == 'DONE') { %> 
+								  <div class="clearfix">
+								  <label for="inputSetting<%- setting.id %>" class="col-sm-2 control-label text-right"><%- i18next.t(setting.label) %></label>
+								  <div class=" col-sm-10 col-xs-12">
+								  <% } else {%>
+								  <div class="form-group">
 								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t(setting.label) %></label>
 								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
+								  <% } %>
+								  <% if(setting.type == 'select'){ %>
+									  <select name="<%- i18next.t(setting.name) %>" id="inputSetting<%- setting.id %>" class="form-control">
+									 <% var options = setting.options.split(',');
+									 _.each(options, function(v, k) { %>
+										<option <% if(v === setting.value) { %>selected <% }%> value="<%- v %>"><%- v %></option>
+									<% }); %>
+									</select>
+								  <% } else if(setting.type == 'password') {%>
+									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" />
+								  <% } else if(setting.type == 'textarea') {%>
+									<% if(setting.name == 'TODO') { 
+										todo_color = todo_color.split('__');
+										todo_icon = todo_icon.split('__');
+									%>
+										<div class="col-sm-4 form-group">
+										<input type="<%- todo_icon[0] %>" id="inputSetting<%- todo_icon[1] %>" name="<%- i18next.t(todo_icon[2]) %>" class="form-control" value="<%- todo_icon[3] %>" placeholder="<%- todo_icon[4] %>" />
+										</div>
+										<div class="col-sm-4 form-group clearfix">
+										<input type="<%- todo_color[0] %>" id="inputSetting<%- todo_color[1] %>" name="<%- i18next.t(todo_color[2]) %>" class="form-control pull-left" value="<%- todo_color[3] %>" placeholder="<%- todo_color[4] %>" />
+										</div>
+									<% } %>
+									<% if(setting.name == 'DOING') { 
+										doing_color = doing_color.split('__');
+										doing_icon = doing_icon.split('__');
+									%>	
+										<div class="col-sm-4 form-group">
+										<input type="<%- doing_icon[0] %>" id="inputSetting<%- doing_icon[1] %>" name="<%- i18next.t(doing_icon[2]) %>" class="form-control" value="<%- doing_icon[3] %>" placeholder="<%- doing_icon[4] %>" />
+										</div>
+										<div class="col-sm-4 form-group clearfix">
+										<input type="<%- doing_color[0] %>" id="inputSetting<%- doing_color[1] %>" name="<%- i18next.t(doing_color[2]) %>" class="form-control pull-left" value="<%- doing_color[3] %>" placeholder="<%- doing_color[4] %>" />
+										</div>
+									<% } %>
+									<% if(setting.name == 'DONE') { 
+										done_color = done_color.split('__');
+										done_icon = done_icon.split('__');
+									%>
+										<div class="col-sm-4 form-group">
+										<input type="<%- done_icon[0] %>" id="inputSetting<%- done_icon[1] %>" name="<%- i18next.t(done_icon[2]) %>" class="form-control" value="<%- done_icon[3] %>" placeholder="<%- done_icon[4] %>"/>
+										</div>
+										<div class="col-sm-4 form-group clearfix">
+										<input type="<%- done_color[0] %>" id="inputSetting<%- done_color[1] %>" name="<%- i18next.t(done_color[2]) %>" class="form-control pull-left" value="<%- done_color[3] %>" placeholder="<%- done_color[4] %>"/>
+										</div>
+									<% } %>
+									<% if(setting.name == 'TODO' || setting.name == 'DOING' || setting.name == 'DONE') { %> 
+									<div class="col-sm-4 form-group">
+									<% } %>
+									<textarea id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" ><%- setting.value %></textarea>
+									<% if(setting.name == 'TODO' || setting.name == 'DOING' || setting.name == 'DONE') { %> 
+									</div>
+									<% } %>
+								  <% } else { %>
 									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" value="<%- setting.value %>" />
+								  <% } %>
 									<div><span class="help-block"><%= i18next.t(setting.description) %></span></div>
 								  </div>
 								</div>
@@ -125,12 +218,21 @@
 							</fieldset>		
 						<%}%>
 					<% }); %>
+					<% if(settingCategory.get('id') == 8){ %>
 					  <div class="form-group">
+						<label for="submit2" class="col-sm-2 control-label"></label>
+						<div class="col-sm-8">
+						<input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary">
+						</div>
+					  </div>
+					 <% } else { %> 
+					 <div class="form-group">
 						<label for="submit2" class="sr-only <% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t('Submit') %></label>
 						<div class="col-sm-8">
 						<input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary">
 						</div>
 					  </div>
+					 <% } %> 
 					</form>
 					<% } %>
 				</div>

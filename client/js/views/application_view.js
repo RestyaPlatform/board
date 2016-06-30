@@ -4,7 +4,7 @@
  *	App.boards						: this object contain all boards(Based on logged in user)
  *	this.model						: undefined
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 var loginExceptionUrl = ['register', 'login', 'forgotpassword', 'user_activation', 'aboutus'];
@@ -29,6 +29,7 @@ App.ApplicationView = Backbone.View.extend({
         page.page_view_type = options.type;
         page.page_view_id = options.id;
         page.page_view_hash = options.hash;
+        page.page_view_q = options.q;
         last_user_activity_id = load_more_last_board_activity_id = last_board_activity_id = 0;
         if (_.isUndefined(App.music)) {
             App.music = {};
@@ -64,7 +65,9 @@ App.ApplicationView = Backbone.View.extend({
                     abortPending: true,
                     success: function(model, response) {
                         api_token = response.access_token;
-                        window.sessionStorage.setItem('links', response.links);
+                        if (!_.isUndefined(response.links)) {
+                            window.sessionStorage.setItem('links', response.links);
+                        }
                         window.sessionStorage.setItem('languages', response.languages);
                         window.sessionStorage.setItem('apps', response.apps);
                         role_links.add(JSON.parse(response.links));
@@ -82,8 +85,55 @@ App.ApplicationView = Backbone.View.extend({
                                 LDAP_LOGIN_ENABLED = settings_response.LDAP_LOGIN_ENABLED;
                                 DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                                 STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
+                                BOSH_SERVICE_URL = settings_response.BOSH_SERVICE_URL;
+                                PREBIND_URL = settings_response.PREBIND_URL;
+                                JABBER_HOST = settings_response.JABBER_HOST;
+                                JABBER_PATH = settings_response.JABBER_PATH;
+                                XMPP_CLIENT_RESOURCE_NAME = settings_response.XMPP_CLIENT_RESOURCE_NAME;
+                                PAGING_COUNT = settings_response.PAGING_COUNT;
                                 APPS = settings_response.apps;
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
+                                DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
+                                if (settings_response.TODO_COLOR) {
+                                    TODO_COLOR = settings_response.TODO_COLOR;
+                                }
+                                if (settings_response.DOING_COLOR) {
+                                    DOING_COLOR = settings_response.DOING_COLOR;
+                                }
+                                if (settings_response.DONE_COLOR) {
+                                    DONE_COLOR = settings_response.DONE_COLOR;
+                                }
+                                if (settings_response.TODO_ICON) {
+                                    TODO_ICON = settings_response.TODO_ICON;
+                                }
+                                if (settings_response.DOING_ICON) {
+                                    DOING_ICON = settings_response.DOING_ICON;
+                                }
+                                if (settings_response.DONE_ICON) {
+                                    DONE_ICON = settings_response.DONE_ICON;
+                                }
+
+                                if (settings_response.TODO) {
+                                    var todo = settings_response.TODO;
+                                    var todo_split = todo.split(',');
+                                    $.each(todo_split, function(todo_key, todo_list) {
+                                        todo_lists[todo_key] = todo_list;
+                                    });
+                                }
+                                if (settings_response.DOING) {
+                                    var doing = settings_response.DOING;
+                                    var doing_split = doing.split(',');
+                                    $.each(doing_split, function(doing_key, doing_list) {
+                                        doing_lists[doing_key] = doing_list;
+                                    });
+                                }
+                                if (settings_response.DONE) {
+                                    var done = settings_response.DONE;
+                                    var done_split = done.split(',');
+                                    $.each(done_split, function(done_key, done_list) {
+                                        done_lists[done_key] = done_list;
+                                    });
+                                }
                                 var current_language = DEFAULT_LANGUAGE;
                                 if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null) {
                                     current_language = authuser.user.language;
@@ -140,8 +190,54 @@ App.ApplicationView = Backbone.View.extend({
                             LDAP_LOGIN_ENABLED = settings_response.LDAP_LOGIN_ENABLED;
                             DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                             STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
+                            BOSH_SERVICE_URL = settings_response.BOSH_SERVICE_URL;
+                            PREBIND_URL = settings_response.PREBIND_URL;
+                            JABBER_HOST = settings_response.JABBER_HOST;
+                            JABBER_PATH = settings_response.JABBER_PATH;
+                            XMPP_CLIENT_RESOURCE_NAME = settings_response.XMPP_CLIENT_RESOURCE_NAME;
+                            PAGING_COUNT = settings_response.PAGING_COUNT;
                             APPS = settings_response.apps;
                             IMAP_EMAIL = settings_response.IMAP_EMAIL;
+                            DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
+                            if (settings_response.TODO_COLOR) {
+                                TODO_COLOR = settings_response.TODO_COLOR;
+                            }
+                            if (settings_response.DOING_COLOR) {
+                                DOING_COLOR = settings_response.DOING_COLOR;
+                            }
+                            if (settings_response.DONE_COLOR) {
+                                DONE_COLOR = settings_response.DONE_COLOR;
+                            }
+                            if (settings_response.TODO_ICON) {
+                                TODO_ICON = settings_response.TODO_ICON;
+                            }
+                            if (settings_response.DOING_ICON) {
+                                DOING_ICON = settings_response.DOING_ICON;
+                            }
+                            if (settings_response.DONE_ICON) {
+                                DONE_ICON = settings_response.DONE_ICON;
+                            }
+                            if (settings_response.TODO) {
+                                var todo = settings_response.TODO;
+                                var todo_split = todo.split(',');
+                                $.each(todo_split, function(todo_key, todo_list) {
+                                    todo_lists[todo_key] = todo_list;
+                                });
+                            }
+                            if (settings_response.DOING) {
+                                var doing = settings_response.DOING;
+                                var doing_split = doing.split(',');
+                                $.each(doing_split, function(doing_key, doing_list) {
+                                    doing_lists[doing_key] = doing_list;
+                                });
+                            }
+                            if (settings_response.DONE) {
+                                var done = settings_response.DONE;
+                                var done_split = done.split(',');
+                                $.each(done_split, function(done_key, done_list) {
+                                    done_lists[done_key] = done_list;
+                                });
+                            }
                             var current_language = DEFAULT_LANGUAGE;
                             if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null && authuser.user.language !== null && authuser.user.language !== undefined) {
                                 current_language = authuser.user.language;
@@ -247,7 +343,7 @@ App.ApplicationView = Backbone.View.extend({
         if (this.model == 'admin_boards_index') {
             changeTitle(i18next.t('Boards'));
         }
-        if (this.model == 'role_settings') {
+        if (this.model == 'role_settings' || this.model == 'add_role' || this.model == 'add_board_user_role' || this.model == 'add_organization_user_role') {
             changeTitle(i18next.t('Role Settings'));
         }
         if (this.model == 'oauth_clients') {
@@ -302,6 +398,31 @@ App.ApplicationView = Backbone.View.extend({
                         });
                         $('#header').html(this.headerView.el);
                     } else {
+                        var lists = {};
+                        var boards = {};
+                        if (response.lists) {
+                            $.each(response.lists, function(list_key, list) {
+                                if (list) {
+                                    var cards = {};
+                                    if (list.cards) {
+                                        $.each(list.cards, function(card_key, card) {
+                                            if (card) {
+                                                cards[card.id] = card.custom_fields;
+                                            }
+                                        });
+                                    }
+                                    lists[list.id] = {
+                                        custom_fields: list.custom_fields,
+                                        cards: cards
+                                    };
+                                }
+                            });
+                        }
+                        boards[response.id] = {
+                            custom_fields: response.custom_fields,
+                            lists: lists
+                        };
+                        custom_fields.boards = boards;
                         Board.authuser = self.authuser;
                         viewed_board = Board;
                         Board.board_user_roles = response.board_user_roles;
@@ -474,6 +595,7 @@ App.ApplicationView = Backbone.View.extend({
         if (page.model !== 'boards_view' && page.model !== 'users_index') {
             $('#header').html(this.headerView.el);
         }
+        window.sessionStorage.setItem('previous_url', Backbone.history.getFragment());
     },
     populateLists: function() {
         App.boards.each(function(board) {
@@ -613,6 +735,75 @@ App.ApplicationView = Backbone.View.extend({
                                 set_interval_id = setInterval(function() {
                                     board_activities.userActivities(true, 1);
                                 }, 10000);
+                                if (!_.isUndefined(board_response._metadata) && !_.isUndefined(board_response._metadata.dashboard)) {
+                                    board_response._metadata.dashboard.page_title = page_title;
+                                    board_index.append(new App.UserDashboardView({
+                                        model: board_response._metadata.dashboard,
+                                    }).el);
+                                }
+                                $('.sparklines', (this.el)).each(function(key) {
+                                    $(this).sparkline($(this).data('todo').split(','), {
+                                        enableTagOptions: true,
+                                        type: 'line',
+                                        fillColor: '#eca186',
+                                        lineColor: '#eca186',
+                                        width: '250',
+                                        height: '25',
+                                        tooltipFormatter: function(sparkline, options, fields) {
+                                            var curr = new Date();
+                                            var this_week = (curr.getDate() + 1) - curr.getDay();
+                                            var selected_day = this_week + fields.offset;
+                                            if (key === 1) {
+                                                var last_week = (curr.getDate() - 6) - curr.getDay();
+                                                selected_day = last_week + fields.offset;
+                                            }
+                                            var day = new Date(curr.setDate(selected_day));
+                                            var current_date = day.toString().split(' ');
+                                            var today = current_date[0] + ', ' + current_date[1] + ' ' + current_date[2] + ', ' + current_date[3];
+                                            return "<span>" + today + " <span><br>Todo: " + fields.y;
+                                        }
+                                    });
+                                    $(this).sparkline($(this).data('doing').split(','), {
+                                        composite: true,
+                                        fillColor: '#fee3e0',
+                                        lineColor: '#fee3e0',
+                                        width: '250',
+                                        height: '25',
+                                        tooltipFormatter: function(sparkline, options, fields) {
+                                            return ",&nbsp;Doing: " + fields.y;
+                                        }
+                                    });
+                                    $(this).sparkline($(this).data('done').split(','), {
+                                        composite: true,
+                                        fillColor: '#65cca9',
+                                        lineColor: '#65cca9',
+                                        width: '250',
+                                        height: '25',
+                                        tooltipFormatter: function(sparkline, options, fields) {
+                                            return ",&nbsp;Done: " + fields.y;
+                                        }
+                                    });
+                                });
+                                $('.js-chart', (this.el)).each(function() {
+                                    var data_chart = [];
+                                    $.each($(this).data(), function(index, value) {
+                                        var _data = {};
+                                        _data.title = index.toUpperCase();
+                                        _data.value = parseInt(value);
+                                        if (_data.title == 'TODO') {
+                                            _data.color = '#eca186';
+                                        } else if (_data.title == 'DOING') {
+                                            _data.color = '#fee3e0';
+                                        } else if (_data.title == 'DONE') {
+                                            _data.color = '#65cca9';
+                                        }
+
+                                        if (parseInt(value) > 0) {
+                                            data_chart.push(_data);
+                                        }
+                                    });
+                                    $(this).html('').drawDoughnutChart(data_chart);
+                                });
                                 if (page.model == 'starred_boards_index') {
                                     board_index.append(new App.StarredBoardsIndexView().el);
                                     if (!_.isEmpty(role_links.where({
@@ -750,6 +941,28 @@ App.ApplicationView = Backbone.View.extend({
                                             }).el);
                                         }
                                     }
+                                    if (typeof page.page_view_q !== 'undefined') {
+                                        var elastic_search = new App.ElasticSearchCollection();
+                                        elastic_search.url = api_url + 'search.json';
+                                        elastic_search.fetch({
+                                            cache: false,
+                                            abortPending: true,
+                                            data: {
+                                                q: page.page_view_q,
+                                                token: api_token
+                                            },
+                                            success: function(model, response) {
+                                                response = response;
+                                                response.result.search_term = page.page_view_q;
+                                                $('#search-page-result-block').html(new App.SearchPageResultView({
+                                                    model: response
+                                                }).el);
+                                                $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
+                                                var w_height = $(window).height() - 38;
+                                                $(".search-block-main-hover").css('height', w_height + 'px');
+                                            }
+                                        });
+                                    }
                                 }
 
                             }
@@ -818,6 +1031,15 @@ App.ApplicationView = Backbone.View.extend({
                         }).el);
                     }
                 });
+            } else if (page.model == 'add_role') {
+                changeTitle(i18next.t('Add role'));
+                $('#content').html(new App.RoleAddView().el);
+            } else if (page.model == 'add_board_user_role') {
+                changeTitle(i18next.t('Add board user role'));
+                $('#content').html(new App.BoardUserRoleAddView().el);
+            } else if (page.model == 'add_organization_user_role') {
+                changeTitle(i18next.t('Add organization user role'));
+                $('#content').html(new App.OrganizationUserRoleAddView().el);
             } else if (page.model == 'organizations_index') {
                 changeTitle(i18next.t('Organizations'));
                 var organizations = new App.OrganizationCollection();

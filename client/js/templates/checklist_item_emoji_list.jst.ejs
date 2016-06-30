@@ -1,0 +1,23 @@
+<ul class="list-unstyled">
+<li class="col-xs-12 clearfix text-center">
+<a href="#" class="js-back-to-item-options pull-left"><i class="icon-caret-left"></i></a><span class="col-xs-10"><strong><%- i18next.t("Add Emoji") %></strong></span>
+<a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a>
+</li>
+<li class="col-xs-12 divider"></li>
+<li class="col-xs-12 js-comment-emoji-search-response">
+  <div class="clearfix">
+	<label class="sr-only"><%- i18next.t("Search Member") %></label>
+	<input value="<%- search_value %>" type="text" autocomplete="off" placeholder="Search emoji" name="member" class="js-search-emoji form-control input-sm js-no-action" title="Search emoji">
+  </div>
+</li>
+<% if(!_.isEmpty(emojiLists)){  %>
+<% _.each(emojiLists, function(emojiList){%>
+	<li class="col-xs-12 navbar-btn">
+	  <span>:<%- emojiList %>:</span>
+	  <span class="js-checklist-item-add-emoji"><%- emojiList %></span>
+	</li>
+<%})%>
+<% } else {%>
+	<li class="col-xs-12 navbar-btn"><span class="alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('emoji')] }) %></span></li>
+<% } %>
+</ul>

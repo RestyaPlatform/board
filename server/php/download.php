@@ -29,15 +29,30 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                 $add_slash = addcslashes($basename, '"\\');
                 $quoted = sprintf('"%s"', $add_slash);
                 $size = filesize($file);
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename=' . $quoted);
-                header('Content-Transfer-Encoding: binary');
-                header('Connection: Keep-Alive');
-                header('Content-length: ' . $size);
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-                header('Pragma: public');
+                $path_info = pathinfo($file);
+                $image_extensions = array(
+                    'gif',
+                    'jpeg',
+                    'jpg',
+                    'png'
+                );
+                if (isset($_GET['view']) && in_array($path_info['extension'], $image_extensions)) {
+                    if ($path_info['extension'] == 'jpg') {
+                        header('Content-Type: image/jpeg');
+                    } else {
+                        header('Content-Type: image/' . $path_info['extension']);
+                    }
+                } else {
+                    header('Content-Description: File Transfer');
+                    header('Content-Type: application/octet-stream');
+                    header('Content-Disposition: attachment; filename=' . $quoted);
+                    header('Content-Transfer-Encoding: binary');
+                    header('Connection: Keep-Alive');
+                    header('Content-length: ' . $size);
+                    header('Expires: 0');
+                    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+                    header('Pragma: public');
+                }
                 readfile($file);
                 exit;
             }

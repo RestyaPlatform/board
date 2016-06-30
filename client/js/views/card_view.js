@@ -12,7 +12,7 @@
  *	this.model.list  				: list model(Based on card). It contain all list based object @see Available Object in App.ListView
  *	this.model.users				: card users collection(Based on card)
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -23,7 +23,7 @@ if (typeof App == 'undefined') {
  */
 App.CardView = Backbone.View.extend({
     template: JST['templates/card'],
-    converter: new Showdown.converter(),
+    converter: new showdown.Converter(),
     /**
      * Constructor
      * initialize default values and actions
@@ -148,6 +148,7 @@ App.CardView = Backbone.View.extend({
         var target = $(ev.target);
         var data = {};
         var list_id = parseInt(target.parents('.js-board-list:first').data('list_id'));
+        var previous_list_id = self.model.attributes.list_id;
         var previous_card_id = target.prev('.js-board-list-card').data('card_id');
         var next_card_id = target.next('.js-board-list-card').data('card_id');
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.attributes.id + '.json';
@@ -169,6 +170,8 @@ App.CardView = Backbone.View.extend({
             patch: true,
             silent: true
         });
+        self.model.list.collection.board.lists.get(previous_list_id).cards.remove(self.model);
+        self.model.list.collection.board.lists.get(list_id).cards.add(self.model);
         var attachments = self.model.list.collection.board.attachments.where({
             card_id: self.model.attributes.id
         });
@@ -396,7 +399,7 @@ App.CardView = Backbone.View.extend({
                 trigger_function: false,
             });
         }
-        var initialState = 'docked';
+        var initialState = (DEFAULT_CARD_VIEW === 'Maximized') ? 'modal' : 'docked';
         if (e.ctrlKey || e.metaKey) {
             initialState = 'modal';
         }
@@ -423,10 +426,6 @@ App.CardView = Backbone.View.extend({
     getDue: function(card_due_date) {
         if (card_due_date === null) {
             return '';
-        }
-        card_due_date = card_due_date.split(' ');
-        if (!_.isEmpty(card_due_date[1])) {
-            card_due_date = card_due_date[0] + 'T' + card_due_date[1];
         }
         var today = new Date();
         var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);

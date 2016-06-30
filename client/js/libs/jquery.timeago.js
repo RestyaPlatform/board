@@ -191,10 +191,14 @@
     if (!element.data("timeago")) {
       element.data("timeago", { datetime: $t.datetime(element) });
       var text = $.trim(element.text());
+	  var options = {
+			year: "numeric", month: "long",
+			day: "numeric", hour: "2-digit", minute: "2-digit"
+		};
       if ($t.settings.localeTitle) {
-        element.attr("title", element.data('timeago').datetime.toLocaleString());
+        element.attr("title", element.data('timeago').datetime.toLocaleTimeString("en-us", options));
       } else if (text.length > 0 && !($t.isTime(element) && element.attr("title"))) {
-		element.attr("title", element.data('timeago').datetime.toLocaleString());
+		element.attr("title", element.data('timeago').datetime.toLocaleTimeString("en-us", options));
       }
     }
     return element.data("timeago");

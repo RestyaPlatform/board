@@ -4,7 +4,7 @@
  *	App.boards						: this object contain all boards(Based on logged in user)
  *	this.model						: undefined
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -19,7 +19,9 @@ App.AdminBoardsIndexView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function(options) {
+        this.sortField = options.sortField;
         this.filter_count = options.filter_count;
+        this.sortDirection = options.sortDirection;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
@@ -37,6 +39,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         'click .js-delete-board': 'deleteBoard',
         'click .js-sort': 'sortBoard',
         'click .js-filter': 'filterBoard',
+        'submit form#BoardSearch': 'boardSearch'
     },
     /**
      * deleteBoard()
@@ -73,9 +76,31 @@ App.AdminBoardsIndexView = Backbone.View.extend({
             'board': this.model,
             filter_count: this.filter_count
         }));
+        if (!_.isUndefined(this.sortField)) {
+            this.renderBoardCollection();
+        }
         $('.js-admin-board-menu').addClass('active');
         $('.js-admin-activity-menu, .js-admin-setting-menu, .js-admin-email-menu, .js-admin-role-menu, .js-admin-user-menu').removeClass('active');
         this.showTooltip();
+        return this;
+    },
+    /**
+     * renderBoardCollection()
+     * populate the html to the dom
+     * @param NULL
+     * @return object
+     *
+     */
+    renderBoardCollection: function() {
+        var view = this.$el.find('.js-my-boards');
+        this.model.setSortField(this.sortField, this.sortDirection);
+        this.model.sort();
+        this.model.each(function(board) {
+            view.append(new App.AdminBoardView({
+                model: board,
+                board_user_roles: board.board_user_roles
+            }).el);
+        });
         return this;
     },
     /**	
@@ -92,20 +117,22 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         if (!_.isUndefined(e)) {
             _this.current_page = 1;
         }
+        $('.js-my-boards').html('<tr class="js-loader"><td colspan="12"><span class="cssloader"></span></td></tr>');
         boards.url = api_url + 'boards.json?page=' + _this.current_page + '&filter=' + _this.filterField;
         app.navigate('#/' + 'boards/list?page=' + _this.current_page + '&filter=' + _this.filterField, {
             trigger: false,
             trigger_function: false,
         });
-        $('.js-my-boards').html('');
         boards.fetch({
             cache: false,
             abortPending: true,
             success: function(boards, response) {
+                $('.js-my-boards').html('');
                 if (boards.length !== 0) {
                     boards.each(function(board) {
                         $('.js-my-boards').append(new App.AdminBoardView({
-                            model: board
+                            model: board,
+                            board_user_roles: response.board_user_roles
                         }).el);
                     });
                 } else {
@@ -131,6 +158,54 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         });
     },
     /**
+     * boardSearch()
+     * @param NULL
+     * @return object
+     *
+     */
+    boardSearch: function(e) {
+        var _this = this;
+        _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
+        _this.searchField = $('#board_search').val();
+        var boards = new App.BoardCollection();
+        $('.js-my-boards').html('<tr class="js-loader"><td colspan="12"><span class="cssloader"></span></td></tr>');
+        if (!_.isUndefined(_this.searchField) && !_.isUndefined(_this.searchField)) {
+            boards.url = api_url + 'boards.json?page=' + _this.current_page + '&search=' + _this.searchField;
+        }
+        boards.fetch({
+            cache: false,
+            abortPending: true,
+            success: function(boards, response) {
+                $('.js-my-boards').html('');
+                if (boards.length !== 0) {
+                    boards.each(function(board) {
+                        $('.js-my-boards').append(new App.AdminBoardView({
+                            model: board,
+                            board_user_roles: response.board_user_roles
+                        }).el);
+                    });
+                } else {
+                    $('.js-my-boards').html('<tr><td class="text-center" colspan="15">No record found</td></tr>');
+                }
+                $('.js-my-boards').find('.timeago').timeago();
+                $('.pagination-boxes').unbind();
+                $('.pagination-boxes').pagination({
+                    total_pages: response._metadata.noOfPages,
+                    current_page: _this.current_page,
+                    display_max: 4,
+                    callback: function(event, page) {
+                        event.preventDefault();
+                        if (page) {
+                            _this.current_page = page;
+                            _this.sortBoard();
+                        }
+                    }
+                });
+            }
+        });
+        return false;
+    },
+    /**
      * sortBoard()
      * @param NULL
      * @return object
@@ -142,6 +217,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         _this.sortField = (!_.isUndefined(e)) ? $(e.currentTarget).data('field') : _this.sortField;
         _this.sortDirection = (!_.isUndefined(e)) ? $(e.currentTarget).data('direction') : _this.sortDirection;
         var boards = new App.BoardCollection();
+        $('.js-my-boards').html('<tr class="js-loader"><td colspan="12"><span class="cssloader"></span></td></tr>');
         if (!_.isUndefined(_this.sortDirection) && !_.isUndefined(_this.sortField)) {
             boards.setSortField(_this.sortField, _this.sortDirection);
             boards.url = api_url + 'boards.json?page=' + _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection;
@@ -175,14 +251,15 @@ App.AdminBoardsIndexView = Backbone.View.extend({
                 $(e.currentTarget).siblings('span').removeClass('icon-caret-up').addClass('icon-caret-down');
             }
         }
-        $('.js-my-boards').html('');
         boards.fetch({
             cache: false,
             abortPending: true,
             success: function(boards, response) {
+                $('.js-my-boards').html('');
                 boards.each(function(board) {
                     $('.js-my-boards').append(new App.AdminBoardView({
-                        model: board
+                        model: board,
+                        board_user_roles: response.board_user_roles
                     }).el);
                 });
                 $('.js-my-boards').find('.timeago').timeago();

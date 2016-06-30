@@ -456,6 +456,60 @@
                 }
             }
         },
+        "addRole": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "editRole": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "addBoardUserRole": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "editBoardUserRole": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "addOrganizationUserRole": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "editOrganizationUserRole": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
         "forgotPassword": {
             "properties": {
                 "email": {
@@ -4483,11 +4537,299 @@
                     "boards"
                 ]
             }
+        },
+        "/v1/roles.json": {
+            "post": {
+                "consumes": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "operationId": "addRole",
+                "parameters": [
+                    {
+                        "description": "OAuth token",
+                        "in": "query",
+                        "name": "token",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Created role object",
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/addRole"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json",
+                    "application/xml",
+                    "text/plain",
+                    "text/html"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response was specified"
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                },
+                "summary": "Add a role",
+                "tags": [
+                    "roles"
+                ]
+            }
+        },
+        "/v1/roles/{roleId}.json": {
+            "put": {
+                "description": "Update the role",
+                "operationId": "editRole",
+                "parameters": [
+                    {
+                        "description": "OAuth token",
+                        "in": "query",
+                        "name": "token",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Role to edit",
+                        "in": "path",
+                        "name": "roleId",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Edit Webhook",
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/editRole"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json",
+                    "application/xml",
+                    "text/plain",
+                    "text/html"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response was specified"
+                    },
+                    "400": {
+                        "description": "Invalid ID supplied"
+                    },
+                    "404": {
+                        "description": "Page not found"
+                    }
+                },
+                "summary": "Edit role",
+                "tags": [
+                    "roles"
+                ]
+            }
+        },
+        "/v1/board_user_roles.json": {
+            "post": {
+                "consumes": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "operationId": "addBoardUserRole",
+                "parameters": [
+                    {
+                        "description": "OAuth token",
+                        "in": "query",
+                        "name": "token",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Created board user role object",
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/addBoardUserRole"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json",
+                    "application/xml",
+                    "text/plain",
+                    "text/html"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response was specified"
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                },
+                "summary": "Add a board user role",
+                "tags": [
+                    "board_user_roles"
+                ]
+            }
+        },
+        "/v1/board_user_roles/{roleId}.json": {
+            "put": {
+                "description": "Update the board user role",
+                "operationId": "editBoardUserRole",
+                "parameters": [
+                    {
+                        "description": "OAuth token",
+                        "in": "query",
+                        "name": "token",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Board user role to edit",
+                        "in": "path",
+                        "name": "roleId",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Edit edit board user role object",
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/editBoardUserRole"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json",
+                    "application/xml",
+                    "text/plain",
+                    "text/html"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response was specified"
+                    },
+                    "400": {
+                        "description": "Invalid ID supplied"
+                    },
+                    "404": {
+                        "description": "Page not found"
+                    }
+                },
+                "summary": "Edit board user role",
+                "tags": [
+                    "board_user_roles"
+                ]
+            }
+        },
+        "/v1/organization_user_roles.json": {
+            "post": {
+                "consumes": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "operationId": "addOrganizationUserRole",
+                "parameters": [
+                    {
+                        "description": "OAuth token",
+                        "in": "query",
+                        "name": "token",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Created organization user role object",
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/addOrganizationUserRole"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json",
+                    "application/xml",
+                    "text/plain",
+                    "text/html"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response was specified"
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                },
+                "summary": "Add a organization user role",
+                "tags": [
+                    "organization_user_roles"
+                ]
+            }
+        },
+        "/v1/organization_user_roles/{roleId}.json": {
+            "put": {
+                "description": "Update the organization user role",
+                "operationId": "editOrganizationUserRole",
+                "parameters": [
+                    {
+                        "description": "OAuth token",
+                        "in": "query",
+                        "name": "token",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Organization user role to edit",
+                        "in": "path",
+                        "name": "roleId",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Edit organization user role object",
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/editOrganizationUserRole"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json",
+                    "application/xml",
+                    "text/plain",
+                    "text/html"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response was specified"
+                    },
+                    "400": {
+                        "description": "Invalid ID supplied"
+                    },
+                    "404": {
+                        "description": "Page not found"
+                    }
+                },
+                "summary": "Edit organization user role",
+                "tags": [
+                    "organization_user_roles"
+                ]
+            }
         }
     },
-    "schemes": [
-        "http"
-    ],
     "swagger": "2.0",
     "tags": [
         {
@@ -4549,6 +4891,18 @@
         {
             "description": "Operations about Webhooks",
             "name": "webhooks"
+        },
+        {
+            "description": "Operations about Roles",
+            "name": "roles"
+        },
+        {
+            "description": "Operations about Board User Roles",
+            "name": "board_user_roles"
+        },
+        {
+            "description": "Operations about Organization User Roles",
+            "name": "organization_user_roles"
         }
     ]
 }

@@ -4,7 +4,7 @@
  *	App.boards						: this object contain all boards(Based on logged in user)
  *	this.model						: activity model.
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -25,7 +25,7 @@ App.UserActivityView = Backbone.View.extend({
         this.render();
         emojify.run();
     },
-    converter: new Showdown.converter(),
+    converter: new showdown.Converter(),
     template: JST['templates/user_activity'],
     className: 'list-group-item-text',
     /**

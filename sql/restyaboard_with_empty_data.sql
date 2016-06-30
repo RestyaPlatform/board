@@ -8,6 +8,21 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
 SET search_path = public, pg_catalog;
 
 --
@@ -1174,6 +1189,7 @@ CREATE TABLE boards (
     archived_card_count bigint DEFAULT (0)::bigint,
     default_email_list_id bigint DEFAULT (0)::bigint NOT NULL,
     is_default_email_position_as_bottom boolean DEFAULT false NOT NULL,
+    custom_fields text,
     CONSTRAINT name CHECK ((char_length(name) > 0))
 );
 
@@ -1217,6 +1233,7 @@ CREATE TABLE cards (
     user_id bigint NOT NULL,
     is_deleted boolean DEFAULT false NOT NULL,
     comment_count bigint DEFAULT (0)::bigint,
+    custom_fields text,
     CONSTRAINT name CHECK ((char_length(name) > 0))
 );
 
@@ -1335,6 +1352,7 @@ CREATE TABLE lists (
     card_count bigint DEFAULT 0,
     lists_subscriber_count bigint DEFAULT 0,
     is_deleted boolean DEFAULT false NOT NULL,
+    custom_fields text,
     CONSTRAINT name CHECK ((char_length((name)::text) > 0))
 );
 
@@ -1430,6 +1448,7 @@ CREATE TABLE users (
     owner_organization_count bigint DEFAULT (0)::bigint,
     member_organization_count bigint DEFAULT (0)::bigint,
     language character varying(10),
+    timezone character varying,
     CONSTRAINT password CHECK ((char_length((password)::text) > 0)),
     CONSTRAINT username CHECK ((char_length((username)::text) > 0))
 );
@@ -1441,8 +1460,8 @@ CREATE TABLE users (
 
 CREATE VIEW activities_listing AS
  SELECT activity.id,
-    activity.created,
-    activity.modified,
+    to_char(activity.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(activity.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     activity.board_id,
     activity.list_id,
     activity.card_id,
@@ -1471,10 +1490,13 @@ CREATE VIEW activities_listing AS
     checklist1.name AS checklist_name,
     organizations.id AS organization_id,
     organizations.name AS organization_name,
-    organizations.logo_url AS organization_logo_url
-   FROM (((((((((activities activity
+    organizations.logo_url AS organization_logo_url,
+    list1.name AS moved_list_name,
+    to_char(activity.created, 'HH24:MI'::text) AS created_time
+   FROM ((((((((((activities activity
      LEFT JOIN boards board ON ((board.id = activity.board_id)))
      LEFT JOIN lists list ON ((list.id = activity.list_id)))
+     LEFT JOIN lists list1 ON ((list1.id = activity.foreign_id)))
      LEFT JOIN cards card ON ((card.id = activity.card_id)))
      LEFT JOIN labels la ON (((la.id = activity.foreign_id) AND ((activity.type)::text = 'add_card_label'::text))))
      LEFT JOIN checklist_items checklist_item ON ((checklist_item.id = activity.foreign_id)))
@@ -1482,6 +1504,115 @@ CREATE VIEW activities_listing AS
      LEFT JOIN checklists checklist1 ON ((checklist1.id = activity.foreign_id)))
      LEFT JOIN users users ON ((users.id = activity.user_id)))
      LEFT JOIN organizations organizations ON ((organizations.id = activity.organization_id)));
+
+
+--
+-- Name: boards_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE boards_users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: boards_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE boards_users (
+    id bigint DEFAULT nextval('boards_users_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    board_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    board_user_role_id smallint DEFAULT (0)::smallint NOT NULL
+);
+
+
+--
+-- Name: boards_users_listing; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW boards_users_listing AS
+ SELECT bu.id,
+    to_char(bu.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(bu.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    bu.board_id,
+    bu.user_id,
+    bu.board_user_role_id,
+    u.username,
+    u.email,
+    u.full_name,
+    (u.is_active)::integer AS is_active,
+    (u.is_email_confirmed)::integer AS is_email_confirmed,
+    b.name AS board_name,
+    u.profile_picture_path,
+    u.initials,
+    b.default_email_list_id,
+    (b.is_default_email_position_as_bottom)::integer AS is_default_email_position_as_bottom
+   FROM ((boards_users bu
+     JOIN users u ON ((u.id = bu.user_id)))
+     JOIN boards b ON ((b.id = bu.board_id)));
+
+
+--
+-- Name: admin_boards_listing; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW admin_boards_listing AS
+ SELECT board.id,
+    board.name,
+    to_char(board.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(board.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    users.username,
+    users.full_name,
+    users.profile_picture_path,
+    users.initials,
+    board.user_id,
+    board.organization_id,
+    board.board_visibility,
+    board.background_color,
+    board.background_picture_url,
+    (board.is_closed)::integer AS is_closed,
+    board.boards_user_count,
+    board.list_count,
+    board.card_count,
+    board.archived_list_count,
+    board.archived_card_count,
+    board.boards_subscriber_count,
+    board.background_pattern_url,
+    board.music_name,
+    organizations.name AS organization_name,
+    organizations.website_url AS organization_website_url,
+    organizations.description AS organization_description,
+    organizations.logo_url AS organization_logo_url,
+    organizations.organization_visibility,
+    ( SELECT array_to_json(array_agg(row_to_json(bu.*))) AS array_to_json
+           FROM ( SELECT boards_users.id,
+                    boards_users.created,
+                    boards_users.modified,
+                    boards_users.board_id,
+                    boards_users.user_id,
+                    boards_users.board_user_role_id,
+                    boards_users.username,
+                    boards_users.email,
+                    boards_users.full_name,
+                    ((boards_users.is_active)::boolean)::integer AS is_active,
+                    ((boards_users.is_email_confirmed)::boolean)::integer AS is_email_confirmed,
+                    boards_users.board_name,
+                    boards_users.profile_picture_path,
+                    boards_users.initials
+                   FROM boards_users_listing boards_users
+                  WHERE (boards_users.board_id = board.id)
+                  ORDER BY boards_users.id) bu) AS boards_users,
+    board.default_email_list_id,
+    board.is_default_email_position_as_bottom
+   FROM ((boards board
+     LEFT JOIN users users ON ((users.id = board.user_id)))
+     LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
 
 
 --
@@ -1606,8 +1737,8 @@ CREATE TABLE cards_labels (
 
 CREATE VIEW boards_labels_listing AS
  SELECT cards_labels.id,
-    cards_labels.created,
-    cards_labels.modified,
+    to_char(cards_labels.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(cards_labels.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     cards_labels.label_id,
     cards_labels.card_id,
     cards_labels.list_id,
@@ -1615,58 +1746,6 @@ CREATE VIEW boards_labels_listing AS
     labels.name
    FROM (cards_labels cards_labels
      LEFT JOIN labels labels ON ((labels.id = cards_labels.label_id)));
-
-
---
--- Name: boards_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE boards_users_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: boards_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE boards_users (
-    id bigint DEFAULT nextval('boards_users_id_seq'::regclass) NOT NULL,
-    created timestamp without time zone NOT NULL,
-    modified timestamp without time zone NOT NULL,
-    board_id bigint NOT NULL,
-    user_id bigint NOT NULL,
-    board_user_role_id smallint DEFAULT (0)::smallint NOT NULL
-);
-
-
---
--- Name: boards_users_listing; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW boards_users_listing AS
- SELECT bu.id,
-    bu.created,
-    bu.modified,
-    bu.board_id,
-    bu.user_id,
-    bu.board_user_role_id,
-    u.username,
-    u.email,
-    u.full_name,
-    (u.is_active)::integer AS is_active,
-    (u.is_email_confirmed)::integer AS is_email_confirmed,
-    b.name AS board_name,
-    u.profile_picture_path,
-    u.initials,
-    b.default_email_list_id,
-    (b.is_default_email_position_as_bottom)::integer AS is_default_email_position_as_bottom
-   FROM ((boards_users bu
-     JOIN users u ON ((u.id = bu.user_id)))
-     JOIN boards b ON ((b.id = bu.board_id)));
 
 
 --
@@ -1756,8 +1835,8 @@ CREATE TABLE card_voters (
 
 CREATE VIEW card_voters_listing AS
  SELECT card_voters.id,
-    card_voters.created,
-    card_voters.modified,
+    to_char(card_voters.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(card_voters.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     card_voters.user_id,
     card_voters.card_id,
     users.username,
@@ -1775,8 +1854,8 @@ CREATE VIEW card_voters_listing AS
 
 CREATE VIEW cards_labels_listing AS
  SELECT cl.id,
-    cl.created,
-    cl.modified,
+    to_char(cl.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(cl.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     cl.label_id,
     cl.card_id,
     c.name AS card_name,
@@ -1821,8 +1900,8 @@ CREATE VIEW cards_users_listing AS
  SELECT u.username,
     u.profile_picture_path,
     cu.id,
-    cu.created,
-    cu.modified,
+    to_char(cu.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(cu.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     cu.card_id,
     cu.user_id,
     u.initials,
@@ -1838,8 +1917,8 @@ CREATE VIEW cards_users_listing AS
 
 CREATE VIEW checklists_listing AS
  SELECT checklists.id,
-    checklists.created,
-    checklists.modified,
+    to_char(checklists.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(checklists.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     checklists.user_id,
     checklists.card_id,
     checklists.name,
@@ -1868,13 +1947,13 @@ CREATE VIEW checklists_listing AS
 
 CREATE VIEW cards_listing AS
  SELECT cards.id,
-    cards.created,
-    cards.modified,
+    to_char(cards.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(cards.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     cards.board_id,
     cards.list_id,
     cards.name,
     cards.description,
-    cards.due_date,
+    to_char(cards.due_date, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS due_date,
     to_date(to_char(cards.due_date, 'YYYY/MM/DD'::text), 'YYYY/MM/DD'::text) AS to_date,
     cards."position",
     (cards.is_archived)::integer AS is_archived,
@@ -1935,8 +2014,8 @@ CREATE VIEW cards_listing AS
                   ORDER BY card_voters_listing.id) cv) AS cards_voters,
     ( SELECT array_to_json(array_agg(row_to_json(cs.*))) AS array_to_json
            FROM ( SELECT cards_subscribers.id,
-                    cards_subscribers.created,
-                    cards_subscribers.modified,
+                    to_char(cards_subscribers.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(cards_subscribers.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
                     cards_subscribers.card_id,
                     cards_subscribers.user_id,
                     (cards_subscribers.is_subscribed)::integer AS is_subscribed
@@ -1955,7 +2034,8 @@ CREATE VIEW cards_listing AS
     cards.comment_count,
     u.username,
     b.name AS board_name,
-    l.name AS list_name
+    l.name AS list_name,
+    cards.custom_fields
    FROM (((cards cards
      LEFT JOIN users u ON ((u.id = cards.user_id)))
      LEFT JOIN boards b ON ((b.id = cards.board_id)))
@@ -1994,8 +2074,8 @@ CREATE TABLE list_subscribers (
 
 CREATE VIEW lists_listing AS
  SELECT lists.id,
-    lists.created,
-    lists.modified,
+    to_char(lists.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(lists.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     lists.board_id,
     lists.name,
     lists."position",
@@ -2032,20 +2112,22 @@ CREATE VIEW lists_listing AS
                     cards_listing.cards_voters,
                     cards_listing.cards_subscribers,
                     cards_listing.cards_labels,
-                    cards_listing.comment_count
+                    cards_listing.comment_count,
+                    cards_listing.custom_fields
                    FROM cards_listing cards_listing
                   WHERE (cards_listing.list_id = lists.id)
                   ORDER BY cards_listing."position") lc) AS cards,
     ( SELECT array_to_json(array_agg(row_to_json(ls.*))) AS array_to_json
            FROM ( SELECT lists_subscribers.id,
-                    lists_subscribers.created,
-                    lists_subscribers.modified,
+                    to_char(lists_subscribers.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(lists_subscribers.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
                     lists_subscribers.list_id,
                     lists_subscribers.user_id,
                     (lists_subscribers.is_subscribed)::integer AS is_subscribed
                    FROM list_subscribers lists_subscribers
                   WHERE (lists_subscribers.list_id = lists.id)
-                  ORDER BY lists_subscribers.id) ls) AS lists_subscribers
+                  ORDER BY lists_subscribers.id) ls) AS lists_subscribers,
+    lists.custom_fields
    FROM lists lists;
 
 
@@ -2056,8 +2138,8 @@ CREATE VIEW lists_listing AS
 CREATE VIEW boards_listing AS
  SELECT board.id,
     board.name,
-    board.created,
-    board.modified,
+    to_char(board.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(board.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     users.username,
     users.full_name,
     users.profile_picture_path,
@@ -2088,8 +2170,8 @@ CREATE VIEW boards_listing AS
     organizations.organization_visibility,
     ( SELECT array_to_json(array_agg(row_to_json(ba.*))) AS array_to_json
            FROM ( SELECT activities.id,
-                    activities.created,
-                    activities.modified,
+                    to_char(activities.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(activities.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
                     activities.board_id,
                     activities.list_id,
                     activities.card_id,
@@ -2115,8 +2197,8 @@ CREATE VIEW boards_listing AS
                  LIMIT 20) ba) AS activities,
     ( SELECT array_to_json(array_agg(row_to_json(bs.*))) AS array_to_json
            FROM ( SELECT boards_subscribers.id,
-                    boards_subscribers.created,
-                    boards_subscribers.modified,
+                    to_char(boards_subscribers.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(boards_subscribers.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
                     boards_subscribers.board_id,
                     boards_subscribers.user_id,
                     (boards_subscribers.is_subscribed)::integer AS is_subscribed
@@ -2125,6 +2207,8 @@ CREATE VIEW boards_listing AS
                   ORDER BY boards_subscribers.id) bs) AS boards_subscribers,
     ( SELECT array_to_json(array_agg(row_to_json(bs.*))) AS array_to_json
            FROM ( SELECT boards_stars.id,
+                    to_char(boards_stars.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(boards_stars.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
                     boards_stars.created,
                     boards_stars.modified,
                     boards_stars.board_id,
@@ -2132,11 +2216,11 @@ CREATE VIEW boards_listing AS
                     (boards_stars.is_starred)::integer AS is_starred
                    FROM board_stars boards_stars
                   WHERE (boards_stars.board_id = board.id)
-                  ORDER BY boards_stars.id) bs) AS boards_stars,
+                  ORDER BY boards_stars.id) bs(id, created, modified, created_1, modified_1, board_id, user_id, is_starred)) AS boards_stars,
     ( SELECT array_to_json(array_agg(row_to_json(batt.*))) AS array_to_json
            FROM ( SELECT card_attachments.id,
-                    card_attachments.created,
-                    card_attachments.modified,
+                    to_char(card_attachments.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(card_attachments.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
                     card_attachments.card_id,
                     card_attachments.name,
                     card_attachments.path,
@@ -2158,7 +2242,8 @@ CREATE VIEW boards_listing AS
                     lists_listing.card_count,
                     lists_listing.lists_subscriber_count,
                     lists_listing.cards,
-                    lists_listing.lists_subscribers
+                    lists_listing.lists_subscribers,
+                    lists_listing.custom_fields
                    FROM lists_listing lists_listing
                   WHERE (lists_listing.board_id = board.id)
                   ORDER BY lists_listing."position") bl) AS lists,
@@ -2181,7 +2266,8 @@ CREATE VIEW boards_listing AS
                   WHERE (boards_users.board_id = board.id)
                   ORDER BY boards_users.id) bu) AS boards_users,
     board.default_email_list_id,
-    board.is_default_email_position_as_bottom
+    board.is_default_email_position_as_bottom,
+    board.custom_fields
    FROM ((boards board
      LEFT JOIN users users ON ((users.id = board.user_id)))
      LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
@@ -2201,11 +2287,15 @@ CREATE VIEW cards_elasticsearch_listing AS
             lists.name AS list,
             cards.name,
             cards.description,
-            cards.due_date,
-            cards.created,
-            cards.modified,
+            to_char(cards.due_date, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS due_date,
+            to_char(cards.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+            to_char(cards.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
             (cards.is_archived)::integer AS is_archived,
             cards.attachment_count,
+            cards.checklist_item_count,
+            cards.checklist_item_completed_count,
+            cards.card_voter_count,
+            cards.cards_user_count,
             ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
                    FROM ( SELECT boards_users.user_id
                            FROM boards_users boards_users
@@ -2241,7 +2331,8 @@ CREATE VIEW cards_elasticsearch_listing AS
                           ORDER BY activities.id) cl) AS activities
            FROM ((cards cards
              LEFT JOIN boards boards ON ((boards.id = cards.board_id)))
-             LEFT JOIN lists lists ON ((lists.id = cards.list_id)))) card;
+             LEFT JOIN lists lists ON ((lists.id = cards.list_id)))
+          WHERE (boards.name IS NOT NULL)) card;
 
 
 --
@@ -2409,8 +2500,8 @@ CREATE TABLE email_templates (
 
 CREATE VIEW gadget_users_listing AS
  SELECT checklists.id,
-    checklists.created,
-    checklists.modified,
+    to_char(checklists.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(checklists.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     checklists.user_id,
     checklists.card_id,
     checklists.name,
@@ -2418,8 +2509,8 @@ CREATE VIEW gadget_users_listing AS
     checklists.checklist_item_completed_count,
     ( SELECT array_to_json(array_agg(row_to_json(ci.*))) AS array_to_json
            FROM ( SELECT checklist_items.id,
-                    checklist_items.created,
-                    checklist_items.modified,
+                    to_char(checklist_items.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(checklist_items.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
                     checklist_items.user_id,
                     checklist_items.card_id,
                     checklist_items.checklist_id,
@@ -2697,8 +2788,8 @@ CREATE TABLE organizations_users (
 
 CREATE VIEW organizations_users_listing AS
  SELECT organizations_users.id,
-    organizations_users.created,
-    organizations_users.modified,
+    to_char(organizations_users.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(organizations_users.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     organizations_users.user_id,
     organizations_users.organization_id,
     organizations_users.organization_user_role_id,
@@ -2753,8 +2844,8 @@ CREATE VIEW organizations_users_listing AS
 
 CREATE VIEW organizations_listing AS
  SELECT organizations.id,
-    organizations.created,
-    organizations.modified,
+    to_char(organizations.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(organizations.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     organizations.user_id,
     organizations.name,
     organizations.website_url,
@@ -2946,8 +3037,8 @@ CREATE TABLE settings (
 
 CREATE VIEW settings_listing AS
  SELECT setting_categories.id,
-    setting_categories.created,
-    setting_categories.modified,
+    to_char(setting_categories.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(setting_categories.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     setting_categories.parent_id,
     setting_categories.name,
     setting_categories.description,
@@ -2990,8 +3081,8 @@ CREATE VIEW simple_board_listing AS
     board.background_pattern_url,
     ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
            FROM ( SELECT lists.id,
-                    lists.created,
-                    lists.modified,
+                    to_char(lists.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(lists.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
                     lists.board_id,
                     lists.user_id,
                     lists.name,
@@ -3120,8 +3211,8 @@ CREATE VIEW users_cards_listing AS
  SELECT b.name AS board_name,
     l.name AS list_name,
     c.id,
-    c.created,
-    c.modified,
+    to_char(c.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(c.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
     c.board_id,
     c.list_id,
     c.name,
@@ -3223,7 +3314,7 @@ CREATE VIEW users_listing AS
     rco.name AS register_country_name,
     lower((rco.iso_alpha2)::text) AS register_country_iso2,
     lt.name AS login_type,
-    users.created,
+    to_char(users.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     users.user_login_count,
     users.is_send_newsletter,
     users.last_email_notified_activity_id,
@@ -3232,7 +3323,8 @@ CREATE VIEW users_listing AS
     users.owner_organization_count,
     users.member_organization_count,
     users.language,
-    (users.is_ldap)::integer AS is_ldap
+    (users.is_ldap)::integer AS is_ldap,
+    users.timezone
    FROM (((((((((users users
      LEFT JOIN ips i ON ((i.id = users.ip_id)))
      LEFT JOIN cities rci ON ((rci.id = i.city_id)))
@@ -3355,7 +3447,6 @@ COPY acl_board_links (id, created, modified, name, url, method, slug, group_id, 
 38	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Move list cards	/boards/?/lists/?/cards	PUT	move_list_cards	4	0
 39	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Post comment to card	/boards/?/lists/?/cards/?/comments	POST	comment_card	4	0
 40	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove attachment from card	/boards/?/lists/?/cards/?/attachments/?	DELETE	remove_card_attachment	4	0
-41	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove board member	/boards_users/?	DELETE	remove_board_user	2	0
 42	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove card member	/boards/?/lists/?/cards/?/users/?	DELETE	delete_card_user	4	0
 45	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe board	/boards/?/board_subscribers	POST	subscribe_board	2	0
 46	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe card	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_card	4	0
@@ -3375,6 +3466,7 @@ COPY acl_board_links (id, created, modified, name, url, method, slug, group_id, 
 29	2016-02-16 16:57:48.45	2016-02-16 16:57:48.45	Add / Delete Labels	/boards/?/labels/?	DELETE	delete_labels	2	0
 44	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Search card to add in comment	/boards/?/cards/search	GET	view_card_search	4	0
 11	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Assign labels to card	/boards/?/lists/?/cards/?/labels	POST	add_labels	4	1
+41	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove board member	/boards/?/boards_users/?	DELETE	remove_board_user	2	0
 \.
 
 
@@ -3538,7 +3630,6 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_use
 18	2016-02-09 16:51:25.217	2016-02-09 16:51:25.217	Revoke OAuth authorized applications	/oauth/applications/?	DELETE	delete_connected_applications	2	1	0	0	0
 19	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Search	/search	GET	view_search	2	1	0	0	0
 20	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Settings management	/settings	GET	load_settings	3	0	0	1	1
-21	2016-02-18 17:42:32.045	2016-02-18 17:42:32.045	Starred board	/boards/?/boards_stars	POST	starred_board	2	1	0	0	0
 22	2016-02-16 20:06:48.576	2016-02-16 20:06:48.576	Starred boards listing	/boards/starred	GET	view_stared_boards	2	1	0	0	0
 24	2016-02-18 17:45:14.983	2016-02-18 17:45:14.983	Unstar board	/boards/?/boards_stars/?	PUT	unstarred_board	2	1	0	0	0
 23	2016-02-18 17:24:25.733	2016-02-18 17:24:25.733	Unstar board	/boards/?/boards_stars/?	PUT	board_star	2	1	0	0	0
@@ -3559,6 +3650,31 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_use
 39	2016-02-09 16:51:25.779	2016-02-09 16:51:25.779	View webhooks	/webhooks	GET	view_webhooks	2	1	0	0	0
 122	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Undo activity	/activities/undo/?	PUT	undo_activity	2	1	0	0	0
 123	2016-03-07 11:45:43.8	2016-03-07 11:45:43.8	User detail	/users/me	GET	user_detail	0	1	0	1	1
+40	2016-06-22 04:50:42.011	2016-06-22 04:50:42.011	Allow to post comments in public board	/boards/?/lists/?/cards/?/comments	POST	comment_card	2	1	0	0	0
+41	2016-06-22 04:50:42.011	2016-06-22 04:50:42.011	Allow to subscribe board in public board	/boards/?/board_subscribers	POST	subscribe_board	2	1	0	0	0
+42	2016-06-22 04:50:42.011	2016-06-22 04:50:42.011	Allow to subscribe list in public board	/boards/?/lists/?/list_subscribers	POST	subscribe_list	2	1	0	0	0
+43	2016-06-22 04:50:42.011	2016-06-22 04:50:42.011	Allow to subscribe card in public board	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_card	2	1	0	0	0
+124	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	XMPP chat login	/xmpp_login	GET	xmpp_login	2	1	0	1	0
+126	2016-06-22 04:50:42.236	2016-06-22 04:50:42.236	Role add	/roles	POST	role_add	1	0	0	1	1
+127	2016-06-22 04:50:42.236	2016-06-22 04:50:42.236	Board user role add	/board_user_roles	POST	board_user_role_add	1	0	0	1	1
+128	2016-06-22 04:50:42.236	2016-06-22 04:50:42.236	Organization user role add	/organization_user_roles	POST	organization_user_role_add	1	0	0	1	1
+129	2016-06-22 04:50:42.239	2016-06-22 04:50:42.239	Role edit	/roles/?	PUT	role_edit	1	0	0	1	1
+130	2016-06-22 04:50:42.239	2016-06-22 04:50:42.239	Board user role edit	/board_user_roles/?	PUT	board_user_role_edit	1	0	0	1	1
+131	2016-06-22 04:50:42.239	2016-06-22 04:50:42.239	Organization user role edit	/organization_user_roles/?	PUT	organization_user_role_edit	1	0	0	1	1
+40	2016-06-28 07:47:21.424	2016-06-28 07:47:21.424	Allow to post comments in public board	/boards/?/lists/?/cards/?/comments	POST	comment_card	2	1	0	0	0
+41	2016-06-28 07:47:21.424	2016-06-28 07:47:21.424	Allow to subscribe board in public board	/boards/?/board_subscribers	POST	subscribe_board	2	1	0	0	0
+42	2016-06-28 07:47:21.424	2016-06-28 07:47:21.424	Allow to subscribe list in public board	/boards/?/lists/?/list_subscribers	POST	subscribe_list	2	1	0	0	0
+43	2016-06-28 07:47:21.424	2016-06-28 07:47:21.424	Allow to subscribe card in public board	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_card	2	1	0	0	0
+21	2016-02-18 17:42:32.045	2016-02-18 17:42:32.045	Allow to star/unstar in public board, card in public board	/boards/?/boards_stars	POST	starred_board	2	1	0	0	0
+132	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	XMPP chat login	/xmpp_login	GET	xmpp_login	2	1	0	1	0
+134	2016-06-28 07:47:21.742	2016-06-28 07:47:21.742	Role add	/roles	POST	role_add	1	0	0	1	1
+135	2016-06-28 07:47:21.742	2016-06-28 07:47:21.742	Board user role add	/board_user_roles	POST	board_user_role_add	1	0	0	1	1
+136	2016-06-28 07:47:21.742	2016-06-28 07:47:21.742	Organization user role add	/organization_user_roles	POST	organization_user_role_add	1	0	0	1	1
+137	2016-06-28 07:47:21.747	2016-06-28 07:47:21.747	Role edit	/roles/?	PUT	role_edit	1	0	0	1	1
+138	2016-06-28 07:47:21.747	2016-06-28 07:47:21.747	Board user role edit	/board_user_roles/?	PUT	board_user_role_edit	1	0	0	1	1
+139	2016-06-28 07:47:21.747	2016-06-28 07:47:21.747	Organization user role edit	/organization_user_roles/?	PUT	organization_user_role_edit	1	0	0	1	1
+125	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	Chat History	/boards/?/chat_history	GET	chat_history	2	1	0	1	0
+133	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	Chat History	/boards/?/chat_history	GET	chat_history	2	1	0	1	0
 \.
 
 
@@ -3566,7 +3682,7 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_use
 -- Name: acl_links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('acl_links_id_seq', 123, true);
+SELECT pg_catalog.setval('acl_links_id_seq', 139, true);
 
 
 --
@@ -3651,6 +3767,52 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 75	2016-02-20 19:07:31.771	2016-02-20 19:07:31.771	9	2
 1218	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	122	1
 1219	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	123	2
+1220	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	40	1
+1221	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	40	2
+1222	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	41	1
+1223	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	41	2
+1224	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	42	1
+1225	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	42	2
+1226	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	43	1
+1227	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	43	2
+1228	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	124	1
+1229	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	124	2
+1230	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	125	1
+1231	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	125	2
+1232	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	126	1
+1233	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	127	1
+1234	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	128	1
+1235	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	129	1
+1236	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	130	1
+1237	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	131	1
+1238	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	40	1
+1239	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	40	2
+1240	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	41	1
+1241	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	41	2
+1242	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	42	1
+1243	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	42	2
+1244	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	43	1
+1245	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	43	2
+1246	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	124	1
+1247	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	132	1
+1248	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	124	2
+1249	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	132	2
+1250	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	125	1
+1251	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	133	1
+1252	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	125	2
+1253	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	133	2
+1254	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	126	1
+1255	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	134	1
+1256	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	127	1
+1257	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	135	1
+1258	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	128	1
+1259	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	136	1
+1260	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	129	1
+1261	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	137	1
+1262	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	130	1
+1263	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	138	1
+1264	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	131	1
+1265	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	139	1
 \.
 
 
@@ -3658,7 +3820,7 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 -- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1219, true);
+SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1265, true);
 
 
 --
@@ -3773,7 +3935,7 @@ SELECT pg_catalog.setval('board_user_roles_seq', 1, false);
 -- Data for Name: boards; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY boards (id, created, modified, user_id, organization_id, name, board_visibility, background_color, background_picture_url, commenting_permissions, voting_permissions, inivitation_permissions, is_closed, is_allow_organization_members_to_join, boards_user_count, list_count, card_count, boards_subscriber_count, background_pattern_url, boards_star_count, is_show_image_front_of_card, background_picture_path, music_name, music_content, archived_list_count, archived_card_count, default_email_list_id, is_default_email_position_as_bottom) FROM stdin;
+COPY boards (id, created, modified, user_id, organization_id, name, board_visibility, background_color, background_picture_url, commenting_permissions, voting_permissions, inivitation_permissions, is_closed, is_allow_organization_members_to_join, boards_user_count, list_count, card_count, boards_subscriber_count, background_pattern_url, boards_star_count, is_show_image_front_of_card, background_picture_path, music_name, music_content, archived_list_count, archived_card_count, default_email_list_id, is_default_email_position_as_bottom, custom_fields) FROM stdin;
 \.
 
 
@@ -3855,7 +4017,7 @@ SELECT pg_catalog.setval('card_voters_id_seq', 1, true);
 -- Data for Name: cards; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY cards (id, created, modified, board_id, list_id, name, description, due_date, "position", is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, cards_user_count, cards_subscriber_count, card_voter_count, activity_count, user_id, is_deleted, comment_count) FROM stdin;
+COPY cards (id, created, modified, board_id, list_id, name, description, due_date, "position", is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, cards_user_count, cards_subscriber_count, card_voter_count, activity_count, user_id, is_deleted, comment_count, custom_fields) FROM stdin;
 \.
 
 
@@ -4730,7 +4892,7 @@ SELECT pg_catalog.setval('list_subscribers_id_seq', 1, false);
 -- Data for Name: lists; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY lists (id, created, modified, board_id, user_id, name, "position", is_archived, card_count, lists_subscriber_count, is_deleted) FROM stdin;
+COPY lists (id, created, modified, board_id, user_id, name, "position", is_archived, card_count, lists_subscriber_count, is_deleted, custom_fields) FROM stdin;
 \.
 
 
@@ -4916,6 +5078,9 @@ COPY setting_categories (id, created, modified, parent_id, name, description, "o
 9	\N	\N	2	Enabled Login Options	Enabled Login Options	1
 2	2014-11-08 02:52:08.822706	2014-04-28 17:01:11	\N	Login	\N	2
 10	2016-02-22 17:39:16.971	2016-02-22 17:39:16.971	\N	IMAP	\N	5
+11	2015-09-26 13:14:18	2015-09-26 13:14:18	\N	XMPP Chat	\N	5
+12	2016-06-22 04:50:42.248	2016-06-22 04:50:42.248	\N	Cards Workflow	\N	7
+13	2016-06-28 07:47:21.765	2016-06-28 07:47:21.765	\N	Cards Workflow	\N	7
 \.
 
 
@@ -4923,7 +5088,7 @@ COPY setting_categories (id, created, modified, parent_id, name, description, "o
 -- Name: setting_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('setting_categories_id_seq', 5, true);
+SELECT pg_catalog.setval('setting_categories_id_seq', 13, true);
 
 
 --
@@ -4958,7 +5123,29 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 23	0	0	elasticsearch.last_processed_activity_id	0	\N	hidden	\N	Last Activity ID	3
 2	4	2	LDAP_SERVER	\N	The DNS name or IP address of the server (e.g., dc.domain.local)	text	\N	Server	4
 36	0	0	webhooks.last_processed_activity_id	0	\N	hidden	\N	Webhook Activity ID	0
+37	11	0	BOSH_SERVICE_URL		\N	text	\N	Bosh Service URL	1
+38	11	0	JABBER_HOST		\N	text	\N	Jabber Host	2
+39	11	0	XMPP_CLIENT_RESOURCE_NAME		\N	text	\N	Client Resource Name	3
+41	0	0	chat.last_processed_chat_id	0	\N	hidden	\N	Last Chat ID	1
+43	12	0	TODO	To do, Todo, New, Probable sale		textarea	\N	Todo	8
+45	12	0	DONE	Done, Resolved, Closed, Completed sale		textarea	\N	Done	10
+44	12	0	DOING	Doing, Feedback, Confirmed, Assigned, Pending sale		textarea	\N	Doing	9
 30	3	0	DEFAULT_CONTACT_EMAIL_ADDRESS	board@restya.com	It is used in all outgoing emails	text	\N	Contact Email Address	4
+52	11	0	BOSH_SERVICE_URL		\N	text	\N	Bosh Service URL	1
+53	11	0	JABBER_HOST		\N	text	\N	Jabber Host	2
+54	11	0	XMPP_CLIENT_RESOURCE_NAME		\N	text	\N	Client Resource Name	3
+56	0	0	chat.last_processed_chat_id	0	\N	hidden	\N	Last Chat ID	1
+58	3	0	TODO	To do, Todo, New, Probable sale		textarea	\N	Todo	8
+59	3	0	DOING	Doing, Feedback, Confirmed, Assigned, Pending sale		textarea	\N	Doing	9
+60	3	0	DONE	Done, Resolved, Closed, Completed sale		textarea	\N	Done	10
+42	3	0	DEFAULT_CARD_VIEW	Maximized	\N	select	Maximized,Normal Dockmodal	Default Card Open	7
+57	3	0	DEFAULT_CARD_VIEW	Maximized	\N	select	Maximized,Normal Dockmodal	Default Card Open	7
+46	12	0	TODO_COLOR	#f47564		text	\N	Todo Color	1
+47	12	0	DOING_COLOR	#27c5c3		text	\N	Doing Color	2
+48	12	0	DONE_COLOR	#8dca35		text	\N	Done Color	3
+49	12	0	TODO_ICON	icon-tasks icon-large		text	\N	Todo Icon	4
+50	12	0	DOING_ICON	icon-spinner icon-large		text	\N	Doing Icon	5
+51	12	0	DONE_ICON	icon-ok-circle icon-large		text	\N	Done Icon	6
 \.
 
 
@@ -4966,7 +5153,7 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 -- Name: settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('settings_id_seq', 24, true);
+SELECT pg_catalog.setval('settings_id_seq', 60, true);
 
 
 --
@@ -5013,9 +5200,9 @@ SELECT pg_catalog.setval('user_logins_id_seq', 2, true);
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count, language) FROM stdin;
-1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	media/User/1/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f	0	0	0	0	0	0	\N
-2	2014-07-05 11:46:40.804	2014-07-05 11:46:40.804	2	user	board+user@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	User	U	\N	\N	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	0	\N	\N	\N	\N	f	0	f	0	0	0	0	0	0	\N
+COPY users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count, language, timezone) FROM stdin;
+1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	media/User/1/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f	0	0	0	0	0	0	\N	\N
+2	2014-07-05 11:46:40.804	2014-07-05 11:46:40.804	2	user	board+user@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	User	U	\N	\N	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	0	\N	\N	\N	\N	f	0	f	0	0	0	0	0	0	\N	\N
 \.
 
 
@@ -6150,12 +6337,21 @@ GRANT ALL ON TABLE users TO postgres;
 
 
 --
--- Name: activities_listing; Type: ACL; Schema: public; Owner: -
+-- Name: boards_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE activities_listing FROM PUBLIC;
-REVOKE ALL ON TABLE activities_listing FROM postgres;
-GRANT ALL ON TABLE activities_listing TO postgres;
+REVOKE ALL ON SEQUENCE boards_users_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE boards_users_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE boards_users_id_seq TO postgres;
+
+
+--
+-- Name: boards_users; Type: ACL; Schema: public; Owner: -
+--
+
+REVOKE ALL ON TABLE boards_users FROM PUBLIC;
+REVOKE ALL ON TABLE boards_users FROM postgres;
+GRANT ALL ON TABLE boards_users TO postgres;
 
 
 --
@@ -6222,33 +6418,6 @@ GRANT ALL ON TABLE cards_labels TO postgres;
 
 
 --
--- Name: boards_labels_listing; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON TABLE boards_labels_listing FROM PUBLIC;
-REVOKE ALL ON TABLE boards_labels_listing FROM postgres;
-GRANT ALL ON TABLE boards_labels_listing TO postgres;
-
-
---
--- Name: boards_users_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON SEQUENCE boards_users_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE boards_users_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE boards_users_id_seq TO postgres;
-
-
---
--- Name: boards_users; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON TABLE boards_users FROM PUBLIC;
-REVOKE ALL ON TABLE boards_users FROM postgres;
-GRANT ALL ON TABLE boards_users TO postgres;
-
-
---
 -- Name: card_attachments_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
@@ -6303,24 +6472,6 @@ GRANT ALL ON TABLE card_voters TO postgres;
 
 
 --
--- Name: card_voters_listing; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON TABLE card_voters_listing FROM PUBLIC;
-REVOKE ALL ON TABLE card_voters_listing FROM postgres;
-GRANT ALL ON TABLE card_voters_listing TO postgres;
-
-
---
--- Name: cards_labels_listing; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON TABLE cards_labels_listing FROM PUBLIC;
-REVOKE ALL ON TABLE cards_labels_listing FROM postgres;
-GRANT ALL ON TABLE cards_labels_listing TO postgres;
-
-
---
 -- Name: cards_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
@@ -6336,24 +6487,6 @@ GRANT ALL ON SEQUENCE cards_users_id_seq TO postgres;
 REVOKE ALL ON TABLE cards_users FROM PUBLIC;
 REVOKE ALL ON TABLE cards_users FROM postgres;
 GRANT ALL ON TABLE cards_users TO postgres;
-
-
---
--- Name: cards_users_listing; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON TABLE cards_users_listing FROM PUBLIC;
-REVOKE ALL ON TABLE cards_users_listing FROM postgres;
-GRANT ALL ON TABLE cards_users_listing TO postgres;
-
-
---
--- Name: checklists_listing; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON TABLE checklists_listing FROM PUBLIC;
-REVOKE ALL ON TABLE checklists_listing FROM postgres;
-GRANT ALL ON TABLE checklists_listing TO postgres;
 
 
 --
@@ -6453,15 +6586,6 @@ GRANT ALL ON SEQUENCE email_templates_id_seq TO postgres;
 REVOKE ALL ON TABLE email_templates FROM PUBLIC;
 REVOKE ALL ON TABLE email_templates FROM postgres;
 GRANT ALL ON TABLE email_templates TO postgres;
-
-
---
--- Name: gadget_users_listing; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON TABLE gadget_users_listing FROM PUBLIC;
-REVOKE ALL ON TABLE gadget_users_listing FROM postgres;
-GRANT ALL ON TABLE gadget_users_listing TO postgres;
 
 
 --

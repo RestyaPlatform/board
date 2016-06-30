@@ -1,0 +1,223 @@
+<% 
+	var d = new Date();
+	var weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+	var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	var today = weekday[d.getDay()]; 
+	var current_month = months[d.getMonth()]; 
+	var today_count = 0;
+	
+	var doing_count = 0;
+	var todo_count = 0;
+	var done_count = 0;
+	
+	var current_week_doing_count = 0;
+	var current_week_todo_count = 0;
+	var current_week_done_count = 0;
+	
+	var overall_doing_count = 0;
+	var overall_todo_count = 0;
+	var overall_done_count = 0;
+	
+	var current_weekwise_doing_count = [0,0,0,0,0,0,0];
+	var current_weekwise_todo_count = [0,0,0,0,0,0,0];
+	var current_weekwise_done_count = [0,0,0,0,0,0,0];
+	
+	var last_weekwise_doing_count = [0,0,0,0,0,0,0];
+	var last_weekwise_todo_count = [0,0,0,0,0,0,0];
+	var last_weekwise_done_count = [0,0,0,0,0,0,0];
+	
+	if(data.dashboard.today) {
+		doing_count = (data.dashboard.today.DOING) ? (data.dashboard.today.DOING) : 0;
+		todo_count = (data.dashboard.today.TODO) ? (data.dashboard.today.TODO) : 0;
+		done_count = (data.dashboard.today.DONE) ? (data.dashboard.today.DONE) : 0;
+		today_count = parseInt(doing_count) + parseInt(today_count) + parseInt(done_count);
+	} 
+	
+	if(data.dashboard.current_week) {
+		current_week_doing_count = (data.dashboard.current_week.DOING) ? (data.dashboard.current_week.DOING) : 0;
+		current_week_todo_count = (data.dashboard.current_week.TODO) ? (data.dashboard.current_week.TODO) : 0;
+		current_week_done_count = (data.dashboard.current_week.DONE) ? (data.dashboard.current_week.DONE) : 0;
+	}
+	if(data.dashboard.overall) {
+		overall_doing_count = (data.dashboard.overall.DOING) ? (data.dashboard.overall.DOING) : 0;
+		overall_todo_count = (data.dashboard.overall.TODO) ? (data.dashboard.overall.TODO) : 0;
+		overall_done_count = (data.dashboard.overall.DONE) ? (data.dashboard.overall.DONE) : 0;
+	}
+	
+	if(data.dashboard.current_weekwise) {
+		current_weekwise_doing_count = (data.dashboard.current_weekwise.DOING) ? (data.dashboard.current_weekwise.DOING) : current_weekwise_doing_count;
+		current_weekwise_todo_count = (data.dashboard.current_weekwise.TODO) ? (data.dashboard.current_weekwise.TODO) : current_weekwise_todo_count;
+		current_weekwise_done_count = (data.dashboard.current_weekwise.DONE) ? (data.dashboard.current_weekwise.DONE) : current_weekwise_done_count;
+	}
+	
+	if(data.dashboard.last_weekwise) {
+		last_weekwise_doing_count = (data.dashboard.last_weekwise.DOING) ? (data.dashboard.last_weekwise.DOING) : last_weekwise_doing_count;
+		last_weekwise_todo_count = (data.dashboard.last_weekwise.TODO) ? (data.dashboard.last_weekwise.TODO) : last_weekwise_todo_count;;
+		last_weekwise_done_count = (data.dashboard.last_weekwise.DONE) ? (data.dashboard.last_weekwise.DONE) : last_weekwise_done_count;
+	}
+	
+%>
+<div class="clearfix">
+	<div class="row">
+	 <div class="col-md-2 col-sm-12 text-center dashboard-organization">
+		<div class="navbar-btn">
+			<label class="clearfix"><a title="<%- data.user.full_name %> (<%- data.user.username %>)" href="#/user/<%- data.user.id %>"><%- data.user.full_name %> (<%- data.user.username %>)</a></label>
+		</div>
+		<div class="navbar-btn">
+			<% if(!_.isEmpty(data.user_profile_picture)) { %>
+				<img title="<%- data.user.full_name %> (<%- data.user.username %>)" alt="<%- data.user.username %>" src="<%- data.user_profile_picture %>" width="147" height="145" class="thumbnail center-block">
+			<% } else { %>
+				<i class="avatar avatar-color-194 avatar-lg img-rounded"><%= (data.user.initials) %></i>
+			<% } %>
+		</div>
+		<div class="clearfix dropdown navbar-btn">
+			<a href="#" title="Organizations" class="btn btn-primary navbar-btn" data-toggle="dropdown"><%- data.organizations.length %> <%- i18next.t('Organizations') %> <i class="caret"></i> </a>
+			 <ul class="dropdown-menu arrow dropdown-menu-right text-left">
+				 <% _.each(data.organizations, function(item, key) { %> 
+					<li><a href="#/organization/<%- item.attributes.id %>" title="<%- item.attributes.name %>"> <%- item.attributes.name %> </a></li>
+				<% }); %> 
+			 </ul>
+		</div>
+	 </div>
+	<div class="col-md-10 col-sm-12 clearfix">
+	  <div class="col-sm-3 col-xs-12">
+		  <div class="row thumbnail">
+		   <div class="pull-left col-md-4 col-xs-6">
+			 <h4><%- i18next.t('Today') %></h4> 
+			 <div class="thumbnail text-center navbar-btn">
+				  <div class="sep-bot"> 
+					<div class="bg-default h6 text-muted list-group-item-heading"><%- current_month %></div>
+					<div class="h3 list-group-item-heading"><%- d.getDate() %></div>
+				  </div>
+				  <div><%- today %></div>
+			 </div>
+		   </div>
+			<ul class="list-unstyled chart-block list-group-item-text pull-right">
+				<li class="list-group-item clearfix no-bor">
+					<a class="show" href="#">
+						<div id="doughnutChart" class="chart js-chart" data-todo="<%- todo_count %>" data-doing="<%- doing_count %>" data-done="<%- done_count %>"></div>
+					</a>
+				</li>
+			</ul>
+			<div class="col-xs-12 pull-right navbar-btn">
+				<a href="#" class="btn btn-xs btn-primary pull-right row" data-toggle="dropdown"><i class="caret"></i></a>
+				<ul class="dropdown-menu arrow arrow-right">
+					<li class="dashboard-search" data-search="today_todo"><a href="#" title="Today Todo">Today Todo</a></li>
+					<li class="dashboard-search" data-search="today_doing"><a href="#" title="Today Doing">Today Doing</a></li>
+					<li class="dashboard-search" data-search="today_done"><a href="#" title="Today Done">Today Done</a></li>
+				</ul>
+			</div>
+		 </div>
+	  </div>
+	  <div class="col-sm-4 col-xs-12">
+		  <div class="col-xs-12 thumbnail">
+		   <div class="pull-left col-lg-4 col-md-6 col-xs-12">
+			   <h4><%- i18next.t('Week') %></h4>
+			   <ul class="list-inline week-chart-date navbar-btn">
+				   <li class="thumbnail text-center navbar-btn col-xs-4">
+				   	  <div class="sep-bot"> 
+						<div class="bg-default h6 text-muted list-group-item-heading "><%- data.dashboard.week_start_month %></div>
+						<div class="h3 list-group-item-heading "><%- data.dashboard.week_start_day %></div>
+					  </div>
+					  <div><%- i18next.t('Mon') %></div>
+					</li>
+					<li> <%- i18next.t('to') %> </li>
+					<li class="thumbnail text-center navbar-btn col-xs-4">
+					  <div class="sep-bot"> 
+						<div class="bg-default h6 text-muted list-group-item-heading "><%- data.dashboard.week_end_month %></div>
+						<div class="h3 list-group-item-heading "><%- data.dashboard.week_end_day %></div>
+					  </div>
+					  <div><%- i18next.t('Sun') %></div>
+					</li>
+				</ul>
+			</div>
+			<ul class="list-unstyled chart-block list-group-item-text pull-right">
+				<li class="list-group-item clearfix no-bor">
+					<a class="show" href="#">
+						<div id="doughnutChart" class="chart js-chart" data-todo="<%- current_week_todo_count %>" data-doing="<%- current_week_doing_count %>" data-done="<%- current_week_done_count %>"></div>
+					</a>
+				</li>
+			</ul>
+			<div class="col-xs-12 pull-right navbar-btn">
+				<a href="#" class="btn btn-xs btn-primary pull-right row" data-toggle="dropdown"><i class="caret"></i></a>
+				<ul class="dropdown-menu arrow arrow-right">
+					<li class="dashboard-search" data-search="week_todo"><a href="#" title="Week Todo">Week Todo</a></li>
+					<li class="dashboard-search" data-search="week_doing"><a href="#" title="Week Doing">Week Doing</a></li>
+					<li class="dashboard-search" data-search="week_done"><a href="#" title="Week Done">Week Done</a></li>
+				</ul>
+			</div>
+		 </div>
+	  </div>
+	  <div class="col-sm-3 col-xs-12">
+		  <div class="row thumbnail">
+			   <div class="pull-left col-xs-5">
+					<h4><%- i18next.t('Overall') %></h4>
+			   </div>
+			   <ul class="list-unstyled chart-block list-group-item-text pull-right">
+				<li class="list-group-item clearfix no-bor">
+					<a class="show" href="#">
+						<div id="doughnutChart" class="chart js-chart" data-todo="<%- overall_todo_count %>" data-doing="<%- overall_doing_count %>" data-done="<%- overall_done_count %>"></div>
+					</a>
+				</li>
+			</ul>
+			<div class="col-xs-12 pull-right navbar-btn">
+				<a href="#" class="btn btn-xs btn-primary pull-right row" data-toggle="dropdown"><i class="caret"></i></a>
+				<ul class="dropdown-menu arrow arrow-right">
+					<li class="dashboard-search" data-search="overall_todo"><a href="#" title="Overall Todo">Overall Todo</a></li>
+					<li class="dashboard-search" data-search="overall_doing"><a href="#" title="Overall Doing">Overall Doing</a></li>
+					<li class="dashboard-search" data-search="overall_done"><a href="#" title="Overall Done">Overall Done</a></li>
+				</ul>
+			</div>
+		 </div>
+	   </div>
+		<div class="clearfix col-sm-2 col-xs-12 pull-right text-center">
+			<div class="clearfix col-xs-12 thumbnail">
+				<h4><%- i18next.t('Unassigned') %></h4>
+				<div class="clearfix h1">
+					<div class="dashboard-search" data-search="unassigned"><%- !_.isUndefined(data.dashboard.unassigned) ? data.dashboard.unassigned : 0 %></div>
+				</div>
+				<div class="well-sm navbar-btn"></div>
+				<div class="well-sm"></div>
+				<div class="col-xs-12 pull-right navbar-btn">
+				<a href="#" class="btn btn-xs btn-primary pull-right row" data-toggle="dropdown"><i class="caret"></i></a>
+				<ul class="dropdown-menu arrow arrow-right">
+					<li class="dashboard-search" data-search="unassigned"><a href="#" title="Unassigned">Unassigned</a></li>
+				</ul>
+			</div>
+			</div>
+		</div>
+	   <div class="col-xs-12 clearfix navbar-btn">
+			<div class="col-sm-6 col-xs-12 clearfix navbar-btn">
+				<div class="col-sm-4 h4"> <%- i18next.t('This week') %></div> 
+				<div class="col-md-8 col-xs-12">
+					<span class="sparklines" data-todo="<%- (current_weekwise_todo_count).join() %>" data-doing="<%- (current_weekwise_doing_count).join() %>" data-done="<%- (current_weekwise_done_count).join() %>" ></span>
+				</div>
+			</div>
+			<div class="col-sm-6 col-xs-12 clearfix navbar-btn"> 
+				<div class="col-sm-4 h4"> <%- i18next.t('Last week') %></div> 
+				<div class="col-md-8 col-xs-12">
+					<span class="sparklines test" data-todo="<%- (last_weekwise_todo_count).join() %>" data-doing="<%- (last_weekwise_doing_count).join() %>" data-done="<%- (last_weekwise_done_count).join() %>" ></span>
+				</div>
+			</div>
+	   </div>
+	   <div class="col-xs-12 text-center navbar-btn">
+			<ul class="list-inline navbar-btn">
+				<% if(!_.isUndefined(data.user.role_id) && data.user.role_id === "1") { %>
+				<li class="navbar-right"><i class="icon-warning-sign text-warning"></i><small class="text-muted"><%- i18next.t('Todo, Doing, Done are as configured in ') %><a href="#/settings/12" title="settings" class="text-primary"> <%- i18next.t('card workflow settings') %> </a><small></li>
+				<% } %>
+			</ul>
+	   </div>
+	</div>
+  </div>
+</div>
+<div class="clearfix dashboard-header">
+	<div class="col-xs-12">
+		<hr>
+		<span class="pull-left h4"><%=data.dashboard.page_title%></span>
+		<ul class="nav nav-pills navbar-right">
+			<li class="<%  var fragment = Backbone.history.fragment; var fragments = fragment.split('/'); if(fragment.indexOf('boards')  != -1 && fragments.length == 1){%>active<%}%>"><a href="#/boards" title="<%- i18next.t('My Boards') %>" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-user"></i></a></li>
+			<li class="<% if(Backbone.history.fragment.indexOf('boards/starred') != -1){%>active<%}%>"><a href="#/boards/starred" title="<%- i18next.t('Starred Boards') %>" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-star"></i></a></li>
+			<li class="<% if(Backbone.history.fragment.indexOf('boards/closed') != -1){%>active<%}%>"><a href="#/boards/closed" title="<%- i18next.t('Closed Boards') %>" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-th-large"></i></a></li>
+		</ul>
+	</div>
+</div>

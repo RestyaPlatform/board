@@ -1,4 +1,5 @@
 <% if(board != null){ %>
+<hr>
 <div class="panel">
   <% if(!_.isEmpty(board.subscribers)){ var subscriber = board.subscribers.findWhere({ user_id: parseInt(authuser.user.id) }); } %>
   <div class="panel-body bg-warning">

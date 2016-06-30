@@ -22,7 +22,14 @@ var DEFAULT_LANGUAGE = '';
 var STANDARD_LOGIN_ENABLED = '';
 var IMAP_EMAIL = '';
 var ANIMATION_SPEED = 300;
+var DEFAULT_CARD_VIEW = '';
+var BOSH_SERVICE_URL = '';
+var JABBER_HOST = '';
+var JABBER_PATH = '';
+var XMPP_CLIENT_RESOURCE_NAME = '';
+var PAGING_COUNT = '';
 var last_activity = '';
+var previous_date = '';
 var SecuritySalt = 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf';
 var last_user_activity_id = 0,
     load_more_last_board_activity_id = 0,
@@ -32,6 +39,16 @@ var xhrPool = [];
 var APPS = [];
 var load_count = 1;
 var from_url = '';
+var custom_fields = {};
+var todo_lists = {};
+var doing_lists = {};
+var done_lists = {};
+var TODO_COLOR = '';
+var DOING_COLOR = '';
+var DONE_COLOR = '';
+var TODO_ICON = '';
+var DOING_ICON = '';
+var DONE_ICON = '';
 Backbone.View.prototype.flash = function(type, message) {
     $.bootstrapGrowl(message, {
         type: type,
@@ -162,6 +179,7 @@ callbackTranslator = {
                         success: function(model, response) {
                             if (!_.isUndefined(response.access_token)) {
                                 Auth.access_token = response.access_token;
+                                Auth.refresh_token = response.refresh_token;
                                 api_token = response.access_token;
                                 window.sessionStorage.setItem('auth', JSON.stringify(Auth));
                                 if (from_url !== 'board_view') {
@@ -206,8 +224,10 @@ Backbone.sync = function(method, model, options) {
             options.data.token = api_token;
         }
     }
-    options.error = callbackTranslator.forBackboneCaller(options.error);
-    options.success = callbackTranslator.forBackboneCaller(options.success);
+    if (typeof model.url === 'string' && model.url.indexOf('.json') !== -1) {
+        options.error = callbackTranslator.forBackboneCaller(options.error);
+        options.success = callbackTranslator.forBackboneCaller(options.success);
+    }
     if (method === 'read') {
         if (options.abortPending === true) {
             for (var i = 0; i < xhrPool.length; i++) {
@@ -229,6 +249,53 @@ Backbone.sync = function(method, model, options) {
     } else {
         return nativeSync(method, model, options);
     }
+};
+var RealXHRSend = XMLHttpRequest.prototype.send;
+var requestCallbacks = [];
+var responseCallbacks = [];
+
+function fireCallbacks(callbacks, xhr) {
+    for (var i = 0; i < callbacks.length; i++) {
+        callbacks[i](xhr);
+    }
+}
+
+function addRequestCallback(callback) {
+    requestCallbacks.push(callback);
+}
+
+function addResponseCallback(callback) {
+    responseCallbacks.push(callback);
+}
+
+function fireResponseCallbacksIfCompleted(xhr) {
+    if (xhr.readyState === 4) {
+        fireCallbacks(responseCallbacks, xhr);
+    }
+}
+
+function proxifyOnReadyStateChange(xhr) {
+    var realOnReadyStateChange = xhr.onreadystatechange;
+    if (realOnReadyStateChange) {
+        xhr.onreadystatechange = function() {
+            fireResponseCallbacksIfCompleted(xhr);
+            realOnReadyStateChange();
+        };
+    }
+}
+XMLHttpRequest.prototype.send = function() {
+    // Fire request callbacks before sending the request
+    fireCallbacks(requestCallbacks, this);
+    // Wire response callbacks
+    if (this.addEventListener) {
+        var self = this;
+        this.addEventListener("readystatechange", function() {
+            fireResponseCallbacksIfCompleted(self);
+        }, false);
+    } else {
+        proxifyOnReadyStateChange(this);
+    }
+    RealXHRSend.apply(this, arguments);
 };
 var AppRouter = Backbone.Router.extend({
     routes: {
@@ -257,6 +324,9 @@ var AppRouter = Backbone.Router.extend({
         'organization/:id/:type': 'organizations_view_type',
         'organizations_user/:id': 'organizations_user_view',
         'roles': 'role_settings',
+        'roles/add': 'add_role',
+        'board_user_roles/add': 'add_board_user_role',
+        'organization_user_roles/add': 'add_organization_user_role',
         'oauth_clients': 'oauth_clients',
         'oauth_clients/add': 'add_oauth_client',
         'oauth_clients/edit/:id': 'edit_oauth_client',
@@ -266,7 +336,8 @@ var AppRouter = Backbone.Router.extend({
         'settings/:id': 'settings_type',
         'email_templates': 'email_templates',
         'email_templates/:id': 'email_template_type',
-        'activities': 'activity_index'
+        'activities': 'activity_index',
+        'search/:q': '_search'
     },
     initialize: function() {
         $('body').removeAttr('style');
@@ -353,6 +424,10 @@ var AppRouter = Backbone.Router.extend({
                     replace: true
                 });
                 clearInterval(set_interval_id);
+                if (!_.isUndefined(authuser.user) && !_.isEmpty(BOSH_SERVICE_URL)) {
+                    converse.user.logout();
+                }
+                $('#conversejs').remove();
                 var view = new Backbone.View();
                 view.flash('success', i18next.t('Logout successfully.'));
             }
@@ -466,6 +541,21 @@ var AppRouter = Backbone.Router.extend({
             model: 'role_settings',
         });
     },
+    add_role: function() {
+        new App.ApplicationView({
+            model: 'add_role',
+        });
+    },
+    add_board_user_role: function() {
+        new App.ApplicationView({
+            model: 'add_board_user_role',
+        });
+    },
+    add_organization_user_role: function() {
+        new App.ApplicationView({
+            model: 'add_organization_user_role',
+        });
+    },
     oauth_clients: function() {
         new App.ApplicationView({
             model: 'oauth_clients',
@@ -513,6 +603,12 @@ var AppRouter = Backbone.Router.extend({
         new App.ApplicationView({
             model: 'activity_index'
         });
+    },
+    _search: function(q) {
+        new App.ApplicationView({
+            model: 'boards_index',
+            q: q
+        });
     }
 });
 var app = new AppRouter();
@@ -525,3 +621,8 @@ app.on('route', function(route, params) {
 Backbone.history.start({
     pushState: false
 });
+
+Backbone.form = function(schema) {
+    var form = new Backbone.Form(schema).render();
+    return form.el;
+};

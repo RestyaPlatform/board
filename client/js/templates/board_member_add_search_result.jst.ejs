@@ -1,5 +1,4 @@
-<% if(user != null){ %>
-<a title="<%- user.attributes.full_name %> (<%- user.attributes.username %>)" href="#"> <span>				
+<span title="<%- user.attributes.full_name %> (<%- user.attributes.username %>)"> <span>				
 				<% if(!_.isEmpty(user.attributes.profile_picture_path)) { 
 					var profile_picture_path = user.showImage('User', user.attributes.id, 'micro_thumb' );
 				%>
@@ -7,9 +6,4 @@
 				<% } else {%>
 					<i class="avatar avatar-color-194 avatar-sm img-rounded"><%- user.attributes.initials %></i>									
 				<% } %>
-			</span><span><%- user.attributes.full_name %></span></a>
-<% } else{ %>
-<span class="alert alert-info">
-	<%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('users')] }) %>
-</span>
-<% } %>			
+</span><span><%- user.attributes.full_name %> (<%- user.attributes.username %>)</span></span>

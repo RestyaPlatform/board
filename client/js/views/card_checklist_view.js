@@ -5,7 +5,7 @@
  *	this.model						: checklist model. It contain all card based object @see Available Object in App.CardView
  *	this.model.card					: card model. @see Available Object in CardView
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -37,6 +37,7 @@ App.CardCheckListView = Backbone.View.extend({
         'click .js-show-item-options': 'showItemOptions',
         'click .js-back-to-item-options': 'backToItemOptions',
         'click .js-show-mention-member-form': 'showMentionMemberForm',
+        'click .js-show-emoji-list-form': 'showEmojiList',
         'click .js-add-item-member': 'addItemMember',
         'keyup .js-item-search-member': 'showSearchItemMembers',
         'click .js-no-action': 'noAction',
@@ -537,6 +538,25 @@ App.CardCheckListView = Backbone.View.extend({
         $('#js-item-add-option-response-' + this.model.id).html(new App.ChecklistItemMentionMemberSerachFormView().el);
         this.$el.find('.js-item-member-search-response').html('');
         this.renderBoardUsers();
+        return false;
+    },
+    /**
+     * showEmojiList()
+     * Show the emoji list
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showEmojiList: function(e) {
+        e.preventDefault();
+        var emojiList = "smile,thumbsup,warning,sunglasses";
+        var emojiListArray = emojiList.split(",");
+        $('#js-item-add-option-response-' + this.model.id).html(new App.ChecklistItemEmojiListView({
+            model: emojiListArray
+        }).el);
+        //$('.js-show-emoji-list-response ul').remove();
+        emojify.run();
         return false;
     },
     /**

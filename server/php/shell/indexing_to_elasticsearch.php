@@ -25,7 +25,7 @@ if ($db_lnk) {
             $row['value'],
             0
         );
-        $result = pg_query_params($db_lnk, "SELECT id, card_id FROM activities WHERE id > $1 AND card_id != $2 AND card_id IS NOT NULL ORDER BY id ASC", $qry_val_arr);
+        $result = pg_query_params($db_lnk, "SELECT id, card_id FROM activities WHERE id > $1 AND card_id != $2 AND board_id != $2 AND card_id IS NOT NULL ORDER BY id ASC", $qry_val_arr);
         $count = pg_num_rows($result);
         if ($count) {
             $ch = curl_init();

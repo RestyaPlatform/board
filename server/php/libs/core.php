@@ -104,6 +104,7 @@ function getRandomStr($arr_characters, $length)
  */
 function getCryptHash($str)
 {
+    $salt = '';
     if (CRYPT_BLOWFISH) {
         if (version_compare(PHP_VERSION, '5.3.7') >= 0) { // http://www.php.net/security/crypt_blowfish.php
             $algo_selector = '$2y$';
@@ -134,7 +135,7 @@ function getCryptHash($str)
         $char1 = chr(33);
         $char2 = chr(127);
         $range = range($char1, $char2);
-        $salt = $algo_selector . $workload_factor . getRandomStr($range, 16); // actually chr(0) - chr(255)
+        $salt = $algo_selector . $workload_factor . getRandomStr($range, 16); // actually chr(0) - chr(255), but used ASCII only
         
     } else if (CRYPT_SHA256) {
         $algo_selector = '$5$';
@@ -142,7 +143,7 @@ function getCryptHash($str)
         $char1 = chr(33);
         $char2 = chr(127);
         $range = range($char1, $char2);
-        $salt = $algo_selector . $workload_factor . getRandomStr($range, 16); // actually chr(0) - chr(255)
+        $salt = $algo_selector . $workload_factor . getRandomStr($range, 16); // actually chr(0) - chr(255), but used ASCII only
         
     } else if (CRYPT_EXT_DES) {
         $algo_selector = '_';
@@ -176,14 +177,14 @@ function getCryptHash($str)
  *
  * @param string $url    URL
  * @param string $method optional Method of CURL default value : get
- * @param array  $post   optional CURL Values default value : array ()
+ * @param mixed  $post   optional CURL Values default value : array ()
  * @param string $format optional Format for values default value : plain
  *
  * @return mixed
  */
 function curlExecute($url, $method = 'get', $post = array() , $format = 'plain')
 {
-    $filename['file_name'] = '';
+    $filename = $return = $error = array();
     $mediadir = '';
     if ($format == 'image') {
         $mediadir = $post;
@@ -314,6 +315,7 @@ function doGet($url)
 function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $revision = null, $foreign_id = null)
 {
     global $r_debug, $db_lnk;
+    $result = '';
     $fields = array(
         'created',
         'modified',
@@ -330,11 +332,10 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
         $type,
         $revision
     );
-    if ($foreign_id != null) {
+    if ($foreign_id !== null) {
         array_push($fields, 'foreign_id');
         array_push($values, $foreign_id);
     }
-    $all_foreign_ids = $foreign_ids;
     foreach ($foreign_ids as $key => $value) {
         if ($key != 'id' && $key != 'user_id') {
             array_push($fields, $key);
@@ -386,8 +387,12 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
 function getRevisiondifference($from_text, $to_text)
 {
     // limit input
-    $from_text = substr($from_text, 0, 1024 * 100);
-    $to_text = substr($to_text, 0, 1024 * 100);
+    if (!empty($from_text)) {
+        $from_text = substr($from_text, 0, 1024 * 100);
+    }
+    if (!empty($to_text)) {
+        $to_text = substr($to_text, 0, 1024 * 100);
+    }
     $granularity = 2; // 0: Paragraph/lines, 1: Sentence, 2: Word, 3: Character
     $granularityStacks = array(
         FineDiff::$paragraphGranularity,
@@ -449,7 +454,8 @@ function ldapAuthenticate($p_user_id, $p_password)
         $t_binddn = '';
         if (empty($t_binddn) && empty($t_password)) {
             $t_binddn = $g_ldap_bind_dn;
-            $t_password = $g_ldap_bind_passwd;
+            $ldap_bind_passwd_decode = base64_decode($g_ldap_bind_passwd);
+            $t_password = str_rot13($ldap_bind_passwd_decode);
         }
         if (!empty($t_binddn) && !empty($t_password)) {
             $t_br = @ldap_bind($t_ds, $t_binddn, $t_password);
@@ -466,15 +472,16 @@ function ldapAuthenticate($p_user_id, $p_password)
     // Search for the user id
     $t_sr = ldap_search($t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs);
     $t_info = ldap_get_entries($t_ds, $t_sr);
+    $user = array();
     $user['User']['is_username_exits'] = false;
     $user['User']['is_password_matched'] = false;
-    if ($t_info) {
+    if (!empty($t_info)) {
         $user['User']['is_username_exits'] = true;
         // Try to authenticate to each until we get a match
         for ($i = 0; $i < $t_info['count']; $i++) {
             $t_dn = $t_info[$i]['dn'];
             // Attempt to bind with the DN and password
-            if ($_data1 = @ldap_bind($t_ds, $t_dn, $p_password)) {
+            if (@ldap_bind($t_ds, $t_dn, $p_password)) {
                 $user['User']['is_password_matched'] = true;
                 if (isset($t_info[$i]['name'])) {
                     $user['User']['first_name'] = $t_info[$i]['name'][0];
@@ -552,11 +559,15 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
         'PUT'
     );
     $board_star = true;
-    $board_star_url = array(
+    $public_board_exception_url = array(
         '/boards/?/boards_stars/?',
-        '/boards/?/boards_stars'
+        '/boards/?/boards_stars',
+        '/boards/?/lists/?/cards/?/comments',
+        '/boards/?/board_subscribers',
+        '/boards/?/lists/?/list_subscribers',
+        '/boards/?/lists/?/cards/?/card_subscribers'
     );
-    if (in_array($r_resource_cmd, $board_star_url)) {
+    if (in_array($r_resource_cmd, $public_board_exception_url)) {
         $board_star = false;
     }
     //temp fix
@@ -633,7 +644,7 @@ function executeQuery($qry, $arr = array())
  * Common method to send mail
  *
  * @param string $template        Email template name
- * @param string $replace_content Email content replace array
+ * @param array  $replace_content Email content replace array
  * @param string $to              To email address
  * @param string $reply_to_mail   Reply to email address
  *
@@ -666,7 +677,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0\r\n";
         $headers.= "Content-Type: text/html; charset=ISO-8859-1\r\n";
-        $headers.= "X-Mailer: Restyaboard (0.2.1; +http://restya.com/board)\r\n";
+        $headers.= "X-Mailer: Restyaboard (0.3; +http://restya.com/board)\r\n";
         $headers.= "X-Auto-Response-Suppress: All\r\n";
         mail($to, $subject, $message, $headers);
     }
@@ -684,51 +695,52 @@ function saveIp()
     );
     $ip_row = executeQuery('SELECT id FROM ips WHERE ip = $1', $qry_val_arr);
     if (!$ip_row) {
-        $country_id = $state_id = $city_id = 0;
-        $lat = $lng = 0.00;
-        if (!empty($_COOKIE['_geo'])) {
-            $_geo = explode('|', $_COOKIE['_geo']);
+        $country_id = 0;
+        $_geo = array();
+        if (function_exists('geoip_record_by_name')) {
+            $_geo = geoip_record_by_name($_SERVER['REMOTE_ADDR']);
+        }
+        if (!empty($_geo)) {
             $qry_val_arr = array(
-                $_geo[0]
+                $_geo['country_code']
             );
             $country_row = executeQuery('SELECT id FROM countries WHERE iso_alpha2 = $1', $qry_val_arr);
             if ($country_row) {
                 $country_id = $country_row['id'];
             }
             $qry_val_arr = array(
-                $_geo[1]
+                $_geo['region']
             );
             $state_row = executeQuery('SELECT id FROM states WHERE name = $1', $qry_val_arr);
             if (!$state_row) {
                 $qry_val_arr = array(
-                    $_geo[1],
+                    $_geo['region'],
                     $country_id
                 );
                 $result = pg_query_params($db_lnk, 'INSERT INTO states (created, modified, name, country_id) VALUES (now(), now(), $1, $2) RETURNING id', $qry_val_arr);
                 $state_row = pg_fetch_assoc($result);
             }
             $qry_val_arr = array(
-                $_geo[2]
+                $_geo['city']
             );
             $city_row = executeQuery('SELECT id FROM cities WHERE name = $1', $qry_val_arr);
             if (!$city_row) {
                 $qry_val_arr = array(
-                    $_geo[2],
+                    $_geo['city'],
                     $state_row['id'],
                     $country_id,
-                    $_geo[3],
-                    $_geo[4]
+                    $_geo['latitude'],
+                    $_geo['longitude']
                 );
                 $result = pg_query_params($db_lnk, 'INSERT INTO cities (created, modified, name, state_id, country_id, latitude, longitude) VALUES (now(), now(), $1, $2, $3, $4, $5) RETURNING id ', $qry_val_arr);
                 $city_row = pg_fetch_assoc($result);
             }
         }
         $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-        $country_id = $country_id;
-        $state_id = (!empty($state_row['id'])) ? $state_row['id'] : $city_id;
-        $city_id = (!empty($city_row['id'])) ? $city_row['id'] : $city_id;
-        $lat = (!empty($_geo[3])) ? $_geo[3] : 0.00;
-        $lng = (!empty($_geo[4])) ? $_geo[4] : 0.00;
+        $state_id = (!empty($state_row['id'])) ? $state_row['id'] : 0;
+        $city_id = (!empty($city_row['id'])) ? $city_row['id'] : 0;
+        $lat = (!empty($_geo['latitude'])) ? $_geo['latitude'] : 0.00;
+        $lng = (!empty($_geo['longitude'])) ? $_geo['longitude'] : 0.00;
         $qry_val_arr = array(
             $_SERVER['REMOTE_ADDR'],
             gethostbyaddr($_SERVER['REMOTE_ADDR']) ,
@@ -747,17 +759,17 @@ function saveIp()
 /**
  * Copy Card
  *
- * @param array   $card_fields  Fields of the card
- * @param array   $cards        Card record array
+ * @param mixed   $cards        Card record array
  * @param integer $new_list_id  List id of the new card
  * @param string  $name         Card name
  * @param integer $new_board_id Board id of the new card
  *
  * @return void
  */
-function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = '')
+function copyCards($cards, $new_list_id, $name, $new_board_id = '')
 {
     global $db_lnk, $authUser;
+    $foreign_ids = $response = array();
     while ($card = pg_fetch_object($cards)) {
         $card->list_id = $new_list_id;
         $card_id = $card->id;
@@ -773,7 +785,7 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
             $foreign_ids['list_id'] = $new_list_id;
             $comment = '##USER_NAME## added ' . $card_result['name'] . ' card to ' . $name . '.';
             insertActivity($authUser['id'], $comment, 'add_card', $foreign_ids);
-            //Copy card attachments
+            // Copy card attachments
             $attachment_fields = 'list_id, card_id, name, path, mimetype';
             if (!empty($new_board_id)) {
                 $attachment_fields = 'board_id, list_id, card_id, name, path, mimetype';
@@ -793,7 +805,7 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
                     insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $attachment_result['id']);
                 }
             }
-            //Copy card comments
+            // Copy card comments
             $comment_fields = 'list_id, card_id, board_id, user_id, type, comment, root, freshness_ts, depth, path, materialized_path';
             $qry_val_arr = array(
                 $card_id,
@@ -805,10 +817,10 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
                     $comment->board_id = $new_board_id;
                     $comment->list_id = $new_list_id;
                     $comment->card_id = $new_card_id;
-                    $card_result = pg_execute_insert('activities', $comment);
+                    pg_execute_insert('activities', $comment);
                 }
             }
-            //Copy checklists
+            // Copy checklists
             $checklist_fields = 'card_id, user_id, name, checklist_item_count, checklist_item_completed_count, position';
             $qry_val_arr = array(
                 $card_id
@@ -824,8 +836,6 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
                         $new_checklist_id = $checklist_result['id'];
                         $comment = '##USER_NAME## added checklist to this card ##CARD_LINK##';
                         insertActivity($authUser['id'], $comment, 'add_card_checklist', $foreign_ids, '', $new_checklist_id);
-                        $copy_checklists[] = $checklist_result;
-                        //Copy checklist items
                         $checklist_item_fields = 'card_id, checklist_id, user_id, name, position';
                         $qry_val_arr = array(
                             $checklist_id
@@ -837,7 +847,6 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
                                 $checklist_item->checklist_id = $new_checklist_id;
                                 $checklist_item_result = pg_execute_insert('checklist_items', $checklist_item);
                                 $checklist_item_result = pg_fetch_assoc($checklist_item_result);
-                                $copy_checklists_items[] = $checklist_item_result;
                                 $comment = '##USER_NAME## added checklist item to this card ##CARD_LINK##';
                                 insertActivity($authUser['id'], $comment, 'add_checklist_item', $foreign_ids, '', $checklist_item_result['id']);
                             }
@@ -845,7 +854,7 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
                     }
                 }
             }
-            //Copy card labels
+            // Copy card labels
             $cards_label_fields = 'list_id, card_id, board_id, label_id';
             if (!empty($new_board_id)) {
                 $cards_label_fields = 'board_id, list_id, card_id, label_id';
@@ -860,17 +869,13 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
                         $cards_label->board_id = $new_board_id;
                         $cards_label->list_id = $new_list_id;
                         $cards_label->card_id = $new_card_id;
-                        $cards_label_values = $new_board_id . ', ' . $new_list_id . ', ' . $new_card_id;
-                    } else {
-                        $cards_label_values = $new_list_id . ', ' . $new_card_id;
                     }
-                    $cards_label_result = pg_execute_insert('cards_labels', $cards_label);
-                    $cards_label_result = pg_fetch_assoc($cards_label_result);
+                    pg_execute_insert('cards_labels', $cards_label);
                     $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ##LABEL_NAME##';
                     insertActivity($authUser['id'], $comment, 'add_card_label', $foreign_ids);
                 }
             }
-            //Copy card users
+            // Copy card users
             $cards_user_fields = 'card_id, user_id';
             $qry_val_arr = array(
                 $card_id
@@ -896,7 +901,7 @@ function copyCards($card_fields, $cards, $new_list_id, $name, $new_board_id = ''
  * To generate query by passed args and insert into table
  *
  * @param string  $table_name Table name to execute the query
- * @param array   $r_post     Values
+ * @param mixed   $r_post     Values
  * @param integer $return_row Return rows
  *
  * @return mixed
@@ -932,13 +937,12 @@ function pg_execute_insert($table_name, $r_post, $return_row = 1)
 /**
  * Common method to get binded values
  *
- * @param string $table               Table name to get values
- * @param array  $data                Field list
- * @param array  $expected_fields_arr Optional default value : array ()
+ * @param string $table Table name to get values
+ * @param mixed  $data  Field list
  *
  * @return mixed
  */
-function getbindValues($table, $data, $expected_fields_arr = array())
+function getbindValues($table, $data)
 {
     global $db_lnk;
     $qry_val_arr = array(
@@ -987,14 +991,9 @@ function importTrelloBoard($board = array())
 {
     set_time_limit(1800);
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
-    $users = array();
+    $users = $lists = $cards = array();
     if (!empty($board)) {
         $user_id = $authUser['id'];
-        $board_visibility = array(
-            'Private',
-            'Organization',
-            'Public'
-        );
         $board_visibility = 0;
         if ($board['prefs']['permissionLevel'] == 'public') {
             $board_visibility = 2;
@@ -1061,7 +1060,6 @@ function importTrelloBoard($board = array())
         );
         pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
         if (!empty($board['lists'])) {
-            $lists = array();
             $i = 0;
             foreach ($board['lists'] as $list) {
                 $i+= 1;
@@ -1078,13 +1076,9 @@ function importTrelloBoard($board = array())
             }
         }
         if (!empty($board['cards'])) {
-            $cards = array();
             foreach ($board['cards'] as $card) {
                 $is_closed = ($card['closed']) ? 'true' : 'false';
                 $date = null;
-                if (!empty($card['due'])) {
-                    $date = str_replace('T', ' ', $card['due']);
-                }
                 $qry_val_arr = array(
                     $new_board['id'],
                     $lists[$card['idList']],
@@ -1100,12 +1094,12 @@ function importTrelloBoard($board = array())
                 if (!empty($card['labels'])) {
                     foreach ($card['labels'] as $label) {
                         $qry_val_arr = array(
-                            $label['color']
+                            $label['name']
                         );
                         $check_label = executeQuery('SELECT id FROM labels WHERE name = $1', $qry_val_arr);
                         if (empty($check_label)) {
                             $qry_val_arr = array(
-                                $label['color']
+                                $label['name']
                             );
                             $check_label = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO labels (created, modified, name) VALUES (now(), now(), $1) RETURNING id', $qry_val_arr));
                         }
@@ -1115,7 +1109,7 @@ function importTrelloBoard($board = array())
                             $_card['id'],
                             $check_label['id']
                         );
-                        $_label = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, board_id, list_id, card_id, label_id) VALUES (now(), now(), $1, $2, $3, $4) RETURNING id', $qry_val_arr));
+                        pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, board_id, list_id, card_id, label_id) VALUES (now(), now(), $1, $2, $3, $4)', $qry_val_arr);
                     }
                 }
                 if (!empty($card['attachments'])) {
@@ -1125,8 +1119,7 @@ function importTrelloBoard($board = array())
                         $save_path = str_replace('\\', '/', $save_path);
                         $filename = curlExecute($attachment['url'], 'get', $mediadir, 'image');
                         $path = $save_path . DIRECTORY_SEPARATOR . $filename['file_name'];
-                        $name = $filename['file_name'];
-                        $created = $modified = str_replace('T', ' ', $attachment['date']);
+                        $created = $modified = $attachment['date'];
                         $qry_val_arr = array(
                             $created,
                             $modified,
@@ -1188,6 +1181,7 @@ function importTrelloBoard($board = array())
             }
         }
         if (!empty($board['actions'])) {
+            $type = $comment = '';
             foreach ($board['actions'] as $action) {
                 if ($action['type'] == 'commentCard') {
                     $type = 'add_comment';
@@ -1265,7 +1259,7 @@ function importTrelloBoard($board = array())
                     $type = 'delete_checklist';
                     $comment = '##USER_NAME## deleted checklist ##CHECKLIST_NAME## from card ##CARD_LINK##';
                 }
-                $created = $modified = str_replace('T', ' ', $action['date']);
+                $created = $modified = $action['date'];
                 $qry_val_arr = array(
                     $created,
                     $modified,
@@ -1305,7 +1299,7 @@ function email2name($email)
 /**
  * Find and replace comment variables
  *
- * @param string $activity is activity informations
+ * @param array $activity is activity informations
  *
  * @return string
  */
@@ -1346,7 +1340,6 @@ function convertBooleanValues($table, $row)
         $table
     );
     $result = pg_query_params($db_lnk, 'SELECT * FROM information_schema.columns WHERE table_name = $1 ', $qry_val_arr);
-    $bindValues = array();
     while ($field_details = pg_fetch_assoc($result)) {
         if ($field_details['data_type'] == 'boolean') {
             $row[$field_details['column_name']] = ($row[$field_details['column_name']] == 'f') ? 0 : 1;
@@ -1392,4 +1385,151 @@ function isClientSecretAvailable()
         $oauth_client = executeQuery('SELECT * FROM oauth_clients WHERE client_secret = $1', $qry_val_arr);
     } while (!empty($oauth_client));
     return $client_secret;
+}
+/**
+ * Genrate ejabberd connection
+ *
+ * @return ejabberd connection
+ */
+function getEjabberdConnection()
+{
+    return pg_connect('host=' . CHAT_DB_HOST . ' port=' . CHAT_DB_PORT . ' dbname=' . CHAT_DB_NAME . ' user=' . CHAT_DB_USER . ' password=' . CHAT_DB_PASSWORD . ' options=--client_encoding=UTF8');
+}
+/**
+ * Bind array from ElasticSearch data
+ *
+ * @param array  $result Search list to bind elastic
+ * @param string $type   Fetching type
+ *
+ * @return array
+ */
+function bind_elastic($result, $type)
+{
+    $card = array(
+        'id' => !empty($result['_source']['id']) ? $result['_source']['id'] : null,
+        'name' => !empty($result['_source']['name']) ? $result['_source']['name'] : null,
+        'list_id' => !empty($result['_source']['list_id']) ? $result['_source']['list_id'] : null,
+        'list_name' => !empty($result['_source']['list']) ? $result['_source']['list'] : null,
+        'board_id' => !empty($result['_source']['board_id']) ? $result['_source']['board_id'] : null,
+        'board_name' => !empty($result['_source']['board']) ? $result['_source']['board'] : null,
+        'name' => !empty($result['_source']['name']) ? $result['_source']['name'] : null,
+        'attachment_count' => !empty($result['_source']['attachment_count']) ? $result['_source']['attachment_count'] : 0,
+        'due_date' => !empty($result['_source']['due_date']) ? $result['_source']['due_date'] : null,
+        'comment_count' => !empty($result['_source']['activities']) ? count($result['_source']['activities']) : 0,
+        'type' => $type,
+        'checklist_item_completed_count' => !empty($result['_source']['checklist_item_completed_count']) ? $result['_source']['checklist_item_completed_count'] : 0,
+        'checklist_item_count' => !empty($result['_source']['checklist_item_count']) ? $result['_source']['checklist_item_count'] : 0,
+        'vote_count' => !empty($result['_source']['card_voter_count']) ? $result['_source']['card_voter_count'] : 0,
+        'description' => !empty($result['_source']['description']) ? $result['_source']['description'] : null
+    );
+    if (!empty($result['highlight'])) {
+        $card['highlight'] = $result['highlight'];
+    }
+    return $card;
+}
+/**
+ * Wait for register response
+ *
+ * @param array  $event events
+ * @param string $args  arguments
+ *
+ * @return array
+ */
+function wait_for_register_response($event, $args)
+{
+    global $client, $form;
+    if ($event == 'stanza_cb') {
+        $stanza = $args[0];
+        if ($stanza->name == 'iq') {
+            $form['type'] = $stanza->attrs['type'];
+            if ($stanza->attrs['type'] == 'result') {
+                $client->send_end_stream();
+                return "logged_out";
+            } else if ($stanza->attrs['type'] == 'error') {
+                $stanza->exists('error');
+                $client->send_end_stream();
+                return "logged_out";
+            }
+        }
+    } else {
+        _notice("unhandled event $event rcvd");
+    }
+}
+/**
+ * Wait for register form
+ *
+ * @param array  $event events
+ * @param string $args  arguments
+ *
+ * @return array
+ */
+function wait_for_register_form($event, $args)
+{
+    global $client, $form, $j_username, $j_password;
+    $stanza = $args[0];
+    $query = $stanza->exists('query', NS_INBAND_REGISTER);
+    if ($query) {
+        $instructions = $query->exists('instructions');
+        foreach ($query->childrens as $k => $child) {
+            if ($child->name != 'instructions') {
+                if ($child->name == 'username') {
+                    $form[$child->name] = $j_username;
+                } else {
+                    $form[$child->name] = $j_password;
+                }
+            }
+        }
+        $client->xeps['0077']->set_form($stanza->attrs['from'], $form);
+        return "wait_for_register_response";
+    } else {
+        $client->end_stream();
+        return "logged_out";
+    }
+}
+/**
+ * Get list name of TODO, DOING, DONE
+ *
+ * @param string $name Fetching work flow
+ *
+ * @return array
+ */
+function getWorkFlow($name)
+{
+    global $db_lnk;
+    $settings = '';
+    $qry_val_arr = array(
+        $name
+    );
+    $s_sql = pg_query_params($db_lnk, 'SELECT value FROM settings WHERE name = $1', $qry_val_arr);
+    $row = pg_fetch_assoc($s_sql);
+    $data = explode(',', $row['value']);
+    foreach ($data as $row) {
+        $settings.= 'list:' . $row . ' OR ';
+    }
+    $settings = substr($settings, 0, -4);
+    $settings_query = '(' . $settings . ') OR ';
+    return $settings_query;
+}
+/**
+ * Get xmpp user object to process create, delete board etc.
+ *
+ * @return array
+ */
+function getXmppUser()
+{
+    global $authUser;
+    $conditions = array(
+        $authUser['username']
+    );
+    $chat_db_lnk = getEjabberdConnection();
+    $user_password = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1', $conditions);
+    $user_password = pg_fetch_assoc($user_password);
+    return array(
+        'username' => $authUser['username'] . '@' . JABBER_HOST,
+        'password' => $user_password['password'],
+        'host' => JABBER_HOST,
+        'ssl' => false,
+        'port' => 5222,
+        'resource' => uniqid('', true)
+    );
 }

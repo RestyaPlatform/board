@@ -125,11 +125,11 @@ if (_.isEmpty(role_links.where({
   <li class="hidden-xs org-btn"><a title="<%- i18next.t('Organizations') %>" href="#/organizations" class="btn btn-default"><span><%- i18next.t("Organizations") %></span></a></li>
    <% } %>	
   <% if(apps !== ""){ %>
-  <li class="dropdown hidden-xs board-btn js-show-add-apps-list"> 
+  <li class="dropdown hidden-xs board-btn js-show-add-apps-list add-apps-list"> 
 	  <a title="<%- i18next.t('Apps') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-apps-list"><span><%- i18next.t("Apps") %> </span><span><i class="icon-collapse"></i></span> </a>
 	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12">
 			<% _.each(apps, function(key,value) { %>
-				<li id="<%- value %>" class="hidden-xs org-btn"><a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- value %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- i18next.t(key.name) %></span></a></li>
+				<li id="<%- value %>" class="org-btn"><a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- value %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- i18next.t(key.name) %></span></a></li>
 			<% }); %>
 			<li class="divider js-apps-list-container-search"></li>
 			<li class="dropdown clearfix">
@@ -147,7 +147,7 @@ if (_.isEmpty(role_links.where({
 	  <div class="form-group">
 		<input id="search-box" type="search" class="search-box pull-right form-control js-search search-box">
 		<i class="icon-circle-blank search-loader hide" id="res"></i>
-		<i class="icon-circle-blank search-loader text-danger hide" id="nres"></i>
+		<i class="icon-circle-blank search-loader text-primary hide" id="nres"></i>
 		<label for="search-box" class="pull-right"><i class="icon-search btn btn-primary search-icon"></i></label>
 		<ul class="dropdown-menu">
 			<li class="js-show-search-result js-dropdown-popup dropdown-popup">
@@ -161,7 +161,11 @@ if (_.isEmpty(role_links.where({
 <div class="navbar-right clearfix">
 	<ul class="nav nav-pills navbar-right">
 	<% if(!_.isUndefined(authuser.user)){%>
+	<% if((navigator.userAgent.toLowerCase().indexOf('android') > -1) && (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)){ %>
+		  <li class="hidden-xs"><a href="#" tittle="<%- i18next.t('Install this webapp to your phone') %>" data-toggle="modal" data-target="#add_home_modal" class="btn btn-default pull-right"><i class="icon-plus"></i></a></li>
+	<% } %>
 	<% if (!_.isUndefined(authuser.user) &&  !_.isEmpty(model.user) && model.user.role_id == 1) { %>
+		<li class="phone-block"><a class="btn btn-primary pull-right js-show-qr-code hidden-xs" id="phone" title="<%- i18next.t('View in iOS App') %>" href=""><i class="icon-mobile-phone lead"></i></a></li>
 	  	<li class="hidden-xs"><a title="<%- i18next.t('Admin CP') %>" class="btn btn-default pull-right admin-cp" href="#/activities"><span class="icon-user lead text-primary"></span><span class="hidden-xs text-primary"><%- i18next.t("Admin") %></span></a></li>
 	  <% } %>
 	  <li class="dropdown">
@@ -209,7 +213,7 @@ if (_.isEmpty(role_links.where({
 		  <div class="tab-content bg-info clearfix">
 		    <div class="col-xs-12 user-filter navbar-btn">
 				<span class="pull-left"><strong><%- i18next.t('Activity') %></strong></span>
-				<ul class="nav nav-pills pull-right">
+				<ul class="nav nav-pills pull-right mob-no-mar">
 					<li id="modal-activities"><a href="#" title="<%- i18next.t('Filter by activities') %>" class="text-muted"><i class="icon-time small"></i></a></li>
 					<li id="modal-comments"><a href="#" title="<%- i18next.t('Filter by comments') %>" class="text-muted"><i class=" icon-comment-alt small"></i></a></li>
 				</ul>    
@@ -255,3 +259,4 @@ if (_.isEmpty(role_links.where({
 <div class="hidden-blocks hide js-hidden-blocks"></div>	
 </div>
 </section>
+<section class="search-block-main" id="search-page-result-block"></section>

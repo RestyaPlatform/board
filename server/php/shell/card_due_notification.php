@@ -37,7 +37,7 @@ if ($db_lnk) {
                 }
                 $date = date_create($card['due_date']);
                 $message = '<a href="' . $_server_domain_url . '/#/board/' . $card['board_id'] . '/card/' . $card['id'] . '">' . $card['name'] . '</a> on <a href="' . $_server_domain_url . '/#/board/' . $card['board_id'] . '">' . $card['board_name'] . '</a> is due ' . date_format($date, "M d") . ' at ' . date_format($date, "h:i a (T)");
-                $subject = '<a href="' . $_server_domain_url . '/#/board/' . $card['board_id'] . '/card/' . $card['id'] . '">' . $card['name'] . '</a> on <a href="' . $_server_domain_url . '/#/board/' . $card['board_id'] . '">' . $card['board_name'] . '</a> is due ' . date_format($date, "M d") . ' at ' . date_format($date, "h:i a (T)") . ' at ' . date("h:i A") . ' on ' . date("F d, Y");
+                $subject = $card['name'] . ' on ' . $card['board_name'] . ' is due ' . date_format($date, "M d") . ' at ' . date_format($date, "h:i a (T)") . ' at ' . date("h:i A") . ' on ' . date("F d, Y");
                 $br = '<div style="line-height:40px;">&nbsp;</div>';
                 $mail_content.= '<div style="display:table">' . "\n";
                 $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";

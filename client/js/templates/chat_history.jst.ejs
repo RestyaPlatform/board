@@ -1,0 +1,21 @@
+<% if(!_.isEmpty(chat_history) && chat_history != null){ 
+	if(chat_history.attributes.created_date != previous_date) {
+%>
+<div class="h3 list-group-item-text navbar-btn well-sm"><%=chat_history.attributes.display_date%></div>
+<hr class="clearfix"/>
+<% } %>
+<div class="media">
+	<div class="pull-left">
+	<strong><%- chat_history.attributes.created_time %></strong>
+	</div>
+	<div class="pull-left">
+	<strong><%- '<' + chat_history.attributes.username + '>' %></strong>
+	</div>
+	<div class="media-body">
+		<span class="js-chat_history-<%- chat_history.attributes.id %>"><%= makeLink(chat_history.attributes.comment, chat_history.attributes.board_id) %></span>
+	</div> 
+</div>
+<% previous_date = chat_history.attributes.created_date; 
+}else{ %>
+	<div class="media-body">No Chat History available.</div>
+<% } %>

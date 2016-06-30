@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!--
+@see http://pear.php.net/manual/en/package.php.php-codesniffer.annotated-ruleset.php
+-->
+<ruleset name="Coding Standard for Behat-Rest-Testing">
+
+    <description>Custimized PSR2 coding standard</description>
+
+    <!--
+    A coding standard based on an early Zend Framework coding standard.
+
+    This has to be put in front of PSR2 because both have rule "Generic.Files.LineLength", while Zend Framework has
+    more restricted constraint (80 characters only).
+    -->
+    <rule ref="Zend">
+        <exclude name="Generic.Functions.OpeningFunctionBraceBsdAllman" />
+        <exclude name="PEAR.Functions.FunctionCallSignature"/>
+        <exclude name="Zend.NamingConventions.ValidVariableName"/>
+    </rule>
+
+    <!-- Ensures doc blocks follow formatting. -->
+    <!-- <rule ref="Generic.Commenting.DocComment"/> -->
+    <rule ref="Squiz.Commenting">
+        <exclude name="Squiz.Commenting.BlockComment"/>
+        <exclude name="Squiz.Commenting.ClassComment"/>
+        <exclude name="Squiz.Commenting.ClosingDeclarationComment"/>
+        <exclude name="Squiz.Commenting.FileComment"/>
+        <exclude name="Squiz.Commenting.FunctionComment"/>
+        <exclude name="Squiz.Commenting.InlineComment"/>
+        <exclude name="Squiz.Commenting.LongConditionClosingComment"/>
+        <exclude name="Squiz.Commenting.PostStatementComment"/>
+        <exclude name="Squiz.Commenting.VariableComment"/>
+    </rule>
+
+    <!-- @see http://www.php-fig.org/psr/psr-2/ PSR-2 Coding Style Guide by PHP Framework Interop Group. -->
+    <rule ref="PSR2" />
+
+    <!-- Ensures there is a single space after cast tokens. -->
+    <rule ref="Generic.Formatting.SpaceAfterCast"/>
+    <!-- Makes sure that shorthand PHP open tags are not used. -->
+    <rule ref="Generic.PHP.DisallowShortOpenTag"/>
+
+    <!-- Ensures that constant names are all uppercase. -->
+    <rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
+
+    <!-- Discourages the use of deprecated functions that are kept in PHP for compatibility with older versions. -->
+    <rule ref="Generic.PHP.DeprecatedFunctions"/>
+
+    <!--
+    Checks that the include_once is used in conditional situations, and require_once is used elsewhere. Also checks
+    that brackets do not surround the file being included.
+    -->
+    <rule ref="PEAR.Files.IncludingFile"/>
+
+    <!-- This message is not required as spaces are allowed for alignment -->
+    <rule ref="Generic.Functions.FunctionCallArgumentSpacing.TooMuchSpaceAfterComma">
+        <severity>0</severity>
+    </rule>
+
+</ruleset>

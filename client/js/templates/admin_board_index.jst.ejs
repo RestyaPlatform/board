@@ -11,6 +11,8 @@
 				<li><a class="js-filter cur" data-filter="organization" title="<%- i18next.t('Organization') %>"><span class="show"><strong><%- filter_count.organization %></strong></span><%- i18next.t('Organization') %></a></li>
 				<% var all = parseInt(filter_count.open) + parseInt(filter_count.closed); %>
 				<li class="active"><a href="#/boards/list" title="<%- i18next.t('All') %>"><span class="show"><strong><%-  all %></strong></span><%- i18next.t('All') %></a></li>
+				<li class="pull-right h4"><form id="BoardSearch" name="BoardSearch" class="form-horizontal col-xs-12"><input type="text" placeholder="Search" name="board_search" id="board_search" class="form-control" /></form></li>
+				
 			</ul>
 		 </div>
 	</section>
@@ -30,7 +32,7 @@
 						  <th colspan="2" class="text-center"><%- i18next.t("Card") %></th>
 						  <th rowspan="2" class="text-center"><span class="js-sort cur" data-field="created" data-direction="desc"  title="<%- i18next.t('Created') %>"><span class="icon-caret-down hide"></span><%- i18next.t("Created") %></span></th>
 						  <th rowspan="2" class="text-center"><span class="js-sort cur" data-field="modified" data-direction="desc"  title="<%- i18next.t('Last activity') %>"><span class="icon-caret-down hide"></span><%- i18next.t("Last activity") %></span></th>
-						  <th rowspan="2" class="text-center"><%- i18next.t("Visibility") %></th>
+						  <th rowspan="2" class="text-center th-width-sm"><%- i18next.t("Visibility") %></th>
 						</tr>
 						<tr class="active">
 						  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="list_count" data-direction="desc"  title="<%- i18next.t('Open') %>"><%- i18next.t("Open") %></span></th>

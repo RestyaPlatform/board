@@ -4,7 +4,7 @@
  *	App.boards						: this object contain all boards(Based on logged in user)
  *	this.model						: board user model
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -24,6 +24,7 @@ App.BoardUserActionsView = Backbone.View.extend({
         'click .js-no-action': 'noAction',
         'click .js-edit-board-member-permission': 'editBoardMemberPermission',
         'click .js-close-popup': 'closePopup',
+        'click .js-user-profile': 'redirectToUserProfile',
     },
     /**
      * Constructor
@@ -98,6 +99,7 @@ App.BoardUserActionsView = Backbone.View.extend({
         var target = $(e.currentTarget);
         this.model.url = api_url + 'boards_users/' + this.model.attributes.id + '.json';
         this.model.set('board_user_role_id', target.data('board_user_role_id'));
+        this.model.set('board_name', this.model.collection.board.attributes.name);
         this.model.save({
             board_user_role_id: target.data('board_user_role_id')
         }, {
@@ -120,6 +122,21 @@ App.BoardUserActionsView = Backbone.View.extend({
         var el = this.$el;
         var target = el.find(e.target);
         target.parents('div.dropdown:first, li.dropdown:first').removeClass('open');
+        return false;
+    },
+    /**
+     * redirectToUserProfile()
+     * redirect to user profile
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    redirectToUserProfile: function(e) {
+        var user_id = $(e.currentTarget).data('id');
+        app.navigate('#/user/' + user_id, {
+            trigger: true
+        });
         return false;
     }
 });

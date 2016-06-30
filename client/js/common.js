@@ -16,26 +16,6 @@ $(window).resize(function() {
 });
 var $dc = $(document);
 $dc.ready(function() {
-    if ($.cookie('_geo') === null) {
-        $.ajax({
-            type: 'GET',
-            url: '//freegeoip.net/json/',
-            dataType: 'JSONP',
-            cache: true,
-            success: function(data) {
-                data.country_code = (data.country_code !== undefined && data.country_code !== null) ? data.country_code : "";
-                data.region = (data.region_name !== undefined && data.region_name !== null) ? data.region_name : "";
-                data.city = (data.city !== undefined && data.city !== null) ? data.city : "";
-                data.latitude = (data.latitude !== undefined && data.latitude !== null) ? data.latitude : "";
-                data.longitude = (data.longitude !== undefined && data.longitude !== null) ? data.longitude : "";
-                var geo = data.country_code + '|' + data.region + '|' + data.city + '|' + data.latitude + '|' + data.longitude;
-                $.cookie('_geo', geo, {
-                    expires: 100,
-                    path: '/'
-                });
-            }
-        });
-    }
     $dc.on('click', '.js-cancel-organization', function(e) {
         var target = $(e.target);
         target.parents('li.dropdown').removeClass('open');
@@ -79,6 +59,9 @@ $dc.ready(function() {
         });
         return false;
     });
+    if ((navigator.userAgent.toLowerCase().indexOf('android') > -1) && (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)) {
+        $('body').append('<div class="modal fade" id="add_home_modal" tabindex="-1" role="dialog" aria-hidden="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" id="js-cssilize-close">x</span><span class="sr-only">Close</span></button><div class="media list-group-item-heading"><div class="media-body"><h4 class="modal-title" id="exampleModalLabel">Install this webapp to your phone</h4></div></div></div><div class="modal-body import-block"><ul><li>Add Restyaboard to homescreen.</li><li>Tap <i class="icon-ellipsis-vertical"></i>to bring up your browser menu and select \'Add to homescreen\' to pin the Restyaboard web app.</li></ul></div></div></div></div>');
+    }
 });
 (function($) {
     $.fn.serializeObject = function() {

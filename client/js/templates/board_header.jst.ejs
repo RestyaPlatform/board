@@ -128,7 +128,7 @@
 								<div class="js-add-board-member-dropdown dropdown inner-dropdown col-xs-12"> 
 									<a href="#" class="text-muted" data-toggle="dropdown"><%- i18next.t('Add Member') %>...</a>
 									<ul class="dropdown-menu arrow">
-										<li class="js-dropdown-popup dropdown-popup">
+										<li>
 										  <div class="col-xs-12 text-center clearfix">
 											<span class="col-xs-10"><strong><%- i18next.t('Members') %></strong></span><a class="js-close-popover-board-member-dropdown pull-right" href="#"><i class="icon-remove"></i></a>										
 										  </div> 
@@ -141,10 +141,10 @@
 											  </div>
 											</form>
 										  </div>
-										  <ul class="list-unstyled js-board-member-search-response col-xs-12 pre-scrollable vertical-scrollbar">
-											<li class="clearfix small"><%- i18next.t('Search for a person in %s by name or email address.', { postProcess: 'sprintf', sprintf: [SITE_NAME]}) %></li>
-										  </ul>
-										</li>
+										  </li>
+										  <li class="js-board-member-search-response col-xs-12 pre-scrollable vertical-scrollbar">
+											<span class="small"><%- i18next.t('Search for a person in %s by name or email address.', { postProcess: 'sprintf', sprintf: [SITE_NAME]}) %></span>
+										 </li>
 									</ul>
 								</div>
 							</li>
@@ -237,7 +237,7 @@
 								<a href="#" class="js-show-unsubscribe-form navbar-btn h4 list-group-item-text" name="unsubscribe" title="<%- i18next.t('Subscribed') %>"><i class="icon-eye-close"></i><span class="hidden-xs"><%- i18next.t('Subscribed') %> <i class="icon-ok js-filter-icon cur"></i></span></a>
 								<% } %>
 								<% } else {%>  
-								<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "subscribe_board",board_user_role_id: parseInt(board.board_user_role_id)})))){ %>
+								<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || ((!_.isEmpty(board.acl_links.where({slug: "subscribe_board",board_user_role_id: parseInt(board.board_user_role_id)})))  || (!_.isEmpty(role_links.where({slug: "subscribe_board"})) && board.attributes.board_visibility == 2)))){ %>
 								<a href="#" class="js-show-subscribe-form navbar-btn h4" name="subscribe" title="<%- i18next.t('Subscribe') %>"><i class="icon-eye-open"></i><span class="hidden-xs"><%- i18next.t('Subscribe') %></span></a>
 								<% } %>
 								<% } %>
@@ -260,15 +260,18 @@
 								 }
 							%>
 							<li><a href="#" class="nav-list-item nav-list-sub-item js-change-background"> <%- i18next.t('Change Background') %></a></li>
+							<% if(!_.isEmpty(IMAP_EMAIL)){ %>
 							<li><a href="#" class="nav-list-item nav-list-sub-item js-email-to-board-settings"> <%- i18next.t('Email to board settings') %></a></li>
+							<% } %>
 							<% }%>
 							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "copy_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
 							<li class="js-sync-google-dropdown inner-dropdown"><a data-toggle="dropdown" href="#" class="js-show-copy-board"><%- i18next.t('Copy board') %></a>
 							</li>
+							<% }%>
+							<% }%>
 							<li class="divider"></li>
-							<% }%>
-							<% }%>
 							<li><a href="#" class="js-show-board-modal" data-toggle="modal" data-target="#modalListView"><%- i18next.t('Show Attachments') %></a></li>
+							<li><a href="#" class="js-show-chat-history-modal" data-toggle="modal" data-target="#modalChatHistoryView"><%- i18next.t('Show Chat History') %></a></li>
 							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
 							<li><a href="#" class="js-additional-settings"><%- i18next.t('Additional Settings') %></a></li>
 							<li class="divider"></li>

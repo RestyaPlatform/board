@@ -1,0 +1,292 @@
+			<div class="clearfix bg-grey search-block row"  id="search-page-result">
+			  <div class="clearfix">
+				<ul class="list-inline text-right navbar-btn">
+					<li>
+						<a href="http://restya.com/board/docs/search?utm_source=Restyaboard&utm_medium=web&utm_campaign=search" title="Search Help" target="_blank">Search Help</a>
+					</li>
+					<li class="js-search-block-close">
+						<a href="javascript:void(0)" class="text-muted" title="Close"><i class="icon-remove text-muted h2"></i></a>
+					</li>
+				</ul>
+				<% if(!_.isEmpty(search_result)) { %>
+				<div class="well-sm col-xs-12">
+				&nbsp;Search results for <strong><%- search_result.search_term %></strong>
+				</div>
+				<% } %>
+				<div class="col-xs-12 navbar-btn">
+					<ul class="list-unstyled navbar-btn">
+							<% if(!_.isUndefined(search_result.boards)) { %>
+							<li>
+							    <strong>Matched in <%- search_result.metadata.boards.count %> boards</strong>
+								<div class="panel clearfix">
+									<ul class="list-inline panel-body">
+										<% _.each(search_result.boards, function(item, key) { %> 
+											<li class="col-sm-2 navbar-btn"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center htruncate" title="<%- item.board_name %>" href="#/board/<%- item.board_id %>"><%- item.board_name %></a></li>
+										<% }); %> 
+									</ul>
+								</div>
+							</li>
+							<%
+							 if (search_result.metadata.boards.count > 10 && search_result.metadata.boards.count > ((search_result.metadata.boards.page > 1)? (parseInt(search_result.metadata.boards.page) * 20) - 10 : search_result.metadata.boards.page * 10)) {
+							 %>
+							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- parseInt(search_result.metadata.boards.page) + 1 %>" data-for="boards">
+							 <a href="javascript:void(0)" class="Load More Boards">Load More Boards</a>
+							 </li>
+							 <%
+							 }
+							 %>
+							 <hr class="col-xs-12">
+							<% } %> 
+							<% if(!_.isUndefined(search_result.lists)) { %>
+							<li>
+							    <strong>Matched in <%- search_result.metadata.lists.count %> lists</strong>
+								<div class="panel clearfix">
+									<ul class="list-inline panel-body">
+										<% _.each(search_result.lists, function(item, key) { %> 
+											<li class="col-sm-2"><span class="pull-left navbar-btn"><%- (key + 1) %>. &nbsp;</span><a class="thumbnail list-group-item-text text-center htruncate" title="<%- item.list_name %>" href="#/board/<%- item.board_id %>"><%= item.board_name + ' &raquo; ' + item.list_name %></a></li>
+										<% }); %> 
+									</ul>
+								</div>
+								<hr class="col-xs-12">
+							</li>
+							<%
+							 if (search_result.metadata.lists.count > 10 && search_result.metadata.lists.count > ((search_result.metadata.lists.page > 1)? (parseInt(search_result.metadata.lists.page) * 20) - 10 : search_result.metadata.lists.page * 10)) {
+							 %>
+							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- parseInt(search_result.metadata.lists.page) + 1 %>" data-for="lists">
+							 <a href="javascript:void(0)" class="Load More Lists">Load More Lists</a>
+							 </li>
+							 <%
+							 }
+							 %>
+							<% } %> 
+							<% if(!_.isUndefined(search_result.cards_labels)) { %>
+							  <li class="list-view clearfix">
+							  <strong>Matched in <%- search_result.metadata.cards_labels.count %> labels</strong>
+							  <% _.each(search_result.cards_labels, function(item, key) { %> 
+							  <div class="col-xs-12 panel">
+								<ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
+									  <li class="col-md-1"><span title="#<%- item.id %>">#<%- item.id %></span></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.board_name %>"><%- item.board_name %></a></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.name %>" ><%- item.name %></a></li>
+									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
+									  <li><span title="Attachments"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></span> </li>
+									   <li><span title="Comments"><i class="icon-comment"></i><small><%- item.attachment_count %></small></span></li>
+									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
+									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
+										  <li><a title="Due date" href="javascript:void(0)"><small><span class="label label-danger">
+										  <%
+											card_due_date = item.due_date;
+											var today = new Date();
+											var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+											var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+											var due_date = new Date(card_due_date);
+											var diff = Math.floor(due_date.getTime() - today.getTime());
+											var day = 1000 * 60 * 60 * 24;var days = Math.floor(diff / day);
+											var months = Math.floor((days + (today.getDate() + 1)) / next_month_last_day.getDate());var years = Math.floor(months / 12);var week = days - (6 - (today.getDay()));
+											var label = 'label-default';
+											if (years < 0 || months < 0 || days <= -1) {
+												label = 'label-danger';
+											}
+											var date_time = item.due_date.split('T');
+											date_time = date_time[0].split(' '); 
+										  %>
+										  <%= dateFormat(date_time[0], "mediumDate") %>
+										  </span></small></a></li>
+									  <% } %> 
+									  <li class="col-md-6 pull-right"><% if (!_.isUndefined(item.highlight)) { %><p class="htruncate"><%= item.highlight['cards_labels.name'] %></p><% } %></li>
+								</ul>
+								</div>
+							  <% }); %> 
+							</li>
+							<%
+							 if (search_result.metadata.cards_labels.count > 10 && search_result.metadata.cards_labels.count > ((search_result.metadata.cards_labels.page > 1)? (parseInt(search_result.metadata.cards_labels.page) * 20) - 10 : search_result.metadata.cards_labels.page * 10)) {
+							 %>
+							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- parseInt(search_result.metadata.cards_labels.page) + 1 %>" data-for="cards_labels">
+							 <a href="javascript:void(0)" class="Load More Labels">Load More Labels</a>
+							 </li>
+							 <%
+							 }
+							 %>
+							<hr class="col-xs-12">
+							<% } %> 
+							<% if(!_.isUndefined(search_result.comments)) { %>
+							   <li class="list-view"><strong>Matched in <%- search_result.metadata.comments.count %> Comments</strong>
+							    <% _.each(search_result.comments, function(item, key) { %> 
+								  <div class="col-xs-12 panel">
+									<ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
+									  <li class="col-md-1"><span title="#<%- item.id %>">#<%- item.id %></span></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.board_name %>" ><%- item.board_name %></span></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.name %>"><%- item.name %></span></li>
+									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
+									  <li><a title="Attachments" href="javascript:void(0)"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
+									   <li><a title="Comments" href="javascript:void(0)"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
+									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
+									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
+										  <li><a title="Due date" href="javascript:void(0)"><small><span class="label label-danger">
+										  <%
+											card_due_date = item.due_date;
+											var today = new Date();
+											var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+											var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+											var due_date = new Date(card_due_date);
+											var diff = Math.floor(due_date.getTime() - today.getTime());
+											var day = 1000 * 60 * 60 * 24;var days = Math.floor(diff / day);
+											var months = Math.floor((days + (today.getDate() + 1)) / next_month_last_day.getDate());var years = Math.floor(months / 12);var week = days - (6 - (today.getDay()));
+											var label = 'label-default';
+											if (years < 0 || months < 0 || days <= -1) {
+												label = 'label-danger';
+											}
+											var date_time = item.due_date.split('T');
+											date_time = date_time[0].split(' '); 
+										  %>
+										  <%= dateFormat(date_time[0], "mediumDate") %>
+										  </span></small></a></li>
+									  <% } %>
+									  <li class="col-md-6 pull-right"><% if (!_.isUndefined(item.highlight)) { %><p class="htruncate"><%= item.highlight['activities.comment'] %></p><% } %></li>
+								</ul>
+							  </div>
+							  <% }); %>
+							 </li>
+							 <%
+							 if (search_result.metadata.comments.count > 10 && search_result.metadata.comments.count > ((search_result.metadata.comments.page > 1)? (parseInt(search_result.metadata.comments.page) * 20) - 10 : search_result.metadata.comments.page * 10)) {
+							 %>
+							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- parseInt(search_result.metadata.comments.page) + 1 %>" data-for="cards_comments">
+							 <a href="javascript:void(0)" class="Load More Comments">Load More Comments</a>
+							 </li>
+							 <%
+							 }
+							 %>
+							 <hr class="col-xs-12">
+							 <% } %>
+							 <% if(!_.isUndefined(search_result.chats)) { %>
+							 <li class="list-view"><strong>Matched in 50 chats</strong>
+							  <div class="panel clearfix">
+								  <ul class="list-inline panel-body">
+									  <li class="col-md-1"><a title="#750" href="javascript:void(0)">#750</a></li>
+									  <li class="col-md-1"><a title="Card3" href="javascript:void(0)">Card 3</a></li>
+									  <li><a title="Votes" href="javascript:void(0)"><i class="icon-thumbs-up"></i><small>0</small></a> </li>
+									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
+									  <li><a title="Attachments" href="javascript:void(0)"><i class="icon-paper-clip"></i><small>5</small></a> </li>
+									  <li><a title="Comments" href="javascript:void(0)"><i class="icon-comment"></i><small>15</small></a></li>
+									  <li><a title="Checklists" href="javascript:void(0)"><i class="icon-ok-sign"></i><small>0/2</small></a> </li>
+									  <li><a title="Due date" href="javascript:void(0)"><small><span class="label label-default">Feb 10, 2015</span></small></a></li>
+									  <li class="col-md-6 pull-right"><p class="htruncate">Lorem Ipsum is simply <span class="bg-search">dummy</span> text of the printing and typesetting industry</p></li>
+								</ul>
+							  </div>
+							 </li>
+							<hr class="col-xs-12">
+						   <% } %>
+						   <% if(!_.isUndefined(search_result.checklists)) { %>
+							 <li class="list-view"><strong>Matched in  <%- search_result.metadata.checklists.count %> Checklists</strong>
+							   <% _.each(search_result.checklists, function(item, key) { %> 
+							    <div class="col-xs-12 panel">
+								   <ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
+									  <li class="col-md-1"><span title="#<%- item.id %>">#<%- item.id %></span></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.board_name %>"><%- item.board_name %></span></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.name %>"><%- item.name %></span></li>
+									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
+									  <li><a title="Attachments" href="javascript:void(0)"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
+									   <li><a title="Comments" href="javascript:void(0)"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
+									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
+									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
+										  <li><a title="Due date" href="javascript:void(0)"><small><span class="label label-danger">
+										  <%
+											card_due_date = item.due_date;
+											var today = new Date();
+											var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+											var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+											var due_date = new Date(card_due_date);
+											var diff = Math.floor(due_date.getTime() - today.getTime());
+											var day = 1000 * 60 * 60 * 24;var days = Math.floor(diff / day);
+											var months = Math.floor((days + (today.getDate() + 1)) / next_month_last_day.getDate());var years = Math.floor(months / 12);var week = days - (6 - (today.getDay()));
+											var label = 'label-default';
+											if (years < 0 || months < 0 || days <= -1) {
+												label = 'label-danger';
+											}
+											var date_time = item.due_date.split('T');
+											date_time = date_time[0].split(' '); 
+										  %>
+										  <%= dateFormat(date_time[0], "mediumDate") %>
+										  </span></small></a></li>
+									  <% } %> 
+									  <li class="col-md-6 pull-right"><% if (!_.isUndefined(item.highlight)) { %><p class="htruncate"><%= item.highlight['cards_checklists.checklist_item_name'] %></p><% } %></li>
+								</ul>
+							  </div>
+							  <% }); %>
+							 </li>
+							 <%							 
+							 if (search_result.metadata.checklists.count > 10 && search_result.metadata.checklists.count > ((search_result.metadata.checklists.page > 1)? (parseInt(search_result.metadata.checklists.page) * 20) - 10 : search_result.metadata.checklists.page * 10)) {
+							 %>
+							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- parseInt(search_result.metadata.checklists.page) + 1 %>" data-for="cards_checklists">
+							 <a href="javascript:void(0)" class="Load More Checklists">Load More Checklists</a>
+							 </li>
+							 <%
+							 }
+							 %>
+							  <hr class="col-xs-12">
+							 <% } %>
+							 <% if(!_.isUndefined(search_result.cards)) { %>
+							   <li class="list-view"><strong>Matched in <%- search_result.metadata.cards.count %> cards</strong>
+							   <% _.each(search_result.cards, function(item, key) { %> 
+								<div class="col-xs-12 panel">
+								   <ul class="list-inline row panel-body js-open-search-model-card-view cur" data-board_id="<%- item.board_id%>" data-list_id="<%- item.list_id%>" data-card_id="<%- item.id%>">
+									  <li class="col-md-1"><span title="#<%- item.id %>">#<%- item.id %></span></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.board_name %>"><%- item.board_name %></span></li>
+									  <li class="col-md-1 htruncate"><span title="<%- item.name %>"><%- item.name %></span></li>
+									  <li><span title="Votes"><i class="icon-thumbs-up"></i><small><%- item.vote_count %></small></span> </li>
+									  <li><a title="Attachments" href="javascript:void(0)"><i class="icon-paper-clip"></i><small><%- item.attachment_count %></small></a> </li>
+									   <li><a title="Comments" href="javascript:void(0)"><i class="icon-comment"></i><small><%- item.attachment_count %></small></a></li>
+									   <li><small><span class="icon-list-ul"></span><span><%- item.checklist_item_completed_count %>/<%- item.checklist_item_count %></span></small></li>
+									  <% if(!_.isUndefined(item.due_date) && item.due_date != null){ %>
+										  <li><a title="Due date" href="javascript:void(0)"><small><span class="label label-danger">
+										  <%
+											card_due_date = item.due_date;
+											var today = new Date();
+											var last_day = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+											var next_month_last_day = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+											var due_date = new Date(card_due_date);
+											var diff = Math.floor(due_date.getTime() - today.getTime());
+											var day = 1000 * 60 * 60 * 24;var days = Math.floor(diff / day);
+											var months = Math.floor((days + (today.getDate() + 1)) / next_month_last_day.getDate());var years = Math.floor(months / 12);var week = days - (6 - (today.getDay()));
+											var label = 'label-default';
+											if (years < 0 || months < 0 || days <= -1) {
+												label = 'label-danger';
+											}
+											var date_time = item.due_date.split('T');
+											date_time = date_time[0].split(' '); 
+										  %>
+										  <%= dateFormat(date_time[0], "mediumDate") %>
+										  </span></small></a></li>
+									  <% } %> 
+									  <li class="col-md-6 pull-right"><% if (!_.isUndefined(item.highlight)) { %><p class="htruncate"><%= 
+									  (!_.isUndefined(item.highlight.description))? item.highlight.description : item.highlight.name %></p> <% } else if (!_.isUndefined(item.description) && item.description != null) {
+									  %>
+									  <p class="htruncate"><%= 
+									  item.description %></p>
+									  <%
+									  } %></li>
+								</ul>
+							  </div>
+							  <% }); %>  
+							 </li>
+							 <%
+							 if (search_result.metadata.cards.count > 10 && search_result.metadata.cards.count > ((search_result.metadata.cards.page > 1)? (parseInt(search_result.metadata.cards.page) * 20) - 10 : search_result.metadata.cards.page * 10)) {
+							 %>
+							 <li class="pull-right js-load-more-search" data-search="<%- search_result.search_term %>" data-page="<%- parseInt(search_result.metadata.cards.page) + 1 %>" data-for="cards">
+							 <a href="javascript:void(0)" class="Load More Cards">Load More Cards</a>
+							 </li>
+							 <%
+							 }
+							 %>
+							 <hr class="col-xs-12">
+							<% } %>
+						</ul>
+				</div>
+			  </div>
+				<% if(_.isEmpty(search_result)) { %>
+				<div class="well-lg"></div>
+				<div class="well-lg"></div>
+				<div class="well-lg"></div>
+				<div class="text-center text-danger col-sm-6 col-sm-offset-3">No Results Found</div>
+				<% } %>
+			</div>

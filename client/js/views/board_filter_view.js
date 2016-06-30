@@ -5,7 +5,7 @@
  *	this.model						: board model. It contain all board based object @see Available Object in App.BoardView
  *	this.model.labels				: labels collection
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -28,7 +28,7 @@ App.BoardFilterView = Backbone.View.extend({
     },
     template: JST['templates/board_filter'],
     tagName: 'li',
-    converter: new Showdown.converter(),
+    converter: new showdown.Converter(),
     /**
      * render()
      * populate the html to the dom

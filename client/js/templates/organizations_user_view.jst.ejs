@@ -45,6 +45,7 @@
 					<td>
 						<div class="clearfix">
 						<span class="pull-left navbar-btn">
+							<a href="#/user/<%-organizations_user.attributes.user_id %>">
 							<% if(!_.isEmpty(organizations_user.attributes.profile_picture_path)) {
 								 var profile_picture_path = organizations_users.showImage('User', organizations_user.attributes.user_id, 'small_thumb' );
 							%>
@@ -52,9 +53,10 @@
 							<% } else {%>
 								<i data-toggle="tooltip" data-placement="bottom" data-original-title="<%- organizations_user.attributes.username %>" class="avatar avatar-color-194 img-rounded"><%- organizations_user.attributes.initials %></i>									
 							<% } %>
+							</a>
 						</span>
-							<div class="pull-left col-xs-5">
-								<h4 class="list-group-item-text list-group-item-heading"><%- organizations_user.attributes.full_name %> (<%- organizations_user.attributes.username %>)</h4>
+							<div class="pull-left col-xs-10">
+								<h4 class="list-group-item-text list-group-item-heading"><a href="#/user/<%-organizations_user.attributes.user_id %>"><%- organizations_user.attributes.full_name %></a></h4>
 								<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
 									<span class="show"><a href="#/user/<%-organizations_user.attributes.user_id %>"><%- organizations_user.attributes.username %></a></span>
 								<% } else { %>
@@ -95,7 +97,7 @@
 													<span class="caret"></span>
 													<span class="sr-only"><%- i18next.t('Toggle Dropdown') %></span>
 												</button>      
-												<ul class="dropdown-menu arrow arrow-right js-show-organization-member-permission-form-response">
+												<ul class="dropdown-menu arrow arrow-right js-show-organization-member-permission-form-response pre-scrollable vertical-scrollbar">
 												</ul>
 											</div>
 										</li>

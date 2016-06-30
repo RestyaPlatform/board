@@ -16,7 +16,7 @@
  *	this.model.lists				: lists collection(Based on board) 
  *	this.model.labels 			   	: labels collection(Based on board)
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -1264,5 +1264,20 @@ App.BoardView = Backbone.View.extend({
     },
     showBoardMemberRemoveForm: function(e) {
         e.preventDefault();
-    }
+    },
+    /**
+     * showChatHistoryModal()
+     * display the chat history in the list
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showChatHistoryModal: function(e) {
+        var modalView = new App.ModalChatHistoryView({
+            model: this.model
+        });
+        modalView.show();
+        return false;
+    },
 });

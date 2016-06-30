@@ -4,7 +4,7 @@
  *	App.boards						: this object contain all boards(Based on logged in user)
  *	this.model						: page view id.
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 App.SettingView = Backbone.View.extend({
@@ -72,6 +72,9 @@ App.SettingView = Backbone.View.extend({
     updateSetting: function(e) {
         var target = $(e.currentTarget);
         var data = target.serializeObject();
+        if (!_.isUndefined(data.DEFAULT_CARD_VIEW)) {
+            DEFAULT_CARD_VIEW = data.DEFAULT_CARD_VIEW;
+        }
         if (!_.isUndefined(data.LDAP_LOGIN_ENABLED) && $('.js-checkbox').is(":checked")) {
             data.LDAP_LOGIN_ENABLED = 'true';
         } else {

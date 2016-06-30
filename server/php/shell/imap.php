@@ -20,7 +20,10 @@ if (!extension_loaded('imap')) {
     exit;
 }
 // Connect imap server
-$connection = imap_open('{' . IMAP_HOST . ':' . IMAP_PORT . '/imap/ssl/novalidate-cert/notls}INBOX', IMAP_EMAIL, IMAP_EMAIL_PASSWORD);
+$imap_email_password = IMAP_EMAIL_PASSWORD;
+$imap_email_password_decode = base64_decode($imap_email_password);
+$imap_email_password = str_rot13($imap_email_password_decode);
+$connection = imap_open('{' . IMAP_HOST . ':' . IMAP_PORT . '/imap/ssl/novalidate-cert/notls}INBOX', IMAP_EMAIL, $imap_email_password);
 if (!$connection) {
     return;
 }
@@ -79,6 +82,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                     $card = pg_fetch_assoc($card_query);
                     $card_id = $card['id'];
                 } else {
+                    $body = imap_fetchbody($connection, $counter, 1);
                     // To email address is for specific card then insert the email as card comment
                     $val_arr = array(
                         $card_id
@@ -181,11 +185,24 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                     }
                     if (empty($file_attachments)) {
                         $body = imap_fetchbody($connection, $counter, 1);
+                        // To email address is for specific card then insert the email as card comment
                         $val_arr = array(
-                            $body,
                             $card_id
                         );
-                        $card_query = pg_query_params('UPDATE cards SET description = $1 WHERE id = $2', $val_arr);
+                        // Fetching list_id to update in card comment
+                        $card_query = pg_query_params('SELECT list_id FROM cards WHERE id = $1', $val_arr);
+                        $card = pg_fetch_assoc($card_query);
+                        $list_id = $card['list_id'];
+                        $val_arr = array(
+                            $card_id,
+                            $board['user_id'],
+                            $list_id,
+                            $board_id,
+                            'add_comment',
+                            $body
+                        );
+                        // Insert email content as comment in respective card
+                        pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
                     }
                 }
             }

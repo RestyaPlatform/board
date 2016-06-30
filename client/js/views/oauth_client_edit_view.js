@@ -4,7 +4,7 @@
  *	App.boards						: this object contain all boards(Based on logged in user)
  *	this.model						: user model.
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -72,7 +72,7 @@ App.OauthClientEditView = Backbone.View.extend({
             cache: false,
             abortPending: true,
             success: function(collections, response) {
-                self.render(response.data[0]);
+                self.render(response);
             }
         });
     },

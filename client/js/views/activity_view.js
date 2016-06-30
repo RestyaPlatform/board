@@ -5,7 +5,7 @@
  *	App.boards						: this object contain all boards(Based on logged in user)
  *	this.model						: activity model and it's related values
  */
-if (typeof App == 'undefined') {
+if (typeof App === 'undefined') {
     App = {};
 }
 /**
@@ -29,7 +29,7 @@ App.ActivityView = Backbone.View.extend({
         if (!_.isUndefined(options.board)) {
             this.board = options.board;
         }
-        if (!_.isUndefined(this.model.board_users)) {
+        if (!_.isUndefined(authuser.user) && !_.isUndefined(this.model.board_users)) {
             var board_user_role_id = this.model.board_users.findWhere({
                 user_id: parseInt(authuser.user.id)
             });
@@ -39,7 +39,7 @@ App.ActivityView = Backbone.View.extend({
         }
         emojify.run();
     },
-    converter: new Showdown.converter(),
+    converter: new showdown.Converter(),
     template: JST['templates/activity'],
     tagName: 'li',
     className: 'btn-block col-xs-12 js-activity',
