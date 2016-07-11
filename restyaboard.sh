@@ -1022,13 +1022,15 @@
 			if [ "$?" -gt 0 ];
 			then
 				echo "Installing php-imagick..."
-				yum install ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
+
+				yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
 				yum install php-pear
 				if [ $? != 0 ]
 				then
 					echo "Installing php-imagick failed with error code 26"
 					exit 1
 				fi
+
 				cd /usr/local/src
 				wget http://pecl.php.net/get/imagick-2.2.2.tgz
 				tar zxvf ./imagick-2.2.2.tgz
@@ -1091,7 +1093,8 @@
 							exit 1
 						fi
 					fi
-					yum install -y postgresql94-server postgresql04-contrib
+
+					yum install -y postgresql94-server postgresql94-contrib
 					if [ $? != 0 ]
 					then
 						echo "postgresql04-contrib installation failed with error code 29"
@@ -1110,6 +1113,7 @@
 						/etc/init.d/postgresql-9.4 start
 						chkconfig --levels 35 postgresql-9.4 on
 					fi
+
 					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /var/lib/pgsql/9.4/data/pg_hba.conf > /var/lib/pgsql/9.4/data/pg_hba.conf.1
 					cd /var/lib/pgsql/9.4/data || exit
 					mv pg_hba.conf pg_hba.conf_old
@@ -1424,4 +1428,5 @@
 		esac
 	fi
 	set +x
+	echo "Login with username admin and password restya"
 } 2>&1 | tee -a restyaboard_install.log
