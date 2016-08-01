@@ -113,7 +113,6 @@
 				if [ $? != 0 ]
 				then
 					echo "GeoIP folder creation failed with error code 52"
-					exit 1
 				fi
 				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
 				gunzip GeoIP.dat.gz
@@ -248,7 +247,6 @@
 				if [ $? != 0 ]
 				then
 					echo "GeoIP folder creation failed with error code 48"
-					exit 1
 				fi
 				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
 				gunzip GeoIP.dat.gz
@@ -793,7 +791,6 @@
 			if [ $? != 0 ]
 			then
 				echo "GeoIP folder creation failed with error code 52"
-				exit 1
 			fi
 			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
 			gunzip GeoIP.dat.gz
@@ -1329,7 +1326,6 @@
 			if [ $? != 0 ]
 			then
 				echo "GeoIP folder creation failed with error code 48"
-				exit 1
 			fi
 			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
 			gunzip GeoIP.dat.gz
