@@ -750,8 +750,10 @@
 			echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
 			echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
 
+			set +x
 			echo "Do you want to setup SMTP configuration (y/n)?"
 			read -r answer
+			set -x
 			case "${answer}" in
 				[Yy])
 				echo "Enter SMTP server address (e.g., smtp.gmail.com)"
@@ -1270,8 +1272,10 @@
 			echo "Reset php-fpm (use unix socket mode)..."
 			sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf
 
+			set +x
 			echo "Do you want to setup SMTP configuration (y/n)?"
 			read -r answer
+			set -x
 			case "${answer}" in
 				[Yy])
 				echo "Enter SMTP server address (e.g., smtp.gmail.com)"
