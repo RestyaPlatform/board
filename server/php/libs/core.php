@@ -1078,7 +1078,7 @@ function importTrelloBoard($board = array())
         if (!empty($board['cards'])) {
             foreach ($board['cards'] as $card) {
                 $is_closed = ($card['closed']) ? 'true' : 'false';
-                $date = null;
+                $date = $card['due'];
                 $qry_val_arr = array(
                     $new_board['id'],
                     $lists[$card['idList']],
