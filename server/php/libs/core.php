@@ -1007,7 +1007,7 @@ function importTrelloBoard($board = array())
             }
         }
         $qry_val_arr = array(
-            $board['name'],
+            utf8_decode($board['name']),
             $board['prefs']['backgroundColor'],
             $background_image,
             $background_pattern,
@@ -1026,15 +1026,15 @@ function importTrelloBoard($board = array())
         if (!empty($board['members'])) {
             foreach ($board['members'] as $member) {
                 $qry_val_arr = array(
-                    $member['username']
+                    utf8_decode($member['username'])
                 );
                 $userExist = executeQuery('SELECT * FROM users WHERE username = $1', $qry_val_arr);
                 if (!$userExist) {
                     $qry_val_arr = array(
-                        $member['username'],
+                        utf8_decode($member['username']),
                         getCryptHash('restya') ,
-                        $member['initials'],
-                        $member['fullName']
+                        utf8_decode($member['initials']),
+                        utf8_decode($member['fullName'])
                     );
                     $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4) RETURNING id', $qry_val_arr));
                     $users[$member['id']] = $user['id'];
@@ -1065,7 +1065,7 @@ function importTrelloBoard($board = array())
                 $i+= 1;
                 $is_closed = ($list['closed']) ? 'true' : 'false';
                 $qry_val_arr = array(
-                    $list['name'],
+                    utf8_decode($list['name']),
                     $new_board['id'],
                     $i,
                     $user_id,
@@ -1082,8 +1082,8 @@ function importTrelloBoard($board = array())
                 $qry_val_arr = array(
                     $new_board['id'],
                     $lists[$card['idList']],
-                    $card['name'],
-                    $card['desc'],
+                    utf8_decode($card['name']),
+                    utf8_decode($card['desc']),
                     $is_closed,
                     $card['pos'],
                     $date,
@@ -1094,12 +1094,12 @@ function importTrelloBoard($board = array())
                 if (!empty($card['labels'])) {
                     foreach ($card['labels'] as $label) {
                         $qry_val_arr = array(
-                            $label['name']
+                            utf8_decode($label['name'])
                         );
                         $check_label = executeQuery('SELECT id FROM labels WHERE name = $1', $qry_val_arr);
                         if (empty($check_label)) {
                             $qry_val_arr = array(
-                                $label['name']
+                                utf8_decode($label['name'])
                             );
                             $check_label = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO labels (created, modified, name) VALUES (now(), now(), $1) RETURNING id', $qry_val_arr));
                         }
@@ -1157,7 +1157,7 @@ function importTrelloBoard($board = array())
             $checklists = array();
             foreach ($board['checklists'] as $checklist) {
                 $qry_val_arr = array(
-                    $checklist['name'],
+                    utf8_decode($checklist['name']),
                     $checklist['pos'],
                     $cards[$checklist['idCard']],
                     $user_id
@@ -1168,7 +1168,7 @@ function importTrelloBoard($board = array())
                     foreach ($checklist['checkItems'] as $checkItem) {
                         $is_completed = ($checkItem['state'] == 'complete') ? 'true' : 'false';
                         $qry_val_arr = array(
-                            $checkItem['name'],
+                            utf8_decode($checkItem['name']),
                             $checkItem['pos'],
                             $cards[$checklist['idCard']],
                             $_checklist['id'],
@@ -1188,13 +1188,13 @@ function importTrelloBoard($board = array())
                     $comment = $action['data']['text'];
                 } else if ($action['type'] == 'addMemberToCard') {
                     $type = 'add_card_user';
-                    $comment = '##USER_NAME## added "' . $action['member']['fullName'] . '" as member to this card ##CARD_LINK##';
+                    $comment = '##USER_NAME## added "' . utf8_decode($action['member']['fullName']) . '" as member to this card ##CARD_LINK##';
                 } else if ($action['type'] == 'createCard') {
                     $type = 'add_card';
-                    $comment = '##USER_NAME## added card ##CARD_LINK## to list "' . $action['data']['list']['name'] . '".';
+                    $comment = '##USER_NAME## added card ##CARD_LINK## to list "' . utf8_decode($action['data']['list']['name']) . '".';
                 } else if ($action['type'] == 'createList') {
                     $type = 'add_list';
-                    $comment = '##USER_NAME## added list "' . $action['data']['list']['name'] . '".';
+                    $comment = '##USER_NAME## added list "' . utf8_decode($action['data']['list']['name']) . '".';
                 } else if ($action['type'] == 'createBoard') {
                     $type = 'add_board';
                     $comment = '##USER_NAME## created board';
@@ -1221,7 +1221,7 @@ function importTrelloBoard($board = array())
                         $comment = '##USER_NAME## archived ##LIST_NAME##';
                     } else if (!empty($action['data']['list']['pos'])) {
                         $type = 'change_list_position';
-                        $comment = '##USER_NAME## changed list ' . $action['data']['list']['name'] . ' position.';
+                        $comment = '##USER_NAME## changed list ' . utf8_decode($action['data']['list']['name']) . ' position.';
                     } else if (!empty($action['data']['list']['name'])) {
                         $type = 'edit_list';
                         $comment = '##USER_NAME## renamed this list.';
@@ -1232,7 +1232,7 @@ function importTrelloBoard($board = array())
                         $comment = '##USER_NAME## moved this card to different position.';
                     } else if (!empty($action['data']['card']['idList'])) {
                         $type = 'moved_list_card';
-                        $comment = '##USER_NAME## moved cards FROM ' . $action['data']['listBefore']['name'] . ' to ' . $action['data']['listAfter']['name'];
+                        $comment = '##USER_NAME## moved cards FROM ' . utf8_decode($action['data']['listBefore']['name']) . ' to ' . utf8_decode($action['data']['listAfter']['name']);
                     } else if (!empty($action['data']['card']['due'])) {
                         $type = 'add_card_duedate';
                         $comment = '##USER_NAME## SET due date to this card ##CARD_LINK##';
@@ -1241,7 +1241,7 @@ function importTrelloBoard($board = array())
                         $comment = '##USER_NAME## added card description in ##CARD_LINK## - ##DESCRIPTION##';
                     } else if (!empty($action['data']['card']['name'])) {
                         $type = 'edit_card';
-                        $comment = '##USER_NAME## edited ' . $action['data']['list']['name'] . ' card in this board.';
+                        $comment = '##USER_NAME## edited ' . utf8_decode($action['data']['list']['name']) . ' card in this board.';
                     }
                 } else if ($action['type'] == 'addChecklistToCard') {
                     $type = 'add_card_checklist';
@@ -1268,7 +1268,7 @@ function importTrelloBoard($board = array())
                     $cards[$action['data']['card']['id']],
                     $users[$action['idMemberCreator']],
                     $type,
-                    $comment
+                    utf8_decode($comment)
                 );
                 pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
             }
