@@ -603,6 +603,8 @@ App.BoardHeaderView = Backbone.View.extend({
     showLabels: function() {
         $('.js-side-bar-' + this.model.id).addClass('side-bar-large');
         var el = this.$el;
+        this.model.labels.setSortField('name', 'asc');
+        this.model.labels.sort();
         el.find('.js-setting-response').html(new App.BoardLabelsView({
             model: this.model,
             labels: this.model.labels
