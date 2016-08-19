@@ -1022,6 +1022,8 @@ App.ModalCardView = Backbone.View.extend({
      */
     closePopup: function(e) {
         var target = $(e.target);
+        var activity_id = $(e.currentTarget).data('activity-id');
+        $('.js-acticity-action-' + activity_id).removeAttr('style');
         target.parents('.dropdown:first').removeClass('open');
         return false;
     },
@@ -2305,6 +2307,7 @@ App.ModalCardView = Backbone.View.extend({
     showConfirmCommentDelete: function(e) {
         e.preventDefault();
         var activity_id = $(e.currentTarget).data('activity-id');
+        $('.js-acticity-action-' + activity_id).css('height', '165px');
         $(e.currentTarget).siblings('ul').find('#js-acticity-actions-response-' + activity_id).html(new App.ActivityDeleteConfirmView({
             model: activity_id
         }).el);
