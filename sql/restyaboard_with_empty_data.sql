@@ -3650,31 +3650,19 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_use
 39	2016-02-09 16:51:25.779	2016-02-09 16:51:25.779	View webhooks	/webhooks	GET	view_webhooks	2	1	0	0	0
 122	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Undo activity	/activities/undo/?	PUT	undo_activity	2	1	0	0	0
 123	2016-03-07 11:45:43.8	2016-03-07 11:45:43.8	User detail	/users/me	GET	user_detail	0	1	0	1	1
-40	2016-06-22 04:50:42.011	2016-06-22 04:50:42.011	Allow to post comments in public board	/boards/?/lists/?/cards/?/comments	POST	comment_card	2	1	0	0	0
-41	2016-06-22 04:50:42.011	2016-06-22 04:50:42.011	Allow to subscribe board in public board	/boards/?/board_subscribers	POST	subscribe_board	2	1	0	0	0
-42	2016-06-22 04:50:42.011	2016-06-22 04:50:42.011	Allow to subscribe list in public board	/boards/?/lists/?/list_subscribers	POST	subscribe_list	2	1	0	0	0
-43	2016-06-22 04:50:42.011	2016-06-22 04:50:42.011	Allow to subscribe card in public board	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_card	2	1	0	0	0
-124	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	XMPP chat login	/xmpp_login	GET	xmpp_login	2	1	0	1	0
-126	2016-06-22 04:50:42.236	2016-06-22 04:50:42.236	Role add	/roles	POST	role_add	1	0	0	1	1
-127	2016-06-22 04:50:42.236	2016-06-22 04:50:42.236	Board user role add	/board_user_roles	POST	board_user_role_add	1	0	0	1	1
-128	2016-06-22 04:50:42.236	2016-06-22 04:50:42.236	Organization user role add	/organization_user_roles	POST	organization_user_role_add	1	0	0	1	1
-129	2016-06-22 04:50:42.239	2016-06-22 04:50:42.239	Role edit	/roles/?	PUT	role_edit	1	0	0	1	1
-130	2016-06-22 04:50:42.239	2016-06-22 04:50:42.239	Board user role edit	/board_user_roles/?	PUT	board_user_role_edit	1	0	0	1	1
-131	2016-06-22 04:50:42.239	2016-06-22 04:50:42.239	Organization user role edit	/organization_user_roles/?	PUT	organization_user_role_edit	1	0	0	1	1
-40	2016-06-28 07:47:21.424	2016-06-28 07:47:21.424	Allow to post comments in public board	/boards/?/lists/?/cards/?/comments	POST	comment_card	2	1	0	0	0
-41	2016-06-28 07:47:21.424	2016-06-28 07:47:21.424	Allow to subscribe board in public board	/boards/?/board_subscribers	POST	subscribe_board	2	1	0	0	0
-42	2016-06-28 07:47:21.424	2016-06-28 07:47:21.424	Allow to subscribe list in public board	/boards/?/lists/?/list_subscribers	POST	subscribe_list	2	1	0	0	0
-43	2016-06-28 07:47:21.424	2016-06-28 07:47:21.424	Allow to subscribe card in public board	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_card	2	1	0	0	0
+40	2016-07-11 01:24:42.648	2016-07-11 01:24:42.648	Allow to post comments in public board	/boards/?/lists/?/cards/?/comments	POST	comment_card	2	1	0	0	0
+41	2016-07-11 01:24:42.648	2016-07-11 01:24:42.648	Allow to subscribe board in public board	/boards/?/board_subscribers	POST	subscribe_board	2	1	0	0	0
+42	2016-07-11 01:24:42.648	2016-07-11 01:24:42.648	Allow to subscribe list in public board	/boards/?/lists/?/list_subscribers	POST	subscribe_list	2	1	0	0	0
+43	2016-07-11 01:24:42.648	2016-07-11 01:24:42.648	Allow to subscribe card in public board	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_card	2	1	0	0	0
 21	2016-02-18 17:42:32.045	2016-02-18 17:42:32.045	Allow to star/unstar in public board, card in public board	/boards/?/boards_stars	POST	starred_board	2	1	0	0	0
-132	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	XMPP chat login	/xmpp_login	GET	xmpp_login	2	1	0	1	0
-134	2016-06-28 07:47:21.742	2016-06-28 07:47:21.742	Role add	/roles	POST	role_add	1	0	0	1	1
-135	2016-06-28 07:47:21.742	2016-06-28 07:47:21.742	Board user role add	/board_user_roles	POST	board_user_role_add	1	0	0	1	1
-136	2016-06-28 07:47:21.742	2016-06-28 07:47:21.742	Organization user role add	/organization_user_roles	POST	organization_user_role_add	1	0	0	1	1
-137	2016-06-28 07:47:21.747	2016-06-28 07:47:21.747	Role edit	/roles/?	PUT	role_edit	1	0	0	1	1
-138	2016-06-28 07:47:21.747	2016-06-28 07:47:21.747	Board user role edit	/board_user_roles/?	PUT	board_user_role_edit	1	0	0	1	1
-139	2016-06-28 07:47:21.747	2016-06-28 07:47:21.747	Organization user role edit	/organization_user_roles/?	PUT	organization_user_role_edit	1	0	0	1	1
+124	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	XMPP chat login	/xmpp_login	GET	xmpp_login	2	1	0	1	0
+126	2016-07-11 01:24:43.052	2016-07-11 01:24:43.052	Role add	/roles	POST	role_add	1	0	0	1	1
+127	2016-07-11 01:24:43.052	2016-07-11 01:24:43.052	Board user role add	/board_user_roles	POST	board_user_role_add	1	0	0	1	1
+128	2016-07-11 01:24:43.052	2016-07-11 01:24:43.052	Organization user role add	/organization_user_roles	POST	organization_user_role_add	1	0	0	1	1
+129	2016-07-11 01:24:43.057	2016-07-11 01:24:43.057	Role edit	/roles/?	PUT	role_edit	1	0	0	1	1
+130	2016-07-11 01:24:43.057	2016-07-11 01:24:43.057	Board user role edit	/board_user_roles/?	PUT	board_user_role_edit	1	0	0	1	1
+131	2016-07-11 01:24:43.057	2016-07-11 01:24:43.057	Organization user role edit	/organization_user_roles/?	PUT	organization_user_role_edit	1	0	0	1	1
 125	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	Chat History	/boards/?/chat_history	GET	chat_history	2	1	0	1	0
-133	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	Chat History	/boards/?/chat_history	GET	chat_history	2	1	0	1	0
 \.
 
 
@@ -3682,7 +3670,7 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_use
 -- Name: acl_links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('acl_links_id_seq', 139, true);
+SELECT pg_catalog.setval('acl_links_id_seq', 131, true);
 
 
 --
@@ -3767,14 +3755,14 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 75	2016-02-20 19:07:31.771	2016-02-20 19:07:31.771	9	2
 1218	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	122	1
 1219	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	123	2
-1220	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	40	1
-1221	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	40	2
-1222	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	41	1
-1223	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	41	2
-1224	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	42	1
-1225	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	42	2
-1226	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	43	1
-1227	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	43	2
+1220	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	40	1
+1221	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	40	2
+1222	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	41	1
+1223	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	41	2
+1224	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	42	1
+1225	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	42	2
+1226	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	43	1
+1227	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	43	2
 1228	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	124	1
 1229	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	124	2
 1230	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	125	1
@@ -3785,34 +3773,6 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 1235	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	129	1
 1236	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	130	1
 1237	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	131	1
-1238	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	40	1
-1239	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	40	2
-1240	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	41	1
-1241	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	41	2
-1242	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	42	1
-1243	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	42	2
-1244	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	43	1
-1245	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	43	2
-1246	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	124	1
-1247	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	132	1
-1248	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	124	2
-1249	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	132	2
-1250	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	125	1
-1251	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	133	1
-1252	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	125	2
-1253	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	133	2
-1254	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	126	1
-1255	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	134	1
-1256	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	127	1
-1257	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	135	1
-1258	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	128	1
-1259	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	136	1
-1260	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	129	1
-1261	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	137	1
-1262	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	130	1
-1263	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	138	1
-1264	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	131	1
-1265	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	139	1
 \.
 
 
@@ -3820,7 +3780,7 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 -- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1265, true);
+SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1237, true);
 
 
 --
@@ -5079,8 +5039,7 @@ COPY setting_categories (id, created, modified, parent_id, name, description, "o
 2	2014-11-08 02:52:08.822706	2014-04-28 17:01:11	\N	Login	\N	2
 10	2016-02-22 17:39:16.971	2016-02-22 17:39:16.971	\N	IMAP	\N	5
 11	2015-09-26 13:14:18	2015-09-26 13:14:18	\N	XMPP Chat	\N	5
-12	2016-06-22 04:50:42.248	2016-06-22 04:50:42.248	\N	Cards Workflow	\N	7
-13	2016-06-28 07:47:21.765	2016-06-28 07:47:21.765	\N	Cards Workflow	\N	7
+12	2016-07-11 01:24:43.075	2016-07-11 01:24:43.075	\N	Cards Workflow	\N	7
 \.
 
 
@@ -5088,7 +5047,7 @@ COPY setting_categories (id, created, modified, parent_id, name, description, "o
 -- Name: setting_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('setting_categories_id_seq', 13, true);
+SELECT pg_catalog.setval('setting_categories_id_seq', 12, true);
 
 
 --
@@ -5123,6 +5082,7 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 23	0	0	elasticsearch.last_processed_activity_id	0	\N	hidden	\N	Last Activity ID	3
 2	4	2	LDAP_SERVER	\N	The DNS name or IP address of the server (e.g., dc.domain.local)	text	\N	Server	4
 36	0	0	webhooks.last_processed_activity_id	0	\N	hidden	\N	Webhook Activity ID	0
+30	3	0	DEFAULT_CONTACT_EMAIL_ADDRESS	board@restya.com	It is used in all outgoing emails	text	\N	Contact Email Address	4
 37	11	0	BOSH_SERVICE_URL		\N	text	\N	Bosh Service URL	1
 38	11	0	JABBER_HOST		\N	text	\N	Jabber Host	2
 39	11	0	XMPP_CLIENT_RESOURCE_NAME		\N	text	\N	Client Resource Name	3
@@ -5130,16 +5090,7 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 43	12	0	TODO	To do, Todo, New, Probable sale		textarea	\N	Todo	8
 45	12	0	DONE	Done, Resolved, Closed, Completed sale		textarea	\N	Done	10
 44	12	0	DOING	Doing, Feedback, Confirmed, Assigned, Pending sale		textarea	\N	Doing	9
-30	3	0	DEFAULT_CONTACT_EMAIL_ADDRESS	board@restya.com	It is used in all outgoing emails	text	\N	Contact Email Address	4
-52	11	0	BOSH_SERVICE_URL		\N	text	\N	Bosh Service URL	1
-53	11	0	JABBER_HOST		\N	text	\N	Jabber Host	2
-54	11	0	XMPP_CLIENT_RESOURCE_NAME		\N	text	\N	Client Resource Name	3
-56	0	0	chat.last_processed_chat_id	0	\N	hidden	\N	Last Chat ID	1
-58	3	0	TODO	To do, Todo, New, Probable sale		textarea	\N	Todo	8
-59	3	0	DOING	Doing, Feedback, Confirmed, Assigned, Pending sale		textarea	\N	Doing	9
-60	3	0	DONE	Done, Resolved, Closed, Completed sale		textarea	\N	Done	10
 42	3	0	DEFAULT_CARD_VIEW	Maximized	\N	select	Maximized,Normal Dockmodal	Default Card Open	7
-57	3	0	DEFAULT_CARD_VIEW	Maximized	\N	select	Maximized,Normal Dockmodal	Default Card Open	7
 46	12	0	TODO_COLOR	#f47564		text	\N	Todo Color	1
 47	12	0	DOING_COLOR	#27c5c3		text	\N	Doing Color	2
 48	12	0	DONE_COLOR	#8dca35		text	\N	Done Color	3
@@ -5153,7 +5104,7 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 -- Name: settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('settings_id_seq', 60, true);
+SELECT pg_catalog.setval('settings_id_seq', 51, true);
 
 
 --
@@ -5201,8 +5152,8 @@ SELECT pg_catalog.setval('user_logins_id_seq', 2, true);
 --
 
 COPY users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count, language, timezone) FROM stdin;
-1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	media/User/1/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f	0	0	0	0	0	0	\N	\N
-2	2014-07-05 11:46:40.804	2014-07-05 11:46:40.804	2	user	board+user@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	User	U	\N	\N	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	0	\N	\N	\N	\N	f	0	f	0	0	0	0	0	0	\N	\N
+1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	media/User/1/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f	0	0	0	0	0	0	\N	+0530
+2	2014-07-05 11:46:40.804	2014-07-05 11:46:40.804	2	user	board+user@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	User	U	\N	\N	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	0	\N	\N	\N	\N	f	0	f	0	0	0	0	0	0	\N	+0530
 \.
 
 
