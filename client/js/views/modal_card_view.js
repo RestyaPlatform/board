@@ -985,7 +985,7 @@ App.ModalCardView = Backbone.View.extend({
     resizeSplitter: function() {
         $('.editor').each(function() {
             var $this = $(this);
-            var factor1 = window.sessionStorage.getItem('factor1');
+            var factor1 = $.cookie('factor1');
             if (factor1 === null) {
                 factor1 = '20';
                 factor2 = '80';
@@ -1002,7 +1002,7 @@ App.ModalCardView = Backbone.View.extend({
                     var factor = x * 100 / $(this).parent().width();
                     var f1 = factor;
                     var f2 = 100 - factor;
-                    window.sessionStorage.setItem('factor1', f1);
+                    $.cookie('factor1', f1);
                     $this.css('width', f1 + '%');
                     $this.next().css('width', f2 + '%');
                 }

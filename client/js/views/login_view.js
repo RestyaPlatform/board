@@ -68,11 +68,11 @@ App.LoginView = Backbone.View.extend({
                     auth_response.user.last_activity_id = response.user.last_activity_id;
                     auth_response.user.language = response.user.language;
                     auth_response.user.is_ldap = response.user.is_ldap;
-                    window.sessionStorage.setItem('auth', JSON.stringify(auth_response));
+                    $.cookie('auth', JSON.stringify(auth_response));
                     i18next.changeLanguage(response.user.language);
                     api_token = response.access_token;
                     var links = JSON.parse(response.links);
-                    window.sessionStorage.setItem('links', response.links);
+                    $.cookie('links', response.links);
                     role_links.reset();
                     if (!_.isEmpty(links)) {
                         role_links.add(links);
@@ -84,9 +84,9 @@ App.LoginView = Backbone.View.extend({
                     });
                     $('.company').addClass('hide');
                     $('#header').html(this.headerView.el);
-                    if (!_.isEmpty(window.sessionStorage.getItem('redirect_link'))) {
-                        var redirect_link = window.sessionStorage.getItem('redirect_link');
-                        sessionStorage.removeItem('redirect_link');
+                    if (!_.isEmpty($.cookie('redirect_link'))) {
+                        var redirect_link = $.cookie('redirect_link');
+                        $.removeCookie('redirect_link');
                         window.location = redirect_link;
                     } else {
                         window.location = '#/boards';

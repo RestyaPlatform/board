@@ -40,18 +40,18 @@ App.ApplicationView = Backbone.View.extend({
                 App.music.inst.silence();
             }
         }
-        if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null && !api_token) {
-            var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+        if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && !api_token) {
+            var Auth = JSON.parse($.cookie('auth'));
             api_token = Auth.access_token;
             page.authuser = Auth;
             authuser = Auth;
         } else {
-            if (_.isUndefined(window.sessionStorage.getItem("music_play")) || window.sessionStorage.getItem("music_play") === null) {
-                window.sessionStorage.setItem('music_play', "1");
+            if (_.isUndefined($.cookie("music_play")) || $.cookie("music_play") === null) {
+                $.cookie('music_play', "1");
             }
         }
-        if (role_links.length === 0 && window.sessionStorage.getItem('links') !== undefined && window.sessionStorage.getItem('links') !== null) {
-            role_links.add(JSON.parse(window.sessionStorage.getItem('links')));
+        if (role_links.length === 0 && $.cookie('links') !== undefined && $.cookie('links') !== null) {
+            role_links.add(JSON.parse($.cookie('links')));
         }
         if (page.model !== 'boards_view') {
             viewed_board = new App.Board();
@@ -66,10 +66,10 @@ App.ApplicationView = Backbone.View.extend({
                     success: function(model, response) {
                         api_token = response.access_token;
                         if (!_.isUndefined(response.links)) {
-                            window.sessionStorage.setItem('links', response.links);
+                            $.cookie('links', response.links);
                         }
-                        window.sessionStorage.setItem('languages', response.languages);
-                        window.sessionStorage.setItem('apps', response.apps);
+                        $.cookie('languages', response.languages);
+                        $.cookie('apps', response.apps);
                         role_links.add(JSON.parse(response.links));
                         settings.url = api_url + 'settings.json';
                         settings.fetch({
@@ -135,7 +135,7 @@ App.ApplicationView = Backbone.View.extend({
                                     });
                                 }
                                 var current_language = DEFAULT_LANGUAGE;
-                                if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null) {
+                                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
                                     current_language = authuser.user.language;
                                 }
                                 i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
@@ -239,7 +239,7 @@ App.ApplicationView = Backbone.View.extend({
                                 });
                             }
                             var current_language = DEFAULT_LANGUAGE;
-                            if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null && authuser.user.language !== null && authuser.user.language !== undefined) {
+                            if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && authuser.user.language !== undefined) {
                                 current_language = authuser.user.language;
                             }
                             i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
@@ -389,7 +389,7 @@ App.ApplicationView = Backbone.View.extend({
                 abortPending: true,
                 success: function(model, response) {
                     if (!_.isUndefined(response.error)) {
-                        window.sessionStorage.setItem('redirect_link', window.location.hash);
+                        $.cookie('redirect_link', window.location.hash);
                         $('#content').html(new App.Board404View({
                             model: authuser
                         }).el);
@@ -595,7 +595,7 @@ App.ApplicationView = Backbone.View.extend({
         if (page.model !== 'boards_view' && page.model !== 'users_index') {
             $('#header').html(this.headerView.el);
         }
-        window.sessionStorage.setItem('previous_url', Backbone.history.getFragment());
+        $.cookie('previous_url', Backbone.history.getFragment());
     },
     populateLists: function() {
         App.boards.each(function(board) {
@@ -623,7 +623,7 @@ App.ApplicationView = Backbone.View.extend({
             changeTitle(i18next.t('Organization'));
             page.organization_view();
         } else if (_.isEmpty(authuser.user) && _.indexOf(loginExceptionUrl, page.model) <= -1) {
-            window.sessionStorage.setItem('redirect_link', window.location.hash);
+            $.cookie('redirect_link', window.location.hash);
             app.navigate('#/users/login', {
                 trigger: true,
                 replace: true
@@ -1128,7 +1128,7 @@ App.ApplicationView = Backbone.View.extend({
         } else {
             authuser.board_id = 0;
         }
-        if ((window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null) || page.model == 'organizations_view') {
+        if (($.cookie('auth') !== undefined && $.cookie('auth') !== null) || page.model == 'organizations_view') {
             this.footerView = new App.FooterView({
                 model: authuser
             }).render();
