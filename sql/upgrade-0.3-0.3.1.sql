@@ -269,3 +269,5 @@ CREATE OR REPLACE VIEW "cards_listing" AS
      LEFT JOIN users u ON ((u.id = cards.user_id)))
      LEFT JOIN boards b ON ((b.id = cards.board_id)))
      LEFT JOIN lists l ON ((l.id = cards.list_id)));
+
+update users set timezone = '+0530';
