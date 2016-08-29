@@ -366,7 +366,7 @@
 			
 			echo "Updating SQL..."
 			psql -d ${POSTGRES_DBNAME} -f "$dir/sql/${RESTYABOARD_VERSION}.sql" -U ${POSTGRES_DBUSER}
-			/bin/echo "$RESTYABOARD_VERSION" > /opt/restyaboard/release
+			/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL updation of SQL failed with error code 33"
@@ -379,7 +379,7 @@
 	
 	if [ -d "$DOWNLOAD_DIR" ];
 	then
-		version=$(cat /opt/restyaboard/release)
+		version=$(cat ${DOWNLOAD_DIR}/release)
 		if [[ $version < $RESTYABOARD_VERSION ]];
 		then
 			update_version
@@ -627,10 +627,10 @@
 			fi
 
 			echo "Downloading Restyaboard script..."
-			mkdir /opt/restyaboard
+			mkdir ${DOWNLOAD_DIR}
 			curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
-			unzip /tmp/restyaboard.zip -d /opt/restyaboard
-			cp /opt/restyaboard/restyaboard.conf /etc/nginx/conf.d
+			unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
+			cp ${DOWNLOAD_DIR}/restyaboard.conf /etc/nginx/conf.d
 			rm /tmp/restyaboard.zip
 			
 			set +x
@@ -659,7 +659,7 @@
 			echo "Changing root directory in nginx configuration..."
 			sed -i "s|root.*html|root $dir|" /etc/nginx/conf.d/restyaboard.conf
 			echo "Copying Restyaboard script to root directory..."
-			cp -r /opt/restyaboard/* "$dir"
+			cp -r ${DOWNLOAD_DIR}/* "$dir"
 			
 			echo "Installing postfix..."
 			echo "postfix postfix/mailname string $webdir"\
@@ -1424,7 +1424,7 @@
 				/etc/init.d/nginx restart
 			fi
 			
-			/bin/echo "$RESTYABOARD_VERSION" > /opt/restyaboard/release
+			/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 		esac
 	fi
 	set +x
