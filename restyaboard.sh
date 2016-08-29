@@ -580,7 +580,6 @@
 					if [ $? != 0 ]
 					then
 						echo "ca-certificates installation failed with error code 12"
-						exit 1
 					fi
 					wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 					apt-key add ACCC4CF8.asc
@@ -597,6 +596,23 @@
 					mv pg_hba.conf.1 pg_hba.conf
 					service postgresql restart
 				esac
+			else
+				psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}'
+				if [ $? < 9.2 ]; then
+					set +x
+					echo "Your PostgreSQL version is low, need to update PostgreSQL version"
+					sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+					apt-get install wget ca-certificates
+					if [ $? != 0 ]
+					then
+						echo "ca-certificates installation failed with error code 12"
+					fi
+					wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
+					apt-key add ACCC4CF8.asc
+					apt-get update
+					apt-get upgrade
+					apt-get install -y postgresql-9.4
+				fi
 			fi
 			
 			echo "Checking ElasticSearch..."
