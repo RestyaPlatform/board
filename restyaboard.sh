@@ -144,7 +144,7 @@
 					if ! hash jq 2>&-;
 					then
 						echo "Installing jq..."
-						apt-get install jq
+						apt-get install -y jq
 						if [ $? != 0 ]
 						then
 							echo "jq installation failed with error code 53"
@@ -585,7 +585,7 @@
 					wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 					apt-key add ACCC4CF8.asc
 					apt-get update
-					apt-get install postgresql-9.4
+					apt-get install -y postgresql-9.4
 					if [ $? != 0 ]
 					then
 						echo "postgresql-9.4 installation failed with error code 13"
@@ -609,7 +609,7 @@
 				case "${answer}" in
 					[Yy])
 					echo "Installing ElasticSearch..."
-					apt-get install openjdk-6-jre
+					apt-get install -y openjdk-6-jre
 					if [ $? != 0 ]
 					then
 						echo "openjdk-6-jre installation failed with error code 14"
@@ -748,8 +748,10 @@
 			echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
 			echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
 
+			set +x
 			echo "Do you want to setup SMTP configuration (y/n)?"
 			read -r answer
+			set -x
 			case "${answer}" in
 				[Yy])
 				echo "Enter SMTP server address (e.g., smtp.gmail.com)"
@@ -768,7 +770,7 @@
 			
 			if ! hash GeoIP-devel 2>&-;
 			then
-				apt-get install php5-geoip php5-dev libgeoip-dev
+				apt-get install -y php5-geoip php5-dev libgeoip-dev
 				if [ $? != 0 ]
 				then
 					echo "php5-geoip php5-dev libgeoip-dev installation failed with error code 50"
@@ -820,7 +822,7 @@
 				if ! hash jq 2>&-;
 				then
 					echo "Installing jq..."
-					apt-get install jq
+					apt-get install -y jq
 					if [ $? != 0 ]
 					then
 						echo "jq installation failed with error code 53"
@@ -1267,8 +1269,10 @@
 			echo "Reset php-fpm (use unix socket mode)..."
 			sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf
 
+			set +x
 			echo "Do you want to setup SMTP configuration (y/n)?"
 			read -r answer
+			set -x
 			case "${answer}" in
 				[Yy])
 				echo "Enter SMTP server address (e.g., smtp.gmail.com)"

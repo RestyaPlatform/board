@@ -99,12 +99,12 @@ App.InstantCardAddView = Backbone.View.extend({
                         id: parseInt(boardId)
                     });
                     this.$('.js-instant-card-user-ids').val('');
-                    this.$('.js-instant-card-member-search-response').nextAll().remove();
+                    this.$('.js-instant-card-member-search-response').html('');
                     this.$('#inputInstantCardAddUserSearch').val('');
-                    $('<li class="small"><div class="col-xs-12">' + i18next.t('Search for a person in %s by name or email address.', {
+                    $(this.$('.js-instant-card-member-search-response')).append('<div class="col-xs-12 small">' + i18next.t('Search for a person in %s by name or email address.', {
                         postProcess: 'sprintf',
                         sprintf: [SITE_NAME]
-                    }) + '</div></li>').insertAfter(this.$('.js-instant-card-member-search-response'));
+                    }) + '</div>');
                     var list_arr = [];
                     if (!_.isUndefined(board)) {
                         _.each(board.attributes.lists, function(list) {
@@ -336,18 +336,18 @@ App.InstantCardAddView = Backbone.View.extend({
                 q: q
             },
             success: function() {
-                self.$el.find('.js-instant-card-member-search-response').nextAll().remove();
+                self.$el.find('.js-instant-card-member-search-response').html('');
                 _.each(users.models, function(user) {
                     var is_added_user = ($.inArray(user.id, self.card_users) !== -1) ? true : false;
-                    $('<li>' + new App.CardSearchUsersResultView({
+                    $(self.$el.find('.js-instant-card-member-search-response')).append(new App.CardSearchUsersResultView({
                         model: user,
                         is_added_user: is_added_user
-                    }).el + '</li>').insertAfter(self.$el.find('.js-instant-card-member-search-response'));
+                    }).el);
                 });
                 if (users.models.length === 0) {
-                    $('<li>' + new App.CardSearchUsersResultView({
+                    $(self.$el.find('.js-instant-card-member-search-response')).append(new App.CardSearchUsersResultView({
                         model: null,
-                    }).el + '</li>').insertAfter(self.$el.find('.js-instant-card-member-search-response'));
+                    }).el);
                 }
             }
         });
