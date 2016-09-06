@@ -1872,6 +1872,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
         }
         if (!empty($user)) {
+            createXmppUser($r_post['email'], $r_post['password']);
             if (LDAP_LOGIN_ENABLED) {
                 $login_type_id = 1;
             } else {
