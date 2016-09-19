@@ -1533,3 +1533,49 @@ function getXmppUser()
         'resource' => uniqid('', true)
     );
 }
+/**
+ * create xmpp user
+ *
+ * @return false
+ */
+function createXmppUser($username, $password) {
+    if (JABBER_HOST) {
+        include 'vendors/xmpp-prebind-php/XmppPrebind.php';
+        $conditions = array(
+            $username
+        );
+        $chat_db_lnk = getEjabberdConnection();
+        $user_password = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1', $conditions);
+        $user_password = pg_fetch_assoc($user_password);
+        if(empty($user_password['password'])) {
+            global $j_username, $j_password;
+            $jaxl_initialize = array(
+                'jid' => JABBER_HOST,
+                'strict' => false,
+                'log_level' => JAXL_DEBUG,
+                'port' => 5222,
+                'log_path' => 'jaxl.log'
+            );
+            $GLOBALS['client'] = new JAXL($jaxl_initialize);
+            $j_username = $username;
+            $j_password = $password;
+            $xeps = array(
+                '0077'
+            );
+            $GLOBALS['client']->require_xep($xeps);
+            $GLOBALS['client']->add_cb('on_stream_features', function ($stanza)
+            {
+                global $argv;
+                $GLOBALS['client']->xeps['0077']->get_form(JABBER_HOST);
+                return "wait_for_register_form";
+            });
+            $GLOBALS['client']->add_cb('on_disconnect', function ()
+            {
+                global $form;
+                _info("registration " . ($form['type'] == 'result' ? 'succeeded' : 'failed'));
+            });
+            $GLOBALS['client']->start();
+        }
+    }
+    return false;
+}
