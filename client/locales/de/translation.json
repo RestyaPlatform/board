@@ -723,6 +723,6 @@
     "{{count}} Comment": "{{count}} Kommentar",
     "{{count}} Comment_plural": "{{count}} Kommentare",
     "{{count}} Vote": "{{count}} Stimme",
-    "{{count}} Vote_plural": "{{count}} Stimmens",
+    "{{count}} Vote_plural": "{{count}} Stimmen",
     "{{count}}_plural": "{{count}}s"
 }
