@@ -9,7 +9,7 @@
  *  this.model.cards_subscribers	: card subscribers collection(Based on card)
  *	this.model.checklists  			: checklists collection(Based on card)
  *	this.model.labels  				: labels collection(Based on card)
- *	this.model.list  				: list model(Based on card). It contain all list based object @see Available Object in App.ListView
+ *	this.model.list  				: list model(Based on card).mar It contain all list based object @see Available Object in App.ListView
  *	this.model.users				: card users collection(Based on card)
  */
 if (typeof App === 'undefined') {
@@ -1051,57 +1051,68 @@ App.ModalCardView = Backbone.View.extend({
         var list_id = this.model.attributes.list_id;
         var board_id = this.model.attributes.board_id;
         var uuid = new Date().getTime();
-        $(e.currentTarget).removeClass('js-add-card-vote');
-        $('.panel-title', e.currentTarget).html('<i class="icon-thumbs-up-alt"></i> ' + i18next.t('Unvote'));
-        var card_voter = new App.CardVoter();
-        card_voter.set('is_offline', true);
-        card_voter.set('card_id', parseInt(card_id));
-        card_voter.set('user_id', parseInt(authuser.user.id));
-        card_voter.set('board_id', board_id);
-        card_voter.set('list_id', list_id);
-        card_voter.set('username', authuser.user.username);
-        card_voter.set('role_id', authuser.user.role_id);
-        card_voter.set('profile_picture_path', authuser.user.profile_picture_path);
-        card_voter.set('initials', authuser.user.initials);
-        self.model.card_voters.add(card_voter);
-        card_voter.url = api_url + 'boards/' + board_id + '/lists/' + list_id + '/cards/' + card_id + '/card_voters.json';
-        card_voter.save({}, {
-            success: function(model, response, options) {
-                if (_.isUndefined(options.temp_id)) {
-                    card_voter.set('is_offline', false);
-                }
-                if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
-                    card_voter.set({
-                        id: parseInt(response.id)
-                    });
-                } else {
-                    global_uuid[uuid] = options.temp_id;
-                    card_voter.set('id', uuid);
-                }
-                if (!_.isUndefined(response.id)) {
-                    self.model.card_voters.findWhere({
-                        card_id: card_id,
-                        user_id: parseInt(authuser.user.id)
-                    }).set('id', parseInt(response.id));
-                    $(e.currentTarget).addClass('js-delete-card-vote').data('id', response.id);
-                }
-                self.model.list.collection.board.cards.get(self.model.id).card_voters.add(card_voter);
-                self.model.set('card_voter_count', parseInt(self.model.attributes.card_voter_count) + 1);
-                if (!_.isUndefined(response.activity)) {
-                    var activity = new App.Activity();
-                    activity.set(response.activity);
-                    activity.board_users = self.model.board_users;
-                    var view = new App.ActivityView({
-                        model: activity,
-                        board: self.model.list.collection.board
-                    });
-                    self.model.activities.unshift(activity);
-                    var view_activity = $('#js-card-activities-' + self.model.id);
-                    view_activity.prepend(view.render().el).find('.timeago').timeago();
-                    emojify.run();
-                }
-            }
+        var cardVoter = this.model.card_voters.findWhere({
+            'user_id': parseInt(authuser.user.id),
+            'card_id': card_id
         });
+        if (_.isUndefined(cardVoter)) {
+            $(e.currentTarget).removeClass('js-add-card-vote');
+            $('.panel-title', e.currentTarget).html('<i class="icon-thumbs-up-alt"></i> ' + i18next.t('Unvote'));
+            var card_voter = new App.CardVoter();
+            card_voter.set('is_offline', true);
+            card_voter.set('card_id', parseInt(card_id));
+            card_voter.set('user_id', parseInt(authuser.user.id));
+            card_voter.set('board_id', board_id);
+            card_voter.set('list_id', list_id);
+            card_voter.set('username', authuser.user.username);
+            card_voter.set('role_id', authuser.user.role_id);
+            card_voter.set('profile_picture_path', authuser.user.profile_picture_path);
+            card_voter.set('initials', authuser.user.initials);
+            self.model.card_voters.add(card_voter);
+            self.model.set('card_voter_count', parseInt(self.model.attributes.card_voter_count) + 1);
+            self.model.list.collection.board.cards.get(self.model.id).card_voters.add(card_voter);
+            card_voter.url = api_url + 'boards/' + board_id + '/lists/' + list_id + '/cards/' + card_id + '/card_voters.json';
+            card_voter.save({}, {
+                success: function(model, response, options) {
+                    if (_.isUndefined(options.temp_id)) {
+                        card_voter.set('is_offline', false);
+                    }
+                    if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
+                        card_voter.set({
+                            id: parseInt(response.id)
+                        });
+                    } else {
+                        global_uuid[uuid] = options.temp_id;
+                        card_voter.set('id', uuid);
+                    }
+                    if (!_.isUndefined(response.id)) {
+                        self.model.card_voters.findWhere({
+                            card_id: card_id,
+                            user_id: parseInt(authuser.user.id)
+                        }).set('id', parseInt(response.id));
+                        $(e.currentTarget).addClass('js-delete-card-vote').data('id', response.id);
+                    }
+                    //self.model.list.collection.board.cards.get(self.model.id).card_voters.add(card_voter);
+                    if (!_.isUndefined(response.activity)) {
+                        var activity = new App.Activity();
+                        activity.set(response.activity);
+                        activity.board_users = self.model.board_users;
+                        var view = new App.ActivityView({
+                            model: activity,
+                            board: self.model.list.collection.board
+                        });
+                        self.model.activities.unshift(activity);
+                        var view_activity = $('#js-card-activities-' + self.model.id);
+                        view_activity.prepend(view.render().el).find('.timeago').timeago();
+                        emojify.run();
+                    }
+                }
+            });
+        } else {
+            if(!$(e.currentTarget).hasClass('js-delete-card-vote')) {
+                $(e.currentTarget).addClass('js-delete-card-vote');
+            }
+        }
         return false;
     },
     /**
@@ -1850,7 +1861,7 @@ App.ModalCardView = Backbone.View.extend({
         var target = $(e.target);
         var data = target.serializeObject();
         data.uuid = new Date().getTime();
-        target.parents('div.dropdown').removeClass('open');
+        target.parents('li.dropdown').removeClass('open');
         var postion = self.model.checklists.max(function(checklist) {
             return (!_.isUndefined(checklist)) ? checklist.attributes.position : 1;
         });
@@ -2011,6 +2022,7 @@ App.ModalCardView = Backbone.View.extend({
         self.model.users.add(card_user, {
             silent: true
         });
+        self.renderUsersCollection();
         card_user.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/users/' + user_id + '.json';
         card_user.save({
             user_id: user_id,
@@ -2047,7 +2059,6 @@ App.ModalCardView = Backbone.View.extend({
                     var view_activity = $('#js-card-activities-' + self.model.id);
                     view_activity.prepend(view.render().el).find('.timeago').timeago();
                 }
-                self.renderUsersCollection();
             }
         });
         return false;

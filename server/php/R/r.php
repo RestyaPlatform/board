@@ -2451,7 +2451,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $table_name = 'card_voters';
         $r_post['card_id'] = $r_resource_vars['cards'];
         $r_post['user_id'] = $authUser['id'];
-        $sql = true;
+         $qry_val_arr = array(
+            $r_post['card_id'],
+            $r_post['user_id']
+        );
+        $check_already_added = executeQuery('SELECT * FROM card_voters WHERE card_id = $1 AND user_id = $2', $qry_val_arr);
+        if (!empty($check_already_added)) {
+            $response['id'] = $check_already_added['id'];
+            $response['cards_voters'] = $check_already_added;
+            $sql = false;
+        } else {
+            $sql = true;
+        }
         break;
 
     case '/boards/?/lists/?/cards/?/attachments':
