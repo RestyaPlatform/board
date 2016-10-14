@@ -1208,7 +1208,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $page_count = $c_data->count;
             }
             $start = ($page - 1) * $page_count;
-            $total_page = (!empty($c_data->count)) ? ceil($c_data->count / $page_count) : 0;
+            $total_page = !empty($page_count) ? ceil($c_data->count / $page_count) : 0;
             $showing = (($start + $page_count) > $c_data->count) ? ($c_data->count - $start) : $page_count;
             $_metadata = array(
                 'noOfPages' => $total_page,
