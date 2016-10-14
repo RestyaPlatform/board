@@ -2282,8 +2282,10 @@ App.ModalCardView = Backbone.View.extend({
         var activity_id = this.$el.find('.js-hide-edit-comment-form').data('activity-id');
         var current_card = this.model.activities.get({
             id: activity_id
-        });
-        this.$el.find('.js-hide-edit-comment-form').parents('span.js-activity-' + activity_id).html(this.converter.makeHtml(_.escape(current_card.attributes.comment)));
+        });		
+		var html_content = '<div class="panel no-mar"><div class="panel-body">'+this.converter.makeHtml(_.escape(current_card.attributes.comment))+'</di></div><small class="pull-left"><abbr class="timeago text-muted pull-left clearfix" title="'+ current_card.attributes.created + '">' + current_card.attributes.created + '</abbr><div class="js-acticity-action-' + current_card.attributes.id + ' pull-left navbar-btn col-xs-8"><ul class="list-inline"><li><a title="Edit" class="js-show-edit-activity js-edit-activity-link-'+current_card.attributes.id +'" href="#" data-activity-id="'+current_card.attributes.id +'"  data-activity-temp-id="'+ current_card.attributes.temp_id + '"><i class="icon-edit"></i>'+ i18next.t("Edit") + '</a></li><li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-'+current_card.attributes.id+'" href="#" data-activity-id="'+current_card.attributes.id+'"><i class="icon-repeat"></i>'+ i18next.t("Reply") + '</a></li><li class="dropdown"><a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete" data-toggle="dropdown" href="#" data-activity-id="'+current_card.attributes.id+'"><i class="icon-remove"></i>'+i18next.t("Delete")+'</a><ul class="dropdown-menu arrow arrow-right"><li id="js-acticity-actions-response-'+ current_card.attributes.id + '" class="js-dropdown-popup dropdown-popup"></li></ul></li></ul></div></small>';
+		//.find('.timeago').timeago()
+        this.$el.find('.js-hide-edit-comment-form').parents('div.js-activity-' + activity_id).html(html_content).find('.timeago').timeago();
         $('.js-acticity-action-' + activity_id).removeClass('hide');
     },
     /**
@@ -2307,7 +2309,7 @@ App.ModalCardView = Backbone.View.extend({
     showConfirmCommentDelete: function(e) {
         e.preventDefault();
         var activity_id = $(e.currentTarget).data('activity-id');
-        $('.js-acticity-action-' + activity_id).css('height', '165px');
+		$('.js-acticity-action-' + activity_id).css('height', '165px');
         $(e.currentTarget).siblings('ul').find('#js-acticity-actions-response-' + activity_id).html(new App.ActivityDeleteConfirmView({
             model: activity_id
         }).el);
