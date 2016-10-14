@@ -280,7 +280,7 @@ App.CardCheckListItemView = Backbone.View.extend({
         this.model.url = api_url + 'boards/' + this.model.card.get('board_id') + '/lists/' + this.model.card.get('list_id') + '/cards/' + this.model.card.id + '/checklists/' + this.model.attributes.checklist_id + '/items/' + this.model.id + '.json';
         this.model.set('is_completed', 0);
         this.render();
-        this.renderProgress();        
+        this.renderProgress();
         this.model.save({
             is_completed: 0
         }, {

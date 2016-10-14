@@ -1111,7 +1111,7 @@ App.ModalCardView = Backbone.View.extend({
                 }
             });
         } else {
-            if(!$(e.currentTarget).hasClass('js-delete-card-vote')) {
+            if (!$(e.currentTarget).hasClass('js-delete-card-vote')) {
                 $(e.currentTarget).addClass('js-delete-card-vote');
             }
         }
