@@ -6,6 +6,26 @@
 #
 # Copyright (c) 2014-2016 Restya.
 # Dual License (OSL 3.0 & Commercial License)
+get_geoip_data () {
+	wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+	gunzip GeoIP.dat.gz
+	mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
+	wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+	gunzip GeoIPv6.dat.gz
+	mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
+	wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+	gunzip GeoLiteCity.dat.gz
+	mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
+	wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+	gunzip GeoLiteCityv6.dat.gz
+	mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
+	wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+	gunzip GeoIPASNum.dat.gz
+	mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
+	wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
+	gunzip GeoIPASNumv6.dat.gz
+	mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
+}
 {
 	if [[ $EUID -ne 0 ]];
 	then
@@ -114,24 +134,8 @@
 				then
 					echo "GeoIP folder creation failed with error code 52"
 				fi
-				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
-				gunzip GeoIP.dat.gz
-				mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
-				wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
-				gunzip GeoIPv6.dat.gz
-				mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
-				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-				gunzip GeoLiteCity.dat.gz
-				mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
-				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
-				gunzip GeoLiteCityv6.dat.gz
-				mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
-				wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
-				gunzip GeoIPASNum.dat.gz
-				mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
-				wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
-				gunzip GeoIPASNumv6.dat.gz
-				mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
+
+				get_geoip_data
 
 				service php5-fpm restart
 				
@@ -248,24 +252,8 @@
 				then
 					echo "GeoIP folder creation failed with error code 48"
 				fi
-				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
-				gunzip GeoIP.dat.gz
-				mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
-				wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
-				gunzip GeoIPv6.dat.gz
-				mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
-				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-				gunzip GeoLiteCity.dat.gz
-				mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
-				wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
-				gunzip GeoLiteCityv6.dat.gz
-				mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
-				wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
-				gunzip GeoIPASNum.dat.gz
-				mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
-				wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
-				gunzip GeoIPASNumv6.dat.gz
-				mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
+
+				get_geoip_data
 
 				ps -q 1 | grep -q -c "systemd"
 				if [ "$?" -eq 0 ];
@@ -792,24 +780,8 @@
 			then
 				echo "GeoIP folder creation failed with error code 52"
 			fi
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
-			gunzip GeoIP.dat.gz
-			mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
-			gunzip GeoIPv6.dat.gz
-			mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-			gunzip GeoLiteCity.dat.gz
-			mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
-			gunzip GeoLiteCityv6.dat.gz
-			mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
-			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
-			gunzip GeoIPASNum.dat.gz
-			mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
-			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
-			gunzip GeoIPASNumv6.dat.gz
-			mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
+
+			get_geoip_data
 			
 			service php5-fpm restart
 			
@@ -1327,24 +1299,8 @@
 			then
 				echo "GeoIP folder creation failed with error code 48"
 			fi
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
-			gunzip GeoIP.dat.gz
-			mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
-			gunzip GeoIPv6.dat.gz
-			mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-			gunzip GeoLiteCity.dat.gz
-			mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
-			gunzip GeoLiteCityv6.dat.gz
-			mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
-			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
-			gunzip GeoIPASNum.dat.gz
-			mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
-			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
-			gunzip GeoIPASNumv6.dat.gz
-			mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
+
+			get_geoip_data
 			
 			ps -q 1 | grep -q -c "systemd"
 			if [ "$?" -eq 0 ];
