@@ -39,8 +39,8 @@ App.BoardView = Backbone.View.extend({
         }
         var self = this;
         this.authuser = authuser.user;
-        if (_.isUndefined(window.sessionStorage.getItem('music_play'))) {
-            window.sessionStorage.setItem('music_play', "1");
+        if (_.isUndefined($.cookie('music_play'))) {
+            $.cookie('music_play', "1");
         }
         this.model.attachments.add(this.model.get('attachments'));
         _.bindAll(this, 'render', 'renderListsCollection', 'renderActivitiesCollection', 'setBoardBackground', 'populateChecklistItems');

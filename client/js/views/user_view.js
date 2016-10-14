@@ -147,9 +147,9 @@ App.UserView = Backbone.View.extend({
                     if (!_.isUndefined(data.result.profile_picture_path)) {
                         $('#dropzone-cssloader').removeClass('cssloader');
                         _this.model.set('profile_picture_path', data.result.profile_picture_path);
-                        var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                        var Auth = JSON.parse($.cookie('auth'));
                         Auth.user.profile_picture_path = data.result.profile_picture_path + "?uid=" + Math.floor((Math.random() * 9999) + 1);
-                        window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                        $.cookie('auth', JSON.stringify(Auth));
                         authuser = Auth;
                         var hash = calcMD5(SecuritySalt + 'User' + _this.model.id + 'png' + 'small_thumb');
                         var profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + _this.model.id + '.' + hash + '.png';
@@ -214,9 +214,9 @@ App.UserView = Backbone.View.extend({
                 }
                 if (!_.isUndefined(response.activity.profile_picture_path) && response.activity.profile_picture_path !== null) {
                     self.model.set('profile_picture_path', response.activity.profile_picture_path);
-                    var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                    var Auth = JSON.parse($.cookie('auth'));
                     Auth.user.profile_picture_path = response.activity.profile_picture_path;
-                    window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                    $.cookie('auth', JSON.stringify(Auth));
                     authuser = Auth;
                     this.footerView = new App.FooterView({
                         model: Auth,
@@ -338,9 +338,9 @@ App.UserView = Backbone.View.extend({
         });
         this.model.set('profile_picture_path', null);
         $('.js-use-uploaded-avatar').html('<i class="avatar avatar-color-194 avatar-md img-rounded">' + $('#inputinitials').val() + '</i>');
-        var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+        var Auth = JSON.parse($.cookie('auth'));
         Auth.user.profile_picture_path = null;
-        window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+        $.cookie('auth', JSON.stringify(Auth));
         authuser = Auth;
         this.footerView = new App.FooterView({
             model: Auth,
@@ -400,9 +400,9 @@ App.UserView = Backbone.View.extend({
                         }
                     }
                     self.model.set('profile_picture_path', response.profile_picture_path);
-                    var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                    var Auth = JSON.parse($.cookie('auth'));
                     Auth.user.profile_picture_path = response.profile_picture_path + "?uid=" + Math.floor((Math.random() * 9999) + 1);
-                    window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                    $.cookie('auth', JSON.stringify(Auth));
                     authuser = Auth;
                     var hash = calcMD5(SecuritySalt + 'User' + self.model.id + 'png' + 'small_thumb');
                     var profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + self.model.id + '.' + hash + '.png?uid=' + Math.floor((Math.random() * 9999) + 1);

@@ -416,7 +416,7 @@ var AppRouter = Backbone.Router.extend({
         User.fetch({
             cache: false,
             success: function() {
-                window.sessionStorage.removeItem('auth');
+                $.removeCookie('auth');
                 api_token = '';
                 authuser = new App.User();
                 app.navigate('#/users/login', {
