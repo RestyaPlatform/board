@@ -671,14 +671,14 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         $message = strtr($template['email_text_content'], $emailFindReplace);
         $subject = strtr($template['subject'], $emailFindReplace);
         $from_email = strtr($template['from_email'], $emailFindReplace);
-        $headers = 'From:' . $from_email . "\r\n";
+        $headers = 'From:' . $from_email . PHP_EOL;
         if (!empty($reply_to_mail)) {
-            $headers.= 'Reply-To:' . $reply_to_mail . "\r\n";
+            $headers.= 'Reply-To:' . $reply_to_mail . PHP_EOL;
         }
-        $headers.= "MIME-Version: 1.0\r\n";
-        $headers.= "Content-Type: text/html; charset=ISO-8859-1\r\n";
-        $headers.= "X-Mailer: Restyaboard (0.3; +http://restya.com/board)\r\n";
-        $headers.= "X-Auto-Response-Suppress: All\r\n";
+        $headers.= "MIME-Version: 1.0" . PHP_EOL;
+        $headers.= "Content-Type: text/html; charset=ISO-8859-1" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.3; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         mail($to, $subject, $message, $headers);
     }
 }
