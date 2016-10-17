@@ -403,16 +403,14 @@ App.CardCheckListView = Backbone.View.extend({
                 silent: true
             });
 
-            self.renderItemsCollection();
-
+            self.renderItemsCollection(false);
             checklist_item.save(data, {
                 success: function(model, response) {
                     self.model.checklist_items.get(data.uuid).id = parseInt(response.checklist_items[0].id);
                     self.model.checklist_items.get(data.uuid).attributes.id = parseInt(response.checklist_items[0].id);
                     self.model.card.list.collection.board.checklist_items.get(data.uuid).attributes.id = parseInt(response.checklist_items[0].id);
                     self.model.card.list.collection.board.checklist_items.get(data.uuid).id = parseInt(response.checklist_items[0].id);
-                    self.renderItemsCollection();
-
+                    self.renderItemsCollection(false);
                     if (!_.isUndefined(response.activities)) {
                         _.each(response.activities, function(_activity) {
                             var activity = new App.Activity();
