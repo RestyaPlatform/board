@@ -539,7 +539,7 @@ get_geoip_data () {
 			php -m | grep imap
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php5-imap..."
-				apt-get install -y php5-imap
+				apt-get install -y php5-imap="5.4.6-0ubuntu5"
 				if [ $? != 0 ]
 				then
 					echo "php5-imap installation failed with error code 11"
