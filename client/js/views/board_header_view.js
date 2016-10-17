@@ -476,6 +476,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 });
             } else {
                 $('.js-delete-all-archived-cards-confirm').addClass('hide');
+                $('.js-delete-all-archived-cards').addClass('hide');
                 el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                     model: null
                 }).el);
