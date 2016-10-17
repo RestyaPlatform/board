@@ -43,7 +43,7 @@ App.BoardView = Backbone.View.extend({
             $.cookie('music_play', "1");
         }
         this.model.attachments.add(this.model.get('attachments'));
-        _.bindAll(this, 'render', 'renderListsCollection', 'renderActivitiesCollection', 'setBoardBackground', 'populateChecklistItems');
+        _.bindAll(this, 'render', 'renderListsCollection', 'renderActivitiesCollection', 'setBoardBackground');
         this.model.bind('change:name change:is_closed', this.render);
         this.model.bind('change:board_visibility', this.render);
         this.model.bind('change:background_color change:background_picture_url change:background_pattern_url', this.setBoardBackground);
@@ -55,7 +55,6 @@ App.BoardView = Backbone.View.extend({
         this.model.lists.bind('change:is_archived', this.renderListsCollection, this);
         this.model.lists.bind('change:comment_count', this.renderListsCollection, this);
         this.model.activities.bind('add', this.renderActivitiesCollection);
-        this.model.checklists.bind('add', this.populateChecklistItems);
         this.model.board_users.bind('add', this.render);
         this.model.board_users.bind('remove', this.render);
         this.model.board_users.bind('change', this.render);
