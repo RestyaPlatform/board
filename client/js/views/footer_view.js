@@ -1008,7 +1008,6 @@ App.FooterView = Backbone.View.extend({
                                             new_user.set('card_id', parseInt(activity.attributes.user.card_id));
                                             card.users.add(new_user);
                                         } else if (activity.attributes.type === 'add_comment') {
-                                            console.log(activity.attributes.comment_count);
                                             card.list.collection.board.activities.add(activity);
                                             card.set('comment_count', activity.attributes.comment_count);
                                         } else if (activity.attributes.type === 'add_card_attachment') {
