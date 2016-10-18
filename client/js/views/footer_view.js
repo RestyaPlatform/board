@@ -1009,6 +1009,7 @@ App.FooterView = Backbone.View.extend({
                                             card.users.add(new_user);
                                         } else if (activity.attributes.type === 'add_comment') {
                                             card.list.collection.board.activities.add(activity);
+                                            card.set('comment_count', activity.attributes.comment_count);
                                         } else if (activity.attributes.type === 'add_card_attachment') {
                                             var new_attachment = new App.CardAttachment();
                                             new_attachment.set(activity.attributes.attachment);
@@ -1017,20 +1018,20 @@ App.FooterView = Backbone.View.extend({
                                             new_attachment.set('list_id', parseInt(activity.attributes.attachment.list_id));
                                             new_attachment.set('card_id', parseInt(activity.attributes.attachment.card_id));
                                             self.board.attachments.add(new_attachment);
-                                        } else if (activity.attributes.type === 'change_card_position') {
-                                            card.set('position', activity.attributes.card.position);
+                                        } else if (activity.attributes.type === 'move_card') {
+                                            card.set('position', activity.attributes.card_position);
                                             var card_new_list = self.board.lists.findWhere({
-                                                id: parseInt(activity.attributes.list_id)
+                                                id: parseInt(activity.attributes.foreign_id)
                                             });
                                             if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(parseInt(activity.attributes.board_id)))) {
                                                 var updated_card_list_cards = self.board.cards.where({
-                                                    list_id: parseInt(activity.attributes.list_id)
+                                                    list_id: parseInt(activity.attributes.foreign_id)
                                                 });
-                                                App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.list_id)).set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
+                                                App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.foreign_id)).set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
                                             }
                                             card_new_list.set('card_count', card_new_list.attributes.card_count + 1);
                                             card.list = card_new_list;
-                                            card.set('list_id', parseInt(activity.attributes.list_id));
+                                            card.set('list_id', parseInt(activity.attributes.foreign_id));
                                             var cards_attachments = self.board.attachments.where({
                                                 card_id: parseInt(activity.attributes.card_id)
                                             });
@@ -1046,7 +1047,7 @@ App.FooterView = Backbone.View.extend({
                                                     self.board.attachments.findWhere({
                                                         id: parseInt(cards_attachment.attributes.id)
                                                     }).set({
-                                                        list_id: parseInt(activity.attributes.list_id)
+                                                        list_id: parseInt(activity.attributes.foreign_id)
                                                     }, options);
                                                     k++;
                                                 });
@@ -1234,7 +1235,7 @@ App.FooterView = Backbone.View.extend({
                                         card_count = board.attributes.card_count - 1;
                                         board.set('card_count', card_count);
                                         board_list.set('card_count', board_list.attributes.card_count - 1);
-                                    } else if (activity.attributes.type === 'change_card_position' || activity.attributes.type === 'moved_list_card') {
+                                    } else if (activity.attributes.type === 'move_card' || activity.attributes.type === 'moved_list_card') {
                                         if (!_.isEmpty(activity.attributes.revisions.new_value)) {
                                             board.set('card_count', '');
                                             card_count = board.attributes.card_count;
