@@ -34,7 +34,7 @@ App.MusicRepeatView = Backbone.View.extend({
                     App.music.inst.silence();
                 }
             } else {
-                if (!_.isUndefined(window.sessionStorage.getItem('music_play')) && window.sessionStorage.getItem('music_play') === "1") {
+                if (!_.isUndefined($.cookie('music_play')) && $.cookie('music_play') === "1") {
                     App.music.inst.play(
                         music_content, temp.continueMusic
                     );

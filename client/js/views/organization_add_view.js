@@ -53,7 +53,7 @@ App.OrganizationAddView = Backbone.View.extend({
                     organization.set('id', parseInt(response.id));
                     auth_user_organizations.add(organization);
                     data.id = parseInt(response.id);
-                    var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                    var Auth = JSON.parse($.cookie('auth'));
                     if (auth_user_organizations === null) {
                         auth_user_organizations = [];
                     }

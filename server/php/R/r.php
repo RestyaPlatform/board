@@ -929,24 +929,26 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['aggs']['board']['terms']['field'] = 'board_id';
                     $data['aggs']['board']['terms']['size'] = 0;
                     $search_response = doPost($elasticsearch_url, $data, 'json');
-                    $board_count = count($search_response['aggregations']['board']['buckets']);
-                    $board_ids = array();
-                    foreach ($search_response['aggregations']['board']['buckets'] as $board) {
-                        $board_ids[] = $board['key'];
-                    }
-                    $conditions = array(
-                        '{' . implode($board_ids, ',') . '}'
-                    );
-                    $boards_result = pg_query_params($db_lnk, 'SELECT id,name FROM boards WHERE id = ANY($1)', $conditions);
-                    $result = array();
-                    while ($board = pg_fetch_assoc($boards_result)) {
-                        $result['_source']['board_id'] = $board['id'];
-                        $result['_source']['board'] = $board['name'];
-                        $response['result']['boards'][] = bind_elastic($result, 'boards');
-                    }
-                    if (!empty($response['result']['boards'])) {
-                        $response['result']['metadata']['boards']['count'] = $board_count;
-                        $response['result']['metadata']['boards']['page'] = $page;
+                    if (!empty($search_response['aggregations'])) {
+                        $board_count = count($search_response['aggregations']['board']['buckets']);
+                        $board_ids = array();
+                        foreach ($search_response['aggregations']['board']['buckets'] as $board) {
+                            $board_ids[] = $board['key'];
+                        }
+                        $conditions = array(
+                            '{' . implode($board_ids, ',') . '}'
+                        );
+                        $boards_result = pg_query_params($db_lnk, 'SELECT id,name FROM boards WHERE id = ANY($1)', $conditions);
+                        $result = array();
+                        while ($board = pg_fetch_assoc($boards_result)) {
+                            $result['_source']['board_id'] = $board['id'];
+                            $result['_source']['board'] = $board['name'];
+                            $response['result']['boards'][] = bind_elastic($result, 'boards');
+                        }
+                        if (!empty($response['result']['boards'])) {
+                            $response['result']['metadata']['boards']['count'] = $board_count;
+                            $response['result']['metadata']['boards']['page'] = $page;
+                        }
                     }
                 }
                 if (!empty($list) && ((!empty($data_for) && $data_for === 'lists') || empty($data_for))) {
@@ -955,26 +957,28 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['aggs']['list']['terms']['field'] = 'list_id';
                     $data['aggs']['list']['terms']['size'] = 0;
                     $search_response = doPost($elasticsearch_url, $data, 'json');
-                    $list_count = count($search_response['aggregations']['list']['buckets']);
-                    $list_ids = array();
-                    foreach ($search_response['aggregations']['list']['buckets'] as $list) {
-                        $list_ids[] = $list['key'];
-                    }
-                    $conditions = array(
-                        '{' . implode($list_ids, ',') . '}'
-                    );
-                    $list_result = pg_query_params($db_lnk, 'SELECT id,name,board_id,(select name from boards where id = l.board_id) as board FROM lists l WHERE id = ANY($1)', $conditions);
-                    $result = array();
-                    while ($list = pg_fetch_assoc($list_result)) {
-                        $result['_source']['list_id'] = $list['id'];
-                        $result['_source']['list'] = $list['name'];
-                        $result['_source']['board_id'] = $list['board_id'];
-                        $result['_source']['board'] = $list['board'];
-                        $response['result']['lists'][] = bind_elastic($result, 'lists');
-                    }
-                    if (!empty($response['result']['lists'])) {
-                        $response['result']['metadata']['lists']['count'] = $list_count;
-                        $response['result']['metadata']['lists']['page'] = $page;
+                    if (!empty($search_response['aggregations'])) {
+                        $list_count = count($search_response['aggregations']['list']['buckets']);
+                        $list_ids = array();
+                        foreach ($search_response['aggregations']['list']['buckets'] as $list) {
+                            $list_ids[] = $list['key'];
+                        }
+                        $conditions = array(
+                            '{' . implode($list_ids, ',') . '}'
+                        );
+                        $list_result = pg_query_params($db_lnk, 'SELECT id,name,board_id,(select name from boards where id = l.board_id) as board FROM lists l WHERE id = ANY($1)', $conditions);
+                        $result = array();
+                        while ($list = pg_fetch_assoc($list_result)) {
+                            $result['_source']['list_id'] = $list['id'];
+                            $result['_source']['list'] = $list['name'];
+                            $result['_source']['board_id'] = $list['board_id'];
+                            $result['_source']['board'] = $list['board'];
+                            $response['result']['lists'][] = bind_elastic($result, 'lists');
+                        }
+                        if (!empty($response['result']['lists'])) {
+                            $response['result']['metadata']['lists']['count'] = $list_count;
+                            $response['result']['metadata']['lists']['page'] = $page;
+                        }
                     }
                 }
                 $data['highlight']['pre_tags'] = array(
@@ -1208,7 +1212,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $page_count = $c_data->count;
             }
             $start = ($page - 1) * $page_count;
-            $total_page = ceil($c_data->count / $page_count);
+            $total_page = !empty($page_count) ? ceil($c_data->count / $page_count) : 0;
             $showing = (($start + $page_count) > $c_data->count) ? ($c_data->count - $start) : $page_count;
             $_metadata = array(
                 'noOfPages' => $total_page,
@@ -1872,6 +1876,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
         }
         if (!empty($user)) {
+            createXmppUser($r_post['email'], $r_post['password']);
             if (LDAP_LOGIN_ENABLED) {
                 $login_type_id = 1;
             } else {
@@ -2451,7 +2456,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $table_name = 'card_voters';
         $r_post['card_id'] = $r_resource_vars['cards'];
         $r_post['user_id'] = $authUser['id'];
-        $sql = true;
+         $qry_val_arr = array(
+            $r_post['card_id'],
+            $r_post['user_id']
+        );
+        $check_already_added = executeQuery('SELECT * FROM card_voters WHERE card_id = $1 AND user_id = $2', $qry_val_arr);
+        if (!empty($check_already_added)) {
+            $response['id'] = $check_already_added['id'];
+            $response['cards_voters'] = $check_already_added;
+            $sql = false;
+        } else {
+            $sql = true;
+        }
         break;
 
     case '/boards/?/lists/?/cards/?/attachments':
@@ -3027,7 +3043,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $emailFindReplace = array(
                                     '##NAME##' => $values['name'],
                                 );
-                                sendMail('welcome', $emailFindReplace, $values['email']);
+                                sendMail('ldap_welcome', $emailFindReplace, $values['email']);
                             }
                         }
                     }
@@ -3073,7 +3089,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                     $emailFindReplace = array(
                                         '##NAME##' => $values['name'],
                                     );
-                                    sendMail('welcome', $emailFindReplace, $values['email']);
+                                    sendMail('ldap_welcome', $emailFindReplace, $values['email']);
                                 }
                             } else {
                                 $user_id = $is_user_exist['id'];
@@ -4271,6 +4287,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $foreign_ids['list_id'] = $r_resource_vars['lists'];
             $comment = '##USER_NAME## archived ##LIST_NAME##';
             $activity_type = 'archive_list';
+        } else if(isset($r_put['custom_fields'])){
+           $comment = '##USER_NAME## auto archived ##LIST_NAME## - '. $r_put['custom_fields'];
         } else {
             $id = $r_resource_vars['lists'];
             $comment = '##USER_NAME## renamed this list.';
