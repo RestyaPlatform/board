@@ -128,7 +128,7 @@
 										</td>
 									<% } %>
 								<% } else { %>
-									<% if (acl_link.attributes.is_allow_only_to_edit === 1 && acl_link.attributes.is_allow_only_to_guest === 0) { %>
+									<% if (acl_link.attributes.is_user_action === 1 && acl_link.attributes.is_guest_action === 0) { %>
 										<td class="text-center">
 											<div class="checkbox">
 												<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
