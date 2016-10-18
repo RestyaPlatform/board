@@ -929,24 +929,26 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['aggs']['board']['terms']['field'] = 'board_id';
                     $data['aggs']['board']['terms']['size'] = 0;
                     $search_response = doPost($elasticsearch_url, $data, 'json');
-                    $board_count = count($search_response['aggregations']['board']['buckets']);
-                    $board_ids = array();
-                    foreach ($search_response['aggregations']['board']['buckets'] as $board) {
-                        $board_ids[] = $board['key'];
-                    }
-                    $conditions = array(
-                        '{' . implode($board_ids, ',') . '}'
-                    );
-                    $boards_result = pg_query_params($db_lnk, 'SELECT id,name FROM boards WHERE id = ANY($1)', $conditions);
-                    $result = array();
-                    while ($board = pg_fetch_assoc($boards_result)) {
-                        $result['_source']['board_id'] = $board['id'];
-                        $result['_source']['board'] = $board['name'];
-                        $response['result']['boards'][] = bind_elastic($result, 'boards');
-                    }
-                    if (!empty($response['result']['boards'])) {
-                        $response['result']['metadata']['boards']['count'] = $board_count;
-                        $response['result']['metadata']['boards']['page'] = $page;
+                    if (!empty($search_response['aggregations'])) {
+                        $board_count = count($search_response['aggregations']['board']['buckets']);
+                        $board_ids = array();
+                        foreach ($search_response['aggregations']['board']['buckets'] as $board) {
+                            $board_ids[] = $board['key'];
+                        }
+                        $conditions = array(
+                            '{' . implode($board_ids, ',') . '}'
+                        );
+                        $boards_result = pg_query_params($db_lnk, 'SELECT id,name FROM boards WHERE id = ANY($1)', $conditions);
+                        $result = array();
+                        while ($board = pg_fetch_assoc($boards_result)) {
+                            $result['_source']['board_id'] = $board['id'];
+                            $result['_source']['board'] = $board['name'];
+                            $response['result']['boards'][] = bind_elastic($result, 'boards');
+                        }
+                        if (!empty($response['result']['boards'])) {
+                            $response['result']['metadata']['boards']['count'] = $board_count;
+                            $response['result']['metadata']['boards']['page'] = $page;
+                        }
                     }
                 }
                 if (!empty($list) && ((!empty($data_for) && $data_for === 'lists') || empty($data_for))) {
@@ -955,26 +957,28 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['aggs']['list']['terms']['field'] = 'list_id';
                     $data['aggs']['list']['terms']['size'] = 0;
                     $search_response = doPost($elasticsearch_url, $data, 'json');
-                    $list_count = count($search_response['aggregations']['list']['buckets']);
-                    $list_ids = array();
-                    foreach ($search_response['aggregations']['list']['buckets'] as $list) {
-                        $list_ids[] = $list['key'];
-                    }
-                    $conditions = array(
-                        '{' . implode($list_ids, ',') . '}'
-                    );
-                    $list_result = pg_query_params($db_lnk, 'SELECT id,name,board_id,(select name from boards where id = l.board_id) as board FROM lists l WHERE id = ANY($1)', $conditions);
-                    $result = array();
-                    while ($list = pg_fetch_assoc($list_result)) {
-                        $result['_source']['list_id'] = $list['id'];
-                        $result['_source']['list'] = $list['name'];
-                        $result['_source']['board_id'] = $list['board_id'];
-                        $result['_source']['board'] = $list['board'];
-                        $response['result']['lists'][] = bind_elastic($result, 'lists');
-                    }
-                    if (!empty($response['result']['lists'])) {
-                        $response['result']['metadata']['lists']['count'] = $list_count;
-                        $response['result']['metadata']['lists']['page'] = $page;
+                    if (!empty($search_response['aggregations'])) {
+                        $list_count = count($search_response['aggregations']['list']['buckets']);
+                        $list_ids = array();
+                        foreach ($search_response['aggregations']['list']['buckets'] as $list) {
+                            $list_ids[] = $list['key'];
+                        }
+                        $conditions = array(
+                            '{' . implode($list_ids, ',') . '}'
+                        );
+                        $list_result = pg_query_params($db_lnk, 'SELECT id,name,board_id,(select name from boards where id = l.board_id) as board FROM lists l WHERE id = ANY($1)', $conditions);
+                        $result = array();
+                        while ($list = pg_fetch_assoc($list_result)) {
+                            $result['_source']['list_id'] = $list['id'];
+                            $result['_source']['list'] = $list['name'];
+                            $result['_source']['board_id'] = $list['board_id'];
+                            $result['_source']['board'] = $list['board'];
+                            $response['result']['lists'][] = bind_elastic($result, 'lists');
+                        }
+                        if (!empty($response['result']['lists'])) {
+                            $response['result']['metadata']['lists']['count'] = $list_count;
+                            $response['result']['metadata']['lists']['page'] = $page;
+                        }
                     }
                 }
                 $data['highlight']['pre_tags'] = array(
