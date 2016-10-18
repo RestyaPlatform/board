@@ -12,7 +12,7 @@
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
-define('R_DEBUG', false);
+define('R_DEBUG', true);
 ini_set('display_errors', R_DEBUG);
 define('R_API_VERSION', 1);
 if (!defined('JSON_PRETTY_PRINT')) {

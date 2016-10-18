@@ -43,7 +43,19 @@
   var api_url = '/restyaboard/api/v1/';
   var template_url = '/restyaboard/client/';
   </script>
-  <script>window.addEventListener('load', function(e){window.applicationCache.addEventListener('updateready', function(e){if (window.applicationCache.status == window.applicationCache.UPDATEREADY){window.applicationCache.swapCache();if (confirm('A new version of this site is available. Load it?')){window.location.reload();}}}, false);}, false);</script>
+  <script>
+        window.addEventListener('load', function(e){
+            window.applicationCache.addEventListener('updateready', function(e){
+                window.applicationCache.update();
+                if (window.applicationCache.status == window.applicationCache.UPDATEREADY){
+                    window.applicationCache.swapCache();
+                    if (confirm('A new version of this site is available. Load it?')){
+                        window.location.reload();
+                    }
+                }
+            }, false);
+        }, false);
+    </script>
   <!-- build:js js/default.cache.js -->
   <script src="js/libs/jquery-1.8.3.js"></script>
   <script src="js/libs/jquery.placeholder.js"></script>
@@ -102,6 +114,8 @@
   <script src="js/libs/jquery.hotkeys.js"></script>
   <script src="js/libs/backbone-hotkeys.js"></script>
   <script src="js/libs/backbone-forms.js"></script>
+  <script src="js/libs/jquery.cookie.js"></script>
+  
   <!-- Conversejs files start -->
   <script type="text/javascript" src="js/libs/conversejs/components/otr/build/dep/salsa20.js"></script>
   <script type="text/javascript" src="js/libs/conversejs/src/bigint.js"></script>

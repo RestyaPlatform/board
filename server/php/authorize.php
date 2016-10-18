@@ -41,7 +41,7 @@ $val_arr = array(
 );
 $oauth_client = executeQuery('SELECT client_name FROM oauth_clients WHERE client_id = $1', $val_arr);
 $error_msg = 0;
-if (!empty($_POST['email'])) {
+if (!empty($_POST['email']) && !empty($_POST['password'])) {
     $val_arr = array(
         $_POST['email']
     );
@@ -95,7 +95,7 @@ if (!empty($_POST['email'])) {
 	 </script>
 <?php
 // display an authorization form
-if (empty($_POST['password']) && (empty($_POST['authorized']) || (!empty($_POST['authorized']) && $_POST['authorized'] === 'Deny'))) {
+if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['authorized']) && $_POST['authorized'] === 'Deny'))) {
     if (LDAP_LOGIN_ENABLED) {
         $loginPlaceholder = 'LDAP Login';
     } else {

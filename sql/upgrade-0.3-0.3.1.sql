@@ -22,6 +22,7 @@ Restyaboard<br>
 </footer>
 </body>
 </html>' WHERE "name" = 'welcome';
+
 UPDATE "email_templates" SET "email_text_content" = '<html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
 <body style="margin:0">
@@ -46,6 +47,7 @@ Restyaboard<br>
 </footer>
 </body>
 </html>' WHERE "name" = 'changepassword';
+
 UPDATE "email_templates" SET "email_text_content" = '<html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
 <body style="margin:0">
@@ -71,6 +73,7 @@ Restyaboard<br>
 </footer>
 </body>
 </html>' WHERE "name" = 'newprojectuser';
+
 UPDATE "email_templates" SET "email_text_content" = '<html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
 <body style="margin:0">
@@ -98,6 +101,7 @@ UPDATE "email_templates" SET "email_text_content" = '<html>
 </footer>
 </body>
 </html>' WHERE "name" = 'email_notification';
+
 UPDATE "email_templates" SET "email_text_content" = '<html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
 <body style="margin:0">
@@ -123,6 +127,7 @@ Restyaboard<br>
 </footer>
 </body>
 </html>' WHERE "name" = 'activation';
+
 UPDATE "email_templates" SET "email_text_content" = '<html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
 <body style="margin:0">
@@ -147,6 +152,7 @@ Restyaboard<br>
 </footer>
 </body>
 </html>' WHERE "name" = 'forgetpassword';
+
 UPDATE "email_templates" SET "email_text_content" = '<html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
 <body style="margin:0">
@@ -269,6 +275,11 @@ CREATE OR REPLACE VIEW "cards_listing" AS
      LEFT JOIN users u ON ((u.id = cards.user_id)))
      LEFT JOIN boards b ON ((b.id = cards.board_id)))
      LEFT JOIN lists l ON ((l.id = cards.list_id)));
+
+UPDATE users SET timezone = '+0530';
+
+DELETE FROM setting_categories WHERE id = 13;
+DELETE FROM settings WHERE id >= 52;
 
 CREATE OR REPLACE VIEW "activities_listing" AS
  SELECT activity.id,

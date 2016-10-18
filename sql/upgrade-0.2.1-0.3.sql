@@ -1365,3 +1365,5 @@ CREATE VIEW "users_listing" AS
      LEFT JOIN states lst ON ((lst.id = li.state_id)))
      LEFT JOIN countries lco ON ((lco.id = li.country_id)))
      LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
+	 
+UPDATE "users" SET "timezone" = '+0530';
