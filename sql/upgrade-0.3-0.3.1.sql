@@ -177,7 +177,7 @@ UPDATE "email_templates" SET "email_text_content" = '<html>
 </h6>
 </footer>
 </body>
-</html>' WHERE "id" = 'due_date_notification';
+</html>' WHERE "name" = 'due_date_notification';
 
 CREATE OR REPLACE VIEW "cards_listing" AS
  SELECT cards.id,

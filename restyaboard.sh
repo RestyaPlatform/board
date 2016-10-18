@@ -568,7 +568,6 @@ get_geoip_data () {
 					if [ $? != 0 ]
 					then
 						echo "ca-certificates installation failed with error code 12"
-						exit 1
 					fi
 					wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 					apt-key add ACCC4CF8.asc
@@ -585,6 +584,23 @@ get_geoip_data () {
 					mv pg_hba.conf.1 pg_hba.conf
 					service postgresql restart
 				esac
+			else
+				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+				if [[ $PSQL_VERSION < 9.3 ]]; then
+					set +x
+					echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.4"
+					sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+					apt-get install wget ca-certificates
+					if [ $? != 0 ]
+					then
+						echo "ca-certificates installation failed with error code 12"
+					fi
+					wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
+					apt-key add ACCC4CF8.asc
+					apt-get update
+					apt-get upgrade
+					apt-get install -y postgresql-9.4
+				fi
 			fi
 			
 			echo "Checking ElasticSearch..."
@@ -1097,6 +1113,57 @@ get_geoip_data () {
 						/etc/init.d/postgresql-9.4 restart
 					fi
 				esac
+			else 
+				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+				if [[ $PSQL_VERSION < 9.3 ]]; then
+					set +x
+					echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.4"
+					if [ $(getconf LONG_BIT) = "32" ]; then
+						yum install -y http://yum.postgresql.org/9.4/redhat/rhel-6.6-i386/pgdg-centos94-9.4-1.noarch.rpm
+						if [ $? != 0 ]
+						then
+							echo "Installing PostgreSQL 32 fail with error code 27"
+						fi
+					fi
+					if [ $(getconf LONG_BIT) = "64" ]; then
+						yum install -y http://yum.postgresql.org/9.4/redhat/rhel-6.6-x86_64/pgdg-centos94-9.4-1.noarch.rpm
+						if [ $? != 0 ]
+						then
+							echo "Installing PostgreSQL 64 fail with error code 28"
+						fi
+					fi
+
+					yum install -y postgresql94-server postgresql94-contrib
+					if [ $? != 0 ]
+					then
+						echo "postgresql04-contrib installation failed with error code 29"
+					fi
+					
+					ps -q 1 | grep -q -c "systemd"
+					if [ "$?" -eq 0 ]; then
+						if [ -f /usr/pgsql-9.4/bin/postgresql94-setup ]; then
+							/usr/pgsql-9.4/bin/postgresql94-setup initdb
+						fi
+						systemctl start postgresql-9.4.service
+						systemctl enable postgresql-9.4.service
+					else
+						service postgresql-9.4 initdb
+						/etc/init.d/postgresql-9.4 start
+						chkconfig --levels 35 postgresql-9.4 on
+					fi
+
+					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /var/lib/pgsql/9.4/data/pg_hba.conf > /var/lib/pgsql/9.4/data/pg_hba.conf.1
+					cd /var/lib/pgsql/9.4/data || exit
+					mv pg_hba.conf pg_hba.conf_old
+					mv pg_hba.conf.1 pg_hba.conf
+					
+					ps -q 1 | grep -q -c "systemd"
+					if [ "$?" -eq 0 ]; then
+						systemctl restart postgresql-9.4.service
+					else
+						/etc/init.d/postgresql-9.4 restart
+					fi
+				fi
 			fi
 
 			echo "Checking ElasticSearch..."
