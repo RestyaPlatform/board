@@ -3043,7 +3043,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $emailFindReplace = array(
                                     '##NAME##' => $values['name'],
                                 );
-                                sendMail('LDAP welcome', $emailFindReplace, $values['email']);
+                                sendMail('ldap_welcome', $emailFindReplace, $values['email']);
                             }
                         }
                     }
@@ -3089,7 +3089,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                     $emailFindReplace = array(
                                         '##NAME##' => $values['name'],
                                     );
-                                    sendMail('welcome', $emailFindReplace, $values['email']);
+                                    sendMail('ldap_welcome', $emailFindReplace, $values['email']);
                                 }
                             } else {
                                 $user_id = $is_user_exist['id'];
