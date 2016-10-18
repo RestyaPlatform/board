@@ -36,6 +36,10 @@ get_geoip_data () {
 	whoami
 	echo $(cat /etc/issue)
 	OS_REQUIREMENT=$(cat /proc/version | grep 'Ubuntu\|Debian\|Raspbian' | sed 's/^.*Ubuntu.*$/Ubuntu/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Raspbian.*$/Raspbian/g')
+	if ([ "$OS_REQUIREMENT" = "" ])
+	then
+		OS_REQUIREMENT=$(cat /etc/issue | grep 'Ubuntu\|Debian\|Raspbian' | sed 's/^.*Ubuntu.*$/Ubuntu/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Raspbian.*$/Raspbian/g')
+	fi
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 	then
 		apt-get install -y curl unzip
