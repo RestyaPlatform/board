@@ -4287,6 +4287,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $foreign_ids['list_id'] = $r_resource_vars['lists'];
             $comment = '##USER_NAME## archived ##LIST_NAME##';
             $activity_type = 'archive_list';
+        } else if(isset($r_put['custom_fields'])){
+           $comment = '##USER_NAME## auto archived ##LIST_NAME## - '. $r_put['custom_fields'];
         } else {
             $id = $r_resource_vars['lists'];
             $comment = '##USER_NAME## renamed this list.';
