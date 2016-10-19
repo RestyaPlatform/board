@@ -117,11 +117,6 @@ module.exports = function(grunt) {
             build: {
                 src: ['client/index.html', 'server/php/config.inc.php'],
                 actions: [{
-                    name: '',
-                    search: '/restyaboard/',
-                    replace: '/',
-                    flags: 'g'
-                }, {
                     name: 'DB User',
                     search: '\'restya\'',
                     replace: '\'<%= config.db_user %>\'',
