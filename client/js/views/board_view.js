@@ -1041,7 +1041,11 @@ App.BoardView = Backbone.View.extend({
             list.set(data, {
                 silent: true
             });
+            var acl_links = new App.AclBoardLinksCollection();
+            var lists = new App.ListCollection();
+            lists.board = self.model;
             list.board = self.model;
+            lists.add(list);
             view = new App.ListView({
                 model: list,
                 attributes: {
