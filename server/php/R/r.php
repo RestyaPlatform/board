@@ -134,89 +134,94 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/users/?/activities':
-        $condition = $condition1 = '';
-        if (isset($r_resource_filters['last_activity_id']) && $r_resource_filters['last_activity_id'] > 0) {
-            $condition = ' AND al.id > $2';
-            $condition1 = ' AND al.id > $3';
-            if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
-                $condition = ' AND al.id < $2';
-                $condition1 = ' AND al.id < $3';
-            }
-        }
-        if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users']) {
-            $val_array = array(
-                $authUser['id']
-            );
-            $logged_user = executeQuery('SELECT boards_users FROM users_listing WHERE id = $1', $val_array);
-            $logged_user_board_ids = array();
-            if (!empty($logged_user['boards_users'])) {
-                $logged_boards_users = json_decode($logged_user['boards_users'], true);
-                foreach ($logged_boards_users as $logged_boards_user) {
-                    $logged_user_board_ids[] = $logged_boards_user['board_id'];
-                }
-            }
-        }
-        $val_array = array(
-            $r_resource_vars['users']
-        );
-        $user = executeQuery('SELECT boards_users FROM users_listing WHERE id = $1', $val_array);
-        $board_ids = array();
-        if (!empty($user['boards_users'])) {
-            $boards_users = json_decode($user['boards_users'], true);
-            foreach ($boards_users as $boards_user) {
-                $board_ids[] = $boards_user['board_id'];
-            }
-        }
-        if (!empty($logged_user_board_ids)) {
-            $board_ids = array_intersect($logged_user_board_ids, $board_ids);
-        }
-        $org_users = pg_query_params($db_lnk, 'SELECT organization_id FROM organizations_users WHERE user_id = $1', $val_array);
-        $org_ids = array();
-        while ($row = pg_fetch_assoc($org_users)) {
-            $org_ids[] = $row['organization_id'];
-        }
+        $condition = '';
         if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users'] && empty($r_resource_filters['board_id'])) {
             if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
-                $condition = (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE al.id < $1' : "";
+                $condition = (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE al.id < $1' : '';
             } else {
-                $condition = (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE al.id > $1' : "";
+                $condition = (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE al.id > $1' : '';
             }
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         } else {
+            if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users']) {
+                $val_array = array(
+                    $authUser['id']
+                );
+                $logged_user = executeQuery('SELECT boards_users FROM users_listing WHERE id = $1', $val_array);
+                $logged_user_board_ids = array();
+                if (!empty($logged_user['boards_users'])) {
+                    $logged_boards_users = json_decode($logged_user['boards_users'], true);
+                    foreach ($logged_boards_users as $logged_boards_user) {
+                        $logged_user_board_ids[] = $logged_boards_user['board_id'];
+                    }
+                }
+            }
+            $val_array = array(
+                $r_resource_vars['users']
+            );
+            $user = executeQuery('SELECT boards_users FROM users_listing WHERE id = $1', $val_array);
+            $board_ids = array();
+            if (!empty($user['boards_users'])) {
+                $boards_users = json_decode($user['boards_users'], true);
+                foreach ($boards_users as $boards_user) {
+                    $board_ids[] = $boards_user['board_id'];
+                }
+            }
+            if (!empty($logged_user_board_ids)) {
+                $board_ids = array_intersect($logged_user_board_ids, $board_ids);
+            }
+            $org_users = pg_query_params($db_lnk, 'SELECT organization_id FROM organizations_users WHERE user_id = $1', $val_array);
+            $org_ids = array();
+            while ($row = pg_fetch_assoc($org_users)) {
+                $org_ids[] = $row['organization_id'];
+            }
             if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
-                $str = '';
                 $i = 1;
-                if (!empty($logged_user_board_ids)) {
-                    $str.= 'board_id = ANY ( $' . $i . ' ) AND';
-                    $i++;
-                    array_push($pg_params, '{' . implode(',', $board_ids) . '}');
-                }
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ' . $str . ' user_id = $' . $i . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str . ' user_id = $' . $i . $condition;
+                $str = 'user_id = $' . $i;
                 array_push($pg_params, $r_resource_vars['users']);
-            } else if (!empty($r_resource_filters['organization_id'])) {
-                if (isset($r_resource_filters['last_activity_id']) && $r_resource_filters['last_activity_id'] > 0) {
-                    $condition1 = ' AND al.id > $4';
+                $i++;
+                if (!empty($logged_user_board_ids)) {
+                    $str.= ' AND board_id = ANY ( $' . $i . ' )';
+                    array_push($pg_params, '{' . implode(',', $board_ids) . '}');
+                    $i++;
                 }
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition1 . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition1;
+                if (!empty($r_resource_filters['last_activity_id'])) {
+                    $str .= ' AND al.id < $' . $i;
+                }
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ' . $str . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str;
+            } else if (!empty($r_resource_filters['organization_id'])) {
+                if (!empty($r_resource_filters['last_activity_id'])) {
+                    $condition = ' AND al.id > $4';
+                }
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition;
                 array_push($pg_params, $r_resource_vars['users'], $r_resource_filters['organization_id'], '{' . $r_resource_filters['organization_id'] . '}');
             } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] = 'all') {
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition1 . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition1;
+                if (!empty($r_resource_filters['last_activity_id'])) {
+                    $condition = ' AND al.id > $3';
+                }
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition;
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
             } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id']) {
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE user_id = $1 AND board_id = $2' . $condition1 . ' ORDER BY freshness_ts DESC, materialized_path ASC LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE user_id = $1 AND board_id = $2' . $condition1;
+                if (!empty($r_resource_filters['last_activity_id'])) {
+                    $condition = ' AND al.id > $3';
+                }
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE user_id = $1 AND board_id = $2' . $condition . ' ORDER BY freshness_ts DESC, materialized_path ASC LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE user_id = $1 AND board_id = $2' . $condition;
                 array_push($pg_params, $r_resource_vars['users'], $r_resource_filters['board_id']);
             } else {
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ( board_id = ANY( $1 ) OR organization_id  = ANY ( $2 ) )' . $condition1 . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ( board_id = ANY( $1 ) OR organization_id  = ANY ( $2 ) )' . $condition1;
+                if (!empty($r_resource_filters['last_activity_id'])) {
+                    $condition = ' AND al.id > $3';
+                }
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ( board_id = ANY( $1 ) OR organization_id  = ANY ( $2 ) )' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ( board_id = ANY( $1 ) OR organization_id  = ANY ( $2 ) )' . $condition;
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
             }
         }
-        if (!empty($condition) || !empty($condition1)) {
+        if (!empty($r_resource_filters['last_activity_id'])) {
             array_push($pg_params, $r_resource_filters['last_activity_id']);
         }
         break;
@@ -1383,7 +1388,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             $obj['list_id']
                         );
                         $obj['list'] = executeQuery('SELECT position, board_id FROM lists WHERE id = $1', $obj_val_arr);
-                    } else if ($obj['type'] === 'add_card') {
+                    } else if ($obj['type'] === 'add_card' || $obj['type'] === 'move_card') {
                         $obj_val_arr = array(
                             $obj['card_id']
                         );
@@ -4337,7 +4342,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
     case '/boards/?/lists/?/cards/?': //cards update
         $table_name = 'cards';
         $id = $r_resource_vars['cards'];
-        $foreign_ids['board_id'] = $r_resource_vars['boards'];
+        $foreign_ids['board_id'] = !empty($r_put['board_id']) ? $r_put['board_id'] : $r_resource_vars['boards'];
         $foreign_ids['list_id'] = $r_resource_vars['lists'];
         $foreign_ids['card_id'] = $r_resource_vars['cards'];
         $activity_type = 'edit_card';
