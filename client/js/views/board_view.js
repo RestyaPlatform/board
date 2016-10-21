@@ -1041,6 +1041,9 @@ App.BoardView = Backbone.View.extend({
             list.set(data, {
                 silent: true
             });
+            var lists = new App.ListCollection();
+            lists.board = self.model;
+            lists.add(list);
             list.board = self.model;
             view = new App.ListView({
                 model: list,
