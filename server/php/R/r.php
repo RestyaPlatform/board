@@ -187,7 +187,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $i++;
                 }
                 if (!empty($r_resource_filters['last_activity_id'])) {
-                    $str .= ' AND al.id < $' . $i;
+                    $str.= ' AND al.id < $' . $i;
                 }
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ' . $str . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str;
@@ -2461,7 +2461,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $table_name = 'card_voters';
         $r_post['card_id'] = $r_resource_vars['cards'];
         $r_post['user_id'] = $authUser['id'];
-         $qry_val_arr = array(
+        $qry_val_arr = array(
             $r_post['card_id'],
             $r_post['user_id']
         );
@@ -4292,8 +4292,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $foreign_ids['list_id'] = $r_resource_vars['lists'];
             $comment = '##USER_NAME## archived ##LIST_NAME##';
             $activity_type = 'archive_list';
-        } else if(isset($r_put['custom_fields'])){
-           $comment = '##USER_NAME## auto archived ##LIST_NAME## - '. $r_put['custom_fields'];
+        } else if (isset($r_put['custom_fields'])) {
+            $comment = '##USER_NAME## auto archived ##LIST_NAME## - ' . $r_put['custom_fields'];
         } else {
             $id = $r_resource_vars['lists'];
             $comment = '##USER_NAME## renamed this list.';
