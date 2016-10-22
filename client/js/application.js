@@ -142,7 +142,7 @@ callbackTranslator = {
             }
             var is_online = false;
 
-            if (((window.sessionStorage.getItem('is_offline_data') !== undefined && window.sessionStorage.getItem('is_offline_data') !== null) && window.sessionStorage.getItem('is_offline_data') === "true")) {
+            if ((($.cookie('is_offline_data') !== undefined && $.cookie('is_offline_data') !== null) && $.cookie('is_offline_data') === "true")) {
                 is_offline_data = true;
             } else {
                 is_offline_data = false;
@@ -169,8 +169,8 @@ callbackTranslator = {
             }
             if (model !== null && !_.isUndefined(model.responseText) && !_.isEmpty(model.responseText) && JSON.parse(model.responseText).error.type === 'OAuth') {
                 api_token = '';
-                if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null) {
-                    var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
+                    var Auth = JSON.parse($.cookie('auth'));
                     var refresh_token = Auth.refresh_token;
                     var get_token = new App.OAuth();
                     get_token.url = api_url + 'oauth.json?refresh_token=' + refresh_token;
@@ -377,8 +377,8 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     changepassword: function(id) {
-        var Auth_check = JSON.parse(window.sessionStorage.getItem('auth'));
-        if (window.sessionStorage.getItem('auth') !== null) {
+        var Auth_check = JSON.parse($.cookie('auth'));
+        if ($.cookie('auth') !== null) {
             if (Auth_check.user.id == id || Auth_check.user.role_id == '1') {
                 new App.ApplicationView({
                     model: 'changepassword',
@@ -417,6 +417,7 @@ var AppRouter = Backbone.Router.extend({
             cache: false,
             success: function() {
                 $.removeCookie('auth');
+                localStorage.removeItem('r_zapier_access_token');
                 api_token = '';
                 authuser = new App.User();
                 app.navigate('#/users/login', {

@@ -147,7 +147,7 @@ App.FooterView = Backbone.View.extend({
             board_id: this.board_id,
             board: this.board,
             languages: $.cookie('languages').split(','),
-            apps: ($.cookie('apps') !== "") ? JSON.parse($.cookie('apps')) : ''
+            apps: (localStorage.getItem('apps') !== "") ? JSON.parse(localStorage.getItem('apps')) : ''
         }));
 
         if (_.isEmpty(this.board_id)) {

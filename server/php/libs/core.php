@@ -1007,7 +1007,7 @@ function importTrelloBoard($board = array())
             }
         }
         $qry_val_arr = array(
-            utf8_decode($board['name']),
+            utf8_decode($board['name']) ,
             $board['prefs']['backgroundColor'],
             $background_image,
             $background_pattern,
@@ -1031,9 +1031,9 @@ function importTrelloBoard($board = array())
                 $userExist = executeQuery('SELECT * FROM users WHERE username = $1', $qry_val_arr);
                 if (!$userExist) {
                     $qry_val_arr = array(
-                        utf8_decode($member['username']),
+                        utf8_decode($member['username']) ,
                         getCryptHash('restya') ,
-                        utf8_decode($member['initials']),
+                        utf8_decode($member['initials']) ,
                         utf8_decode($member['fullName'])
                     );
                     $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4) RETURNING id', $qry_val_arr));
@@ -1065,7 +1065,7 @@ function importTrelloBoard($board = array())
                 $i+= 1;
                 $is_closed = ($list['closed']) ? 'true' : 'false';
                 $qry_val_arr = array(
-                    utf8_decode($list['name']),
+                    utf8_decode($list['name']) ,
                     $new_board['id'],
                     $i,
                     $user_id,
@@ -1082,8 +1082,8 @@ function importTrelloBoard($board = array())
                 $qry_val_arr = array(
                     $new_board['id'],
                     $lists[$card['idList']],
-                    utf8_decode($card['name']),
-                    utf8_decode($card['desc']),
+                    utf8_decode($card['name']) ,
+                    utf8_decode($card['desc']) ,
                     $is_closed,
                     $card['pos'],
                     $date,
@@ -1157,7 +1157,7 @@ function importTrelloBoard($board = array())
             $checklists = array();
             foreach ($board['checklists'] as $checklist) {
                 $qry_val_arr = array(
-                    utf8_decode($checklist['name']),
+                    utf8_decode($checklist['name']) ,
                     $checklist['pos'],
                     $cards[$checklist['idCard']],
                     $user_id
@@ -1168,7 +1168,7 @@ function importTrelloBoard($board = array())
                     foreach ($checklist['checkItems'] as $checkItem) {
                         $is_completed = ($checkItem['state'] == 'complete') ? 'true' : 'false';
                         $qry_val_arr = array(
-                            utf8_decode($checkItem['name']),
+                            utf8_decode($checkItem['name']) ,
                             $checkItem['pos'],
                             $cards[$checklist['idCard']],
                             $_checklist['id'],
@@ -1534,11 +1534,14 @@ function getXmppUser()
     );
 }
 /**
- * create xmpp user
+ * Create xmpp user
+ * @param string $username xmpp username
+ * @param string $password  xmpp password
  *
  * @return false
  */
-function createXmppUser($username, $password) {
+function createXmppUser($username, $password)
+{
     if (JABBER_HOST) {
         include 'vendors/xmpp-prebind-php/XmppPrebind.php';
         $conditions = array(
@@ -1547,7 +1550,7 @@ function createXmppUser($username, $password) {
         $chat_db_lnk = getEjabberdConnection();
         $user_password = pg_query_params($chat_db_lnk, 'SELECT password FROM users WHERE username = $1', $conditions);
         $user_password = pg_fetch_assoc($user_password);
-        if(empty($user_password['password'])) {
+        if (empty($user_password['password'])) {
             global $j_username, $j_password;
             $jaxl_initialize = array(
                 'jid' => JABBER_HOST,
