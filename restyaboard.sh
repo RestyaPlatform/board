@@ -15,11 +15,12 @@
 	set -x
 	whoami
 	echo $(cat /etc/issue)
-	OS_REQUIREMENT=$(cat /proc/version | grep 'Ubuntu\|Debian\|Raspbian' | sed 's/^.*Ubuntu.*$/Ubuntu/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Raspbian.*$/Raspbian/g')
+	OS_REQUIREMENT=$(cat /proc/version | grep 'Ubuntu\|Debian\|Raspbian\|CentOS\|Fedora' | sed 's/^.*Ubuntu.*$/Ubuntu/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Raspbian.*$/Raspbian/g' | sed 's/^.*CentOS.*$/CentOS/g' | sed 's/^.*Fedora.*$/Fedora/g')
 	if ([ "$OS_REQUIREMENT" = "" ])
 	then
-		OS_REQUIREMENT=$(cat /etc/issue | grep 'Ubuntu\|Debian\|Raspbian' | sed 's/^.*Ubuntu.*$/Ubuntu/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Raspbian.*$/Raspbian/g')
+		OS_REQUIREMENT=$(cat /etc/issue | grep 'Ubuntu\|Debian\|Raspbian\|CentOS\|Fedora' | sed 's/^.*Ubuntu.*$/Ubuntu/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Raspbian.*$/Raspbian/g' | sed 's/^.*CentOS.*$/CentOS/g' | sed 's/^.*Fedora.*$/Fedora/g')
 	fi
+	OS_VERSION=$(lsb_release -rs | cut -f1 -d.)
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 	then
 		sed -i -e 's/us.archive.ubuntu.com/archive.ubuntu.com/g' /etc/apt/sources.list
@@ -183,7 +184,6 @@
 			if [ $? != 0 ]
 			then
 				echo "debian-keyring installation failed with error code 1"
-				exit 1
 			fi
 			
 			apt-get update -y
@@ -230,13 +230,16 @@
 					fi
 				esac
 			fi
+
+			wget http://mirrors.kernel.org/ubuntu/pool/main/libn/libnl3/libnl-3-200_3.2.21-1ubuntu3_amd64.deb
+			wget http://mirrors.kernel.org/ubuntu/pool/main/libn/libnl3/libnl-genl-3-200_3.2.21-1ubuntu3_amd64.deb
+			dpkg -i *.deb
 			
 			echo "Installing PHP fpm and cli extension..."
 			apt-get install -y php7.0-fpm php7.0-cli
 			if [ $? != 0 ]
 			then
 				echo "php7.0-cli installation failed with error code 4"
-				exit 1
 			fi
 			service php7.0-fpm start
 			
@@ -395,11 +398,14 @@
 				case "${answer}" in
 					[Yy])
 					echo "Installing ElasticSearch..."
+
+					add-apt-repository ppa:openjdk-r/ppa
+					apt-get update
+
 					apt-get install -y openjdk-8-jre
 					if [ $? != 0 ]
 					then
 						echo "openjdk-8-jre installation failed with error code 14"
-						exit 1
 					fi
 					wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.7.deb
 					if [ $? != 0 ]
@@ -418,7 +424,6 @@
 				if [ $? != 0 ]
 				then
 					echo "php7.0-geoip php7.0-dev libgeoip-dev installation failed with error code 50"
-					exit 1
 				fi
 			fi
 
@@ -428,7 +433,6 @@
 				if [ $? != 0 ]
 				then
 					echo "pecl geoip installation failed with error code 47"
-					exit 1
 				fi
 			fi
 
@@ -513,8 +517,7 @@
 			apt-get install -y postfix
 			        if [ $? != 0 ]
 				then
-					echo "-y postfix installation failed with error code 16"
-					exit 1
+					echo "postfix installation failed with error code 16"
 				fi
 			echo "Changing permission..."
 			chmod -R go+w "$dir/media"
@@ -625,7 +628,6 @@
 					if [ $? != 0 ]
 					then
 						echo "jq installation failed with error code 53"
-						exit 1
 					fi
 				fi
 				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
@@ -851,7 +853,13 @@
 					[Yy])
 					echo "Installing PostgreSQL..."
 					if [ $(getconf LONG_BIT) = "32" ]; then
-						yum install -y http://yum.postgresql.org/9.4/redhat/rhel-6.6-i386/pgdg-centos94-9.4-1.noarch.rpm
+						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
+							rpm -Uvh "http://yum.postgresql.org/9.4/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora94-9.4-3.noarch.rpm"
+						else
+							rpm -Uvh "http://yum.postgresql.org/9.4/redhat/rhel-${OS_VERSION}-i386/pgdg-centos94-9.4-3.noarch.rpm"
+						fi
+
+						yum install -y postgresql94-server postgresql94
 						if [ $? != 0 ]
 						then
 							echo "Installing PostgreSQL 32 fail with error code 27"
@@ -859,7 +867,13 @@
 						fi
 					fi
 					if [ $(getconf LONG_BIT) = "64" ]; then
-						yum install -y http://yum.postgresql.org/9.4/redhat/rhel-6.6-x86_64/pgdg-centos94-9.4-1.noarch.rpm
+						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
+							rpm -Uvh "http://yum.postgresql.org/9.4/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora94-9.4-3.noarch.rpm"
+						else
+							rpm -Uvh "http://yum.postgresql.org/9.4/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos94-9.4-3.noarch.rpm"
+						fi
+
+						yum install -y postgresql94-server postgresql94
 						if [ $? != 0 ]
 						then
 							echo "Installing PostgreSQL 64 fail with error code 28"
@@ -873,31 +887,6 @@
 						echo "postgresql04-contrib installation failed with error code 29"
 						exit 1
 					fi
-					
-					ps -q 1 | grep -q -c "systemd"
-					if [ "$?" -eq 0 ]; then
-						if [ -f /usr/pgsql-9.4/bin/postgresql94-setup ]; then
-							/usr/pgsql-9.4/bin/postgresql94-setup initdb
-						fi
-						systemctl start postgresql-9.4.service
-						systemctl enable postgresql-9.4.service
-					else
-						service postgresql-9.4 initdb
-						/etc/init.d/postgresql-9.4 start
-						chkconfig --levels 35 postgresql-9.4 on
-					fi
-
-					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /var/lib/pgsql/9.4/data/pg_hba.conf > /var/lib/pgsql/9.4/data/pg_hba.conf.1
-					cd /var/lib/pgsql/9.4/data || exit
-					mv pg_hba.conf pg_hba.conf_old
-					mv pg_hba.conf.1 pg_hba.conf
-					
-					ps -q 1 | grep -q -c "systemd"
-					if [ "$?" -eq 0 ]; then
-						systemctl restart postgresql-9.4.service
-					else
-						/etc/init.d/postgresql-9.4 restart
-					fi
 				esac
 			else 
 				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
@@ -905,14 +894,26 @@
 					set +x
 					echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.4"
 					if [ $(getconf LONG_BIT) = "32" ]; then
-						yum install -y http://yum.postgresql.org/9.4/redhat/rhel-6.6-i386/pgdg-centos94-9.4-1.noarch.rpm
+						if [[ $OS_REQUIREMENT == "Fedora" ]]; then
+							rpm -Uvh "http://yum.postgresql.org/9.4/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora94-9.4-3.noarch.rpm"
+						else
+							rpm -Uvh "http://yum.postgresql.org/9.4/redhat/rhel-${OS_VERSION}-i386/pgdg-centos94-9.4-3.noarch.rpm"
+						fi
+
+						yum install -y postgresql94-server postgresql94
 						if [ $? != 0 ]
 						then
 							echo "Installing PostgreSQL 32 fail with error code 27"
 						fi
 					fi
 					if [ $(getconf LONG_BIT) = "64" ]; then
-						yum install -y http://yum.postgresql.org/9.4/redhat/rhel-6.6-x86_64/pgdg-centos94-9.4-1.noarch.rpm
+						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
+							rpm -Uvh "http://yum.postgresql.org/9.4/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora94-9.4-3.noarch.rpm"
+						else
+							rpm -Uvh "http://yum.postgresql.org/9.4/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos94-9.4-3.noarch.rpm"
+						fi
+
+						yum install -y postgresql94-server postgresql94
 						if [ $? != 0 ]
 						then
 							echo "Installing PostgreSQL 64 fail with error code 28"
@@ -923,33 +924,34 @@
 					if [ $? != 0 ]
 					then
 						echo "postgresql04-contrib installation failed with error code 29"
-					fi
-					
-					ps -q 1 | grep -q -c "systemd"
-					if [ "$?" -eq 0 ]; then
-						if [ -f /usr/pgsql-9.4/bin/postgresql94-setup ]; then
-							/usr/pgsql-9.4/bin/postgresql94-setup initdb
-						fi
-						systemctl start postgresql-9.4.service
-						systemctl enable postgresql-9.4.service
-					else
-						service postgresql-9.4 initdb
-						/etc/init.d/postgresql-9.4 start
-						chkconfig --levels 35 postgresql-9.4 on
-					fi
-
-					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /var/lib/pgsql/9.4/data/pg_hba.conf > /var/lib/pgsql/9.4/data/pg_hba.conf.1
-					cd /var/lib/pgsql/9.4/data || exit
-					mv pg_hba.conf pg_hba.conf_old
-					mv pg_hba.conf.1 pg_hba.conf
-					
-					ps -q 1 | grep -q -c "systemd"
-					if [ "$?" -eq 0 ]; then
-						systemctl restart postgresql-9.4.service
-					else
-						/etc/init.d/postgresql-9.4 restart
+						exit 1
 					fi
 				fi
+			fi
+
+			ps -q 1 | grep -q -c "systemd"
+			if [ "$?" -eq 0 ]; then
+				if [ -f /usr/pgsql-9.4/bin/postgresql94-setup ]; then
+					/usr/pgsql-9.4/bin/postgresql94-setup initdb
+				fi
+				systemctl start postgresql-9.4.service
+				systemctl enable postgresql-9.4.service
+			else
+				service postgresql-9.4 initdb
+				/etc/init.d/postgresql-9.4 start
+				chkconfig --levels 35 postgresql-9.4 on
+			fi
+
+			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /var/lib/pgsql/9.4/data/pg_hba.conf > /var/lib/pgsql/9.4/data/pg_hba.conf.1
+			cd /var/lib/pgsql/9.4/data || exit
+			mv pg_hba.conf pg_hba.conf_old
+			mv pg_hba.conf.1 pg_hba.conf
+			
+			ps -q 1 | grep -q -c "systemd"
+			if [ "$?" -eq 0 ]; then
+				systemctl restart postgresql-9.4.service
+			else
+				/etc/init.d/postgresql-9.4 restart
 			fi
 
 			echo "Checking ElasticSearch..."
