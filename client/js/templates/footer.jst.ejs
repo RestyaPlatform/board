@@ -41,7 +41,7 @@ if (_.isEmpty(role_links.where({
 	<% } else { %>
 	<li class="hidden-xs music-btn pa">
 		<% if(board_id !== undefined && board_id !== null && board_id !== "" && !_.isEmpty(this.music_content) && this.music_content !== ''){ %>
-			<% if(window.sessionStorage.getItem('music_play') === "1") { %>
+			<% if($.cookie('music_play') === "1") { %>
 				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" class="animation btn btn-default js-product-beat-action" data-type='on'>
 				<span class="show"><i class="icon-volume-up lead show"></i></span>
 				</a>
