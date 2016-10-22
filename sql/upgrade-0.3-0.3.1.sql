@@ -22,6 +22,7 @@ Restyaboard<br>
 </footer>
 </body>
 </html>' WHERE "name" = 'welcome';
+
 UPDATE "email_templates" SET "email_text_content" = '<html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
 <body style="margin:0">
@@ -46,6 +47,7 @@ Restyaboard<br>
 </footer>
 </body>
 </html>' WHERE "name" = 'changepassword';
+
 UPDATE "email_templates" SET "email_text_content" = '<html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
 <body style="margin:0">
@@ -71,6 +73,7 @@ Restyaboard<br>
 </footer>
 </body>
 </html>' WHERE "name" = 'newprojectuser';
+
 UPDATE "email_templates" SET "email_text_content" = '<html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
 <body style="margin:0">
@@ -98,6 +101,7 @@ UPDATE "email_templates" SET "email_text_content" = '<html>
 </footer>
 </body>
 </html>' WHERE "name" = 'email_notification';
+
 UPDATE "email_templates" SET "email_text_content" = '<html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
 <body style="margin:0">
@@ -123,6 +127,7 @@ Restyaboard<br>
 </footer>
 </body>
 </html>' WHERE "name" = 'activation';
+
 UPDATE "email_templates" SET "email_text_content" = '<html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
 <body style="margin:0">
@@ -147,6 +152,7 @@ Restyaboard<br>
 </footer>
 </body>
 </html>' WHERE "name" = 'forgetpassword';
+
 UPDATE "email_templates" SET "email_text_content" = '<html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
 <body style="margin:0">
@@ -171,7 +177,7 @@ UPDATE "email_templates" SET "email_text_content" = '<html>
 </h6>
 </footer>
 </body>
-</html>' WHERE "id" = 'due_date_notification';
+</html>' WHERE "name" = 'due_date_notification';
 
 CREATE OR REPLACE VIEW "cards_listing" AS
  SELECT cards.id,
@@ -270,4 +276,81 @@ CREATE OR REPLACE VIEW "cards_listing" AS
      LEFT JOIN boards b ON ((b.id = cards.board_id)))
      LEFT JOIN lists l ON ((l.id = cards.list_id)));
 
-update users set timezone = '+0530';
+UPDATE users SET timezone = '+0530';
+
+DELETE FROM setting_categories WHERE id = 13;
+DELETE FROM settings WHERE id >= 52;
+
+CREATE OR REPLACE VIEW "activities_listing" AS
+ SELECT activity.id,
+    to_char(activity.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(activity.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    activity.board_id,
+    activity.list_id,
+    activity.card_id,
+    activity.user_id,
+    activity.foreign_id,
+    activity.type,
+    activity.comment,
+    activity.revisions,
+    activity.root,
+    activity.freshness_ts,
+    activity.depth,
+    activity.path,
+    activity.materialized_path,
+    board.name AS board_name,
+    list.name AS list_name,
+    card.name AS card_name,
+    users.username,
+    users.full_name,
+    users.profile_picture_path,
+    users.initials,
+    la.name AS label_name,
+    card.description AS card_description,
+    users.role_id AS user_role_id,
+    checklist_item.name AS checklist_item_name,
+    checklist.name AS checklist_item_parent_name,
+    checklist1.name AS checklist_name,
+    organizations.id AS organization_id,
+    organizations.name AS organization_name,
+    organizations.logo_url AS organization_logo_url,
+    list1.name AS moved_list_name,
+    to_char(activity.created, 'HH24:MI'::text) AS created_time,
+    card.position AS card_position,
+    card.comment_count AS comment_count
+   FROM ((((((((((activities activity
+     LEFT JOIN boards board ON ((board.id = activity.board_id)))
+     LEFT JOIN lists list ON ((list.id = activity.list_id)))
+     LEFT JOIN lists list1 ON ((list1.id = activity.foreign_id)))
+     LEFT JOIN cards card ON ((card.id = activity.card_id)))
+     LEFT JOIN labels la ON (((la.id = activity.foreign_id) AND ((activity.type)::text = 'add_card_label'::text))))
+     LEFT JOIN checklist_items checklist_item ON ((checklist_item.id = activity.foreign_id)))
+     LEFT JOIN checklists checklist ON ((checklist.id = checklist_item.checklist_id)))
+     LEFT JOIN checklists checklist1 ON ((checklist1.id = activity.foreign_id)))
+     LEFT JOIN users users ON ((users.id = activity.user_id)))
+     LEFT JOIN organizations organizations ON ((organizations.id = activity.organization_id)));
+
+INSERT INTO "email_templates" ("id", "created", "modified", "from_email", "reply_to_email", "name", "description", "subject", "email_text_content", "email_variables", "display_name") values ('8', '2014-05-08 12:14:07.472', '2014-05-08 12:14:07.472', '##SITE_NAME## Restyaboard <##FROM_EMAIL##>', '##REPLY_TO_EMAIL##', 'ldap_welcome', 'We will send this mail, when admin imports from LDAP.', 'Restyaboard / Welcome', '<html>
+<head></head>
+<body style="margin:0">
+<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">
+<div style="border: 1px solid #EEEEEE;">
+<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>
+</div>
+</header>
+<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">
+<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
+<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
+<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">Admin imported your LDAP account in ##SITE_NAME##. You can login with your LDAP username and password in ##SITE_URL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>
+Restyaboard<br>
+##SITE_URL##</p>
+</pre>
+</div>
+</div>
+</main>
+<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
+<h6 style="text-align:center;margin:5px 15px;"> 
+<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
+</footer>
+</body>
+</html>', 'SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME', 'LDAP Welcome');

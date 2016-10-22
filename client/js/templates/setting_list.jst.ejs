@@ -133,7 +133,7 @@
 								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
 									<select name="<%- i18next.t(setting.name) %>" id="inputSetting<%- setting.id %>" class="form-control">
 									 <%
-									 _.each(JSON.parse(window.sessionStorage.getItem('languages')), function(v, k) { %>
+									 _.each(JSON.parse($.cookie('languages')), function(v, k) { %>
 										<option <% if(k === setting.value) { %>selected <% }%> value="<%- k %>"><%- v %></option>
 									<% }); %>
 									</select>
