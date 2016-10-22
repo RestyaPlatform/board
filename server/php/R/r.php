@@ -1382,22 +1382,22 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $obj_val_arr = array(
                             $obj['list_id']
                         );
-                        $obj['list'] = executeQuery('SELECT * FROM lists WHERE id = $1', $obj_val_arr);
+                        $obj['list'] = executeQuery('SELECT * FROM lists_listing WHERE id = $1', $obj_val_arr);
                     } else if ($obj['type'] === 'change_list_position') {
                         $obj_val_arr = array(
                             $obj['list_id']
                         );
                         $obj['list'] = executeQuery('SELECT position, board_id FROM lists WHERE id = $1', $obj_val_arr);
-                    } else if ($obj['type'] === 'add_card' || $obj['type'] === 'move_card') {
+                    } else if ($obj['type'] === 'add_card') {
                         $obj_val_arr = array(
                             $obj['card_id']
                         );
-                        $obj['card'] = executeQuery('SELECT * FROM cards WHERE id = $1', $obj_val_arr);
+                        $obj['card'] = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
                     } else if ($obj['type'] === 'copy_card') {
                         $obj_val_arr = array(
                             $obj['foreign_id']
                         );
-                        $obj['card'] = executeQuery('SELECT * FROM cards WHERE id = $1', $obj_val_arr);
+                        $obj['card'] = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
                     } else if ($obj['type'] === 'add_card_checklist') {
                         $obj_val_arr = array(
                             $obj['foreign_id']
@@ -1426,7 +1426,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $obj_val_arr = array(
                             $obj['foreign_id']
                         );
-                        $obj['checklist'] = executeQuery('SELECT * FROM checklists WHERE id = $1', $obj_val_arr);
+                        $obj['checklist'] = executeQuery('SELECT * FROM checklists_listing WHERE id = $1', $obj_val_arr);
                     } else if ($obj['type'] === 'add_checklist_item' || $obj['type'] === 'update_card_checklist_item' || $obj['type'] === 'moved_card_checklist_item') {
                         $obj_val_arr = array(
                             $obj['foreign_id']
@@ -1441,7 +1441,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $obj_val_arr = array(
                             $obj['card_id']
                         );
-                        $obj['card'] = executeQuery('SELECT position FROM cards WHERE id = $1', $obj_val_arr);
+                        $obj['card'] = executeQuery('SELECT position FROM cards_listing WHERE id = $1', $obj_val_arr);
                     }
                 } else if ($r_resource_cmd == '/boards/?') {
                     global $_server_domain_url;
@@ -2441,7 +2441,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $s_result = pg_query_params($db_lnk, 'SELECT is_subscribed FROM card_subscribers WHERE card_id = $1 and user_id = $2', $qry_val_arr);
         $check_subscribed = pg_fetch_assoc($s_result);
         if (!empty($check_subscribed)) {
-            $is_subscribed = ($r_post['is_subscribed']) ? true : false;
+            $is_subscribed = ($r_post['is_subscribed']) ? 'true' : 'false';
             $qry_val_arr = array(
                 $is_subscribed,
                 $r_resource_vars['cards'],
@@ -2785,7 +2785,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $r_post['name'] = $card_name;
         $conditions = array(
             $r_post['list_id'],
-            'false'
+            '0'
         );
         $list_card_objs = pg_query_params($db_lnk, 'SELECT * FROM cards_listing WHERE list_id = $1 AND is_archived = $2 ORDER BY position ASC', $conditions);
         $list_cards = array();
