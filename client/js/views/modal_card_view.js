@@ -2277,8 +2277,8 @@ App.ModalCardView = Backbone.View.extend({
                     self.model.activities.unshift(activity);
                     var view_activity = $('#js-card-activities-' + self.model.id);
                     view_activity.prepend(view.render().el).find('.timeago').timeago();
-					emojify.run();
-					self.hideReplyCommentForm();
+                    emojify.run();
+                    self.hideReplyCommentForm();
                 }
             });
         }
