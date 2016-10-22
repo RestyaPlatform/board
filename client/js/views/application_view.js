@@ -69,7 +69,7 @@ App.ApplicationView = Backbone.View.extend({
                             $.cookie('links', response.links);
                         }
                         $.cookie('languages', response.languages);
-                        $.cookie('apps', response.apps);
+                        localStorage.setItem('apps', response.apps);
                         role_links.add(JSON.parse(response.links));
                         settings.url = api_url + 'settings.json';
                         settings.fetch({
