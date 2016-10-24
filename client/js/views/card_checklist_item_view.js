@@ -224,7 +224,13 @@ App.CardCheckListItemView = Backbone.View.extend({
     deleteItem: function() {
         this.$el.remove();
         this.model.url = api_url + 'boards/' + this.model.card.get('board_id') + '/lists/' + this.model.card.get('list_id') + '/cards/' + this.model.card.id + '/checklists/' + this.model.attributes.checklist_id + '/items/' + this.model.id + '.json';
-        var checkList_item = this.model.card.list.collection.board.checklist_items.get(this.model.id);
+        var checklist_item_id = this.model.id;
+        var checkList_item;
+        _.each(this.model.card.list.collection.board.checklist_items.models, function(checklistItem) {
+            if (checklist_item_id === checklistItem.attributes.id) {
+                checkList_item = checklistItem;
+            }
+        });
         var bool = checkList_item.attributes.is_completed;
         if (bool) {
             this.model.set('is_completed', 1);

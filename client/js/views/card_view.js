@@ -41,7 +41,7 @@ App.CardView = Backbone.View.extend({
             this.template = JST['templates/card_list_view'];
         }
         if (!_.isEmpty(this.model)) {
-            this.model.bind('change:id change:name change:description change:board_id  change:cards_checklists  change:cards_labels  change:cards_subscribers  change:is_archived  change:due_date change:list_id  change:title change:is_offline', this.render);
+            this.model.bind('change:id change:name change:description change:board_id  change:cards_checklists  change:cards_labels  change:cards_subscribers  change:is_archived  change:due_date change:list_id  change:title change:is_offline change:checklist_item_count change:checklist_item_completed_count', this.render);
             this.model.bind('change:list_id', this.renderListChange);
             if (this.model.has('list')) {
                 this.list = this.model.get('list');
