@@ -228,7 +228,7 @@ App.CardCheckListItemView = Backbone.View.extend({
         var checkList_item;
         _.each(this.model.card.list.collection.board.checklist_items.models, function(checklistItem) {
             if (checklist_item_id === checklistItem.attributes.id) {
-                checkList_item = checklistItem
+                checkList_item = checklistItem;
             }
         });
         var bool = checkList_item.attributes.is_completed;
