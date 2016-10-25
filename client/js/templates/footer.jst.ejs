@@ -17,7 +17,7 @@ if (_.isEmpty(role_links.where({
 	<img src="img/logo-icon-offline.png" alt="[Images: <%- SITE_NAME %>]" style="display:none;" />--->
   </li>
   <li class="hidden-xs about-btn">
-	<a href="#/about" title="RestyaBoard">
+	<a href="#/boards" title="RestyaBoard">
 		<img title="Restya" alt="[Image: <%- SITE_NAME %>]" src="img/logo-icon.png">
 		<span class="hidden-lg hidden-md hidden-sm navbar-btn">&nbsp;<%- i18next.t("About") %></span>
 		<!-- Todo: quick fix. load image before offline. call after when goes offline--->
@@ -193,6 +193,7 @@ if (_.isEmpty(role_links.where({
 		    <% if(!_.isEmpty(role_links.where({slug: "view_user"}))){ %>
 				<li><a title="<%- i18next.t('Profile') %>" href="#/user/<%-model.user.id%>"><%- i18next.t("Profile") %></a></li>
 			<% } %>
+			<li><a title="<%- i18next.t('About Us') %>" href="#/about"><%- i18next.t("About Us") %></a></li>
 			<li class="dropdown-submenu dropdown language-dropdown">
 				<a href="#" data-toggle="dropdown" class="dropdown-toggle js-open-popover" title="<%- i18next.t('Change Language') %>"><span><i class="icon-caret-left"></i></span><%- i18next.t('Change Language') %></a>
 				<ul class="dropdown-menu text-left js-change-language-form-response">
