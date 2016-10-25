@@ -1312,76 +1312,76 @@ App.ModalCardView = Backbone.View.extend({
         var current_list_id = this.model.attributes.list_id;
         var current_board_id = this.model.attributes.board_id;
         var data = {};
-		data = $(e.target).serializeObject();
-		data.list_id = parseInt(data.list_id);
-		data.board_id = parseInt(data.board_id);
-		data.position = parseInt(data.position);			
-		
-		var change_list = this.board.lists.findWhere({
-			id: data.list_id
-		});
-		
-		var change_list_cards = this.model.list.collection.board.cards.where({
-			list_id: data.list_id
-		});
-		
-		var change_list_cards_collection = new App.CardCollection();
-		change_list_cards_collection.add(change_list_cards);
-		var i = 1;
-		var change_prev_card, change_next_card;
-		change_list_cards_collection.each(function(card) {
-			if (!card.attributes.is_archived && _.isUndefined(change_next_card)) {					
-				if (i === data.position) {
-					change_next_card = card;
-				} else {
-					change_prev_card = card;
-				}
-				i++;
-			}
-		});		
-		
-		if (!_.isUndefined(change_list)) {
-			this.model.list = change_list;
-		}
-		if (_.isUndefined(change_prev_card)) {
-			
-			data.position = (change_next_card.attributes.position) / 2;
-			console.log('1: '+data.position);
-			this.model.set({
-				position: data.position
-			});
-		} else if (!_.isUndefined(change_prev_card)) {
-			//			console.log('2');
-			data.position = (change_prev_card.attributes.position + change_next_card.attributes.position) / 2;
-			console.log('2' + data.position);
-			this.model.set({
-				position: data.position
-			});
-		}
-		this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
-		this.model.save(data, {
-			patch: true
-		});
-		if (data.list_id !== current_list_id) {
-			this.model.list.collection.board.lists.get(current_list_id).cards.remove(this.model);
-			this.model.list.collection.board.lists.get(data.list_id).cards.add(this.model);
-			this.model.list = this.model.list.collection.get(data.list_id);
-			var prev_list_card_count = parseInt(this.boards.get(current_board_id).lists.get(current_list_id).get('card_count'));
-			this.boards.get(current_board_id).lists.get(current_list_id).set('card_count', prev_list_card_count - 1);
-			var current_list = this.board.lists.findWhere({
-				id: current_list_id
-			});
-			current_list.attributes.card_count = prev_list_card_count - 1;
-			var change_list_card_count = parseInt(this.boards.get(data.board_id).lists.get(data.list_id).get('card_count'));
-			this.boards.get(data.board_id).lists.get(data.list_id).set('card_count', change_list_card_count + 1);
-			change_list = this.board.lists.findWhere({
-				id: data.list_id
-			});
-			change_list.attributes.card_count = change_list_card_count + 1;
-		}		
-//		this.clearModalSideOverlay(e);
-		return false;
-		
+        data = $(e.target).serializeObject();
+        data.list_id = parseInt(data.list_id);
+        data.board_id = parseInt(data.board_id);
+        data.position = parseInt(data.position);
+
+        var change_list = this.board.lists.findWhere({
+            id: data.list_id
+        });
+
+        var change_list_cards = this.model.list.collection.board.cards.where({
+            list_id: data.list_id
+        });
+
+        var change_list_cards_collection = new App.CardCollection();
+        change_list_cards_collection.add(change_list_cards);
+        var i = 1;
+        var change_prev_card, change_next_card;
+        change_list_cards_collection.each(function(card) {
+            if (!card.attributes.is_archived && _.isUndefined(change_next_card)) {
+                if (i === data.position) {
+                    change_next_card = card;
+                } else {
+                    change_prev_card = card;
+                }
+                i++;
+            }
+        });
+
+        if (!_.isUndefined(change_list)) {
+            this.model.list = change_list;
+        }
+        if (_.isUndefined(change_prev_card)) {
+
+            data.position = (change_next_card.attributes.position) / 2;
+            console.log('1: ' + data.position);
+            this.model.set({
+                position: data.position
+            });
+        } else if (!_.isUndefined(change_prev_card)) {
+            //			console.log('2');
+            data.position = (change_prev_card.attributes.position + change_next_card.attributes.position) / 2;
+            console.log('2' + data.position);
+            this.model.set({
+                position: data.position
+            });
+        }
+        this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
+        this.model.save(data, {
+            patch: true
+        });
+        if (data.list_id !== current_list_id) {
+            this.model.list.collection.board.lists.get(current_list_id).cards.remove(this.model);
+            this.model.list.collection.board.lists.get(data.list_id).cards.add(this.model);
+            this.model.list = this.model.list.collection.get(data.list_id);
+            var prev_list_card_count = parseInt(this.boards.get(current_board_id).lists.get(current_list_id).get('card_count'));
+            this.boards.get(current_board_id).lists.get(current_list_id).set('card_count', prev_list_card_count - 1);
+            var current_list = this.board.lists.findWhere({
+                id: current_list_id
+            });
+            current_list.attributes.card_count = prev_list_card_count - 1;
+            var change_list_card_count = parseInt(this.boards.get(data.board_id).lists.get(data.list_id).get('card_count'));
+            this.boards.get(data.board_id).lists.get(data.list_id).set('card_count', change_list_card_count + 1);
+            change_list = this.board.lists.findWhere({
+                id: data.list_id
+            });
+            change_list.attributes.card_count = change_list_card_count + 1;
+        }
+        //		this.clearModalSideOverlay(e);
+        return false;
+
     },
     /**
      * archiveCard()
