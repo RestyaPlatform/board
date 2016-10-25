@@ -1296,81 +1296,128 @@ App.ModalCardView = Backbone.View.extend({
      */
     moveCard: function(e) {
         e.preventDefault();
-        var current_list_id = this.model.attributes.list_id;
-        var current_board_id = this.model.attributes.board_id;
-        var data = {};
-		data = $(e.target).serializeObject();
-		data.list_id = parseInt(data.list_id);
-		data.board_id = parseInt(data.board_id);
-		data.position = parseInt(data.position);			
-		
-		var change_list = this.board.lists.findWhere({
-			id: data.list_id
-		});
-		
-		var change_list_cards = this.model.list.collection.board.cards.where({
-			list_id: data.list_id
-		});
-		
-		var change_list_cards_collection = new App.CardCollection();
-		change_list_cards_collection.add(change_list_cards);
-		var i = 1;
-		var change_prev_card, change_next_card;
-		change_list_cards_collection.each(function(card) {
-			if (!card.attributes.is_archived && _.isUndefined(change_next_card)) {					
-				if (i === data.position) {
-					change_next_card = card;
-				} else {
-					change_prev_card = card;
-				}
-				i++;
-			}
-		});
-		console.log("Next "+change_next_card);
-		console.log("Previous "+change_prev_card);
-		
-		if (!_.isUndefined(change_list)) {
-			this.model.list = change_list;
-		}
-		if (_.isUndefined(change_prev_card)) {
-			
-			data.position = (change_next_card.attributes.position) / 2;
-			console.log('1: '+data.position);
-			this.model.set({
-				position: data.position
-			});
-		} else if (!_.isUndefined(change_prev_card)) {
-			//			console.log('2');
-			data.position = (change_prev_card.attributes.position + change_next_card.attributes.position) / 2;
-			console.log('2' + data.position);
-			this.model.set({
-				position: data.position
-			});
-		}
-		this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
-		this.model.save(data, {
-			patch: true
-		});
-		if (data.list_id !== current_list_id) {
-			this.model.list.collection.board.lists.get(current_list_id).cards.remove(this.model);
-			this.model.list.collection.board.lists.get(data.list_id).cards.add(this.model);
-			this.model.list = this.model.list.collection.get(data.list_id);
-			var prev_list_card_count = parseInt(this.boards.get(current_board_id).lists.get(current_list_id).get('card_count'));
-			this.boards.get(current_board_id).lists.get(current_list_id).set('card_count', prev_list_card_count - 1);
-			var current_list = this.board.lists.findWhere({
-				id: current_list_id
-			});
-			current_list.attributes.card_count = prev_list_card_count - 1;
-			var change_list_card_count = parseInt(this.boards.get(data.board_id).lists.get(data.list_id).get('card_count'));
-			this.boards.get(data.board_id).lists.get(data.list_id).set('card_count', change_list_card_count + 1);
-			change_list = this.board.lists.findWhere({
-				id: data.list_id
-			});
-			change_list.attributes.card_count = change_list_card_count + 1;
-		}		
-//		this.clearModalSideOverlay(e);
-		return false;
-		
+        var card_id = this.model.id;
+        var current_card = this.model.attributes;
+        var data = $(e.target).serializeObject();
+        data.list_id = parseInt(data.list_id);
+        data.board_id = parseInt(data.board_id);
+        var position = parseInt(data.position);
+        var prev_list_id = this.model.attributes.list_id;
+        var prev_board_id = this.model.attributes.board_id;
+        var view_card = $('#js-card-listing-' + data.list_id);
+        if (data.list_id !== this.model.attributes.list_id) {
+            var card_count = parseInt(this.boards.get(this.model.attributes.board_id).lists.get(this.model.attributes.list_id).get('card_count'));
+            this.boards.get(this.model.attributes.board_id).lists.get(this.model.attributes.list_id).set('card_count', card_count - 1);
+        }
+        var cards = this.model.list.collection.board.cards.where({
+            list_id: data.list_id
+        });
+        this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
+        var list_cards = new App.CardCollection();
+        list_cards.add(cards);
+        list_cards.sortByColumn('position');
+        var next = view_card.find('.js-board-list-card:nth-child(' + data.position + ')');
+        var prev = view_card.find('.js-board-list-card:nth-child(' + (data.position - 1) + ')');
+        var before = '';
+        var after = '';
+        var difference = '';
+        var newPosition = '';
+        var view = '';
+        var list = this.board.lists.findWhere({
+            id: data.list_id
+        });
+        this.model.set(data, {
+            silent: true
+        });
+        if (!_.isUndefined(list)) {
+            this.model.list = list;
+        }
+        if (prev.length !== 0) {
+            before = list_cards.get(parseInt(prev.data('card_id')));
+            after = list_cards.at(list_cards.indexOf(before) + 1);
+            if (typeof after == 'undefined') {
+                afterPosition = before.position() + 2;
+            } else {
+                afterPosition = after.position();
+            }
+            difference = (afterPosition - before.position()) / 2;
+            newPosition = difference + before.position();
+            this.model.set({
+                position: newPosition
+            });
+            data.position = newPosition;
+            view = new App.CardView({
+                tagName: 'div',
+                model: this.model,
+                converter: this.converter
+            });
+            prev.after(view.render().el);
+        } else if (next.length !== 0) {
+            after = list_cards.get(parseInt(next.data('card_id')));
+            before = list_cards.at(list_cards.indexOf(after) - 1);
+            if (typeof before == 'undefined') {
+                beforePosition = 0.0;
+            } else {
+                beforePosition = before.position();
+            }
+            difference = (after.position() - beforePosition) / 2;
+            newPosition = difference + beforePosition;
+            this.model.set({
+                position: newPosition
+            });
+            data.position = newPosition;
+            view = new App.CardView({
+                tagName: 'div',
+                model: this.model,
+                converter: this.converter
+            });
+            next.before(view.render().el);
+        } else {
+            view = new App.CardView({
+                tagName: 'div',
+                model: this.model,
+                converter: this.converter
+            });
+            view_card.append(view.render().el);
+            data.position = position;
+        }
+        if (data.board_id !== prev_board_id) {
+            this.boards.get(data.board_id).lists.get(data.list_id).set('card_count', list_cards.length + 1);
+            this.model.collection.remove(this.model, {
+                silent: true
+            });
+            var close_doc = $('#js-card-modal-' + this.model.id);
+            close_doc.dockmodal('close');
+            $('#js-card-' + this.model.id).remove();
+        } else {
+            if (data.list_id !== prev_list_id) {
+                this.boards.get(list.attributes.board_id).lists.get(list.attributes.id).set('card_count', list_cards.length + 1);
+            } else {
+                this.boards.get(list.attributes.board_id).lists.get(list.attributes.id).set('card_count', list_cards.length);
+            }
+            list.set('card_count', list_cards.length + 1);
+            this.model.set(data);
+            this.refreshdock();
+        }
+        if (data.list_id !== current_card.list_id) {
+            this.$el.modal('hide');
+            this.model.collection.remove(this.model);
+            data.board_id = parseInt(data.board_id);
+            if (data.board_id === current_card.board_id) {
+                this.model.list.collection.board.cards.remove(this.model);
+                this.model.list.collection.board.lists.get(parseInt(data.list_id)).cards.add(this.model);
+                this.model.list = this.model.list.collection.get(parseInt(data.list_id));
+                var doc = $('#js-card-modal-' + this.model.id);
+                doc.dockmodal('close');
+            }
+            this.model.set(data);
+        }
+        this.model.list.cards.sortByColumn('position');
+
+        this.model.save(data, {
+            patch: true
+        });
+        return false;
     },
     /**
      * archiveCard()
