@@ -1930,12 +1930,17 @@ App.ModalCardView = Backbone.View.extend({
                             self.model.list.collection.board.checklist_items.add(checklist_item);
                         });
                     }
-
-
                 }
                 self.model.list.collection.board.checklists.add(card_checklist);
-                self.model.checklists.add(card_checklist);
-
+                self.model.checklists.add(card_checklist);				
+				
+				$('.js-card-checklist').each(function() {
+					var id = $(this).attr("data-checklist_id");		
+					if(card_checklist.id == $(this).attr("data-checklist_id")) {
+						$(this).find('.js-add-item-view').trigger('click');	
+					}
+				});										   
+				
                 var __checklist_items = self.model.list.collection.board.checklist_items.where({
                     card_id: parseInt(self.model.attributes.id)
                 });
