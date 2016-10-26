@@ -49,6 +49,8 @@ var DONE_COLOR = '';
 var TODO_ICON = '';
 var DOING_ICON = '';
 var DONE_ICON = '';
+var JABBER_ENABLED = 0;
+var ELASTICSEARCH_ENABLED = 0;
 Backbone.View.prototype.flash = function(type, message) {
     $.bootstrapGrowl(message, {
         type: type,

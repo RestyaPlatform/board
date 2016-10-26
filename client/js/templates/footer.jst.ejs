@@ -141,22 +141,32 @@ if (_.isEmpty(role_links.where({
   <% } %>
 </ul>
 <% if(!_.isUndefined(authuser.user)){%>
-<div class="col-xs-push-0 col-sm-push-1 col-md-push-1 col-lg-push-1 col-lg-4 col-md-3 col-sm-1 col-xs-12 hidden-xs search-xs list-group-item-heading clearfix">
-	<form role="form" class="search-container clearfix">
-	<div class="text-center clearfix hide search-loader" id="js-loader-img"><img src="img/ajax-loader.gif" alt="[Images:Loader]" title="Loading..." /></div>
-	  <div class="form-group">
-		<input id="search-box" type="search" class="search-box pull-right form-control js-search search-box">
-		<i class="icon-circle-blank search-loader hide" id="res"></i>
-		<i class="icon-circle-blank search-loader text-primary hide" id="nres"></i>
-		<label for="search-box" class="pull-right"><i class="icon-search btn btn-primary search-icon"></i></label>
-		<ul class="dropdown-menu">
-			<li class="js-show-search-result js-dropdown-popup dropdown-popup">
-			</li>
-		</ul>
-	  </div>
-	  <button type="submit" class="search-submit sr-only"><%- i18next.t("Submit") %></button>
-	</form>
-</div>
+	<% if ( !_.isUndefined(ELASTICSEARCH_ENABLED) && ELASTICSEARCH_ENABLED == 1) { %>
+		<div class="col-xs-push-0 col-sm-push-1 col-md-push-1 col-lg-push-1 col-lg-4 col-md-3 col-sm-1 col-xs-12 hidden-xs search-xs list-group-item-heading clearfix">
+			<form role="form" class="search-container clearfix">
+			<div class="text-center clearfix hide search-loader" id="js-loader-img"><img src="img/ajax-loader.gif" alt="[Images:Loader]" title="Loading..." /></div>
+			  <div class="form-group">
+				<input id="search-box" type="search" class="search-box pull-right form-control js-search search-box">
+				<i class="icon-circle-blank search-loader hide" id="res"></i>
+				<i class="icon-circle-blank search-loader text-primary hide" id="nres"></i>
+				<label for="search-box" class="pull-right"><i class="icon-search btn btn-primary search-icon"></i></label>
+				<ul class="dropdown-menu">
+					<li class="js-show-search-result js-dropdown-popup dropdown-popup">
+					</li>
+				</ul>
+			  </div>
+			  <button type="submit" class="search-submit sr-only"><%- i18next.t("Submit") %></button>
+			</form>
+		</div>
+	<% } else { %>
+		<div class="col-xs-push-0 col-sm-push-1 col-md-push-1 col-lg-push-1 col-lg-4 col-md-3 col-sm-1 col-xs-12 hidden-xs search-xs list-group-item-heading clearfix">
+			<form role="form" class="search-container clearfix">
+				<div class="form-group">
+					<label for="search-box" class="pull-right"><i class="icon-search btn btn-primary search-icon disabled"></i></label>
+				</div>
+			</form>
+		</div>
+	 <% } %>
  <% } %>
 <div class="navbar-right clearfix">
 	<ul class="nav nav-pills navbar-right">
@@ -207,7 +217,9 @@ if (_.isEmpty(role_links.where({
 			</li>
 		</ul>
 	  </li>
-	  <li class="hidden-xs"><a data-toggle="tooltip" data-placement="top" title="<%- i18next.t('Chat') %>" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-chat<% }%>" data-original-title="<%- i18next.t('Chat') %>"><i class="icon-comment lead"></i></a></li> 
+	  
+	  <li class="hidden-xs"><a data-toggle="tooltip" data-placement="top" title="<%- i18next.t('Chat') %>" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-chat<% }%>" data-original-title="<%- i18next.t('Chat') %>"><i class="icon-comment lead disabled"></i></a></li> 
+	  
 	  <li class="hidden-xs"><a data-container="body" data-toggle="tooltip" data-placement="top" title="<%- i18next.t('Instant add card') %>" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-instant-card-from<% }%>" data-original-title="Add New"><i class="icon-plus-sign lead"></i></a></li>
 	  <li class="dropdown notifications pull-right hidden-xs"><a data-toggle="dropdown" href="#" class="btn btn-default pull-right js-show-notification" title="Notifications"><sup class="badge notification-count hide js-notification-count"></sup><i class="icon-bell lead"></i></a>
 		<div id="all_activities" class="tabbable tabs-below dropdown-menu pull-right js-dropdown-popup" role="menu">
