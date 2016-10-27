@@ -2026,7 +2026,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     foreach ($thumbsizes['User'] as $key => $value) {
                         $mediadir = APP_PATH . '/client/img/' . $key . '/User/' . $r_resource_vars['users'];
                         $list = glob($mediadir . '.*');
-                        if (file_exists($list[0])) {
+                        if (!empty($list) && file_exists($list[0])) {
                             unlink($list[0]);
                         }
                     }
