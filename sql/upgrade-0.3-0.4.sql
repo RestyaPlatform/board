@@ -355,7 +355,14 @@ Restyaboard<br>
 </body>
 </html>', 'SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME', 'LDAP Welcome');
 
+DELETE FROM acl_links_roles WHERE id IN (SELECT id FROM  acl_links WHERE name='Unstar board' ORDER BY id DESC LIMIT 1);
 
-delete from acl_links_roles where id in (select id from  acl_links where name='Unstar board' order by id desc limit 1);
+DELETE FROM acl_links WHERE id  = (SELECT id FROM acl_links WHERE name='Unstar board' ORDER BY id DESC LIMIT 1);
 
-delete from acl_links where id  = (select id from acl_links where name='Unstar board' order by id desc limit 1);
+DELETE FROM acl_links_roles WHERE id IN (SELECT id FROM  acl_links WHERE name='XMPP chat login' ORDER BY id DESC LIMIT 1);
+
+DELETE FROM acl_links WHERE id  = (SELECT id FROM acl_links WHERE name='XMPP chat login' ORDER BY id DESC LIMIT 1);
+
+DELETE FROM acl_links_roles WHERE id IN (SELECT id FROM  acl_links WHERE name='Chat History' ORDER BY id DESC LIMIT 1);
+
+DELETE FROM acl_links WHERE id  = (SELECT id FROM acl_links WHERE name='Chat History' ORDER BY id DESC LIMIT 1);
