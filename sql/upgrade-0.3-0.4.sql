@@ -354,3 +354,8 @@ Restyaboard<br>
 </footer>
 </body>
 </html>', 'SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME', 'LDAP Welcome');
+
+
+delete from acl_links_roles where id in (select id from  acl_links where name='Unstar board' order by id desc limit 1);
+
+delete from acl_links where id  = (select id from acl_links where name='Unstar board' order by id desc limit 1);
