@@ -36,8 +36,8 @@ if (ini_get('date.timezone')) {
 }
 date_default_timezone_set($default_timezone);
 define('R_DB_HOST', 'localhost');
-define('R_DB_USER', 'postgres');
-define('R_DB_PASSWORD', 'ahsan123');
+define('R_DB_USER', 'restya');
+define('R_DB_PASSWORD', 'hjVl2!rGd');
 define('R_DB_NAME', 'restyaboard');
 define('R_DB_PORT', 5432);
 define('CHAT_DB_HOST', 'localhost');
