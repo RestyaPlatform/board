@@ -2204,6 +2204,7 @@ App.ModalCardView = Backbone.View.extend({
                     } else {
                         view_activity.prepend(view.render().el).find('.timeago').timeago();
                     }
+                    $("#inputAddComment").html('');
                     emojify.run();
                     self.hideReplyCommentForm();
 
