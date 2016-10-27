@@ -1706,7 +1706,7 @@ App.FooterView = Backbone.View.extend({
                 $('.modal-comments, .modal-activities', e_target).parent('li').removeClass('hide');
                 $("#no-record").remove();
             }
-            if (i !== 2) {                                
+            if (i !== 2) {
                 $(hide_class, e_target).parent('li').addClass('hide');
                 if ($('#modal-comments', e_target).hasClass('active')) {
                     $("#js-board-activities").append('<li id="no-record">No Records Found</li>');
