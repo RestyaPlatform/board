@@ -1123,8 +1123,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 				} else {
 					$response['ELASTICSEARCH_ENABLED'] = 1 ;
 				}
-			} else if($row['name'] == 'JABBER_HOST') {
-				$response['JABBER_ENABLED'] = ($row['value'] == '') ? 0 : 1;
+			} else if($row['name'] == 'BOSH_SERVICE_URL') {
+				$response['JABBER_ENABLED'] = (trim($row['value']) == '') ? 0 : 1;				
 			} 
 			
             $response[$row['name']] = $row['value'];
