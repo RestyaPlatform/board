@@ -94,7 +94,6 @@ App.ApplicationView = Backbone.View.extend({
                                 APPS = settings_response.apps;
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-                                JABBER_ENABLED = settings_response.JABBER_ENABLED;
                                 ELASTICSEARCH_ENABLED = settings_response.ELASTICSEARCH_ENABLED;
                                 if (settings_response.TODO_COLOR) {
                                     TODO_COLOR = settings_response.TODO_COLOR;
@@ -201,7 +200,6 @@ App.ApplicationView = Backbone.View.extend({
                             APPS = settings_response.apps;
                             IMAP_EMAIL = settings_response.IMAP_EMAIL;
                             DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-                            JABBER_ENABLED = settings_response.JABBER_ENABLED;
                             ELASTICSEARCH_ENABLED = settings_response.ELASTICSEARCH_ENABLED;
                             if (settings_response.TODO_COLOR) {
                                 TODO_COLOR = settings_response.TODO_COLOR;

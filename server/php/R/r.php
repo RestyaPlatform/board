@@ -1118,13 +1118,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($s_sql)) {
             if ($row['name'] == 'ELASTICSEARCH_URL') {
                 $search_response = doGet($row['value']);
-                if (empty($search_response) || isset($search_response['error'])) {
+                if (empty($search_response) || !empty($search_response['error'])) {
                     $response['ELASTICSEARCH_ENABLED'] = 0;
                 } else {
                     $response['ELASTICSEARCH_ENABLED'] = 1;
                 }
-            } else if ($row['name'] == 'BOSH_SERVICE_URL') {
-                $response['JABBER_ENABLED'] = (trim($row['value']) == '') ? 0 : 1;
             }
             $response[$row['name']] = $row['value'];
         }
