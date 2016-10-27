@@ -18,6 +18,9 @@ define('R_API_VERSION', 1);
 if (!defined('JSON_PRETTY_PRINT')) {
     define('JSON_PRETTY_PRINT', 128);
 }
+if (!defined('JSON_UNESCAPED_SLASHES')) {
+    define('JSON_UNESCAPED_SLASHES', 128);
+}
 define('APP_PATH', dirname(dirname(dirname(__FILE__))));
 // While changing below oAuth credentials, have to update in oauth_clients table also.
 if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
@@ -33,8 +36,8 @@ if (ini_get('date.timezone')) {
 }
 date_default_timezone_set($default_timezone);
 define('R_DB_HOST', 'localhost');
-define('R_DB_USER', 'restya');
-define('R_DB_PASSWORD', 'hjVl2!rGd');
+define('R_DB_USER', 'postgres');
+define('R_DB_PASSWORD', 'ahsan123');
 define('R_DB_NAME', 'restyaboard');
 define('R_DB_PORT', 5432);
 define('CHAT_DB_HOST', 'localhost');
