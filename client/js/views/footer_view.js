@@ -994,7 +994,7 @@ App.FooterView = Backbone.View.extend({
                                                 items = new App.CheckListItemCollection();
                                                 items.add(checklist_items);
                                                 completed_count = items.filter(function(checklist_item) {
-                                                    return parseInt(checklist_item.get('is_completed')) === 1;
+                                                    return ((parseInt(checklist_item.get('is_completed')) === 1) || ((checklist_item.get('is_completed')) === 't'));
                                                 }).length;
                                                 total_count = items.models.length;
                                                 card.set('checklist_item_completed_count', completed_count);
@@ -1009,7 +1009,8 @@ App.FooterView = Backbone.View.extend({
                                             card.users.add(new_user);
                                         } else if (activity.attributes.type === 'add_comment') {
                                             card.list.collection.board.activities.add(activity);
-                                            card.set('comment_count', activity.attributes.comment_count);
+                                            var current_card = card.list.collection.board.cards.get(activity.attributes.card_id);
+                                            card.set('comment_count', parseInt(current_card.attributes.comment_count) + 1);
                                         } else if (activity.attributes.type === 'add_card_attachment') {
                                             var new_attachment = new App.CardAttachment();
                                             new_attachment.set(activity.attributes.attachment);
@@ -1703,9 +1704,14 @@ App.FooterView = Backbone.View.extend({
             hide_class = hide_class.substring(0, hide_class.lastIndexOf(', '));
             if (i === 2 || i === 0) {
                 $('.modal-comments, .modal-activities', e_target).parent('li').removeClass('hide');
+                $("#no-record").remove();
             }
             if (i !== 2) {
                 $(hide_class, e_target).parent('li').addClass('hide');
+                if ($('#modal-comments', e_target).hasClass('active')) {
+                    $("#js-board-activities").append('<li id="no-record">No Records Found</li>');
+                }
+
             }
             $('#' + target.attr('id'), e_target).parent('ul').removeClass('called');
         }

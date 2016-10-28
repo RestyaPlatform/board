@@ -402,7 +402,7 @@ App.CardCheckListView = Backbone.View.extend({
             self.model.card.list.collection.board.checklist_items.add(checklist_item, {
                 silent: true
             });
-
+            self.model.card.set('checklist_item_count', self.model.card.get('checklist_item_count') + 1);
             self.renderItemsCollection(false);
             checklist_item.save(data, {
                 success: function(model, response) {
