@@ -905,8 +905,7 @@
 						then
 							echo "Installing PostgreSQL 32 fail with error code 27"
 						fi
-					fi
-					if [ $(getconf LONG_BIT) = "64" ]; then
+					else
 						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
 							rpm -Uvh "http://yum.postgresql.org/9.4/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora94-9.4-3.noarch.rpm"
 						else
@@ -1010,10 +1009,38 @@
 
 			get_geoip_data
 			
+			yum install -y git
+			git clone git://github.com/rebar/rebar.git
+			cd rebar
+			./bootstrap
+
+			yum install -y gcc glibc-devel make ncurses-devel openssl-devel autoconf expat-devel
+
+			cd /opt
+			wget http://erlang.org/download/otp_src_R15B01.tar.gz
+			tar zxvf otp_src_R15B01.tar.gz
+			cd otp_src_R15B01
+			./configure && make && make install
+
 			cd /opt
 			wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
-			wget https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_18.3-1~centos~6_i386.rpm
-			rpm -ivh esl-erlang_18.3-1~centos~6_i386.rpm
+			if [ $(getconf LONG_BIT) = "32" ]; then
+				if [[ $OS_REQUIREMENT = "Fedora" ]]; then
+					wget "https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_15.b.3-1~fedora~beefymiracle_i386.rpm"
+					rpm -ivh esl-erlang_15.b.3-1~fedora~beefymiracle_i386.rpm
+				else
+					wget "https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_18.3-1~centos~${OS_VERSION}_i386.rpm"
+					rpm -ivh "esl-erlang_18.3-1~centos~${OS_VERSION}_i386.rpm"
+				fi
+			else
+				if [[ $OS_REQUIREMENT = "Fedora" ]]; then
+					wget "http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/esl-erlang_15.b.3-1~fedora~beefymiracle_amd64.rpm"
+					rpm -ivh esl-erlang_15.b.3-1~fedora~beefymiracle_amd64.rpm
+				else
+					wget "http://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_18.3-1~centos~${OS_VERSION}_amd64.rpm"
+					rpm -ivh "esl-erlang_18.3-1~centos~${OS_VERSION}_amd64.rpm"
+				fi
+			fi
 			yum install -y libyaml*
 			tar -zvxf ejabberd-15.07.tgz
 			cd ejabberd-15.07
