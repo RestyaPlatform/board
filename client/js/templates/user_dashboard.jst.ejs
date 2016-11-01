@@ -73,9 +73,13 @@
 		<div class="clearfix dropdown navbar-btn">
 			<a href="#" title="Organizations" class="btn btn-primary navbar-btn" data-toggle="dropdown"><%- data.organizations.length %> <%- i18next.t('Organizations') %> <i class="caret"></i> </a>
 			 <ul class="dropdown-menu arrow dropdown-menu-right text-left">
-				 <% _.each(data.organizations, function(item, key) { %> 
-					<li><a href="#/organization/<%- item.attributes.id %>" title="<%- item.attributes.name %>"> <%- item.attributes.name %> </a></li>
-				<% }); %> 
+				 <% if(!_.isEmpty(data.organizations)) { %>
+					<% _.each(data.organizations, function(item, key) { %> 
+						<li><a href="#/organization/<%- item.attributes.id %>" title="<%- item.attributes.name %>"> <%- item.attributes.name %> </a></li>
+					<% }); %> 
+				<% } else { %>
+					<li><%- i18next.t('No Records found') %></li>
+				<% } %>
 			 </ul>
 		</div>
 	 </div>
