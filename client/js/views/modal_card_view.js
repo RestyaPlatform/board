@@ -1339,21 +1339,22 @@ App.ModalCardView = Backbone.View.extend({
                 i++;
             }
         });
-
         if (!_.isUndefined(change_list)) {
             this.model.list = change_list;
         }
         if (_.isUndefined(change_prev_card)) {
 
             data.position = (change_next_card.attributes.position) / 2;
-            console.log('1: ' + data.position);
+            this.model.set({
+                position: data.position
+            });
+        } else if (_.isUndefined(change_next_card)) {
+            data.position = (change_prev_card.attributes.position) + 1;
             this.model.set({
                 position: data.position
             });
         } else if (!_.isUndefined(change_prev_card)) {
-            //			console.log('2');
             data.position = (change_prev_card.attributes.position + change_next_card.attributes.position) / 2;
-            console.log('2' + data.position);
             this.model.set({
                 position: data.position
             });
