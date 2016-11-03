@@ -1380,7 +1380,7 @@ App.ModalCardView = Backbone.View.extend({
             });
             change_list.attributes.card_count = change_list_card_count + 1;
         }
-        //		this.clearModalSideOverlay(e);
+        this.clearModalSideOverlay(e);
         return false;
 
     },
