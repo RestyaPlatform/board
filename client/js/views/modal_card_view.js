@@ -700,15 +700,15 @@ App.ModalCardView = Backbone.View.extend({
             if (parseInt(this.model.attributes.is_archived) === 1) {
                 class_name = ' label label-warning';
                 text = i18next.t('This card is archived.');
-            } else {							
-				if (subscribed != '') {                
-					class_name = ' label label-warning';
-					text = i18next.t('This card is subscribed.');
-				} else {
-					class_name = ' label label-warning';
-					text = i18next.t('This card is unsubscribed.');
-				}				
-			}
+            } else {
+                if (subscribed != '') {
+                    class_name = ' label label-warning';
+                    text = i18next.t('This card is subscribed.');
+                } else {
+                    class_name = ' label label-warning';
+                    text = i18next.t('This card is unsubscribed.');
+                }
+            }
             $('.title-text', doc.parent().prev('.dockmodal-header')).html('<div class="card-id pull-left"><strong>#' + this.model.id + '</strong></div><span class="title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + text + '</span>');
             doc.html(this.template({
                 card: this.model,
