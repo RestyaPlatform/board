@@ -701,7 +701,7 @@ App.ModalCardView = Backbone.View.extend({
                 class_name = ' label label-warning';
                 text = i18next.t('This card is archived.');
             } else {
-                if (subscribed != '') {
+                if (subscribed !== '') {
                     class_name = ' label label-warning';
                     text = i18next.t('This card is subscribed.');
                 } else {
