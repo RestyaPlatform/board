@@ -512,8 +512,8 @@ App.ModalCardView = Backbone.View.extend({
      * @return false
      */
     showMemberSearch: function(e) {
-        $(".js-comment").removeClass("act-sel");
-        $(e.target).addClass("act-sel");
+        $(".js-comment").removeClass("current-comment-box");
+        $(e.target).addClass("current-comment-box");
         var q = $(e.target).val();
         var keyCode = e.which || e.keyCode;
         if (keyCode === 50 && (e.shiftKey || e.metaKey)) {
@@ -2773,16 +2773,16 @@ App.ModalCardView = Backbone.View.extend({
      */
     AddCommentMember: function(e) {
         e.preventDefault();
-        var str = this.$el.find('.act-sel').val();
+        var str = this.$el.find('.current-comment-box').val();
         if (_.isEmpty($('.js-search-member').val())) {
-            var space = _.isEmpty(this.$el.find('.act-sel').val()) ? '' : ' ';
+            var space = _.isEmpty(this.$el.find('.current-comment-box').val()) ? '' : ' ';
             var pos = str.lastIndexOf('@');
             str = str.substring(0, pos) + str.substring(pos + 1);
-            this.$el.find('.act-sel').val(str + space + '@' + $(e.currentTarget).data('user-name')).focus();
+            this.$el.find('.current-comment-box').val(str + space + '@' + $(e.currentTarget).data('user-name')).focus();
         } else {
-            this.$el.find('.act-sel ').val(str.replace('@' + $('.js-search-member').val(), '@' + $(e.currentTarget).data('user-name'))).focus();
+            this.$el.find('.current-comment-box').val(str.replace('@' + $('.js-search-member').val(), '@' + $(e.currentTarget).data('user-name'))).focus();
         }
-        $(".js-comment").removeClass("act-sel");
+        $(".js-comment").removeClass("current-comment-box");
         this.autoMentionSelectionStart = 0;
         $('.js-search-member').val('').trigger('keyup');
     },
