@@ -1711,7 +1711,11 @@ App.FooterView = Backbone.View.extend({
                 if ($('#modal-comments', e_target).hasClass('active')) {
                     $("#js-board-activities").append('<li id="no-record">No Records Found</li>');
                 }
-
+            }
+            if ($("ul#js-board-activities").find("li.js-activity:not('.hide')").length > 0) {
+                $("#no-record").addClass("hide");
+            } else {
+                $("#no-record").removeClass("hide");
             }
             $('#' + target.attr('id'), e_target).parent('ul').removeClass('called');
         }
