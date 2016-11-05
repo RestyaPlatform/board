@@ -5099,6 +5099,21 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         array_push($pg_params, $r_resource_vars['webhooks']);
         break;
 
+    case '/roles/?':    
+        $sql = 'DELETE FROM roles WHERE id= $1';
+        array_push($pg_params, $r_resource_vars['roles']);
+        break;
+
+    case '/board_user_roles/?':    
+        $sql = 'DELETE FROM board_user_roles WHERE id= $1';
+        array_push($pg_params, $r_resource_vars['board_user_roles']);
+        break;
+
+     case '/organization_user_roles/?':   
+        $sql = 'DELETE FROM organization_user_roles WHERE id= $1';
+        array_push($pg_params, $r_resource_vars['organization_user_roles']);
+        break;
+
     default:
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
         break;
