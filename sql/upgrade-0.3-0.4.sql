@@ -366,3 +366,7 @@ DELETE FROM acl_links WHERE id  = (SELECT id FROM acl_links WHERE name='XMPP cha
 DELETE FROM acl_links_roles WHERE id IN (SELECT id FROM  acl_links WHERE name='Chat History' ORDER BY id DESC LIMIT 1);
 
 DELETE FROM acl_links WHERE id  = (SELECT id FROM acl_links WHERE name='Chat History' ORDER BY id DESC LIMIT 1);
+
+ALTER TABLE public.board_user_roles ADD PRIMARY KEY (id);
+
+ALTER TABLE public.organization_user_roles ADD PRIMARY KEY (id);
