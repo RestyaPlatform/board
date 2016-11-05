@@ -219,6 +219,7 @@ App.ModalCardView = Backbone.View.extend({
         $('.js-show-emoji-list-response').append(new App.EmojiListView({
             model: emojiListArray
         }).el);
+        $('.js-comment-emoji-search-response').parent('ul').addClass("emoji-scroll");
         emojify.run();
     },
     /**
