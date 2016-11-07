@@ -25,8 +25,6 @@ App.ModalShortcutView = Backbone.View.extend({
         //this.render();
     },
     template: JST['templates/modal_shortcut'],
-    tagName: 'li',
-    // className: 'clearfix col-xs-12',
     /**
      * show()
      * display list attachment in modal box
