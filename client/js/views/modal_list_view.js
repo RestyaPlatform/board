@@ -34,6 +34,7 @@ App.ModalListView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         _(this).bindAll('show', 'teardown');
+        this.model.attachments.bind('remove', this.displayEmptyMessage, this);
     },
     teardown: function() {
         this.$el.data('modal', null);
@@ -104,6 +105,15 @@ App.ModalListView = Backbone.View.extend({
                 model: null
             });
             view_attachment.append(view.render().el);
+        }
+    },
+    displayEmptyMessage: function() {
+        if (this.model.attachments.length === 0) {
+            var view_attachment = this.$('#js-list-attachments-list');
+            var view = new App.AttachmentView({
+                model: null
+            });
+            view_attachment.html(view.render().el);
         }
     }
 });
