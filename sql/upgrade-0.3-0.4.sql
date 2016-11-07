@@ -366,3 +366,25 @@ DELETE FROM acl_links WHERE id  = (SELECT id FROM acl_links WHERE name='XMPP cha
 DELETE FROM acl_links_roles WHERE id IN (SELECT id FROM  acl_links WHERE name='Chat History' ORDER BY id DESC LIMIT 1);
 
 DELETE FROM acl_links WHERE id  = (SELECT id FROM acl_links WHERE name='Chat History' ORDER BY id DESC LIMIT 1);
+
+ALTER TABLE public.board_user_roles ADD PRIMARY KEY (id);
+
+ALTER TABLE public.organization_user_roles ADD PRIMARY KEY (id);
+
+INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
+VALUES ('141', now(), now(), 'Board user role delete', '/board_user_roles/?', 'DELETE', 'board_user_role_delete', '1', '0', '0', '1', '1');
+
+INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
+VALUES ('142', now(), now(), 'Organization user role delete', '/organization_user_roles/?', 'DELETE', 'organization_user_role_delete', '1', '0', '0', '1', '1');
+
+INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
+VALUES ('143', now(), now(), 'Role delete', '/roles/?', 'DELETE', 'role_delete', '1', '0', '0', '1', '1');
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
+VALUES (now(), now(), '141', '1');
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
+VALUES (now(), now(), '142', '1');
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
+VALUES (now(), now(), '143', '1');

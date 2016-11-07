@@ -1114,8 +1114,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/settings':
-        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\' or name = \'LDAP_LOGIN_ENABLED\' OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'STANDARD_LOGIN_ENABLED\' OR name = \'BOSH_SERVICE_URL\' OR name = \'PREBIND_URL\' OR name = \'JABBER_HOST\' OR name = \'PAGING_COUNT\' OR name = \'DEFAULT_CARD_VIEW\' OR name = \'TODO\' OR name = \'DOING\' OR name = \'DONE\' OR name = \'TODO_COLOR\' OR name = \'DOING_COLOR\' OR name = \'DONE_COLOR\' OR name = \'TODO_ICON\' OR name = \'DOING_ICON\' OR name = \'DONE_ICON\'', array());
+        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\' or name = \'LDAP_LOGIN_ENABLED\' OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'STANDARD_LOGIN_ENABLED\' OR name = \'BOSH_SERVICE_URL\' OR name = \'PREBIND_URL\' OR name = \'JABBER_HOST\' OR name = \'PAGING_COUNT\' OR name = \'DEFAULT_CARD_VIEW\' OR name = \'TODO\' OR name = \'DOING\' OR name = \'DONE\' OR name = \'TODO_COLOR\' OR name = \'DOING_COLOR\' OR name = \'DONE_COLOR\' OR name = \'TODO_ICON\' OR name = \'DOING_ICON\' OR name = \'DONE_ICON\' OR name = \'ELASTICSEARCH_URL\' OR name = \'ELASTICSEARCH_INDEX\'', array());
         while ($row = pg_fetch_assoc($s_sql)) {
+            if ($row['name'] == 'ELASTICSEARCH_URL') {
+                $search_response = doGet($row['value']);
+                if (empty($search_response) || !empty($search_response['error'])) {
+                    $response['ELASTICSEARCH_ENABLED'] = 0;
+                } else {
+                    $response['ELASTICSEARCH_ENABLED'] = 1;
+                }
+            }
             $response[$row['name']] = $row['value'];
         }
         $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
@@ -5089,6 +5097,21 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/webhooks/?':
         $sql = 'DELETE FROM webhooks WHERE id= $1';
         array_push($pg_params, $r_resource_vars['webhooks']);
+        break;
+
+    case '/roles/?':    
+        $sql = 'DELETE FROM roles WHERE id= $1';
+        array_push($pg_params, $r_resource_vars['roles']);
+        break;
+
+    case '/board_user_roles/?':    
+        $sql = 'DELETE FROM board_user_roles WHERE id= $1';
+        array_push($pg_params, $r_resource_vars['board_user_roles']);
+        break;
+
+     case '/organization_user_roles/?':   
+        $sql = 'DELETE FROM organization_user_roles WHERE id= $1';
+        array_push($pg_params, $r_resource_vars['organization_user_roles']);
         break;
 
     default:
