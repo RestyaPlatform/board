@@ -15,11 +15,7 @@
 	set -x
 	whoami
 	echo $(cat /etc/issue)
-	OS_REQUIREMENT=$(cat /proc/version | grep 'Ubuntu\|Debian\|Raspbian\|CentOS\|Fedora' | sed 's/^.*Ubuntu.*$/Ubuntu/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Raspbian.*$/Raspbian/g' | sed 's/^.*CentOS.*$/CentOS/g' | sed 's/^.*Fedora.*$/Fedora/g')
-	if ([ "$OS_REQUIREMENT" = "" ])
-	then
-		OS_REQUIREMENT=$(cat /etc/issue | grep 'Ubuntu\|Debian\|Raspbian\|CentOS\|Fedora' | sed 's/^.*Ubuntu.*$/Ubuntu/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Raspbian.*$/Raspbian/g' | sed 's/^.*CentOS.*$/CentOS/g' | sed 's/^.*Fedora.*$/Fedora/g')
-	fi
+	OS_REQUIREMENT=$(lsb_release -i -s)
 	OS_VERSION=$(lsb_release -rs | cut -f1 -d.)
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 	then
