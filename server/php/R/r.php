@@ -1855,9 +1855,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $check_user = ldapAuthenticate($r_post['email'], $r_post['password']);
             if (is_array($check_user) && !empty($check_user['User']) && $check_user['User']['is_username_exits'] && $check_user['User']['is_password_matched'] && isset($check_user['User']['email']) && !empty($check_user['User']['email'])) {
                 $val_arr = array(
-                    $check_user['User']['email']
+                    $check_user['User']['email'],
+                    $r_post['email']
                 );
-                $user = executeQuery('SELECT * FROM users_listing WHERE email = $1', $val_arr);
+                $user = executeQuery('SELECT * FROM users_listing WHERE email = $1 or username = $2 ', $val_arr);
                 if (!$user) {
                     $r_post['password'] = getCryptHash($r_post['password']);
                     $r_post['role_id'] = 2; // user
@@ -1875,6 +1876,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $user['id']
                     );
                     $user = executeQuery('SELECT * FROM users_listing WHERE id = $1', $val_arr);
+                } else {
+                    if ($user['email'] != $check_user['User']['email']) {
+                        $res_val_arr = array(
+                            $check_user['User']['email'],
+                            $user['id']
+                        );
+                        pg_query_params($db_lnk, 'UPDATE users SET (email) = ($1) WHERE id = $2', $res_val_arr);
+                    }
                 }
             } else {
                 $ldap_error = $check_user;
@@ -5099,17 +5108,17 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         array_push($pg_params, $r_resource_vars['webhooks']);
         break;
 
-    case '/roles/?':    
+    case '/roles/?':
         $sql = 'DELETE FROM roles WHERE id= $1';
         array_push($pg_params, $r_resource_vars['roles']);
         break;
 
-    case '/board_user_roles/?':    
+    case '/board_user_roles/?':
         $sql = 'DELETE FROM board_user_roles WHERE id= $1';
         array_push($pg_params, $r_resource_vars['board_user_roles']);
         break;
 
-     case '/organization_user_roles/?':   
+    case '/organization_user_roles/?':
         $sql = 'DELETE FROM organization_user_roles WHERE id= $1';
         array_push($pg_params, $r_resource_vars['organization_user_roles']);
         break;
@@ -5159,6 +5168,17 @@ if (!empty($_GET['_url']) && $db_lnk) {
         '/users/?/activation',
         '/users/forgotpassword'
     );
+    if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/client.php') && !empty($_server_domain_url)) {
+        doPost('http://restya.com/clients', array(
+            'app' => 'board',
+            'ver' => '0.3',
+            'url' => $_server_domain_url
+        ));
+        $fh = fopen(APP_PATH . '/tmp/cache/client.php', 'a');
+        fwrite($fh, '<?php' . "\n");
+        fwrite($fh, '$_server_domain_url = \'' . $_server_domain_url . '\';');
+        fclose($fh);
+    }
     if ($r_resource_cmd != '/users/login') {
         $token_exception_url = array(
             '/settings',
