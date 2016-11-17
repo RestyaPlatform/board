@@ -1856,7 +1856,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             if (is_array($check_user) && !empty($check_user['User']) && $check_user['User']['is_username_exits'] && $check_user['User']['is_password_matched'] && isset($check_user['User']['email']) && !empty($check_user['User']['email'])) {
                 $val_arr = array(
                     $check_user['User']['email'],
-					$r_post['email']
+                    $r_post['email']
                 );
                 $user = executeQuery('SELECT * FROM users_listing WHERE email = $1 or username = $2 ', $val_arr);
                 if (!$user) {
@@ -1876,15 +1876,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $user['id']
                     );
                     $user = executeQuery('SELECT * FROM users_listing WHERE id = $1', $val_arr);
-                } else {					
-					if($user['email'] != $check_user['User']['email']) {
-						$res_val_arr = array(
-							$check_user['User']['email'],
-							$user['id']								
-						);
-						pg_query_params($db_lnk, 'UPDATE users SET (email) = ($1) WHERE id = $2', $res_val_arr);
-					}
-				}
+                } else {
+                    if ($user['email'] != $check_user['User']['email']) {
+                        $res_val_arr = array(
+                            $check_user['User']['email'],
+                            $user['id']
+                        );
+                        pg_query_params($db_lnk, 'UPDATE users SET (email) = ($1) WHERE id = $2', $res_val_arr);
+                    }
+                }
             } else {
                 $ldap_error = $check_user;
             }
@@ -5167,20 +5167,20 @@ if (!empty($_GET['_url']) && $db_lnk) {
         '/oauth/token',
         '/users/?/activation',
         '/users/forgotpassword'
-	);
-	
-	//$resp = doPost('http://192.168.1.210/ravi/board/clients', array('app' => 'board', 'ver' => '0.3', 'url' => $_server_domain_url));				
-	//echo "<pre>"; print_r($resp);
-	
-	if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/client.php') && !empty($_server_domain_url)) {			
-		doPost('http://restya.com/clients', array('app' => 'board', 'ver' => '0.3', 'url' => $_server_domain_url));			
-		$fh = fopen(APP_PATH . '/tmp/cache/client.php', 'a');
-		fwrite($fh, '<?php' . "\n");
-		fwrite($fh, '$_server_domain_url = \'' . $_server_domain_url . '\';');
-		fclose($fh);
-	}			
-	
-	
+    );
+    //$resp = doPost('http://192.168.1.210/ravi/board/clients', array('app' => 'board', 'ver' => '0.3', 'url' => $_server_domain_url));
+    //echo "<pre>"; print_r($resp);
+    if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/client.php') && !empty($_server_domain_url)) {
+        doPost('http://restya.com/clients', array(
+            'app' => 'board',
+            'ver' => '0.3',
+            'url' => $_server_domain_url
+        ));
+        $fh = fopen(APP_PATH . '/tmp/cache/client.php', 'a');
+        fwrite($fh, '<?php' . "\n");
+        fwrite($fh, '$_server_domain_url = \'' . $_server_domain_url . '\';');
+        fclose($fh);
+    }
     if ($r_resource_cmd != '/users/login') {
         $token_exception_url = array(
             '/settings',
