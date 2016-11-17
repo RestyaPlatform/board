@@ -5168,8 +5168,6 @@ if (!empty($_GET['_url']) && $db_lnk) {
         '/users/?/activation',
         '/users/forgotpassword'
     );
-    //$resp = doPost('http://192.168.1.210/ravi/board/clients', array('app' => 'board', 'ver' => '0.3', 'url' => $_server_domain_url));
-    //echo "<pre>"; print_r($resp);
     if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/client.php') && !empty($_server_domain_url)) {
         doPost('http://restya.com/clients', array(
             'app' => 'board',
