@@ -46,7 +46,7 @@
 
     function setAnimationCSS($this, $el) {
         var aniSpeed = $this.options.animationSpeed / 1000;
-        $el.css({"transition": aniSpeed + "s right, " + aniSpeed + "s left, " + aniSpeed + "s top, " + aniSpeed + "s height, " + aniSpeed + "s width"});
+		$el.css({"left": "50%", "right": "50%", "top": "50%", "bottom": "50%"});		 //"transition": "0.1s", 
         return true;
     }
 
@@ -168,7 +168,10 @@
                 // create overlay
                 var $overlay = $("." + dClass + "-overlay");
                 if (!$overlay.length) {
-                    $overlay = $('<div/>').addClass(dClass + "-overlay");
+                    $overlay = $('<div/>').addClass(dClass + "-overlay").click(function (e) {
+                        methods.destroy.apply($this);
+                        return false;
+                    });					
                 }
 
                 // raise create event
@@ -256,8 +259,7 @@
                         if ($.isFunction($this.options.close)) {
                             $this.options.close($this);
                         }
-                    }, $this.options.animationSpeed);
-
+                    });
                 }
                 catch (err) {
                     alert(err.message);
@@ -391,7 +393,10 @@
                         "top": $this.options.poppedOutDistance,
                         "bottom": 42 + "px"
                     });
-                    $("." + dClass + "-overlay").show();
+					$("." + dClass + "-overlay").click(function (e) {
+                        methods.destroy.apply($this);
+                        return false;
+                    }).show();
                     $dockModal.find(".action-popout").attr("title", "Pop-in");
 
                     methods.refreshLayout();
