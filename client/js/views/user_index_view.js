@@ -108,12 +108,12 @@ App.UserIndex = Backbone.View.extend({
             }).el);
         }
     },
-     /**
+    /**
      * changePassword()
      * update user password
      * @return false
      */
-    changePassword: function(e) { 
+    changePassword: function(e) {
         var target = $(e.target);
         var data = target.serializeObject();
         target[0].reset();
