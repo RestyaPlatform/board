@@ -8,7 +8,7 @@
 	<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(checklist.board_users.board.acl_links.where({slug: "delete_checklist",board_user_role_id: parseInt(checklist.board_user_role_id)})))){ %>
 	<div class="navbar-right dropdown h4">
 		<a class="btn btn-link dropdown-toggle js-show-checklist-actions" role="button" data-toggle="dropdown" title=" <%- i18next.t('Checklist') %>" href="#"> 
-			<span><i class="icon-chevron-sign-down text-primary"></i></span>
+			<span><i class="icon-chevron-sign-down text-primary no-print"></i></span>
 		</a>
 		<ul class="dropdown-menu arrow dropdown-menu-left" id="js-checklist-confirm-response-<%- checklist.get('id') %>">
 			<li class="clearfix">
