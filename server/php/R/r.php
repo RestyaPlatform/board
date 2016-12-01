@@ -2015,6 +2015,45 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         break;
 
+ case '/users/?/adminchangepassword':
+        $qry_val_array = array(
+            $r_resource_vars['users']
+        );
+        if ($r_post['confirm_password'] == $r_post['password']) {
+            $user = executeQuery('SELECT * FROM users WHERE id = $1', $qry_val_array);
+            if ($user) {
+                    $res_val_arr = array(
+                        getCryptHash($r_post['password']) ,
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
+                    if (JABBER_HOST) {
+                        $xmpp_user = getXmppUser();
+                        $xmpp = new xmpp($xmpp_user);
+                        $xmpp->changePassword('<iq xmlns="jabber:client" to="' . JABBER_HOST . '" type="set" id="2"><query 
+						xmlns="jabber:iq:register"><username>' . $user['username'] . '</username><password>' . $r_post['password'] . '</password></query></iq>');
+                    }
+                    if ($authUser['role_id'] == 1) {
+                        $emailFindReplace = array(
+                            '##PASSWORD##' => $r_post['password']
+                        );
+                        sendMail('changepassword', $emailFindReplace, $user['email']);
+                        $response = array(
+                            'success' => 'Password change successfully.'
+                        );
+                    }
+            } else {
+                $response = array(
+                    'error' => 1
+                );
+            }
+        } else {
+            $response = array(
+                'error' => 2
+            );
+        }
+        break;
+        
     case '/users/?':
         $is_return_vlaue = true;
         $profile_picture_path = 'null';
