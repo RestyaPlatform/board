@@ -102,6 +102,7 @@ App.ModalCardView = Backbone.View.extend({
         'keyup[m] .dockmodal': 'keyboardShowAddMemberForm',
         'keyup[l] .dockmodal': 'keyboardShowCardLabelForm',
         'keyup[space] .dockmodal': 'keyboardAddCardMember',
+        'click .js-print-screen': 'printScreen',
     },
     /**
      * Constructor
@@ -202,6 +203,18 @@ App.ModalCardView = Backbone.View.extend({
             cache: false,
             contentType: false
         });
+    },
+    /**
+     * printScreen()
+     * Print card
+     * @param file
+     * @type Object(DOM event)
+     * @param card_id
+     * @type integer
+     *
+     */
+    printScreen: function() {
+        $('.printable').print();
     },
     /**
      * showEmojiList()

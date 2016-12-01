@@ -1,6 +1,6 @@
 <div class="form-group list-group-item-text" data-checklist-id="<%- checklist_item.get('id') %>">
 	<div class="checkbox list-group-item-text">
-		<input id="checklist<%- checklist_item.get('id') %>" type="checkbox" class="hide <% if(!_.isUndefined(authuser.user)){ if(parseInt(checklist_item.get('is_completed')) === 1){ %> js-markas-incomplete <% } else{%> js-markas-completed <% } } %>" <% if(parseInt(checklist_item.get('is_completed')) === 1){ %>checked<% } %> <% if(_.isUndefined(authuser.user)){%> disabled<%}%> >
+		<input id="checklist<%- checklist_item.get('id') %>" type="checkbox" class="hide no-print <% if(!_.isUndefined(authuser.user)){ if(parseInt(checklist_item.get('is_completed')) === 1){ %> js-markas-incomplete <% } else{%> js-markas-completed <% } } %>" <% if(parseInt(checklist_item.get('is_completed')) === 1){ %>checked<% } %> <% if(_.isUndefined(authuser.user)){%> disabled<%}%> >
 		<label for="checklist<%- checklist_item.get('id') %>" class="pull-left js-checklist-item-head">
 		</label>
 		<div class="col-xs-11 row">

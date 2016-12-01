@@ -33,7 +33,7 @@
 <% } %>
 <%if(!_.isUndefined(authuser.user)) {%>
 	<div class="btn-toolbar navbar-btn">
-		<div class="btn-group btn-group-xs navbar-btn">
+		<div class="btn-group btn-group-xs navbar-btn no-print">
 			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(attachment.board.acl_links.where({slug: "download_attachment_card", board_user_role_id: parseInt(attachment.board.board_user_role_id)})))) {
 			%>
 			<div class="btn btn-primary">	
