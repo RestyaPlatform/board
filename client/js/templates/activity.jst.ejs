@@ -115,7 +115,7 @@
 						<% if(!_.isUndefined(activity.from_footer)) { %>
 							<div class="js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline"><li><a title="Undo" class="js-undo2 col-xs-12 nav navbar-btn" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>							
 						<% } else { %>	
-							<div class="js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline"><li><a title="Undo" class="js-undo col-xs-12 nav navbar-btn" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>
+							<div class="js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline"><li><a title="Undo" class="js-undo col-xs-12 nav navbar-btn no-print" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>
 						<% }%>	
 					<% } %>
 				<% } %>
