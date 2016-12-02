@@ -30,6 +30,7 @@ App.UserIndex = Backbone.View.extend({
         'click .js-unblock-user': 'unBlockUser',
         'click .js-remove-user': 'removeUser',
         'click .js-all-user-activities': 'showUserActivities',
+        'submit .js-admin-change-password': 'changePassword',
     },
     /**
      * Constructor
@@ -106,6 +107,33 @@ App.UserIndex = Backbone.View.extend({
                 model: user_board
             }).el);
         }
+    },
+    /**
+     * changePassword()
+     * update user password
+     * @return false
+     */
+    changePassword: function(e) {
+        var target = $(e.target);
+        var data = target.serializeObject();
+        target[0].reset();
+        var user = new App.User();
+        var self = this;
+        user.url = api_url + 'users/' + this.model.attributes.id + '/adminchangepassword.json';
+        user.save(data, {
+            success: function(model, response) {
+                if (response.error) {
+                    if (parseInt(response.error) === 1) {
+                        self.flash('danger', i18next.t('Unable to change password. Please try again.'));
+                    } else if (parseInt(response.error) === 2) {
+                        self.flash('danger', i18next.t('New and confirm password field must match, please try again.'));
+                    }
+                } else {
+                    self.flash('success', i18next.t('Password has been changed successfully.'));
+                }
+            }
+        });
+        return false;
     },
     /**
      * noAction()
