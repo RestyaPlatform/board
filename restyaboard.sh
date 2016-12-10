@@ -20,7 +20,23 @@
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 	then
 		sed -i -e 's/us.archive.ubuntu.com/archive.ubuntu.com/g' /etc/apt/sources.list
+		
+		echo "deb http://mirrors.linode.com/debian/ wheezy main contrib non-free" >> /etc/apt/sources.list
+		echo "deb-src http://mirrors.linode.com/debian/ wheezy main contrib non-free" >> /etc/apt/sources.list
+		echo "deb http://mirrors.linode.com/debian-security/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
+		echo "deb-src http://mirrors.linode.com/debian-security/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
+		echo "deb http://mirrors.linode.com/debian/ wheezy-updates main" >> /etc/apt/sources.list
+		echo "deb-src http://mirrors.linode.com/debian/ wheezy-updates main" >> /etc/apt/sources.list
+		sed -i -e 's/deb cdrom/#deb cdrom/g' /etc/apt/sources.list
+		apt-key update
 		apt-get update
+
+		echo "deb http://packages.dotdeb.org jessie all" >> /etc/apt/sources.list
+		echo "deb-src http://packages.dotdeb.org jessie all" >> /etc/apt/sources.list
+		wget https://www.dotdeb.org/dotdeb.gpg
+		apt-key add dotdeb.gpg
+		apt-get update
+
 		apt-get install -y curl unzip
 	else
 		yum install -y curl unzip
@@ -166,16 +182,6 @@
 		set -x
 		case "${answer}" in
 			[Yy])
-			echo "deb http://mirrors.linode.com/debian/ wheezy main contrib non-free" >> /etc/apt/sources.list
-			echo "deb-src http://mirrors.linode.com/debian/ wheezy main contrib non-free" >> /etc/apt/sources.list
-			echo "deb http://mirrors.linode.com/debian-security/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
-			echo "deb-src http://mirrors.linode.com/debian-security/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
-			echo "deb http://mirrors.linode.com/debian/ wheezy-updates main" >> /etc/apt/sources.list
-			echo "deb-src http://mirrors.linode.com/debian/ wheezy-updates main" >> /etc/apt/sources.list
-			sed -i -e 's/deb cdrom/#deb cdrom/g' /etc/apt/sources.list
-			
-			apt-key update
-			apt-get update
 			apt-get install debian-keyring debian-archive-keyring
 			if [ $? != 0 ]
 			then
@@ -255,6 +261,7 @@
 			php -m | grep pgsql
 			if [ "$?" -gt 0 ]; then
 				echo "Installing php7.0-pgsql..."
+				apt-get install libpq5
 				apt-get install -y php7.0-pgsql
 				if [ $? != 0 ]
 				then
@@ -850,12 +857,12 @@
 					echo "Installing PostgreSQL..."
 					if [ $(getconf LONG_BIT) = "32" ]; then
 						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-							rpm -Uvh "http://yum.postgresql.org/9.4/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora94-9.4-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.5/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora95-9.5-3.noarch.rpm"
 						else
-							rpm -Uvh "http://yum.postgresql.org/9.4/redhat/rhel-${OS_VERSION}-i386/pgdg-centos94-9.4-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.5/redhat/rhel-${OS_VERSION}-i386/pgdg-centos95-9.5-3.noarch.rpm"
 						fi
 
-						yum install -y postgresql94-server postgresql94
+						yum install -y postgresql95-server postgresql95
 						if [ $? != 0 ]
 						then
 							echo "Installing PostgreSQL 32 fail with error code 27"
@@ -864,12 +871,12 @@
 					fi
 					if [ $(getconf LONG_BIT) = "64" ]; then
 						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-							rpm -Uvh "http://yum.postgresql.org/9.4/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora94-9.4-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.5/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora95-9.5-3.noarch.rpm"
 						else
-							rpm -Uvh "http://yum.postgresql.org/9.4/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos94-9.4-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.5/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos95-9.5-3.noarch.rpm"
 						fi
 
-						yum install -y postgresql94-server postgresql94
+						yum install -y postgresql95-server postgresql95
 						if [ $? != 0 ]
 						then
 							echo "Installing PostgreSQL 64 fail with error code 28"
@@ -877,10 +884,10 @@
 						fi
 					fi
 
-					yum install -y postgresql94-server postgresql94-contrib
+					yum install -y postgresql95-contrib
 					if [ $? != 0 ]
 					then
-						echo "postgresql04-contrib installation failed with error code 29"
+						echo "postgresql95-contrib installation failed with error code 29"
 						exit 1
 					fi
 				esac
@@ -888,65 +895,67 @@
 				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
 				if [[ $PSQL_VERSION < 9.3 ]]; then
 					set +x
-					echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.4"
+					echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.5"
 					if [ $(getconf LONG_BIT) = "32" ]; then
 						if [[ $OS_REQUIREMENT == "Fedora" ]]; then
-							rpm -Uvh "http://yum.postgresql.org/9.4/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora94-9.4-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.5/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora95-9.5-3.noarch.rpm"
 						else
-							rpm -Uvh "http://yum.postgresql.org/9.4/redhat/rhel-${OS_VERSION}-i386/pgdg-centos94-9.4-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.5/redhat/rhel-${OS_VERSION}-i386/pgdg-centos95-9.5-3.noarch.rpm"
 						fi
 
-						yum install -y postgresql94-server postgresql94
+						yum install -y postgresql95-server postgresql95
 						if [ $? != 0 ]
 						then
 							echo "Installing PostgreSQL 32 fail with error code 27"
 						fi
 					else
 						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-							rpm -Uvh "http://yum.postgresql.org/9.4/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora94-9.4-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.5/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora95-9.5-3.noarch.rpm"
 						else
-							rpm -Uvh "http://yum.postgresql.org/9.4/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos94-9.4-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.5/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos95-9.5-3.noarch.rpm"
 						fi
 
-						yum install -y postgresql94-server postgresql94
+						yum install -y postgresql95-server postgresql95
 						if [ $? != 0 ]
 						then
 							echo "Installing PostgreSQL 64 fail with error code 28"
 						fi
 					fi
 
-					yum install -y postgresql94-server postgresql94-contrib
+					yum install -y postgresql95-contrib
 					if [ $? != 0 ]
 					then
-						echo "postgresql04-contrib installation failed with error code 29"
+						echo "postgresql95-contrib installation failed with error code 29"
 						exit 1
 					fi
 				fi
 			fi
 
+			PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+			PSQL_FOLDER=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}') | sed 's/\.//'
 			ps -q 1 | grep -q -c "systemd"
 			if [ "$?" -eq 0 ]; then
-				if [ -f /usr/pgsql-9.4/bin/postgresql94-setup ]; then
-					/usr/pgsql-9.4/bin/postgresql94-setup initdb
+				if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
+					"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
 				fi
-				systemctl start postgresql-9.4.service
-				systemctl enable postgresql-9.4.service
+				systemctl start "postgresql-${PSQL_VERSION}.service"
+				systemctl enable "postgresql-${PSQL_VERSION}.service"
 			else
-				service postgresql-9.4 initdb
-				/etc/init.d/postgresql-9.4 start
-				chkconfig --levels 35 postgresql-9.4 on
+				service "postgresql-${PSQL_VERSION}" initdb
+				"/etc/init.d/postgresql-${PSQL_VERSION}" start
+				chkconfig --levels 35 "postgresql-${PSQL_VERSION}" on
 			fi
 
-			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /var/lib/pgsql/9.4/data/pg_hba.conf > /var/lib/pgsql/9.4/data/pg_hba.conf.1
-			cd /var/lib/pgsql/9.4/data || exit
+			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf" > "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf.1"
+			cd "/var/lib/pgsql/${PSQL_VERSION}/data" || exit
 			mv pg_hba.conf pg_hba.conf_old
 			mv pg_hba.conf.1 pg_hba.conf
 			
 			ps -q 1 | grep -q -c "systemd"
 			if [ "$?" -eq 0 ]; then
-				systemctl restart postgresql-9.4.service
+				systemctl restart "postgresql-${PSQL_VERSION}.service"
 			else
-				/etc/init.d/postgresql-9.4 restart
+				"/etc/init.d/postgresql-${PSQL_VERSION}" restart
 			fi
 
 			echo "Checking ElasticSearch..."
