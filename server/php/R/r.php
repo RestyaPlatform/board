@@ -2962,7 +2962,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $t_password = str_rot13($ldap_bind_passwd_decode);
             }
             if (true === ldap_bind($ldap_connection, $t_binddn, $t_password)) {
-                $search_filter = '(&(objectCategory=person)(' . LDAP_UID_FIELD . '=*))';
+                $search_filter = '(&(objectClass=person)(' . LDAP_UID_FIELD . '=*))';
                 $attributes = array(
                     'samaccountname',
                     'mail',
