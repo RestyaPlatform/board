@@ -8,6 +8,8 @@ Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [R
 
 Project is active! Follow development in [dev](https://github.com/RestyaPlatform/board/tree/dev) branch
 
+**Major release will be pushed in few hours!**
+
 ### Demo
 
 [Demo](http://restya.com/board/demo)
