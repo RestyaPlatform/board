@@ -13,13 +13,9 @@
 	  <%  if(typeof(user) == "undefined") { %>
 	  	<ul class="nav nav-pills navbar-left">
 	  	<%
-			if(!_.isEmpty(role_links.where({slug: "users_register"}))) {
-				if(!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") {
-		%>
-		<li class="<% if(Backbone.history.fragment.indexOf('users/register') != -1){%>active<%}%>"><a href="#/users/register" title="<%- i18next.t('Register') %>"><strong><%- i18next.t("Register") %></strong></a></li>
-		 <% 	
-				}
-		   }
+			if(!_.isEmpty(role_links.where({slug: "users_register"}))) {	%>
+		<li class="ldap_login_check <% if(Backbone.history.fragment.indexOf('users/register') != -1){%>active<%}%>"><a href="#/users/register" title="<%- i18next.t('Register') %>"><strong><%- i18next.t("Register") %></strong></a></li>
+		 <% 	}
 			if(!_.isEmpty(role_links.where({slug: "users_login"}))){
 		 %>
 		<li class="<% if(Backbone.history.fragment.indexOf('users/login') != -1){%>active<%}%>"><a href="#/users/login" title="<%- i18next.t('Login') %>"><strong><%- i18next.t("Login") %></strong></a></li>
@@ -118,9 +114,7 @@
 				</li>
               </ul>
             </div></div>
-				<% if (!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") { %>
-					<div class="pull-left well-sm"><a class="label" href="#/users/admin_user_add" title="<%- i18next.t('Add User') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("Add User") %></span></a></div>
-				<% } %>
+					<div class="ldap_login_check pull-left well-sm"><a class="label" href="#/users/admin_user_add" title="<%- i18next.t('Add User') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("Add User") %></span></a></div>
 			<% } %>
 			<% if(!_.isEmpty(current_param) && (current_param === 'oauth_clients')){ %>
 				<div class="pull-left well-sm"><a class="label" href="#/oauth_clients/add" title="<%- i18next.t('New application') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("New application") %></span></a></div>

@@ -157,6 +157,8 @@
 				  </li>
 				  <% } %>
 				  <% } %>
+					<li class="after-start-date">
+					</li>
 				</ul>
 					<div class="list-group-item-text clearfix">
 					  <h4 class="text-muted"><%- i18next.t('Description') %> 
@@ -287,7 +289,7 @@
 					  </li>
 				   <% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-						<li class="navbar-btn"> <a class="btn btn-default <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)})))) { %> js-card-send-to-board<% } %> even-action" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><%}%>" href=""><i class="icon-cloud-download"></i>
+						<li class="navbar-btn"> <a class="btn btn-default <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)})))) { %> js-card-send-to-board<% } %> " title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><%}%>" href=""><i class="icon-cloud-download"></i>
 						<% if(parseInt(card.attributes.is_archived) === 0){ %>
 							<%- i18next.t('Archive') %>
 						<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
@@ -302,6 +304,13 @@
 						<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Due Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 						<li class="col-xs-12 divider"></li>
 						<li class="js-show-card-due-date-form-response col-xs-12"> </li>
+					  </ul>
+					</li>
+					<li class="dropdown navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-card-start-date-form-first" role="button" data-toggle="dropdown" title="<%- i18next.t('Start Date') %>" href="#"><i class="icon-calendar"></i><%- i18next.t('Start Date') %></a>
+					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 start-hide">
+						<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Start Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
+						<li class="col-xs-12 divider"></li>
+						<li class="js-show-card-start-date-form-response-first col-xs-12"> </li>
 					  </ul>
 					</li>
 					<% } %>
@@ -444,6 +453,13 @@
 			<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Due Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 			<li class="col-xs-12 divider"></li>
 			<li class="js-show-card-due-date-form-response col-xs-12"> </li>
+		  </ul>
+		</li>
+		<li class="dropdown"> <a class="dropdown-toggle js-show-card-start-date-form-second" role="button" data-toggle="dropdown" title="<%- i18next.t('Start Date') %>" href="#"><%- i18next.t('Start Date') %></a>
+		  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 start-hide">
+			<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('start Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
+			<li class="col-xs-12 divider"></li>
+			<li class="js-show-card-start-date-form-response-second col-xs-12"> </li>
 		  </ul>
 		</li>
 		<% } %>

@@ -93,23 +93,12 @@ App.LoginView = Backbone.View.extend({
                     }
                 } else {
                     $('input#inputPassword', target).val('');
-                    if (response.code === 'LDAP') {
-                        if (response.error === 'ERROR_LDAP_AUTH_FAILED') {
-                            self.flash('danger', i18next.t('LDAP authentication failed.'));
-                        } else if (response.error === 'ERROR_LDAP_SERVER_CONNECT_FAILED') {
-                            self.flash('danger', i18next.t('LDAP server connection failed.'));
-                        } else {
-                            self.flash('danger', i18next.t('Email not associated for this LDAP account.'));
-                        }
+                    if (is_offline_data) {
+                        self.flash('danger', i18next.t('Sorry, login failed. Internet connection not available.'));
                     } else {
-                        if (is_offline_data) {
-                            self.flash('danger', i18next.t('Sorry, login failed. Internet connection not available.'));
-                        } else {
-                            self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
-                        }
+                        self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
                     }
                 }
-
             }
         });
         return false;

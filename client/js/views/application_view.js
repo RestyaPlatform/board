@@ -82,7 +82,6 @@ App.ApplicationView = Backbone.View.extend({
                                 DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                                 LABEL_ICON = settings_response.LABEL_ICON;
                                 SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
-                                LDAP_LOGIN_ENABLED = settings_response.LDAP_LOGIN_ENABLED;
                                 DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                                 STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
                                 BOSH_SERVICE_URL = settings_response.BOSH_SERVICE_URL;
@@ -150,19 +149,11 @@ App.ApplicationView = Backbone.View.extend({
                                     }
                                 }, function() {
                                     if (page.model === "admin_user_add" || page.model === "register") {
-                                        if ((!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") || (!_.isEmpty(STANDARD_LOGIN_ENABLED) && (STANDARD_LOGIN_ENABLED === "true"))) {
-                                            page.call_function();
-                                        } else {
-                                            changeTitle(i18next.t('404 Page not found'));
-                                            this.headerView = new App.HeaderView({
-                                                model: authuser
-                                            });
-                                            $('#header').html(this.headerView.el);
-                                            var view = new App.Error404View();
-                                            $('#content').html(view.el);
-                                            return;
-                                        }
+                                        //@Todo
+                                        page.call_function();
+
                                     } else {
+
                                         page.call_function();
                                     }
                                 });
@@ -188,7 +179,6 @@ App.ApplicationView = Backbone.View.extend({
                             DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                             LABEL_ICON = settings_response.LABEL_ICON;
                             SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
-                            LDAP_LOGIN_ENABLED = settings_response.LDAP_LOGIN_ENABLED;
                             DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                             STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
                             BOSH_SERVICE_URL = settings_response.BOSH_SERVICE_URL;
@@ -255,18 +245,9 @@ App.ApplicationView = Backbone.View.extend({
                                 }
                             }, function() {
                                 if (page.model === "admin_user_add" || page.model === "register") {
-                                    if ((!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") || (!_.isEmpty(STANDARD_LOGIN_ENABLED) && (STANDARD_LOGIN_ENABLED === "true"))) {
-                                        page.call_function();
-                                    } else {
-                                        changeTitle(i18next.t('404 Page not found'));
-                                        this.headerView = new App.HeaderView({
-                                            model: authuser
-                                        });
-                                        $('#header').html(this.headerView.el);
-                                        var view = new App.Error404View();
-                                        $('#content').html(view.el);
-                                        return;
-                                    }
+                                    //@Todo
+                                    page.call_function();
+
                                 } else {
                                     page.call_function();
                                 }
@@ -275,18 +256,9 @@ App.ApplicationView = Backbone.View.extend({
                     });
                 } else {
                     if (page.model === "admin_user_add" || page.model === "register") {
-                        if ((!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") || (!_.isEmpty(STANDARD_LOGIN_ENABLED) && (STANDARD_LOGIN_ENABLED === "true"))) {
-                            page.call_function();
-                        } else {
-                            changeTitle(i18next.t('404 Page not found'));
-                            this.headerView = new App.HeaderView({
-                                model: authuser
-                            });
-                            $('#header').html(this.headerView.el);
-                            var view = new App.Error404View();
-                            $('#content').html(view.el);
-                            return;
-                        }
+                        //@Todo
+                        page.call_function();
+
                     } else {
                         page.call_function();
                     }
@@ -458,6 +430,7 @@ App.ApplicationView = Backbone.View.extend({
                             $('.js-switch-grid-view').trigger('click');
                             view_type = null;
                         }
+                        App.current_board = Board;
                         this.footerView = new App.FooterView({
                             model: authuser,
                             board_id: self.id,
@@ -696,21 +669,6 @@ App.ApplicationView = Backbone.View.extend({
                 this.pageView = new App.AboutusView();
                 $('#content').html(this.pageView.el);
             } else if (page.model == 'boards_index' || page.model == 'starred_boards_index' || page.model == 'closed_boards_index') {
-                changeTitle(i18next.t('Boards'));
-                var page_title = i18next.t('My Boards');
-                if (page.model == 'starred_boards_index') {
-                    changeTitle(i18next.t('Starred Boards'));
-                    page_title = i18next.t('Starred Boards');
-                } else if (page.model == 'closed_boards_index') {
-                    changeTitle(i18next.t('Closed Boards'));
-                    page_title = i18next.t('Closed Boards');
-                }
-                this.headerView = new App.BoardIndexHeaderView({
-                    model: page_title,
-                });
-                $('#header').html(new App.BoardIndexHeaderView({
-                    model: page_title,
-                }).el);
                 var board_index = $('#content');
                 board_index.html('');
                 var self = this;
@@ -726,86 +684,6 @@ App.ApplicationView = Backbone.View.extend({
                             cache: false,
                             abortPending: true,
                             success: function(board_model, board_response) {
-                                App.boards = boards;
-                                self.populateLists();
-                                self.populateBoardStarred();
-                                var board_activities = new App.FooterView({
-                                    model: authuser,
-                                    boards: boards
-                                });
-                                clearInterval(set_interval_id);
-                                set_interval_id = setInterval(function() {
-                                    board_activities.userActivities(true, 1);
-                                }, 10000);
-                                if (!_.isUndefined(board_response._metadata) && !_.isUndefined(board_response._metadata.dashboard)) {
-                                    board_response._metadata.dashboard.page_title = page_title;
-                                    board_index.append(new App.UserDashboardView({
-                                        model: board_response._metadata.dashboard,
-                                    }).el);
-                                }
-                                $('.sparklines', (this.el)).each(function(key) {
-                                    $(this).sparkline($(this).data('todo').split(','), {
-                                        enableTagOptions: true,
-                                        type: 'line',
-                                        fillColor: '#eca186',
-                                        lineColor: '#eca186',
-                                        width: '250',
-                                        height: '25',
-                                        tooltipFormatter: function(sparkline, options, fields) {
-                                            var curr = new Date();
-                                            var this_week = (curr.getDate() + 1) - curr.getDay();
-                                            var selected_day = this_week + fields.offset;
-                                            if (key === 1) {
-                                                var last_week = (curr.getDate() - 6) - curr.getDay();
-                                                selected_day = last_week + fields.offset;
-                                            }
-                                            var day = new Date(curr.setDate(selected_day));
-                                            var current_date = day.toString().split(' ');
-                                            var today = current_date[0] + ', ' + current_date[1] + ' ' + current_date[2] + ', ' + current_date[3];
-                                            return "<span>" + today + " <span><br>Todo: " + fields.y;
-                                        }
-                                    });
-                                    $(this).sparkline($(this).data('doing').split(','), {
-                                        composite: true,
-                                        fillColor: '#fee3e0',
-                                        lineColor: '#fee3e0',
-                                        width: '250',
-                                        height: '25',
-                                        tooltipFormatter: function(sparkline, options, fields) {
-                                            return ",&nbsp;Doing: " + fields.y;
-                                        }
-                                    });
-                                    $(this).sparkline($(this).data('done').split(','), {
-                                        composite: true,
-                                        fillColor: '#65cca9',
-                                        lineColor: '#65cca9',
-                                        width: '250',
-                                        height: '25',
-                                        tooltipFormatter: function(sparkline, options, fields) {
-                                            return ",&nbsp;Done: " + fields.y;
-                                        }
-                                    });
-                                });
-                                $('.js-chart', (this.el)).each(function() {
-                                    var data_chart = [];
-                                    $.each($(this).data(), function(index, value) {
-                                        var _data = {};
-                                        _data.title = index.toUpperCase();
-                                        _data.value = parseInt(value);
-                                        if (_data.title == 'TODO') {
-                                            _data.color = '#eca186';
-                                        } else if (_data.title == 'DOING') {
-                                            _data.color = '#fee3e0';
-                                        } else if (_data.title == 'DONE') {
-                                            _data.color = '#65cca9';
-                                        }
-
-                                        if (parseInt(value) > 0) {
-                                            data_chart.push(_data);
-                                        }
-                                    });
-                                    $(this).html('').drawDoughnutChart(data_chart);
-                                });
                                 if (page.model == 'starred_boards_index') {
                                     board_index.append(new App.StarredBoardsIndexView().el);
                                     if (!_.isEmpty(role_links.where({
@@ -942,28 +820,6 @@ App.ApplicationView = Backbone.View.extend({
                                                 className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12'
                                             }).el);
                                         }
-                                    }
-                                    if (typeof page.page_view_q !== 'undefined') {
-                                        var elastic_search = new App.ElasticSearchCollection();
-                                        elastic_search.url = api_url + 'search.json';
-                                        elastic_search.fetch({
-                                            cache: false,
-                                            abortPending: true,
-                                            data: {
-                                                q: page.page_view_q,
-                                                token: api_token
-                                            },
-                                            success: function(model, response) {
-                                                response = response;
-                                                response.result.search_term = page.page_view_q;
-                                                $('#search-page-result-block').html(new App.SearchPageResultView({
-                                                    model: response
-                                                }).el);
-                                                $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
-                                                var w_height = $(window).height() - 38;
-                                                $(".search-block-main-hover").css('height', w_height + 'px');
-                                            }
-                                        });
                                     }
                                 }
 

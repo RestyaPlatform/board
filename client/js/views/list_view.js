@@ -795,6 +795,7 @@ App.ListView = Backbone.View.extend({
                         }
                     },
                     start: function(ev, ui) {
+                        ui.helper.height(ui.item.outerHeight() + 10);
                         ui.placeholder.height(ui.item.outerHeight());
                         $('.js-show-modal-card-view ').removeClass('cur');
                     },

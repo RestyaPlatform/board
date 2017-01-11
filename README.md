@@ -59,6 +59,8 @@ To give you some idea about of our plans:
 
 Our approach is similar to Magento. If anything is not clear, please [contact us](http://restya.com/contact?category=contributing).
 
+You can help with translating Restyaboard via [transifex](https://www.transifex.com/restya/restyaboard/).
+
 All Submissions you make to Restya through GitHub are subject to the following terms and conditions:
 
 * You grant Restya a perpetual, worldwide, non-exclusive, no charge, royalty free, irrevocable license under your applicable copyrights and patents to reproduce, prepare derivative works of, display, publicly perform, sublicense and distribute any feedback, ideas, code, or other information ("Submission") you submit through GitHub.

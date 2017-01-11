@@ -118,7 +118,7 @@ App.ModalCardView = Backbone.View.extend({
         }
         var self = this;
         _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderUsersCollection', 'refreshdock');
-        this.model.bind('change:name change:description change:board_id  change:cards_checklists  change:cards_labels  change:cards_subscribers  change:is_archived  change:due_date change:list_id  change:title', this.refreshdock);
+        this.model.bind('change:name change:description change:board_id  change:cards_checklists  change:cards_labels  change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
         this.model.cards_subscribers.bind('add remove', this.refreshdock);
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
         this.model.checklists.bind('add', this.renderChecklistsCollection);
@@ -447,7 +447,7 @@ App.ModalCardView = Backbone.View.extend({
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayBtn: true,
-            pickerPosition: 'bottom-right',
+            pickerPosition: 'top-right',
             todayHighlight: 1,
             startView: 2,
             minView: 2,
@@ -457,6 +457,7 @@ App.ModalCardView = Backbone.View.extend({
         $('.js-card-duetime-edit-' + this.model.id).datetimepicker({
             format: 'hh:ii:ss',
             autoclose: true,
+            pickerPosition: 'top-right',
             showMeridian: false,
             startView: 1,
             maxView: 1,
@@ -478,7 +479,7 @@ App.ModalCardView = Backbone.View.extend({
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayBtn: true,
-            pickerPosition: 'bottom-right',
+            pickerPosition: 'top-right',
             todayHighlight: 1,
             startView: 2,
             minView: 2,
@@ -492,6 +493,7 @@ App.ModalCardView = Backbone.View.extend({
             format: 'hh:ii:ss',
             autoclose: true,
             showMeridian: false,
+            pickerPosition: 'top-right',
             startView: 1,
             maxView: 1,
             pickDate: false,
@@ -585,6 +587,13 @@ App.ModalCardView = Backbone.View.extend({
                 start: data.due_date + 'T' + data.due_time
             };
         }
+        if (!_.isUndefined(data.start_date) || !_.isUndefined(data.start_time)) {
+            data = {
+                to_date: data.start_date,
+                start_date: data.start_date + ' ' + data.start_time,
+                start: data.start_date + 'T' + data.start_time
+            };
+        }
         this.model.set(data);
         var target = $(e.currentTarget);
         $('.js-show-side-card-title-edit-form').parents().find('.dropdown').removeClass('open');
@@ -644,6 +653,19 @@ App.ModalCardView = Backbone.View.extend({
                             }
                         });
                         self.model.set('due_date', data.start);
+                    }
+                    if (!_.isEmpty(data.start_date)) {
+                        self.model.list.collection.board.lists.each(function(list) {
+                            var cards = list.get('cards') || [];
+                            if (!_.isEmpty(cards)) {
+                                _.each(cards, function(card) {
+                                    if (card.id === self.model.id) {
+                                        card.start_date = data.start_date;
+                                    }
+                                });
+                            }
+                        });
+                        self.model.set('start_date', data.start);
                     }
                 }
             });
@@ -1086,8 +1108,12 @@ App.ModalCardView = Backbone.View.extend({
             card_voter.set('role_id', authuser.user.role_id);
             card_voter.set('profile_picture_path', authuser.user.profile_picture_path);
             card_voter.set('initials', authuser.user.initials);
+            var vote_count = self.model.attributes.card_voter_count;
+            if (_.isUndefined(vote_count)) {
+                vote_count = 0;
+            }
             self.model.card_voters.add(card_voter);
-            self.model.set('card_voter_count', parseInt(self.model.attributes.card_voter_count) + 1);
+            self.model.set('card_voter_count', parseInt(vote_count) + 1);
             self.model.list.collection.board.cards.get(self.model.id).card_voters.add(card_voter);
             card_voter.url = api_url + 'boards/' + board_id + '/lists/' + list_id + '/cards/' + card_id + '/card_voters.json';
             card_voter.save({}, {
@@ -1160,6 +1186,8 @@ App.ModalCardView = Backbone.View.extend({
         this.model.list.collection.board.cards.get(self.model.id).card_voters.remove(card_voter);
         card_voter.url = api_url + 'boards/' + board_id + '/lists/' + list_id + '/cards/' + card_id + '/card_voters/' + voter_id + '.json';
         self.model.card_voters.remove(card_voter);
+        var vote_count = self.model.attributes.card_voter_count;
+        self.model.set('card_voter_count', parseInt(vote_count) - 1);
         card_voter.destroy({
             success: function(model, response) {
                 if (!_.isUndefined(response.activity)) {
@@ -2155,6 +2183,10 @@ App.ModalCardView = Backbone.View.extend({
                     activity.set('username', authuser.user.username);
                     activity.set('profile_picture_path', authuser.user.profile_picture_path);
                     activity.set('initials', authuser.user.initials);
+                    var currentdate = new Date();
+                    var date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10) ? '0' + (currentdate.getMonth() + 1) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10) ? '0' + currentdate.getDate() : currentdate.getDate());
+                    var time = currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes() + ':' + (currentdate.getSeconds() < 10 ? '0' : '') + currentdate.getSeconds();
+                    activity.set('created', date + 'T' + time);
                     self.model.activities.unshift(activity);
                     self.model.list.collection.board.activities.add(activity);
                     model.board_users = self.model.board_users;

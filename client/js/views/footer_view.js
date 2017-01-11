@@ -25,8 +25,6 @@ App.FooterView = Backbone.View.extend({
         'click .js-show-organizations-board-from': 'showOrganizationsBoardFrom',
         'click .js-show-board-add-form': 'showBoardAddForm',
         'click .js-show-organizations-add-form': 'showOrganizationsAddForm',
-        'click .js-show-instant-card-from': 'showInstantCardFrom',
-        'click .js-show-chat': 'showChat',
         'click .js-show-qr-code': 'showQrCode',
         'click .js-show-boards-list': 'showBoardsList',
         'click .js-collapse-myboards': 'collapseMyBoards',
@@ -54,12 +52,6 @@ App.FooterView = Backbone.View.extend({
         },
         'click .js-all-board-activities': 'showBoardActivities',
         'click .js-notification-menu': 'notificationMenu',
-        'click .search-icon': 'callQSearch',
-        'submit form.search-container': 'qSearch',
-        'click .js-close-popover': 'closePopup',
-        'click .js-search': 'showSearchMsg',
-        'focusout .js-search': 'searchClose',
-        'submit form.js-instantCardAddForm': 'addInstantCard',
         'click .js-show-notification': 'showNotification',
         'click .js-change-language': 'changeLanguage',
         'click .js-back-boards-list': 'showBackBoardsList',
@@ -93,7 +85,6 @@ App.FooterView = Backbone.View.extend({
         'click #modal-comments': 'showActivity',
         'click .js-show-shortcuts-modal': 'showShortcutModal',
         'keyup[shift+/] body': 'keyboardShowShortcutModal',
-        'click .js-search-block-close': 'closeSearchBlock',
     },
     /** 
      * Constructor
@@ -142,12 +133,32 @@ App.FooterView = Backbone.View.extend({
                 }
             });
         }
+        var getting_new_array = [];
+        if (!_.isEmpty(localStorage.getItem('apps'))) {
+            apps_data = JSON.parse(localStorage.getItem('apps'));
+            var getss = apps_data;
+            var get_names = [];
+            _.each(apps_data, function(data) {
+                get_names.push(data.name);
+            });
+            get_names.sort();
+            _.each(get_names, function(data) {
+                _.each(getss, function(datas) {
+                    if (data === datas.name) {
+                        getting_new_array.push(datas);
+                    }
+                });
+            });
+        } else {
+            getting_new_array = '';
+        }
+
         this.$el.html(this.template({
             model: this.model,
             board_id: this.board_id,
             board: this.board,
             languages: $.cookie('languages').split(','),
-            apps: (localStorage.getItem('apps') !== "") ? JSON.parse(localStorage.getItem('apps')) : ''
+            apps: getting_new_array
         }));
 
         if (_.isEmpty(this.board_id)) {
@@ -264,40 +275,6 @@ App.FooterView = Backbone.View.extend({
                 }
             }
         });
-        return false;
-    },
-    /**
-     * showInstantCardFrom()
-     * show instant card add form
-     * @param e
-     * @type Object(DOM event)
-     * @return false
-     *
-     */
-    showInstantCardFrom: function(e) {
-        e.preventDefault();
-        var instantCardAdd = new App.InstantCardAdd({
-            board_id: '',
-            list_id: ''
-        });
-        var cardAddView = new App.InstantCardAddView({
-            model: instantCardAdd,
-            board: this.board
-        });
-        return false;
-    },
-    /**
-     * showChat()
-     * show chat form
-     * @param e
-     * @type Object(DOM event)
-     * @return false
-     *
-     */
-    showChat: function(e) {
-        e.preventDefault();
-        $('#js-chat-count').addClass('hide').html('');
-        $('a#toggle-controlbox').trigger('click');
         return false;
     },
     /**
@@ -420,36 +397,6 @@ App.FooterView = Backbone.View.extend({
         var parent = target.parents('.js-show-add-boards-list');
         var insert = $('.js-show-boards-list-response', parent);
         $('.js-show-boards-list-response').html(new App.OrganizationAddView().el);
-        return false;
-    },
-    /**
-     * searchClose()
-     * close
-     * @param e
-     * @type Object(DOM event)
-     * @return false
-     *
-     */
-    searchClose: function() {
-        $('.search-container').removeClass('search-tab');
-        $("#js-loader-img").addClass('hide');
-        $("#res").addClass('hide');
-        $("#nres").addClass('hide');
-
-        return false;
-    },
-    /**
-     * closePopup()
-     * hide opened dropdown
-     * @param e
-     * @type Object(DOM event)
-     * @return false
-     *
-     */
-    closePopup: function(e) {
-        var target = $(e.target);
-        target.parents('li.dropdown').removeClass('open');
-        $('li.js-back').remove();
         return false;
     },
     /**
@@ -1445,73 +1392,6 @@ App.FooterView = Backbone.View.extend({
             this.userActivities();
         }
     },
-    /**
-     * qSearch()
-     * search board, list, card
-     * @param e
-     * @type Object(DOM event)
-     *
-     */
-    callQSearch: function(e) {
-        this.qSearch();
-    },
-    qSearch: function(e) {
-        var q = $('#search-box').val();
-        if (q !== '') {
-            $('.search-container').addClass('search-tab');
-            $("#res, #nres").removeClass('hide');
-            var elastic_search = new App.ElasticSearchCollection();
-            elastic_search.url = api_url + 'search.json';
-            elastic_search.fetch({
-                data: {
-                    q: q,
-                    token: api_token
-                },
-                success: function(model, response) {
-                    response = response;
-                    response.result.search_term = q;
-                    $("#js-loader-img").addClass('hide');
-                    $("#res").addClass('hide');
-                    $("#nres").addClass('hide');
-                    app.navigate('#/search/' + q, {
-                        trigger: false,
-                        trigger_function: false,
-                        replace: true
-                    });
-                    $('.js-boards-list-container-search').addClass('hide');
-                    $('#search-page-result-block').html(new App.SearchPageResultView({
-                        model: response
-                    }).el);
-                    $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
-                    var w_height = $(window).height() - 38;
-                    $(".search-block-main-hover").css('height', w_height + 'px');
-                }
-            });
-        }
-        return false;
-    },
-    /**
-     * showSearchMsg()
-     * display search result
-     * @param e
-     * @type Object(DOM event)
-     *
-     */
-    showSearchMsg: function(e) {
-        e.preventDefault();
-        $('.js-show-search-result').html(new App.ShowSearchMessageView({
-            model: this.model
-        }).el);
-    },
-    addInstantCard: function(e) {
-        e.preventDefault();
-        $('li.dropdown').removeClass('open');
-        var self = this;
-        var data = $(e.target).serializeObject();
-        var card = new App.Card();
-        card.url = api_url + 'boards/' + data.board_id + '/lists/' + data.list_id + '/cards.json';
-        card.save(data);
-    },
     showNotification: function(e) {
         e.preventDefault();
         $('#js-board-activities, #js-all-activities').empty();
@@ -1746,14 +1626,4 @@ App.FooterView = Backbone.View.extend({
         }
         return false;
     },
-    closeSearchBlock: function(e) {
-        var url = $.cookie('previous_url');
-        app.navigate('#/' + url, {
-            trigger: false,
-            trigger_function: false,
-            replace: true
-        });
-        $('#search-box').val('');
-        $('#search-page-result-block').html('');
-    }
 });

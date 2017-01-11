@@ -367,24 +367,24 @@ DELETE FROM acl_links_roles WHERE id IN (SELECT id FROM  acl_links WHERE name='C
 
 DELETE FROM acl_links WHERE id  = (SELECT id FROM acl_links WHERE name='Chat History' ORDER BY id DESC LIMIT 1);
 
-ALTER TABLE public.board_user_roles ADD PRIMARY KEY (id);
+DELETE FROM "settings"
+WHERE (("name" = 'ELASTICSEARCH_URL') OR ("name" = 'ELASTICSEARCH_INDEX'));
 
-ALTER TABLE public.organization_user_roles ADD PRIMARY KEY (id);
+DELETE FROM "settings"
+WHERE (("name" = 'JABBER_HOST') OR ("name" = 'BOSH_SERVICE_URL'));
 
-INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
-VALUES ('141', now(), now(), 'Board user role delete', '/board_user_roles/?', 'DELETE', 'board_user_role_delete', '1', '0', '0', '1', '1');
+DELETE FROM "settings"
+WHERE (("name" = 'elasticsearch.last_processed_activity_id') OR ("name" = 'chat.last_processed_chat_id') );
+ 
+DELETE FROM "settings"
+WHERE (("name" = 'LDAP_LOGIN_ENABLED') OR ("name" = 'LDAP_PORT') OR ("name" = 'LDAP_UID_FIELD') OR ("name" = 'LDAP_BIND_DN')  
+OR ("name" = 'LDAP_BIND_PASSWD') OR ("name" = 'LDAP_PROTOCOL_VERSION') OR ("name" = 'LDAP_ROOT_DN')  
+OR ("name" = 'LDAP_SERVER'));
 
-INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
-VALUES ('142', now(), now(), 'Organization user role delete', '/organization_user_roles/?', 'DELETE', 'organization_user_role_delete', '1', '0', '0', '1', '1');
+DELETE FROM "settings"
+WHERE (("name" = 'TODO') OR ("name" = 'DOING') OR ("name" = 'DONE') OR ("name" = 'TODO_COLOR')  
+OR ("name" = 'DOING_COLOR') OR ("name" = 'DONE_COLOR') OR ("name" = 'TODO_ICON')  
+OR ("name" = 'DOING_ICON') OR ("name" = 'DONE_ICON'));
 
-INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide")
-VALUES ('143', now(), now(), 'Role delete', '/roles/?', 'DELETE', 'role_delete', '1', '0', '0', '1', '1');
-
-INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
-VALUES (now(), now(), '141', '1');
-
-INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
-VALUES (now(), now(), '142', '1');
-
-INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
-VALUES (now(), now(), '143', '1');
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
+VALUES ('3', '0', 'site.enabled_plugins', 'Chart,Chat,ElasticSearch,LdapLogin,SupportApp', NULL, 'text', NULL, 'Enable Plugins', '4');
