@@ -574,9 +574,6 @@
 			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
-			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo "*/5 * * * * $dir/server/php/shell/indexing_to_elasticsearch.sh" >> /var/spool/cron/crontabs/root
-			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
 			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/crontabs/root
 			
@@ -591,12 +588,6 @@
 			
 			echo "Setting up cron for every 5 minutes to send email notification to past due..."
 			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
-			
-			echo "Setting up cron for every 5 minutes to send chat conversation as email notification to user..."
-			echo "*/5 * * * * $dir/server/php/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
-			
-			echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
-			echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
 
 			set +x
 			echo "Do you want to setup SMTP configuration (y/n)?"
@@ -1143,9 +1134,6 @@
 			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
-			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo "*/5 * * * * $dir/server/php/shell/indexing_to_elasticsearch.sh" >> /var/spool/cron/root
-			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
 			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/root
 			
@@ -1160,12 +1148,6 @@
 			
 			echo "Setting up cron for every 5 minutes to send email notification to past due..."
 			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
-			
-			echo "Setting up cron for every 5 minutes to send chat conversation as email notification to user..."
-			echo "*/5 * * * * $dir/server/php/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
-			
-			echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
-			echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
 			
 			echo "Reset php-fpm (use unix socket mode)..."
 			sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf
