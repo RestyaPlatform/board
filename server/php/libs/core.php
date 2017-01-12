@@ -418,7 +418,7 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
 {
     global $r_debug, $db_lnk, $authUser;
     $role = 3; // Guest role id
-    if (is_plugin_enabled('SupportApp')) {
+    if (is_plugin_enabled('r_support_app')) {
         require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'SupportApp' . DIRECTORY_SEPARATOR . 'functions.php';
         if (checkSupportAppEnabled($r_resource_vars)) {
             return true;
@@ -1632,13 +1632,11 @@ function json_response($table_name, $r_resource_vars)
 }
 function is_plugin_enabled($plugin_name)
 {
-    global $r_debug, $db_lnk, $authUser, $_server_domain_url;
-    $conditions = array();
-    $setting_plugin = executeQuery("SELECT value FROM settings WHERE name ='site.enabled_plugins'", $conditions, 0, 1);
-    $enabled_plugin = explode(",", $setting_plugin['value']);
-    if (in_array($plugin_name, $enabled_plugin)) {
+    $file = APP_PATH . '/client/apps/' . $plugin_name . '/app.json';
+    $content = file_get_contents($file);
+    $data = json_decode($content, true);
+    if ($data['enabled'] === true) {
         return true;
-    } else {
-        return false;
     }
+    return false;
 }

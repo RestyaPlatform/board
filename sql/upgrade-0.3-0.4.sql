@@ -368,14 +368,8 @@ DELETE FROM acl_links_roles WHERE id IN (SELECT id FROM  acl_links WHERE name='C
 DELETE FROM acl_links WHERE id  = (SELECT id FROM acl_links WHERE name='Chat History' ORDER BY id DESC LIMIT 1);
 
 DELETE FROM "settings"
-WHERE (("name" = 'ELASTICSEARCH_URL') OR ("name" = 'ELASTICSEARCH_INDEX'));
-
-DELETE FROM "settings"
-WHERE (("name" = 'JABBER_HOST') OR ("name" = 'BOSH_SERVICE_URL'));
-
-DELETE FROM "settings"
 WHERE (("name" = 'elasticsearch.last_processed_activity_id') OR ("name" = 'chat.last_processed_chat_id') );
- 
+
 DELETE FROM "settings"
 WHERE (("name" = 'LDAP_LOGIN_ENABLED') OR ("name" = 'LDAP_PORT') OR ("name" = 'LDAP_UID_FIELD') OR ("name" = 'LDAP_BIND_DN')  
 OR ("name" = 'LDAP_BIND_PASSWD') OR ("name" = 'LDAP_PROTOCOL_VERSION') OR ("name" = 'LDAP_ROOT_DN')  
@@ -385,6 +379,3 @@ DELETE FROM "settings"
 WHERE (("name" = 'TODO') OR ("name" = 'DOING') OR ("name" = 'DONE') OR ("name" = 'TODO_COLOR')  
 OR ("name" = 'DOING_COLOR') OR ("name" = 'DONE_COLOR') OR ("name" = 'TODO_ICON')  
 OR ("name" = 'DOING_ICON') OR ("name" = 'DONE_ICON'));
-
-INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
-VALUES ('3', '0', 'site.enabled_plugins', 'Chart,Chat,ElasticSearch,LdapLogin,SupportApp', NULL, 'text', NULL, 'Enable Plugins', '4');

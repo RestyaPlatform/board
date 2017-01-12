@@ -30,7 +30,7 @@ use Psr\Log\LoggerInterface;
 $j_username = $j_password = '';
 require_once '../bootstrap.php';
 global $jabberHost;
-if (is_plugin_enabled('Chat')) {
+if (is_plugin_enabled('r_chat')) {
     require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chat' . DIRECTORY_SEPARATOR . 'functions.php';
     require APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chat' . DIRECTORY_SEPARATOR . 'libs/vendors/jaxl3/jaxl.php';
     $json = file_get_contents(APP_PATH . '/client/apps/r_chat/app.json');
@@ -112,7 +112,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $filter_condition.= 'is_active = 1';
             } else if ($r_resource_filters['filter'] == 'inactive') {
                 $filter_condition.= 'is_active = 0';
-            } else if (is_plugin_enabled('LdapLogin') && $r_resource_filters['filter'] == 'ldap') {
+            } else if (is_plugin_enabled('r_ldap_login') && $r_resource_filters['filter'] == 'ldap') {
                 $filter_condition.= 'is_ldap = 1';
             } else {
                 $filter_condition.= 'role_id = ' . $r_resource_filters['filter'];
@@ -143,7 +143,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $val_array = array(
             true
         );
-        if (is_plugin_enabled('LdapLogin')) {
+        if (is_plugin_enabled('r_ldap_login')) {
             $ldap_count = executeQuery('SELECT count(*) FROM users WHERE is_ldap = $1', $val_array);
             $filter_count['ldap'] = $ldap_count['count'];
         }
@@ -709,7 +709,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($_metadata) && !empty($board_user_roles)) {
                     $data['board_user_roles'] = $board_user_roles;
                 }
-                if (is_plugin_enabled('Chart')) {
+                if (is_plugin_enabled('r_chart')) {
                     require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chart' . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
                     $passed_values = array();
                     $passed_values['sort'] = $sort;
@@ -1572,7 +1572,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $passed_values['authUser'] = $authUser;
             $passed_values['val_arr'] = $val_arr;
             $passed_values['board_lists'] = $board_lists;
-            if ($plugin_key == 'LdapLogin') {
+            if ($plugin_key == 'r_ldap_login') {
                 $plugin_key = 'Ldap';
             }
             $plugin_return = call_user_func($plugin_key . '_r_get', $passed_values);
@@ -1647,7 +1647,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $user_id['user_id']
                 );
                 $users = pg_query_params($db_lnk, 'DELETE FROM users WHERE id= $1 RETURNING username', $conditions);
-                if (is_plugin_enabled('Chat') && JABBER_HOST) {
+                if (is_plugin_enabled('r_chat') && JABBER_HOST) {
                     $user = pg_fetch_assoc($users);
                     $xmpp_user = getXmppUser();
                     $xmpp = new xmpp($xmpp_user);
@@ -1689,7 +1689,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'success' => 'Checked boards are reopened successfully.'
             );
         } else if ($action_id == 3) {
-            if (is_plugin_enabled('Chat') && JABBER_HOST) {
+            if (is_plugin_enabled('r_chat') && JABBER_HOST) {
                 $xmpp_user = getXmppUser();
                 $xmpp = new xmpp($xmpp_user);
             }
@@ -1698,7 +1698,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $board_id['board_id']
                 );
                 $boards = pg_query_params($db_lnk, 'DELETE FROM boards WHERE id= $1', $conditions);
-                if (is_plugin_enabled('Chat') && JABBER_HOST && $boards) {
+                if (is_plugin_enabled('r_chat') && JABBER_HOST && $boards) {
                     $board = pg_fetch_assoc($boards);
                     $xmpp->destroyRoom('board-' . $board_id['board_id']);
                 }
@@ -1755,7 +1755,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
             $r_post['full_name'] = email2name($r_post['email']);
-            if (is_plugin_enabled('Chat') && JABBER_HOST) {
+            if (is_plugin_enabled('r_chat') && JABBER_HOST) {
                 global $j_username, $j_password;
                 $jaxl_initialize = array(
                     'jid' => JABBER_HOST,
@@ -1831,7 +1831,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
             $r_post['full_name'] = ($r_post['email'] == '') ? $r_post['username'] : email2name($r_post['email']);
-            if (is_plugin_enabled('Chat') && JABBER_HOST) {
+            if (is_plugin_enabled('r_chat') && JABBER_HOST) {
                 global $j_username, $j_password;
                 $jaxl_initialize = array(
                     'jid' => JABBER_HOST,
@@ -1898,7 +1898,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['email']
         );
         $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
-        if (is_plugin_enabled('LdapLogin')) {
+        if (is_plugin_enabled('r_ldap_login')) {
             require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'LdapLogin' . DIRECTORY_SEPARATOR . 'functions.php';
             $ldap_response = ldapUpdateUser($log_user, $r_post);
             $ldap_error = $ldap_response['ldap_error'];
@@ -1914,7 +1914,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
         }
         if (!empty($user)) {
-            if (is_plugin_enabled('LdapLogin')) {
+            if (is_plugin_enabled('r_ldap_login')) {
                 $login_type_id = 1;
             } else {
                 $login_type_id = 2;
@@ -1937,7 +1937,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $role_val_arr = array(
                 $user['role_id']
             );
-            $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $role_val_arr);
+            $role_links = executeQuery('SELECT links FROM role_links_listing WHERE id = $1', $role_val_arr);
             $post_val = array(
                 'grant_type' => 'password',
                 'username' => $user['username'],
@@ -1992,7 +1992,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $r_resource_vars['users']
                 );
                 pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
-                if (is_plugin_enabled('Chat') && $jabberHost) {
+                if (is_plugin_enabled('r_chat') && $jabberHost) {
                     $xmpp_user = getXmppUser();
                     $xmpp = new xmpp($xmpp_user);
                     $xmpp->changePassword('<iq xmlns="jabber:client" to="' . $jabberHost . '" type="set" id="2"><query 
@@ -2034,7 +2034,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $r_resource_vars['users']
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
-                    if (is_plugin_enabled('Chat') && $jabberHost) {
+                    if (is_plugin_enabled('r_chat') && $jabberHost) {
                         $xmpp_user = getXmppUser();
                         $xmpp = new xmpp($xmpp_user);
                         $xmpp->changePassword('<iq xmlns="jabber:client" to="' . $jabberHost . '" type="set" id="2"><query 
@@ -2266,7 +2266,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (!empty($uuid)) {
                     $response['uuid'] = $uuid;
                 }
-                if (is_plugin_enabled('Chat') && JABBER_HOST) {
+                if (is_plugin_enabled('r_chat') && JABBER_HOST) {
                     $xmpp_user = getXmppUser();
                     $xmpp = new xmpp($xmpp_user);
                     $xmpp->createRoom('board-' . $response['id'], $r_post['name']);
@@ -2996,7 +2996,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 $comment = '##USER_NAME## added member to board';
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board_user', $foreign_ids, '', $response['id']);
-                if (is_plugin_enabled('Chat') && $jabberHost) {
+                if (is_plugin_enabled('r_chat') && $jabberHost) {
                     $xmpp_user = getXmppUser();
                     $xmpp = new xmpp($xmpp_user);
                     $xmpp->grantMember('board-' . $previous_value['id'], $r_post['username'], 'member');
@@ -4293,7 +4293,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         break;
 
     default:
-        $plugin_url['LdapLogin'] = array(
+        $plugin_url['r_ldap_login'] = array(
             '/users/import'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
@@ -4961,7 +4961,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         break;
 
     default:
-        $plugin_url['LdapLogin'] = array(
+        $plugin_url['r_ldap_login'] = array(
             '/users/import'
         );
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
@@ -4995,7 +4995,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_user', $foreign_id);
         $sql = 'DELETE FROM users WHERE id= $1';
         array_push($pg_params, $r_resource_vars['users']);
-        if (is_plugin_enabled('Chat') && JABBER_HOST) {
+        if (is_plugin_enabled('r_chat') && JABBER_HOST) {
             $xmpp_user = getXmppUser();
             $xmpp = new xmpp($xmpp_user);
             $xmpp->deleteUser('<iq from="' . $authUser['username'] . '@' . JABBER_HOST . '" id="delete-user-2" to="' . JABBER_HOST . '" type="set" xml:lang="en"><command xmlns="http://jabber.org/protocol/commands" node="http://jabber.org/protocol/admin#delete-user"><x xmlns="jabber:x:data" type="submit"><field type="hidden" var="FORM_TYPE"><value>http://jabber.org/protocol/admin</value></field><field var="accountjids"><value>' . $username['username'] . '@' . JABBER_HOST . '</value></field></x></command></iq>');
@@ -5047,7 +5047,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             pg_query_params($db_lnk, 'DELETE FROM cards_users WHERE card_id = $1 AND user_id = $2', $conditions);
         }
         array_push($pg_params, $r_resource_vars['boards_users']);
-        if (is_plugin_enabled('Chat') && JABBER_HOST) {
+        if (is_plugin_enabled('r_chat') && JABBER_HOST) {
             $xmpp_user = getXmppUser();
             $xmpp = new xmpp($xmpp_user);
             $xmpp->revokeMember('board-' . $previous_value['board_id'], $previous_value['username']);
