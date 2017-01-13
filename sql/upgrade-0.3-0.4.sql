@@ -379,3 +379,18 @@ DELETE FROM "settings"
 WHERE (("name" = 'TODO') OR ("name" = 'DOING') OR ("name" = 'DONE') OR ("name" = 'TODO_COLOR')  
 OR ("name" = 'DOING_COLOR') OR ("name" = 'DONE_COLOR') OR ("name" = 'TODO_ICON')  
 OR ("name" = 'DOING_ICON') OR ("name" = 'DONE_ICON'));
+
+DELETE FROM "settings"
+WHERE (("name" = 'ELASTICSEARCH_URL') OR ("name" = 'ELASTICSEARCH_INDEX'));
+
+DELETE FROM "settings"
+WHERE (("name" = 'JABBER_HOST') OR ("name" = 'BOSH_SERVICE_URL'));
+
+DELETE FROM "setting_categories"
+WHERE (("name" = 'XMPP Chat') OR ("name" = 'Cards Workflow') OR ("name" = 'ElasticSearch'));
+
+UPDATE "settings" SET "setting_category_parent_id" = '0', "setting_category_id" = '3', "label" = 'Standard login/register', "order" = '8' WHERE "name" = 'STANDARD_LOGIN_ENABLED';
+
+DELETE FROM "settings" WHERE"name" = 'ENABLE_SSL_CONNECTIVITY';
+
+DELETE FROM "setting_categories" WHERE "name" = 'Login';

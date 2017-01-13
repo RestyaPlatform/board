@@ -15,7 +15,7 @@
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', _.escape(activity.attributes.checklist_item_parent_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
 			} else {
-					var comment = activity.attributes.full_name + ' commented in card ' + cardLink;
+				var comment = activity.attributes.full_name + ' commented in card ' + cardLink;
 			}
 		%>   
 		<ul class="media-list">
@@ -32,6 +32,9 @@
 				<div class="media-body">
 					<div class="media-heading">
 						<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
+							<%
+								activity.attributes.comment = stripScripts(activity.attributes.comment);
+							%>
 							<span><%= comment %></span>
 							<%= converter.makeHtml(makeLink(_.escape(activity.attributes.comment), activity.attributes.board_id)) %>
 						<% } else{%>

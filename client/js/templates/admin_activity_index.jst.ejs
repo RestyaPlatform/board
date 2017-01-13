@@ -15,15 +15,15 @@
 		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', _.escape(activity.attributes.checklist_item_parent_name));
 		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
 	} else {
-			var comment = activity.attributes.full_name + ' commented in card ' + cardLink;
-			var matches = activity.attributes.comment.match(/@([^ ]*)/g);
-			var _username = [];
-			_.each(matches, function(match) {
-				_username.push(match.substr(1));
-			});
-			if(_.contains(_username, authuser.user.username)){
-				comment = activity.attributes.full_name + ' has mentioned you in card ' + cardLink;
-			}
+		var comment = activity.attributes.full_name + ' commented in card ' + cardLink;
+		var matches = activity.attributes.comment.match(/@([^ ]*)/g);
+		var _username = [];
+		_.each(matches, function(match) {
+			_username.push(match.substr(1));
+		});
+		if(_.contains(_username, authuser.user.username)){
+			comment = activity.attributes.full_name + ' has mentioned you in card ' + cardLink;
+		}
 	}
 %>
 <div class="media">
@@ -41,6 +41,9 @@
 		<div class="media-heading">			
             <span class="js-activity-<%- activity.attributes.id %>">
 				<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
+					<%
+						activity.attributes.comment = stripScripts(activity.attributes.comment);
+					%>
 					<span><%= comment %></span>
 					<%= converter.makeHtml(makeLink(_.escape(activity.attributes.comment), activity.attributes.board_id)) %>
 				<% } else{%>
@@ -61,6 +64,9 @@
 				<div class="panel-body">
 					<span class="js-activity-<%- activity.attributes.id %>">
 						<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
+							<%
+								activity.attributes.comment = stripScripts(activity.attributes.comment);
+							%>
 							<span><%= comment %></span>
 							<%= converter.makeHtml(makeLink(_.escape(activity.attributes.comment), activity.attributes.board_id)) %>
 						<% } else{%>

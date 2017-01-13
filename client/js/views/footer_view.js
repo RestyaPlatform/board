@@ -772,8 +772,10 @@ App.FooterView = Backbone.View.extend({
                                 if (!_.isUndefined(activity.attributes.checklist_item_parent_name)) {
                                     activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', activity.attributes.checklist_item_parent_name);
                                 }
+                                activity.attributes.comment = stripScripts(activity.attributes.comment);
                             } else if (activity.attributes.type === 'add_comment') {
                                 activity.attributes.comment = _.escape(activity.attributes.full_name) + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                activity.attributes.comment = stripScripts(activity.attributes.comment);
                             }
                             new Notification(activity.attributes.comment, {
                                 icon: icon
