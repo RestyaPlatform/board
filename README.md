@@ -8,7 +8,7 @@ Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [R
 
 Project is active! Follow development in [dev](https://github.com/RestyaPlatform/board/tree/dev) branch
 
-**Major release will be pushed in few hours!**
+**Pushed major release in dev branch. Preparing for website changes**
 
 ### Demo
 
@@ -43,21 +43,36 @@ To upgrade, overwrite application files and apply respective DB script:
 
 To give you some idea about of our plans:
 
-#### Immediate (cooking)
+#### Under release
 
-* Chat
-* Notifier iOS App (Possibly, Free and non-open source)
+* Commercial branching for better monetization
+* Notifier iOS App (Non-open source; free with IAP)
 
 
 #### Next
 
-* Refactor R framework
-  * Our focus on shipping this somewhat bloated "ultra thin" R framework. Better use new "REST URL to DB Query builder" code once that is tested (?).
-* Merge caching layer works (Or, only in commerical?)
+* Undisclosed domain centric plugins
 * Marketplace for ecosystem
   * Allow developers to make money
 * Apps listing platform
   * Find apps easily
+
+------------
+
+### FAQ (Frequently Asked Questions)
+
+#### Do you have any installation instruction for Windows?
+
+Please find in [Restyaboard Install in Windows](http://restya.com/board/docs/windows) document. If you face any issue, please feel free to [open a ticket](https://github.com/RestyaPlatform/board/issues/new)
+
+#### Do you have any installation instruction for Apache?
+
+Please check [Restyaboard Install in Apache](http://restya.com/board/docs/apache)
+
+#### Getting blank page after install
+
+Most likely it is related to your DB credentials. Please also check install log and see if your setup was complete without any errors.
+
 
 ------------
 
@@ -88,6 +103,6 @@ Required sofware: nginx, php-fpm (with mbstring), PostgreSQL, ElasticSearch, Gru
 
 ### License
 
-Copyright (c) 2014-2016 [Restya](http://restya.com/).
+Copyright (c) 2014-2017 [Restya](http://restya.com/).
 
 Dual License ([OSL 3.0](LICENSE.txt) & [Commercial License](http://restya.com/contact))
