@@ -72,5 +72,5 @@ App.ArchivedCardView = Backbone.View.extend({
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.attributes.id + '.json';
         this.model.destroy();
         return false;
-    },
+    }
 });

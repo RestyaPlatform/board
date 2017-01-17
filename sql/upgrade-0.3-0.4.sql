@@ -394,3 +394,48 @@ UPDATE "settings" SET "setting_category_parent_id" = '0', "setting_category_id" 
 DELETE FROM "settings" WHERE"name" = 'ENABLE_SSL_CONNECTIVITY';
 
 DELETE FROM "setting_categories" WHERE "name" = 'Login';
+
+ALTER TABLE "acl_board_links_boards_user_roles" ADD CONSTRAINT "acl_board_links_boards_user_roles_id" PRIMARY KEY ("id");
+CREATE INDEX "acl_board_links_boards_user_roles_acl_board_link_id" ON "acl_board_links_boards_user_roles" ("acl_board_link_id");
+CREATE INDEX "acl_board_links_boards_user_roles_board_user_role_id" ON "acl_board_links_boards_user_roles" ("board_user_role_id");
+
+ALTER TABLE "acl_links" ADD CONSTRAINT "acl_links_id" PRIMARY KEY ("id");
+CREATE INDEX "acl_links_slug" ON "acl_links" ("slug");
+CREATE INDEX "acl_links_group_id" ON "acl_links" ("group_id");
+
+ALTER TABLE "acl_links_roles" ADD CONSTRAINT "acl_links_roles_id" PRIMARY KEY ("id");
+CREATE INDEX "acl_links_roles_acl_link_id" ON "acl_links_roles" ("acl_link_id");
+CREATE INDEX "acl_links_roles_role_id" ON "acl_links_roles" ("role_id");
+
+ALTER TABLE "acl_organization_links_organizations_user_roles" ADD CONSTRAINT "acl_organization_links_organizations_user_roles_id" PRIMARY KEY ("id");
+CREATE INDEX "acl_organization_links_organizations_user_roles_acl_organization_link_id" ON "acl_organization_links_organizations_user_roles" ("acl_organization_link_id");
+CREATE INDEX "acl_organization_links_organizations_user_roles_organization_user_role_id" ON "acl_organization_links_organizations_user_roles" ("organization_user_role_id");
+
+ALTER TABLE "board_stars" ADD CONSTRAINT "board_stars_id" PRIMARY KEY ("id");
+
+ALTER TABLE "board_user_roles" ADD CONSTRAINT "board_user_roles_id" PRIMARY KEY ("id");
+
+CREATE INDEX "boards_users_board_user_role_id" ON "boards_users" ("board_user_role_id");
+
+ALTER TABLE "login_types" ADD CONSTRAINT "login_types_id" PRIMARY KEY ("id");
+
+ALTER TABLE "organization_user_roles" ADD CONSTRAINT "organization_user_roles_id" PRIMARY KEY ("id");
+
+CREATE INDEX "organizations_users_organization_user_role_id" ON "organizations_users" ("organization_user_role_id");
+
+CREATE INDEX "users_last_email_notified_activity_id" ON "users" ("last_email_notified_activity_id");
+CREATE INDEX "users_login_type_id" ON "users" ("login_type_id");
+CREATE INDEX "users_ip_id" ON "users" ("ip_id");
+CREATE INDEX "users_last_login_ip_id" ON "users" ("last_login_ip_id");
+
+ALTER TABLE "webhooks" ADD CONSTRAINT "webhooks_id" PRIMARY KEY ("id");
+CREATE INDEX "webhooks_url" ON "webhooks" ("url");
+
+ALTER TABLE "user_logins" ADD CONSTRAINT "user_logins_id" PRIMARY KEY ("id");
+CREATE INDEX "user_logins_user_id" ON "user_logins" ("user_id");
+CREATE INDEX "user_logins_ip_id" ON "user_logins" ("ip_id");
+
+CREATE INDEX "ips_ip" ON "ips" ("ip");
+CREATE INDEX "ips_city_id" ON "ips" ("city_id");
+CREATE INDEX "ips_state_id" ON "ips" ("state_id");
+CREATE INDEX "ips_country_id" ON "ips" ("country_id");

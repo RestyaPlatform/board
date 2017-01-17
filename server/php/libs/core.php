@@ -1567,7 +1567,7 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
             }
         }
         if ($r_resource_cmd == '/boards_users/?') {
-            if (JABBER_HOST) {
+            if (is_plugin_enabled('r_chat')) {
                 $affiliation = ($r_put['board_user_role_id'] == 1) ? 'admin' : 'member';
                 $xmpp_user = getXmppUser();
                 $xmpp = new xmpp($xmpp_user);

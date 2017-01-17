@@ -9,8 +9,7 @@ require_once 'libs' . DIRECTORY_SEPARATOR . 'core.php';
 require_once 'libs' . DIRECTORY_SEPARATOR . 'vendors' . DIRECTORY_SEPARATOR . 'OAuth2' . DIRECTORY_SEPARATOR . 'Autoloader.php';
 function main()
 {
-    global $r_debug, $authUser, $token, $localAccessIps, $db_lnk, $token_exception_url, $exception_url, $scope_exception_url;
-    global $post_exception_url, $put_exception_url, $exception_before_token, $exception_url, $admin_access_url, $put_admin_access_url;
+    global $r_debug, $authUser, $token, $localAccessIps, $db_lnk, $token_exception_url, $exception_url, $scope_exception_url, $post_exception_url, $put_exception_url, $exception_before_token, $exception_url, $admin_access_url, $put_admin_access_url, $_server_domain_url;
     if (PHP_SAPI == 'cli') { // if command line mode...
         if ($_SERVER['argc'] < 2) {
             echo 'Usage: php ' . __FILE__ . ' <relative url>' . "\n";
