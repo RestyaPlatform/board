@@ -73,6 +73,10 @@ Please check [Restyaboard Install in Apache](http://restya.com/board/docs/apache
 
 Most likely it is related to your DB credentials. Please also check install log and see if your setup was complete without any errors.
 
+#### How can I contribute to Restyaboard translation?
+
+Please translate Restyaboard via [transifex](https://www.transifex.com/restya/restyaboard/)
+
 
 ------------
 
