@@ -46,7 +46,7 @@ function main()
         if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/client.php') && !empty($_server_domain_url)) {
             doPost('http://restya.com/clients', array(
                 'app' => 'board',
-                'ver' => '0.3',
+                'ver' => '0.4',
                 'url' => $_server_domain_url
             ));
             $fh = fopen(APP_PATH . '/tmp/cache/client.php', 'a');
@@ -79,71 +79,6 @@ function main()
                     $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $qry_val_arr);
                 }
                 $authUser = array_merge($role_links, $user);
-            } else if (!empty($_GET['refresh_token'])) {
-                $oauth_clientid = OAUTH_CLIENTID;
-                $oauth_client_secret = OAUTH_CLIENT_SECRET;
-                $conditions = array(
-                    'access_token' => $_GET['refresh_token']
-                );
-                $response = executeQuery("SELECT user_id as username, expires, scope, client_id FROM oauth_refresh_tokens WHERE refresh_token = $1", $conditions);
-                if ($response['client_id'] == 6664115227792148 && OAUTH_CLIENTID == 7742632501382313) {
-                    $oauth_clientid = 6664115227792148;
-                    $oauth_client_secret = 'hw3wpe2cfsxxygogwue47cwnf7';
-                }
-                $post_val = array(
-                    'grant_type' => 'refresh_token',
-                    'refresh_token' => $_GET['refresh_token'],
-                    'client_id' => $oauth_clientid,
-                    'client_secret' => $oauth_client_secret
-                );
-                $response = getToken($post_val);
-                echo json_encode($response);
-                exit;
-            } else if (!in_array($r_resource_cmd, $token_exception_url)) {
-                $post_val = array(
-                    'grant_type' => 'client_credentials',
-                    'client_id' => OAUTH_CLIENTID,
-                    'client_secret' => OAUTH_CLIENT_SECRET
-                );
-                $response = getToken($post_val);
-                $qry_val_arr = array(
-                    3
-                );
-                $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $qry_val_arr);
-                $response = array_merge($response, $role_links);
-                $files = glob(APP_PATH . '/client/locales/*/translation.json', GLOB_BRACE);
-                $lang_iso2_codes = array();
-                foreach ($files as $file) {
-                    $folder = explode('/', $file);
-                    $folder_iso2_code = $folder[count($folder) - 2];
-                    array_push($lang_iso2_codes, $folder_iso2_code);
-                }
-                $qry_val_arr = array(
-                    '{' . implode($lang_iso2_codes, ',') . '}'
-                );
-                $result = pg_query_params($db_lnk, 'SELECT name, iso2 FROM languages WHERE iso2 = ANY ( $1 ) ORDER BY name ASC', $qry_val_arr);
-                while ($row = pg_fetch_assoc($result)) {
-                    $languages[$row['iso2']] = $row['name'];
-                }
-                $response['languages'] = json_encode($languages);
-                $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
-                if (!empty($files)) {
-                    foreach ($files as $file) {
-                        $content = file_get_contents($file);
-                        $data = json_decode($content, true);
-                        $folder = explode('/', $file);
-                        if ($data['enabled'] === true) {
-                            foreach ($data as $key => $value) {
-                                if ($key != 'settings') {
-                                    $response['apps'][$folder[count($folder) - 2]][$key] = $value;
-                                }
-                            }
-                        }
-                    }
-                }
-                $response['apps'] = !empty($response['apps']) ? json_encode($response['apps']) : '';
-                echo json_encode($response);
-                exit;
             }
         }
         $r_resource_vars = array();
@@ -157,7 +92,7 @@ function main()
             $r_put = json_decode(file_get_contents('php://input'));
             $post_data = $r_put = (array)$r_put;
         }
-        if ($r_resource_cmd == '/users/logout' || $r_resource_cmd == '/users/register' || checkAclLinks($_SERVER['REQUEST_METHOD'], $r_resource_cmd, $r_resource_vars, $post_data)) {
+        if ($r_resource_cmd == '/users/logout' || $r_resource_cmd == '/users/register' || $r_resource_cmd == '/oauth' || checkAclLinks($_SERVER['REQUEST_METHOD'], $r_resource_cmd, $r_resource_vars, $post_data)) {
             // /users/5/products/10 -> array('users' => 5, 'products' => 10) ...
             $scope = array();
             if (!empty($response['scope'])) {
@@ -168,7 +103,7 @@ function main()
                 // Server...
                 switch ($_SERVER['REQUEST_METHOD']) {
                 case 'GET':
-                    if (in_array('read', $scope)) {
+                    if (in_array('read', $scope) || $r_resource_cmd == '/oauth') {
                         r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters);
                         $is_valid_req = true;
                     } else {
@@ -218,7 +153,7 @@ function main()
                 echo json_encode($response);
                 exit;
             }
-            header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication failed', true, 401);
+            header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication 2 failed', true, 401);
         }
     } else {
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);

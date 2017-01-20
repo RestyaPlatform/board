@@ -54,7 +54,7 @@ if (is_plugin_enabled('r_chat')) {
  */
 function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 {
-    global $r_debug, $db_lnk, $authUser, $_server_domain_url, $jabberHost;
+    global $r_debug, $db_lnk, $authUser, $_server_domain_url, $jabberHost, $token_exception_url;
     // switch case.. if taking more length, then associative array...
     $query_timeout = 0;
     $sql = false;
@@ -67,6 +67,72 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     $limit = PAGING_COUNT;
     $response = $revisions = $val_arr = $conditions = $pg_params = array();
     switch ($r_resource_cmd) {
+    case '/oauth':
+        if (!empty($_GET['refresh_token'])) {
+            $oauth_clientid = OAUTH_CLIENTID;
+            $oauth_client_secret = OAUTH_CLIENT_SECRET;
+            $conditions = array(
+                'access_token' => $_GET['refresh_token']
+            );
+            $response = executeQuery("SELECT user_id as username, expires, scope, client_id FROM oauth_refresh_tokens WHERE refresh_token = $1", $conditions);
+            if ($response['client_id'] == 6664115227792148 && OAUTH_CLIENTID == 7742632501382313) {
+                $oauth_clientid = 6664115227792148;
+                $oauth_client_secret = 'hw3wpe2cfsxxygogwue47cwnf7';
+            }
+            $post_val = array(
+                'grant_type' => 'refresh_token',
+                'refresh_token' => $_GET['refresh_token'],
+                'client_id' => $oauth_clientid,
+                'client_secret' => $oauth_client_secret
+            );
+            $response = getToken($post_val);
+        } else if (!in_array($r_resource_cmd, $token_exception_url)) {
+            $post_val = array(
+                'grant_type' => 'client_credentials',
+                'client_id' => OAUTH_CLIENTID,
+                'client_secret' => OAUTH_CLIENT_SECRET
+            );
+            $response = getToken($post_val);
+            $qry_val_arr = array(
+                3
+            );
+            $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $qry_val_arr);
+            $response = array_merge($response, $role_links);
+            $files = glob(APP_PATH . '/client/locales/*/translation.json', GLOB_BRACE);
+            $lang_iso2_codes = array();
+            foreach ($files as $file) {
+                $folder = explode('/', $file);
+                $folder_iso2_code = $folder[count($folder) - 2];
+                array_push($lang_iso2_codes, $folder_iso2_code);
+            }
+            $qry_val_arr = array(
+                '{' . implode($lang_iso2_codes, ',') . '}'
+            );
+            $result = pg_query_params($db_lnk, 'SELECT name, iso2 FROM languages WHERE iso2 = ANY ( $1 ) ORDER BY name ASC', $qry_val_arr);
+            while ($row = pg_fetch_assoc($result)) {
+                $languages[$row['iso2']] = $row['name'];
+            }
+            $response['languages'] = json_encode($languages);
+            $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
+            if (!empty($files)) {
+                foreach ($files as $file) {
+                    $content = file_get_contents($file);
+                    $data = json_decode($content, true);
+                    $folder = explode('/', $file);
+                    if ($data['enabled'] === true) {
+                        foreach ($data as $key => $value) {
+                            if ($key != 'settings') {
+                                $response['apps'][$folder[count($folder) - 2]][$key] = $value;
+                            }
+                        }
+                    }
+                }
+            }
+            $response['apps'] = !empty($response['apps']) ? json_encode($response['apps']) : '';
+        }
+        echo json_encode($response);
+        break;
+
     case '/users/me':
         $role_val_arr = array(
             $authUser['role_id']
@@ -848,64 +914,115 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/organizations':
-        $organization_ids = array();
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organizations_listing';
-        if (!empty($authUser) && $authUser['role_id'] != 1) {
-            $s_sql = 'SELECT b.organization_id FROM boards_users AS bu LEFT JOIN boards AS b ON b.id = bu.board_id WHERE bu.user_id = $1';
-            $conditions = array(
-                $authUser['id']
-            );
-            $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
-            while ($row = pg_fetch_assoc($s_result)) {
-                if ($row['organization_id'] != 0) {
+        if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'simple') {
+            $organization_ids = array();
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organizations';
+            if (!empty($authUser) && $authUser['role_id'] != 1) {
+                $s_sql = 'SELECT b.organization_id FROM boards_users AS bu LEFT JOIN boards AS b ON b.id = bu.board_id WHERE bu.user_id = $1';
+                $conditions = array(
+                    $authUser['id']
+                );
+                $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
+                while ($row = pg_fetch_assoc($s_result)) {
+                    if ($row['organization_id'] != 0) {
+                        array_push($organization_ids, $row['organization_id']);
+                    }
+                }
+                $s_sql = 'SELECT id FROM organizations WHERE user_id = $1';
+                $conditions = array(
+                    $authUser['id']
+                );
+                $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
+                while ($row = pg_fetch_assoc($s_result)) {
+                    array_push($organization_ids, $row['id']);
+                }
+                $s_sql = 'SELECT organization_id FROM organizations_users WHERE user_id = $1';
+                $conditions = array(
+                    $authUser['id']
+                );
+                $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
+                while ($row = pg_fetch_assoc($s_result)) {
                     array_push($organization_ids, $row['organization_id']);
                 }
-            }
-            $s_sql = 'SELECT id FROM organizations WHERE user_id = $1';
-            $conditions = array(
-                $authUser['id']
-            );
-            $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
-            while ($row = pg_fetch_assoc($s_result)) {
-                array_push($organization_ids, $row['id']);
-            }
-            $s_sql = 'SELECT organization_id FROM organizations_users WHERE user_id = $1';
-            $conditions = array(
-                $authUser['id']
-            );
-            $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
-            while ($row = pg_fetch_assoc($s_result)) {
-                array_push($organization_ids, $row['organization_id']);
-            }
-            if (!empty($organization_ids)) {
-                $sql.= ' WHERE id IN (' . implode(",", array_unique($organization_ids)) . ')';
-            } else {
-                $sql.= ' WHERE user_id = ' . $authUser['id'];
-            }
-        }
-        $sql.= ' ORDER BY id ASC) as d ';
-        if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
-                $data = array();
-                while ($row = pg_fetch_row($result)) {
-                    $obj = json_decode($row[0], true);
-                    $acl_links_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM acl_organization_links_listing) as d';
-                    $acl_links_result = pg_query_params($db_lnk, $acl_links_sql, array());
-                    $obj['acl_links'] = array();
-                    while ($row = pg_fetch_assoc($acl_links_result)) {
-                        $obj['acl_links'][] = json_decode($row['row_to_json'], true);
-                    }
-                    $organization_user_roles_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organization_user_roles) as d';
-                    $organization_user_roles_result = pg_query_params($db_lnk, $organization_user_roles_sql, array());
-                    $obj['organization_user_roles'] = array();
-                    while ($row = pg_fetch_assoc($organization_user_roles_result)) {
-                        $obj['organization_user_roles'][] = json_decode($row['row_to_json'], true);
-                    }
-                    $data[] = $obj;
+                if (!empty($organization_ids)) {
+                    $sql.= ' WHERE id IN (' . implode(",", array_unique($organization_ids)) . ')';
+                } else {
+                    $sql.= ' WHERE user_id = ' . $authUser['id'];
                 }
-                echo json_encode($data);
-            } else {
-                $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+            }
+            $sql.= ' ORDER BY id ASC) as d ';
+            if (!empty($sql)) {
+                if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                    $data = array();
+                    while ($row = pg_fetch_row($result)) {
+                        $obj = json_decode($row[0], true);
+                        $data[] = $obj;
+                    }
+                    echo json_encode($data);
+                } else {
+                    $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+                }
+            }
+        } else {
+            $organization_ids = array();
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organizations_listing';
+            if (!empty($authUser) && $authUser['role_id'] != 1) {
+                $s_sql = 'SELECT b.organization_id FROM boards_users AS bu LEFT JOIN boards AS b ON b.id = bu.board_id WHERE bu.user_id = $1';
+                $conditions = array(
+                    $authUser['id']
+                );
+                $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
+                while ($row = pg_fetch_assoc($s_result)) {
+                    if ($row['organization_id'] != 0) {
+                        array_push($organization_ids, $row['organization_id']);
+                    }
+                }
+                $s_sql = 'SELECT id FROM organizations WHERE user_id = $1';
+                $conditions = array(
+                    $authUser['id']
+                );
+                $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
+                while ($row = pg_fetch_assoc($s_result)) {
+                    array_push($organization_ids, $row['id']);
+                }
+                $s_sql = 'SELECT organization_id FROM organizations_users WHERE user_id = $1';
+                $conditions = array(
+                    $authUser['id']
+                );
+                $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
+                while ($row = pg_fetch_assoc($s_result)) {
+                    array_push($organization_ids, $row['organization_id']);
+                }
+                if (!empty($organization_ids)) {
+                    $sql.= ' WHERE id IN (' . implode(",", array_unique($organization_ids)) . ')';
+                } else {
+                    $sql.= ' WHERE user_id = ' . $authUser['id'];
+                }
+            }
+            $sql.= ' ORDER BY id ASC) as d ';
+            if (!empty($sql)) {
+                if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                    $data = array();
+                    while ($row = pg_fetch_row($result)) {
+                        $obj = json_decode($row[0], true);
+                        $acl_links_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM acl_organization_links_listing) as d';
+                        $acl_links_result = pg_query_params($db_lnk, $acl_links_sql, array());
+                        $obj['acl_links'] = array();
+                        while ($row = pg_fetch_assoc($acl_links_result)) {
+                            $obj['acl_links'][] = json_decode($row['row_to_json'], true);
+                        }
+                        $organization_user_roles_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organization_user_roles) as d';
+                        $organization_user_roles_result = pg_query_params($db_lnk, $organization_user_roles_sql, array());
+                        $obj['organization_user_roles'] = array();
+                        while ($row = pg_fetch_assoc($organization_user_roles_result)) {
+                            $obj['organization_user_roles'][] = json_decode($row['row_to_json'], true);
+                        }
+                        $data[] = $obj;
+                    }
+                    echo json_encode($data);
+                } else {
+                    $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+                }
             }
         }
         break;
@@ -1411,6 +1528,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $content = file_get_contents($file);
                 $data = json_decode($content, true);
                 if ($data['enabled'] === true) {
+                    $folder = explode('/', $file);
+                    if ($data['enabled'] === true) {
+                        foreach ($data as $key => $value) {
+                            if ($key != 'settings') {
+                                $response['apps_data'][$folder[count($folder) - 2]][$key] = $value;
+                            }
+                        }
+                    }
                     if (!empty($data['settings'])) {
                         foreach ($data['settings'] as $key => $value) {
                             if ($value['is_public']) {
@@ -1428,6 +1553,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
             }
         }
+        $response['apps_data'] = !empty($response['apps_data']) ? json_encode($response['apps_data']) : '';
         echo json_encode($response);
         break;
 
@@ -2230,7 +2356,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             if ($_FILES['board_import']['error'] == 0) {
                 $get_files = file_get_contents($_FILES['board_import']['tmp_name']);
                 $utf8_encoded_content = utf8_encode($get_files);
-                $imported_board = json_decode($utf8_encoded_content, true, 512, JSON_UNESCAPED_UNICODE);
+                if (version_compare(phpversion() , '5.4.0', '<')) {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512);
+                } else {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512, JSON_UNESCAPED_UNICODE);
+                }
                 if (!empty($imported_board) && !empty($imported_board['prefs'])) {
                     $board = importTrelloBoard($imported_board);
                     $response['id'] = $board['id'];

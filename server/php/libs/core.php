@@ -586,7 +586,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=ISO-8859-1" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.3; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.4; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         mail($to, $subject, $message, $headers);
     }
@@ -1561,7 +1561,7 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
         }
         if ($r_resource_cmd == '/users/?') {
             if (isset($r_put['is_active']) && $r_put['is_active'] == false) {
-                executeQuery('SELECT username FROM users WHERE id =' . $r_resource_vars['users']);
+                executeQuery('SELECT username FROM users WHERE id =' . $id);
                 // Todo handle with jaxl for ban_account
                 
             }

@@ -21,6 +21,9 @@ if (!defined('JSON_PRETTY_PRINT')) {
 if (!defined('JSON_UNESCAPED_SLASHES')) {
     define('JSON_UNESCAPED_SLASHES', 128);
 }
+if (!defined('JSON_UNESCAPED_UNICODE')) {
+    define('JSON_UNESCAPED_UNICODE', 256);
+}
 define('APP_PATH', dirname(dirname(dirname(__FILE__))));
 // While changing below oAuth credentials, have to update in oauth_clients table also.
 if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
@@ -46,6 +49,8 @@ define('CHAT_DB_PASSWORD', 'ftfnVgYl2');
 define('CHAT_DB_NAME', 'ejabb');
 define('CHAT_DB_PORT', '5432');
 define('SECURITYSALT', 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf');
+define('SITE_LICENSE_KEY', 'REPLACE YOUR LICENCE HERE');
+define('LICENSE_HASH', '');
 if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php') && !empty($_server_domain_url)) {
     $fh = fopen(APP_PATH . '/tmp/cache/site_url_for_shell.php', 'a');
     fwrite($fh, '<?php' . "\n");

@@ -127,6 +127,7 @@ App.ApplicationView = Backbone.View.extend({
                         abortPending: true,
                         success: function(collection, settings_response) {
                             SITE_NAME = settings_response.SITE_NAME;
+                            localStorage.setItem('apps', settings_response.apps_data);
                             page.set_page_title();
                             FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
                             DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
@@ -327,9 +328,6 @@ App.ApplicationView = Backbone.View.extend({
                         } else if (view_type === 'calendar') {
                             $('.js-switch-calendar-view').trigger('click');
                             view_type = null;
-                        } else if (view_type === 'gantt') {
-                            $('.js-switch-timeline-view').trigger('click');
-                            view_type = null;
                         } else if (view_type === 'attachments') {
                             $('.js-show-board-modal').trigger('click');
                             view_type = null;
@@ -371,9 +369,6 @@ App.ApplicationView = Backbone.View.extend({
                 view_type = null;
             } else if (view_type === 'calendar') {
                 $('.js-switch-calendar-view').trigger('click');
-                view_type = null;
-            } else if (view_type === 'gantt') {
-                $('.js-switch-timeline-view').trigger('click');
                 view_type = null;
             } else if (view_type === 'attachments') {
                 $('.js-show-board-modal').trigger('click');
@@ -446,7 +441,7 @@ App.ApplicationView = Backbone.View.extend({
                     page.populateLists();
                     page.populateBoardStarred();
                     var organizations = new App.OrganizationCollection();
-                    organizations.url = api_url + 'organizations.json';
+                    organizations.url = api_url + 'organizations.json?type=simple';
                     organizations.fetch({
                         cache: false,
                         abortPending: true,

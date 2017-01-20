@@ -24,7 +24,7 @@
 				_.each(list.models, function(settingCategory) {				
 					var settings = settingCategory.get('settings');
 		%>		
-				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%}%>" id="settingTab<%- settingCategory.get('id') %>">
+				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%} else { %> hide <% } %>" id="settingTab<%- settingCategory.get('id') %>">
 					<% if(!_.isEmpty(settings)){ %>
 					<% if(settingCategory.get('id') == 10){ %>
 					<p class="alert alert-info "><%- i18next.t('To add/reply cards via email you must set up a secret email account with IMAP access. This should support plus addressing and has to be dedicated to handle replying through email feature. Suggested email address is rbreply@yourdomain.tld') %></p>
@@ -219,7 +219,7 @@
 						<%}%>
 					<% }); %>
 					<% if(settingCategory.get('id') == 8){ %>
-					  <div class="form-group">
+					  <div class="form-group well-lg">
 						<label for="submit2" class="col-sm-2 control-label"></label>
 						<div class="col-sm-8">
 						<input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary">

@@ -1006,6 +1006,9 @@ App.FooterView = Backbone.View.extend({
                                             self.board.attachments.remove(self.board.attachments.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
                                             }));
+                                            card.attachments.remove(card.attachments.findWhere({
+                                                id: parseInt(activity.attributes.foreign_id)
+                                            }));
                                         } else if (activity.attributes.type === 'delete_card_comment') {
                                             self.board.activities.remove(self.board.activities.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
@@ -1074,7 +1077,10 @@ App.FooterView = Backbone.View.extend({
 
                                     }
                                     if (!_.isUndefined(list)) {
-                                        list.set(activity.attributes.revisions.new_value);
+                                        console.log(activity);
+                                        if (activity.attributes.revisions) {
+                                            list.set(activity.attributes.revisions.new_value);
+                                        }
                                         if (activity.attributes.type === 'delete_list') {
                                             var removed_list_cards = self.board.cards.where({
                                                 list_id: parseInt(list.attributes.id)

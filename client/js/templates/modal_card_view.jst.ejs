@@ -455,13 +455,6 @@
 			<li class="js-show-card-due-date-form-response col-xs-12"> </li>
 		  </ul>
 		</li>
-		<li class="dropdown"> <a class="dropdown-toggle js-show-card-start-date-form-second" role="button" data-toggle="dropdown" title="<%- i18next.t('Start Date') %>" href="#"><%- i18next.t('Start Date') %></a>
-		  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 start-hide">
-			<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('start Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
-			<li class="col-xs-12 divider"></li>
-			<li class="js-show-card-start-date-form-response-second col-xs-12"> </li>
-		  </ul>
-		</li>
 		<% } %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_card_user",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			<li class="dropdown"><a data-toggle="dropdown" class="dropdown-toggle js-show-add-member-form js-card-header-action" title="<%- i18next.t('Members') %>" href="#"><%- i18next.t('Members') %></a>
