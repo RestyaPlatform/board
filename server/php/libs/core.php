@@ -1633,10 +1633,12 @@ function json_response($table_name, $r_resource_vars)
 function is_plugin_enabled($plugin_name)
 {
     $file = APP_PATH . '/client/apps/' . $plugin_name . '/app.json';
-    $content = file_get_contents($file);
-    $data = json_decode($content, true);
-    if ($data['enabled'] === true) {
-        return true;
+    if (file_exists($file)) {
+        $content = file_get_contents($file);
+        $data = json_decode($content, true);
+        if ($data['enabled'] === true) {
+            return true;
+        }
     }
     return false;
 }
