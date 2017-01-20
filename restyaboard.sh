@@ -16,6 +16,11 @@
 	whoami
 	echo $(cat /etc/issue)
 	OS_REQUIREMENT=$(lsb_release -i -s)
+	if [ $? != 0 || OS_REQUIREMENT = "" ]
+	then
+		echo "lsb_release is not enabled"
+		exit 1
+	fi
 	OS_VERSION=$(lsb_release -rs | cut -f1 -d.)
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 	then
@@ -47,11 +52,6 @@
 	POSTGRES_DBUSER=restya
 	POSTGRES_DBPASS=hjVl2!rGd
 	POSTGRES_DBPORT=5432
-	EJABBERD_DBHOST=localhost
-	EJABBERD_DBNAME=ejabberd
-	EJABBERD_DBUSER=ejabb
-	EJABBERD_DBPASS=ftfnVgYl2
-	EJABBERD_DBPORT=5432
 	DOWNLOAD_DIR=/opt/restyaboard
 	
 	get_geoip_data () 
@@ -115,13 +115,10 @@
 			sed -i "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_DBPASS}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
-			
-			echo "Changing ejabberd database name, user and password..."
-			sed -i "s/^.*'CHAT_DB_NAME'.*$/define('CHAT_DB_NAME', '${EJABBERD_DBNAME}');/g" "$dir/server/php/config.inc.php"
-			sed -i "s/^.*'CHAT_DB_USER'.*$/define('CHAT_DB_USER', '${EJABBERD_DBUSER}');/g" "$dir/server/php/config.inc.php"
-			sed -i "s/^.*'CHAT_DB_PASSWORD'.*$/define('CHAT_DB_PASSWORD', '${EJABBERD_DBPASS}');/g" "$dir/server/php/config.inc.php"
-			sed -i "s/^.*'CHAT_DB_HOST'.*$/define('CHAT_DB_HOST', '${EJABBERD_DBHOST}');/g" "$dir/server/php/config.inc.php"
-			sed -i "s/^.*'CHAT_DB_PORT'.*$/define('CHAT_DB_PORT', '${EJABBERD_DBPORT}');/g" "$dir/server/php/config.inc.php"
+
+			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/chat_activities.sh//" /var/spool/cron/crontabs/root
+			sed -i "s/0 * * * * $dir\/server\/php\/shell\/periodic_chat_email_notification.sh//" /var/spool/cron/crontabs/root
+			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/indexing_to_elasticsearch.sh//" /var/spool/cron/crontabs/root
 			
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
@@ -149,10 +146,11 @@
 				echo "PostgreSQL updation of SQL failed with error code 33"
 				exit 1
 			fi
+
 		esac
 	}
 	
-	if [ -d "$DOWNLOAD_DIR" ];
+	if [ -f "$DOWNLOAD_DIR/release" ];
 	then
 		version=$(cat ${DOWNLOAD_DIR}/release)
 		if [[ $version < $RESTYABOARD_VERSION ]];
@@ -391,36 +389,6 @@
 			mv pg_hba.conf.1 pg_hba.conf
 			service postgresql restart
 			
-			echo "Checking ElasticSearch..."
-			if ! curl http://localhost:9200 > /dev/null 2>&1; then
-				echo "ElasticSearch not installed!"
-				set +x
-				echo "Do you want to install ElasticSearch (y/n)?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					echo "Installing ElasticSearch..."
-
-					add-apt-repository ppa:openjdk-r/ppa
-					apt-get update
-
-					apt-get install -y openjdk-8-jre
-					if [ $? != 0 ]
-					then
-						echo "openjdk-8-jre installation failed with error code 14"
-					fi
-					wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.7.deb
-					if [ $? != 0 ]
-					then
-						echo "elasticsearch downloading failed with error code 15"
-						exit 1
-					fi
-					dpkg -i elasticsearch-0.90.7.deb
-					service elasticsearch restart
-				esac
-			fi
-			
 			if ! hash GeoIP-devel 2>&-;
 			then
 				apt-get install -y php7.0-geoip php7.0-dev libgeoip-dev
@@ -464,15 +432,6 @@
 			tar -jvxf expat-2.1.1.tar.bz2
 			cd expat-2.1.1/
 			./configure
-			make
-			make install
-
-			cd /opt
-			wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
-			tar -zvxf ejabberd-15.07.tgz
-			cd ejabberd-15.07
-			./autogen.sh
-			./configure --enable-pgsql
 			make
 			make install
 
@@ -537,13 +496,13 @@
 			sleep 1
 
 			echo "Creating PostgreSQL user and database..."
-			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
+			psql -U postgres -c "DROP USER IF EXISTS ${POSTGRES_DBUSER};CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL user creation failed with error code 35 "
 				exit 1
 			fi
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 36"
@@ -574,9 +533,6 @@
 			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
-			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo "*/5 * * * * $dir/server/php/shell/indexing_to_elasticsearch.sh" >> /var/spool/cron/crontabs/root
-			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
 			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/crontabs/root
 			
@@ -591,12 +547,6 @@
 			
 			echo "Setting up cron for every 5 minutes to send email notification to past due..."
 			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
-			
-			echo "Setting up cron for every 5 minutes to send chat conversation as email notification to user..."
-			echo "*/5 * * * * $dir/server/php/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
-			
-			echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
-			echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
 
 			set +x
 			echo "Do you want to setup SMTP configuration (y/n)?"
@@ -643,33 +593,12 @@
 					unzip /tmp/$fid.zip -d "$dir/client/apps"
 				done
 			esac
-
-			cd /etc/ejabberd
-			echo "Creating ejabberd user and database..."
-			psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
-
-			cd /etc/ejabberd
-			psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
-
-			psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
-			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
-			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-			sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
-			sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
-			
-			ejabberdctl start
-			sleep 15
-			ejabberdctl change_password admin $webdir restya
-			ejabberdctl stop
-			sleep 15
-			ejabberdctl start
 			
 			echo "Starting services..."
 			service cron restart
 			service php7.0-fpm restart
 			service nginx restart
 			service postfix restart
-			service elasticsearch restart
 		esac
 	else
 		set +x
@@ -958,34 +887,6 @@
 				"/etc/init.d/postgresql-${PSQL_VERSION}" restart
 			fi
 
-			echo "Checking ElasticSearch..."
-			if ! curl http://localhost:9200 > /dev/null 2>&1;
-			then
-				echo "ElasticSearch not installed!"
-				set +x
-				echo "Do you want to install ElasticSearch (y/n)?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					echo "Installing ElasticSearch..."
-					sudo yum install -y java-1.7.0-openjdk
-					if [ $? != 0 ]
-					then
-						echo "Java installation failed with error code 30"
-						exit 1
-					fi
-					wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.10.noarch.rpm
-					if [ $? != 0 ]
-					then
-						echo "ElasticSearch downloading failed with error code 31"
-						exit 1
-					fi
-					nohup rpm -Uvh elasticsearch-0.90.10.noarch.rpm &
-					chkconfig elasticsearch on
-				esac
-			fi
-
 			if ! hash GeoIP-devel 2>&-;
 			then
 				yum install -y GeoIP-devel
@@ -1026,33 +927,6 @@
 			tar zxvf otp_src_R15B01.tar.gz
 			cd otp_src_R15B01
 			./configure && make && make install
-
-			cd /opt
-			wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
-			if [ $(getconf LONG_BIT) = "32" ]; then
-				if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-					wget "https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_15.b.3-1~fedora~beefymiracle_i386.rpm"
-					rpm -ivh esl-erlang_15.b.3-1~fedora~beefymiracle_i386.rpm
-				else
-					wget "https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_18.3-1~centos~${OS_VERSION}_i386.rpm"
-					rpm -ivh "esl-erlang_18.3-1~centos~${OS_VERSION}_i386.rpm"
-				fi
-			else
-				if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-					wget "http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/esl-erlang_15.b.3-1~fedora~beefymiracle_amd64.rpm"
-					rpm -ivh esl-erlang_15.b.3-1~fedora~beefymiracle_amd64.rpm
-				else
-					wget "http://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_18.3-1~centos~${OS_VERSION}_amd64.rpm"
-					rpm -ivh "esl-erlang_18.3-1~centos~${OS_VERSION}_amd64.rpm"
-				fi
-			fi
-			yum install -y libyaml*
-			tar -zvxf ejabberd-15.07.tgz
-			cd ejabberd-15.07
-			./autogen.sh
-			./configure --enable-pgsql
-			make
-			make install
 
 			yum install -y php-xml
 
@@ -1106,13 +980,13 @@
 			sleep 1
 
 			echo "Creating PostgreSQL user and database..."
-			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
+			psql -U postgres -c "DROP USER IF EXISTS ${POSTGRES_DBUSER};CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL user creation failed with error code 41"
 				exit 1
 			fi			
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 42"
@@ -1143,9 +1017,6 @@
 			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
-			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo "*/5 * * * * $dir/server/php/shell/indexing_to_elasticsearch.sh" >> /var/spool/cron/root
-			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
 			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/root
 			
@@ -1160,12 +1031,6 @@
 			
 			echo "Setting up cron for every 5 minutes to send email notification to past due..."
 			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
-			
-			echo "Setting up cron for every 5 minutes to send chat conversation as email notification to user..."
-			echo "*/5 * * * * $dir/server/php/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
-			
-			echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
-			echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
 			
 			echo "Reset php-fpm (use unix socket mode)..."
 			sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf
@@ -1216,25 +1081,6 @@
 					unzip /tmp/$fid.zip -d "$dir/client/apps"
 				done
 			esac
-
-			echo "Creating ejabberd user and database..."
-			psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
-
-			cd /etc/ejabberd
-			psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
-			
-			psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
-			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
-			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-			sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
-			sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
-
-			ejabberdctl start
-			sleep 15
-			ejabberdctl change_password admin $webdir restya
-			ejabberdctl stop
-			sleep 15
-			ejabberdctl start
 
 			ps -q 1 | grep -q -c "systemd"
 			if [ "$?" -eq 0 ];

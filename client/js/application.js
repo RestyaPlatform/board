@@ -23,10 +23,6 @@ var STANDARD_LOGIN_ENABLED = '';
 var IMAP_EMAIL = '';
 var ANIMATION_SPEED = 300;
 var DEFAULT_CARD_VIEW = '';
-var BOSH_SERVICE_URL = '';
-var JABBER_HOST = '';
-var JABBER_PATH = '';
-var XMPP_CLIENT_RESOURCE_NAME = '';
 var PAGING_COUNT = '';
 var last_activity = '';
 var previous_date = '';
@@ -40,16 +36,6 @@ var APPS = [];
 var load_count = 1;
 var from_url = '';
 var custom_fields = {};
-var todo_lists = {};
-var doing_lists = {};
-var done_lists = {};
-var TODO_COLOR = '';
-var DOING_COLOR = '';
-var DONE_COLOR = '';
-var TODO_ICON = '';
-var DOING_ICON = '';
-var DONE_ICON = '';
-var ELASTICSEARCH_ENABLED = 0;
 Backbone.View.prototype.flash = function(type, message) {
     $.bootstrapGrowl(message, {
         type: type,
@@ -119,7 +105,7 @@ callbackTranslator = {
                     $('#content').html(new App.Error404View().el);
                     return;
                 } else if (JSON.parse(model.responseText).error.type === 'visibility') {
-                    window.sessionStorage.setItem('redirect_link', window.location.hash);
+                    $.cookie('redirect_link', window.location.hash);
                     changeTitle('Board not found');
                     this.headerView = new App.HeaderView({
                         model: authuser
@@ -150,7 +136,7 @@ callbackTranslator = {
             }
 
             if (hasOfflineStatusCode(options)) {
-                window.sessionStorage.setItem('is_offline_data', true);
+                $.cookie('is_offline_data', true);
                 is_offline_data = true;
                 model.is_offline = true;
                 $('.js-hide-on-offline').addClass('hide');
@@ -163,7 +149,7 @@ callbackTranslator = {
             }
             if (is_online && is_offline_data) {
                 is_offline_data = false;
-                window.sessionStorage.removeItem('is_offline_data');
+                $.removeCookie('is_offline_data');
                 $('#js-footer-brand-img').attr('title', i18next.t('Syncing...')).attr('src', 'img/logo-icon-sync.gif').attr('data-original-title', i18next.t('Syncing...')).tooltip("show");
                 var offline_data = new App.ListCollection();
                 offline_data.syncDirty();
@@ -182,7 +168,7 @@ callbackTranslator = {
                                 Auth.access_token = response.access_token;
                                 Auth.refresh_token = response.refresh_token;
                                 api_token = response.access_token;
-                                window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                                $.cookie('auth', JSON.stringify(Auth));
                                 if (from_url !== 'board_view') {
                                     Backbone.history.loadUrl(Backbone.history.fragment);
                                 }
@@ -392,7 +378,7 @@ var AppRouter = Backbone.Router.extend({
                 User.fetch({
                     cache: false,
                     success: function() {
-                        window.sessionStorage.removeItem('auth');
+                        $.removeCookie('auth');
                         api_token = '';
                         authuser = new App.User();
                         app.navigate('#/users/login', {
@@ -404,7 +390,7 @@ var AppRouter = Backbone.Router.extend({
                 });
             }
         } else {
-            window.sessionStorage.setItem('redirect_link', window.location.hash);
+            $.cookie('redirect_link', window.location.hash);
             new App.ApplicationView({
                 model: 'login'
             });
@@ -418,6 +404,7 @@ var AppRouter = Backbone.Router.extend({
             cache: false,
             success: function() {
                 $.removeCookie('auth');
+                delete(App.boards);
                 localStorage.removeItem('r_zapier_access_token');
                 api_token = '';
                 authuser = new App.User();

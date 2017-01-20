@@ -23,14 +23,7 @@
 		 	}
 		 %>
 		 </ul>
-	 <% }else{ %> 
-	 	<ul class="nav nav-pills navbar-left">
-			<li class="<%  var fragment = Backbone.history.fragment; var fragments = fragment.split('/'); if(fragment.indexOf('boards')  != -1 && fragments.length == 1){%>active<%}%>"><a href="#/boards" title="<%- i18next.t('My Boards') %>" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-user"></i></a></li>
-            <li class="<% if(Backbone.history.fragment.indexOf('boards/starred') != -1){%>active<%}%>"><a href="#/boards/starred" title="<%- i18next.t('Starred Boards') %>" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-star"></i></a></li>
-			<li class="<% if(Backbone.history.fragment.indexOf('boards/closed') != -1){%>active<%}%>"><a href="#/boards/closed" title="<%- i18next.t('Closed Boards') %>" class="text-muted list-group-item-text navbar-btn h4"><i class="icon-th-large"></i></a></li>
-        </ul>
-	 <% }%>
-	  
+	 <% } %>   
 	</div>
 	</nav>
    </div>

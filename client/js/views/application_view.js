@@ -83,57 +83,10 @@ App.ApplicationView = Backbone.View.extend({
                                 LABEL_ICON = settings_response.LABEL_ICON;
                                 SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
                                 DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
-                                STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
-                                BOSH_SERVICE_URL = settings_response.BOSH_SERVICE_URL;
-                                PREBIND_URL = settings_response.PREBIND_URL;
-                                JABBER_HOST = settings_response.JABBER_HOST;
-                                JABBER_PATH = settings_response.JABBER_PATH;
-                                XMPP_CLIENT_RESOURCE_NAME = settings_response.XMPP_CLIENT_RESOURCE_NAME;
                                 PAGING_COUNT = settings_response.PAGING_COUNT;
                                 APPS = settings_response.apps;
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-                                ELASTICSEARCH_ENABLED = settings_response.ELASTICSEARCH_ENABLED;
-                                if (settings_response.TODO_COLOR) {
-                                    TODO_COLOR = settings_response.TODO_COLOR;
-                                }
-                                if (settings_response.DOING_COLOR) {
-                                    DOING_COLOR = settings_response.DOING_COLOR;
-                                }
-                                if (settings_response.DONE_COLOR) {
-                                    DONE_COLOR = settings_response.DONE_COLOR;
-                                }
-                                if (settings_response.TODO_ICON) {
-                                    TODO_ICON = settings_response.TODO_ICON;
-                                }
-                                if (settings_response.DOING_ICON) {
-                                    DOING_ICON = settings_response.DOING_ICON;
-                                }
-                                if (settings_response.DONE_ICON) {
-                                    DONE_ICON = settings_response.DONE_ICON;
-                                }
-
-                                if (settings_response.TODO) {
-                                    var todo = settings_response.TODO;
-                                    var todo_split = todo.split(',');
-                                    $.each(todo_split, function(todo_key, todo_list) {
-                                        todo_lists[todo_key] = todo_list;
-                                    });
-                                }
-                                if (settings_response.DOING) {
-                                    var doing = settings_response.DOING;
-                                    var doing_split = doing.split(',');
-                                    $.each(doing_split, function(doing_key, doing_list) {
-                                        doing_lists[doing_key] = doing_list;
-                                    });
-                                }
-                                if (settings_response.DONE) {
-                                    var done = settings_response.DONE;
-                                    var done_split = done.split(',');
-                                    $.each(done_split, function(done_key, done_list) {
-                                        done_lists[done_key] = done_list;
-                                    });
-                                }
                                 var current_language = DEFAULT_LANGUAGE;
                                 if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
                                     current_language = authuser.user.language;
@@ -174,62 +127,17 @@ App.ApplicationView = Backbone.View.extend({
                         abortPending: true,
                         success: function(collection, settings_response) {
                             SITE_NAME = settings_response.SITE_NAME;
+                            localStorage.setItem('apps', settings_response.apps_data);
                             page.set_page_title();
                             FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
                             DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                             LABEL_ICON = settings_response.LABEL_ICON;
                             SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
                             DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
-                            STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
-                            BOSH_SERVICE_URL = settings_response.BOSH_SERVICE_URL;
-                            PREBIND_URL = settings_response.PREBIND_URL;
-                            JABBER_HOST = settings_response.JABBER_HOST;
-                            JABBER_PATH = settings_response.JABBER_PATH;
-                            XMPP_CLIENT_RESOURCE_NAME = settings_response.XMPP_CLIENT_RESOURCE_NAME;
                             PAGING_COUNT = settings_response.PAGING_COUNT;
                             APPS = settings_response.apps;
                             IMAP_EMAIL = settings_response.IMAP_EMAIL;
                             DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-                            ELASTICSEARCH_ENABLED = settings_response.ELASTICSEARCH_ENABLED;
-                            if (settings_response.TODO_COLOR) {
-                                TODO_COLOR = settings_response.TODO_COLOR;
-                            }
-                            if (settings_response.DOING_COLOR) {
-                                DOING_COLOR = settings_response.DOING_COLOR;
-                            }
-                            if (settings_response.DONE_COLOR) {
-                                DONE_COLOR = settings_response.DONE_COLOR;
-                            }
-                            if (settings_response.TODO_ICON) {
-                                TODO_ICON = settings_response.TODO_ICON;
-                            }
-                            if (settings_response.DOING_ICON) {
-                                DOING_ICON = settings_response.DOING_ICON;
-                            }
-                            if (settings_response.DONE_ICON) {
-                                DONE_ICON = settings_response.DONE_ICON;
-                            }
-                            if (settings_response.TODO) {
-                                var todo = settings_response.TODO;
-                                var todo_split = todo.split(',');
-                                $.each(todo_split, function(todo_key, todo_list) {
-                                    todo_lists[todo_key] = todo_list;
-                                });
-                            }
-                            if (settings_response.DOING) {
-                                var doing = settings_response.DOING;
-                                var doing_split = doing.split(',');
-                                $.each(doing_split, function(doing_key, doing_list) {
-                                    doing_lists[doing_key] = doing_list;
-                                });
-                            }
-                            if (settings_response.DONE) {
-                                var done = settings_response.DONE;
-                                var done_split = done.split(',');
-                                $.each(done_split, function(done_key, done_list) {
-                                    done_lists[done_key] = done_list;
-                                });
-                            }
                             var current_language = DEFAULT_LANGUAGE;
                             if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && authuser.user.language !== undefined) {
                                 current_language = authuser.user.language;
@@ -420,9 +328,6 @@ App.ApplicationView = Backbone.View.extend({
                         } else if (view_type === 'calendar') {
                             $('.js-switch-calendar-view').trigger('click');
                             view_type = null;
-                        } else if (view_type === 'gantt') {
-                            $('.js-switch-timeline-view').trigger('click');
-                            view_type = null;
                         } else if (view_type === 'attachments') {
                             $('.js-show-board-modal').trigger('click');
                             view_type = null;
@@ -464,9 +369,6 @@ App.ApplicationView = Backbone.View.extend({
                 view_type = null;
             } else if (view_type === 'calendar') {
                 $('.js-switch-calendar-view').trigger('click');
-                view_type = null;
-            } else if (view_type === 'gantt') {
-                $('.js-switch-timeline-view').trigger('click');
                 view_type = null;
             } else if (view_type === 'attachments') {
                 $('.js-show-board-modal').trigger('click');
@@ -539,7 +441,7 @@ App.ApplicationView = Backbone.View.extend({
                     page.populateLists();
                     page.populateBoardStarred();
                     var organizations = new App.OrganizationCollection();
-                    organizations.url = api_url + 'organizations.json';
+                    organizations.url = api_url + 'organizations.json?type=simple';
                     organizations.fetch({
                         cache: false,
                         abortPending: true,

@@ -127,9 +127,9 @@ if (_.isEmpty(role_links.where({
   <% if(apps !== ""){ %>
   <li class="dropdown hidden-xs board-btn js-show-add-apps-list add-apps-list"> 
 	  <a title="<%- i18next.t('Apps') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-apps-list"><span><%- i18next.t("Apps") %> </span><span><i class="icon-collapse"></i></span> </a>
-	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12">
+	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12 pre-scrollable vertical-scrollbar">
 			<% _.each(apps, function(key,value) { %>
-				<li id="<%- value %>" class="org-btn"><a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- value %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- i18next.t(key.name) %></span></a></li>
+				<li id="<%- value %>" class="org-btn"><a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- key.id %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- i18next.t(key.name) %></span></a></li>
 			<% }); %>
 			<li class="divider js-apps-list-container-search"></li>
 			<li class="dropdown clearfix">
@@ -175,7 +175,7 @@ if (_.isEmpty(role_links.where({
 		    <% if(!_.isEmpty(role_links.where({slug: "view_user"}))){ %>
 				<li><a title="<%- i18next.t('Profile') %>" href="#/user/<%-model.user.id%>"><%- i18next.t("Profile") %></a></li>
 			<% } %>
-			<li><a title="<%- i18next.t('About Us') %>" href="#/about"><%- i18next.t("About Us") %></a></li>
+			<li><a title="<%- i18next.t('About Restyaboard') %>" href="#/about"><%- i18next.t("About Restyaboard") %></a></li>
 			<li class="dropdown-submenu dropdown language-dropdown">
 				<a href="#" data-toggle="dropdown" class="dropdown-toggle js-open-popover" title="<%- i18next.t('Change Language') %>"><span><i class="icon-caret-left"></i></span><%- i18next.t('Change Language') %></a>
 				<ul class="dropdown-menu text-left js-change-language-form-response">

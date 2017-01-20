@@ -112,7 +112,7 @@
     width: auto;
     height: auto;
     border: 0;
-    z-index: 9999;
+    z-index: 99999 !important;
 }
 .dockmodal.minimized {
     height: 36px;

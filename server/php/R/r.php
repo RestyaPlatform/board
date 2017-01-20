@@ -29,8 +29,8 @@ use Xmpp\Xep\Xep0045 as xmpp;
 use Psr\Log\LoggerInterface;
 $j_username = $j_password = '';
 require_once '../bootstrap.php';
-global $jabberHost;
-if (is_plugin_enabled('Chat')) {
+global $jabberHost, $jaxlDebug;
+if (is_plugin_enabled('r_chat')) {
     require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chat' . DIRECTORY_SEPARATOR . 'functions.php';
     require APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chat' . DIRECTORY_SEPARATOR . 'libs/vendors/jaxl3/jaxl.php';
     $json = file_get_contents(APP_PATH . '/client/apps/r_chat/app.json');
@@ -54,7 +54,7 @@ if (is_plugin_enabled('Chat')) {
  */
 function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 {
-    global $r_debug, $db_lnk, $authUser, $_server_domain_url, $jabberHost;
+    global $r_debug, $db_lnk, $authUser, $_server_domain_url, $jabberHost, $token_exception_url;
     // switch case.. if taking more length, then associative array...
     $query_timeout = 0;
     $sql = false;
@@ -67,6 +67,72 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     $limit = PAGING_COUNT;
     $response = $revisions = $val_arr = $conditions = $pg_params = array();
     switch ($r_resource_cmd) {
+    case '/oauth':
+        if (!empty($_GET['refresh_token'])) {
+            $oauth_clientid = OAUTH_CLIENTID;
+            $oauth_client_secret = OAUTH_CLIENT_SECRET;
+            $conditions = array(
+                'access_token' => $_GET['refresh_token']
+            );
+            $response = executeQuery("SELECT user_id as username, expires, scope, client_id FROM oauth_refresh_tokens WHERE refresh_token = $1", $conditions);
+            if ($response['client_id'] == 6664115227792148 && OAUTH_CLIENTID == 7742632501382313) {
+                $oauth_clientid = 6664115227792148;
+                $oauth_client_secret = 'hw3wpe2cfsxxygogwue47cwnf7';
+            }
+            $post_val = array(
+                'grant_type' => 'refresh_token',
+                'refresh_token' => $_GET['refresh_token'],
+                'client_id' => $oauth_clientid,
+                'client_secret' => $oauth_client_secret
+            );
+            $response = getToken($post_val);
+        } else if (!in_array($r_resource_cmd, $token_exception_url)) {
+            $post_val = array(
+                'grant_type' => 'client_credentials',
+                'client_id' => OAUTH_CLIENTID,
+                'client_secret' => OAUTH_CLIENT_SECRET
+            );
+            $response = getToken($post_val);
+            $qry_val_arr = array(
+                3
+            );
+            $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $qry_val_arr);
+            $response = array_merge($response, $role_links);
+            $files = glob(APP_PATH . '/client/locales/*/translation.json', GLOB_BRACE);
+            $lang_iso2_codes = array();
+            foreach ($files as $file) {
+                $folder = explode('/', $file);
+                $folder_iso2_code = $folder[count($folder) - 2];
+                array_push($lang_iso2_codes, $folder_iso2_code);
+            }
+            $qry_val_arr = array(
+                '{' . implode($lang_iso2_codes, ',') . '}'
+            );
+            $result = pg_query_params($db_lnk, 'SELECT name, iso2 FROM languages WHERE iso2 = ANY ( $1 ) ORDER BY name ASC', $qry_val_arr);
+            while ($row = pg_fetch_assoc($result)) {
+                $languages[$row['iso2']] = $row['name'];
+            }
+            $response['languages'] = json_encode($languages);
+            $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
+            if (!empty($files)) {
+                foreach ($files as $file) {
+                    $content = file_get_contents($file);
+                    $data = json_decode($content, true);
+                    $folder = explode('/', $file);
+                    if ($data['enabled'] === true) {
+                        foreach ($data as $key => $value) {
+                            if ($key != 'settings') {
+                                $response['apps'][$folder[count($folder) - 2]][$key] = $value;
+                            }
+                        }
+                    }
+                }
+            }
+            $response['apps'] = !empty($response['apps']) ? json_encode($response['apps']) : '';
+        }
+        echo json_encode($response);
+        break;
+
     case '/users/me':
         $role_val_arr = array(
             $authUser['role_id']
@@ -112,7 +178,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $filter_condition.= 'is_active = 1';
             } else if ($r_resource_filters['filter'] == 'inactive') {
                 $filter_condition.= 'is_active = 0';
-            } else if (is_plugin_enabled('LdapLogin') && $r_resource_filters['filter'] == 'ldap') {
+            } else if (is_plugin_enabled('r_ldap_login') && $r_resource_filters['filter'] == 'ldap') {
                 $filter_condition.= 'is_ldap = 1';
             } else {
                 $filter_condition.= 'role_id = ' . $r_resource_filters['filter'];
@@ -143,7 +209,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $val_array = array(
             true
         );
-        if (is_plugin_enabled('LdapLogin')) {
+        if (is_plugin_enabled('r_ldap_login')) {
             $ldap_count = executeQuery('SELECT count(*) FROM users WHERE is_ldap = $1', $val_array);
             $filter_count['ldap'] = $ldap_count['count'];
         }
@@ -709,7 +775,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($_metadata) && !empty($board_user_roles)) {
                     $data['board_user_roles'] = $board_user_roles;
                 }
-                if (is_plugin_enabled('Chart')) {
+                if (is_plugin_enabled('r_chart')) {
                     require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chart' . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
                     $passed_values = array();
                     $passed_values['sort'] = $sort;
@@ -848,64 +914,115 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/organizations':
-        $organization_ids = array();
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organizations_listing';
-        if (!empty($authUser) && $authUser['role_id'] != 1) {
-            $s_sql = 'SELECT b.organization_id FROM boards_users AS bu LEFT JOIN boards AS b ON b.id = bu.board_id WHERE bu.user_id = $1';
-            $conditions = array(
-                $authUser['id']
-            );
-            $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
-            while ($row = pg_fetch_assoc($s_result)) {
-                if ($row['organization_id'] != 0) {
+        if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'simple') {
+            $organization_ids = array();
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organizations';
+            if (!empty($authUser) && $authUser['role_id'] != 1) {
+                $s_sql = 'SELECT b.organization_id FROM boards_users AS bu LEFT JOIN boards AS b ON b.id = bu.board_id WHERE bu.user_id = $1';
+                $conditions = array(
+                    $authUser['id']
+                );
+                $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
+                while ($row = pg_fetch_assoc($s_result)) {
+                    if ($row['organization_id'] != 0) {
+                        array_push($organization_ids, $row['organization_id']);
+                    }
+                }
+                $s_sql = 'SELECT id FROM organizations WHERE user_id = $1';
+                $conditions = array(
+                    $authUser['id']
+                );
+                $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
+                while ($row = pg_fetch_assoc($s_result)) {
+                    array_push($organization_ids, $row['id']);
+                }
+                $s_sql = 'SELECT organization_id FROM organizations_users WHERE user_id = $1';
+                $conditions = array(
+                    $authUser['id']
+                );
+                $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
+                while ($row = pg_fetch_assoc($s_result)) {
                     array_push($organization_ids, $row['organization_id']);
                 }
-            }
-            $s_sql = 'SELECT id FROM organizations WHERE user_id = $1';
-            $conditions = array(
-                $authUser['id']
-            );
-            $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
-            while ($row = pg_fetch_assoc($s_result)) {
-                array_push($organization_ids, $row['id']);
-            }
-            $s_sql = 'SELECT organization_id FROM organizations_users WHERE user_id = $1';
-            $conditions = array(
-                $authUser['id']
-            );
-            $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
-            while ($row = pg_fetch_assoc($s_result)) {
-                array_push($organization_ids, $row['organization_id']);
-            }
-            if (!empty($organization_ids)) {
-                $sql.= ' WHERE id IN (' . implode(",", array_unique($organization_ids)) . ')';
-            } else {
-                $sql.= ' WHERE user_id = ' . $authUser['id'];
-            }
-        }
-        $sql.= ' ORDER BY id ASC) as d ';
-        if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
-                $data = array();
-                while ($row = pg_fetch_row($result)) {
-                    $obj = json_decode($row[0], true);
-                    $acl_links_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM acl_organization_links_listing) as d';
-                    $acl_links_result = pg_query_params($db_lnk, $acl_links_sql, array());
-                    $obj['acl_links'] = array();
-                    while ($row = pg_fetch_assoc($acl_links_result)) {
-                        $obj['acl_links'][] = json_decode($row['row_to_json'], true);
-                    }
-                    $organization_user_roles_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organization_user_roles) as d';
-                    $organization_user_roles_result = pg_query_params($db_lnk, $organization_user_roles_sql, array());
-                    $obj['organization_user_roles'] = array();
-                    while ($row = pg_fetch_assoc($organization_user_roles_result)) {
-                        $obj['organization_user_roles'][] = json_decode($row['row_to_json'], true);
-                    }
-                    $data[] = $obj;
+                if (!empty($organization_ids)) {
+                    $sql.= ' WHERE id IN (' . implode(",", array_unique($organization_ids)) . ')';
+                } else {
+                    $sql.= ' WHERE user_id = ' . $authUser['id'];
                 }
-                echo json_encode($data);
-            } else {
-                $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+            }
+            $sql.= ' ORDER BY id ASC) as d ';
+            if (!empty($sql)) {
+                if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                    $data = array();
+                    while ($row = pg_fetch_row($result)) {
+                        $obj = json_decode($row[0], true);
+                        $data[] = $obj;
+                    }
+                    echo json_encode($data);
+                } else {
+                    $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+                }
+            }
+        } else {
+            $organization_ids = array();
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organizations_listing';
+            if (!empty($authUser) && $authUser['role_id'] != 1) {
+                $s_sql = 'SELECT b.organization_id FROM boards_users AS bu LEFT JOIN boards AS b ON b.id = bu.board_id WHERE bu.user_id = $1';
+                $conditions = array(
+                    $authUser['id']
+                );
+                $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
+                while ($row = pg_fetch_assoc($s_result)) {
+                    if ($row['organization_id'] != 0) {
+                        array_push($organization_ids, $row['organization_id']);
+                    }
+                }
+                $s_sql = 'SELECT id FROM organizations WHERE user_id = $1';
+                $conditions = array(
+                    $authUser['id']
+                );
+                $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
+                while ($row = pg_fetch_assoc($s_result)) {
+                    array_push($organization_ids, $row['id']);
+                }
+                $s_sql = 'SELECT organization_id FROM organizations_users WHERE user_id = $1';
+                $conditions = array(
+                    $authUser['id']
+                );
+                $s_result = pg_query_params($db_lnk, $s_sql, $conditions);
+                while ($row = pg_fetch_assoc($s_result)) {
+                    array_push($organization_ids, $row['organization_id']);
+                }
+                if (!empty($organization_ids)) {
+                    $sql.= ' WHERE id IN (' . implode(",", array_unique($organization_ids)) . ')';
+                } else {
+                    $sql.= ' WHERE user_id = ' . $authUser['id'];
+                }
+            }
+            $sql.= ' ORDER BY id ASC) as d ';
+            if (!empty($sql)) {
+                if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                    $data = array();
+                    while ($row = pg_fetch_row($result)) {
+                        $obj = json_decode($row[0], true);
+                        $acl_links_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM acl_organization_links_listing) as d';
+                        $acl_links_result = pg_query_params($db_lnk, $acl_links_sql, array());
+                        $obj['acl_links'] = array();
+                        while ($row = pg_fetch_assoc($acl_links_result)) {
+                            $obj['acl_links'][] = json_decode($row['row_to_json'], true);
+                        }
+                        $organization_user_roles_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organization_user_roles) as d';
+                        $organization_user_roles_result = pg_query_params($db_lnk, $organization_user_roles_sql, array());
+                        $obj['organization_user_roles'] = array();
+                        while ($row = pg_fetch_assoc($organization_user_roles_result)) {
+                            $obj['organization_user_roles'][] = json_decode($row['row_to_json'], true);
+                        }
+                        $data[] = $obj;
+                    }
+                    echo json_encode($data);
+                } else {
+                    $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+                }
             }
         }
         break;
@@ -1401,7 +1518,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/settings':
-        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\'  OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'STANDARD_LOGIN_ENABLED\' OR name = \'BOSH_SERVICE_URL\' OR name = \'PREBIND_URL\' OR name = \'JABBER_HOST\' OR name = \'PAGING_COUNT\' OR name = \'DEFAULT_CARD_VIEW\' OR name = \'TODO\' OR name = \'DOING\' OR name = \'DONE\' OR name = \'TODO_COLOR\' OR name = \'DOING_COLOR\' OR name = \'DONE_COLOR\' OR name = \'TODO_ICON\' OR name = \'DOING_ICON\' OR name = \'DONE_ICON\'', array());
+        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\'  OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'STANDARD_LOGIN_ENABLED\' OR name = \'PAGING_COUNT\' OR name = \'DEFAULT_CARD_VIEW\'', array());
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
@@ -1411,6 +1528,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $content = file_get_contents($file);
                 $data = json_decode($content, true);
                 if ($data['enabled'] === true) {
+                    $folder = explode('/', $file);
+                    if ($data['enabled'] === true) {
+                        foreach ($data as $key => $value) {
+                            if ($key != 'settings') {
+                                $response['apps_data'][$folder[count($folder) - 2]][$key] = $value;
+                            }
+                        }
+                    }
                     if (!empty($data['settings'])) {
                         foreach ($data['settings'] as $key => $value) {
                             if ($value['is_public']) {
@@ -1428,6 +1553,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
             }
         }
+        $response['apps_data'] = !empty($response['apps_data']) ? json_encode($response['apps_data']) : '';
         echo json_encode($response);
         break;
 
@@ -1572,7 +1698,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $passed_values['authUser'] = $authUser;
             $passed_values['val_arr'] = $val_arr;
             $passed_values['board_lists'] = $board_lists;
-            if ($plugin_key == 'LdapLogin') {
+            if ($plugin_key == 'r_ldap_login') {
                 $plugin_key = 'Ldap';
             }
             $plugin_return = call_user_func($plugin_key . '_r_get', $passed_values);
@@ -1647,11 +1773,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $user_id['user_id']
                 );
                 $users = pg_query_params($db_lnk, 'DELETE FROM users WHERE id= $1 RETURNING username', $conditions);
-                if (is_plugin_enabled('Chat') && JABBER_HOST) {
+                if (is_plugin_enabled('r_chat') && $jabberHost) {
                     $user = pg_fetch_assoc($users);
                     $xmpp_user = getXmppUser();
                     $xmpp = new xmpp($xmpp_user);
-                    $xmpp->deleteUser('<iq from="' . $authUser['username'] . '@' . JABBER_HOST . '" id="delete-user-2" to="' . JABBER_HOST . '" type="set" xml:lang="en"><command xmlns="http://jabber.org/protocol/commands" node="http://jabber.org/protocol/admin#delete-user"><x xmlns="jabber:x:data" type="submit"><field type="hidden" var="FORM_TYPE"><value>http://jabber.org/protocol/admin</value></field><field var="accountjids"><value>' . $user['username'] . '@' . JABBER_HOST . '</value></field></x></command></iq>');
+                    $xmpp->deleteUser('<iq from="' . $authUser['username'] . '@' . $jabberHost . '" id="delete-user-2" to="' . $jabberHost . '" type="set" xml:lang="en"><command xmlns="http://jabber.org/protocol/commands" node="http://jabber.org/protocol/admin#delete-user"><x xmlns="jabber:x:data" type="submit"><field type="hidden" var="FORM_TYPE"><value>http://jabber.org/protocol/admin</value></field><field var="accountjids"><value>' . $user['username'] . '@' . $jabberHost . '</value></field></x></command></iq>');
                 }
             }
             $response = array(
@@ -1689,7 +1815,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'success' => 'Checked boards are reopened successfully.'
             );
         } else if ($action_id == 3) {
-            if (is_plugin_enabled('Chat') && JABBER_HOST) {
+            if (is_plugin_enabled('r_chat') && $jabberHost) {
                 $xmpp_user = getXmppUser();
                 $xmpp = new xmpp($xmpp_user);
             }
@@ -1698,7 +1824,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $board_id['board_id']
                 );
                 $boards = pg_query_params($db_lnk, 'DELETE FROM boards WHERE id= $1', $conditions);
-                if (is_plugin_enabled('Chat') && JABBER_HOST && $boards) {
+                if (is_plugin_enabled('r_chat') && $jabberHost && $boards) {
                     $board = pg_fetch_assoc($boards);
                     $xmpp->destroyRoom('board-' . $board_id['board_id']);
                 }
@@ -1755,12 +1881,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
             $r_post['full_name'] = email2name($r_post['email']);
-            if (is_plugin_enabled('Chat') && JABBER_HOST) {
+            if (is_plugin_enabled('r_chat') && $jabberHost) {
                 global $j_username, $j_password;
                 $jaxl_initialize = array(
-                    'jid' => JABBER_HOST,
+                    'jid' => $jabberHost,
                     'strict' => false,
-                    'log_level' => JAXL_DEBUG,
+                    'log_level' => 0,
                     'port' => 5222,
                     'log_path' => 'jaxl.log'
                 );
@@ -1774,7 +1900,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $GLOBALS['client']->add_cb('on_stream_features', function ($stanza)
                 {
                     global $argv;
-                    $GLOBALS['client']->xeps['0077']->get_form(JABBER_HOST);
+                    $GLOBALS['client']->xeps['0077']->get_form($jabberHost);
                     return "wait_for_register_form";
                 });
                 $GLOBALS['client']->add_cb('on_disconnect', function ()
@@ -1831,12 +1957,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
             $r_post['full_name'] = ($r_post['email'] == '') ? $r_post['username'] : email2name($r_post['email']);
-            if (is_plugin_enabled('Chat') && JABBER_HOST) {
+            if (is_plugin_enabled('r_chat') && !empty($jabberHost)) {
                 global $j_username, $j_password;
                 $jaxl_initialize = array(
-                    'jid' => JABBER_HOST,
+                    'jid' => $jabberHost,
                     'strict' => false,
-                    'log_level' => JAXL_DEBUG,
+                    'log_level' => 0,
                     'port' => 5222,
                     'log_path' => 'jaxl.log'
                 );
@@ -1850,7 +1976,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $GLOBALS['client']->add_cb('on_stream_features', function ($stanza)
                 {
                     global $argv;
-                    $GLOBALS['client']->xeps['0077']->get_form(JABBER_HOST);
+                    $GLOBALS['client']->xeps['0077']->get_form($jabberHost);
                     return "wait_for_register_form";
                 });
                 $GLOBALS['client']->add_cb('on_disconnect', function ()
@@ -1898,7 +2024,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['email']
         );
         $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
-        if (is_plugin_enabled('LdapLogin')) {
+        if (is_plugin_enabled('r_ldap_login')) {
             require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'LdapLogin' . DIRECTORY_SEPARATOR . 'functions.php';
             $ldap_response = ldapUpdateUser($log_user, $r_post);
             $ldap_error = $ldap_response['ldap_error'];
@@ -1914,7 +2040,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
         }
         if (!empty($user)) {
-            if (is_plugin_enabled('LdapLogin')) {
+            if (is_plugin_enabled('r_ldap_login')) {
                 $login_type_id = 1;
             } else {
                 $login_type_id = 2;
@@ -1937,7 +2063,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $role_val_arr = array(
                 $user['role_id']
             );
-            $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $role_val_arr);
+            $role_links = executeQuery('SELECT links FROM role_links_listing WHERE id = $1', $role_val_arr);
             $post_val = array(
                 'grant_type' => 'password',
                 'username' => $user['username'],
@@ -1992,7 +2118,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $r_resource_vars['users']
                 );
                 pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
-                if (is_plugin_enabled('Chat') && $jabberHost) {
+                if (is_plugin_enabled('r_chat') && $jabberHost) {
                     $xmpp_user = getXmppUser();
                     $xmpp = new xmpp($xmpp_user);
                     $xmpp->changePassword('<iq xmlns="jabber:client" to="' . $jabberHost . '" type="set" id="2"><query 
@@ -2034,7 +2160,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $r_resource_vars['users']
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
-                    if (is_plugin_enabled('Chat') && $jabberHost) {
+                    if (is_plugin_enabled('r_chat') && $jabberHost) {
                         $xmpp_user = getXmppUser();
                         $xmpp = new xmpp($xmpp_user);
                         $xmpp->changePassword('<iq xmlns="jabber:client" to="' . $jabberHost . '" type="set" id="2"><query 
@@ -2230,7 +2356,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             if ($_FILES['board_import']['error'] == 0) {
                 $get_files = file_get_contents($_FILES['board_import']['tmp_name']);
                 $utf8_encoded_content = utf8_encode($get_files);
-                $imported_board = json_decode($utf8_encoded_content, true, 512, JSON_UNESCAPED_UNICODE);
+                if (version_compare(phpversion() , '5.4.0', '<')) {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512);
+                } else {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512, JSON_UNESCAPED_UNICODE);
+                }
                 if (!empty($imported_board) && !empty($imported_board['prefs'])) {
                     $board = importTrelloBoard($imported_board);
                     $response['id'] = $board['id'];
@@ -2266,7 +2396,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (!empty($uuid)) {
                     $response['uuid'] = $uuid;
                 }
-                if (is_plugin_enabled('Chat') && JABBER_HOST) {
+                if (is_plugin_enabled('r_chat') && $jabberHost) {
                     $xmpp_user = getXmppUser();
                     $xmpp = new xmpp($xmpp_user);
                     $xmpp->createRoom('board-' . $response['id'], $r_post['name']);
@@ -2996,7 +3126,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 $comment = '##USER_NAME## added member to board';
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board_user', $foreign_ids, '', $response['id']);
-                if (is_plugin_enabled('Chat') && $jabberHost) {
+                if (is_plugin_enabled('r_chat') && $jabberHost) {
                     $xmpp_user = getXmppUser();
                     $xmpp = new xmpp($xmpp_user);
                     $xmpp->grantMember('board-' . $previous_value['id'], $r_post['username'], 'member');
@@ -4293,7 +4423,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         break;
 
     default:
-        $plugin_url['LdapLogin'] = array(
+        $plugin_url['r_ldap_login'] = array(
             '/users/import'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
@@ -4303,6 +4433,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             }
         }
         if (!empty($pluginToBePassed)) {
+            if ($pluginToBePassed === 'r_ldap_login') {
+                $pluginToBePassed = 'LdapLogin';
+                $plugin_key = 'LdapLogin';
+            }
             require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginToBePassed . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
             $passed_values = array();
             $passed_values['sql'] = $sql;
@@ -4321,11 +4455,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $passed_values['enabledPlugins'] = $enabledPlugins;
             }
             $plugin_return = call_user_func($plugin_key . '_r_post', $passed_values);
-            foreach ($plugin_return as $return_plugin_key => $return_plugin_values) {
-                $ {
-                    $return_plugin_key
-                } = $return_plugin_values;
-            }
+            echo json_encode($plugin_return);
+            break;
         }
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
         break;
@@ -4961,7 +5092,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         break;
 
     default:
-        $plugin_url['LdapLogin'] = array(
+        $plugin_url['r_ldap_login'] = array(
             '/users/import'
         );
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
@@ -4995,10 +5126,10 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_user', $foreign_id);
         $sql = 'DELETE FROM users WHERE id= $1';
         array_push($pg_params, $r_resource_vars['users']);
-        if (is_plugin_enabled('Chat') && JABBER_HOST) {
+        if (is_plugin_enabled('r_chat') && $jabberHost) {
             $xmpp_user = getXmppUser();
             $xmpp = new xmpp($xmpp_user);
-            $xmpp->deleteUser('<iq from="' . $authUser['username'] . '@' . JABBER_HOST . '" id="delete-user-2" to="' . JABBER_HOST . '" type="set" xml:lang="en"><command xmlns="http://jabber.org/protocol/commands" node="http://jabber.org/protocol/admin#delete-user"><x xmlns="jabber:x:data" type="submit"><field type="hidden" var="FORM_TYPE"><value>http://jabber.org/protocol/admin</value></field><field var="accountjids"><value>' . $username['username'] . '@' . JABBER_HOST . '</value></field></x></command></iq>');
+            $xmpp->deleteUser('<iq from="' . $authUser['username'] . '@' . $jabberHost . '" id="delete-user-2" to="' . $jabberHost . '" type="set" xml:lang="en"><command xmlns="http://jabber.org/protocol/commands" node="http://jabber.org/protocol/admin#delete-user"><x xmlns="jabber:x:data" type="submit"><field type="hidden" var="FORM_TYPE"><value>http://jabber.org/protocol/admin</value></field><field var="accountjids"><value>' . $username['username'] . '@' . $jabberHost . '</value></field></x></command></iq>');
         }
         break;
 
@@ -5047,7 +5178,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             pg_query_params($db_lnk, 'DELETE FROM cards_users WHERE card_id = $1 AND user_id = $2', $conditions);
         }
         array_push($pg_params, $r_resource_vars['boards_users']);
-        if (is_plugin_enabled('Chat') && JABBER_HOST) {
+        if (is_plugin_enabled('r_chat') && $jabberHost) {
             $xmpp_user = getXmppUser();
             $xmpp = new xmpp($xmpp_user);
             $xmpp->revokeMember('board-' . $previous_value['board_id'], $previous_value['username']);

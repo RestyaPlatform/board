@@ -2,12 +2,16 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 9.5.4
+-- Dumped by pg_dump version 9.5.4
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
+SET row_security = off;
 
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
@@ -916,7 +920,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: acl_board_links; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_board_links; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE acl_board_links (
@@ -945,7 +949,7 @@ CREATE SEQUENCE acl_board_links_boards_user_roles_seq
 
 
 --
--- Name: acl_board_links_boards_user_roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_board_links_boards_user_roles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE acl_board_links_boards_user_roles (
@@ -983,7 +987,7 @@ CREATE SEQUENCE acl_links_id_seq
 
 
 --
--- Name: acl_links; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_links; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE acl_links (
@@ -1015,7 +1019,7 @@ CREATE SEQUENCE acl_links_roles_roles_id_seq
 
 
 --
--- Name: acl_links_roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_links_roles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE acl_links_roles (
@@ -1053,7 +1057,7 @@ CREATE SEQUENCE acl_organization_links_seq
 
 
 --
--- Name: acl_organization_links; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_organization_links; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE acl_organization_links (
@@ -1082,7 +1086,7 @@ CREATE SEQUENCE acl_organization_links_organizations_user_roles_seq
 
 
 --
--- Name: acl_organization_links_organizations_user_roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_organization_links_organizations_user_roles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE acl_organization_links_organizations_user_roles (
@@ -1120,7 +1124,7 @@ CREATE SEQUENCE activities_id_seq
 
 
 --
--- Name: activities; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: activities; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE activities (
@@ -1157,7 +1161,7 @@ CREATE SEQUENCE boards_id_seq
 
 
 --
--- Name: boards; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: boards; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE boards (
@@ -1207,7 +1211,7 @@ CREATE SEQUENCE cards_id_seq
 
 
 --
--- Name: cards; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: cards; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE cards (
@@ -1251,7 +1255,7 @@ CREATE SEQUENCE checklist_items_id_seq
 
 
 --
--- Name: checklist_items; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: checklist_items; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE checklist_items (
@@ -1281,7 +1285,7 @@ CREATE SEQUENCE checklists_id_seq
 
 
 --
--- Name: checklists; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: checklists; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE checklists (
@@ -1311,7 +1315,7 @@ CREATE SEQUENCE labels_id_seq
 
 
 --
--- Name: labels; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: labels; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE labels (
@@ -1337,7 +1341,7 @@ CREATE SEQUENCE lists_id_seq
 
 
 --
--- Name: lists; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: lists; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE lists (
@@ -1370,7 +1374,7 @@ CREATE SEQUENCE organizations_id_seq
 
 
 --
--- Name: organizations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: organizations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE organizations (
@@ -1402,7 +1406,7 @@ CREATE SEQUENCE users_id_seq
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE users (
@@ -1412,7 +1416,7 @@ CREATE TABLE users (
     role_id integer DEFAULT 0 NOT NULL,
     username character varying(255) NOT NULL,
     email character varying(255) NOT NULL,
-    password character varying(255) NOT NULL,
+    password character varying(256) NOT NULL,
     full_name character varying(255),
     initials character varying(10),
     about_me text,
@@ -1492,7 +1496,9 @@ CREATE VIEW activities_listing AS
     organizations.name AS organization_name,
     organizations.logo_url AS organization_logo_url,
     list1.name AS moved_list_name,
-    to_char(activity.created, 'HH24:MI'::text) AS created_time
+    to_char(activity.created, 'HH24:MI'::text) AS created_time,
+    card."position" AS card_position,
+    card.comment_count
    FROM ((((((((((activities activity
      LEFT JOIN boards board ON ((board.id = activity.board_id)))
      LEFT JOIN lists list ON ((list.id = activity.list_id)))
@@ -1519,7 +1525,7 @@ CREATE SEQUENCE boards_users_id_seq
 
 
 --
--- Name: boards_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: boards_users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE boards_users (
@@ -1640,7 +1646,7 @@ CREATE SEQUENCE boards_stars_id_seq
 
 
 --
--- Name: board_stars; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: board_stars; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE board_stars (
@@ -1666,7 +1672,7 @@ CREATE SEQUENCE boards_subscribers_id_seq
 
 
 --
--- Name: board_subscribers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: board_subscribers; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE board_subscribers (
@@ -1692,7 +1698,7 @@ CREATE SEQUENCE board_user_roles_seq
 
 
 --
--- Name: board_user_roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: board_user_roles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE board_user_roles (
@@ -1717,7 +1723,7 @@ CREATE SEQUENCE cards_labels_id_seq
 
 
 --
--- Name: cards_labels; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: cards_labels; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE cards_labels (
@@ -1761,7 +1767,7 @@ CREATE SEQUENCE card_attachments_id_seq
 
 
 --
--- Name: card_attachments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: card_attachments; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE card_attachments (
@@ -1791,7 +1797,7 @@ CREATE SEQUENCE cards_subscribers_id_seq
 
 
 --
--- Name: card_subscribers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: card_subscribers; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE card_subscribers (
@@ -1817,7 +1823,7 @@ CREATE SEQUENCE card_voters_id_seq
 
 
 --
--- Name: card_voters; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: card_voters; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE card_voters (
@@ -1880,7 +1886,7 @@ CREATE SEQUENCE cards_users_id_seq
 
 
 --
--- Name: cards_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: cards_users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE cards_users (
@@ -2030,12 +2036,13 @@ CREATE VIEW cards_listing AS
                     cards_labels.name
                    FROM cards_labels_listing cards_labels
                   WHERE (cards_labels.card_id = cards.id)
-                  ORDER BY cards_labels.id) cl) AS cards_labels,
+                  ORDER BY cards_labels.name) cl) AS cards_labels,
     cards.comment_count,
     u.username,
     b.name AS board_name,
     l.name AS list_name,
-    cards.custom_fields
+    cards.custom_fields,
+    cards.due_date AS notification_due_date
    FROM (((cards cards
      LEFT JOIN users u ON ((u.id = cards.user_id)))
      LEFT JOIN boards b ON ((b.id = cards.board_id)))
@@ -2055,7 +2062,7 @@ CREATE SEQUENCE lists_subscribers_id_seq
 
 
 --
--- Name: list_subscribers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: list_subscribers; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE list_subscribers (
@@ -2353,7 +2360,7 @@ CREATE VIEW checklist_add_listing AS
 
 
 --
--- Name: cities; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: cities; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE cities (
@@ -2401,7 +2408,7 @@ ALTER SEQUENCE cities_id_seq1 OWNED BY cities.id;
 
 
 --
--- Name: countries; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: countries; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE countries (
@@ -2476,7 +2483,7 @@ CREATE SEQUENCE email_templates_id_seq
 
 
 --
--- Name: email_templates; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: email_templates; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE email_templates (
@@ -2535,7 +2542,7 @@ CREATE SEQUENCE ips_id_seq
 
 
 --
--- Name: ips; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: ips; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE ips (
@@ -2567,7 +2574,7 @@ CREATE SEQUENCE languages_id_seq
 
 
 --
--- Name: languages; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: languages; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE languages (
@@ -2606,7 +2613,7 @@ CREATE SEQUENCE login_types_id_seq
 
 
 --
--- Name: login_types; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: login_types; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE login_types (
@@ -2618,7 +2625,7 @@ CREATE TABLE login_types (
 
 
 --
--- Name: oauth_access_tokens; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_access_tokens; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE oauth_access_tokens (
@@ -2631,7 +2638,7 @@ CREATE TABLE oauth_access_tokens (
 
 
 --
--- Name: oauth_authorization_codes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_authorization_codes; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE oauth_authorization_codes (
@@ -2645,7 +2652,7 @@ CREATE TABLE oauth_authorization_codes (
 
 
 --
--- Name: oauth_clients; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_clients; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE oauth_clients (
@@ -2698,7 +2705,7 @@ ALTER SEQUENCE oauth_clients_id_seq1 OWNED BY oauth_clients.id;
 
 
 --
--- Name: oauth_jwt; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_jwt; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE oauth_jwt (
@@ -2709,7 +2716,7 @@ CREATE TABLE oauth_jwt (
 
 
 --
--- Name: oauth_refresh_tokens; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_refresh_tokens; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE oauth_refresh_tokens (
@@ -2722,7 +2729,7 @@ CREATE TABLE oauth_refresh_tokens (
 
 
 --
--- Name: oauth_scopes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_scopes; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE oauth_scopes (
@@ -2744,7 +2751,7 @@ CREATE SEQUENCE organization_user_roles_seq
 
 
 --
--- Name: organization_user_roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: organization_user_roles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE organization_user_roles (
@@ -2769,7 +2776,7 @@ CREATE SEQUENCE organizations_users_id_seq
 
 
 --
--- Name: organizations_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: organizations_users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE organizations_users (
@@ -2943,7 +2950,7 @@ CREATE SEQUENCE roles_id_seq
 
 
 --
--- Name: roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: roles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE roles (
@@ -2968,7 +2975,7 @@ CREATE VIEW role_links_listing AS
 
 
 --
--- Name: setting_categories; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: setting_categories; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE setting_categories (
@@ -3014,7 +3021,7 @@ CREATE SEQUENCE settings_id_seq
 
 
 --
--- Name: settings; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: settings; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE settings (
@@ -3109,14 +3116,6 @@ CREATE VIEW simple_board_listing AS
                   WHERE (bs.board_id = board.id)
                   ORDER BY bs.id) l) AS stars,
     org.name AS organization_name,
-    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
-           FROM ( SELECT bu.id,
-                    bu.board_id,
-                    bu.user_id,
-                    bu.board_user_role_id
-                   FROM boards_users bu
-                  WHERE (bu.board_id = board.id)
-                  ORDER BY bu.id) l) AS users,
     org.logo_url AS organization_logo_url,
     board.music_content,
     board.music_name
@@ -3126,7 +3125,7 @@ CREATE VIEW simple_board_listing AS
 
 
 --
--- Name: states; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: states; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE states (
@@ -3171,7 +3170,7 @@ ALTER SEQUENCE states_id_seq1 OWNED BY states.id;
 
 
 --
--- Name: user_logins; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: user_logins; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE user_logins (
@@ -3350,7 +3349,7 @@ CREATE SEQUENCE webhooks_id_seq
 
 
 --
--- Name: webhooks; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: webhooks; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE webhooks (
@@ -3631,7 +3630,6 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_use
 19	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Search	/search	GET	view_search	2	1	0	0	0
 20	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Settings management	/settings	GET	load_settings	3	0	0	1	1
 22	2016-02-16 20:06:48.576	2016-02-16 20:06:48.576	Starred boards listing	/boards/starred	GET	view_stared_boards	2	1	0	0	0
-24	2016-02-18 17:45:14.983	2016-02-18 17:45:14.983	Unstar board	/boards/?/boards_stars/?	PUT	unstarred_board	2	1	0	0	0
 23	2016-02-18 17:24:25.733	2016-02-18 17:24:25.733	Unstar board	/boards/?/boards_stars/?	PUT	board_star	2	1	0	0	0
 25	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Upload profile picture	/users/?	POST	add_user_profile_picture	2	1	0	0	0
 26	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	User activation	/users/?/activation	PUT	user_activation	1	0	1	0	0
@@ -3650,18 +3648,28 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_use
 39	2016-02-09 16:51:25.779	2016-02-09 16:51:25.779	View webhooks	/webhooks	GET	view_webhooks	2	1	0	0	0
 122	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Undo activity	/activities/undo/?	PUT	undo_activity	2	1	0	0	0
 123	2016-03-07 11:45:43.8	2016-03-07 11:45:43.8	User detail	/users/me	GET	user_detail	0	1	0	1	1
-40	2016-07-11 01:24:42.648	2016-07-11 01:24:42.648	Allow to post comments in public board	/boards/?/lists/?/cards/?/comments	POST	comment_card	2	1	0	0	0
-41	2016-07-11 01:24:42.648	2016-07-11 01:24:42.648	Allow to subscribe board in public board	/boards/?/board_subscribers	POST	subscribe_board	2	1	0	0	0
-42	2016-07-11 01:24:42.648	2016-07-11 01:24:42.648	Allow to subscribe list in public board	/boards/?/lists/?/list_subscribers	POST	subscribe_list	2	1	0	0	0
-43	2016-07-11 01:24:42.648	2016-07-11 01:24:42.648	Allow to subscribe card in public board	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_card	2	1	0	0	0
-21	2016-02-18 17:42:32.045	2016-02-18 17:42:32.045	Allow to star/unstar in public board, card in public board	/boards/?/boards_stars	POST	starred_board	2	1	0	0	0
+40	2016-06-22 04:50:42.011	2016-06-22 04:50:42.011	Allow to post comments in public board	/boards/?/lists/?/cards/?/comments	POST	comment_card	2	1	0	0	0
+41	2016-06-22 04:50:42.011	2016-06-22 04:50:42.011	Allow to subscribe board in public board	/boards/?/board_subscribers	POST	subscribe_board	2	1	0	0	0
+42	2016-06-22 04:50:42.011	2016-06-22 04:50:42.011	Allow to subscribe list in public board	/boards/?/lists/?/list_subscribers	POST	subscribe_list	2	1	0	0	0
+43	2016-06-22 04:50:42.011	2016-06-22 04:50:42.011	Allow to subscribe card in public board	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_card	2	1	0	0	0
 124	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	XMPP chat login	/xmpp_login	GET	xmpp_login	2	1	0	1	0
-126	2016-07-11 01:24:43.052	2016-07-11 01:24:43.052	Role add	/roles	POST	role_add	1	0	0	1	1
-127	2016-07-11 01:24:43.052	2016-07-11 01:24:43.052	Board user role add	/board_user_roles	POST	board_user_role_add	1	0	0	1	1
-128	2016-07-11 01:24:43.052	2016-07-11 01:24:43.052	Organization user role add	/organization_user_roles	POST	organization_user_role_add	1	0	0	1	1
-129	2016-07-11 01:24:43.057	2016-07-11 01:24:43.057	Role edit	/roles/?	PUT	role_edit	1	0	0	1	1
-130	2016-07-11 01:24:43.057	2016-07-11 01:24:43.057	Board user role edit	/board_user_roles/?	PUT	board_user_role_edit	1	0	0	1	1
-131	2016-07-11 01:24:43.057	2016-07-11 01:24:43.057	Organization user role edit	/organization_user_roles/?	PUT	organization_user_role_edit	1	0	0	1	1
+126	2016-06-22 04:50:42.236	2016-06-22 04:50:42.236	Role add	/roles	POST	role_add	1	0	0	1	1
+127	2016-06-22 04:50:42.236	2016-06-22 04:50:42.236	Board user role add	/board_user_roles	POST	board_user_role_add	1	0	0	1	1
+128	2016-06-22 04:50:42.236	2016-06-22 04:50:42.236	Organization user role add	/organization_user_roles	POST	organization_user_role_add	1	0	0	1	1
+129	2016-06-22 04:50:42.239	2016-06-22 04:50:42.239	Role edit	/roles/?	PUT	role_edit	1	0	0	1	1
+130	2016-06-22 04:50:42.239	2016-06-22 04:50:42.239	Board user role edit	/board_user_roles/?	PUT	board_user_role_edit	1	0	0	1	1
+131	2016-06-22 04:50:42.239	2016-06-22 04:50:42.239	Organization user role edit	/organization_user_roles/?	PUT	organization_user_role_edit	1	0	0	1	1
+40	2016-06-28 07:47:21.424	2016-06-28 07:47:21.424	Allow to post comments in public board	/boards/?/lists/?/cards/?/comments	POST	comment_card	2	1	0	0	0
+41	2016-06-28 07:47:21.424	2016-06-28 07:47:21.424	Allow to subscribe board in public board	/boards/?/board_subscribers	POST	subscribe_board	2	1	0	0	0
+42	2016-06-28 07:47:21.424	2016-06-28 07:47:21.424	Allow to subscribe list in public board	/boards/?/lists/?/list_subscribers	POST	subscribe_list	2	1	0	0	0
+43	2016-06-28 07:47:21.424	2016-06-28 07:47:21.424	Allow to subscribe card in public board	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_card	2	1	0	0	0
+21	2016-02-18 17:42:32.045	2016-02-18 17:42:32.045	Allow to star/unstar in public board, card in public board	/boards/?/boards_stars	POST	starred_board	2	1	0	0	0
+134	2016-06-28 07:47:21.742	2016-06-28 07:47:21.742	Role add	/roles	POST	role_add	1	0	0	1	1
+135	2016-06-28 07:47:21.742	2016-06-28 07:47:21.742	Board user role add	/board_user_roles	POST	board_user_role_add	1	0	0	1	1
+136	2016-06-28 07:47:21.742	2016-06-28 07:47:21.742	Organization user role add	/organization_user_roles	POST	organization_user_role_add	1	0	0	1	1
+137	2016-06-28 07:47:21.747	2016-06-28 07:47:21.747	Role edit	/roles/?	PUT	role_edit	1	0	0	1	1
+138	2016-06-28 07:47:21.747	2016-06-28 07:47:21.747	Board user role edit	/board_user_roles/?	PUT	board_user_role_edit	1	0	0	1	1
+139	2016-06-28 07:47:21.747	2016-06-28 07:47:21.747	Organization user role edit	/organization_user_roles/?	PUT	organization_user_role_edit	1	0	0	1	1
 125	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	Chat History	/boards/?/chat_history	GET	chat_history	2	1	0	1	0
 \.
 
@@ -3670,7 +3678,7 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_use
 -- Name: acl_links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('acl_links_id_seq', 131, true);
+SELECT pg_catalog.setval('acl_links_id_seq', 139, true);
 
 
 --
@@ -3701,7 +3709,6 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 21	2016-02-20 19:07:38.318	2016-02-20 19:07:38.318	6	2
 22	2016-02-20 19:07:31.771	2016-02-20 19:07:31.771	9	1
 23	2016-02-20 19:08:16.346	2016-02-20 19:08:16.346	10	2
-24	2016-02-20 19:08:16.346	2016-02-20 19:08:16.346	10	1
 25	2016-02-20 19:07:25.664	2016-02-20 19:07:25.664	11	3
 26	2016-02-20 19:07:39.589	2016-02-20 19:07:39.589	12	2
 27	2016-02-20 19:07:26.404	2016-02-20 19:07:26.404	17	3
@@ -3755,14 +3762,14 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 75	2016-02-20 19:07:31.771	2016-02-20 19:07:31.771	9	2
 1218	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	122	1
 1219	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	123	2
-1220	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	40	1
-1221	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	40	2
-1222	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	41	1
-1223	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	41	2
-1224	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	42	1
-1225	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	42	2
-1226	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	43	1
-1227	2016-07-11 01:24:42.655	2016-07-11 01:24:42.655	43	2
+1220	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	40	1
+1221	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	40	2
+1222	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	41	1
+1223	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	41	2
+1224	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	42	1
+1225	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	42	2
+1226	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	43	1
+1227	2016-06-22 04:50:42.032	2016-06-22 04:50:42.032	43	2
 1228	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	124	1
 1229	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	124	2
 1230	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	125	1
@@ -3773,6 +3780,34 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 1235	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	129	1
 1236	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	130	1
 1237	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	131	1
+1238	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	40	1
+1239	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	40	2
+1240	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	41	1
+1241	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	41	2
+1242	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	42	1
+1243	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	42	2
+1244	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	43	1
+1245	2016-06-28 07:47:21.437	2016-06-28 07:47:21.437	43	2
+1246	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	124	1
+1247	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	132	1
+1248	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	124	2
+1249	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	132	2
+1250	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	125	1
+1251	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	133	1
+1252	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	125	2
+1253	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	133	2
+1254	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	126	1
+1255	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	134	1
+1256	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	127	1
+1257	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	135	1
+1258	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	128	1
+1259	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	136	1
+1260	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	129	1
+1261	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	137	1
+1262	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	130	1
+1263	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	138	1
+1264	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	131	1
+1265	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	139	1
 \.
 
 
@@ -3780,7 +3815,7 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 -- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1237, true);
+SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1265, true);
 
 
 --
@@ -4217,7 +4252,7 @@ COPY countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capita
 135	MV	MDV	462	MV	Maldives	Male	300	395650	AS	.mv	MVR	Rufiyaa             	960       	#####               	^(d{5})$            	dv,en	1282028	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 136	ML	MLI	466	ML	Mali	Bamako	1240000	13796354	AF	.ml	XOF	Franc               	223       	                    	                    	fr-ML,bm	2453866	SN,NE,DZ,CI,GN,MR,BF	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 137	MT	MLT	470	MT	Malta	Valletta	316	403000	EU	.mt	EUR	Euro                	356       	@@@ ###|@@@ ##      	^([A-Z]{3}d{2}d?)$  	mt,en-MT	2562770	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
-138	MH	MHL	584	RM	Marshall Islands	Majuro	181.30000000000001	65859	OC	.mh	USD	Dollar              	692       	                    	                    	mh,en-MH	2080185	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
+138	MH	MHL	584	RM	Marshall Islands	Majuro	181.300000000000011	65859	OC	.mh	USD	Dollar              	692       	                    	                    	mh,en-MH	2080185	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 139	MQ	MTQ	474	MB	Martinique	Fort-de-France	1100	432900	NA	.mq	EUR	Euro                	596       	#####               	^(d{5})$            	fr-MQ	3570311	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 140	MR	MRT	478	MR	Mauritania	Nouakchott	1030700	3205060	AF	.mr	MRO	Ouguiya             	222       	                    	                    	ar-MR,fuc,snk,fr,mey,wo	2378080	SN,DZ,EH,ML         	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 141	MU	MUS	480	MP	Mauritius	Port Louis	2040	1294104	AF	.mu	MUR	Rupee               	230       	                    	                    	en-MU,bho,fr	934292	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
@@ -4225,7 +4260,7 @@ COPY countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capita
 143	MX	MEX	484	MX	Mexico	Mexico City	1972550	112468855	NA	.mx	MXN	Peso                	52        	#####               	^(d{5})$            	es-MX	3996063	GT,US,BZ            	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 144	FM	FSM	583	FM	Micronesia	Palikir	702	107708	OC	.fm	USD	Dollar              	691       	#####               	^(d{5})$            	en-FM,chk,pon,yap,kos,uli,woe,nkr,kpg	2081918	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 145	MD	MDA	498	MD	Moldova	Chisinau	33843	4324000	EU	.md	MDL	Leu                 	373       	MD-####             	^(?:MD)*(d{4})$     	ro,ru,gag,tr	617790	RO,UA               	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
-146	MC	MCO	492	MN	Monaco	Monaco	1.95	32965	EU	.mc	EUR	Euro                	377       	#####               	^(d{5})$            	fr-MC,en,it	2993457	FR                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
+146	MC	MCO	492	MN	Monaco	Monaco	1.94999999999999996	32965	EU	.mc	EUR	Euro                	377       	#####               	^(d{5})$            	fr-MC,en,it	2993457	FR                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 147	MN	MNG	496	MG	Mongolia	Ulan Bator	1565000	3086918	AS	.mn	MNT	Tugrik              	976       	######              	^(d{6})$            	mn,ru	2029969	CN,RU               	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 148	ME	MNE	499	MJ	Montenegro	Podgorica	14026	666730	EU	.me	EUR	Euro                	382       	#####               	^(d{5})$            	sr,hu,bs,sq,hr,rom	3194884	AL,HR,BA,RS,XK      	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 149	MS	MSR	500	MH	Montserrat	Plymouth	102	9341	NA	.ms	XCD	Dollar              	+1-664    	                    	                    	en-MS	3578097	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
@@ -4243,7 +4278,7 @@ COPY countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capita
 161	NE	NER	562	NG	Niger	Niamey	1267000	15878271	AF	.ne	XOF	Franc               	227       	####                	^(d{4})$            	fr-NE,ha,kr,dje	2440476	TD,BJ,DZ,LY,BF,NG,ML	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 162	NG	NGA	566	NI	Nigeria	Abuja	923768	154000000	AF	.ng	NGN	Naira               	234       	######              	^(d{6})$            	en-NG,ha,yo,ig,ff	2328926	TD,NE,BJ,CM         	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 163	NU	NIU	570	NE	Niue	Alofi	260	2166	OC	.nu	NZD	Dollar              	683       	                    	                    	niu,en-NU	4036232	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
-164	NF	NFK	574	NF	Norfolk Island	Kingston	34.600000000000001	1828	OC	.nf	AUD	Dollar              	672       	                    	                    	en-NF	2155115	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
+164	NF	NFK	574	NF	Norfolk Island	Kingston	34.6000000000000014	1828	OC	.nf	AUD	Dollar              	672       	                    	                    	en-NF	2155115	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 165	KP	PRK	408	KN	North Korea	Pyongyang	120540	22912177	AS	.kp	KPW	Won                 	850       	###-###             	^(d{6})$            	ko-KP	1873107	CN,KR,RU            	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 166	MP	MNP	580	CQ	Northern Mariana Islands	Saipan	477	53883	OC	.mp	USD	Dollar              	+1-670    	                    	                    	fil,tl,zh,ch-MP,en-MP	4041468	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 167	NO	NOR	578	NO	Norway	Oslo	324220	4985870	EU	.no	NOK	Krone               	47        	####                	^(d{4})$            	no,nb,nn,se,fi	3144096	FI,RU,SE            	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
@@ -4274,7 +4309,7 @@ COPY countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capita
 192	PM	SPM	666	SB	Saint Pierre and Miquelon	Saint-Pierre	242	7012	NA	.pm	EUR	Euro                	508       	#####               	^(97500)$           	fr-PM	3424932	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 193	VC	VCT	670	VC	Saint Vincent and the Grenadines	Kingstown	389	104217	NA	.vc	XCD	Dollar              	+1-784    	                    	                    	en-VC,fr	3577815	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 194	WS	WSM	882	WS	Samoa	Apia	2944	192001	OC	.ws	WST	Tala                	685       	                    	                    	sm,en-WS	4034894	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
-195	SM	SMR	674	SM	San Marino	San Marino	61.200000000000003	31477	EU	.sm	EUR	Euro                	378       	4789#               	^(4789d)$           	it-SM	3168068	IT                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
+195	SM	SMR	674	SM	San Marino	San Marino	61.2000000000000028	31477	EU	.sm	EUR	Euro                	378       	4789#               	^(4789d)$           	it-SM	3168068	IT                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 196	ST	STP	678	TP	Sao Tome and Principe	Sao Tome	1001	175808	AF	.st	STD	Dobra               	239       	                    	                    	pt-ST	2410758	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 197	SA	SAU	682	SA	Saudi Arabia	Riyadh	1960582	25731776	AS	.sa	SAR	Rial                	966       	#####               	^(d{5})$            	ar-SA	102358	QA,OM,IQ,YE,JO,AE,KW	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 198	SN	SEN	686	SG	Senegal	Dakar	196190	12323252	AF	.sn	XOF	Franc               	221       	#####               	^(d{5})$            	fr-SN,wo,fuc,mnk	2245662	GN,MR,GW,GM,ML      	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
@@ -4282,7 +4317,7 @@ COPY countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capita
 200	CS	SCG	891	YI	Serbia and Montenegro	Belgrade	102350	10829175	EU	.cs	RSD	Dinar               	381       	#####               	^(d{5})$            	cu,hu,sq,sr	0	AL,HU,MK,RO,HR,BA,BG	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 201	SC	SYC	690	SE	Seychelles	Victoria	455	88340	AF	.sc	SCR	Rupee               	248       	                    	                    	en-SC,fr-SC	241170	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 202	SL	SLE	694	SL	Sierra Leone	Freetown	71740	5245695	AF	.sl	SLL	Leone               	232       	                    	                    	en-SL,men,tem	2403846	LR,GN               	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
-203	SG	SGP	702	SN	Singapore	Singapur	692.70000000000005	4701069	AS	.sg	SGD	Dollar              	65        	######              	^(d{6})$            	cmn,en-SG,ms-SG,ta-SG,zh-SG	1880251	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
+203	SG	SGP	702	SN	Singapore	Singapur	692.700000000000045	4701069	AS	.sg	SGD	Dollar              	65        	######              	^(d{6})$            	cmn,en-SG,ms-SG,ta-SG,zh-SG	1880251	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 204	SX	SXM	534	NN	Sint Maarten	Philipsburg	0	37429	NA	.sx	ANG	Guilder             	599       	                    	                    	nl,en	7609695	MF                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 205	SK	SVK	703	LO	Slovakia	Bratislava	48845	5455000	EU	.sk	EUR	Euro                	421       	###  ##             	^(d{5})$            	sk,hu	3057568	PL,HU,CZ,UA,AT      	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 206	SI	SVN	705	SI	Slovenia	Ljubljana	20273	2007000	EU	.si	EUR	Euro                	386       	SI- ####            	^(?:SI)*(d{4})$     	sl,sh	3190538	HU,IT,HR,AT         	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
@@ -4321,7 +4356,7 @@ COPY countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capita
 242	UY	URY	858	UY	Uruguay	Montevideo	176220	3477000	SA	.uy	UYU	Peso                	598       	#####               	^(d{5})$            	es-UY	3439705	BR,AR               	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 243	UZ	UZB	860	UZ	Uzbekistan	Tashkent	447400	27865738	AS	.uz	UZS	Som                 	998       	######              	^(d{6})$            	uz,ru,tg	1512440	TM,AF,KG,TJ,KZ      	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 244	VU	VUT	548	NH	Vanuatu	Port Vila	12200	221552	OC	.vu	VUV	Vatu                	678       	                    	                    	bi,en-VU,fr-VU	2134431	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
-245	VA	VAT	336	VT	Vatican	Vatican City	0.44	921	EU	.va	EUR	Euro                	379       	                    	                    	la,it,fr	3164670	IT                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
+245	VA	VAT	336	VT	Vatican	Vatican City	0.440000000000000002	921	EU	.va	EUR	Euro                	379       	                    	                    	la,it,fr	3164670	IT                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 246	VE	VEN	862	VE	Venezuela	Caracas	912050	27223228	SA	.ve	VEF	Bolivar             	58        	####                	^(d{4})$            	es-VE	3625428	GY,BR,CO            	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 247	VN	VNM	704	VM	Vietnam	Hanoi	329560	89571130	AS	.vn	VND	Dong                	84        	######              	^(d{6})$            	vi,en,fr,zh,km	1562822	CN,LA,KH            	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 248	WF	WLF	876	WF	Wallis and Futuna	Mata Utu	274	16025	OC	.wf	XPF	Franc               	681       	#####               	^(986d{2})$         	wls,fud,fr-WF	4034749	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
@@ -4355,13 +4390,14 @@ SELECT pg_catalog.setval('countries_id_seq1', 1, false);
 --
 
 COPY email_templates (id, created, modified, from_email, reply_to_email, name, description, subject, email_text_content, email_variables, display_name) FROM stdin;
-2	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	welcome	We will send this mail, when user register in this site and get activate.	Restyaboard / Welcome	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We wish to say a quick hello and thanks for registering at ##SITE_NAME##.<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME	Welcome
-4	2014-05-08 12:13:50.69	2014-05-08 12:13:50.69	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	changepassword	We will send this mail to user, when admin change users password.	Restyaboard / Password changed	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">Admin reset your password for your ##SITE_NAME## account.<br>Your new password: ##PASSWORD##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=change_password_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_NAME, SITE_URL, PASSWORD	Change Password
-5	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	newprojectuser	We will send this mail, when user added for board.	Restyaboard / ##BOARD_NAME## assigned by ##CURRENT_USER##	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2>\r\n<p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CURRENT_USER## has added you to the board ##BOARD_NAME## ##BOARD_URL##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=new_board_member_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, NAME, BOARD_NAME, CURRENT_USER, BOARD_URL	New Board User
-6	2015-10-09 06:15:49.891	2015-10-09 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	email_notification	We will send this mail, when user activities in this site.	Restyaboard / ##NOTIFICATION_COUNT## new notifications since ##SINCE##	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="Restyaboard"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="Restyaboard"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<div style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;margin-top:30px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Here's what you missed…</h2>\r\n<div style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</div>\r\n</div>\r\n</div>\r\n</div>\r\n<div style="text-align:center;margin:5px 15px;padding:10px 0px;">\r\n<a href="##SITE_URL##/#/user/##USER_ID##/settings">Change email preferences</a>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\r\n</h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, CONTENT, NAME, NOTIFICATION_COUNT, SINCE	Email Notification
-1	2014-05-08 12:13:37.268	2014-05-08 12:13:37.268	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	activation	We will send this mail, when user registering an account he/she will get an activation request.	Restyaboard / Account confirmation	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,\r\n</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">You are one step ahead. Please click the below URL to activate your account.<br>##ACTIVATION_URL##<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=activation_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME, ACTIVATION_URL	Activation
-3	2014-05-08 12:13:59.784	2014-05-08 12:13:59.784	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	forgetpassword	We will send this mail, when user submit the forgot password form	Restyaboard / Password reset	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We have received a password reset request for your account at ##SITE_NAME##.<br>New password: ##PASSWORD##<br>If you didn't requested this action and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\r\nRestyaboard<br>\r\n##SITE_URL##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=forgot_password_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_NAME, SITE_URL, CONTACT_EMAIL, NAME, PASSWORD	Forgot Password
-7	2016-01-10 06:15:49.891	2016-01-10 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	due_date_notification	We will send this mail, One day before when the card due date end.	##SUBJECT##	<html>\r\n<head></head>\r\n<body style="margin:0">\r\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\r\n<div style="border: 1px solid #EEEEEE;">\r\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\r\n</div>\r\n</header>\r\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\r\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\r\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\r\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;">\r\n<h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Due soon…</h2>\r\n<p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</p>\r\n</pre>\r\n</div>\r\n</div>\r\n</main>\r\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\r\n<h6 style="text-align:center;margin:5px 15px;"> \r\n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=due_date_notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\r\n</h6>\r\n</footer>\r\n</body>\r\n</html>	SITE_URL, SITE_NAME, SUBJECT, CONTENT	Due Date Notification
+4	2014-05-08 12:13:50.69	2014-05-08 12:13:50.69	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	changepassword	We will send this mail to user, when admin change users password.	Restyaboard / Password changed	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">Admin reset your password for your ##SITE_NAME## account.<br>Your new password: ##PASSWORD##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=change_password_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_NAME, SITE_URL, PASSWORD	Change Password
+6	2015-10-09 06:15:49.891	2015-10-09 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	email_notification	We will send this mail, when user activities in this site.	Restyaboard / ##NOTIFICATION_COUNT## new notifications since ##SINCE##	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="Restyaboard"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="Restyaboard"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<div style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;margin-top:30px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Here's what you missed…</h2>\n<div style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</div>\n</div>\n</div>\n</div>\n<div style="text-align:center;margin:5px 15px;padding:10px 0px;">\n<a href="##SITE_URL##/#/user/##USER_ID##/settings">Change email preferences</a>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\n</h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTENT, NAME, NOTIFICATION_COUNT, SINCE	Email Notification
+1	2014-05-08 12:13:37.268	2014-05-08 12:13:37.268	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	activation	We will send this mail, when user registering an account he/she will get an activation request.	Restyaboard / Account confirmation	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,\n</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">You are one step ahead. Please click the below URL to activate your account.<br>##ACTIVATION_URL##<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=activation_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME, ACTIVATION_URL	Activation
+2	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	welcome	We will send this mail, when user register in this site and get activate.	Restyaboard / Welcome	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We wish to say a quick hello and thanks for registering at ##SITE_NAME##.<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME	Welcome
+5	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	newprojectuser	We will send this mail, when user added for board.	Restyaboard / ##BOARD_NAME## assigned by ##CURRENT_USER##	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%\nCREA;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2>\n<p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CURRENT_USER## has added you to the board ##BOARD_NAME## ##BOARD_URL##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=new_board_member_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, NAME, BOARD_NAME, CURRENT_USER, BOARD_URL	New Board User
+3	2014-05-08 12:13:59.784	2014-05-08 12:13:59.784	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	forgetpassword	We will send this mail, when user submit the forgot password form	Restyaboard / Password reset	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We have received a password reset request for your account at ##SITE_NAME##.<br>New password: ##PASSWORD##<br>If you didn't requested this action and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=forgot_password_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_NAME, SITE_URL, CONTACT_EMAIL, NAME, PASSWORD	Forgot Password
+7	2016-01-10 06:15:49.891	2016-01-10 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	due_date_notification	We will send this mail, One day before when the card due date end.	##SUBJECT##	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;">\n<h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Due soon…</h2>\n<p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=due_date_notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\n</h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, SUBJECT, CONTENT	Due Date Notification
+8	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	ldap_welcome	We will send this mail, when admin imports from LDAP.	Restyaboard / Welcome	<html>\n<head></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">Admin imported your LDAP account in ##SITE_NAME##. You can login with your LDAP username and password in ##SITE_URL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME	LDAP Welcome
 \.
 
 
@@ -4717,6 +4753,7 @@ COPY languages (id, created, modified, name, iso2, iso3, is_active) FROM stdin;
 307	2016-03-10 16:24:44.833	2016-03-10 16:24:44.833	Serbian	sr	sr	0
 308	2016-03-10 16:24:44.834	2016-03-10 16:24:44.834	Serbian (Ijekavian)	sr@Ijekavian	sr@Ijekavian	0
 309	2016-03-10 16:24:44.834	2016-03-10 16:24:44.834	Serbian (Ijekavian Latin)	sr@ijekavianlatin	sr@ijekavianlatin	0
+412	2016-03-10 16:24:44.87	2016-03-10 16:24:44.87	Yiddish	yi	yi	0
 310	2016-03-10 16:24:44.834	2016-03-10 16:24:44.834	Serbian (Latin)	sr@latin	sr@latin	0
 311	2016-03-10 16:24:44.835	2016-03-10 16:24:44.835	Serbian (Latin) (Serbia)	sr_RS@latin	sr_RS@latin	0
 312	2016-03-10 16:24:44.835	2016-03-10 16:24:44.835	Serbian (Serbia)	sr_RS	sr_RS	0
@@ -4819,7 +4856,6 @@ COPY languages (id, created, modified, name, iso2, iso3, is_active) FROM stdin;
 409	2016-03-10 16:24:44.87	2016-03-10 16:24:44.87	Wolof	wo	wo	0
 410	2016-03-10 16:24:44.87	2016-03-10 16:24:44.87	Wolof (Senegal)	wo_SN	wo_SN	0
 411	2016-03-10 16:24:44.87	2016-03-10 16:24:44.87	Xhosa	xh	xh	0
-412	2016-03-10 16:24:44.87	2016-03-10 16:24:44.87	Yiddish	yi	yi	0
 413	2016-03-10 16:24:44.87	2016-03-10 16:24:44.87	Yoruba	yo	yo	0
 414	2016-03-10 16:24:44.871	2016-03-10 16:24:44.871	Zulu	zu	zu	0
 415	2016-03-10 16:24:44.871	2016-03-10 16:24:44.871	Zulu (South Africa)	zu_ZA	zu_ZA	0
@@ -5034,12 +5070,8 @@ COPY setting_categories (id, created, modified, parent_id, name, description, "o
 7	2015-04-25 19:58:48.845	2015-04-25 19:58:48.845	6	Dropbox	\N	0
 3	2014-11-21 02:52:08.822706	2014-11-21 02:52:08.822706	\N	System	\N	1
 6	2015-04-25 19:58:48.845	2015-04-25 19:58:48.845	\N	Third Party API	\N	3
-1	2014-04-23 16:30:20.121	2014-04-23 16:30:20.121	\N	ElasticSearch		4
 9	\N	\N	2	Enabled Login Options	Enabled Login Options	1
-2	2014-11-08 02:52:08.822706	2014-04-28 17:01:11	\N	Login	\N	2
 10	2016-02-22 17:39:16.971	2016-02-22 17:39:16.971	\N	IMAP	\N	5
-11	2015-09-26 13:14:18	2015-09-26 13:14:18	\N	XMPP Chat	\N	5
-12	2016-07-11 01:24:43.075	2016-07-11 01:24:43.075	\N	Cards Workflow	\N	7
 \.
 
 
@@ -5047,7 +5079,7 @@ COPY setting_categories (id, created, modified, parent_id, name, description, "o
 -- Name: setting_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('setting_categories_id_seq', 12, true);
+SELECT pg_catalog.setval('setting_categories_id_seq', 13, true);
 
 
 --
@@ -5061,42 +5093,18 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 21	3	0	SITE_TIMEZONE	+0200	\N	text	\N	Site Timezone	5
 18	6	0	DROPBOX_APPKEY		\N	text	\N	Dropbox App Key	1
 20	6	0	FLICKR_API_KEY		\N	text	\N	Flickr API Key	2
-3	9	2	LDAP_LOGIN_ENABLED	false	\N	checkbox	\N	LDAP	2
-22	9	2	STANDARD_LOGIN_ENABLED	true	\N	checkbox	\N	Standard	1
 29	3	0	DEFAULT_REPLY_TO_EMAIL_ADDRESS	board@restya.com	\N	text	\N	Reply To Email Address	3
 13	3	0	DEFAULT_FROM_EMAIL_ADDRESS	board@restya.com	\N	text	\N	From Email Address	2
 31	3	0	DEFAULT_LANGUAGE	en_US	\N	text	\N	Default Language	6
-24	4	2	ENABLE_SSL_CONNECTIVITY	\N	Use encryption (SSL, ldaps:// URL) when connects to server?	checkbox	\N	Enable SSL Connectivity	3
-5	4	2	LDAP_PORT	\N	Server port (e.g., 389 for LDAP and 636 for LDAP using SSL)	text	\N	Port	5
-8	5	2	LDAP_UID_FIELD	\N	You can use different field from the username here. For pre-windows 2000 style login, use sAMAccountName and for a UPN style login use userPrincipalName.	text	\N	Account Filter	9
-9	5	2	LDAP_BIND_DN	\N	Enter a valid user account/DN to pre-bind with if your LDAP server does not allow anonymous profile searches, or requires a user with specific privileges to search.	text	\N	Bind DN	10
-10	5	2	LDAP_BIND_PASSWD	\N	Enter a password for the above Bind DN.	password	\N	Bind password	11
-4	4	2	LDAP_PROTOCOL_VERSION	\N	Difference between LDAPv3 and LDAPv2 https://msdn.microsoft.com/en-us/library/windows/desktop/aa366099%28v=vs.85%29.aspx (e.g., 3)	text	\N	Protocol Version	6
-6	4	2	LDAP_ROOT_DN	\N	This is your search base for LDAP queries. This should be at least your domain root, (e.g., dc=domain,dc=local) You can define this as a Organizational Unit if you want to narrow down the search base (e.g., ou=team,ou=company,dc=domain,dc=local)	text	\N	Base DN	7
-16	1	0	ELASTICSEARCH_URL		e.g., http://localhost:9200/	text	\N	Server URL	3
-17	1	0	ELASTICSEARCH_INDEX		Used to prefix index names to avoid potential collisions. e.g., restya	text	\N	Index Name	4
 32	10	0	IMAP_HOST		\N	text	\N	Incoming Mail Server	1
 33	10	0	IMAP_PORT		e.g., 993	text	\N	Port	2
 34	10	0	IMAP_EMAIL		\N	text	\N	Email address	3
 35	10	0	IMAP_EMAIL_PASSWORD		\N	password	\N	Password	4
-23	0	0	elasticsearch.last_processed_activity_id	0	\N	hidden	\N	Last Activity ID	3
-2	4	2	LDAP_SERVER	\N	The DNS name or IP address of the server (e.g., dc.domain.local)	text	\N	Server	4
 36	0	0	webhooks.last_processed_activity_id	0	\N	hidden	\N	Webhook Activity ID	0
-30	3	0	DEFAULT_CONTACT_EMAIL_ADDRESS	board@restya.com	It is used in all outgoing emails	text	\N	Contact Email Address	4
-37	11	0	BOSH_SERVICE_URL		\N	text	\N	Bosh Service URL	1
-38	11	0	JABBER_HOST		\N	text	\N	Jabber Host	2
 39	11	0	XMPP_CLIENT_RESOURCE_NAME		\N	text	\N	Client Resource Name	3
-41	0	0	chat.last_processed_chat_id	0	\N	hidden	\N	Last Chat ID	1
-43	12	0	TODO	To do, Todo, New, Probable sale		textarea	\N	Todo	8
-45	12	0	DONE	Done, Resolved, Closed, Completed sale		textarea	\N	Done	10
-44	12	0	DOING	Doing, Feedback, Confirmed, Assigned, Pending sale		textarea	\N	Doing	9
+30	3	0	DEFAULT_CONTACT_EMAIL_ADDRESS	board@restya.com	It is used in all outgoing emails	text	\N	Contact Email Address	4
 42	3	0	DEFAULT_CARD_VIEW	Maximized	\N	select	Maximized,Normal Dockmodal	Default Card Open	7
-46	12	0	TODO_COLOR	#f47564		text	\N	Todo Color	1
-47	12	0	DOING_COLOR	#27c5c3		text	\N	Doing Color	2
-48	12	0	DONE_COLOR	#8dca35		text	\N	Done Color	3
-49	12	0	TODO_ICON	icon-tasks icon-large		text	\N	Todo Icon	4
-50	12	0	DOING_ICON	icon-spinner icon-large		text	\N	Doing Icon	5
-51	12	0	DONE_ICON	icon-ok-circle icon-large		text	\N	Done Icon	6
+22	3	0	STANDARD_LOGIN_ENABLED	true	\N	checkbox	\N	Standard login/register	8
 \.
 
 
@@ -5104,7 +5112,7 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 -- Name: settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('settings_id_seq', 51, true);
+SELECT pg_catalog.setval('settings_id_seq', 60, true);
 
 
 --
@@ -5180,7 +5188,15 @@ SELECT pg_catalog.setval('webhooks_id_seq', 1, false);
 
 
 --
--- Name: acl_board_links_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_board_links_boards_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY acl_board_links_boards_user_roles
+    ADD CONSTRAINT acl_board_links_boards_user_roles_id PRIMARY KEY (id);
+
+
+--
+-- Name: acl_board_links_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY acl_board_links
@@ -5188,7 +5204,15 @@ ALTER TABLE ONLY acl_board_links
 
 
 --
--- Name: acl_organization_links_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_links_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY acl_links_roles
+    ADD CONSTRAINT acl_links_roles_id PRIMARY KEY (id);
+
+
+--
+-- Name: acl_organization_links_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY acl_organization_links
@@ -5196,7 +5220,15 @@ ALTER TABLE ONLY acl_organization_links
 
 
 --
--- Name: activities_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_organization_links_organizations_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY acl_organization_links_organizations_user_roles
+    ADD CONSTRAINT acl_organization_links_organizations_user_roles_id PRIMARY KEY (id);
+
+
+--
+-- Name: activities_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY activities
@@ -5204,7 +5236,15 @@ ALTER TABLE ONLY activities
 
 
 --
--- Name: board_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: board_stars_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY board_stars
+    ADD CONSTRAINT board_stars_id PRIMARY KEY (id);
+
+
+--
+-- Name: board_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY board_subscribers
@@ -5212,7 +5252,15 @@ ALTER TABLE ONLY board_subscribers
 
 
 --
--- Name: board_users_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: board_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY board_user_roles
+    ADD CONSTRAINT board_user_roles_id PRIMARY KEY (id);
+
+
+--
+-- Name: board_users_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY boards_users
@@ -5220,7 +5268,7 @@ ALTER TABLE ONLY boards_users
 
 
 --
--- Name: boards_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: boards_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY boards
@@ -5228,7 +5276,7 @@ ALTER TABLE ONLY boards
 
 
 --
--- Name: card_attachments_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: card_attachments_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY card_attachments
@@ -5236,7 +5284,7 @@ ALTER TABLE ONLY card_attachments
 
 
 --
--- Name: card_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: card_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY card_subscribers
@@ -5244,7 +5292,7 @@ ALTER TABLE ONLY card_subscribers
 
 
 --
--- Name: card_users_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: card_users_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cards_users
@@ -5252,7 +5300,7 @@ ALTER TABLE ONLY cards_users
 
 
 --
--- Name: card_voters_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: card_voters_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY card_voters
@@ -5260,7 +5308,7 @@ ALTER TABLE ONLY card_voters
 
 
 --
--- Name: cards_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: cards_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cards
@@ -5268,7 +5316,7 @@ ALTER TABLE ONLY cards
 
 
 --
--- Name: cards_labels_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: cards_labels_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cards_labels
@@ -5276,7 +5324,7 @@ ALTER TABLE ONLY cards_labels
 
 
 --
--- Name: checklist_items_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: checklist_items_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY checklist_items
@@ -5284,7 +5332,7 @@ ALTER TABLE ONLY checklist_items
 
 
 --
--- Name: checklists_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: checklists_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY checklists
@@ -5292,7 +5340,7 @@ ALTER TABLE ONLY checklists
 
 
 --
--- Name: cities_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: cities_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cities
@@ -5300,7 +5348,7 @@ ALTER TABLE ONLY cities
 
 
 --
--- Name: countries_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: countries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY countries
@@ -5308,7 +5356,7 @@ ALTER TABLE ONLY countries
 
 
 --
--- Name: email_templates_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: email_templates_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY email_templates
@@ -5316,7 +5364,7 @@ ALTER TABLE ONLY email_templates
 
 
 --
--- Name: ips_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: ips_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ips
@@ -5324,7 +5372,7 @@ ALTER TABLE ONLY ips
 
 
 --
--- Name: labels_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: labels_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY labels
@@ -5332,7 +5380,7 @@ ALTER TABLE ONLY labels
 
 
 --
--- Name: lists_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: lists_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY lists
@@ -5340,7 +5388,7 @@ ALTER TABLE ONLY lists
 
 
 --
--- Name: lists_subscribers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: lists_subscribers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY list_subscribers
@@ -5348,7 +5396,15 @@ ALTER TABLE ONLY list_subscribers
 
 
 --
--- Name: oauth_access_tokens_access_token; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: login_types_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY login_types
+    ADD CONSTRAINT login_types_id PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_access_tokens_access_token; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY oauth_access_tokens
@@ -5356,7 +5412,7 @@ ALTER TABLE ONLY oauth_access_tokens
 
 
 --
--- Name: oauth_authorization_codes_authorization_code; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_authorization_codes_authorization_code; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY oauth_authorization_codes
@@ -5364,7 +5420,7 @@ ALTER TABLE ONLY oauth_authorization_codes
 
 
 --
--- Name: oauth_clients_client_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_clients_client_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY oauth_clients
@@ -5372,7 +5428,7 @@ ALTER TABLE ONLY oauth_clients
 
 
 --
--- Name: oauth_jwt_client_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_jwt_client_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY oauth_jwt
@@ -5380,7 +5436,7 @@ ALTER TABLE ONLY oauth_jwt
 
 
 --
--- Name: oauth_refresh_tokens_refresh_token; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_refresh_tokens_refresh_token; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY oauth_refresh_tokens
@@ -5388,7 +5444,15 @@ ALTER TABLE ONLY oauth_refresh_tokens
 
 
 --
--- Name: organization_users_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: organization_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY organization_user_roles
+    ADD CONSTRAINT organization_user_roles_id PRIMARY KEY (id);
+
+
+--
+-- Name: organization_users_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY organizations_users
@@ -5396,7 +5460,7 @@ ALTER TABLE ONLY organizations_users
 
 
 --
--- Name: organizations_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: organizations_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY organizations
@@ -5404,7 +5468,7 @@ ALTER TABLE ONLY organizations
 
 
 --
--- Name: roles_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: roles_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY roles
@@ -5412,7 +5476,7 @@ ALTER TABLE ONLY roles
 
 
 --
--- Name: setting_categories_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: setting_categories_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY setting_categories
@@ -5420,7 +5484,7 @@ ALTER TABLE ONLY setting_categories
 
 
 --
--- Name: settings_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: settings_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY settings
@@ -5428,7 +5492,7 @@ ALTER TABLE ONLY settings
 
 
 --
--- Name: states_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: states_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states
@@ -5436,7 +5500,15 @@ ALTER TABLE ONLY states
 
 
 --
--- Name: users_id; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: user_logins_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY user_logins
+    ADD CONSTRAINT user_logins_id PRIMARY KEY (id);
+
+
+--
+-- Name: users_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY users
@@ -5444,493 +5516,648 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: acl_board_links_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: webhooks_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY webhooks
+    ADD CONSTRAINT webhooks_id PRIMARY KEY (id);
+
+
+--
+-- Name: acl_board_links_boards_user_roles_acl_board_link_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX acl_board_links_boards_user_roles_acl_board_link_id ON acl_board_links_boards_user_roles USING btree (acl_board_link_id);
+
+
+--
+-- Name: acl_board_links_boards_user_roles_board_user_role_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX acl_board_links_boards_user_roles_board_user_role_id ON acl_board_links_boards_user_roles USING btree (board_user_role_id);
+
+
+--
+-- Name: acl_board_links_group_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX acl_board_links_group_id ON acl_board_links USING btree (group_id);
 
 
 --
--- Name: acl_board_links_slug; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_board_links_slug; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX acl_board_links_slug ON acl_board_links USING btree (slug);
 
 
 --
--- Name: acl_board_links_url; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_board_links_url; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX acl_board_links_url ON acl_board_links USING btree (url);
 
 
 --
--- Name: acl_organization_links_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_links_group_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX acl_links_group_id ON acl_links USING btree (group_id);
+
+
+--
+-- Name: acl_links_roles_acl_link_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX acl_links_roles_acl_link_id ON acl_links_roles USING btree (acl_link_id);
+
+
+--
+-- Name: acl_links_roles_role_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX acl_links_roles_role_id ON acl_links_roles USING btree (role_id);
+
+
+--
+-- Name: acl_links_slug; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX acl_links_slug ON acl_links USING btree (slug);
+
+
+--
+-- Name: acl_organization_links_group_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX acl_organization_links_group_id ON acl_organization_links USING btree (group_id);
 
 
 --
--- Name: acl_organization_links_slug; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_organization_links_organizations_user_roles_acl_organizatio; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX acl_organization_links_organizations_user_roles_acl_organizatio ON acl_organization_links_organizations_user_roles USING btree (acl_organization_link_id);
+
+
+--
+-- Name: acl_organization_links_organizations_user_roles_organization_us; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX acl_organization_links_organizations_user_roles_organization_us ON acl_organization_links_organizations_user_roles USING btree (organization_user_role_id);
+
+
+--
+-- Name: acl_organization_links_slug; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX acl_organization_links_slug ON acl_organization_links USING btree (slug);
 
 
 --
--- Name: acl_organization_links_url; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: acl_organization_links_url; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX acl_organization_links_url ON acl_organization_links USING btree (url);
 
 
 --
--- Name: activities_attachment_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: activities_attachment_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX activities_attachment_id ON activities USING btree (foreign_id);
 
 
 --
--- Name: activities_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: activities_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX activities_board_id ON activities USING btree (board_id);
 
 
 --
--- Name: activities_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: activities_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX activities_card_id ON activities USING btree (card_id);
 
 
 --
--- Name: activities_depth; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: activities_depth; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX activities_depth ON activities USING btree (depth);
 
 
 --
--- Name: activities_freshness_ts; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: activities_freshness_ts; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX activities_freshness_ts ON activities USING btree (freshness_ts);
 
 
 --
--- Name: activities_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: activities_list_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX activities_list_id ON activities USING btree (list_id);
 
 
 --
--- Name: activities_materialized_path; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: activities_materialized_path; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX activities_materialized_path ON activities USING btree (materialized_path);
 
 
 --
--- Name: activities_path; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: activities_path; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX activities_path ON activities USING btree (path);
 
 
 --
--- Name: activities_root; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: activities_root; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX activities_root ON activities USING btree (root);
 
 
 --
--- Name: activities_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: activities_type; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX activities_type ON activities USING btree (type);
 
 
 --
--- Name: activities_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: activities_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX activities_user_id ON activities USING btree (user_id);
 
 
 --
--- Name: attachments_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: attachments_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX attachments_card_id ON card_attachments USING btree (card_id);
 
 
 --
--- Name: board_stars_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: board_stars_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX board_stars_board_id ON board_stars USING btree (board_id);
 
 
 --
--- Name: board_stars_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: board_stars_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX board_stars_user_id ON board_stars USING btree (user_id);
 
 
 --
--- Name: board_subscribers_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: board_subscribers_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX board_subscribers_board_id ON board_subscribers USING btree (board_id);
 
 
 --
--- Name: board_subscribers_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: board_subscribers_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX board_subscribers_user_id ON board_subscribers USING btree (user_id);
 
 
 --
--- Name: board_users_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: board_users_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX board_users_board_id ON boards_users USING btree (board_id);
 
 
 --
--- Name: board_users_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: board_users_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX board_users_user_id ON boards_users USING btree (user_id);
 
 
 --
--- Name: boards_organization_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: boards_organization_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX boards_organization_id ON boards USING btree (organization_id);
 
 
 --
--- Name: boards_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: boards_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX boards_user_id ON boards USING btree (user_id);
 
 
 --
--- Name: card_attachments_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: boards_users_board_user_role_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX boards_users_board_user_role_id ON boards_users USING btree (board_user_role_id);
+
+
+--
+-- Name: card_attachments_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX card_attachments_board_id ON card_attachments USING btree (board_id);
 
 
 --
--- Name: card_attachments_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: card_attachments_list_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX card_attachments_list_id ON card_attachments USING btree (list_id);
 
 
 --
--- Name: card_subscribers_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: card_subscribers_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX card_subscribers_card_id ON card_subscribers USING btree (card_id);
 
 
 --
--- Name: card_subscribers_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: card_subscribers_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX card_subscribers_user_id ON card_subscribers USING btree (user_id);
 
 
 --
--- Name: card_users_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: card_users_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX card_users_card_id ON cards_users USING btree (card_id);
 
 
 --
--- Name: card_users_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: card_users_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX card_users_user_id ON cards_users USING btree (user_id);
 
 
 --
--- Name: card_voters_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: card_voters_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX card_voters_card_id ON card_voters USING btree (card_id);
 
 
 --
--- Name: card_voters_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: card_voters_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX card_voters_user_id ON card_voters USING btree (user_id);
 
 
 --
--- Name: cards_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: cards_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX cards_board_id ON cards USING btree (board_id);
 
 
 --
--- Name: cards_labels_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: cards_labels_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX cards_labels_board_id ON cards_labels USING btree (board_id);
 
 
 --
--- Name: cards_labels_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: cards_labels_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX cards_labels_card_id ON cards_labels USING btree (card_id);
 
 
 --
--- Name: cards_labels_label_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: cards_labels_label_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX cards_labels_label_id ON cards_labels USING btree (label_id);
 
 
 --
--- Name: cards_labels_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: cards_labels_list_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX cards_labels_list_id ON cards_labels USING btree (list_id);
 
 
 --
--- Name: cards_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: cards_list_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX cards_list_id ON cards USING btree (list_id);
 
 
 --
--- Name: cards_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: cards_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX cards_user_id ON cards USING btree (user_id);
 
 
 --
--- Name: checklist_items_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: checklist_items_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX checklist_items_card_id ON checklist_items USING btree (card_id);
 
 
 --
--- Name: checklist_items_checklist_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: checklist_items_checklist_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX checklist_items_checklist_id ON checklist_items USING btree (checklist_id);
 
 
 --
--- Name: checklist_items_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: checklist_items_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX checklist_items_user_id ON checklist_items USING btree (user_id);
 
 
 --
--- Name: checklists_card_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: checklists_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX checklists_card_id ON checklists USING btree (card_id);
 
 
 --
--- Name: checklists_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: checklists_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX checklists_user_id ON checklists USING btree (user_id);
 
 
 --
--- Name: email_templates_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: email_templates_name; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX email_templates_name ON email_templates USING btree (name);
 
 
 --
--- Name: labels_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: ips_city_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ips_city_id ON ips USING btree (city_id);
+
+
+--
+-- Name: ips_country_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ips_country_id ON ips USING btree (country_id);
+
+
+--
+-- Name: ips_ip; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ips_ip ON ips USING btree (ip);
+
+
+--
+-- Name: ips_state_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ips_state_id ON ips USING btree (state_id);
+
+
+--
+-- Name: labels_name; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX labels_name ON labels USING btree (name);
 
 
 --
--- Name: list_subscribers_list_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: list_subscribers_list_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX list_subscribers_list_id ON list_subscribers USING btree (list_id);
 
 
 --
--- Name: list_subscribers_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: list_subscribers_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX list_subscribers_user_id ON list_subscribers USING btree (user_id);
 
 
 --
--- Name: lists_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: lists_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX lists_board_id ON lists USING btree (board_id);
 
 
 --
--- Name: lists_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: lists_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX lists_user_id ON lists USING btree (user_id);
 
 
 --
--- Name: oauth_access_tokens_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_access_tokens_client_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX oauth_access_tokens_client_id ON oauth_access_tokens USING btree (client_id);
 
 
 --
--- Name: oauth_access_tokens_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_access_tokens_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX oauth_access_tokens_user_id ON oauth_access_tokens USING btree (user_id);
 
 
 --
--- Name: oauth_authorization_codes_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_authorization_codes_client_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX oauth_authorization_codes_client_id ON oauth_authorization_codes USING btree (client_id);
 
 
 --
--- Name: oauth_authorization_codes_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_authorization_codes_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX oauth_authorization_codes_user_id ON oauth_authorization_codes USING btree (user_id);
 
 
 --
--- Name: oauth_clients_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_clients_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX oauth_clients_user_id ON oauth_clients USING btree (user_id);
 
 
 --
--- Name: oauth_refresh_tokens_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_refresh_tokens_client_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX oauth_refresh_tokens_client_id ON oauth_refresh_tokens USING btree (client_id);
 
 
 --
--- Name: oauth_refresh_tokens_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: oauth_refresh_tokens_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX oauth_refresh_tokens_user_id ON oauth_refresh_tokens USING btree (user_id);
 
 
 --
--- Name: organization_users_organization_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: organization_users_organization_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX organization_users_organization_id ON organizations_users USING btree (organization_id);
 
 
 --
--- Name: organization_users_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: organization_users_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX organization_users_user_id ON organizations_users USING btree (user_id);
 
 
 --
--- Name: organizations_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: organizations_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX organizations_user_id ON organizations USING btree (user_id);
 
 
 --
--- Name: roles_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: organizations_users_organization_user_role_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX organizations_users_organization_user_role_id ON organizations_users USING btree (organization_user_role_id);
+
+
+--
+-- Name: roles_name; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX roles_name ON roles USING btree (name);
 
 
 --
--- Name: setting_categories_parent_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: setting_categories_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX setting_categories_parent_id ON setting_categories USING btree (parent_id);
 
 
 --
--- Name: settings_setting_category_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: settings_setting_category_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX settings_setting_category_id ON settings USING btree (setting_category_id);
 
 
 --
--- Name: settings_setting_category_parent_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: settings_setting_category_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX settings_setting_category_parent_id ON settings USING btree (setting_category_parent_id);
 
 
 --
--- Name: users_email; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: user_logins_ip_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX user_logins_ip_id ON user_logins USING btree (ip_id);
+
+
+--
+-- Name: user_logins_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX user_logins_user_id ON user_logins USING btree (user_id);
+
+
+--
+-- Name: users_email; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX users_email ON users USING btree (email);
 
 
 --
--- Name: users_last_activity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: users_ip_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX users_ip_id ON users USING btree (ip_id);
+
+
+--
+-- Name: users_last_activity_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX users_last_activity_id ON users USING btree (last_activity_id);
 
 
 --
--- Name: users_role_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: users_last_email_notified_activity_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX users_last_email_notified_activity_id ON users USING btree (last_email_notified_activity_id);
+
+
+--
+-- Name: users_last_login_ip_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX users_last_login_ip_id ON users USING btree (last_login_ip_id);
+
+
+--
+-- Name: users_login_type_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX users_login_type_id ON users USING btree (login_type_id);
+
+
+--
+-- Name: users_role_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX users_role_id ON users USING btree (role_id);
 
 
 --
--- Name: users_username; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: users_username; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX users_username ON users USING btree (username);
+
+
+--
+-- Name: webhooks_url; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX webhooks_url ON webhooks USING btree (url);
 
 
 --

@@ -17,9 +17,9 @@
 		<% } %>       
 	</a>
 	<div class="media-body">   
-    	<% if(activity.attributes.type == 'add_comment' && activity.attributes.type == 'edit_comment' ) { %>
+    	<% if(activity.attributes.type == 'add_comment' && activity.attributes.type == 'edit_comment' ) { 
+		%>
 		<div class="media-heading">			
-			
             <span class="js-activity-<%- activity.attributes.id %>"><%= converter.makeHtml(makeLink(''+ _.escape(activity.attributes.comment), activity.attributes.board_id)) %></span>
 		</div>   
         <% } else {%>
@@ -59,7 +59,9 @@
 							<span><%= comment %></span>
 						<% } %>
 							<div class="panel no-mar"><div class="panel-body">
-
+							<%
+								activity.attributes.comment = stripScripts(activity.attributes.comment);
+							%>
 							<%= converter.makeHtml(makeLink(activity.attributes.comment, activity.attributes.board_id)) %>
 							<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment'], activity.attributes.type)) { %>
 						<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text">

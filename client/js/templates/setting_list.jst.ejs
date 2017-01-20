@@ -24,7 +24,7 @@
 				_.each(list.models, function(settingCategory) {				
 					var settings = settingCategory.get('settings');
 		%>		
-				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%}%>" id="settingTab<%- settingCategory.get('id') %>">
+				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%} else { %> hide <% } %>" id="settingTab<%- settingCategory.get('id') %>">
 					<% if(!_.isEmpty(settings)){ %>
 					<% if(settingCategory.get('id') == 10){ %>
 					<p class="alert alert-info "><%- i18next.t('To add/reply cards via email you must set up a secret email account with IMAP access. This should support plus addressing and has to be dedicated to handle replying through email feature. Suggested email address is rbreply@yourdomain.tld') %></p>
@@ -116,11 +116,11 @@
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-8 checkbox-inline">
 						<% } %>
-									<div class="<% if(setting.name != 'ENABLE_SSL_CONNECTIVITY'){ %>checkbox pull-left<% } else { %>form-group<% } %>">
-									<% if(setting.name === 'ENABLE_SSL_CONNECTIVITY'){ %><div class="col-xs-3"></div><div		class="col-xs-9"><% } %>
+									<div class="form-group">
+									<% if(setting.name === 'STANDARD_LOGIN_ENABLED'){ %><div class="col-xs-3"></div><div		class="col-xs-9"><% } %>
  										<input class="js-checkbox" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" type="checkbox" <% if(setting.value === 'true') { %> checked="checked" <% } %> value="<%- setting.value %>">
  										<label for="inputSetting<%- setting.id %>"><%- i18next.t(setting.label) %> </label>
-									<% if(setting.name === 'ENABLE_SSL_CONNECTIVITY'){ %></div><% } %>
+									<% if(setting.name === 'STANDARD_LOGIN_ENABLED'){ %></div><% } %>
  									</div>
 					    <% if(setting.id == 3){ %>
 								</div>
@@ -219,7 +219,7 @@
 						<%}%>
 					<% }); %>
 					<% if(settingCategory.get('id') == 8){ %>
-					  <div class="form-group">
+					  <div class="form-group well-lg">
 						<label for="submit2" class="col-sm-2 control-label"></label>
 						<div class="col-sm-8">
 						<input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary">

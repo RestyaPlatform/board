@@ -102,9 +102,9 @@ class XmppPrebind
          * @link http://xmpp.org/extensions/xep-0124.html#rids
         */
         if (function_exists('mt_rand')) {
-            $this->rid = mt_rand(1000000000, 10000000000);
+            $this->rid = mt_rand(1000000000, mt_getrandmax());
         } else {
-            $this->rid = rand(1000000000, 10000000000);
+            $this->rid = rand(1000000000, mt_getrandmax());
         }
     }
     /**

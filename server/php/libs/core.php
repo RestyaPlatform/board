@@ -418,7 +418,7 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
 {
     global $r_debug, $db_lnk, $authUser;
     $role = 3; // Guest role id
-    if (is_plugin_enabled('SupportApp')) {
+    if (is_plugin_enabled('r_support_app')) {
         require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'SupportApp' . DIRECTORY_SEPARATOR . 'functions.php';
         if (checkSupportAppEnabled($r_resource_vars)) {
             return true;
@@ -586,7 +586,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=ISO-8859-1" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.3; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.4; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         mail($to, $subject, $message, $headers);
     }
@@ -1561,13 +1561,13 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
         }
         if ($r_resource_cmd == '/users/?') {
             if (isset($r_put['is_active']) && $r_put['is_active'] == false) {
-                executeQuery('SELECT username FROM users WHERE id =' . $r_resource_vars['users']);
+                executeQuery('SELECT username FROM users WHERE id =' . $id);
                 // Todo handle with jaxl for ban_account
                 
             }
         }
         if ($r_resource_cmd == '/boards_users/?') {
-            if (JABBER_HOST) {
+            if (is_plugin_enabled('r_chat')) {
                 $affiliation = ($r_put['board_user_role_id'] == 1) ? 'admin' : 'member';
                 $xmpp_user = getXmppUser();
                 $xmpp = new xmpp($xmpp_user);
@@ -1632,13 +1632,13 @@ function json_response($table_name, $r_resource_vars)
 }
 function is_plugin_enabled($plugin_name)
 {
-    global $r_debug, $db_lnk, $authUser, $_server_domain_url;
-    $conditions = array();
-    $setting_plugin = executeQuery("SELECT value FROM settings WHERE name ='site.enabled_plugins'", $conditions, 0, 1);
-    $enabled_plugin = explode(",", $setting_plugin['value']);
-    if (in_array($plugin_name, $enabled_plugin)) {
-        return true;
-    } else {
-        return false;
+    $file = APP_PATH . '/client/apps/' . $plugin_name . '/app.json';
+    if (file_exists($file)) {
+        $content = file_get_contents($file);
+        $data = json_decode($content, true);
+        if ($data['enabled'] === true) {
+            return true;
+        }
     }
+    return false;
 }

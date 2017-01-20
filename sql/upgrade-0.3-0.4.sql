@@ -368,14 +368,8 @@ DELETE FROM acl_links_roles WHERE id IN (SELECT id FROM  acl_links WHERE name='C
 DELETE FROM acl_links WHERE id  = (SELECT id FROM acl_links WHERE name='Chat History' ORDER BY id DESC LIMIT 1);
 
 DELETE FROM "settings"
-WHERE (("name" = 'ELASTICSEARCH_URL') OR ("name" = 'ELASTICSEARCH_INDEX'));
-
-DELETE FROM "settings"
-WHERE (("name" = 'JABBER_HOST') OR ("name" = 'BOSH_SERVICE_URL'));
-
-DELETE FROM "settings"
 WHERE (("name" = 'elasticsearch.last_processed_activity_id') OR ("name" = 'chat.last_processed_chat_id') );
- 
+
 DELETE FROM "settings"
 WHERE (("name" = 'LDAP_LOGIN_ENABLED') OR ("name" = 'LDAP_PORT') OR ("name" = 'LDAP_UID_FIELD') OR ("name" = 'LDAP_BIND_DN')  
 OR ("name" = 'LDAP_BIND_PASSWD') OR ("name" = 'LDAP_PROTOCOL_VERSION') OR ("name" = 'LDAP_ROOT_DN')  
@@ -386,5 +380,214 @@ WHERE (("name" = 'TODO') OR ("name" = 'DOING') OR ("name" = 'DONE') OR ("name" =
 OR ("name" = 'DOING_COLOR') OR ("name" = 'DONE_COLOR') OR ("name" = 'TODO_ICON')  
 OR ("name" = 'DOING_ICON') OR ("name" = 'DONE_ICON'));
 
-INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
-VALUES ('3', '0', 'site.enabled_plugins', 'Chart,Chat,ElasticSearch,LdapLogin,SupportApp', NULL, 'text', NULL, 'Enable Plugins', '4');
+DELETE FROM "settings"
+WHERE (("name" = 'ELASTICSEARCH_URL') OR ("name" = 'ELASTICSEARCH_INDEX'));
+
+DELETE FROM "settings"
+WHERE (("name" = 'JABBER_HOST') OR ("name" = 'BOSH_SERVICE_URL'));
+
+DELETE FROM "setting_categories"
+WHERE (("name" = 'XMPP Chat') OR ("name" = 'Cards Workflow') OR ("name" = 'ElasticSearch'));
+
+UPDATE "settings" SET "setting_category_parent_id" = '0', "setting_category_id" = '3', "label" = 'Standard login/register', "order" = '8' WHERE "name" = 'STANDARD_LOGIN_ENABLED';
+
+DELETE FROM "settings" WHERE"name" = 'ENABLE_SSL_CONNECTIVITY';
+
+DELETE FROM "setting_categories" WHERE "name" = 'Login';
+
+ALTER TABLE "acl_board_links_boards_user_roles" ADD CONSTRAINT "acl_board_links_boards_user_roles_id" PRIMARY KEY ("id");
+CREATE INDEX "acl_board_links_boards_user_roles_acl_board_link_id" ON "acl_board_links_boards_user_roles" ("acl_board_link_id");
+CREATE INDEX "acl_board_links_boards_user_roles_board_user_role_id" ON "acl_board_links_boards_user_roles" ("board_user_role_id");
+
+ALTER TABLE "acl_links" ADD CONSTRAINT "acl_links_id" PRIMARY KEY ("id");
+CREATE INDEX "acl_links_slug" ON "acl_links" ("slug");
+CREATE INDEX "acl_links_group_id" ON "acl_links" ("group_id");
+
+ALTER TABLE "acl_links_roles" ADD CONSTRAINT "acl_links_roles_id" PRIMARY KEY ("id");
+CREATE INDEX "acl_links_roles_acl_link_id" ON "acl_links_roles" ("acl_link_id");
+CREATE INDEX "acl_links_roles_role_id" ON "acl_links_roles" ("role_id");
+
+ALTER TABLE "acl_organization_links_organizations_user_roles" ADD CONSTRAINT "acl_organization_links_organizations_user_roles_id" PRIMARY KEY ("id");
+CREATE INDEX "acl_organization_links_organizations_user_roles_acl_organization_link_id" ON "acl_organization_links_organizations_user_roles" ("acl_organization_link_id");
+CREATE INDEX "acl_organization_links_organizations_user_roles_organization_user_role_id" ON "acl_organization_links_organizations_user_roles" ("organization_user_role_id");
+
+ALTER TABLE "board_stars" ADD CONSTRAINT "board_stars_id" PRIMARY KEY ("id");
+
+ALTER TABLE "board_user_roles" ADD CONSTRAINT "board_user_roles_id" PRIMARY KEY ("id");
+
+CREATE INDEX "boards_users_board_user_role_id" ON "boards_users" ("board_user_role_id");
+
+ALTER TABLE "login_types" ADD CONSTRAINT "login_types_id" PRIMARY KEY ("id");
+
+ALTER TABLE "organization_user_roles" ADD CONSTRAINT "organization_user_roles_id" PRIMARY KEY ("id");
+
+CREATE INDEX "organizations_users_organization_user_role_id" ON "organizations_users" ("organization_user_role_id");
+
+CREATE INDEX "users_last_email_notified_activity_id" ON "users" ("last_email_notified_activity_id");
+CREATE INDEX "users_login_type_id" ON "users" ("login_type_id");
+CREATE INDEX "users_ip_id" ON "users" ("ip_id");
+CREATE INDEX "users_last_login_ip_id" ON "users" ("last_login_ip_id");
+
+ALTER TABLE "webhooks" ADD CONSTRAINT "webhooks_id" PRIMARY KEY ("id");
+CREATE INDEX "webhooks_url" ON "webhooks" ("url");
+
+ALTER TABLE "user_logins" ADD CONSTRAINT "user_logins_id" PRIMARY KEY ("id");
+CREATE INDEX "user_logins_user_id" ON "user_logins" ("user_id");
+CREATE INDEX "user_logins_ip_id" ON "user_logins" ("ip_id");
+
+CREATE INDEX "ips_ip" ON "ips" ("ip");
+CREATE INDEX "ips_city_id" ON "ips" ("city_id");
+CREATE INDEX "ips_state_id" ON "ips" ("state_id");
+CREATE INDEX "ips_country_id" ON "ips" ("country_id");
+
+DROP VIEW simple_board_listing;
+CREATE OR REPLACE VIEW simple_board_listing AS
+ SELECT board.id,
+    board.name,
+    board.user_id,
+    board.organization_id,
+    board.board_visibility,
+    board.background_color,
+    board.background_picture_url,
+    board.commenting_permissions,
+    board.voting_permissions,
+    (board.is_closed)::integer AS is_closed,
+    (board.is_allow_organization_members_to_join)::integer AS is_allow_organization_members_to_join,
+    board.boards_user_count,
+    board.list_count,
+    board.card_count,
+    board.boards_subscriber_count,
+    board.background_pattern_url,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT lists.id,
+                    to_char(lists.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(lists.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+                    lists.board_id,
+                    lists.user_id,
+                    lists.name,
+                    lists."position",
+                    (lists.is_archived)::integer AS is_archived,
+                    lists.card_count,
+                    lists.lists_subscriber_count,
+                    (lists.is_deleted)::integer AS is_deleted
+                   FROM lists lists
+                  WHERE (lists.board_id = board.id)
+                  ORDER BY lists."position") l) AS lists,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT cll.label_id,
+                    cll.name
+                   FROM cards_labels_listing cll
+                  WHERE (cll.board_id = board.id)
+                  ORDER BY cll.name) l) AS labels,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT bs.id,
+                    bs.board_id,
+                    bs.user_id,
+                    (bs.is_starred)::integer AS is_starred
+                   FROM board_stars bs
+                  WHERE (bs.board_id = board.id)
+                  ORDER BY bs.id) l) AS stars,
+    org.name AS organization_name,
+    org.logo_url AS organization_logo_url,
+    board.music_content,
+    board.music_name
+   FROM (boards board
+     LEFT JOIN organizations org ON ((org.id = board.organization_id)))
+  ORDER BY board.name;
+
+DROP VIEW users_listing;
+
+ALTER TABLE "users" ALTER "password" TYPE character varying(256), ALTER "password" DROP DEFAULT, ALTER "password" SET NOT NULL;
+
+CREATE VIEW "users_listing" AS
+  SELECT users.id,
+    users.role_id,
+    users.username,
+    users.password,
+    users.email,
+    users.full_name,
+    users.initials,
+    users.about_me,
+    users.profile_picture_path,
+    users.notification_frequency,
+    (users.is_allow_desktop_notification)::integer AS is_allow_desktop_notification,
+    (users.is_active)::integer AS is_active,
+    (users.is_email_confirmed)::integer AS is_email_confirmed,
+    users.created_organization_count,
+    users.created_board_count,
+    users.joined_organization_count,
+    users.list_count,
+    users.joined_card_count,
+    users.created_card_count,
+    users.joined_board_count,
+    users.checklist_count,
+    users.checklist_item_completed_count,
+    users.checklist_item_count,
+    users.activity_count,
+    users.card_voter_count,
+    (users.is_productivity_beats)::integer AS is_productivity_beats,
+    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
+           FROM ( SELECT organizations_users_listing.organization_id AS id,
+                    organizations_users_listing.name,
+                    organizations_users_listing.description,
+                    organizations_users_listing.website_url,
+                    organizations_users_listing.logo_url,
+                    organizations_users_listing.organization_visibility
+                   FROM organizations_users_listing organizations_users_listing
+                  WHERE (organizations_users_listing.user_id = users.id)
+                  ORDER BY organizations_users_listing.id) o) AS organizations,
+    users.last_activity_id,
+    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
+           FROM ( SELECT boards_stars.id,
+                    boards_stars.board_id,
+                    boards_stars.user_id,
+                    (boards_stars.is_starred)::integer AS is_starred
+                   FROM board_stars boards_stars
+                  WHERE (boards_stars.user_id = users.id)
+                  ORDER BY boards_stars.id) o) AS boards_stars,
+    ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
+           FROM ( SELECT boards_users.id,
+                    boards_users.board_id,
+                    boards_users.user_id,
+                    boards_users.board_user_role_id,
+                    boards.name,
+                    boards.background_picture_url,
+                    boards.background_pattern_url,
+                    boards.background_color
+                   FROM (boards_users boards_users
+                     JOIN boards ON ((boards.id = boards_users.board_id)))
+                  WHERE (boards_users.user_id = users.id)
+                  ORDER BY boards_users.id) o) AS boards_users,
+    users.last_login_date,
+    li.ip AS last_login_ip,
+    lci.name AS login_city_name,
+    lst.name AS login_state_name,
+    lco.name AS login_country_name,
+    lower((lco.iso_alpha2)::text) AS login_country_iso2,
+    i.ip AS registered_ip,
+    rci.name AS register_city_name,
+    rst.name AS register_state_name,
+    rco.name AS register_country_name,
+    lower((rco.iso_alpha2)::text) AS register_country_iso2,
+    lt.name AS login_type,
+    to_char(users.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    users.user_login_count,
+    users.is_send_newsletter,
+    users.last_email_notified_activity_id,
+    users.owner_board_count,
+    users.member_board_count,
+    users.owner_organization_count,
+    users.member_organization_count,
+    users.language,
+    (users.is_ldap)::integer AS is_ldap,
+    users.timezone
+   FROM (((((((((users users
+     LEFT JOIN ips i ON ((i.id = users.ip_id)))
+     LEFT JOIN cities rci ON ((rci.id = i.city_id)))
+     LEFT JOIN states rst ON ((rst.id = i.state_id)))
+     LEFT JOIN countries rco ON ((rco.id = i.country_id)))
+     LEFT JOIN ips li ON ((li.id = users.last_login_ip_id)))
+     LEFT JOIN cities lci ON ((lci.id = li.city_id)))
+     LEFT JOIN states lst ON ((lst.id = li.state_id)))
+     LEFT JOIN countries lco ON ((lco.id = li.country_id)))
+     LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
