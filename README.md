@@ -26,6 +26,7 @@ To upgrade, overwrite application files and apply respective DB script:
 *  v0.1.6 to v0.2 - `/sql/upgrade-0.1.6-0.2.sql`
 *  v0.2 to v0.2.1 - `/sql/upgrade-0.2-0.2.1.sql`
 *  v0.2.1 to v0.3 - `/sql/upgrade-0.2.1-0.3.sql`
+*  v0.3 to v0.4 - `/sql/upgrade-0.3-0.4.sql`
 
 ### Forum
 
