@@ -1,0 +1,9 @@
+-Delete "USER"
+-email in apacheconf
+-postgre db settings
+xmmp settings in app / -ejabber dbsetup + configfile
+-elastic search settings
+-abfragen alle hintereinander weg
+
+translation einbinden
+linux variante testen
