@@ -292,7 +292,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-docco');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.registerTask('format', ['jsbeautifier:default', 'prettify', 'exec']);
-    grunt.registerTask('pre-commit', ['jshint', 'phplint', 'jsbeautifier:pre-merge']);
+    grunt.registerTask('pre-commit', ['jshint', 'phplint']);
     grunt.registerTask('build', 'Build task', function(env) {
         grunt.config.set('config', grunt.file.readJSON('build/' + env + '.json'));
         grunt.task.run(['jshint', 'phplint', 'less', 'jst', 'concat', 'cssmin', 'uglify', 'filerev', 'usemin', 'htmlmin', 'regex-replace', 'manifest', 'lineending', 'zip']);
