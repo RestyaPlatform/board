@@ -128,15 +128,7 @@
 			rm $dir/server/php/shell/periodic_chat_email_notification.php
 			rm $dir/server/php/shell/upgrade_v0.2.1_v0.3.php
 
-			rm -rf $dir/client/apps/r_amazon_echo/
-			rm -rf $dir/client/apps/r_auto_archive_expired_cards/
-			rm -rf $dir/client/apps/r_canned_response/
-			rm -rf $dir/client/apps/r_estimated_time/
-			rm -rf $dir/client/apps/r_import_github/
-			rm -rf $dir/client/apps/r_seo_checklist/
-			rm -rf $dir/client/apps/r_slack/
-			rm -rf $dir/client/apps/r_website_qa_checklist/
-			rm -rf $dir/client/apps/r_zapier/
+			rm -rf $dir/client/apps/
 
 			rm -rf $dir/server/php/libs/vendors/xmpp/
 			rm -rf $dir/server/php/libs/vendors/jaxl3/
@@ -144,9 +136,46 @@
 			
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
+				if ! hash jq 2>&-;
+				then
+					echo "Installing jq..."
+					apt-get install -y jq
+					if [ $? != 0 ]
+					then
+						echo "jq installation failed with error code 53"
+					fi
+				fi
+				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
+				chmod -R go+w "/tmp/apps.json"
+				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
+				do
+					mkdir "$dir/client/apps"
+					chmod -R go+w "$dir/client/apps"
+					curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
+					unzip /tmp/$fid.zip -d "$dir/client/apps"
+				done
 				service nginx restart
 				service php7.0-fpm restart
 			else
+				if ! hash jq 2>&-;
+				then
+					echo "Installing jq..."
+					yum install -y jq
+					if [ $? != 0 ]
+					then
+						echo "jq installation failed with error code 49"
+						exit 1
+					fi
+				fi
+				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
+				chmod -R go+w "/tmp/apps.json"
+				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
+				do
+					mkdir "$dir/client/apps"
+					chmod -R go+w "$dir/client/apps"
+					curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
+					unzip /tmp/$fid.zip -d "$dir/client/apps"
+				done
 				ps -q 1 | grep -q -c "systemd"
 				if [ "$?" -eq 0 ];
 				then
