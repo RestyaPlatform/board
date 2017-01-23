@@ -1,8 +1,12 @@
 ### Restyaboard
 
-[![Build Status](https://travis-ci.org/RestyaPlatform/board.svg?branch=master)](https://travis-ci.org/RestyaPlatform/board)
+[![Build Status](https://travis-ci.org/RestyaPlatform/board.svg?branch=master)](https://travis-ci.org/RestyaPlatform/board) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/RestyaPlatform/board.svg)](http://isitmaintained.com/project/RestyaPlatform/board "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/RestyaPlatform/board.svg)](http://isitmaintained.com/project/RestyaPlatform/board "Percentage of issues still open")
 
 Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [Restya platform] (http://restya.com/).
+
+### Status: Active
+
+Project is active! Follow development in [dev](https://github.com/RestyaPlatform/board/tree/dev) branch
 
 ### Demo
 
@@ -38,17 +42,15 @@ To upgrade, overwrite application files and apply respective DB script:
 
 To give you some idea about of our plans:
 
-#### Immediate (cooking)
+#### Under release
 
-* Chat
-* Notifier iOS App (Possibly, Free and non-open source)
+* Commercial branching for better monetization
+* Notifier iOS App (Non-open source; free with IAP)
 
 
 #### Next
 
-* Refactor R framework
-  * Our focus on shipping this somewhat bloated "ultra thin" R framework. Better use new "REST URL to DB Query builder" code once that is tested (?).
-* Merge caching layer works (Or, only in commerical?)
+* Undisclosed domain centric plugins
 * Marketplace for ecosystem
   * Allow developers to make money
 * Apps listing platform
@@ -56,17 +58,34 @@ To give you some idea about of our plans:
 
 ------------
 
+### FAQ (Frequently Asked Questions)
+
+#### Do you have any installation instruction for Windows?
+
+Please find in [Restyaboard Install in Windows](http://restya.com/board/docs/windows) document. If you face any issue, please feel free to [open a ticket](https://github.com/RestyaPlatform/board/issues/new)
+
+#### Do you have any installation instruction for Apache?
+
+Please check [Restyaboard Install in Apache](http://restya.com/board/docs/apache)
+
+#### Getting blank page after install
+
+Most likely it is related to your DB credentials. Please also check install log and see if your setup was complete without any errors.
+
+#### How can I contribute to Restyaboard translation?
+
+Please translate Restyaboard via [transifex](https://www.transifex.com/restya/restyaboard/)
+
+------------
+
 ### Contributing
 
 Our approach is similar to Magento. If anything is not clear, please [contact us](http://restya.com/contact?category=contributing).
-
-You can help with translating Restyaboard via [transifex](https://www.transifex.com/restya/restyaboard/).
 
 All Submissions you make to Restya through GitHub are subject to the following terms and conditions:
 
 * You grant Restya a perpetual, worldwide, non-exclusive, no charge, royalty free, irrevocable license under your applicable copyrights and patents to reproduce, prepare derivative works of, display, publicly perform, sublicense and distribute any feedback, ideas, code, or other information ("Submission") you submit through GitHub.
 * Your Submission is an original work of authorship and you are the owner or are legally entitled to grant the license stated above.
-
 
 
 ### Build
@@ -85,6 +104,6 @@ Required sofware: nginx, php-fpm (with mbstring), PostgreSQL, ElasticSearch, Gru
 
 ### License
 
-Copyright (c) 2014-2016 [Restya](http://restya.com/).
+Copyright (c) 2014-2017 [Restya](http://restya.com/).
 
 Dual License ([OSL 3.0](LICENSE.txt) & [Commercial License](http://restya.com/contact))
