@@ -51,8 +51,10 @@ App.RegisterView = Backbone.View.extend({
             success: function(model, response) {
                 if (response.error) {
                     if (response.error === 1) {
+                        $('#submitRegister').removeAttr('disabled');
                         self.flash('danger', i18next.t('Email address already exist. Your registration process is not completed. Please, try again.'));
                     } else if (response.error === 2) {
+                        $('#submitRegister').removeAttr('disabled');
                         self.flash('danger', i18next.t('Username already exists. Your registration process is not completed. Please, try again.'));
                     }
                     $('#inputPassword').val('');

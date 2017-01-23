@@ -17,7 +17,7 @@ if (_.isEmpty(role_links.where({
 	<img src="img/logo-icon-offline.png" alt="[Images: <%- SITE_NAME %>]" style="display:none;" />--->
   </li>
   <li class="hidden-xs about-btn">
-	<a href="#/about" title="RestyaBoard">
+	<a href="#/boards" title="RestyaBoard">
 		<img title="Restya" alt="[Image: <%- SITE_NAME %>]" src="img/logo-icon.png">
 		<span class="hidden-lg hidden-md hidden-sm navbar-btn">&nbsp;<%- i18next.t("About") %></span>
 		<!-- Todo: quick fix. load image before offline. call after when goes offline--->
@@ -41,7 +41,7 @@ if (_.isEmpty(role_links.where({
 	<% } else { %>
 	<li class="hidden-xs music-btn pa">
 		<% if(board_id !== undefined && board_id !== null && board_id !== "" && !_.isEmpty(this.music_content) && this.music_content !== ''){ %>
-			<% if(window.sessionStorage.getItem('music_play') === "1") { %>
+			<% if($.cookie('music_play') === "1") { %>
 				<a href="#" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" title="<%- i18next.t('Productivity Beats - %s', { postProcess: 'sprintf', sprintf: [this.music_name]}) %>" class="animation btn btn-default js-product-beat-action" data-type='on'>
 				<span class="show"><i class="icon-volume-up lead show"></i></span>
 				</a>
@@ -75,7 +75,7 @@ if (_.isEmpty(role_links.where({
 		%>
 			<li class="clearfix js-closed-board-list dropdown dropdown-submenu dropdown js-boards-list-container-search">            
 				<a href="#" class="js-board-dropdown dropdown-toggle js-open-popover js-closed-boards" data-toggle="dropdown" title="<%- i18next.t('Closed Boards') %>"><%- i18next.t("Closed Boards") %></a>
-				<ul class="sidebar-boards-list js-closedboard-list  list-unstyled list-group dropdown-menu"></ul>
+				<ul class="sidebar-boards-list js-closedboard-list  list-unstyled list-group dropdown-menu pre-scrollable vertical-scrollbar"></ul>
 				</li>
 		<%
 			}
@@ -85,7 +85,7 @@ if (_.isEmpty(role_links.where({
 		%>
 			<li class="clearfix js-board-dropdown js-stared-board-lists dropdown-submenu dropdown js-boards-list-container-search">            
 					<a href="#" class="dropdown-toggle js-open-popover js-starred-boards" data-toggle="dropdown" title="<%- i18next.t('Starred Boards') %>"><%- i18next.t("Starred Boards") %></a>				
-					<ul class="sidebar-boards-list js-board-starred-list list-unstyled list-group dropdown-menu"></ul>			
+					<ul class="sidebar-boards-list js-board-starred-list list-unstyled list-group dropdown-menu pre-scrollable vertical-scrollbar"></ul>			
 				</li>
 		<%
 			}
@@ -96,7 +96,7 @@ if (_.isEmpty(role_links.where({
 		%>
 				<li class="clearfix js-my-board-lists dropdown-submenu dropdown js-boards-list-container-search">			
 					<a href="#" class="js-board-dropdown dropdown-toggle js-open-popover js-my-boards-listing" data-toggle="dropdown" title="<%- i18next.t('My Boards') %>"><%- i18next.t("My Boards") %></a>
-					<ul class="sidebar-boards-list js-myboard-list list-unstyled list-group dropdown-menu"></ul>			
+					<ul class="sidebar-boards-list js-myboard-list list-unstyled list-group dropdown-menu pre-scrollable vertical-scrollbar"></ul>			
 				</li>
 		<%
 			} 		
@@ -127,9 +127,9 @@ if (_.isEmpty(role_links.where({
   <% if(apps !== ""){ %>
   <li class="dropdown hidden-xs board-btn js-show-add-apps-list add-apps-list"> 
 	  <a title="<%- i18next.t('Apps') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-apps-list"><span><%- i18next.t("Apps") %> </span><span><i class="icon-collapse"></i></span> </a>
-	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12">
+	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12 pre-scrollable vertical-scrollbar">
 			<% _.each(apps, function(key,value) { %>
-				<li id="<%- value %>" class="org-btn"><a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- value %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- i18next.t(key.name) %></span></a></li>
+				<li id="<%- value %>" class="org-btn"><a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- key.id %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- i18next.t(key.name) %></span></a></li>
 			<% }); %>
 			<li class="divider js-apps-list-container-search"></li>
 			<li class="dropdown clearfix">
@@ -140,24 +140,6 @@ if (_.isEmpty(role_links.where({
   <% } %>
   <% } %>
 </ul>
-<% if(!_.isUndefined(authuser.user)){%>
-<div class="col-xs-push-0 col-sm-push-1 col-md-push-1 col-lg-push-1 col-lg-4 col-md-3 col-sm-1 col-xs-12 hidden-xs search-xs list-group-item-heading clearfix">
-	<form role="form" class="search-container clearfix">
-	<div class="text-center clearfix hide search-loader" id="js-loader-img"><img src="img/ajax-loader.gif" alt="[Images:Loader]" title="Loading..." /></div>
-	  <div class="form-group">
-		<input id="search-box" type="search" class="search-box pull-right form-control js-search search-box">
-		<i class="icon-circle-blank search-loader hide" id="res"></i>
-		<i class="icon-circle-blank search-loader text-primary hide" id="nres"></i>
-		<label for="search-box" class="pull-right"><i class="icon-search btn btn-primary search-icon"></i></label>
-		<ul class="dropdown-menu">
-			<li class="js-show-search-result js-dropdown-popup dropdown-popup">
-			</li>
-		</ul>
-	  </div>
-	  <button type="submit" class="search-submit sr-only"><%- i18next.t("Submit") %></button>
-	</form>
-</div>
- <% } %>
 <div class="navbar-right clearfix">
 	<ul class="nav nav-pills navbar-right">
 	<% if(!_.isUndefined(authuser.user)){%>
@@ -168,7 +150,7 @@ if (_.isEmpty(role_links.where({
 		<li class="phone-block"><a class="btn btn-primary pull-right js-show-qr-code hidden-xs" id="phone" title="<%- i18next.t('View in iOS App') %>" href=""><i class="icon-mobile-phone lead"></i></a></li>
 	  	<li class="hidden-xs"><a title="<%- i18next.t('Admin CP') %>" class="btn btn-default pull-right admin-cp" href="#/activities"><span class="icon-user lead text-primary"></span><span class="hidden-xs text-primary"><%- i18next.t("Admin") %></span></a></li>
 	  <% } %>
-	  <li class="dropdown">
+	  <li class="dropdown  instant_cards">
 	   <a href="#" data-toggle="dropdown" class="dropdown-toggle btn btn-default pull-right" title="<%-model.user.full_name%> (<%-model.user.username%>)">
 	   		<span class="js-user-img">
 			<% if(!_.isEmpty(model.user.profile_picture_path)){ 
@@ -193,6 +175,7 @@ if (_.isEmpty(role_links.where({
 		    <% if(!_.isEmpty(role_links.where({slug: "view_user"}))){ %>
 				<li><a title="<%- i18next.t('Profile') %>" href="#/user/<%-model.user.id%>"><%- i18next.t("Profile") %></a></li>
 			<% } %>
+			<li><a title="<%- i18next.t('About Restyaboard') %>" href="#/about"><%- i18next.t("About Restyaboard") %></a></li>
 			<li class="dropdown-submenu dropdown language-dropdown">
 				<a href="#" data-toggle="dropdown" class="dropdown-toggle js-open-popover" title="<%- i18next.t('Change Language') %>"><span><i class="icon-caret-left"></i></span><%- i18next.t('Change Language') %></a>
 				<ul class="dropdown-menu text-left js-change-language-form-response">
@@ -206,9 +189,7 @@ if (_.isEmpty(role_links.where({
 			</li>
 		</ul>
 	  </li>
-	  <li class="hidden-xs"><a data-toggle="tooltip" data-placement="top" title="<%- i18next.t('Chat') %>" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-chat<% }%>" data-original-title="<%- i18next.t('Chat') %>"><i class="icon-comment lead"></i></a></li> 
-	  <li class="hidden-xs"><a data-container="body" data-toggle="tooltip" data-placement="top" title="<%- i18next.t('Instant add card') %>" <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>href="#" <% }else{ %> href="#/users/login"<% }%> id="add" class="btn btn-default pull-right  <% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user)){ %>js-show-instant-card-from<% }%>" data-original-title="Add New"><i class="icon-plus-sign lead"></i></a></li>
-	  <li class="dropdown notifications pull-right hidden-xs"><a data-toggle="dropdown" href="#" class="btn btn-default pull-right js-show-notification" title="Notifications"><sup class="badge notification-count hide js-notification-count"></sup><i class="icon-bell lead"></i></a>
+	  <li class="dropdown notifications pull-right hidden-xs chat_icons"><a data-toggle="dropdown" href="#" class="btn btn-default pull-right js-show-notification" title="Notifications"><sup class="badge notification-count hide js-notification-count"></sup><i class="icon-bell lead"></i></a>
 		<div id="all_activities" class="tabbable tabs-below dropdown-menu pull-right js-dropdown-popup" role="menu">
 		  <div class="tab-content bg-info clearfix">
 		    <div class="col-xs-12 user-filter navbar-btn">

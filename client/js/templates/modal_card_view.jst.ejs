@@ -1,7 +1,7 @@
 <section class="row js-card-dock-modal-<%- card.attributes.id %> js-card-container" id="dropzone<%- card.attributes.id %>">
   <div class="pull-right js-attachment-loader"></div>
-  <div class="clearfix col-xs-12">
-  <h3 class="navbar-btn"> <span class="icon-credit-card text-muted"></span> <a href="" title="<%- card.attributes.name %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-card-title-edit-form<% }else{ %> js-no-action<%}%>"><%- card.attributes.name %></a><small><%- i18next.t('in list') %></small><span class="dropdown"><a class="dropdown-toggle <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'move_list_cards',board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-move-card-form<%}else{%>js-no-action<%}%>" data-toggle="dropdown" title="<%- list.attributes.name %>" href="#"><%- list.attributes.name %></a>
+  <div class="clearfix col-xs-12 printable">
+  <h3 class="navbar-btn"> <span class="icon-credit-card text-muted"></span> <a href="" title="<%- card.attributes.name %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-card-title-edit-form<% }else{ %> js-no-action<%}%>"><%- card.attributes.name %></a><small class = "no-print"><%- i18next.t('in list') %></small><span class="dropdown"><a class="dropdown-toggle <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'move_list_cards',board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-move-card-form<%}else{%>js-no-action<%}%>" data-toggle="dropdown" title="<%- list.attributes.name %>" href="#"><%- list.attributes.name %></a>
   <% if(!_.isUndefined(authuser.user)){ %>
 	<ul class="dropdown-menu arrow col-xs-12 panel-body">
 		<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
@@ -59,13 +59,14 @@
 					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Members') %></h4>
 					<ul class="list-inline clearfix" id="js-card-users-list-<%- card.attributes.id %>">
 					<% if(!_.isUndefined(authuser.user)){ %>
-					  <li id="js-card-user-add-container">
+					  <li id="js-card-user-add-container" class = "no-print">
 						<div class="dropdown js-member-dropdown"> 
 						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_card_user",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 						<a class="dropdown-toggle js-show-add-member-form btn btn-default" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Member') %>" href="#"> <i class="icon-plus"></i> </a>
 						<% } %>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
-							<li> <div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong><%- i18next.t('Members') %></strong></span><i class="icon-remove cur"></i></div></li>
+							<li> <div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong><%- i18next.t('Members') %></strong></span>
+							<i class="icon-remove cur no-print"></i></div></li>
 							<li class="col-xs-12 divider"></li>
 							<li class="col-xs-12">
 							  <form method="post" class="text-center" name="addMember">
@@ -88,7 +89,7 @@
 					<ul class="list-inline clearfix js-card-labels-list">
 					<% if(!_.isUndefined(authuser.user)){ %>
 					  <li>
-						<div class="dropdown js-label-dropdown">
+						<div class="dropdown js-label-dropdown no-print">
 						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_labels",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 							<a class="dropdown-toggle js-show-card-label-form btn btn-default" role="button" data-toggle="dropdown" title="<%- i18next.t('Add new Labels') %>" href="#"> <i class="icon-plus"></i></a><% } %>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 js-show-card-label-form-response">
@@ -112,7 +113,7 @@
 							%>
 							<% if(_.isEmpty(voted_user)){  %>
 							  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-							  <button type="button" class="btn btn-primary js-add-card-vote"><i class=" icon-thumbs-up"></i></button> 
+							  <button type="button" class="btn btn-primary js-add-card-vote no-print"><i class=" icon-thumbs-up"></i></button> 
 							  <% } %>  
 							  <% } else{ %>
 							  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
@@ -156,13 +157,15 @@
 				  </li>
 				  <% } %>
 				  <% } %>
+					<li class="after-start-date">
+					</li>
 				</ul>
 					<div class="list-group-item-text clearfix">
 					  <h4 class="text-muted"><%- i18next.t('Description') %> 
 					  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 						  <a href="#" class="<%if(!_.isUndefined(authuser.user)) {%>js-show-card-desc-edit-form<%}else{%>js-no-action<%}%>" title="<%- i18next.t('Edit') %>">
 					  <%if(!_.isUndefined(authuser.user)) {%>
-						<i class="icon-pencil"></i>
+						<i class="icon-pencil no-print"></i>
 					   <% } %>
 					  </a>
 					  <% } %>
@@ -192,7 +195,7 @@
 				  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_card_attachment",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 				  <div class="clearfix dropdown"> 
 				  <% if(!_.isUndefined(authuser.user)){%>
-				  <a class="dropdown-toggle btn-link h4 js-load-dropbox" role="button" data-toggle="dropdown" title="<%- i18next.t('Add an attachment') %>" href="#"> <span class="text-muted panel-title" ><%- i18next.t('Add an attachment') %></span> </a>
+				  <a class="dropdown-toggle btn-link h4 js-load-dropbox no-print" role="button" data-toggle="dropdown" title="<%- i18next.t('Add an attachment') %>" href="#"> <span class="text-muted panel-title" ><%- i18next.t('Add an attachment') %></span> </a>
 				  <% } %>
 					<ul class="dropdown-menu arrow col-xs-3">
 						<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Attach From...') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
@@ -218,13 +221,13 @@
 				</div>
 				<% } %>
 				<% if(!_.isUndefined(authuser.user)) { %>
-				<div class="list-group-item-text clearfix">	
+				<div class="list-group-item-text clearfix no-print">	
 					<div class="col-xs-12 row">
 					  <h3 class="pull-left"><%- i18next.t('Actions') %></h3>
 				    </div>
 				<ul class="js-card-actions list-inline navbar-btn">
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-					<li class="dropdown navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-move-card-form js-card-header-action even-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><i class="icon-folder-close"></i><%- i18next.t('Move') %></a>
+					<li class="dropdown navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-move-card-form js-card-header-action even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><i class="icon-folder-close"></i><%- i18next.t('Move') %></a>
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 						<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 						<li class="col-xs-12 divider"></li>
@@ -241,7 +244,7 @@
 					</li>
 					<% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "copy_card",board_user_role_id: parseInt(list.board_user_role_id)})))  && !is_offline_data){ %>
-						<li class="dropdown js-hide-on-offline navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-copy-card-form even-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Copy') %>" href="#"><i class="icon-copy"></i><%- i18next.t('Copy') %></a>
+						<li class="dropdown js-hide-on-offline navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-copy-card-form even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Copy') %>" href="#"><i class="icon-copy"></i><%- i18next.t('Copy') %></a>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 pre-scrollable vertical-scrollbar">
 							<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Copy Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 							<li class="col-xs-12 divider"></li>
@@ -275,7 +278,7 @@
 							}
 						%>
 						<li class="<%= subscribe_disabled %> navbar-btn"> 
-							<a class="btn btn-default <% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%> even-action" title="<%- subscribe_title %> " href="">
+							<a class="btn btn-default <% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%> even-action htruncate" title="<%- subscribe_title %> " href="">
 							<% if(!_.isEmpty(cards_subscribers)){ %>
 								<i class="icon-eye-open"></i>
 						    <% } else { %>
@@ -286,7 +289,7 @@
 					  </li>
 				   <% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-						<li class="navbar-btn"> <a class="btn btn-default <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)})))) { %> js-card-send-to-board<% } %> even-action" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><%}%>" href=""><i class="icon-cloud-download"></i>
+						<li class="navbar-btn"> <a class="btn btn-default  <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)})))) { %> js-card-send-to-board <% } %> even-action htruncate" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><%}%>" href=""><i class="icon-cloud-download"></i>
 						<% if(parseInt(card.attributes.is_archived) === 0){ %>
 							<%- i18next.t('Archive') %>
 						<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
@@ -296,16 +299,23 @@
 						</li>
 					<% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
-					<li class="dropdown navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-card-due-date-form even-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><i class="icon-calendar"></i><%- i18next.t('Due Date') %></a>
+					<li class="dropdown navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-card-due-date-form even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><i class="icon-calendar"></i><%- i18next.t('Due Date') %></a>
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 						<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Due Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 						<li class="col-xs-12 divider"></li>
 						<li class="js-show-card-due-date-form-response col-xs-12"> </li>
 					  </ul>
 					</li>
+					<li class="dropdown navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-card-start-date-form-first even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Start Date') %>" href="#"><i class="icon-calendar"></i><%- i18next.t('Start Date') %></a>
+					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 start-hide">
+						<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Start Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
+						<li class="col-xs-12 divider"></li>
+						<li class="js-show-card-start-date-form-response-first col-xs-12"> </li>
+					  </ul>
+					</li>
 					<% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_checklists",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-						<li class="dropdown navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-checklist-add-form even-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Checklist') %>" href="#"><i class="icon-list-ul"></i><%- i18next.t('Checklist') %></a>
+						<li class="dropdown navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-checklist-add-form even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Checklist') %>" href="#"><i class="icon-list-ul"></i><%- i18next.t('Checklist') %></a>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 							<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Add Checklist') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 							<li class="col-xs-12 divider"></li>
@@ -326,7 +336,7 @@
 		  <li class="list-group-item list-group-item-info clearfix">
 			<div class="list-group-item-heading clearfix">
 				  <h3 class="pull-left"><%- i18next.t('Activity') %></h3>
-				  <div class="clearfix pull-right well-sm user-filter">
+				  <div class="clearfix pull-right well-sm user-filter no-print">
                         <ul class="nav nav-pills">
                             <li id="modal-activities"><a href="#" title="<%- i18next.t('Filter by activities') %>" class="text-muted" ><i class="icon-time small"></i></a></li>
                             <li id="modal-comments"><a href="#" title="<%- i18next.t('Filter by comments') %>" class="text-muted"><i class="icon-comment-alt small"></i></a></li>
@@ -337,7 +347,7 @@
 			  <ul class="media-list">
 				<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || ((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "comment_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(role_links.where({slug: "comment_card"})) && card.list.collection.board.attributes.board_visibility == 2)))){ %>
 				<li class="media comment-block"> 
-				  <form method="post" class="form-horizontal js-add-comment">
+				  <form method="post" class="form-horizontal js-add-comment no-print">
 				  <ul class="media-list">
 						<li class="media">
 						<a data-placement="bottom" data-container="body" title="<%-authuser.user.full_name %> (<%- authuser.user.username %>)" data-toggle="tooltip" class="pull-left" href="#/user/<%- authuser.id %>">
@@ -646,7 +656,13 @@
 	  <a class="show btn btn-link js-more-menu quiet-button" data-toggle="dropdown" title="<%- i18next.t('More options share, print, export, and delete.') %>" href="#"><%- i18next.t('Share and more...') %></a>
 		<ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 			<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('More') %></strong></span> <a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
-			<li class="col-xs-12 divider"></li>       
+			<li class="col-xs-12 divider"></li>  
+			<li class="dropdown js-more-dropdown"> 
+							<a class="js-print-screen" title="<%- i18next.t('Print...') %>" href="javascript:void(0)">
+								<%- i18next.t('Print...') %>
+						</a> 
+					  </li> 
+			<li class="col-xs-12 divider"></li>     
 			<li class="col-xs-12">
 			  <p class="text-muted"> <span class="show"><%- i18next.t('Card # %s', { postProcess: 'sprintf', sprintf: [card.attributes.id] }) %></span> <span class="show"><%- i18next.t('Link to this card') %></span> </p>
 			  <form role="form">

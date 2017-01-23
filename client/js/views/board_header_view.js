@@ -85,7 +85,6 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-switch-grid-view': 'switchGridView',
         'click .js-switch-list-view': 'switchListView',
         'click .js-switch-calendar-view': 'switchCalendarView',
-        'click .js-switch-timeline-view': 'switchTimelineView',
         'click .js-show-filters': 'showFilters',
         'click .js-show-labels': 'showLabels',
         'click .js-archived-items': 'showArchivedItems',
@@ -476,6 +475,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 });
             } else {
                 $('.js-delete-all-archived-cards-confirm').addClass('hide');
+                $('.js-delete-all-archived-cards').addClass('hide');
                 el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                     model: null
                 }).el);
@@ -603,6 +603,8 @@ App.BoardHeaderView = Backbone.View.extend({
     showLabels: function() {
         $('.js-side-bar-' + this.model.id).addClass('side-bar-large');
         var el = this.$el;
+        this.model.labels.setSortField('name', 'asc');
+        this.model.labels.sort();
         el.find('.js-setting-response').html(new App.BoardLabelsView({
             model: this.model,
             labels: this.model.labels
@@ -760,136 +762,6 @@ App.BoardHeaderView = Backbone.View.extend({
 
             }
         }
-        return false;
-    },
-    /**
-     * switchTimelineView()
-     * swith to the timeline view
-     * @param e
-     * @type Object(DOM event)
-     *
-     */
-    switchTimelineView: function() {
-        $('body').removeClass('modal-open');
-        $('#boards-view').addClass('col-xs-12');
-        $('#switch-board-view').addClass('calendar-view');
-        $('#switch-board-view').removeClass('board-viewlist col-xs-12');
-        $('li.js-switch-view').removeClass('active');
-        $('a.js-switch-timeline-view').parent().addClass('active');
-        $('.js-list-form').removeClass('hide');
-        var current_param = Backbone.history.fragment;
-        if (current_param.indexOf('/gantt') === -1) {
-            app.navigate('#/board/' + this.model.id + '/gantt', {
-                trigger: false,
-                trigger_function: false,
-            });
-        }
-        var gantt_card_ids = [];
-        this.ganttView(gantt_card_ids, false, false);
-        return false;
-    },
-    ganttView: function(card_ids, is_from_filter) {
-        var self = this;
-        var gantt_response = [];
-        var content = '';
-        this.model.lists.each(function(list) {
-            var cards = list.get('cards') || [];
-            if (!_.isEmpty(cards)) {
-                var i = 0;
-                _.each(cards, function(card) {
-                    if (card.is_archived === 0 && ((is_from_filter === true && $.inArray(card.id, card_ids) !== -1 && card.due_date !== null) || (is_from_filter === false && card.due_date !== null))) {
-                        var l = {};
-                        var n = {};
-                        var c = [];
-                        var today = new Date();
-                        card_due_date = card.due_date.split(' ');
-                        var due_date = new Date(card_due_date[0]);
-                        var diff = Math.floor(due_date.getTime() - today.getTime());
-                        var day = 1000 * 60 * 60 * 24;
-                        var days = Math.floor(diff / day);
-                        var customClass = 'ganttRed';
-                        if (days < -1) {
-                            customClass = 'ganttRed';
-                        } else if (days == -1) {
-                            customClass = 'ganttOrange';
-                        } else if (days > -1) {
-                            customClass = 'ganttGreen';
-                        }
-                        card_created_date = card.created.split('T');
-                        var created_date = new Date(card_created_date[0]);
-                        var form_date = card.created;
-                        if (created_date.getTime() > due_date.getTime()) {
-                            form_date = card.due_date;
-                        }
-                        var to_date = card.due_date;
-                        d = new Date(form_date);
-                        n.from = '/Date(' + d.getTime() + ')/';
-                        d = new Date(to_date);
-                        n.to = '/Date(' + d.getTime() + ')/';
-                        n.label = card.name;
-                        n.customClass = customClass;
-                        c.push(n);
-                        l.name = '';
-                        if (i === 0) {
-                            l.name = list.get('name');
-                        }
-                        l.desc = card.name;
-                        l.values = c;
-                        gantt_response.push(l);
-                        i++;
-                        if (is_from_filter === false) {
-                            content += '<div id="js-card-' + card.id + '">';
-                            card = self.model.cards.findWhere({
-                                id: card.id
-                            });
-                            content += '<ul class="unstyled hide js-card-labels">';
-                            var filtered_labels = card.list.collection.board.labels.where({
-                                card_id: card.id
-                            });
-                            var labels = new App.CardLabelCollection();
-                            labels.add(filtered_labels);
-                            labels.each(function(label) {
-                                if (_.escape(label.attributes.name) !== "") {
-                                    content += '<li class="' + _.escape(label.attributes.name) + '">' + _.escape(label.attributes.name) + '</li>';
-                                }
-                            });
-                            content += '</ul>';
-                            content += '<ul class="unstyled js-card-users hide">';
-                            card.users.each(function(user) {
-                                content += '<li>user-filter-' + user.get('user_id') + '</li>';
-                            });
-                            content += '</ul>';
-                            content += '<ul class="unstyled js-card-due hide">';
-                            content += self.getDue(card.get('due_date'));
-                            content += '</ul>';
-                            content += '</div>';
-                        }
-                    }
-                });
-            }
-        });
-        if (is_from_filter === false) {
-            this.gantt_content = content;
-        } else {
-            content = this.gantt_content;
-        }
-        $('div.js-board-view-' + this.model.id).html('').gantt({
-            source: gantt_response,
-            navigate: 'scroll',
-            maxScale: 'hours',
-            itemsPerPage: 10,
-            onRender: function() {
-                var windowW = $(window).width();
-                var NavContent = windowW - 335;
-                $('.nav-slider-content').css('width', (NavContent + 'px'));
-                $(window).resize(function() {
-                    var windowW = $(window).width();
-                    var NavContent = windowW - 335;
-                    $('.nav-slider-content').css('width', (NavContent + 'px'));
-                });
-                $('div.js-board-view-' + self.model.id).append(content);
-            }
-        });
         return false;
     },
     /**
@@ -1462,7 +1334,9 @@ App.BoardHeaderView = Backbone.View.extend({
         var data = el.find('form#BoardRenameForm').serializeObject();
         var board = new App.Board();
         this.model.set(data);
-        App.boards.get(this.model.attributes.id).set(data);
+        App.boards.get(this.model.attributes.id).set(data, {
+            silent: true
+        });
         board.set(data);
         board.set('id', this.model.id);
         board.url = api_url + 'boards/' + this.model.id + '.json';
@@ -1930,12 +1804,6 @@ App.BoardHeaderView = Backbone.View.extend({
         $('.js-board-dues, .js-board-users, .js-board-labels').children().removeClass('selected');
         $('.js-clear-all').addClass('text-muted');
         $('.js-show-modal-card-view').show();
-        var current_param = Backbone.history.fragment.split('?');
-        var current_url = current_param[0].split('/');
-        if (current_url[2] == 'gantt') {
-            gantt_card_ids = [];
-            this.ganttView(gantt_card_ids, false);
-        }
         return false;
     },
     /**

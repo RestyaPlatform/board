@@ -56,14 +56,20 @@ while ($email_templates_row = pg_fetch_assoc($email_templates_result)) {
 $json = json_decode(file_get_contents($app_path . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'apps' . DIRECTORY_SEPARATOR . 'apps.json'), true);
 $auto_json_arr = array();
 foreach($json as $data) {
-	$auto_json_arr[$data['name']] = $data['name'];
-	$auto_json_arr[$data['description']] = $data['description'];
-	if(!empty($data['settings_description'])) {
+	if (!empty($data['name'])) {
+		$auto_json_arr[$data['name']] = $data['name'];
+	}
+	if (!empty($data['description'])) {
+		$auto_json_arr[$data['description']] = $data['description'];
+	}
+	if (!empty($data['settings_description'])) {
 		$auto_json_arr[$data['settings_description']] = $data['settings_description'];
 	}
-	if(!empty($data['settings'])) {
+	if (!empty($data['settings'])) {
 		foreach($data['settings'] as $settings_data) {
-			$auto_json_arr[$settings_data['label']] = $settings_data['label'];		
+			if (!empty($settings_data['label'])) {
+				$auto_json_arr[$settings_data['label']] = $settings_data['label'];		
+			}
 		}
 	}
 }

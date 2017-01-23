@@ -8,8 +8,6 @@ Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [R
 
 Project is active! Follow development in [dev](https://github.com/RestyaPlatform/board/tree/dev) branch
 
-**Pushed major release in dev branch. Preparing for website changes**
-
 ### Demo
 
 [Demo](http://restya.com/board/demo)
@@ -32,6 +30,7 @@ To upgrade, overwrite application files and apply respective DB script:
 *  v0.1.6 to v0.2 - `/sql/upgrade-0.1.6-0.2.sql`
 *  v0.2 to v0.2.1 - `/sql/upgrade-0.2-0.2.1.sql`
 *  v0.2.1 to v0.3 - `/sql/upgrade-0.2.1-0.3.sql`
+*  v0.3 to v0.4 - `/sql/upgrade-0.3-0.4.sql`
 
 ### Forum
 
@@ -77,7 +76,6 @@ Most likely it is related to your DB credentials. Please also check install log 
 
 Please translate Restyaboard via [transifex](https://www.transifex.com/restya/restyaboard/)
 
-
 ------------
 
 ### Contributing
@@ -88,7 +86,6 @@ All Submissions you make to Restya through GitHub are subject to the following t
 
 * You grant Restya a perpetual, worldwide, non-exclusive, no charge, royalty free, irrevocable license under your applicable copyrights and patents to reproduce, prepare derivative works of, display, publicly perform, sublicense and distribute any feedback, ideas, code, or other information ("Submission") you submit through GitHub.
 * Your Submission is an original work of authorship and you are the owner or are legally entitled to grant the license stated above.
-
 
 
 ### Build

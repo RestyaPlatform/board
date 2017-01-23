@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2016 Restya
+ * @copyright  2014-2017 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -41,7 +41,7 @@ $val_arr = array(
 );
 $oauth_client = executeQuery('SELECT client_name FROM oauth_clients WHERE client_id = $1', $val_arr);
 $error_msg = 0;
-if (!empty($_POST['email'])) {
+if (!empty($_POST['email']) && !empty($_POST['password'])) {
     $val_arr = array(
         $_POST['email']
     );
@@ -95,7 +95,7 @@ if (!empty($_POST['email'])) {
 	 </script>
 <?php
 // display an authorization form
-if (empty($_POST['password']) && (empty($_POST['authorized']) || (!empty($_POST['authorized']) && $_POST['authorized'] === 'Deny'))) {
+if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['authorized']) && $_POST['authorized'] === 'Deny'))) {
     if (LDAP_LOGIN_ENABLED) {
         $loginPlaceholder = 'LDAP Login';
     } else {
@@ -114,10 +114,8 @@ if (empty($_POST['password']) && (empty($_POST['authorized']) || (!empty($_POST[
 						<form class="form-horizontal clearfix col-xs-12" method="post" role="form" name="UserLoginForm" id="UserLoginForm">
 							<div class="form-group">
 							  <label for="inputEmail" class="sr-only control-label">Email or Username</label>
-							  <input type="text" placeholder="<?php
-    echo $loginPlaceholder; ?>" class="form-control" id="inputEmail" name="email"  value="<?php
-    echo !empty($_POST['email']) ? $_POST['email'] : ''; ?>" title="<?php
-    echo $loginPlaceholder; ?>" required/>
+							  <input type="text" placeholder="" class="form-control authorize_ldap" id="inputEmail" name="email"  value="<?php
+    echo !empty($_POST['email']) ? $_POST['email'] : ''; ?>" title="" required/>
 							</div>
 							<div class="form-group">
 							  <label for="inputPassword" class="sr-only control-label">Password</label>

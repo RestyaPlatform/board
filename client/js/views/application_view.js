@@ -40,18 +40,18 @@ App.ApplicationView = Backbone.View.extend({
                 App.music.inst.silence();
             }
         }
-        if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null && !api_token) {
-            var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+        if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && !api_token) {
+            var Auth = JSON.parse($.cookie('auth'));
             api_token = Auth.access_token;
             page.authuser = Auth;
             authuser = Auth;
         } else {
-            if (_.isUndefined(window.sessionStorage.getItem("music_play")) || window.sessionStorage.getItem("music_play") === null) {
-                window.sessionStorage.setItem('music_play', "1");
+            if (_.isUndefined($.cookie("music_play")) || $.cookie("music_play") === null) {
+                $.cookie('music_play', "1");
             }
         }
-        if (role_links.length === 0 && window.sessionStorage.getItem('links') !== undefined && window.sessionStorage.getItem('links') !== null) {
-            role_links.add(JSON.parse(window.sessionStorage.getItem('links')));
+        if (role_links.length === 0 && $.cookie('links') !== undefined && $.cookie('links') !== null) {
+            role_links.add(JSON.parse($.cookie('links')));
         }
         if (page.model !== 'boards_view') {
             viewed_board = new App.Board();
@@ -66,10 +66,10 @@ App.ApplicationView = Backbone.View.extend({
                     success: function(model, response) {
                         api_token = response.access_token;
                         if (!_.isUndefined(response.links)) {
-                            window.sessionStorage.setItem('links', response.links);
+                            $.cookie('links', response.links);
                         }
-                        window.sessionStorage.setItem('languages', response.languages);
-                        window.sessionStorage.setItem('apps', response.apps);
+                        $.cookie('languages', response.languages);
+                        localStorage.setItem('apps', response.apps);
                         role_links.add(JSON.parse(response.links));
                         settings.url = api_url + 'settings.json';
                         settings.fetch({
@@ -82,60 +82,13 @@ App.ApplicationView = Backbone.View.extend({
                                 DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                                 LABEL_ICON = settings_response.LABEL_ICON;
                                 SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
-                                LDAP_LOGIN_ENABLED = settings_response.LDAP_LOGIN_ENABLED;
                                 DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
-                                STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
-                                BOSH_SERVICE_URL = settings_response.BOSH_SERVICE_URL;
-                                PREBIND_URL = settings_response.PREBIND_URL;
-                                JABBER_HOST = settings_response.JABBER_HOST;
-                                JABBER_PATH = settings_response.JABBER_PATH;
-                                XMPP_CLIENT_RESOURCE_NAME = settings_response.XMPP_CLIENT_RESOURCE_NAME;
                                 PAGING_COUNT = settings_response.PAGING_COUNT;
                                 APPS = settings_response.apps;
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-                                if (settings_response.TODO_COLOR) {
-                                    TODO_COLOR = settings_response.TODO_COLOR;
-                                }
-                                if (settings_response.DOING_COLOR) {
-                                    DOING_COLOR = settings_response.DOING_COLOR;
-                                }
-                                if (settings_response.DONE_COLOR) {
-                                    DONE_COLOR = settings_response.DONE_COLOR;
-                                }
-                                if (settings_response.TODO_ICON) {
-                                    TODO_ICON = settings_response.TODO_ICON;
-                                }
-                                if (settings_response.DOING_ICON) {
-                                    DOING_ICON = settings_response.DOING_ICON;
-                                }
-                                if (settings_response.DONE_ICON) {
-                                    DONE_ICON = settings_response.DONE_ICON;
-                                }
-
-                                if (settings_response.TODO) {
-                                    var todo = settings_response.TODO;
-                                    var todo_split = todo.split(',');
-                                    $.each(todo_split, function(todo_key, todo_list) {
-                                        todo_lists[todo_key] = todo_list;
-                                    });
-                                }
-                                if (settings_response.DOING) {
-                                    var doing = settings_response.DOING;
-                                    var doing_split = doing.split(',');
-                                    $.each(doing_split, function(doing_key, doing_list) {
-                                        doing_lists[doing_key] = doing_list;
-                                    });
-                                }
-                                if (settings_response.DONE) {
-                                    var done = settings_response.DONE;
-                                    var done_split = done.split(',');
-                                    $.each(done_split, function(done_key, done_list) {
-                                        done_lists[done_key] = done_list;
-                                    });
-                                }
                                 var current_language = DEFAULT_LANGUAGE;
-                                if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null) {
+                                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
                                     current_language = authuser.user.language;
                                 }
                                 i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
@@ -149,19 +102,11 @@ App.ApplicationView = Backbone.View.extend({
                                     }
                                 }, function() {
                                     if (page.model === "admin_user_add" || page.model === "register") {
-                                        if ((!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") || (!_.isEmpty(STANDARD_LOGIN_ENABLED) && (STANDARD_LOGIN_ENABLED === "true"))) {
-                                            page.call_function();
-                                        } else {
-                                            changeTitle(i18next.t('404 Page not found'));
-                                            this.headerView = new App.HeaderView({
-                                                model: authuser
-                                            });
-                                            $('#header').html(this.headerView.el);
-                                            var view = new App.Error404View();
-                                            $('#content').html(view.el);
-                                            return;
-                                        }
+                                        //@Todo
+                                        page.call_function();
+
                                     } else {
+
                                         page.call_function();
                                     }
                                 });
@@ -182,64 +127,19 @@ App.ApplicationView = Backbone.View.extend({
                         abortPending: true,
                         success: function(collection, settings_response) {
                             SITE_NAME = settings_response.SITE_NAME;
+                            localStorage.setItem('apps', settings_response.apps_data);
                             page.set_page_title();
                             FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
                             DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                             LABEL_ICON = settings_response.LABEL_ICON;
                             SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
-                            LDAP_LOGIN_ENABLED = settings_response.LDAP_LOGIN_ENABLED;
                             DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
-                            STANDARD_LOGIN_ENABLED = settings_response.STANDARD_LOGIN_ENABLED;
-                            BOSH_SERVICE_URL = settings_response.BOSH_SERVICE_URL;
-                            PREBIND_URL = settings_response.PREBIND_URL;
-                            JABBER_HOST = settings_response.JABBER_HOST;
-                            JABBER_PATH = settings_response.JABBER_PATH;
-                            XMPP_CLIENT_RESOURCE_NAME = settings_response.XMPP_CLIENT_RESOURCE_NAME;
                             PAGING_COUNT = settings_response.PAGING_COUNT;
                             APPS = settings_response.apps;
                             IMAP_EMAIL = settings_response.IMAP_EMAIL;
                             DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-                            if (settings_response.TODO_COLOR) {
-                                TODO_COLOR = settings_response.TODO_COLOR;
-                            }
-                            if (settings_response.DOING_COLOR) {
-                                DOING_COLOR = settings_response.DOING_COLOR;
-                            }
-                            if (settings_response.DONE_COLOR) {
-                                DONE_COLOR = settings_response.DONE_COLOR;
-                            }
-                            if (settings_response.TODO_ICON) {
-                                TODO_ICON = settings_response.TODO_ICON;
-                            }
-                            if (settings_response.DOING_ICON) {
-                                DOING_ICON = settings_response.DOING_ICON;
-                            }
-                            if (settings_response.DONE_ICON) {
-                                DONE_ICON = settings_response.DONE_ICON;
-                            }
-                            if (settings_response.TODO) {
-                                var todo = settings_response.TODO;
-                                var todo_split = todo.split(',');
-                                $.each(todo_split, function(todo_key, todo_list) {
-                                    todo_lists[todo_key] = todo_list;
-                                });
-                            }
-                            if (settings_response.DOING) {
-                                var doing = settings_response.DOING;
-                                var doing_split = doing.split(',');
-                                $.each(doing_split, function(doing_key, doing_list) {
-                                    doing_lists[doing_key] = doing_list;
-                                });
-                            }
-                            if (settings_response.DONE) {
-                                var done = settings_response.DONE;
-                                var done_split = done.split(',');
-                                $.each(done_split, function(done_key, done_list) {
-                                    done_lists[done_key] = done_list;
-                                });
-                            }
                             var current_language = DEFAULT_LANGUAGE;
-                            if (window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null && authuser.user.language !== null && authuser.user.language !== undefined) {
+                            if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && authuser.user.language !== undefined) {
                                 current_language = authuser.user.language;
                             }
                             i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
@@ -253,18 +153,9 @@ App.ApplicationView = Backbone.View.extend({
                                 }
                             }, function() {
                                 if (page.model === "admin_user_add" || page.model === "register") {
-                                    if ((!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") || (!_.isEmpty(STANDARD_LOGIN_ENABLED) && (STANDARD_LOGIN_ENABLED === "true"))) {
-                                        page.call_function();
-                                    } else {
-                                        changeTitle(i18next.t('404 Page not found'));
-                                        this.headerView = new App.HeaderView({
-                                            model: authuser
-                                        });
-                                        $('#header').html(this.headerView.el);
-                                        var view = new App.Error404View();
-                                        $('#content').html(view.el);
-                                        return;
-                                    }
+                                    //@Todo
+                                    page.call_function();
+
                                 } else {
                                     page.call_function();
                                 }
@@ -273,18 +164,9 @@ App.ApplicationView = Backbone.View.extend({
                     });
                 } else {
                     if (page.model === "admin_user_add" || page.model === "register") {
-                        if ((!_.isEmpty(LDAP_LOGIN_ENABLED) && LDAP_LOGIN_ENABLED === "false") || (!_.isEmpty(STANDARD_LOGIN_ENABLED) && (STANDARD_LOGIN_ENABLED === "true"))) {
-                            page.call_function();
-                        } else {
-                            changeTitle(i18next.t('404 Page not found'));
-                            this.headerView = new App.HeaderView({
-                                model: authuser
-                            });
-                            $('#header').html(this.headerView.el);
-                            var view = new App.Error404View();
-                            $('#content').html(view.el);
-                            return;
-                        }
+                        //@Todo
+                        page.call_function();
+
                     } else {
                         page.call_function();
                     }
@@ -389,7 +271,7 @@ App.ApplicationView = Backbone.View.extend({
                 abortPending: true,
                 success: function(model, response) {
                     if (!_.isUndefined(response.error)) {
-                        window.sessionStorage.setItem('redirect_link', window.location.hash);
+                        $.cookie('redirect_link', window.location.hash);
                         $('#content').html(new App.Board404View({
                             model: authuser
                         }).el);
@@ -446,9 +328,6 @@ App.ApplicationView = Backbone.View.extend({
                         } else if (view_type === 'calendar') {
                             $('.js-switch-calendar-view').trigger('click');
                             view_type = null;
-                        } else if (view_type === 'gantt') {
-                            $('.js-switch-timeline-view').trigger('click');
-                            view_type = null;
                         } else if (view_type === 'attachments') {
                             $('.js-show-board-modal').trigger('click');
                             view_type = null;
@@ -456,6 +335,7 @@ App.ApplicationView = Backbone.View.extend({
                             $('.js-switch-grid-view').trigger('click');
                             view_type = null;
                         }
+                        App.current_board = Board;
                         this.footerView = new App.FooterView({
                             model: authuser,
                             board_id: self.id,
@@ -489,9 +369,6 @@ App.ApplicationView = Backbone.View.extend({
                 view_type = null;
             } else if (view_type === 'calendar') {
                 $('.js-switch-calendar-view').trigger('click');
-                view_type = null;
-            } else if (view_type === 'gantt') {
-                $('.js-switch-timeline-view').trigger('click');
                 view_type = null;
             } else if (view_type === 'attachments') {
                 $('.js-show-board-modal').trigger('click');
@@ -564,7 +441,7 @@ App.ApplicationView = Backbone.View.extend({
                     page.populateLists();
                     page.populateBoardStarred();
                     var organizations = new App.OrganizationCollection();
-                    organizations.url = api_url + 'organizations.json';
+                    organizations.url = api_url + 'organizations.json?type=simple';
                     organizations.fetch({
                         cache: false,
                         abortPending: true,
@@ -595,7 +472,7 @@ App.ApplicationView = Backbone.View.extend({
         if (page.model !== 'boards_view' && page.model !== 'users_index') {
             $('#header').html(this.headerView.el);
         }
-        window.sessionStorage.setItem('previous_url', Backbone.history.getFragment());
+        $.cookie('previous_url', Backbone.history.getFragment());
     },
     populateLists: function() {
         App.boards.each(function(board) {
@@ -623,7 +500,7 @@ App.ApplicationView = Backbone.View.extend({
             changeTitle(i18next.t('Organization'));
             page.organization_view();
         } else if (_.isEmpty(authuser.user) && _.indexOf(loginExceptionUrl, page.model) <= -1) {
-            window.sessionStorage.setItem('redirect_link', window.location.hash);
+            $.cookie('redirect_link', window.location.hash);
             app.navigate('#/users/login', {
                 trigger: true,
                 replace: true
@@ -694,21 +571,6 @@ App.ApplicationView = Backbone.View.extend({
                 this.pageView = new App.AboutusView();
                 $('#content').html(this.pageView.el);
             } else if (page.model == 'boards_index' || page.model == 'starred_boards_index' || page.model == 'closed_boards_index') {
-                changeTitle(i18next.t('Boards'));
-                var page_title = i18next.t('My Boards');
-                if (page.model == 'starred_boards_index') {
-                    changeTitle(i18next.t('Starred Boards'));
-                    page_title = i18next.t('Starred Boards');
-                } else if (page.model == 'closed_boards_index') {
-                    changeTitle(i18next.t('Closed Boards'));
-                    page_title = i18next.t('Closed Boards');
-                }
-                this.headerView = new App.BoardIndexHeaderView({
-                    model: page_title,
-                });
-                $('#header').html(new App.BoardIndexHeaderView({
-                    model: page_title,
-                }).el);
                 var board_index = $('#content');
                 board_index.html('');
                 var self = this;
@@ -724,86 +586,6 @@ App.ApplicationView = Backbone.View.extend({
                             cache: false,
                             abortPending: true,
                             success: function(board_model, board_response) {
-                                App.boards = boards;
-                                self.populateLists();
-                                self.populateBoardStarred();
-                                var board_activities = new App.FooterView({
-                                    model: authuser,
-                                    boards: boards
-                                });
-                                clearInterval(set_interval_id);
-                                set_interval_id = setInterval(function() {
-                                    board_activities.userActivities(true, 1);
-                                }, 10000);
-                                if (!_.isUndefined(board_response._metadata) && !_.isUndefined(board_response._metadata.dashboard)) {
-                                    board_response._metadata.dashboard.page_title = page_title;
-                                    board_index.append(new App.UserDashboardView({
-                                        model: board_response._metadata.dashboard,
-                                    }).el);
-                                }
-                                $('.sparklines', (this.el)).each(function(key) {
-                                    $(this).sparkline($(this).data('todo').split(','), {
-                                        enableTagOptions: true,
-                                        type: 'line',
-                                        fillColor: '#eca186',
-                                        lineColor: '#eca186',
-                                        width: '250',
-                                        height: '25',
-                                        tooltipFormatter: function(sparkline, options, fields) {
-                                            var curr = new Date();
-                                            var this_week = (curr.getDate() + 1) - curr.getDay();
-                                            var selected_day = this_week + fields.offset;
-                                            if (key === 1) {
-                                                var last_week = (curr.getDate() - 6) - curr.getDay();
-                                                selected_day = last_week + fields.offset;
-                                            }
-                                            var day = new Date(curr.setDate(selected_day));
-                                            var current_date = day.toString().split(' ');
-                                            var today = current_date[0] + ', ' + current_date[1] + ' ' + current_date[2] + ', ' + current_date[3];
-                                            return "<span>" + today + " <span><br>Todo: " + fields.y;
-                                        }
-                                    });
-                                    $(this).sparkline($(this).data('doing').split(','), {
-                                        composite: true,
-                                        fillColor: '#fee3e0',
-                                        lineColor: '#fee3e0',
-                                        width: '250',
-                                        height: '25',
-                                        tooltipFormatter: function(sparkline, options, fields) {
-                                            return ",&nbsp;Doing: " + fields.y;
-                                        }
-                                    });
-                                    $(this).sparkline($(this).data('done').split(','), {
-                                        composite: true,
-                                        fillColor: '#65cca9',
-                                        lineColor: '#65cca9',
-                                        width: '250',
-                                        height: '25',
-                                        tooltipFormatter: function(sparkline, options, fields) {
-                                            return ",&nbsp;Done: " + fields.y;
-                                        }
-                                    });
-                                });
-                                $('.js-chart', (this.el)).each(function() {
-                                    var data_chart = [];
-                                    $.each($(this).data(), function(index, value) {
-                                        var _data = {};
-                                        _data.title = index.toUpperCase();
-                                        _data.value = parseInt(value);
-                                        if (_data.title == 'TODO') {
-                                            _data.color = '#eca186';
-                                        } else if (_data.title == 'DOING') {
-                                            _data.color = '#fee3e0';
-                                        } else if (_data.title == 'DONE') {
-                                            _data.color = '#65cca9';
-                                        }
-
-                                        if (parseInt(value) > 0) {
-                                            data_chart.push(_data);
-                                        }
-                                    });
-                                    $(this).html('').drawDoughnutChart(data_chart);
-                                });
                                 if (page.model == 'starred_boards_index') {
                                     board_index.append(new App.StarredBoardsIndexView().el);
                                     if (!_.isEmpty(role_links.where({
@@ -940,28 +722,6 @@ App.ApplicationView = Backbone.View.extend({
                                                 className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12'
                                             }).el);
                                         }
-                                    }
-                                    if (typeof page.page_view_q !== 'undefined') {
-                                        var elastic_search = new App.ElasticSearchCollection();
-                                        elastic_search.url = api_url + 'search.json';
-                                        elastic_search.fetch({
-                                            cache: false,
-                                            abortPending: true,
-                                            data: {
-                                                q: page.page_view_q,
-                                                token: api_token
-                                            },
-                                            success: function(model, response) {
-                                                response = response;
-                                                response.result.search_term = page.page_view_q;
-                                                $('#search-page-result-block').html(new App.SearchPageResultView({
-                                                    model: response
-                                                }).el);
-                                                $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
-                                                var w_height = $(window).height() - 38;
-                                                $(".search-block-main-hover").css('height', w_height + 'px');
-                                            }
-                                        });
                                     }
                                 }
 
@@ -1128,7 +888,7 @@ App.ApplicationView = Backbone.View.extend({
         } else {
             authuser.board_id = 0;
         }
-        if ((window.sessionStorage.getItem('auth') !== undefined && window.sessionStorage.getItem('auth') !== null) || page.model == 'organizations_view') {
+        if (($.cookie('auth') !== undefined && $.cookie('auth') !== null) || page.model == 'organizations_view') {
             this.footerView = new App.FooterView({
                 model: authuser
             }).render();

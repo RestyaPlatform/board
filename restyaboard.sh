@@ -4,28 +4,8 @@
 #
 # Usage: ./restyaboard.sh
 #
-# Copyright (c) 2014-2016 Restya.
+# Copyright (c) 2014-2017 Restya.
 # Dual License (OSL 3.0 & Commercial License)
-get_geoip_data () {
-	wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
-	gunzip GeoIP.dat.gz
-	mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
-	wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
-	gunzip GeoIPv6.dat.gz
-	mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
-	wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-	gunzip GeoLiteCity.dat.gz
-	mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
-	wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
-	gunzip GeoLiteCityv6.dat.gz
-	mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
-	wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
-	gunzip GeoIPASNum.dat.gz
-	mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
-	wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
-	gunzip GeoIPASNumv6.dat.gz
-	mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
-}
 {
 	if [[ $EUID -ne 0 ]];
 	then
@@ -35,9 +15,33 @@ get_geoip_data () {
 	set -x
 	whoami
 	echo $(cat /etc/issue)
-	OS_REQUIREMENT=$(cat /proc/version | grep 'Ubuntu\|Debian\|Raspbian' | sed 's/^.*Ubuntu.*$/Ubuntu/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Debian.*$/Debian/g' | sed 's/^.*Raspbian.*$/Raspbian/g')
+	OS_REQUIREMENT=$(lsb_release -i -s)
+	if [ $? != 0 || OS_REQUIREMENT = "" ]
+	then
+		echo "lsb_release is not enabled"
+		exit 1
+	fi
+	OS_VERSION=$(lsb_release -rs | cut -f1 -d.)
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 	then
+		sed -i -e 's/us.archive.ubuntu.com/archive.ubuntu.com/g' /etc/apt/sources.list
+		
+		echo "deb http://mirrors.linode.com/debian/ wheezy main contrib non-free" >> /etc/apt/sources.list
+		echo "deb-src http://mirrors.linode.com/debian/ wheezy main contrib non-free" >> /etc/apt/sources.list
+		echo "deb http://mirrors.linode.com/debian-security/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
+		echo "deb-src http://mirrors.linode.com/debian-security/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
+		echo "deb http://mirrors.linode.com/debian/ wheezy-updates main" >> /etc/apt/sources.list
+		echo "deb-src http://mirrors.linode.com/debian/ wheezy-updates main" >> /etc/apt/sources.list
+		sed -i -e 's/deb cdrom/#deb cdrom/g' /etc/apt/sources.list
+		apt-key update
+		apt-get update
+
+		echo "deb http://packages.dotdeb.org jessie all" >> /etc/apt/sources.list
+		echo "deb-src http://packages.dotdeb.org jessie all" >> /etc/apt/sources.list
+		wget https://www.dotdeb.org/dotdeb.gpg
+		apt-key add dotdeb.gpg
+		apt-get update
+
 		apt-get install -y curl unzip
 	else
 		yum install -y curl unzip
@@ -48,17 +52,34 @@ get_geoip_data () {
 	POSTGRES_DBUSER=restya
 	POSTGRES_DBPASS=hjVl2!rGd
 	POSTGRES_DBPORT=5432
-	EJABBERD_DBHOST=localhost
-	EJABBERD_DBNAME=ejabberd
-	EJABBERD_DBUSER=ejabb
-	EJABBERD_DBPASS=ftfnVgYl2
-	EJABBERD_DBPORT=5432
 	DOWNLOAD_DIR=/opt/restyaboard
 	
+	get_geoip_data () 
+	{
+		wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+		gunzip GeoIP.dat.gz
+		mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
+		wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+		gunzip GeoIPv6.dat.gz
+		mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
+		wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+		gunzip GeoLiteCity.dat.gz
+		mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
+		wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+		gunzip GeoLiteCityv6.dat.gz
+		mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
+		wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+		gunzip GeoIPASNum.dat.gz
+		mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
+		wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
+		gunzip GeoIPASNumv6.dat.gz
+		mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
+	}
+
 	update_version()
 	{
 		set +x
-		echo "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available. Do you want to get it now y/n?"
+		echo -e "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available.\n\nImportant: Please note that upgrading will remove any commercial apps that were free in previous version.\nFor more details about commercial apps, please visit http://restya.com/board/pricing\n\nDo you want to get it now y/n?"
 		read -r answer
 		set -x
 		case "${answer}" in
@@ -94,282 +115,95 @@ get_geoip_data () {
 			sed -i "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_DBPASS}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
-			
-			echo "Changing ejabberd database name, user and password..."
-			sed -i "s/^.*'CHAT_DB_NAME'.*$/define('CHAT_DB_NAME', '${EJABBERD_DBNAME}');/g" "$dir/server/php/config.inc.php"
-			sed -i "s/^.*'CHAT_DB_USER'.*$/define('CHAT_DB_USER', '${EJABBERD_DBUSER}');/g" "$dir/server/php/config.inc.php"
-			sed -i "s/^.*'CHAT_DB_PASSWORD'.*$/define('CHAT_DB_PASSWORD', '${EJABBERD_DBPASS}');/g" "$dir/server/php/config.inc.php"
-			sed -i "s/^.*'CHAT_DB_HOST'.*$/define('CHAT_DB_HOST', '${EJABBERD_DBHOST}');/g" "$dir/server/php/config.inc.php"
-			sed -i "s/^.*'CHAT_DB_PORT'.*$/define('CHAT_DB_PORT', '${EJABBERD_DBPORT}');/g" "$dir/server/php/config.inc.php"
+
+			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/chat_activities.sh//" /var/spool/cron/crontabs/root
+			sed -i "s/0 * * * * $dir\/server\/php\/shell\/periodic_chat_email_notification.sh//" /var/spool/cron/crontabs/root
+			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/indexing_to_elasticsearch.sh//" /var/spool/cron/crontabs/root
+
+			rm $dir/server/php/shell/chat_activities.sh
+			rm $dir/server/php/shell/chat_activities.php
+			rm $dir/server/php/shell/indexing_to_elasticsearch.sh
+			rm $dir/server/php/shell/indexing_to_elasticsearch.php
+			rm $dir/server/php/shell/periodic_chat_email_notification.sh
+			rm $dir/server/php/shell/periodic_chat_email_notification.php
+			rm $dir/server/php/shell/upgrade_v0.2.1_v0.3.php
+
+			rm -rf $dir/client/apps/
+
+			rm -rf $dir/server/php/libs/vendors/xmpp/
+			rm -rf $dir/server/php/libs/vendors/jaxl3/
+			rm -rf $dir/server/php/libs/vendors/xmpp-prebind-php/
 			
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
-				echo "Setting up cron for every 5 minutes to send chat conversation as email notification to user..."
-				echo "*/5 * * * * $dir/server/php/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
-				
-				echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
-				echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
-				
-				if ! hash GeoIP-devel 2>&-;
+				if ! hash jq 2>&-;
 				then
-					apt-get install php5-geoip php5-dev libgeoip-dev
+					echo "Installing jq..."
+					apt-get install -y jq
 					if [ $? != 0 ]
 					then
-						echo "php5-geoip php5-dev libgeoip-dev installation failed with error code 50"
-						exit 1
+						echo "jq installation failed with error code 53"
 					fi
 				fi
-				if ! hash pecl/geoip 2>&-;
-				then
-					pecl install geoip
-					if [ $? != 0 ]
-					then
-						echo "pecl geoip installation failed with error code 47"
-						exit 1
-					fi
-				fi
-				echo "extension=geoip.so" >> /etc/php.ini
-				mkdir -v /usr/share/GeoIP
-				if [ $? != 0 ]
-				then
-					echo "GeoIP folder creation failed with error code 52"
-					exit 1
-				fi
-
-				get_geoip_data
-
-				service php5-fpm restart
-				
-				set +x
-				echo "Do you want to install Restyaboard apps (y/n)?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					if ! hash jq 2>&-;
-					then
-						echo "Installing jq..."
-						apt-get install jq
-						if [ $? != 0 ]
-						then
-							echo "jq installation failed with error code 53"
-							exit 1
-						fi
-					fi
-					curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
-					chmod -R go+w "/tmp/apps.json"
-					for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
-					do
-						mkdir "$dir/client/apps"
-						chmod -R go+w "$dir/client/apps"
-						curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-						unzip /tmp/$fid.zip -d "$dir/client/apps"
-					done
-				esac
-				
-				apt-get install autotools-dev
-
-				apt-get install automake
-
-				apt-get install erlang
-
-				apt-get install libyaml-dev
-
-				cd /opt
-				wget http://liquidtelecom.dl.sourceforge.net/project/expat/expat/2.1.1/expat-2.1.1.tar.bz2
-				tar -jvxf expat-2.1.1.tar.bz2
-				cd expat-2.1.1/
-				./configure
-				make
-				make install
-
-				cd /opt
-				wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
-				tar -zvxf ejabberd-15.07.tgz
-				cd ejabberd-15.07
-				./autogen.sh
-				./configure --enable-pgsql
-				make
-				make install
-
-				set +x
-				echo "To configure ejabberd, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
-				read -r webdir
-				while [[ -z "$webdir" ]]
+				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
+				chmod -R go+w "/tmp/apps.json"
+				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
 				do
-					read -r -p "To configure ejabberd, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+					mkdir "$dir/client/apps"
+					chmod -R go+w "$dir/client/apps"
+					curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
+					unzip /tmp/$fid.zip -d "$dir/client/apps"
 				done
-				
-				cd /etc/ejabberd
-				echo "Creating ejabberd user and database..."
-				psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
-
-				cd /etc/ejabberd
-				psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
-
-				psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
-				mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
-				chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-				sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
-				sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
-				
-				ejabberdctl start
-				sleep 15
-				ejabberdctl change_password admin $webdir restya
-				ejabberdctl stop
-				sleep 15
-				ejabberdctl start
-				
+				service nginx restart
+				service php7.0-fpm restart
 			else
-				
-				echo "Setting up cron for every 5 minutes to send chat conversation as email notification to user..."
-				echo "*/5 * * * * $dir/server/php/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
-				
-				echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
-				echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
-				
-				if ! hash GeoIP-devel 2>&-;
+				if ! hash jq 2>&-;
 				then
-					yum install GeoIP-devel
+					echo "Installing jq..."
+					yum install -y jq
 					if [ $? != 0 ]
 					then
-						echo "GeoIP-devel installation failed with error code 46"
+						echo "jq installation failed with error code 49"
 						exit 1
 					fi
 				fi
-
-				if ! hash pecl/geoip 2>&-;
-				then
-					pecl install geoip
-					if [ $? != 0 ]
-					then
-						echo "pecl geoip installation failed with error code 47"
-						exit 1
-					fi
-				fi
-				echo "extension=geoip.so" >> /etc/php.ini
-				mkdir -v /usr/share/GeoIP
-				if [ $? != 0 ]
-				then
-					echo "GeoIP folder creation failed with error code 48"
-					exit 1
-				fi
-
-				get_geoip_data
-
-				ps -q 1 | grep -q -c "systemd"
-				if [ "$?" -eq 0 ];
-				then
-					systemctl restart php-fpm
-				else
-					/etc/init.d/php-fpm restart
-				fi
-				
-				set +x
-				echo "Do you want to install Restyaboard apps (y/n)?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					if ! hash jq 2>&-;
-					then
-						echo "Installing jq..."
-						yum install -y jq
-						if [ $? != 0 ]
-						then
-							echo "jq installation failed with error code 49"
-							exit 1
-						fi
-					fi
-					curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
-					chmod -R go+w "/tmp/apps.json"
-					for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
-					do
-						mkdir "$dir/client/apps"
-						chmod -R go+w "$dir/client/apps"
-						curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-						unzip /tmp/$fid.zip -d "$dir/client/apps"
-					done
-				esac
-
-				cd /opt
-				wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
-				wget https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_18.3-1~centos~6_i386.rpm
-				rpm -ivh esl-erlang_18.3-1~centos~6_i386.rpm
-				yum install libyaml*
-				tar -zvxf ejabberd-15.07.tgz
-				cd ejabberd-15.07
-				./autogen.sh
-				./configure --enable-pgsql
-				make
-				make install
-				yum install php-xml
-				set +x
-				echo "To configure ejabberd, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
-				read -r webdir
-				while [[ -z "$webdir" ]]
+				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
+				chmod -R go+w "/tmp/apps.json"
+				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
 				do
-					read -r -p "To configure ejabberd, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+					mkdir "$dir/client/apps"
+					chmod -R go+w "$dir/client/apps"
+					curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
+					unzip /tmp/$fid.zip -d "$dir/client/apps"
 				done
-
-				echo "Creating ejabberd user and database..."
-				psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
-
-				cd /etc/ejabberd
-				psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
-				
-				psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
-				mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
-				chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-				sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
-				sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
-
-				ejabberdctl start
-				sleep 15
-				ejabberdctl change_password admin $webdir restya
-				ejabberdctl stop
-				sleep 15
-				ejabberdctl start
-
 				ps -q 1 | grep -q -c "systemd"
 				if [ "$?" -eq 0 ];
 				then
 					echo "Starting services with systemd..."
-					systemctl start nginx
-					systemctl start php-fpm
+					systemctl restart nginx
+					systemctl restart php-fpm
 				else
 					echo "Starting services..."
 					/etc/init.d/php-fpm restart
 					/etc/init.d/nginx restart
 				fi
-
 			fi
-			
-			set +x
-			echo "Folder structure modified. Script going to delete unwanted files inside R folder except r.php and README.md. Do you want to do it now y/n?"
-			read -r answer
-			set -x
-			case "${answer}" in
-				[Yy])
-				rm -rf $dir/server/php/R/shell $dir/server/php/R/libs $dir/server/php/R/image.php $dir/server/php/R/config.inc.php $dir/server/php/R/authorize.php $dir/server/php/R/oauth_callback.php $dir/server/php/R/download.php $dir/server/php/R/ical.php
-			esac
 			
 			echo "Updating SQL..."
 			psql -d ${POSTGRES_DBNAME} -f "$dir/sql/${RESTYABOARD_VERSION}.sql" -U ${POSTGRES_DBUSER}
-			/bin/echo "$RESTYABOARD_VERSION" > /opt/restyaboard/release
+			/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL updation of SQL failed with error code 33"
 				exit 1
 			fi
-			
-			php $dir/server/php/shell/upgrade_v0.2.1_v0.3.php
+
 		esac
 	}
 	
-	if [ -d "$DOWNLOAD_DIR" ];
+	if [ -f "$DOWNLOAD_DIR/release" ];
 	then
-		version=$(cat /opt/restyaboard/release)
+		version=$(cat ${DOWNLOAD_DIR}/release)
 		if [[ $version < $RESTYABOARD_VERSION ]];
 		then
 			update_version
@@ -397,25 +231,17 @@ get_geoip_data () {
 		set -x
 		case "${answer}" in
 			[Yy])
-			echo "deb http://mirrors.linode.com/debian/ wheezy main contrib non-free" >> /etc/apt/sources.list
-			echo "deb-src http://mirrors.linode.com/debian/ wheezy main contrib non-free" >> /etc/apt/sources.list
-			echo "deb http://mirrors.linode.com/debian-security/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
-			echo "deb-src http://mirrors.linode.com/debian-security/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
-			echo "deb http://mirrors.linode.com/debian/ wheezy-updates main" >> /etc/apt/sources.list
-			echo "deb-src http://mirrors.linode.com/debian/ wheezy-updates main" >> /etc/apt/sources.list
-			sed -i -e 's/deb cdrom/#deb cdrom/g' /etc/apt/sources.list
-			
-			apt-key update
-			apt-get update
 			apt-get install debian-keyring debian-archive-keyring
 			if [ $? != 0 ]
 			then
 				echo "debian-keyring installation failed with error code 1"
-				exit 1
 			fi
 			
 			apt-get update -y
 			apt-get upgrade -y
+
+			add-apt-repository ppa:ondrej/php
+			apt-get update -y
 			
 			echo "Checking nginx..."
 			if ! which nginx > /dev/null 2>&1; then
@@ -447,32 +273,35 @@ get_geoip_data () {
 				case "${answer}" in
 					[Yy])
 					echo "Installing PHP..."
-					apt-get install -y php5 php5-common
+					apt-get install -y php7.0 php7.0-common
 					if [ $? != 0 ]
 					then
-						echo "php5-common installation failed with error code 3"
+						echo "PHP installation failed with error code 3"
 						exit 1
 					fi
 				esac
 			fi
+
+			wget http://mirrors.kernel.org/ubuntu/pool/main/libn/libnl3/libnl-3-200_3.2.21-1ubuntu3_amd64.deb
+			wget http://mirrors.kernel.org/ubuntu/pool/main/libn/libnl3/libnl-genl-3-200_3.2.21-1ubuntu3_amd64.deb
+			dpkg -i *.deb
 			
 			echo "Installing PHP fpm and cli extension..."
-			apt-get install -y php5-fpm php5-cli
+			apt-get install -y php7.0-fpm php7.0-cli
 			if [ $? != 0 ]
 			then
-				echo "php5-cli installation failed with error code 4"
-				exit 1
+				echo "php7.0-cli installation failed with error code 4"
 			fi
-			service php5-fpm start
+			service php7.0-fpm start
 			
 			echo "Checking PHP curl extension..."
 			php -m | grep curl
 			if [ "$?" -gt 0 ]; then
-				echo "Installing php5-curl..."
-				apt-get install -y php5-curl
+				echo "Installing php7.0-curl..."
+				apt-get install -y php7.0-curl
 				if [ $? != 0 ]
 				then
-					echo "php5-curl installation failed with error code 5"
+					echo "php7.0-curl installation failed with error code 5"
 					exit 1
 				fi
 			fi
@@ -480,11 +309,12 @@ get_geoip_data () {
 			echo "Checking PHP pgsql extension..."
 			php -m | grep pgsql
 			if [ "$?" -gt 0 ]; then
-				echo "Installing php5-pgsql..."
-				apt-get install -y php5-pgsql
+				echo "Installing php7.0-pgsql..."
+				apt-get install libpq5
+				apt-get install -y php7.0-pgsql
 				if [ $? != 0 ]
 				then
-					echo "php5-pgsql installation failed with error code 6"
+					echo "php7.0-pgsql installation failed with error code 6"
 					exit 1
 				fi
 			fi
@@ -492,11 +322,11 @@ get_geoip_data () {
 			echo "Checking PHP mbstring extension..."
 			php -m | grep mbstring
 			if [ "$?" -gt 0 ]; then
-				echo "Installing php5-mbstring..."
-				apt-get install -y php5-mbstring
+				echo "Installing php7.0-mbstring..."
+				apt-get install -y php7.0-mbstring
 				if [ $? != 0 ]
 				then
-					echo "php5-mbstring installation failed with error code 7"
+					echo "php7.0-mbstring installation failed with error code 7"
 					exit 1
 				fi
 			fi
@@ -504,11 +334,11 @@ get_geoip_data () {
 			echo "Checking PHP ldap extension..."
 			php -m | grep ldap
 			if [ "$?" -gt 0 ]; then
-				echo "Installing php5-ldap..."
-				apt-get install -y php5-ldap
+				echo "Installing php7.0-ldap..."
+				apt-get install -y php7.0-ldap
 				if [ $? != 0 ]
 				then
-					echo "php5-ldap installation failed with error code 8"
+					echo "php7.0-ldap installation failed with error code 8"
 					exit 1
 				fi
 			fi
@@ -516,23 +346,23 @@ get_geoip_data () {
 			echo "Checking PHP imagick extension..."
 			php -m | grep imagick
 			if [ "$?" -gt 0 ]; then
-				echo "Installing php5-imagick..."
-				apt-get install gcc
+				echo "Installing php7.0-imagick..."
+				apt-get install -y gcc
 				if [ $? != 0 ]
 				then
 					echo "gcc installation failed with error code 9"
 					exit 1
 				fi
-				apt-get install imagemagick
+				apt-get install -y imagemagick
 				if [ $? != 0 ]
 				then
 					echo "imagemagick installation failed with error code 9"
 					exit 1
 				fi
-				apt-get install php5-imagick
+				apt-get install -y php7.0-imagick
 				if [ $? != 0 ]
 				then
-					echo "php5-imagick installation failed with error code 10"
+					echo "php7.0-imagick installation failed with error code 10"
 					exit 1
 				fi
 			fi
@@ -540,19 +370,19 @@ get_geoip_data () {
 			echo "Checking PHP imap extension..."
 			php -m | grep imap
 			if [ "$?" -gt 0 ]; then
-				echo "Installing php5-imap..."
-				apt-get install -y php5-imap
+				echo "Installing php7.0-imap..."
+				apt-get install -y php7.0-imap
 				if [ $? != 0 ]
 				then
-					echo "php5-imap installation failed with error code 11"
+					echo "php7.0-imap installation failed with error code 11"
 					exit 1
 				fi
 			fi
 			
 			echo "Setting up timezone..."
 			timezone=$(cat /etc/timezone)
-			sed -i -e 's/date.timezone/;date.timezone/g' /etc/php5/fpm/php.ini
-			echo "date.timezone = $timezone" >> /etc/php5/fpm/php.ini
+			sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.0/fpm/php.ini
+			echo "date.timezone = $timezone" >> /etc/php/7.0/fpm/php.ini
 			
 			echo "Checking PostgreSQL..."
 			id -a postgres
@@ -570,57 +400,98 @@ get_geoip_data () {
 					if [ $? != 0 ]
 					then
 						echo "ca-certificates installation failed with error code 12"
-						exit 1
 					fi
 					wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 					apt-key add ACCC4CF8.asc
 					apt-get update
-					apt-get install postgresql-9.4
+					apt-get install -y postgresql-9.4 --allow-unauthenticated
 					if [ $? != 0 ]
 					then
 						echo "postgresql-9.4 installation failed with error code 13"
 						exit 1
 					fi
-					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/9.4/main/pg_hba.conf > /etc/postgresql/9.4/main/pg_hba.conf.1
-					cd /etc/postgresql/9.4/main || exit
-					mv pg_hba.conf pg_hba.conf_old
-					mv pg_hba.conf.1 pg_hba.conf
-					service postgresql restart
 				esac
+			else
+				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+				if [[ $PSQL_VERSION < 9.3 ]]; then
+					set +x
+					echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.4"
+					sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+					apt-get install wget ca-certificates
+					if [ $? != 0 ]
+					then
+						echo "ca-certificates installation failed with error code 12"
+					fi
+					wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
+					apt-key add ACCC4CF8.asc
+					apt-get update
+					apt-get upgrade
+					apt-get install -y postgresql-9.4 --allow-unauthenticated
+					if [ $? != 0 ]
+					then
+						echo "postgresql-9.4 installation failed with error code 13"
+						exit 1
+					fi
+				fi
 			fi
+			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/9.4/main/pg_hba.conf > /etc/postgresql/9.4/main/pg_hba.conf.1
+			cd /etc/postgresql/9.4/main || exit
+			mv pg_hba.conf pg_hba.conf_old
+			mv pg_hba.conf.1 pg_hba.conf
+			service postgresql restart
 			
-			echo "Checking ElasticSearch..."
-			if ! curl http://localhost:9200 > /dev/null 2>&1; then
-				echo "ElasticSearch not installed!"
-				set +x
-				echo "Do you want to install ElasticSearch (y/n)?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					echo "Installing ElasticSearch..."
-					apt-get install openjdk-6-jre
-					if [ $? != 0 ]
-					then
-						echo "openjdk-6-jre installation failed with error code 14"
-						exit 1
-					fi
-					wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.7.deb
-					if [ $? != 0 ]
-					then
-						echo "elasticsearch downloading failed with error code 15"
-						exit 1
-					fi
-					dpkg -i elasticsearch-0.90.7.deb
-					service elasticsearch restart
-				esac
+			if ! hash GeoIP-devel 2>&-;
+			then
+				apt-get install -y php7.0-geoip php7.0-dev libgeoip-dev
+				if [ $? != 0 ]
+				then
+					echo "php7.0-geoip php7.0-dev libgeoip-dev installation failed with error code 50"
+				fi
 			fi
 
+			if ! hash pecl/geoip 2>&-;
+			then
+				pecl install geoip
+				if [ $? != 0 ]
+				then
+					echo "pecl geoip installation failed with error code 47"
+				fi
+			fi
+
+			echo "extension=geoip.so" >> /etc/php.ini
+
+			mkdir -v /usr/share/GeoIP
+			if [ $? != 0 ]
+			then
+				echo "GeoIP folder creation failed with error code 52"
+			fi
+
+			get_geoip_data
+			
+			apt-get install -y autotools-dev
+
+			apt-get install -y automake
+
+			apt-get install -y erlang
+
+			apt-get install -y libyaml-dev
+
+			apt-get install -y rebar
+
+			cd /opt
+			wget http://liquidtelecom.dl.sourceforge.net/project/expat/expat/2.1.1/expat-2.1.1.tar.bz2
+			tar -jvxf expat-2.1.1.tar.bz2
+			cd expat-2.1.1/
+			./configure
+			make
+			make install
+
 			echo "Downloading Restyaboard script..."
-			mkdir /opt/restyaboard
+			apt-get install -y curl
+			mkdir ${DOWNLOAD_DIR}
 			curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
-			unzip /tmp/restyaboard.zip -d /opt/restyaboard
-			cp /opt/restyaboard/restyaboard.conf /etc/nginx/conf.d
+			unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
+			cp ${DOWNLOAD_DIR}/restyaboard.conf /etc/nginx/conf.d
 			rm /tmp/restyaboard.zip
 			
 			set +x
@@ -649,7 +520,7 @@ get_geoip_data () {
 			echo "Changing root directory in nginx configuration..."
 			sed -i "s|root.*html|root $dir|" /etc/nginx/conf.d/restyaboard.conf
 			echo "Copying Restyaboard script to root directory..."
-			cp -r /opt/restyaboard/* "$dir"
+			cp -r ${DOWNLOAD_DIR}/* "$dir"
 			
 			echo "Installing postfix..."
 			echo "postfix postfix/mailname string $webdir"\
@@ -659,8 +530,7 @@ get_geoip_data () {
 			apt-get install -y postfix
 			        if [ $? != 0 ]
 				then
-					echo "-y postfix installation failed with error code 16"
-					exit 1
+					echo "postfix installation failed with error code 16"
 				fi
 			echo "Changing permission..."
 			chmod -R go+w "$dir/media"
@@ -677,13 +547,13 @@ get_geoip_data () {
 			sleep 1
 
 			echo "Creating PostgreSQL user and database..."
-			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
+			psql -U postgres -c "DROP USER IF EXISTS ${POSTGRES_DBUSER};CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL user creation failed with error code 35 "
 				exit 1
 			fi
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 36"
@@ -714,9 +584,6 @@ get_geoip_data () {
 			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
-			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo "*/5 * * * * $dir/server/php/shell/indexing_to_elasticsearch.sh" >> /var/spool/cron/crontabs/root
-			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
 			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/crontabs/root
 			
@@ -731,15 +598,11 @@ get_geoip_data () {
 			
 			echo "Setting up cron for every 5 minutes to send email notification to past due..."
 			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
-			
-			echo "Setting up cron for every 5 minutes to send chat conversation as email notification to user..."
-			echo "*/5 * * * * $dir/server/php/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
-			
-			echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
-			echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
 
+			set +x
 			echo "Do you want to setup SMTP configuration (y/n)?"
 			read -r answer
+			set -x
 			case "${answer}" in
 				[Yy])
 				echo "Enter SMTP server address (e.g., smtp.gmail.com)"
@@ -755,37 +618,7 @@ get_geoip_data () {
 				sed -i "s/SMTP = localhost/SMTP = $smtp_server/" /etc/php.ini
 				sed -i "s/smtp_port = 25/smtp_port = $smtp_port/" /etc/php.ini
 			esac
-			
-			if ! hash GeoIP-devel 2>&-;
-			then
-				apt-get install php5-geoip php5-dev libgeoip-dev
-				if [ $? != 0 ]
-				then
-					echo "php5-geoip php5-dev libgeoip-dev installation failed with error code 50"
-					exit 1
-				fi
-			fi
-			if ! hash pecl/geoip 2>&-;
-			then
-				pecl install geoip
-				if [ $? != 0 ]
-				then
-					echo "pecl geoip installation failed with error code 47"
-					exit 1
-				fi
-			fi
-			echo "extension=geoip.so" >> /etc/php.ini
-			mkdir -v /usr/share/GeoIP
-			if [ $? != 0 ]
-			then
-				echo "GeoIP folder creation failed with error code 52"
-				exit 1
-			fi
-
-			get_geoip_data
-			
-			service php5-fpm restart
-			
+						
 			set +x
 			echo "Do you want to install Restyaboard apps (y/n)?"
 			read -r answer
@@ -795,11 +628,10 @@ get_geoip_data () {
 				if ! hash jq 2>&-;
 				then
 					echo "Installing jq..."
-					apt-get install jq
+					apt-get install -y jq
 					if [ $? != 0 ]
 					then
 						echo "jq installation failed with error code 53"
-						exit 1
 					fi
 				fi
 				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
@@ -813,57 +645,11 @@ get_geoip_data () {
 				done
 			esac
 			
-			apt-get install autotools-dev
-
-			apt-get install automake
-
-			apt-get install erlang
-
-			apt-get install libyaml-dev
-
-			cd /opt
-			wget http://liquidtelecom.dl.sourceforge.net/project/expat/expat/2.1.1/expat-2.1.1.tar.bz2
-			tar -jvxf expat-2.1.1.tar.bz2
-			cd expat-2.1.1/
-			./configure
-			make
-			make install
-
-			cd /opt
-			wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
-			tar -zvxf ejabberd-15.07.tgz
-			cd ejabberd-15.07
-			./autogen.sh
-			./configure --enable-pgsql
-			make
-			make install
-
-			cd /etc/ejabberd
-			echo "Creating ejabberd user and database..."
-			psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
-
-			cd /etc/ejabberd
-			psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
-
-			psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
-			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
-			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-			sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
-			sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
-			
-			ejabberdctl start
-			sleep 15
-			ejabberdctl change_password admin $webdir restya
-			ejabberdctl stop
-			sleep 15
-			ejabberdctl start
-			
 			echo "Starting services..."
 			service cron restart
-			service php5-fpm restart
+			service php7.0-fpm restart
 			service nginx restart
 			service postfix restart
-			service elasticsearch restart
 		esac
 	else
 		set +x
@@ -996,7 +782,7 @@ get_geoip_data () {
 				echo "Installing php-imagick..."
 
 				yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
-				yum install php-pear
+				yum install -y php-pear
 				if [ $? != 0 ]
 				then
 					echo "Installing php-imagick failed with error code 26"
@@ -1050,7 +836,13 @@ get_geoip_data () {
 					[Yy])
 					echo "Installing PostgreSQL..."
 					if [ $(getconf LONG_BIT) = "32" ]; then
-						yum install -y http://yum.postgresql.org/9.4/redhat/rhel-6.6-i386/pgdg-centos94-9.4-1.noarch.rpm
+						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
+							rpm -Uvh "http://yum.postgresql.org/9.5/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora95-9.5-3.noarch.rpm"
+						else
+							rpm -Uvh "http://yum.postgresql.org/9.5/redhat/rhel-${OS_VERSION}-i386/pgdg-centos95-9.5-3.noarch.rpm"
+						fi
+
+						yum install -y postgresql95-server postgresql95
 						if [ $? != 0 ]
 						then
 							echo "Installing PostgreSQL 32 fail with error code 27"
@@ -1058,7 +850,13 @@ get_geoip_data () {
 						fi
 					fi
 					if [ $(getconf LONG_BIT) = "64" ]; then
-						yum install -y http://yum.postgresql.org/9.4/redhat/rhel-6.6-x86_64/pgdg-centos94-9.4-1.noarch.rpm
+						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
+							rpm -Uvh "http://yum.postgresql.org/9.5/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora95-9.5-3.noarch.rpm"
+						else
+							rpm -Uvh "http://yum.postgresql.org/9.5/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos95-9.5-3.noarch.rpm"
+						fi
+
+						yum install -y postgresql95-server postgresql95
 						if [ $? != 0 ]
 						then
 							echo "Installing PostgreSQL 64 fail with error code 28"
@@ -1066,67 +864,122 @@ get_geoip_data () {
 						fi
 					fi
 
-					yum install -y postgresql94-server postgresql94-contrib
+					yum install -y postgresql95-contrib
 					if [ $? != 0 ]
 					then
-						echo "postgresql04-contrib installation failed with error code 29"
+						echo "postgresql95-contrib installation failed with error code 29"
 						exit 1
 					fi
-					
-					ps -q 1 | grep -q -c "systemd"
-					if [ "$?" -eq 0 ]; then
-						if [ -f /usr/pgsql-9.4/bin/postgresql94-setup ]; then
-							/usr/pgsql-9.4/bin/postgresql94-setup initdb
+				esac
+			else 
+				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+				if [[ $PSQL_VERSION < 9.3 ]]; then
+					set +x
+					echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.5"
+					if [ $(getconf LONG_BIT) = "32" ]; then
+						if [[ $OS_REQUIREMENT == "Fedora" ]]; then
+							rpm -Uvh "http://yum.postgresql.org/9.5/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora95-9.5-3.noarch.rpm"
+						else
+							rpm -Uvh "http://yum.postgresql.org/9.5/redhat/rhel-${OS_VERSION}-i386/pgdg-centos95-9.5-3.noarch.rpm"
 						fi
-						systemctl start postgresql-9.4.service
-						systemctl enable postgresql-9.4.service
+
+						yum install -y postgresql95-server postgresql95
+						if [ $? != 0 ]
+						then
+							echo "Installing PostgreSQL 32 fail with error code 27"
+						fi
 					else
-						service postgresql-9.4 initdb
-						/etc/init.d/postgresql-9.4 start
-						chkconfig --levels 35 postgresql-9.4 on
+						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
+							rpm -Uvh "http://yum.postgresql.org/9.5/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora95-9.5-3.noarch.rpm"
+						else
+							rpm -Uvh "http://yum.postgresql.org/9.5/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos95-9.5-3.noarch.rpm"
+						fi
+
+						yum install -y postgresql95-server postgresql95
+						if [ $? != 0 ]
+						then
+							echo "Installing PostgreSQL 64 fail with error code 28"
+						fi
 					fi
 
-					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /var/lib/pgsql/9.4/data/pg_hba.conf > /var/lib/pgsql/9.4/data/pg_hba.conf.1
-					cd /var/lib/pgsql/9.4/data || exit
-					mv pg_hba.conf pg_hba.conf_old
-					mv pg_hba.conf.1 pg_hba.conf
-					
-					ps -q 1 | grep -q -c "systemd"
-					if [ "$?" -eq 0 ]; then
-						systemctl restart postgresql-9.4.service
-					else
-						/etc/init.d/postgresql-9.4 restart
+					yum install -y postgresql95-contrib
+					if [ $? != 0 ]
+					then
+						echo "postgresql95-contrib installation failed with error code 29"
+						exit 1
 					fi
-				esac
+				fi
 			fi
 
-			echo "Checking ElasticSearch..."
-			if ! curl http://localhost:9200 > /dev/null 2>&1;
+			PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+			PSQL_FOLDER=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}') | sed 's/\.//'
+			ps -q 1 | grep -q -c "systemd"
+			if [ "$?" -eq 0 ]; then
+				if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
+					"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
+				fi
+				systemctl start "postgresql-${PSQL_VERSION}.service"
+				systemctl enable "postgresql-${PSQL_VERSION}.service"
+			else
+				service "postgresql-${PSQL_VERSION}" initdb
+				"/etc/init.d/postgresql-${PSQL_VERSION}" start
+				chkconfig --levels 35 "postgresql-${PSQL_VERSION}" on
+			fi
+
+			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf" > "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf.1"
+			cd "/var/lib/pgsql/${PSQL_VERSION}/data" || exit
+			mv pg_hba.conf pg_hba.conf_old
+			mv pg_hba.conf.1 pg_hba.conf
+			
+			ps -q 1 | grep -q -c "systemd"
+			if [ "$?" -eq 0 ]; then
+				systemctl restart "postgresql-${PSQL_VERSION}.service"
+			else
+				"/etc/init.d/postgresql-${PSQL_VERSION}" restart
+			fi
+
+			if ! hash GeoIP-devel 2>&-;
 			then
-				echo "ElasticSearch not installed!"
-				set +x
-				echo "Do you want to install ElasticSearch (y/n)?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					echo "Installing ElasticSearch..."
-					sudo yum install java-1.7.0-openjdk -y
-					if [ $? != 0 ]
-					then
-						echo "java installation failed with error code 30"
-						exit 1
-					fi
-					wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.10.noarch.rpm
-					if [ $? != 0 ]
-					then
-						echo " ElasticSearch downloading failed with error code 31"
-						exit 1
-					fi
-					nohup rpm -Uvh elasticsearch-0.90.10.noarch.rpm &
-					chkconfig elasticsearch on
-				esac
+				yum install -y GeoIP-devel
+				if [ $? != 0 ]
+				then
+					echo "GeoIP-devel installation failed with error code 46"
+					exit 1
+				fi
 			fi
+
+			if ! hash pecl/geoip 2>&-;
+			then
+				pecl install geoip
+				if [ $? != 0 ]
+				then
+					echo "pecl geoip installation failed with error code 47"
+					exit 1
+				fi
+			fi
+			echo "extension=geoip.so" >> /etc/php.ini
+			mkdir -v /usr/share/GeoIP
+			if [ $? != 0 ]
+			then
+				echo "GeoIP folder creation failed with error code 48"
+			fi
+
+			get_geoip_data
+			
+			yum install -y git
+			git clone git://github.com/rebar/rebar.git
+			cd rebar
+			./bootstrap
+
+			yum install -y gcc glibc-devel make ncurses-devel openssl-devel autoconf expat-devel
+
+			cd /opt
+			wget http://erlang.org/download/otp_src_R15B01.tar.gz
+			tar zxvf otp_src_R15B01.tar.gz
+			cd otp_src_R15B01
+			./configure && make && make install
+
+			yum install -y php-xml
 
 			echo "Downloading Restyaboard script..."
 			mkdir ${DOWNLOAD_DIR}
@@ -1178,13 +1031,13 @@ get_geoip_data () {
 			sleep 1
 
 			echo "Creating PostgreSQL user and database..."
-			psql -U postgres -c "CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
+			psql -U postgres -c "DROP USER IF EXISTS ${POSTGRES_DBUSER};CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL user creation failed with error code 41"
 				exit 1
 			fi			
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 42"
@@ -1215,9 +1068,6 @@ get_geoip_data () {
 			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
-			echo "Setting up cron for every 5 minutes to update ElasticSearch indexing..."
-			echo "*/5 * * * * $dir/server/php/shell/indexing_to_elasticsearch.sh" >> /var/spool/cron/root
-			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
 			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/root
 			
@@ -1233,17 +1083,13 @@ get_geoip_data () {
 			echo "Setting up cron for every 5 minutes to send email notification to past due..."
 			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
 			
-			echo "Setting up cron for every 5 minutes to send chat conversation as email notification to user..."
-			echo "*/5 * * * * $dir/server/php/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
-			
-			echo "Setting up cron for every 1 hour to send chat conversation as email notification to user, if the user chosen notification type as periodic..."
-			echo "0 * * * * $dir/server/php/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
-			
 			echo "Reset php-fpm (use unix socket mode)..."
 			sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf
 
+			set +x
 			echo "Do you want to setup SMTP configuration (y/n)?"
 			read -r answer
+			set -x
 			case "${answer}" in
 				[Yy])
 				echo "Enter SMTP server address (e.g., smtp.gmail.com)"
@@ -1258,58 +1104,8 @@ get_geoip_data () {
 				sed -i "1022 i auth_password = $smtp_password" /etc/php.ini
 				sed -i "s/SMTP = localhost/SMTP = $smtp_server/" /etc/php.ini
 				sed -i "s/smtp_port = 25/smtp_port = $smtp_port/" /etc/php.ini
-			esac		
-			
-			# Start services
-			ps -q 1 | grep -q -c "systemd"
-			if [ "$?" -eq 0 ];
-			then
-				echo "Starting services with systemd..."
-				systemctl start nginx
-				systemctl start php-fpm
-			else
-				echo "Starting services..."
-				/etc/init.d/php-fpm restart
-				/etc/init.d/nginx restart
-			fi
+			esac
 
-			if ! hash GeoIP-devel 2>&-;
-			then
-				yum install GeoIP-devel
-				if [ $? != 0 ]
-				then
-					echo "GeoIP-devel installation failed with error code 46"
-					exit 1
-				fi
-			fi
-
-			if ! hash pecl/geoip 2>&-;
-			then
-				pecl install geoip
-				if [ $? != 0 ]
-				then
-					echo "pecl geoip installation failed with error code 47"
-					exit 1
-				fi
-			fi
-			echo "extension=geoip.so" >> /etc/php.ini
-			mkdir -v /usr/share/GeoIP
-			if [ $? != 0 ]
-			then
-				echo "GeoIP folder creation failed with error code 48"
-				exit 1
-			fi
-
-			get_geoip_data
-			
-			ps -q 1 | grep -q -c "systemd"
-			if [ "$?" -eq 0 ];
-			then
-				systemctl restart php-fpm
-			else
-				/etc/init.d/php-fpm restart
-			fi
-			
 			set +x
 			echo "Do you want to install Restyaboard apps (y/n)?"
 			read -r answer
@@ -1336,37 +1132,6 @@ get_geoip_data () {
 					unzip /tmp/$fid.zip -d "$dir/client/apps"
 				done
 			esac
-			
-			cd /opt
-			wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
-			wget https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_18.3-1~centos~6_i386.rpm
-			rpm -ivh esl-erlang_18.3-1~centos~6_i386.rpm
-			yum install libyaml*
-			tar -zvxf ejabberd-15.07.tgz
-			cd ejabberd-15.07
-			./autogen.sh
-			./configure --enable-pgsql
-			make
-			make install
-			yum install php-xml
-			echo "Creating ejabberd user and database..."
-			psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
-
-			cd /etc/ejabberd
-			psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
-			
-			psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
-			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
-			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-			sed -i 's/restya.com/'$webdir'/g' /etc/ejabberd/ejabberd.yml
-			sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
-
-			ejabberdctl start
-			sleep 15
-			ejabberdctl change_password admin $webdir restya
-			ejabberdctl stop
-			sleep 15
-			ejabberdctl start
 
 			ps -q 1 | grep -q -c "systemd"
 			if [ "$?" -eq 0 ];
@@ -1380,7 +1145,7 @@ get_geoip_data () {
 				/etc/init.d/nginx restart
 			fi
 			
-			/bin/echo "$RESTYABOARD_VERSION" > /opt/restyaboard/release
+			/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 		esac
 	fi
 	set +x

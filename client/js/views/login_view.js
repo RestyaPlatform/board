@@ -68,11 +68,11 @@ App.LoginView = Backbone.View.extend({
                     auth_response.user.last_activity_id = response.user.last_activity_id;
                     auth_response.user.language = response.user.language;
                     auth_response.user.is_ldap = response.user.is_ldap;
-                    window.sessionStorage.setItem('auth', JSON.stringify(auth_response));
+                    $.cookie('auth', JSON.stringify(auth_response));
                     i18next.changeLanguage(response.user.language);
                     api_token = response.access_token;
                     var links = JSON.parse(response.links);
-                    window.sessionStorage.setItem('links', response.links);
+                    $.cookie('links', response.links);
                     role_links.reset();
                     if (!_.isEmpty(links)) {
                         role_links.add(links);
@@ -84,32 +84,21 @@ App.LoginView = Backbone.View.extend({
                     });
                     $('.company').addClass('hide');
                     $('#header').html(this.headerView.el);
-                    if (!_.isEmpty(window.sessionStorage.getItem('redirect_link'))) {
-                        var redirect_link = window.sessionStorage.getItem('redirect_link');
-                        sessionStorage.removeItem('redirect_link');
+                    if (!_.isEmpty($.cookie('redirect_link'))) {
+                        var redirect_link = $.cookie('redirect_link');
+                        $.removeCookie('redirect_link');
                         window.location = redirect_link;
                     } else {
                         window.location = '#/boards';
                     }
                 } else {
                     $('input#inputPassword', target).val('');
-                    if (response.code === 'LDAP') {
-                        if (response.error === 'ERROR_LDAP_AUTH_FAILED') {
-                            self.flash('danger', i18next.t('LDAP authentication failed.'));
-                        } else if (response.error === 'ERROR_LDAP_SERVER_CONNECT_FAILED') {
-                            self.flash('danger', i18next.t('LDAP server connection failed.'));
-                        } else {
-                            self.flash('danger', i18next.t('Email not associated for this LDAP account.'));
-                        }
+                    if (is_offline_data) {
+                        self.flash('danger', i18next.t('Sorry, login failed. Internet connection not available.'));
                     } else {
-                        if (is_offline_data) {
-                            self.flash('danger', i18next.t('Sorry, login failed. Internet connection not available.'));
-                        } else {
-                            self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
-                        }
+                        self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
                     }
                 }
-
             }
         });
         return false;

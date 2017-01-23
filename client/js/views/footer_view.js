@@ -25,8 +25,6 @@ App.FooterView = Backbone.View.extend({
         'click .js-show-organizations-board-from': 'showOrganizationsBoardFrom',
         'click .js-show-board-add-form': 'showBoardAddForm',
         'click .js-show-organizations-add-form': 'showOrganizationsAddForm',
-        'click .js-show-instant-card-from': 'showInstantCardFrom',
-        'click .js-show-chat': 'showChat',
         'click .js-show-qr-code': 'showQrCode',
         'click .js-show-boards-list': 'showBoardsList',
         'click .js-collapse-myboards': 'collapseMyBoards',
@@ -54,12 +52,6 @@ App.FooterView = Backbone.View.extend({
         },
         'click .js-all-board-activities': 'showBoardActivities',
         'click .js-notification-menu': 'notificationMenu',
-        'click .search-icon': 'callQSearch',
-        'submit form.search-container': 'qSearch',
-        'click .js-close-popover': 'closePopup',
-        'click .js-search': 'showSearchMsg',
-        'focusout .js-search': 'searchClose',
-        'submit form.js-instantCardAddForm': 'addInstantCard',
         'click .js-show-notification': 'showNotification',
         'click .js-change-language': 'changeLanguage',
         'click .js-back-boards-list': 'showBackBoardsList',
@@ -93,7 +85,6 @@ App.FooterView = Backbone.View.extend({
         'click #modal-comments': 'showActivity',
         'click .js-show-shortcuts-modal': 'showShortcutModal',
         'keyup[shift+/] body': 'keyboardShowShortcutModal',
-        'click .js-search-block-close': 'closeSearchBlock',
     },
     /** 
      * Constructor
@@ -142,12 +133,32 @@ App.FooterView = Backbone.View.extend({
                 }
             });
         }
+        var getting_new_array = [];
+        if (!_.isEmpty(localStorage.getItem('apps'))) {
+            apps_data = JSON.parse(localStorage.getItem('apps'));
+            var getss = apps_data;
+            var get_names = [];
+            _.each(apps_data, function(data) {
+                get_names.push(data.name);
+            });
+            get_names.sort();
+            _.each(get_names, function(data) {
+                _.each(getss, function(datas) {
+                    if (data === datas.name) {
+                        getting_new_array.push(datas);
+                    }
+                });
+            });
+        } else {
+            getting_new_array = '';
+        }
+
         this.$el.html(this.template({
             model: this.model,
             board_id: this.board_id,
             board: this.board,
-            languages: window.sessionStorage.getItem('languages').split(','),
-            apps: (window.sessionStorage.getItem('apps') !== "") ? JSON.parse(window.sessionStorage.getItem('apps')) : ''
+            languages: $.cookie('languages').split(','),
+            apps: getting_new_array
         }));
 
         if (_.isEmpty(this.board_id)) {
@@ -216,14 +227,14 @@ App.FooterView = Backbone.View.extend({
             } else {
                 authuser.user.is_productivity_beats = 0;
             }
-            var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+            var Auth = JSON.parse($.cookie('auth'));
             Auth.user.is_productivity_beats = volume;
-            window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+            $.cookie('auth', JSON.stringify(Auth));
         } else {
             if (volume === true) {
-                window.sessionStorage.setItem('music_play', "1");
+                $.cookie('music_play', "1");
             } else {
-                window.sessionStorage.setItem('music_play', "0");
+                $.cookie('music_play', "0");
             }
         }
         $(e.currentTarget).data('type', set_type);
@@ -247,9 +258,9 @@ App.FooterView = Backbone.View.extend({
         e.preventDefault();
         var self = this;
         authuser.user.language = $(e.currentTarget).data('lang');
-        var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+        var Auth = JSON.parse($.cookie('auth'));
         Auth.user.language = $(e.currentTarget).data('lang');
-        window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+        $.cookie('auth', JSON.stringify(Auth));
         var user = new App.User();
         user.url = api_url + 'users/' + authuser.user.id + '.json';
         user.set('id', parseInt(authuser.user.id));
@@ -264,40 +275,6 @@ App.FooterView = Backbone.View.extend({
                 }
             }
         });
-        return false;
-    },
-    /**
-     * showInstantCardFrom()
-     * show instant card add form
-     * @param e
-     * @type Object(DOM event)
-     * @return false
-     *
-     */
-    showInstantCardFrom: function(e) {
-        e.preventDefault();
-        var instantCardAdd = new App.InstantCardAdd({
-            board_id: '',
-            list_id: ''
-        });
-        var cardAddView = new App.InstantCardAddView({
-            model: instantCardAdd,
-            board: this.board
-        });
-        return false;
-    },
-    /**
-     * showChat()
-     * show chat form
-     * @param e
-     * @type Object(DOM event)
-     * @return false
-     *
-     */
-    showChat: function(e) {
-        e.preventDefault();
-        $('#js-chat-count').addClass('hide').html('');
-        $('a#toggle-controlbox').trigger('click');
         return false;
     },
     /**
@@ -420,36 +397,6 @@ App.FooterView = Backbone.View.extend({
         var parent = target.parents('.js-show-add-boards-list');
         var insert = $('.js-show-boards-list-response', parent);
         $('.js-show-boards-list-response').html(new App.OrganizationAddView().el);
-        return false;
-    },
-    /**
-     * searchClose()
-     * close
-     * @param e
-     * @type Object(DOM event)
-     * @return false
-     *
-     */
-    searchClose: function() {
-        $('.search-container').removeClass('search-tab');
-        $("#js-loader-img").addClass('hide');
-        $("#res").addClass('hide');
-        $("#nres").addClass('hide');
-
-        return false;
-    },
-    /**
-     * closePopup()
-     * hide opened dropdown
-     * @param e
-     * @type Object(DOM event)
-     * @return false
-     *
-     */
-    closePopup: function(e) {
-        var target = $(e.target);
-        target.parents('li.dropdown').removeClass('open');
-        $('li.js-back').remove();
         return false;
     },
     /**
@@ -738,7 +685,7 @@ App.FooterView = Backbone.View.extend({
         var self = this;
         var activities = new App.ActivityCollection();
         var view_activity = $('#js-all-activities');
-        var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+        var Auth = JSON.parse($.cookie('auth'));
         if (_.isUndefined(authuser.user.last_activity_id)) {
             authuser.user.last_activity_id = Auth.user.last_activity_id;
         }
@@ -780,14 +727,14 @@ App.FooterView = Backbone.View.extend({
                         } else {
                             $('.js-notification-count').addClass('hide');
                         }
-                        Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                        Auth = JSON.parse($.cookie('auth'));
                         Auth.user.last_activity_id = update_last_activity.id;
                         Auth.user.notify_count = favCount;
-                        window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                        $.cookie('auth', JSON.stringify(Auth));
                         authuser.user.last_activity_id = update_last_activity.id;
                     } else if (mode == 2) {
                         if (favCount > 0) {
-                            Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                            Auth = JSON.parse($.cookie('auth'));
                             var user = new App.User();
                             user.url = api_url + 'users/' + authuser.user.id + '.json';
                             user.set('id', parseInt(authuser.user.id));
@@ -798,7 +745,7 @@ App.FooterView = Backbone.View.extend({
                             Auth.user.notify_count = 0;
                             favicon.badge(0);
                             $('.js-notification-count').addClass('hide');
-                            window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                            $.cookie('auth', JSON.stringify(Auth));
 
                         }
                     }
@@ -825,8 +772,10 @@ App.FooterView = Backbone.View.extend({
                                 if (!_.isUndefined(activity.attributes.checklist_item_parent_name)) {
                                     activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', activity.attributes.checklist_item_parent_name);
                                 }
+                                activity.attributes.comment = stripScripts(activity.attributes.comment);
                             } else if (activity.attributes.type === 'add_comment') {
                                 activity.attributes.comment = _.escape(activity.attributes.full_name) + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                activity.attributes.comment = stripScripts(activity.attributes.comment);
                             }
                             new Notification(activity.attributes.comment, {
                                 icon: icon
@@ -994,7 +943,7 @@ App.FooterView = Backbone.View.extend({
                                                 items = new App.CheckListItemCollection();
                                                 items.add(checklist_items);
                                                 completed_count = items.filter(function(checklist_item) {
-                                                    return parseInt(checklist_item.get('is_completed')) === 1;
+                                                    return ((parseInt(checklist_item.get('is_completed')) === 1) || ((checklist_item.get('is_completed')) === 't'));
                                                 }).length;
                                                 total_count = items.models.length;
                                                 card.set('checklist_item_completed_count', completed_count);
@@ -1009,6 +958,8 @@ App.FooterView = Backbone.View.extend({
                                             card.users.add(new_user);
                                         } else if (activity.attributes.type === 'add_comment') {
                                             card.list.collection.board.activities.add(activity);
+                                            var current_card = card.list.collection.board.cards.get(activity.attributes.card_id);
+                                            card.set('comment_count', parseInt(current_card.attributes.comment_count) + 1);
                                         } else if (activity.attributes.type === 'add_card_attachment') {
                                             var new_attachment = new App.CardAttachment();
                                             new_attachment.set(activity.attributes.attachment);
@@ -1017,20 +968,20 @@ App.FooterView = Backbone.View.extend({
                                             new_attachment.set('list_id', parseInt(activity.attributes.attachment.list_id));
                                             new_attachment.set('card_id', parseInt(activity.attributes.attachment.card_id));
                                             self.board.attachments.add(new_attachment);
-                                        } else if (activity.attributes.type === 'change_card_position') {
-                                            card.set('position', activity.attributes.card.position);
+                                        } else if (activity.attributes.type === 'move_card') {
+                                            card.set('position', activity.attributes.card_position);
                                             var card_new_list = self.board.lists.findWhere({
-                                                id: parseInt(activity.attributes.list_id)
+                                                id: parseInt(activity.attributes.foreign_id)
                                             });
                                             if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(parseInt(activity.attributes.board_id)))) {
                                                 var updated_card_list_cards = self.board.cards.where({
-                                                    list_id: parseInt(activity.attributes.list_id)
+                                                    list_id: parseInt(activity.attributes.foreign_id)
                                                 });
-                                                App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.list_id)).set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
+                                                App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.foreign_id)).set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
                                             }
                                             card_new_list.set('card_count', card_new_list.attributes.card_count + 1);
                                             card.list = card_new_list;
-                                            card.set('list_id', parseInt(activity.attributes.list_id));
+                                            card.set('list_id', parseInt(activity.attributes.foreign_id));
                                             var cards_attachments = self.board.attachments.where({
                                                 card_id: parseInt(activity.attributes.card_id)
                                             });
@@ -1046,13 +997,16 @@ App.FooterView = Backbone.View.extend({
                                                     self.board.attachments.findWhere({
                                                         id: parseInt(cards_attachment.attributes.id)
                                                     }).set({
-                                                        list_id: parseInt(activity.attributes.list_id)
+                                                        list_id: parseInt(activity.attributes.foreign_id)
                                                     }, options);
                                                     k++;
                                                 });
                                             }
                                         } else if (activity.attributes.type === 'delete_card_attachment') {
                                             self.board.attachments.remove(self.board.attachments.findWhere({
+                                                id: parseInt(activity.attributes.foreign_id)
+                                            }));
+                                            card.attachments.remove(card.attachments.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
                                             }));
                                         } else if (activity.attributes.type === 'delete_card_comment') {
@@ -1123,7 +1077,9 @@ App.FooterView = Backbone.View.extend({
 
                                     }
                                     if (!_.isUndefined(list)) {
-                                        list.set(activity.attributes.revisions.new_value);
+                                        if (activity.attributes.revisions) {
+                                            list.set(activity.attributes.revisions.new_value);
+                                        }
                                         if (activity.attributes.type === 'delete_list') {
                                             var removed_list_cards = self.board.cards.where({
                                                 list_id: parseInt(list.attributes.id)
@@ -1234,7 +1190,7 @@ App.FooterView = Backbone.View.extend({
                                         card_count = board.attributes.card_count - 1;
                                         board.set('card_count', card_count);
                                         board_list.set('card_count', board_list.attributes.card_count - 1);
-                                    } else if (activity.attributes.type === 'change_card_position' || activity.attributes.type === 'moved_list_card') {
+                                    } else if (activity.attributes.type === 'move_card' || activity.attributes.type === 'moved_list_card') {
                                         if (!_.isEmpty(activity.attributes.revisions.new_value)) {
                                             board.set('card_count', '');
                                             card_count = board.attributes.card_count;
@@ -1322,10 +1278,10 @@ App.FooterView = Backbone.View.extend({
                         var unread_activity_id = _.max(activities.models, function(activity) {
                             return activity.id;
                         });
-                        Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                        Auth = JSON.parse($.cookie('auth'));
                         Auth.user.unread_activity_id = unread_activity_id.id;
                         authuser.user.unread_activity_id = unread_activity_id.id;
-                        window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                        $.cookie('auth', JSON.stringify(Auth));
                     }
                 } else {
                     if (parseInt(authuser.user.last_activity_id) === 0 || authuser.user.last_activity_id === null) {
@@ -1357,7 +1313,7 @@ App.FooterView = Backbone.View.extend({
     boardActivities: function() {
         var view_activity = $('#js-board-activities');
         var self = this;
-        var Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+        var Auth = JSON.parse($.cookie('auth'));
         var clicked_notification_count = 0,
             clicked_all_notification_count = 0;
         var activities = new App.ActivityCollection();
@@ -1387,10 +1343,10 @@ App.FooterView = Backbone.View.extend({
                     var unread_activity_id = _.max(activities.models, function(activity) {
                         return activity.id;
                     });
-                    Auth = JSON.parse(window.sessionStorage.getItem('auth'));
+                    Auth = JSON.parse($.cookie('auth'));
                     Auth.user.unread_activity_id = unread_activity_id.id;
                     authuser.user.unread_activity_id = unread_activity_id.id;
-                    window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                    $.cookie('auth', JSON.stringify(Auth));
                     var last_board_activity = _.min(activities.models, function(activity) {
                         return activity.id;
                     });
@@ -1409,7 +1365,7 @@ App.FooterView = Backbone.View.extend({
                         Auth.user.notify_count = 0;
                         favicon.badge(0);
                         $('.js-notification-count').addClass('hide');
-                        window.sessionStorage.setItem('auth', JSON.stringify(Auth));
+                        $.cookie('auth', JSON.stringify(Auth));
                     }
 
                 }
@@ -1442,73 +1398,6 @@ App.FooterView = Backbone.View.extend({
         } else {
             this.userActivities();
         }
-    },
-    /**
-     * qSearch()
-     * search board, list, card
-     * @param e
-     * @type Object(DOM event)
-     *
-     */
-    callQSearch: function(e) {
-        this.qSearch();
-    },
-    qSearch: function(e) {
-        var q = $('#search-box').val();
-        if (q !== '') {
-            $('.search-container').addClass('search-tab');
-            $("#res, #nres").removeClass('hide');
-            var elastic_search = new App.ElasticSearchCollection();
-            elastic_search.url = api_url + 'search.json';
-            elastic_search.fetch({
-                data: {
-                    q: q,
-                    token: api_token
-                },
-                success: function(model, response) {
-                    response = response;
-                    response.result.search_term = q;
-                    $("#js-loader-img").addClass('hide');
-                    $("#res").addClass('hide');
-                    $("#nres").addClass('hide');
-                    app.navigate('#/search/' + q, {
-                        trigger: false,
-                        trigger_function: false,
-                        replace: true
-                    });
-                    $('.js-boards-list-container-search').addClass('hide');
-                    $('#search-page-result-block').html(new App.SearchPageResultView({
-                        model: response
-                    }).el);
-                    $("#search-page-result").removeClass("search-block").addClass("search-block-main-hover");
-                    var w_height = $(window).height() - 38;
-                    $(".search-block-main-hover").css('height', w_height + 'px');
-                }
-            });
-        }
-        return false;
-    },
-    /**
-     * showSearchMsg()
-     * display search result
-     * @param e
-     * @type Object(DOM event)
-     *
-     */
-    showSearchMsg: function(e) {
-        e.preventDefault();
-        $('.js-show-search-result').html(new App.ShowSearchMessageView({
-            model: this.model
-        }).el);
-    },
-    addInstantCard: function(e) {
-        e.preventDefault();
-        $('li.dropdown').removeClass('open');
-        var self = this;
-        var data = $(e.target).serializeObject();
-        var card = new App.Card();
-        card.url = api_url + 'boards/' + data.board_id + '/lists/' + data.list_id + '/cards.json';
-        card.save(data);
     },
     showNotification: function(e) {
         e.preventDefault();
@@ -1702,9 +1591,18 @@ App.FooterView = Backbone.View.extend({
             hide_class = hide_class.substring(0, hide_class.lastIndexOf(', '));
             if (i === 2 || i === 0) {
                 $('.modal-comments, .modal-activities', e_target).parent('li').removeClass('hide');
+                $("#no-record").remove();
             }
             if (i !== 2) {
                 $(hide_class, e_target).parent('li').addClass('hide');
+                if ($('#modal-comments', e_target).hasClass('active')) {
+                    $("#js-board-activities").append('<li id="no-record">No Records Found</li>');
+                }
+            }
+            if ($("ul#js-board-activities").find("li.js-activity:not('.hide')").length > 0) {
+                $("#no-record").addClass("hide");
+            } else {
+                $("#no-record").removeClass("hide");
             }
             $('#' + target.attr('id'), e_target).parent('ul').removeClass('called');
         }
@@ -1735,14 +1633,4 @@ App.FooterView = Backbone.View.extend({
         }
         return false;
     },
-    closeSearchBlock: function(e) {
-        var url = window.sessionStorage.getItem('previous_url');
-        app.navigate('#/' + url, {
-            trigger: false,
-            trigger_function: false,
-            replace: true
-        });
-        $('#search-box').val('');
-        $('#search-page-result-block').html('');
-    }
 });

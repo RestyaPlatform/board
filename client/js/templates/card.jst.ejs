@@ -95,7 +95,7 @@
 			card.users.each(function(card_user) {
 				if (!_.isUndefined(card_user)) {
 		%>
-					<li class="pull-right js-tooltip navbar-btn" data-container="body" data-placement="bottom" title="<%-card_user.attributes.full_name %> (<%-card_user.attributes.username %>)" data-toggle="tooltip">
+					<li class="pull-left js-tooltip navbar-btn" data-container="body" data-placement="bottom" title="<%-card_user.attributes.full_name %> (<%-card_user.attributes.username %>)" data-toggle="tooltip">
 						<% if(!_.isEmpty(card_user.attributes.profile_picture_path)) { 
 							var profile_picture_path = card.showImage('User', card_user.attributes.user_id, 'small_thumb' );
 						%>

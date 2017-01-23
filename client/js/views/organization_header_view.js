@@ -92,7 +92,12 @@ App.OrganizationHeaderView = Backbone.View.extend({
             this.model.save(data, {
                 patch: true,
                 success: function(model, response) {
-
+                    var organization = auth_user_organizations.findWhere({
+                        id: parseInt(model.id)
+                    });
+                    if (!_.isEmpty(organization)) {
+                        organization.set("name", data.name);
+                    }
                 }
             });
         }

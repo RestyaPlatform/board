@@ -180,6 +180,31 @@
 			    <span><%if(parseInt(user.attributes.is_active) === 1){%><%- i18next.t("Block") %><%}else{%><%- i18next.t("Unblock") %><%}%></span></a>
 		    </li>  
 			<li class="navbar-btn">
+				<div class="dropdown btn-group">  
+						<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button">
+							<%- i18next.t("Change Password") %>
+						</button>
+								<ul class="dropdown-menu arrow arrow-right" role="menu">
+											<div class="panel-body well-lg">
+												<form role="form" class = "js-admin-change-password" name="UserChangePasswordAdminForm" id="UserChangePasswordAdminForm">
+														<div class="form-group input password required">
+															<label class="sr-only control-label" for="inputPassword"><%- i18next.t('Enter a new Password') %></label>
+															<input type="password" class="form-control" placeholder="<%- i18next.t('Enter a new Password') %>" id="inputPassword" name="password" required title="<%- i18next.t('Enter a new Password') %>">
+														</div>
+														<div class="form-group input cpassword required">
+															<label class="sr-only control-label" for="inputConfirmPassword"><%- i18next.t('Confirm Password') %></label>
+															<input type="password" class="form-control" placeholder="<%- i18next.t('Confirm Password') %>" id="inputConfirmPassword" name="confirm_password" required title="<%- i18next.t('Confirm Password') %>">
+														</div>
+														<div class="form-group">
+															<label class="sr-only control-label" for="submit2"><%- i18next.t('Change Password') %></label>
+															<input type="submit" class="btn btn-primary col-xs-12" id="submitChangePasswordAdmin" value="<%- i18next.t('Change Password') %>" >
+														</div>
+												</form>
+										</div>
+								</ul>
+					</div>
+			</li> 
+			<li class="navbar-btn">
 			    <span class="dropdown navbar-btn">
 				<a aria-expanded="false" data-toggle="dropdown" class="btn btn-primary btn-xs" href="#" <% if(user.attributes.role_id == 1){%> disabled="disabled" <% } %> >
 					<i class="icon-remove"></i> <%- i18next.t("Delete") %>

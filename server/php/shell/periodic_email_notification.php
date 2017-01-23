@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2016 Restya
+ * @copyright  2014-2017 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -347,3 +347,8 @@ if ($db_lnk) {
         }
     }
 }
+$conditions = array(
+    'now()'
+);
+executeQuery("DELETE FROM oauth_access_tokens WHERE expires < $1", $conditions);
+executeQuery("DELETE FROM oauth_refresh_tokens WHERE expires < $1", $conditions);

@@ -55,6 +55,11 @@
 							<label class="sr-only control-label" for="submitEditRole"><%- i18next.t("Update") %></label>
 							<input type="submit" class="btn btn-primary col-xs-12" id="submitEditRole" value="<%- i18next.t('Update') %>">
 						  </div>
+							<% if(parseInt(role.attributes.id) > 3) { %>
+								<div class="form-group">
+									<a href="#" title="Delete" class="js-delete-role btn btn-primary col-xs-12" data-role_id="<%- role.attributes.id %>"><%- i18next.t('Delete') %></a>											
+								</div>
+							<% } %>
 						</form>
 					 </li>
 				</ul>
@@ -128,7 +133,7 @@
 										</td>
 									<% } %>
 								<% } else { %>
-									<% if (acl_link.attributes.is_allow_only_to_edit === 1 && acl_link.attributes.is_allow_only_to_guest === 0) { %>
+									<% if (acl_link.attributes.is_user_action === 1 && acl_link.attributes.is_guest_action === 0) { %>
 										<td class="text-center">
 											<div class="checkbox">
 												<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
@@ -208,6 +213,11 @@
 										<label class="sr-only control-label" for="submitEditBoardUserRole"><%- i18next.t("Update") %></label>
 										<input type="submit" class="btn btn-primary col-xs-12" id="submitEditBoardUserRole" value="<%- i18next.t('Update') %>">
 									  </div>
+										<% if(parseInt(board_user_role.attributes.id) > 3) { %>
+											<div class="form-group">
+												<a href="#" title="Delete" class="js-delete-board-user-role btn btn-primary col-xs-12" data-board_user_role_id="<%- board_user_role.attributes.id %>"><%- i18next.t('Delete') %></a>											
+											</div>
+										<% } %>
 									</form>
 								 </li>
 							</ul>
@@ -314,6 +324,11 @@
 												<label class="sr-only control-label" for="submitEditOrganizationUserRole"><%- i18next.t("Update") %></label>
 												<input type="submit" class="btn btn-primary col-xs-12" id="submitEditOrganizationUserRole" value="<%- i18next.t('Update') %>">
 											  </div>
+												<% if(parseInt(organization_user_role.attributes.id) > 3) { %>
+													<div class="form-group">
+														<a href="#" title="Delete" class="js-delete-organization-user-role btn btn-primary col-xs-12" data-organization_user_role_id="<%- organization_user_role.attributes.id %>"><%- i18next.t('Delete') %></a>											
+													</div>
+												<% } %>
 											</form>
 										 </li>
 									</ul>

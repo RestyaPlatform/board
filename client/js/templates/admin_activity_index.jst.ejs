@@ -15,15 +15,16 @@
 		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', _.escape(activity.attributes.checklist_item_parent_name));
 		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
 	} else {
-			var comment = activity.attributes.full_name + ' commented in card ' + cardLink;
-			var matches = activity.attributes.comment.match(/@([^ ]*)/g);
-			var _username = [];
-			_.each(matches, function(match) {
-				_username.push(match.substr(1));
-			});
-			if(_.contains(_username, authuser.user.username)){
-				comment = activity.attributes.full_name + ' has mentioned you in card ' + cardLink;
-			}
+		var comment = activity.attributes.full_name + ' commented in card ' + cardLink;
+		var matches = activity.attributes.comment.match(/@([^ ]*)/g);
+		var _username = [];
+		_.each(matches, function(match) {
+			_username.push(match.substr(1));
+		});
+		if(_.contains(_username, authuser.user.username)){
+			comment = activity.attributes.full_name + ' has mentioned you in card ' + cardLink;
+		}
+		comment = stripScripts(comment);
 	}
 %>
 <div class="media">
@@ -41,6 +42,9 @@
 		<div class="media-heading">			
             <span class="js-activity-<%- activity.attributes.id %>">
 				<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
+					<%
+						activity.attributes.comment = stripScripts(activity.attributes.comment);
+					%>
 					<span><%= comment %></span>
 					<%= converter.makeHtml(makeLink(_.escape(activity.attributes.comment), activity.attributes.board_id)) %>
 				<% } else{%>
@@ -61,6 +65,9 @@
 				<div class="panel-body">
 					<span class="js-activity-<%- activity.attributes.id %>">
 						<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
+							<%
+								activity.attributes.comment = stripScripts(activity.attributes.comment);
+							%>
 							<span><%= comment %></span>
 							<%= converter.makeHtml(makeLink(_.escape(activity.attributes.comment), activity.attributes.board_id)) %>
 						<% } else{%>
@@ -104,7 +111,7 @@
 							<% } %>
 							</ul>
 						</div>
-					<% } else if(activity.attributes.revisions != null && activity.attributes.revisions != "" && (parseInt(authuser.user.id) == 1 || current_user_can_undo_it == true )){ %>
+					<% } else if(activity.attributes.revisions != null && activity.attributes.revisions != "" && (parseInt(authuser.user.id) == 1)){ %>
 						<% if(!_.isEmpty(role_links.where({slug: "undo_activity"}))){ %>
 							<% if(_.isUndefined(activity.from_footer)) { %>
 								<div class="pull-left js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline col-xs-offset-0"><li><a title="<%- i18next.t('Undo') %>" class="js-undo2 pull-left" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>

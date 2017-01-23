@@ -738,41 +738,7 @@
                 ]
             }
         },
-        "/v1/boards/{boardId}.json": {
-            "delete": {
-                "operationId": "deleteBoard",
-                "parameters": [
-                    {
-                        "description": "OAuth token",
-                        "in": "query",
-                        "name": "token",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "description": "Board ID to delete",
-                        "in": "path",
-                        "name": "boardId",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "produces": [
-                    "application/json",
-                    "application/xml",
-                    "text/plain",
-                    "text/html"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "No response was specified"
-                    }
-                },
-                "summary": "Delete the board",
-                "tags": [
-                    "boards"
-                ]
-            },
+        "/v1/boards/{boardId}.json": {            
             "get": {
                 "description": "Returns a Board based on ID",
                 "operationId": "getBoardById",
@@ -1884,55 +1850,7 @@
                 ]
             }
         },
-        "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/card_voters.json": {
-            "delete": {
-                "operationId": "deleteCardVoters",
-                "parameters": [
-                    {
-                        "description": "OAuth token",
-                        "in": "query",
-                        "name": "token",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "description": "Selected board ID",
-                        "in": "path",
-                        "name": "boardId",
-                        "required": true,
-                        "type": "integer"
-                    },
-                    {
-                        "description": "Selected list ID",
-                        "in": "path",
-                        "name": "listId",
-                        "required": true,
-                        "type": "integer"
-                    },
-                    {
-                        "description": "Card ID to delete",
-                        "in": "path",
-                        "name": "cardId",
-                        "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "produces": [
-                    "application/json",
-                    "application/xml",
-                    "text/plain",
-                    "text/html"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "No response was specified"
-                    }
-                },
-                "summary": "Delete all Card voters",
-                "tags": [
-                    "card_voters"
-                ]
-            },
+        "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/card_voters.json": {            
             "post": {
                 "consumes": [
                     "application/json",
@@ -2044,69 +1962,7 @@
                 "tags": [
                     "card_voters"
                 ]
-            },
-            "put": {
-                "consumes": [
-                    "application/json",
-                    "application/xml"
-                ],
-                "operationId": "updateVote",
-                "parameters": [
-                    {
-                        "description": "OAuth token",
-                        "in": "query",
-                        "name": "token",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "description": "Selected board ID",
-                        "in": "path",
-                        "name": "boardId",
-                        "required": true,
-                        "type": "integer"
-                    },
-                    {
-                        "description": "Selected list ID",
-                        "in": "path",
-                        "name": "listId",
-                        "required": true,
-                        "type": "integer"
-                    },
-                    {
-                        "description": "Card ID to delete",
-                        "in": "path",
-                        "name": "cardId",
-                        "required": true,
-                        "type": "integer"
-                    },
-                    {
-                        "description": "Selected card voter ID",
-                        "in": "path",
-                        "name": "cardVoterId",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "produces": [
-                    "application/json",
-                    "application/xml",
-                    "text/plain",
-                    "text/html"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "No response was specified"
-                    },
-                    "405": {
-                        "description": "Invalid input"
-                    }
-                },
-                "summary": "Update a Vote",
-                "tags": [
-                    "card_voters"
-                ]
-            }
+            }            
         },
         "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/checklists.json": {
             "post": {
@@ -2582,7 +2438,7 @@
                 ]
             }
         },
-        "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/comment.json": {
+        "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/comments.json": {
             "post": {
                 "consumes": [
                     "application/json",
@@ -2648,7 +2504,7 @@
                 ]
             }
         },
-        "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/comment/{commentId}.json": {
+        "/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/comments/{commentId}.json": {
             "delete": {
                 "operationId": "deleteComment",
                 "parameters": [
@@ -3203,51 +3059,7 @@
                 ]
             }
         },
-        "/v1/boards_users/{userId}.json": {
-            "delete": {
-                "consumes": [
-                    "application/json",
-                    "application/xml"
-                ],
-                "operationId": "removeBoardMember",
-                "parameters": [
-                    {
-                        "description": "OAuth token",
-                        "in": "query",
-                        "name": "token",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "description": "ID of BoardUser Table needs to Remove",
-                        "format": "int64",
-                        "in": "path",
-                        "maximum": 100000,
-                        "minimum": 1,
-                        "name": "userId",
-                        "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "produces": [
-                    "application/json",
-                    "application/xml",
-                    "text/plain",
-                    "text/html"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "No response was specified"
-                    },
-                    "405": {
-                        "description": "Invalid input"
-                    }
-                },
-                "summary": "Remove member from the Board",
-                "tags": [
-                    "boards"
-                ]
-            },
+        "/v1/boards_users/{userId}.json": {            
             "put": {
                 "consumes": [
                     "application/json",
@@ -3823,41 +3635,7 @@
             }
         },
         "/v1/organizations_users/{id}.json": {
-            "get": {
-                "description": "Returns member list",
-                "operationId": "Members listing",
-                "parameters": [
-                    {
-                        "description": "OAuth token",
-                        "in": "query",
-                        "name": "token",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "description": "Organization ID to get listing",
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "produces": [
-                    "application/json",
-                    "application/xml",
-                    "text/plain",
-                    "text/html"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "No response was specified"
-                    }
-                },
-                "summary": "Member Listing",
-                "tags": [
-                    "organizations"
-                ]
-            },
+            
             "put": {
                 "description": "Change member  permission",
                 "operationId": "changeMemberPermission",
@@ -3907,42 +3685,7 @@
                 "tags": [
                     "organizations"
                 ]
-            },
-            "delete": {
-                "description": "Remove organization member",
-                "operationId": "remove_organization_user",
-                "parameters": [
-                    {
-                        "description": "OAuth token",
-                        "in": "query",
-                        "name": "token",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "description": "User ID to Remove from Organization members list",
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "produces": [
-                    "application/json",
-                    "application/xml",
-                    "text/plain",
-                    "text/html"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "No response was specified"
-                    }
-                },
-                "summary": "Remove organization member",
-                "tags": [
-                    "organizations"
-                ]
-            }
+            }            
         },
         "/v1/users.json": {
             "get": {

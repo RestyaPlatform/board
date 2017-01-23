@@ -26,45 +26,8 @@ App.SettingView = Backbone.View.extend({
      */
     events: {
         'submit form#js-setting-list-form': 'updateSetting',
-        'click .js-import-users': 'importUsers',
     },
-    /**
-     * importUsers()
-     * @return false
-     */
-    importUsers: function(e) {
-        var importUsersUrl = api_url + 'users/import.json?token=' + api_token;
-        $('.js-import-users').attr('disabled', true);
-        $('#js-loader-img').removeClass('hide');
-        var is_import_organizations = ($('#enableImportUsers').is(":checked")) ? true : false;
-        var is_send_welcome_mail = ($('#dontSendWelcomeMail').is(":checked")) ? false : true;
-        $.ajax({
-            type: 'POST',
-            data: {
-                'is_import_organizations': is_import_organizations,
-                'is_send_welcome_mail': is_send_welcome_mail
-            },
-            url: importUsersUrl,
-            success: function(response) {
-                if (response.success) {
-                    if (is_import_organizations) {
-                        self.flash('success', i18next.t('Users and organizations imported successfully.'));
-                    } else {
-                        self.flash('success', i18next.t('Users imported successfully.'));
-                    }
-                } else {
-                    if (response.error === 'user_not_found') {
-                        self.flash('danger', i18next.t('User records not available.'));
-                    } else {
-                        self.flash('danger', i18next.t('LDAP connection failed.'));
-                    }
-                }
-                $('#js-loader-img').addClass('hide');
-                $('.js-import-users').attr('disabled', false);
-            },
-            dataType: 'json'
-        });
-    },
+
     /**
      * updateSetting()
      * @return false
@@ -75,13 +38,7 @@ App.SettingView = Backbone.View.extend({
         if (!_.isUndefined(data.DEFAULT_CARD_VIEW)) {
             DEFAULT_CARD_VIEW = data.DEFAULT_CARD_VIEW;
         }
-        if (!_.isUndefined(data.LDAP_LOGIN_ENABLED) && $('.js-checkbox').is(":checked")) {
-            data.LDAP_LOGIN_ENABLED = 'true';
-        } else {
-            if (parseInt(this.id) === 2) {
-                data.LDAP_LOGIN_ENABLED = 'false';
-            }
-        }
+
         if (!_.isUndefined(data.STANDARD_LOGIN_ENABLED) && $('.js-checkbox').is(":checked")) {
             data.STANDARD_LOGIN_ENABLED = 'true';
         } else {

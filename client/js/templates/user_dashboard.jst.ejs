@@ -73,9 +73,13 @@
 		<div class="clearfix dropdown navbar-btn">
 			<a href="#" title="Organizations" class="btn btn-primary navbar-btn" data-toggle="dropdown"><%- data.organizations.length %> <%- i18next.t('Organizations') %> <i class="caret"></i> </a>
 			 <ul class="dropdown-menu arrow dropdown-menu-right text-left">
-				 <% _.each(data.organizations, function(item, key) { %> 
-					<li><a href="#/organization/<%- item.attributes.id %>" title="<%- item.attributes.name %>"> <%- item.attributes.name %> </a></li>
-				<% }); %> 
+				 <% if(!_.isEmpty(data.organizations)) { %>
+					<% _.each(data.organizations, function(item, key) { %> 
+						<li><a href="#/organization/<%- item.attributes.id %>" title="<%- item.attributes.name %>"> <%- item.attributes.name %> </a></li>
+					<% }); %> 
+				<% } else { %>
+					<li><%- i18next.t('No Records found') %></li>
+				<% } %>
 			 </ul>
 		</div>
 	 </div>
@@ -94,7 +98,7 @@
 		   </div>
 			<ul class="list-unstyled chart-block list-group-item-text pull-right">
 				<li class="list-group-item clearfix no-bor">
-					<a class="show" href="#">
+					<a class="show">
 						<div id="doughnutChart" class="chart js-chart" data-todo="<%- todo_count %>" data-doing="<%- doing_count %>" data-done="<%- done_count %>"></div>
 					</a>
 				</li>
@@ -133,7 +137,7 @@
 			</div>
 			<ul class="list-unstyled chart-block list-group-item-text pull-right">
 				<li class="list-group-item clearfix no-bor">
-					<a class="show" href="#">
+					<a class="show">
 						<div id="doughnutChart" class="chart js-chart" data-todo="<%- current_week_todo_count %>" data-doing="<%- current_week_doing_count %>" data-done="<%- current_week_done_count %>"></div>
 					</a>
 				</li>
@@ -155,7 +159,7 @@
 			   </div>
 			   <ul class="list-unstyled chart-block list-group-item-text pull-right">
 				<li class="list-group-item clearfix no-bor">
-					<a class="show" href="#">
+					<a class="show">
 						<div id="doughnutChart" class="chart js-chart" data-todo="<%- overall_todo_count %>" data-doing="<%- overall_doing_count %>" data-done="<%- overall_done_count %>"></div>
 					</a>
 				</li>

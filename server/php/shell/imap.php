@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2016 Restya
+ * @copyright  2014-2017 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -69,10 +69,19 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                     $card_query = pg_query_params('SELECT ' . $str . ' as position FROM cards WHERE board_id = $1 AND list_id = $2', $val_arr);
                     $card = pg_fetch_assoc($card_query);
                     $position = empty($card['position']) ? 1 : (!empty($board['is_default_email_position_as_bottom'])) ? $card['position'] + 1 : $card['position'];
+                    $title = '';
+                    $decoded_title = imap_mime_header_decode($header->subject);
+                    for ($i = 0; $i < count($decoded_title); $i++) {
+                        if (!strcasecmp($decoded_title[$i]->charset, "utf-8") == 0) {
+                            $title.= iconv($decoded_title[$i]->charset, "utf-8", $decoded_title[$i]->text);
+                        } else {
+                            $title.= $decoded_title[$i]->text;
+                        }
+                    }
                     $val_arr = array(
                         $board_id,
                         $list_id,
-                        $header->subject,
+                        $title,
                         $body,
                         $position,
                         $board['user_id']

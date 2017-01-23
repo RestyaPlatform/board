@@ -42,11 +42,9 @@ App.AppsView = Backbone.View.extend({
         _app.save(data, {
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
+                    localStorage.removeItem('apps');
                     self.flash('success', i18next.t('App updated successfully'));
-                    app.navigate('#/apps', {
-                        trigger: true,
-                        replace: true
-                    });
+                    location.reload();
                 } else {
                     self.flash('danger', i18next.t('App not updated successfully.'));
                 }
@@ -62,8 +60,22 @@ App.AppsView = Backbone.View.extend({
      *
      */
     render: function() {
+        var get_names = [];
+        var getss = this.model;
+        _.each(this.model, function(data) {
+            get_names.push(data.name);
+        });
+        get_names.sort();
+        var getting_new_array = [];
+        _.each(get_names, function(data) {
+            _.each(getss, function(datas) {
+                if (data === datas.name) {
+                    getting_new_array.push(datas);
+                }
+            });
+        });
         this.$el.html(this.template({
-            apps: this.model,
+            apps: getting_new_array,
         }));
         $('.js-admin-app-menu').addClass('active');
         $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-role-menu, .js-admin-setting-menu, .js-admin-board-menu, .js-admin-email-menu').removeClass('active');

@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2016 Restya
+ * @copyright  2014-2017 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -21,7 +21,7 @@ if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
 }
 if ($db_lnk) {
     $qry_val_arr = array();
-    $result = pg_query_params($db_lnk, "SELECT * FROM cards_listing WHERE due_date BETWEEN ((now() + '1 day'::INTERVAL) - '300 seconds'::INTERVAL) AND (now() + '1 day'::INTERVAL)", $qry_val_arr);
+    $result = pg_query_params($db_lnk, "SELECT * FROM cards_listing WHERE notification_due_date BETWEEN ((now() + '1 day'::INTERVAL) - '300 seconds'::INTERVAL) AND (now() + '1 day'::INTERVAL)", $qry_val_arr);
     while ($card = pg_fetch_assoc($result)) {
         $cards_users = json_decode($card['cards_users']);
         if (!empty($cards_users)) {
