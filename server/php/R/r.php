@@ -8,7 +8,7 @@
  * @package    REST
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2016 Restya
+ * @copyright  2014-2017 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  * @todo       Fix code duplication & make it really lightweight
@@ -24,9 +24,6 @@ require_once '../config.inc.php';
 require_once '../libs/vendors/finediff.php';
 require_once '../libs/core.php';
 require_once '../libs/vendors/OAuth2/Autoloader.php';
-require_once '../libs/vendors/xmpp/vendor/autoload.php';
-use Xmpp\Xep\Xep0045 as xmpp;
-use Psr\Log\LoggerInterface;
 $j_username = $j_password = '';
 require_once '../bootstrap.php';
 global $jabberHost, $jaxlDebug;
@@ -1774,10 +1771,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 );
                 $users = pg_query_params($db_lnk, 'DELETE FROM users WHERE id= $1 RETURNING username', $conditions);
                 if (is_plugin_enabled('r_chat') && $jabberHost) {
-                    $user = pg_fetch_assoc($users);
-                    $xmpp_user = getXmppUser();
-                    $xmpp = new xmpp($xmpp_user);
-                    $xmpp->deleteUser('<iq from="' . $authUser['username'] . '@' . $jabberHost . '" id="delete-user-2" to="' . $jabberHost . '" type="set" xml:lang="en"><command xmlns="http://jabber.org/protocol/commands" node="http://jabber.org/protocol/admin#delete-user"><x xmlns="jabber:x:data" type="submit"><field type="hidden" var="FORM_TYPE"><value>http://jabber.org/protocol/admin</value></field><field var="accountjids"><value>' . $user['username'] . '@' . $jabberHost . '</value></field></x></command></iq>');
+                    xmppDeleteUser($users);
                 }
             }
             $response = array(
@@ -1816,8 +1810,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
         } else if ($action_id == 3) {
             if (is_plugin_enabled('r_chat') && $jabberHost) {
-                $xmpp_user = getXmppUser();
-                $xmpp = new xmpp($xmpp_user);
+                $xmpp = xmppObj();
             }
             foreach ($board_ids as $board_id) {
                 $conditions = array(
@@ -1825,8 +1818,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 );
                 $boards = pg_query_params($db_lnk, 'DELETE FROM boards WHERE id= $1', $conditions);
                 if (is_plugin_enabled('r_chat') && $jabberHost && $boards) {
-                    $board = pg_fetch_assoc($boards);
-                    $xmpp->destroyRoom('board-' . $board_id['board_id']);
+                    xmppDestroyRoom($boards, $xmpp);
                 }
             }
             $response = array(
@@ -1882,33 +1874,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['ip_id'] = saveIp();
             $r_post['full_name'] = email2name($r_post['email']);
             if (is_plugin_enabled('r_chat') && $jabberHost) {
-                global $j_username, $j_password;
-                $jaxl_initialize = array(
-                    'jid' => $jabberHost,
-                    'strict' => false,
-                    'log_level' => 0,
-                    'port' => 5222,
-                    'log_path' => 'jaxl.log'
-                );
-                $GLOBALS['client'] = new JAXL($jaxl_initialize);
-                $j_username = $r_post['username'];
-                $j_password = $r_post['password'];
-                $xeps = array(
-                    '0077'
-                );
-                $GLOBALS['client']->require_xep($xeps);
-                $GLOBALS['client']->add_cb('on_stream_features', function ($stanza)
-                {
-                    global $argv;
-                    $GLOBALS['client']->xeps['0077']->get_form($jabberHost);
-                    return "wait_for_register_form";
-                });
-                $GLOBALS['client']->add_cb('on_disconnect', function ()
-                {
-                    global $form;
-                    _info("registration " . ($form['type'] == 'result' ? 'succeeded' : 'failed'));
-                });
-                $GLOBALS['client']->start();
+                xmppRegisterUser($r_post);
             }
             if (!empty($sql)) {
                 $post = getbindValues($table_name, $r_post);
@@ -1958,33 +1924,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['ip_id'] = saveIp();
             $r_post['full_name'] = ($r_post['email'] == '') ? $r_post['username'] : email2name($r_post['email']);
             if (is_plugin_enabled('r_chat') && !empty($jabberHost)) {
-                global $j_username, $j_password;
-                $jaxl_initialize = array(
-                    'jid' => $jabberHost,
-                    'strict' => false,
-                    'log_level' => 0,
-                    'port' => 5222,
-                    'log_path' => 'jaxl.log'
-                );
-                $GLOBALS['client'] = new JAXL($jaxl_initialize);
-                $j_username = $r_post['username'];
-                $j_password = $r_post['password'];
-                $xeps = array(
-                    '0077'
-                );
-                $GLOBALS['client']->require_xep($xeps);
-                $GLOBALS['client']->add_cb('on_stream_features', function ($stanza)
-                {
-                    global $argv;
-                    $GLOBALS['client']->xeps['0077']->get_form($jabberHost);
-                    return "wait_for_register_form";
-                });
-                $GLOBALS['client']->add_cb('on_disconnect', function ()
-                {
-                    global $form;
-                    _info("registration " . ($form['type'] == 'result' ? 'succeeded' : 'failed'));
-                });
-                $GLOBALS['client']->start();
+                xmppRegisterUser($r_post);
             }
             if (!empty($sql)) {
                 $post = getbindValues($table_name, $r_post);
@@ -2119,10 +2059,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 );
                 pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
                 if (is_plugin_enabled('r_chat') && $jabberHost) {
-                    $xmpp_user = getXmppUser();
-                    $xmpp = new xmpp($xmpp_user);
-                    $xmpp->changePassword('<iq xmlns="jabber:client" to="' . $jabberHost . '" type="set" id="2"><query 
-						xmlns="jabber:iq:register"><username>' . $user['username'] . '</username><password>' . $r_post['password'] . '</password></query></iq>');
+                    xmppChangePassword($r_post, $user);
                 }
                 if ($authUser['role_id'] == 1) {
                     $emailFindReplace = array(
@@ -2161,10 +2098,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
                     if (is_plugin_enabled('r_chat') && $jabberHost) {
-                        $xmpp_user = getXmppUser();
-                        $xmpp = new xmpp($xmpp_user);
-                        $xmpp->changePassword('<iq xmlns="jabber:client" to="' . $jabberHost . '" type="set" id="2"><query 
-						xmlns="jabber:iq:register"><username>' . $user['username'] . '</username><password>' . $r_post['password'] . '</password></query></iq>');
+                        xmppChangePassword($r_post, $user);
                     }
                     $conditions = array(
                         $authUser['username']
@@ -2397,9 +2331,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $response['uuid'] = $uuid;
                 }
                 if (is_plugin_enabled('r_chat') && $jabberHost) {
-                    $xmpp_user = getXmppUser();
-                    $xmpp = new xmpp($xmpp_user);
-                    $xmpp->createRoom('board-' . $response['id'], $r_post['name']);
+                    xmppCreateRoom($r_post, $response);
                 }
                 if (!$is_import_board) {
                     $foreign_id['board_id'] = $response['id'];
@@ -3127,9 +3059,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $comment = '##USER_NAME## added member to board';
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board_user', $foreign_ids, '', $response['id']);
                 if (is_plugin_enabled('r_chat') && $jabberHost) {
-                    $xmpp_user = getXmppUser();
-                    $xmpp = new xmpp($xmpp_user);
-                    $xmpp->grantMember('board-' . $previous_value['id'], $r_post['username'], 'member');
+                    xmppGrantMember($r_post, $previous_value);
                 }
             }
         }
@@ -4743,8 +4673,15 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $qry_val_arr = array(
             $r_resource_vars['cards']
         );
-        $s_result = pg_query_params($db_lnk, 'SELECT name, board_id, list_id, position, description, due_date FROM ' . $table_name . ' WHERE id = $1', $qry_val_arr);
+        $s_result = pg_query_params($db_lnk, 'SELECT name, board_id, list_id, position, description, custom_fields, due_date FROM ' . $table_name . ' WHERE id = $1', $qry_val_arr);
         $previous_value = pg_fetch_assoc($s_result);
+        if (!empty($previous_value['custom_fields'])) {
+            $custom_decode = json_decode($previous_value['custom_fields'], true);
+            $present_custom_decode = json_decode($r_put['custom_fields'], true);
+            $final_custom_array = array_merge($custom_decode, $present_custom_decode);
+            $custom_field_encode = json_encode($final_custom_array);
+            $r_put['custom_fields'] = $custom_field_encode;
+        }
         $current_list_id = $previous_value['list_id'];
         if (isset($r_put['position'])) {
             if (!empty($r_put['list_id'])) {
@@ -5110,7 +5047,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
  */
 function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 {
-    global $r_debug, $db_lnk, $authUser, $_server_domain_url;
+    global $r_debug, $db_lnk, $authUser, $_server_domain_url, $jabberHost;
     $sql = false;
     $pg_params = $diff = $response = $foreign_ids = $foreign_id = $revisions_del = array();
     $activity_type = '';
@@ -5127,9 +5064,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $sql = 'DELETE FROM users WHERE id= $1';
         array_push($pg_params, $r_resource_vars['users']);
         if (is_plugin_enabled('r_chat') && $jabberHost) {
-            $xmpp_user = getXmppUser();
-            $xmpp = new xmpp($xmpp_user);
-            $xmpp->deleteUser('<iq from="' . $authUser['username'] . '@' . $jabberHost . '" id="delete-user-2" to="' . $jabberHost . '" type="set" xml:lang="en"><command xmlns="http://jabber.org/protocol/commands" node="http://jabber.org/protocol/admin#delete-user"><x xmlns="jabber:x:data" type="submit"><field type="hidden" var="FORM_TYPE"><value>http://jabber.org/protocol/admin</value></field><field var="accountjids"><value>' . $username['username'] . '@' . $jabberHost . '</value></field></x></command></iq>');
+            xmppDeleteSingleUser($username);
         }
         break;
 
@@ -5179,9 +5114,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         array_push($pg_params, $r_resource_vars['boards_users']);
         if (is_plugin_enabled('r_chat') && $jabberHost) {
-            $xmpp_user = getXmppUser();
-            $xmpp = new xmpp($xmpp_user);
-            $xmpp->revokeMember('board-' . $previous_value['board_id'], $previous_value['username']);
+            xmppRevokeMember($previous_value);
         }
         break;
 

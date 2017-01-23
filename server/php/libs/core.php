@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2016 Restya
+ * @copyright  2014-2017 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -1568,10 +1568,7 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
         }
         if ($r_resource_cmd == '/boards_users/?') {
             if (is_plugin_enabled('r_chat')) {
-                $affiliation = ($r_put['board_user_role_id'] == 1) ? 'admin' : 'member';
-                $xmpp_user = getXmppUser();
-                $xmpp = new xmpp($xmpp_user);
-                $xmpp->grantMember('board-' . $r_put['board_id'], $r_put['username'], $affiliation);
+                xmppChangeGrantMember($r_put);
             }
         }
         $val = '';

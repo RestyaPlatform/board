@@ -43,9 +43,7 @@
             <span class="js-activity-<%- activity.attributes.id %>">
 				<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
 					<%
-						console.log(activity.attributes.comment);
 						activity.attributes.comment = stripScripts(activity.attributes.comment);
-						console.log(activity.attributes.comment);
 					%>
 					<span><%= comment %></span>
 					<%= converter.makeHtml(makeLink(_.escape(activity.attributes.comment), activity.attributes.board_id)) %>
@@ -68,9 +66,7 @@
 					<span class="js-activity-<%- activity.attributes.id %>">
 						<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
 							<%
-								console.log(activity.attributes.comment);
 								activity.attributes.comment = stripScripts(activity.attributes.comment);
-								console.log(activity.attributes.comment);
 							%>
 							<span><%= comment %></span>
 							<%= converter.makeHtml(makeLink(_.escape(activity.attributes.comment), activity.attributes.board_id)) %>

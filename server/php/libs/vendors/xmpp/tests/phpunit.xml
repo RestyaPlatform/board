@@ -1,5 +1,0 @@
-<phpunit colors="true" bootstrap="./TestHelper.php">
-    <testsuite name="Xmpp Test Suite">
-        <directory>./</directory>
-    </testsuite>
-</phpunit>

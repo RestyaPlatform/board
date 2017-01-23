@@ -8,8 +8,42 @@ module.exports = function(grunt) {
         jshint: {
             all: source_js_files
         },
+        eslint: {
+            src: source_js_files
+        },
+        closureCompiler: {
+            options: {
+                compilerFile: 'compiler/compiler.jar',
+                checkModified: true,
+                compilerOpts: {
+                    compilation_level: 'ADVANCED_OPTIMIZATIONS',
+                    define: ["'goog.DEBUG=false'"],
+                    warning_level: 'verbose',
+                    jscomp_off: ['checkTypes', 'fileoverviewTags'],
+                    summary_detail_level: 3,
+                    output_wrapper: '"(function(){%output%}).call(this);"'
+                },
+                execOpts: {
+                    maxBuffer: 999999 * 1024
+                },
+                d32: true,
+                TieredCompilation: true
+            },
+            targetName: {
+                src: 'client/js/default.cache.js',
+                dest: 'client/js/default.cache.compiled.js'
+            }
+        },
         phplint: {
             all: ['server/php/R/*.php', 'server/php/shell/*.php', 'server/php/libs/*.php']
+        },
+        phpcs: {
+            application: {
+                dir: ['server/php/R/*.php', 'server/php/shell/*.php', 'server/php/libs/*.php']
+            },
+            options: {
+                standard: 'PEAR'
+            }
         },
         less: {
             development: {
@@ -83,16 +117,24 @@ module.exports = function(grunt) {
             }
         },
         uglify: {
-            js: {
+            main: {
                 files: {
                     'client/js/default.cache.js': ['client/js/default.cache.js']
                 }
             },
-            authorize_js: {
+            authorize: {
                 files: {
                     'client/js/authorize.cache.js': ['client/js/authorize.cache.js']
                 }
             },
+            apps: {
+                files: [{
+                    expand: true,
+                    cwd: 'client/apps',
+                    src: '**/js/*.js',
+                    dest: 'client/apps'
+                }]
+            }
         },
         filerev: {
             live: {
@@ -114,9 +156,23 @@ module.exports = function(grunt) {
             }
         },
         'regex-replace': {
-            build: {
+            deploy: {
+                src: ['client/index.html'],
+                actions: [{
+                    name: '',
+                    search: '/restyaboard/',
+                    replace: '/',
+                    flags: 'g'
+                }]
+            },
+            replace: {
                 src: ['client/index.html', 'server/php/config.inc.php'],
                 actions: [{
+                    name: 'Debug mode Replace',
+                    search: '\'R_DEBUG\', true',
+                    replace: '\'R_DEBUG\', false',
+                    flags: 'g'
+                }, {
                     name: 'DB User',
                     search: '\'restya\'',
                     replace: '\'<%= config.db_user %>\'',
@@ -137,22 +193,22 @@ module.exports = function(grunt) {
                     replace: '<html class="no-js" lang="en" manifest="default.appcache">',
                     flags: 'g'
                 }, {
-                    name: 'Chat DB Host',
+                    name: 'DB Host',
                     search: '\'CHAT_DB_HOST\', \'localhost\'',
                     replace: '\'CHAT_DB_HOST\', \'<%= config.chat_db_host %>\'',
                     flags: 'g'
                 }, {
-                    name: 'Chat DB User',
+                    name: 'DB User',
                     search: '\'ejabb\'',
                     replace: '\'<%= config.chat_db_user %>\'',
                     flags: 'g'
                 }, {
-                    name: 'Chat DB Password',
+                    name: 'DB Password',
                     search: 'ftfnVgYl2',
                     replace: '<%= config.chat_db_password %>',
                     flags: 'g'
                 }, {
-                    name: 'Chat DB Name',
+                    name: 'DB Name',
                     search: '\'ejabberd\'',
                     replace: '\'<%= config.chat_db_name %>\'',
                     flags: 'g'
@@ -160,7 +216,7 @@ module.exports = function(grunt) {
             }
         },
         manifest: {
-            build: {
+            main: {
                 options: {
                     basePath: 'client',
                     timestamp: true,
@@ -202,8 +258,12 @@ module.exports = function(grunt) {
             }
         },
         zip: {
-            'using-cwd': {
-                src: ['manifest.xml', 'api_explorer/**/*.*', 'server/php/**/*.*', 'media/**/*.*', 'client/*.*', 'client/css/authorize.css', 'client/css/default.cache.*.css', 'client/js/default.cache.*.js', 'client/js/authorize.cache.js', 'client/js/workflow_templates/*.*', 'client/font/**/*.*', 'client/img/**/*.*'],
+            deploy: {
+                src: ['restyaboard.sh', 'ejabberd.yml', 'manifest.xml', 'sql/restyaboard_with_empty_data.sql', 'tmp/cache/', 'api_explorer/**/*.*', 'server/php/**/*.*', 'media/**/*.*', 'client/*.*', 'client/css/authorize.css', 'client/css/default.cache.*.css', 'client/js/default.cache.*.js', 'client/js/authorize.cache.js', 'client/js/workflow_templates/*.*', 'client/font/**/*.*', 'client/img/**/*.*', 'client/locales/**/*.*'],
+                dest: 'restyaboard.zip'
+            },
+            main: {
+                src: ['manifest.xml', 'api_explorer/**/*.*', 'server/php/**/*.*', 'media/**/*.*', 'client/*.*', 'client/css/authorize.css', 'client/css/default.cache.*.css', 'client/js/default.cache.*.js', 'client/js/authorize.cache.js', 'client/js/workflow_templates/*.*', 'client/font/**/*.*', 'client/img/**/*.*', 'client/locales/**/*.*', 'client/apps/**/*.*'],
                 dest: 'restyaboard.zip'
             }
         },
@@ -270,7 +330,10 @@ module.exports = function(grunt) {
         }
     });
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-eslint');
+    grunt.loadNpmTasks('grunt-closure-tools');
     grunt.loadNpmTasks('grunt-phplint');
+    grunt.loadNpmTasks('grunt-phpcs');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-jst');
     grunt.loadNpmTasks('grunt-contrib-concat');
@@ -282,9 +345,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-usemin');
     grunt.loadNpmTasks('grunt-contrib-htmlmin');
     grunt.loadNpmTasks('grunt-exec');
-    grunt.loadNpmTasks('grunt-lineending');
     grunt.loadNpmTasks('grunt-regex-replace');
     grunt.loadNpmTasks('grunt-manifest');
+    grunt.loadNpmTasks('grunt-lineending');
     grunt.loadNpmTasks('grunt-zip');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-plato');
@@ -294,7 +357,11 @@ module.exports = function(grunt) {
     grunt.registerTask('format', ['jsbeautifier:default', 'prettify', 'exec']);
     grunt.registerTask('pre-commit', ['jshint', 'phplint']);
     grunt.registerTask('build', 'Build task', function(env) {
-        grunt.config.set('config', grunt.file.readJSON('build/' + env + '.json'));
-        grunt.task.run(['jshint', 'phplint', 'less', 'jst', 'concat', 'cssmin', 'uglify', 'filerev', 'usemin', 'htmlmin', 'regex-replace', 'manifest', 'lineending', 'zip']);
+        if (env == 'deploy') {
+            grunt.task.run(['jshint', 'phplint', 'less', 'jst', 'concat', 'cssmin', 'uglify', 'filerev', 'usemin', 'htmlmin', 'regex-replace:deploy', 'manifest', 'lineending', 'zip:deploy']);
+        } else {
+            grunt.config.set('config', grunt.file.readJSON('build/' + env + '.json'));
+            grunt.task.run(['jshint', 'phplint', 'less', 'jst', 'concat', 'cssmin', 'uglify', 'filerev', 'usemin', 'htmlmin', 'regex-replace:replace', 'regex-replace:app', 'manifest', 'lineending', 'zip:main']);
+        }
     });
 };

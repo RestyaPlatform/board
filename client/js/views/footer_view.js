@@ -1077,7 +1077,6 @@ App.FooterView = Backbone.View.extend({
 
                                     }
                                     if (!_.isUndefined(list)) {
-                                        console.log(activity);
                                         if (activity.attributes.revisions) {
                                             list.set(activity.attributes.revisions.new_value);
                                         }

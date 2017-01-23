@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2016 Restya
+ * @copyright  2014-2017 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */

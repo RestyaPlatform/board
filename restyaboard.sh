@@ -4,7 +4,7 @@
 #
 # Usage: ./restyaboard.sh
 #
-# Copyright (c) 2014-2016 Restya.
+# Copyright (c) 2014-2017 Restya.
 # Dual License (OSL 3.0 & Commercial License)
 {
 	if [[ $EUID -ne 0 ]];
@@ -79,7 +79,7 @@
 	update_version()
 	{
 		set +x
-		echo "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available. Do you want to get it now y/n?"
+		echo "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available.\n\nImportant: Please note that upgrading will remove any commercial apps that were free in previous version.\nFor more details about commercial apps, please visit http://restya.com/board/pricing\n\nDo you want to get it now y/n?"
 		read -r answer
 		set -x
 		case "${answer}" in
@@ -119,6 +119,28 @@
 			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/chat_activities.sh//" /var/spool/cron/crontabs/root
 			sed -i "s/0 * * * * $dir\/server\/php\/shell\/periodic_chat_email_notification.sh//" /var/spool/cron/crontabs/root
 			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/indexing_to_elasticsearch.sh//" /var/spool/cron/crontabs/root
+
+			rm $dir/server/php/shell/chat_activities.sh
+			rm $dir/server/php/shell/chat_activities.php
+			rm $dir/server/php/shell/indexing_to_elasticsearch.sh
+			rm $dir/server/php/shell/indexing_to_elasticsearch.php
+			rm $dir/server/php/shell/periodic_chat_email_notification.sh
+			rm $dir/server/php/shell/periodic_chat_email_notification.php
+			rm $dir/server/php/shell/upgrade_v0.2.1_v0.3.php
+
+			rm -rf $dir/client/apps/r_amazon_echo/
+			rm -rf $dir/client/apps/r_auto_archive_expired_cards/
+			rm -rf $dir/client/apps/r_canned_response/
+			rm -rf $dir/client/apps/r_estimated_time/
+			rm -rf $dir/client/apps/r_import_github/
+			rm -rf $dir/client/apps/r_seo_checklist/
+			rm -rf $dir/client/apps/r_slack/
+			rm -rf $dir/client/apps/r_website_qa_checklist/
+			rm -rf $dir/client/apps/r_zapier/
+
+			rm -rf $dir/server/php/libs/vendors/xmpp/
+			rm -rf $dir/server/php/libs/vendors/jaxl3/
+			rm -rf $dir/server/php/libs/vendors/xmpp-prebind-php/
 			
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
