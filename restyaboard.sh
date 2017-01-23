@@ -79,7 +79,7 @@
 	update_version()
 	{
 		set +x
-		echo "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available.\n\nImportant: Please note that upgrading will remove any commercial apps that were free in previous version.\nFor more details about commercial apps, please visit http://restya.com/board/pricing\n\nDo you want to get it now y/n?"
+		echo -e "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available.\n\nImportant: Please note that upgrading will remove any commercial apps that were free in previous version.\nFor more details about commercial apps, please visit http://restya.com/board/pricing\n\nDo you want to get it now y/n?"
 		read -r answer
 		set -x
 		case "${answer}" in
