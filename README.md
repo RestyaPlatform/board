@@ -44,7 +44,6 @@ To give you some idea about of our plans:
 
 #### Under release
 
-* Commercial branching for better monetization
 * Notifier iOS App (Non-open source; free with IAP)
 
 
