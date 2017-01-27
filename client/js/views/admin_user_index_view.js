@@ -56,6 +56,7 @@ App.AdminUserIndexView = Backbone.View.extend({
                     roles: response.roles
                 }).el);
                 users.each(function(user) {
+                    user.roles = response.roles;
                     $('.js-user-list').append(new App.UserIndex({
                         model: user
                     }).el);
