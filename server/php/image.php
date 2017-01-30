@@ -64,7 +64,7 @@ if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size)) {
         $new_image_obj = new imagick($fullPath);
         $new_image = $new_image_obj->clone();
         $new_image->setImageColorspace(Imagick::COLORSPACE_RGB);
-        $new_image->flattenImages();
+        $new_image->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
         if (!$is_aspect) {
             $new_image->cropThumbnailImage($width, $height);
         } else {
