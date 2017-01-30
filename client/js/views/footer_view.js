@@ -1583,7 +1583,7 @@ App.FooterView = Backbone.View.extend({
             $('.modal-activities').parent('li').removeClass('hide');
             $('#modal-activities').addClass('active');
             $('#modal-comments').removeClass('active');
-            if ($("li.js-activity:visible").length == 0) {
+            if ($("li.js-activity:visible").length === 0) {
                 $("#js-all-activities").append('<li id="no-record">No Records Found</li>');
             }
         }
@@ -1593,7 +1593,7 @@ App.FooterView = Backbone.View.extend({
             $('.modal-comments').parent('li').removeClass('hide');
             $('#modal-comments').addClass('active');
             $('#modal-activities').removeClass('active');
-            if ($("li.js-activity:visible").length == 0) {
+            if ($("li.js-activity:visible").length === 0) {
                 $("#js-all-activities").append('<li id="no-record">No Records Found</li>');
             }
         }
