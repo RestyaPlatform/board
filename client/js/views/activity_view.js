@@ -29,7 +29,7 @@ App.ActivityView = Backbone.View.extend({
         if (!_.isUndefined(options.board)) {
             this.board = options.board;
         }
-        if (!_.isUndefined(authuser.user) && !_.isUndefined(this.model.board_users)) {
+        if (!_.isUndefined(authuser.user) && !_.isEmpty(this.model) && !_.isUndefined(this.model.board_users)) {
             var board_user_role_id = this.model.board_users.findWhere({
                 user_id: parseInt(authuser.user.id)
             });
