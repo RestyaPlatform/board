@@ -1036,8 +1036,6 @@ App.ModalCardView = Backbone.View.extend({
             }
             $this.resizable({
                 handles: 'e',
-                minWidth: 110,
-                maxWidth: 490,
                 resize: function(event, ui) {
                     var x = ui.element.outerWidth();
                     var ele = ui.element;
