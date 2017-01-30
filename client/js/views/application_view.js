@@ -472,7 +472,9 @@ App.ApplicationView = Backbone.View.extend({
         if (page.model !== 'boards_view' && page.model !== 'users_index') {
             $('#header').html(this.headerView.el);
         }
-        $.cookie('previous_url', Backbone.history.getFragment());
+        if (page.model !== 'boards_view') {
+            $.cookie('previous_url', Backbone.history.getFragment());
+        }
     },
     populateLists: function() {
         App.boards.each(function(board) {
