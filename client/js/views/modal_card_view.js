@@ -918,7 +918,8 @@ App.ModalCardView = Backbone.View.extend({
                         } else if (current_param.indexOf('/card/' + self.model.id) != -1) {
                             current_param = current_param.replace('/card/' + self.model.id, '');
                         } else {
-                            current_param = 'board/' + self.model.attributes.board_id;
+                            var board_id = window.location.hash.split("/");
+                            current_param = 'board/' + board_id['2'];
                         }
                         app.navigate('#/' + current_param, {
                             trigger: false,
