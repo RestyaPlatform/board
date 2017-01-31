@@ -183,15 +183,15 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         } else if (!empty($r_resource_filters['search'])) {
             $filter_condition = "WHERE LOWER(full_name) LIKE '%" . strtolower($r_resource_filters['search']) . "%' OR LOWER(email) LIKE '%" . strtolower($r_resource_filters['search']) . "%' ";
         }
-        $c_sql = 'SELECT COUNT(*) FROM users_listing ul ';
+        $c_sql = 'SELECT COUNT(*) FROM admin_users_listing ul ';
         if (!empty($r_resource_filters['search'])) {
-            $c_sql = 'SELECT COUNT(*) FROM users_listing ul ' . $filter_condition;
+            $c_sql = 'SELECT COUNT(*) FROM admin_users_listing ul ' . $filter_condition;
         }
         if (!empty($c_sql)) {
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
             $_metadata = $paging_data['_metadata'];
         }
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ' limit ' . $_metadata['limit'] . ' offset ' . $_metadata['offset'] . ') as d ';
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM admin_users_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ' limit ' . $_metadata['limit'] . ' offset ' . $_metadata['offset'] . ') as d ';
         $filter_count = array();
         $val_array = array(
             true
