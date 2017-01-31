@@ -1825,6 +1825,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'success' => 'Checked boards are deleted successfully.'
             );
         }
+        echo json_encode($response);
         break;
 
     case '/users/forgotpassword': //users forgot password
@@ -5344,7 +5345,8 @@ $exception_url = array(
     '/users/?/activation',
     '/settings',
     '/boards/?',
-    '/oauth/token'
+    '/oauth/token',
+    '/users/logout'
 );
 $scope_exception_url = array(
     '/users/login',
