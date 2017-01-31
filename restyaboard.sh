@@ -16,7 +16,7 @@
 	whoami
 	echo $(cat /etc/issue)
 	OS_REQUIREMENT=$(lsb_release -i -s)
-	if [ $? != 0 || OS_REQUIREMENT = "" ]
+	if [ $? != 0 ]
 	then
 		echo "lsb_release is not enabled"
 		exit 1
