@@ -46,7 +46,7 @@ function main()
         if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/client.php') && !empty($_server_domain_url)) {
             doPost('http://restya.com/clients', array(
                 'app' => 'board',
-                'ver' => '0.4',
+                'ver' => '0.4.1',
                 'url' => $_server_domain_url
             ));
             $fh = fopen(APP_PATH . '/tmp/cache/client.php', 'a');
