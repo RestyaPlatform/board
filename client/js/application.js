@@ -95,27 +95,18 @@ callbackTranslator = {
             $('#progress').width('101%').delay(200).fadeOut(400, function() {
                 $(this).remove();
             });
-            if (model !== null && !_.isUndefined(model.responseText) && !_.isEmpty(model.responseText)) {
-                if (JSON.parse(model.responseText).error.type === 'board') {
-                    changeTitle('404 Page not found');
-                    this.headerView = new App.HeaderView({
-                        model: authuser
-                    });
-                    $('#header').html(this.headerView.el);
-                    $('#content').html(new App.Error404View().el);
-                    return;
-                } else if (JSON.parse(model.responseText).error.type === 'visibility') {
-                    $.cookie('redirect_link', window.location.hash);
-                    changeTitle('Board not found');
-                    this.headerView = new App.HeaderView({
-                        model: authuser
-                    });
-                    $('#header').html(this.headerView.el);
-                    $('#content').html(new App.Board404View({
-                        model: authuser
-                    }).el);
-                    return;
-                }
+            var current_url = window.location.hash.split("/");
+            if (model !== null && !_.isUndefined(model.status) && model.status == '401' && !_.isUndefined(current_url) && current_url['1'] == 'board') {
+                $.cookie('redirect_link', window.location.hash);
+                changeTitle('Board not found');
+                this.headerView = new App.HeaderView({
+                    model: authuser
+                });
+                $('#header').html(this.headerView.el);
+                $('#content').html(new App.Board404View({
+                    model: authuser
+                }).el);
+                return;
             }
             if (model === null) {
                 changeTitle('404 Page not found');
