@@ -1577,34 +1577,25 @@ App.FooterView = Backbone.View.extend({
         var hide_class = '';
         var target = $(e.currentTarget);
         var e_target = $(e.target).parents().find('#all_activities');
-        if (!$('#' + target.attr('id'), e_target).parent('ul').hasClass('called')) {
-            $('#' + target.attr('id'), e_target).parent('ul').addClass('called');
-            $('#' + target.attr('id'), e_target).toggleClass('active');
-            if (!$('#modal-comments', e_target).hasClass('active')) {
-                i++;
-                hide_class = hide_class + '.modal-comments, ';
+        if (target.attr('id') == 'modal-activities') {
+            $('#no-record').remove();
+            $('.modal-comments').parent('li').addClass('hide');
+            $('.modal-activities').parent('li').removeClass('hide');
+            $('#modal-activities').addClass('active');
+            $('#modal-comments').removeClass('active');
+            if ($("li.js-activity:visible").length === 0) {
+                $("#js-all-activities").append('<li id="no-record">No Records Found</li>');
             }
-            if (!$('#modal-activities', e_target).hasClass('active')) {
-                i++;
-                hide_class = hide_class + '.modal-activities, ';
+        }
+        if (target.attr('id') == 'modal-comments') {
+            $('#no-record').remove();
+            $('.modal-activities').parent('li').addClass('hide');
+            $('.modal-comments').parent('li').removeClass('hide');
+            $('#modal-comments').addClass('active');
+            $('#modal-activities').removeClass('active');
+            if ($("li.js-activity:visible").length === 0) {
+                $("#js-all-activities").append('<li id="no-record">No Records Found</li>');
             }
-            hide_class = hide_class.substring(0, hide_class.lastIndexOf(', '));
-            if (i === 2 || i === 0) {
-                $('.modal-comments, .modal-activities', e_target).parent('li').removeClass('hide');
-                $("#no-record").remove();
-            }
-            if (i !== 2) {
-                $(hide_class, e_target).parent('li').addClass('hide');
-                if ($('#modal-comments', e_target).hasClass('active')) {
-                    $("#js-board-activities").append('<li id="no-record">No Records Found</li>');
-                }
-            }
-            if ($("ul#js-board-activities").find("li.js-activity:not('.hide')").length > 0) {
-                $("#no-record").addClass("hide");
-            } else {
-                $("#no-record").removeClass("hide");
-            }
-            $('#' + target.attr('id'), e_target).parent('ul').removeClass('called');
         }
         return false;
     },

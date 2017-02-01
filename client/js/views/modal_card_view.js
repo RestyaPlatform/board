@@ -918,7 +918,8 @@ App.ModalCardView = Backbone.View.extend({
                         } else if (current_param.indexOf('/card/' + self.model.id) != -1) {
                             current_param = current_param.replace('/card/' + self.model.id, '');
                         } else {
-                            current_param = 'board/' + self.model.attributes.board_id;
+                            var board_id = window.location.hash.split("/");
+                            current_param = 'board/' + board_id['2'];
                         }
                         app.navigate('#/' + current_param, {
                             trigger: false,
@@ -1035,8 +1036,6 @@ App.ModalCardView = Backbone.View.extend({
             }
             $this.resizable({
                 handles: 'e',
-                minWidth: 110,
-                maxWidth: 490,
                 resize: function(event, ui) {
                     var x = ui.element.outerWidth();
                     var ele = ui.element;
@@ -1830,7 +1829,7 @@ App.ModalCardView = Backbone.View.extend({
                 content_img = '<img src="' + profile_picture_path + '" alt="' + user.get('username') + '" title="' + user.get('full_name') + ' (' + user.get('username') + ')" class="img-rounded img-responsive avatar" data-container="body" data-toggle="tooltip">';
             }
             if (!isNaN(user.attributes.user_id)) {
-                content += '<li class="js-added-card-user-' + user.attributes.user_id + '"><a href="#/user/' + user.attributes.user_id + '">' + content_img + '</a></li>';
+                content += '<li class="js-added-card-user-' + user.attributes.user_id + '"><div class="dropdown js-member-dropdown"> <a class="dropdown-toggle js-show-add-member-form" role="button" data-toggle="dropdown" title="' + user.attributes.username + '" href="#"> ' + content_img + '</a><ul class="dropdown-menu dropdown-menu-left arrow col-xs-12"><li> <div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>Members</strong></span><i class="icon-remove cur no-print"></i></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12"><form method="post" class="text-center" name="addMember"><div class="form-group"><label class="sr-only">Search Member</label><input type="text" autocomplete="off" id="inputOrganizationUserSearch" placeholder="Search Members" name="email" required class="js-search-users form-control input-sm" title="Search Members"></div></form></li><li class="js-organization-member-search-response col-xs-12 small">Search for a person by name or email address.</li></ul></div></li>';
             }
         });
         if (view_user.length > 0) {

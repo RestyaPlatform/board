@@ -46,7 +46,7 @@ function main()
         if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/client.php') && !empty($_server_domain_url)) {
             doPost('http://restya.com/clients', array(
                 'app' => 'board',
-                'ver' => '0.4',
+                'ver' => '0.4.1',
                 'url' => $_server_domain_url
             ));
             $fh = fopen(APP_PATH . '/tmp/cache/client.php', 'a');
@@ -92,7 +92,12 @@ function main()
             $r_put = json_decode(file_get_contents('php://input'));
             $post_data = $r_put = (array)$r_put;
         }
-        if ($r_resource_cmd == '/users/logout' || $r_resource_cmd == '/users/register' || $r_resource_cmd == '/oauth' || checkAclLinks($_SERVER['REQUEST_METHOD'], $r_resource_cmd, $r_resource_vars, $post_data)) {
+        $url_arrays = array(
+            '/users/logout',
+            '/users/register',
+            '/oauth'
+        );
+        if (in_array($r_resource_cmd, $url_arrays) || checkAclLinks($_SERVER['REQUEST_METHOD'], $r_resource_cmd, $r_resource_vars, $post_data)) {
             // /users/5/products/10 -> array('users' => 5, 'products' => 10) ...
             $scope = array();
             if (!empty($response['scope'])) {

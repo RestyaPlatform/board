@@ -571,6 +571,21 @@ App.ApplicationView = Backbone.View.extend({
                 this.pageView = new App.AboutusView();
                 $('#content').html(this.pageView.el);
             } else if (page.model == 'boards_index' || page.model == 'starred_boards_index' || page.model == 'closed_boards_index') {
+                changeTitle(i18next.t('Boards'));
+                var page_title = i18next.t('My Boards');
+                if (page.model == 'starred_boards_index') {
+                    changeTitle(i18next.t('Starred Boards'));
+                    page_title = i18next.t('Starred Boards');
+                } else if (page.model == 'closed_boards_index') {
+                    changeTitle(i18next.t('Closed Boards'));
+                    page_title = i18next.t('Closed Boards');
+                }
+                this.headerView = new App.BoardIndexHeaderView({
+                    model: page_title,
+                });
+                $('#header').html(new App.BoardIndexHeaderView({
+                    model: page_title,
+                }).el);
                 var board_index = $('#content');
                 board_index.html('');
                 var self = this;
@@ -586,6 +601,9 @@ App.ApplicationView = Backbone.View.extend({
                             cache: false,
                             abortPending: true,
                             success: function(board_model, board_response) {
+                                board_index.append(new App.UserDashboardView({
+                                    model: page_title,
+                                }).el);
                                 if (page.model == 'starred_boards_index') {
                                     board_index.append(new App.StarredBoardsIndexView().el);
                                     if (!_.isEmpty(role_links.where({
