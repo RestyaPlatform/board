@@ -95,12 +95,7 @@ if (!empty($_POST['email']) && !empty($_POST['password'])) {
 	 </script>
 <?php
 // display an authorization form
-if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['authorized']) && $_POST['authorized'] === 'Deny'))) {
-    if (LDAP_LOGIN_ENABLED) {
-        $loginPlaceholder = 'LDAP Login';
-    } else {
-        $loginPlaceholder = 'Email or Username';
-    } ?>
+if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['authorized']) && $_POST['authorized'] === 'Deny'))) { ?>
 	<section class="clearfix">
 	  <div class="col-md-5 col-md-offset-4">
 		<div class="text-center navbar-btn"><a title="Restya" href="#/"><img title="<?php
@@ -114,7 +109,7 @@ if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['author
 						<form class="form-horizontal clearfix col-xs-12" method="post" role="form" name="UserLoginForm" id="UserLoginForm">
 							<div class="form-group">
 							  <label for="inputEmail" class="sr-only control-label">Email or Username</label>
-							  <input type="text" placeholder="" class="form-control authorize_ldap" id="inputEmail" name="email"  value="<?php
+							  <input type="text" placeholder="Email or Username" class="form-control authorize_ldap change-ldap" id="inputEmail" name="email"  value="<?php
     echo !empty($_POST['email']) ? $_POST['email'] : ''; ?>" title="" required/>
 							</div>
 							<div class="form-group">
