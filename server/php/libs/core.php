@@ -1108,7 +1108,7 @@ function importTrelloBoard($board = array())
                     $type = 'add_board';
                     $comment = '##USER_NAME## created board';
                 } else if ($action['type'] == 'updateBoard') {
-                    if (!empty($action['data']['board']['closed']) && $action['data']['board']['closed']) {
+                    if (!empty($action['data']['board']['closed']) && isset($action['data']['board']['closed'])) {
                         $type = 'reopen_board';
                         $comment = '##USER_NAME## closed ##BOARD_NAME## board.';
                     } else if (!empty($action['data']['board']['closed'])) {
@@ -1125,7 +1125,7 @@ function importTrelloBoard($board = array())
                         $comment = '##USER_NAME## renamed ##BOARD_NAME## board.';
                     }
                 } else if ($action['type'] == 'updateList') {
-                    if ($action['data']['list']['closed']) {
+                    if (isset($action['data']['list']['closed'])) {
                         $type = 'archive_list';
                         $comment = '##USER_NAME## archived ##LIST_NAME##';
                     } else if (!empty($action['data']['list']['pos'])) {
@@ -1169,17 +1169,65 @@ function importTrelloBoard($board = array())
                     $comment = '##USER_NAME## deleted checklist ##CHECKLIST_NAME## from card ##CARD_LINK##';
                 }
                 $created = $modified = $action['date'];
-                $qry_val_arr = array(
-                    $created,
-                    $modified,
-                    $new_board['id'],
-                    $lists[$action['data']['list']['id']],
-                    $cards[$action['data']['card']['id']],
-                    $users[$action['idMemberCreator']],
-                    $type,
-                    utf8_decode($comment)
-                );
-                pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                if (!empty($action['data']['list']['id'])) {
+                    if (array_key_exists($action['data']['list']['id'], $lists)) {
+                        $lists_key = $lists[$action['data']['list']['id']];
+                    } else {
+                        $lists_key = '';
+                    }
+                }
+                if (!empty($action['data']['card']['id'])) {
+                    if (array_key_exists($action['data']['card']['id'], $cards)) {
+                        $cards_key = $cards[$action['data']['card']['id']];
+                    } else {
+                        $cards_key = '';
+                    }
+                }
+                if (empty($lists_key) && empty($cards_key)) {
+                    $qry_val_arr = array(
+                        $created,
+                        $modified,
+                        $new_board['id'],
+                        $users[$action['idMemberCreator']],
+                        $type,
+                        preg_replace('/[^A-Za-z0-9\-# ]/', ' ', utf8_decode($comment))
+                    );
+                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
+                } else if (!empty($lists_key) && empty($cards_key)) {
+                    $qry_val_arr = array(
+                        $created,
+                        $modified,
+                        $new_board['id'],
+                        $lists_key,
+                        $users[$action['idMemberCreator']],
+                        $type,
+                        preg_replace('/[^A-Za-z0-9\-# ]/', ' ', utf8_decode($comment))
+                    );
+                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                } else if (empty($lists_key) && !empty($cards_key)) {
+                    $qry_val_arr = array(
+                        $created,
+                        $modified,
+                        $new_board['id'],
+                        $cards_key,
+                        $users[$action['idMemberCreator']],
+                        $type,
+                        preg_replace('/[^A-Za-z0-9\-# ]/', ' ', utf8_decode($comment))
+                    );
+                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                } else if (!empty($lists_key) && !empty($cards_key)) {
+                    $qry_val_arr = array(
+                        $created,
+                        $modified,
+                        $new_board['id'],
+                        $lists_key,
+                        $cards_key,
+                        $users[$action['idMemberCreator']],
+                        $type,
+                        preg_replace('/[^A-Za-z0-9\-# ]/', ' ', utf8_decode($comment))
+                    );
+                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                }
             }
         }
         return $new_board;
