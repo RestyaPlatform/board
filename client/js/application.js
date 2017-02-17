@@ -95,6 +95,41 @@ callbackTranslator = {
             $('#progress').width('101%').delay(200).fadeOut(400, function() {
                 $(this).remove();
             });
+            if (model !== null && !_.isUndefined(model.responseText) && !_.isEmpty(model.responseText) && JSON.parse(model.responseText).error.type === 'OAuth') {
+                api_token = '';
+                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
+                    var Auth = JSON.parse($.cookie('auth'));
+                    var refresh_token = Auth.refresh_token;
+                    var get_token = new App.OAuth();
+                    get_token.url = api_url + 'oauth.json?refresh_token=' + refresh_token;
+                    get_token.fetch({
+                        cache: false,
+                        success: function(model, response) {
+                            if (!_.isUndefined(response.access_token)) {
+                                Auth.access_token = response.access_token;
+                                Auth.refresh_token = response.refresh_token;
+                                api_token = response.access_token;
+                                $.cookie('auth', JSON.stringify(Auth));
+                                if (from_url !== 'board_view') {
+                                    Backbone.history.loadUrl(Backbone.history.fragment);
+                                }
+                            } else {
+                                app.navigate('#/users/logout', {
+                                    trigger: true,
+                                    replace: true
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    app.navigate('#/users/logout', {
+                        trigger: true,
+                        replace: true
+                    });
+                }
+            } else {
+                return callback.call(null, model, resp, options);
+            }
             var current_url = window.location.hash.split("/");
             if (model !== null && !_.isUndefined(model.status) && model.status == '401' && !_.isUndefined(current_url) && current_url['1'] == 'board') {
                 $.cookie('redirect_link', window.location.hash);
@@ -144,41 +179,6 @@ callbackTranslator = {
                 $('#js-footer-brand-img').attr('title', i18next.t('Syncing...')).attr('src', 'img/logo-icon-sync.gif').attr('data-original-title', i18next.t('Syncing...')).tooltip("show");
                 var offline_data = new App.ListCollection();
                 offline_data.syncDirty();
-            }
-            if (model !== null && !_.isUndefined(model.responseText) && !_.isEmpty(model.responseText) && JSON.parse(model.responseText).error.type === 'OAuth') {
-                api_token = '';
-                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
-                    var Auth = JSON.parse($.cookie('auth'));
-                    var refresh_token = Auth.refresh_token;
-                    var get_token = new App.OAuth();
-                    get_token.url = api_url + 'oauth.json?refresh_token=' + refresh_token;
-                    get_token.fetch({
-                        cache: false,
-                        success: function(model, response) {
-                            if (!_.isUndefined(response.access_token)) {
-                                Auth.access_token = response.access_token;
-                                Auth.refresh_token = response.refresh_token;
-                                api_token = response.access_token;
-                                $.cookie('auth', JSON.stringify(Auth));
-                                if (from_url !== 'board_view') {
-                                    Backbone.history.loadUrl(Backbone.history.fragment);
-                                }
-                            } else {
-                                app.navigate('#/users/logout', {
-                                    trigger: true,
-                                    replace: true
-                                });
-                            }
-                        }
-                    });
-                } else {
-                    app.navigate('#/users/logout', {
-                        trigger: true,
-                        replace: true
-                    });
-                }
-            } else {
-                return callback.call(null, model, resp, options);
             }
         };
     }
