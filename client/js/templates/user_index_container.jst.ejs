@@ -62,6 +62,7 @@
             <li><a href="#/users" class="js-select js-no-pjax" data-unchecked="js-checkbox-list" title="<%- i18next.t('None') %>"><%- i18next.t("None") %></a></li>
             <li><a title="<%- i18next.t('Blocked') %>" href="#/users" class="js-select" data-unchecked="js-checkbox-active" data-checked="js-checkbox-inactive"><%- i18next.t("Blocked") %></a></li>
             <li><a title="<%- i18next.t('Unblocked') %>" href="#/users" class="js-select" data-unchecked="js-checkbox-inactive" data-checked="js-checkbox-active"><%- i18next.t("Unblocked") %></a></li>
+            <li><a title="<%- i18next.t('Unconfirmed') %>" href="#/users" class="js-select" data-checked="js-checkbox-unconfirmed"><%- i18next.t("Unconfirmed") %></a></li>
 			 				  
           </ul>
           <div class="pull-left">
@@ -72,6 +73,7 @@
 	                  <option value="1"><%- i18next.t("Block") %></option>
 	                  <option value="2"><%- i18next.t("Unblock") %></option>
 	                  <option value="3"><%- i18next.t("Delete") %></option>
+                    <option value="4"><%- i18next.t("Confirm email") %></option>
 	                </select>
                 </div>
             </form>

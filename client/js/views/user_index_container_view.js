@@ -302,8 +302,10 @@ App.UserIndexContainerView = Backbone.View.extend({
                                 self.flash('success', i18next.t('Checked users are blocked successfully.'));
                             } else if ($("#js-more-action option:selected").val() == 2) {
                                 self.flash('success', i18next.t('Checked users are unblocked successfully.'));
-                            } else {
+                            } else if ($("#js-more-action option:selected").val() == 3) {
                                 self.flash('success', i18next.t('Checked users are deleted successfully.'));
+                            } else if ($("#js-more-action option:selected").val() == 4) {
+                                self.flash('success', i18next.t('Checked users are email successfully activated.'));
                             }
                             app.navigate('#/users', {
                                 trigger: true,
