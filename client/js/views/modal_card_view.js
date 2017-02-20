@@ -1028,7 +1028,7 @@ App.ModalCardView = Backbone.View.extend({
         $('.editor').each(function() {
             var $this = $(this);
             var factor1 = $.cookie('factor1');
-            if (factor1 === null) {
+            if ((factor1 === null) || (typeof factor1 === 'undefined')) {
                 factor1 = '20';
                 factor2 = '80';
             } else {
