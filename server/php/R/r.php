@@ -1777,7 +1777,19 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $response = array(
                 'success' => 'Checked users are deleted successfully.'
             );
+        } else if ($action_id == 4) {
+            foreach ($user_ids as $user_id) {
+                $data = array(
+                    1,
+                    $user_id['user_id']
+                );
+                pg_query_params($db_lnk, 'UPDATE users SET is_email_confirmed = $1 WHERE id = $2', $data);
+            }
+            $response = array(
+                'success' => 'Checked user emails are confirmed successfully.'
+            );
         }
+        echo json_encode($response);
         break;
 
     case '/boards/bulk_action':
