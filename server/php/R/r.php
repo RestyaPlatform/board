@@ -1786,7 +1786,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 pg_query_params($db_lnk, 'UPDATE users SET is_email_confirmed = $1 WHERE id = $2', $data);
             }
             $response = array(
-                'success' => 'Checked users are email successfully activated.'
+                'success' => 'Checked user emails are confirmed successfully.'
             );
         }
         echo json_encode($response);
