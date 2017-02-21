@@ -95,37 +95,12 @@ callbackTranslator = {
             $('#progress').width('101%').delay(200).fadeOut(400, function() {
                 $(this).remove();
             });
-            var current_url = window.location.hash.split("/");
-            if (model !== null && !_.isUndefined(model.status) && model.status == '401' && !_.isUndefined(current_url) && current_url['1'] == 'board') {
-                $.cookie('redirect_link', window.location.hash);
-                changeTitle('Board not found');
-                this.headerView = new App.HeaderView({
-                    model: authuser
-                });
-                $('#header').html(this.headerView.el);
-                $('#content').html(new App.Board404View({
-                    model: authuser
-                }).el);
-                return;
-            }
-            if (model === null) {
-                changeTitle('404 Page not found');
-                this.headerView = new App.HeaderView({
-                    model: authuser
-                });
-                $('#header').html(this.headerView.el);
-                var view = new App.Error404View();
-                $('#content').html(view.el);
-                return;
-            }
             var is_online = false;
-
             if ((($.cookie('is_offline_data') !== undefined && $.cookie('is_offline_data') !== null) && $.cookie('is_offline_data') === "true")) {
                 is_offline_data = true;
             } else {
                 is_offline_data = false;
             }
-
             if (hasOfflineStatusCode(options)) {
                 $.cookie('is_offline_data', true);
                 is_offline_data = true;
@@ -145,37 +120,62 @@ callbackTranslator = {
                 var offline_data = new App.ListCollection();
                 offline_data.syncDirty();
             }
-            if (model !== null && !_.isUndefined(model.responseText) && !_.isEmpty(model.responseText) && JSON.parse(model.responseText).error.type === 'OAuth') {
-                api_token = '';
-                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
-                    var Auth = JSON.parse($.cookie('auth'));
-                    var refresh_token = Auth.refresh_token;
-                    var get_token = new App.OAuth();
-                    get_token.url = api_url + 'oauth.json?refresh_token=' + refresh_token;
-                    get_token.fetch({
-                        cache: false,
-                        success: function(model, response) {
-                            if (!_.isUndefined(response.access_token)) {
-                                Auth.access_token = response.access_token;
-                                Auth.refresh_token = response.refresh_token;
-                                api_token = response.access_token;
-                                $.cookie('auth', JSON.stringify(Auth));
-                                if (from_url !== 'board_view') {
-                                    Backbone.history.loadUrl(Backbone.history.fragment);
+            var current_url = window.location.hash.split("/");
+            if (model === null) {
+                changeTitle('404 Page not found');
+                this.headerView = new App.HeaderView({
+                    model: authuser
+                });
+                $('#header').html(this.headerView.el);
+                var view = new App.Error404View();
+                $('#content').html(view.el);
+                return;
+            } else if (model !== null && !_.isUndefined(model.status) && model.status == '401') {
+                if (!_.isUndefined(model.responseText) && !_.isEmpty(model.responseText) && JSON.parse(model.responseText).error.type === 'OAuth') {
+                    api_token = '';
+                    if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
+                        var Auth = JSON.parse($.cookie('auth'));
+                        var refresh_token = Auth.refresh_token;
+                        var get_token = new App.OAuth();
+                        get_token.url = api_url + 'oauth.json?refresh_token=' + refresh_token;
+                        get_token.fetch({
+                            cache: false,
+                            success: function(model, response) {
+                                if (!_.isUndefined(response.access_token)) {
+                                    Auth.access_token = response.access_token;
+                                    Auth.refresh_token = response.refresh_token;
+                                    api_token = response.access_token;
+                                    $.cookie('auth', JSON.stringify(Auth));
+                                    if (from_url !== 'board_view') {
+                                        Backbone.history.loadUrl(Backbone.history.fragment);
+                                    } else {
+                                        return callback.call(null, model, resp, options);
+                                    }
+                                } else {
+                                    app.navigate('#/users/logout', {
+                                        trigger: true,
+                                        replace: true
+                                    });
                                 }
-                            } else {
-                                app.navigate('#/users/logout', {
-                                    trigger: true,
-                                    replace: true
-                                });
                             }
-                        }
+                        });
+                    } else {
+                        app.navigate('#/users/logout', {
+                            trigger: true,
+                            replace: true
+                        });
+                    }
+                } else if (!_.isUndefined(current_url) && current_url['1'] == 'board') {
+                    $.cookie('redirect_link', window.location.hash);
+                    changeTitle('Board not found');
+                    this.headerView = new App.HeaderView({
+                        model: authuser
                     });
-                } else {
-                    app.navigate('#/users/logout', {
-                        trigger: true,
-                        replace: true
-                    });
+                    $('#header').html(this.headerView.el);
+                    $('#content').html(new App.Board404View({
+                        model: authuser
+                    }).el);
+                    return;
                 }
             } else {
                 return callback.call(null, model, resp, options);
