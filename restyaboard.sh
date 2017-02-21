@@ -16,7 +16,7 @@
 	whoami
 	echo $(cat /etc/issue)
 	OS_REQUIREMENT=$(lsb_release -i -s)
-	if [ $? != 0 ]
+	if [ $? != 0 || OS_REQUIREMENT = "" ]
 	then
 		echo "lsb_release is not enabled"
 		exit 1
@@ -379,6 +379,18 @@
 				fi
 			fi
 			
+			echo "Checking xml..."
+			php -m | grep xml
+			if [ "$?" -gt 0 ]; then
+				echo "Installing xml..."
+				apt-get install php7.0-xml
+				if [ $? != 0 ]
+				then
+					echo "xml installation failed with error code 56"
+					exit 1
+				fi
+			fi
+
 			echo "Setting up timezone..."
 			timezone=$(cat /etc/timezone)
 			sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.0/fpm/php.ini
@@ -553,7 +565,7 @@
 				echo "PostgreSQL user creation failed with error code 35 "
 				exit 1
 			fi
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 36"
@@ -814,7 +826,19 @@
 				fi
 				
 			fi
-			
+
+			echo "Checking xml..."
+			php -m | grep xml
+			if [ "$?" -gt 0 ]; then
+				echo "Installing xml..."
+				yum install php-xml
+				if [ $? != 0 ]
+				then
+					echo "xml installation failed with error code 57"
+					exit 1
+				fi
+			fi
+
 			echo "Setting up timezone..."
 			timezone=$(cat /etc/sysconfig/clock | grep ZONE | cut -d"\"" -f2)
 			sed -i -e 's/date.timezone/;date.timezone/g' /etc/php.ini
@@ -1037,7 +1061,7 @@
 				echo "PostgreSQL user creation failed with error code 41"
 				exit 1
 			fi			
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 42"
