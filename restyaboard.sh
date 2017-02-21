@@ -379,6 +379,18 @@
 				fi
 			fi
 			
+			echo "Checking xml..."
+			php -m | grep xml
+			if [ "$?" -gt 0 ]; then
+				echo "Installing xml..."
+				apt-get install php7.0-xml
+				if [ $? != 0 ]
+				then
+					echo "xml installation failed with error code 56"
+					exit 1
+				fi
+			fi
+			
 			echo "Setting up timezone..."
 			timezone=$(cat /etc/timezone)
 			sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.0/fpm/php.ini
@@ -815,6 +827,18 @@
 				
 			fi
 			
+			echo "Checking xml..."
+			php -m | grep xml
+			if [ "$?" -gt 0 ]; then
+				echo "Installing xml..."
+				yum install php-xml
+				if [ $? != 0 ]
+				then
+					echo "xml installation failed with error code 57"
+					exit 1
+				fi
+			fi
+
 			echo "Setting up timezone..."
 			timezone=$(cat /etc/sysconfig/clock | grep ZONE | cut -d"\"" -f2)
 			sed -i -e 's/date.timezone/;date.timezone/g' /etc/php.ini
