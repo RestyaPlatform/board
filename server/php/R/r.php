@@ -1777,7 +1777,19 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $response = array(
                 'success' => 'Checked users are deleted successfully.'
             );
+        } else if ($action_id == 4) {
+            foreach ($user_ids as $user_id) {
+                $data = array(
+                    1,
+                    $user_id['user_id']
+                );
+                pg_query_params($db_lnk, 'UPDATE users SET is_email_confirmed = $1 WHERE id = $2', $data);
+            }
+            $response = array(
+                'success' => 'Checked user emails are confirmed successfully.'
+            );
         }
+        echo json_encode($response);
         break;
 
     case '/boards/bulk_action':
@@ -4676,7 +4688,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         );
         $s_result = pg_query_params($db_lnk, 'SELECT name, board_id, list_id, position, description, custom_fields, due_date FROM ' . $table_name . ' WHERE id = $1', $qry_val_arr);
         $previous_value = pg_fetch_assoc($s_result);
-        if (!empty($previous_value['custom_fields'])) {
+        if (!empty($previous_value['custom_fields']) && !empty($r_put['custom_fields'])) {
             $custom_decode = json_decode($previous_value['custom_fields'], true);
             $present_custom_decode = json_decode($r_put['custom_fields'], true);
             $final_custom_array = array_merge($custom_decode, $present_custom_decode);

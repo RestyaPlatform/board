@@ -1,7 +1,7 @@
 <td>
     <div class="form-group text-center">
 	    <div class="checkbox">
-            <input <% if(user.attributes.role_id == 1){%>disabled<%}%> id="<%- user.attributes.id%>"  name="user_id[<%- user.attributes.id %>]" value="<%- user.attributes.id%>" class="js-checkbox-list <%if(parseInt(user.attributes.is_active) === 1){%>js-checkbox-active<%}else{%>js-checkbox-inactive<%}%>" type="checkbox">
+            <input <% if(user.attributes.role_id == 1){%>disabled<%}%> id="<%- user.attributes.id%>"  name="user_id[<%- user.attributes.id %>]" value="<%- user.attributes.id%>" class="js-checkbox-list <%if(parseInt(user.attributes.is_active) === 1){%>js-checkbox-active<%}else{%>js-checkbox-inactive<%}%><% if(!user.attributes.is_email_confirmed){ %> js-checkbox-unconfirmed<%}%>" type="checkbox">
             <label class="js-update-user" data-user_id="<%- user.attributes.id %>" for="<%- user.attributes.id%>"></label>
         </div>
     </div>

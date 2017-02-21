@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.4
--- Dumped by pg_dump version 9.5.4
+-- Dumped from database version 9.5.2
+-- Dumped by pg_dump version 9.5.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1622,6 +1622,192 @@ CREATE VIEW admin_boards_listing AS
 
 
 --
+-- Name: cities; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE cities (
+    id bigint NOT NULL,
+    created timestamp without time zone,
+    modified timestamp without time zone,
+    country_id bigint,
+    state_id bigint,
+    latitude character varying(255),
+    longitude character varying(255),
+    name character varying(255),
+    is_active boolean DEFAULT false
+);
+
+
+--
+-- Name: countries; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE countries (
+    id bigint NOT NULL,
+    iso_alpha2 character(2) DEFAULT NULL::bpchar,
+    iso_alpha3 character(3) DEFAULT NULL::bpchar,
+    iso_numeric bigint,
+    fips_code character varying(3) DEFAULT NULL::character varying,
+    name character varying(200) DEFAULT NULL::character varying,
+    capital character varying(200) DEFAULT NULL::character varying,
+    areainsqkm double precision,
+    population bigint,
+    continent character(2) DEFAULT NULL::bpchar,
+    tld character(3) DEFAULT NULL::bpchar,
+    currency character(3) DEFAULT NULL::bpchar,
+    currencyname character(20) DEFAULT NULL::bpchar,
+    phone character(10) DEFAULT NULL::bpchar,
+    postalcodeformat character(20) DEFAULT NULL::bpchar,
+    postalcoderegex character(20) DEFAULT NULL::bpchar,
+    languages character varying(200) DEFAULT NULL::character varying,
+    geonameid bigint,
+    neighbours character(20) DEFAULT NULL::bpchar,
+    equivalentfipscode character(10) DEFAULT NULL::bpchar,
+    created timestamp without time zone,
+    iso2 character varying(2),
+    iso3 character varying(3),
+    modified timestamp without time zone
+);
+
+
+--
+-- Name: ips_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE ips_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ips; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE ips (
+    id bigint DEFAULT nextval('ips_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone,
+    modified timestamp without time zone,
+    ip character varying(255) NOT NULL,
+    host character varying(255) NOT NULL,
+    user_agent character varying(255) NOT NULL,
+    "order" integer DEFAULT 0,
+    city_id bigint,
+    state_id bigint,
+    country_id bigint,
+    latitude double precision,
+    longitude double precision
+);
+
+
+--
+-- Name: login_types_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE login_types_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: login_types; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE login_types (
+    id bigint DEFAULT nextval('login_types_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    name character varying(255) NOT NULL
+);
+
+
+--
+-- Name: states; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE states (
+    id bigint NOT NULL,
+    created timestamp without time zone,
+    modified timestamp without time zone,
+    country_id bigint,
+    name character varying(45),
+    is_active boolean DEFAULT false
+);
+
+
+--
+-- Name: admin_users_listing; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW admin_users_listing AS
+ SELECT users.id,
+    users.role_id,
+    users.username,
+    users.password,
+    users.email,
+    users.full_name,
+    users.initials,
+    users.about_me,
+    users.profile_picture_path,
+    users.notification_frequency,
+    (users.is_allow_desktop_notification)::integer AS is_allow_desktop_notification,
+    (users.is_active)::integer AS is_active,
+    (users.is_email_confirmed)::integer AS is_email_confirmed,
+    users.created_organization_count,
+    users.created_board_count,
+    users.joined_organization_count,
+    users.list_count,
+    users.joined_card_count,
+    users.created_card_count,
+    users.joined_board_count,
+    users.checklist_count,
+    users.checklist_item_completed_count,
+    users.checklist_item_count,
+    users.activity_count,
+    users.card_voter_count,
+    (users.is_productivity_beats)::integer AS is_productivity_beats,
+    users.last_activity_id,
+    users.last_login_date,
+    li.ip AS last_login_ip,
+    lci.name AS login_city_name,
+    lst.name AS login_state_name,
+    lco.name AS login_country_name,
+    lower((lco.iso_alpha2)::text) AS login_country_iso2,
+    i.ip AS registered_ip,
+    rci.name AS register_city_name,
+    rst.name AS register_state_name,
+    rco.name AS register_country_name,
+    lower((rco.iso_alpha2)::text) AS register_country_iso2,
+    lt.name AS login_type,
+    to_char(users.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    users.user_login_count,
+    users.is_send_newsletter,
+    users.last_email_notified_activity_id,
+    users.owner_board_count,
+    users.member_board_count,
+    users.owner_organization_count,
+    users.member_organization_count,
+    users.language,
+    (users.is_ldap)::integer AS is_ldap,
+    users.timezone
+   FROM (((((((((users users
+     LEFT JOIN ips i ON ((i.id = users.ip_id)))
+     LEFT JOIN cities rci ON ((rci.id = i.city_id)))
+     LEFT JOIN states rst ON ((rst.id = i.state_id)))
+     LEFT JOIN countries rco ON ((rco.id = i.country_id)))
+     LEFT JOIN ips li ON ((li.id = users.last_login_ip_id)))
+     LEFT JOIN cities lci ON ((lci.id = li.city_id)))
+     LEFT JOIN states lst ON ((lst.id = li.state_id)))
+     LEFT JOIN countries lco ON ((lco.id = li.country_id)))
+     LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
+
+
+--
 -- Name: attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -2360,23 +2546,6 @@ CREATE VIEW checklist_add_listing AS
 
 
 --
--- Name: cities; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE cities (
-    id bigint NOT NULL,
-    created timestamp without time zone,
-    modified timestamp without time zone,
-    country_id bigint,
-    state_id bigint,
-    latitude character varying(255),
-    longitude character varying(255),
-    name character varying(255),
-    is_active boolean DEFAULT false
-);
-
-
---
 -- Name: cities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -2405,38 +2574,6 @@ CREATE SEQUENCE cities_id_seq1
 --
 
 ALTER SEQUENCE cities_id_seq1 OWNED BY cities.id;
-
-
---
--- Name: countries; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE countries (
-    id bigint NOT NULL,
-    iso_alpha2 character(2) DEFAULT NULL::bpchar,
-    iso_alpha3 character(3) DEFAULT NULL::bpchar,
-    iso_numeric bigint,
-    fips_code character varying(3) DEFAULT NULL::character varying,
-    name character varying(200) DEFAULT NULL::character varying,
-    capital character varying(200) DEFAULT NULL::character varying,
-    areainsqkm double precision,
-    population bigint,
-    continent character(2) DEFAULT NULL::bpchar,
-    tld character(3) DEFAULT NULL::bpchar,
-    currency character(3) DEFAULT NULL::bpchar,
-    currencyname character(20) DEFAULT NULL::bpchar,
-    phone character(10) DEFAULT NULL::bpchar,
-    postalcodeformat character(20) DEFAULT NULL::bpchar,
-    postalcoderegex character(20) DEFAULT NULL::bpchar,
-    languages character varying(200) DEFAULT NULL::character varying,
-    geonameid bigint,
-    neighbours character(20) DEFAULT NULL::bpchar,
-    equivalentfipscode character(10) DEFAULT NULL::bpchar,
-    created timestamp without time zone,
-    iso2 character varying(2),
-    iso3 character varying(3),
-    modified timestamp without time zone
-);
 
 
 --
@@ -2530,38 +2667,6 @@ CREATE VIEW gadget_users_listing AS
 
 
 --
--- Name: ips_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE ips_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: ips; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE ips (
-    id bigint DEFAULT nextval('ips_id_seq'::regclass) NOT NULL,
-    created timestamp without time zone,
-    modified timestamp without time zone,
-    ip character varying(255) NOT NULL,
-    host character varying(255) NOT NULL,
-    user_agent character varying(255) NOT NULL,
-    "order" integer DEFAULT 0,
-    city_id bigint,
-    state_id bigint,
-    country_id bigint,
-    latitude double precision,
-    longitude double precision
-);
-
-
---
 -- Name: languages_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -2598,30 +2703,6 @@ CREATE SEQUENCE list_subscribers_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
---
--- Name: login_types_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE login_types_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: login_types; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE login_types (
-    id bigint DEFAULT nextval('login_types_id_seq'::regclass) NOT NULL,
-    created timestamp without time zone NOT NULL,
-    modified timestamp without time zone NOT NULL,
-    name character varying(255) NOT NULL
-);
 
 
 --
@@ -3125,20 +3206,6 @@ CREATE VIEW simple_board_listing AS
 
 
 --
--- Name: states; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE states (
-    id bigint NOT NULL,
-    created timestamp without time zone,
-    modified timestamp without time zone,
-    country_id bigint,
-    name character varying(45),
-    is_active boolean DEFAULT false
-);
-
-
---
 -- Name: states_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -3633,7 +3700,6 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_use
 23	2016-02-18 17:24:25.733	2016-02-18 17:24:25.733	Unstar board	/boards/?/boards_stars/?	PUT	board_star	2	1	0	0	0
 25	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Upload profile picture	/users/?	POST	add_user_profile_picture	2	1	0	0	0
 26	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	User activation	/users/?/activation	PUT	user_activation	1	0	1	0	0
-27	2016-02-18 20:11:14.482	2016-02-18 20:11:14.482	View board	/boards/?	GET	view_board	2	1	1	0	0
 28	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View boards listing	/boards	GET	view_board_listing	2	1	0	0	0
 29	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View closed boards	/boards/closed_boards	GET	view_closed_boards	2	1	0	0	0
 30	2016-02-09 16:51:25.217	2016-02-09 16:51:25.217	View OAuth authorized applications	/oauth/applications	GET	view_connected_applications	2	1	0	0	0
@@ -3671,6 +3737,7 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_use
 138	2016-06-28 07:47:21.747	2016-06-28 07:47:21.747	Board user role edit	/board_user_roles/?	PUT	board_user_role_edit	1	0	0	1	1
 139	2016-06-28 07:47:21.747	2016-06-28 07:47:21.747	Organization user role edit	/organization_user_roles/?	PUT	organization_user_role_edit	1	0	0	1	1
 125	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	Chat History	/boards/?/chat_history	GET	chat_history	2	1	0	1	0
+27	2016-02-18 20:11:14.482	2016-02-18 20:11:14.482	View board	/boards/?	GET	view_board	2	1	0	0	0
 \.
 
 
@@ -6533,6 +6600,69 @@ GRANT ALL ON TABLE boards_users TO postgres;
 
 
 --
+-- Name: cities; Type: ACL; Schema: public; Owner: -
+--
+
+REVOKE ALL ON TABLE cities FROM PUBLIC;
+REVOKE ALL ON TABLE cities FROM postgres;
+GRANT ALL ON TABLE cities TO postgres;
+
+
+--
+-- Name: countries; Type: ACL; Schema: public; Owner: -
+--
+
+REVOKE ALL ON TABLE countries FROM PUBLIC;
+REVOKE ALL ON TABLE countries FROM postgres;
+GRANT ALL ON TABLE countries TO postgres;
+
+
+--
+-- Name: ips_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+REVOKE ALL ON SEQUENCE ips_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE ips_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE ips_id_seq TO postgres;
+
+
+--
+-- Name: ips; Type: ACL; Schema: public; Owner: -
+--
+
+REVOKE ALL ON TABLE ips FROM PUBLIC;
+REVOKE ALL ON TABLE ips FROM postgres;
+GRANT ALL ON TABLE ips TO postgres;
+
+
+--
+-- Name: login_types_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+REVOKE ALL ON SEQUENCE login_types_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE login_types_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE login_types_id_seq TO postgres;
+
+
+--
+-- Name: login_types; Type: ACL; Schema: public; Owner: -
+--
+
+REVOKE ALL ON TABLE login_types FROM PUBLIC;
+REVOKE ALL ON TABLE login_types FROM postgres;
+GRANT ALL ON TABLE login_types TO postgres;
+
+
+--
+-- Name: states; Type: ACL; Schema: public; Owner: -
+--
+
+REVOKE ALL ON TABLE states FROM PUBLIC;
+REVOKE ALL ON TABLE states FROM postgres;
+GRANT ALL ON TABLE states TO postgres;
+
+
+--
 -- Name: attachments_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
@@ -6695,15 +6825,6 @@ GRANT ALL ON TABLE checklist_add_listing TO postgres;
 
 
 --
--- Name: cities; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON TABLE cities FROM PUBLIC;
-REVOKE ALL ON TABLE cities FROM postgres;
-GRANT ALL ON TABLE cities TO postgres;
-
-
---
 -- Name: cities_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
@@ -6719,15 +6840,6 @@ GRANT ALL ON SEQUENCE cities_id_seq TO postgres;
 REVOKE ALL ON SEQUENCE cities_id_seq1 FROM PUBLIC;
 REVOKE ALL ON SEQUENCE cities_id_seq1 FROM postgres;
 GRANT ALL ON SEQUENCE cities_id_seq1 TO postgres;
-
-
---
--- Name: countries; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON TABLE countries FROM PUBLIC;
-REVOKE ALL ON TABLE countries FROM postgres;
-GRANT ALL ON TABLE countries TO postgres;
 
 
 --
@@ -6767,48 +6879,12 @@ GRANT ALL ON TABLE email_templates TO postgres;
 
 
 --
--- Name: ips_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON SEQUENCE ips_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE ips_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE ips_id_seq TO postgres;
-
-
---
--- Name: ips; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON TABLE ips FROM PUBLIC;
-REVOKE ALL ON TABLE ips FROM postgres;
-GRANT ALL ON TABLE ips TO postgres;
-
-
---
 -- Name: list_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE list_subscribers_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE list_subscribers_id_seq FROM postgres;
 GRANT ALL ON SEQUENCE list_subscribers_id_seq TO postgres;
-
-
---
--- Name: login_types_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON SEQUENCE login_types_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE login_types_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE login_types_id_seq TO postgres;
-
-
---
--- Name: login_types; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON TABLE login_types FROM PUBLIC;
-REVOKE ALL ON TABLE login_types FROM postgres;
-GRANT ALL ON TABLE login_types TO postgres;
 
 
 --
@@ -6935,15 +7011,6 @@ GRANT ALL ON SEQUENCE settings_id_seq TO postgres;
 REVOKE ALL ON TABLE settings FROM PUBLIC;
 REVOKE ALL ON TABLE settings FROM postgres;
 GRANT ALL ON TABLE settings TO postgres;
-
-
---
--- Name: states; Type: ACL; Schema: public; Owner: -
---
-
-REVOKE ALL ON TABLE states FROM PUBLIC;
-REVOKE ALL ON TABLE states FROM postgres;
-GRANT ALL ON TABLE states TO postgres;
 
 
 --
