@@ -383,10 +383,10 @@
 			php -m | grep xml
 			if [ "$?" -gt 0 ]; then
 				echo "Installing xml..."
-				yum install php-xml
+				apt-get install php7.0-xml
 				if [ $? != 0 ]
 				then
-					echo "xml installation failed with error code 57"
+					echo "xml installation failed with error code 56"
 					exit 1
 				fi
 			fi
@@ -831,10 +831,10 @@
 			php -m | grep xml
 			if [ "$?" -gt 0 ]; then
 				echo "Installing xml..."
-				apt-get install php7.0-xml
+				yum install php-xml
 				if [ $? != 0 ]
 				then
-					echo "xml installation failed with error code 56"
+					echo "xml installation failed with error code 57"
 					exit 1
 				fi
 			fi
