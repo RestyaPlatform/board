@@ -43,6 +43,7 @@ define('R_DB_USER', 'restya');
 define('R_DB_PASSWORD', 'hjVl2!rGd');
 define('R_DB_NAME', 'restyaboard');
 define('R_DB_PORT', 5432);
+define('R_DB_DRIVER', 'pgsql');
 define('CHAT_DB_HOST', 'localhost');
 define('CHAT_DB_USER', 'ejabberd');
 define('CHAT_DB_PASSWORD', 'ftfnVgYl2');
