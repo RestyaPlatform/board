@@ -1,16 +1,18 @@
 <?php
 /**
- * Base API
+ * R - Ultra lightweight REST server
  *
  * PHP version 5
  *
  * @category   PHP
- * @package    Base
+ * @package    REST
  * @subpackage Core
- * @author     Agriya <info@agriya.com>
- * @copyright  2016 Agriya Infoway Private Ltd
- * @license    http://www.agriya.com/ Agriya Infoway Licence
- * @link       http://www.agriya.com
+ * @author     Restya <info@restya.com>
+ * @copyright  2014-2017 Restya
+ * @license    http://restya.com/ Restya Licence
+ * @link       http://restya.com/
+ * @todo       Fix code duplication & make it really lightweight
+ * @since      2013-08-23
  */
 use Illuminate\Database\Capsule\Manager as DB;
 require_once '../../bootstrap.php';
