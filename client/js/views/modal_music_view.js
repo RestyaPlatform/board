@@ -40,39 +40,57 @@ App.ModalMusicView = Backbone.View.extend({
         var self = this;
         var music_name = $('.js-music_name').val();
         var music_content = $('.js-music_content').val();
-        this.model.url = api_url + 'boards/' + this.model.id + '.json';
-        this.model.set('music_name', music_name);
-        this.model.set('music_content', music_content);
-        data = {
-            music_name: music_name,
-            music_content: music_content
-        };
-        this.model.save(data, {
-            patch: true,
-            success: function(model, response) {
-                var view = new Backbone.View();
-                view.flash('success', i18next.t('Updated successfully.'));
-                $('#music-modal').modal('hide');
-                $('div.modal-backdrop').remove();
-                if (!_.isEmpty(music_name) && music_name != 'NULL') {
-                    App.music.music_name = music_name;
-                }
-                if (!_.isEmpty(music_content) && music_content != 'NULL') {
-                    App.music.music_content = music_content;
-                    var temp = new App.MusicRepeatView();
-                    temp.continueMusic();
-                } else {
-                    App.music.inst.silence();
-                }
-                self.footerView = new App.FooterView({
-                    model: authuser,
-                    board_id: self.model.id
-                }).render();
-                $('#footer').html(self.footerView.el);
-                self.showTooltip();
+        if (!$.trim(music_name).length || !$.trim(music_content).length) {
+            if (!$.trim(music_name).length && !$.trim(music_content).length) {
+                $('.error-msg-name').remove();
+                $('.error-msg-content').remove();
+                $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('.js-music_name');
+                $('<div class="error-msg-content text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('.js-music_content');
+            } else if (!$.trim(music_name).length) {
+                $('.error-msg-name').remove();
+                $('.error-msg-content').remove();
+                $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('.js-music_name');
+            } else if (!$.trim(music_content).length) {
+                $('.error-msg-name').remove();
+                $('.error-msg-content').remove();
+                $('<div class="error-msg-content text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('.js-music_content');
             }
-        });
-
+        } else {
+            $('.error-msg-name').remove();
+            $('.error-msg-content').remove();
+            this.model.url = api_url + 'boards/' + this.model.id + '.json';
+            this.model.set('music_name', music_name);
+            this.model.set('music_content', music_content);
+            data = {
+                music_name: music_name,
+                music_content: music_content
+            };
+            this.model.save(data, {
+                patch: true,
+                success: function(model, response) {
+                    var view = new Backbone.View();
+                    view.flash('success', i18next.t('Updated successfully.'));
+                    $('#music-modal').modal('hide');
+                    $('div.modal-backdrop').remove();
+                    if (!_.isEmpty(music_name) && music_name != 'NULL') {
+                        App.music.music_name = music_name;
+                    }
+                    if (!_.isEmpty(music_content) && music_content != 'NULL') {
+                        App.music.music_content = music_content;
+                        var temp = new App.MusicRepeatView();
+                        temp.continueMusic();
+                    } else {
+                        App.music.inst.silence();
+                    }
+                    self.footerView = new App.FooterView({
+                        model: authuser,
+                        board_id: self.model.id
+                    }).render();
+                    $('#footer').html(self.footerView.el);
+                    self.showTooltip();
+                }
+            });
+        }
         return false;
     },
     /**
