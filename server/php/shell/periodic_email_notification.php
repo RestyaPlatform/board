@@ -87,7 +87,7 @@ if ($db_lnk) {
                     $br = '<div style="line-height:40px;">&nbsp;</div>';
                 }
                 if (!empty($activity['card_id']) && IMAP_EMAIL) {
-                    $imap_email = split("@", IMAP_EMAIL);
+                    $imap_email = explode("@", IMAP_EMAIL);
                     $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
                         $activity['card_id']
@@ -180,7 +180,7 @@ if ($db_lnk) {
                     $br = '<div style="line-height:40px;">&nbsp;</div>';
                 }
                 if (!empty($activity['card_id']) && IMAP_EMAIL) {
-                    $imap_email = split("@", IMAP_EMAIL);
+                    $imap_email = explode("@", IMAP_EMAIL);
                     $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
                         $activity['card_id']
@@ -273,7 +273,7 @@ if ($db_lnk) {
                     $br = '<div style="line-height:40px;">&nbsp;</div>';
                 }
                 if (!empty($activity['card_id']) && IMAP_EMAIL) {
-                    $imap_email = split("@", IMAP_EMAIL);
+                    $imap_email = explode("@", IMAP_EMAIL);
                     $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
                         $activity['card_id']
