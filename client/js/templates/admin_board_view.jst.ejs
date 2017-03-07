@@ -133,7 +133,7 @@
 						<ul class="list-unstyled clearfix js-get-board-member-lists-response">
 							<% board.board_users.each(function(user) { %>
 								<li class="form-inline navbar-btn btn-xs pull-left js-board-user-avatar-click dropdown nav">
-										<a href="#/user/<%-user.attributes.id %>">
+										<a href="#/user/<%-user.attributes.user_id %>">
 										<span data-placement="bottom" title="<%- user.attributes.full_name %> (<%-user.attributes.username %>)" data-toggle="tooltip" class="col-xs-12 btn-block navbar-btn">				
 										<% if(!_.isEmpty(user.attributes.profile_picture_path)) { 
 											var profile_picture_path = board.showImage('User', user.attributes.user_id, 'small_thumb' );
