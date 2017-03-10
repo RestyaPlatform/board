@@ -359,7 +359,7 @@
 					echo "imagemagick installation failed with error code 9"
 					exit 1
 				fi
-				apt-get install -y php7.0-imagick
+				apt-get install -y php-imagick
 				if [ $? != 0 ]
 				then
 					echo "php7.0-imagick installation failed with error code 10"
