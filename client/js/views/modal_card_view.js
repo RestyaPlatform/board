@@ -583,6 +583,11 @@ App.ModalCardView = Backbone.View.extend({
         var self = this;
         var validation = true;
         var data = $(e.target).serializeObject();
+        if ($.trim(data.name) === '') {
+            $('.error-msg-name').remove();
+            $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputCardName');
+            return false;
+        }
         if (!_.isUndefined(data.due_date) || !_.isUndefined(data.due_time)) {
             data = {
                 to_date: data.due_date,
