@@ -1531,7 +1531,7 @@ $app->GET('/api/v1/acl_links.json', function ($request, $response, $args)
     $acl_links_result = executeQueryAll($acl_links_sql, array());
     $results['acl_links'] = array();
     foreach ($acl_links_result as $row) {
-        $results['acl_links'][] = json_decode($row['row_to_json'], true);
+        $results['acl_links'][] = $row;
     }
     $roles_sql = 'SELECT id, name FROM roles ORDER BY id ASC';
     $roles_result = executeQueryAll($roles_sql, array());
@@ -1543,7 +1543,7 @@ $app->GET('/api/v1/acl_links.json', function ($request, $response, $args)
     $acl_board_links_result = executeQueryAll($acl_board_links_sql, array());
     $results['acl_board_links'] = array();
     foreach ($acl_board_links_result as $row) {
-        $results['acl_board_links'][] = json_decode($row['row_to_json'], true);
+        $results['acl_board_links'][] = $row;
     }
     $board_user_roles_sql = 'SELECT id, name, description FROM board_user_roles ORDER BY id ASC';
     $board_user_roles_result = executeQueryAll($board_user_roles_sql, array());
@@ -1555,7 +1555,7 @@ $app->GET('/api/v1/acl_links.json', function ($request, $response, $args)
     $acl_organization_links_result = executeQueryAll($acl_organization_links_sql, array());
     $results['acl_organization_links'] = array();
     foreach ($acl_organization_links_result as $row) {
-        $results['acl_organization_links'][] = json_decode($row['row_to_json'], true);
+        $results['acl_organization_links'][] = $row;
     }
     $organization_user_roles_sql = 'SELECT id, name, description FROM organization_user_roles ORDER BY id ASC';
     $organization_user_roles_result = executeQueryAll($organization_user_roles_sql, array());
@@ -3780,6 +3780,7 @@ $app->POST('/api/v1/boards/{boardId}/lists/{listId}/cards/{cardId}/checklists/{c
             if (empty($args['member'])) {
                 unset($args['member']);
             }
+            $args = getbindValues($table_name, $args);
             $result = executeInsertQuery($table_name, $args);
             $item = $result;
             $results[$table_name][] = $item;
