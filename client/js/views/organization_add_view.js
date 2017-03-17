@@ -44,28 +44,47 @@ App.OrganizationAddView = Backbone.View.extend({
     },
     addOrganization: function(e) {
         var data = $(e.target).serializeObject();
-        var organization = new App.Organization();
-        organization.url = api_url + 'organizations.json';
-        organization.set(data);
-        if (!_.isUndefined(data.name) && data.name !== null && $.trim(data.name) !== "") {
-            organization.save(data, {
-                success: function(model, response) {
-                    organization.set('id', parseInt(response.id));
-                    auth_user_organizations.add(organization);
-                    data.id = parseInt(response.id);
-                    var Auth = JSON.parse($.cookie('auth'));
-                    if (auth_user_organizations === null) {
-                        auth_user_organizations = [];
-                    }
-                    auth_user_organizations.add(data);
-                    app.navigate('#/organization/' + response.id, {
-                        trigger: true,
-                        replace: true
-                    });
-                }
-            });
+        if ($.trim(data.name) === '' || $.trim(data.description) === '') {
+            if ($.trim(data.name) === '' && $.trim(data.description) === '') {
+                $('.error-msg-name').remove();
+                $('.error-msg-description').remove();
+                $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputOrganizationName');
+                $('<div class="error-msg-description text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputOrganizationDescription');
+            } else if ($.trim(data.name) === '') {
+                $('.error-msg-name').remove();
+                $('.error-msg-description').remove();
+                $('<div class="error-msg-name text-primary h6">' + i18next.t('whitespace alone not allowed') + '</div>').insertAfter('#inputOrganizationName');
+            } else if ($.trim(data.description) === '') {
+                $('.error-msg-name').remove();
+                $('.error-msg-description').remove();
+                $('<div class="error-msg-description text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputOrganizationDescription');
+            }
         } else {
-            this.flash(i18next.t('Enter organization name'), i18next.t('Organization name is empty'));
+            $('.error-msg-name').remove();
+            $('.error-msg-description').remove();
+            var organization = new App.Organization();
+            organization.url = api_url + 'organizations.json';
+            organization.set(data);
+            if (!_.isUndefined(data.name) && data.name !== null && $.trim(data.name) !== "") {
+                organization.save(data, {
+                    success: function(model, response) {
+                        organization.set('id', parseInt(response.id));
+                        auth_user_organizations.add(organization);
+                        data.id = parseInt(response.id);
+                        var Auth = JSON.parse($.cookie('auth'));
+                        if (auth_user_organizations === null) {
+                            auth_user_organizations = [];
+                        }
+                        auth_user_organizations.add(data);
+                        app.navigate('#/organization/' + response.id, {
+                            trigger: true,
+                            replace: true
+                        });
+                    }
+                });
+            } else {
+                this.flash(i18next.t('Enter organization name'), i18next.t('Organization name is empty'));
+            }
         }
         return false;
     }
