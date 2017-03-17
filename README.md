@@ -4,6 +4,8 @@
 
 Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [Restya platform] (http://restya.com/).
 
+# For Free Installation, [contact us](http://restya.com/contact?category=free-installation) 
+
 ### Status: Active
 
 Project is active! Follow development in [dev](https://github.com/RestyaPlatform/board/tree/dev) branch
