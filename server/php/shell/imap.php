@@ -14,6 +14,7 @@
  */
 $app_path = dirname(dirname(__FILE__));
 require_once $app_path . '/config.inc.php';
+ini_set('display_errors', true);
 // Check is imap extension loaded
 if (!extension_loaded('imap')) {
     echo 'IMAP PHP extension not available on this server. Bounced email functions will not work.';
@@ -23,7 +24,9 @@ if (!extension_loaded('imap')) {
 $imap_email_password = IMAP_EMAIL_PASSWORD;
 $imap_email_password_decode = base64_decode($imap_email_password);
 $imap_email_password = str_rot13($imap_email_password_decode);
-$connection = imap_open('{' . IMAP_HOST . ':' . IMAP_PORT . '/imap/ssl/novalidate-cert/notls}INBOX', IMAP_EMAIL, $imap_email_password);
+$connection = imap_open('{' . IMAP_HOST . ':' . IMAP_PORT . '/imap/' . (IMAP_PORT === '993') ? 'ssl/' : '' . 'novalidate-cert}INBOX', IMAP_EMAIL, IMAP_EMAIL_PASSWORD, NULL, 1, array(
+    'DISABLE_AUTHENTICATOR' => 'PLAIN'
+));
 if (!$connection) {
     return;
 }
@@ -37,6 +40,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
     // Email format for board - board+##board_id##+hash@restya.com
     // Email format for card  - board+##board_id##+##card_id##+hash@restya.com
     // Check to email address contains atleast one "+" symbol
+    echo 'Mail: ' . $header->to[0]->mailbox;
     if (count($mail) > 1) {
         $board_id = $mail[1];
         $card_id = '';
@@ -45,6 +49,9 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
             $card_id = $mail[2];
             $hash = $mail[3];
         }
+        echo 'Board ID: ' . $board_id;
+        echo 'Card ID: ' . $card_id;
+        echo 'Hash: ' . $hash;
         // Check email hash with generated hash
         if ($hash == md5(SECURITYSALT . $board_id . $card_id)) {
             $condition = array(
@@ -68,21 +75,13 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                     // Select minimum/maximum card position based on email to board settings
                     $card_query = pg_query_params('SELECT ' . $str . ' as position FROM cards WHERE board_id = $1 AND list_id = $2', $val_arr);
                     $card = pg_fetch_assoc($card_query);
-                    $position = empty($card['position']) ? 1 : (!empty($board['is_default_email_position_as_bottom'])) ? $card['position'] + 1 : $card['position'];
-                    $title = '';
-                    $decoded_title = imap_mime_header_decode($header->subject);
-                    for ($i = 0; $i < count($decoded_title); $i++) {
-                        if (!strcasecmp($decoded_title[$i]->charset, "utf-8") == 0) {
-                            $title.= iconv($decoded_title[$i]->charset, "utf-8", $decoded_title[$i]->text);
-                        } else {
-                            $title.= $decoded_title[$i]->text;
-                        }
-                    }
+                    $position = empty($card['position']) ? 1 : (!empty($board['is_default_email_position_as_bottom'])) ? $card['position'] + 1 : ($card['position'] / 2);
+                    $title = $header->subject;
                     $val_arr = array(
                         $board_id,
                         $list_id,
                         $title,
-                        $body,
+                        decode_qprint($body) ,
                         $position,
                         $board['user_id']
                     );
@@ -106,7 +105,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                         $list_id,
                         $board_id,
                         'add_comment',
-                        $body
+                        decode_qprint($body)
                     );
                     // Insert email content as comment in respective card
                     pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
@@ -128,12 +127,14 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                             $attachments[$i]['filesize'] = $structure->parts[$i]->bytes;
                         }
                         //### Tmobile & metropcs
-                        if (preg_match('/</i', $structure->parts[$i]->id) && preg_match('/>/i', $structure->parts[$i]->id)) {
-                            foreach ($structure->parts[$i]->parameters as $param) {
-                                if (strtolower($param->attribute) == 'name') {
-                                    $attachments[$i]['is_attachment'] = true;
-                                    $attachments[$i]['name'] = $param->value;
-                                    $attachments[$i]['filename'] = $param->value;
+                        if (!empty($structure->parts[$i]->id)) {
+                            if (preg_match('/</i', $structure->parts[$i]->id) && preg_match('/>/i', $structure->parts[$i]->id)) {
+                                foreach ($structure->parts[$i]->parameters as $param) {
+                                    if (strtolower($param->attribute) == 'name') {
+                                        $attachments[$i]['is_attachment'] = true;
+                                        $attachments[$i]['name'] = $param->value;
+                                        $attachments[$i]['filename'] = $param->value;
+                                    }
                                 }
                             }
                         }
@@ -192,27 +193,6 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                         }
                         $i++;
                     }
-                    if (empty($file_attachments)) {
-                        $body = imap_fetchbody($connection, $counter, 1);
-                        // To email address is for specific card then insert the email as card comment
-                        $val_arr = array(
-                            $card_id
-                        );
-                        // Fetching list_id to update in card comment
-                        $card_query = pg_query_params('SELECT list_id FROM cards WHERE id = $1', $val_arr);
-                        $card = pg_fetch_assoc($card_query);
-                        $list_id = $card['list_id'];
-                        $val_arr = array(
-                            $card_id,
-                            $board['user_id'],
-                            $list_id,
-                            $board_id,
-                            'add_comment',
-                            $body
-                        );
-                        // Insert email content as comment in respective card
-                        pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
-                    }
                 }
             }
         }
@@ -222,3 +202,10 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
 }
 // Closing the imap connection
 imap_expunge($connection);
+function decode_qprint($str)
+{
+    $str = preg_replace("/\=([A-F][A-F0-9])/", "%$1", $str);
+    $str = urldecode($str);
+    $str = utf8_encode($str);
+    return $str;
+}
