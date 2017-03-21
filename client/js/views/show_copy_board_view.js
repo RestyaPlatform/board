@@ -57,25 +57,31 @@ App.ShowCopyBoardView = Backbone.View.extend({
      *
      */
     copyNewBoard: function(e) {
-        e.preventDefault();
-        var self = this;
-        var data = $(e.target).serializeObject();
-        data.user_id = authuser.user.id;
-        var board = new App.Board();
-        board.url = api_url + 'boards/' + this.model.id + '/copy.json';
-        board.save(data, {
-            success: function(model, response) {
-                if (!_.isUndefined(board.get('id'))) {
-                    app.navigate('#/board/' + board.get('id'), {
-                        trigger: true,
-                        replace: true,
-                    });
-                    self.flash('success', i18next.t('Board copied successfully.'));
-                } else {
-                    self.flash('danger', i18next.t('Unable to copy the board.'));
+        if (!$.trim($('#inputCopyBoardName').val()).length) {
+            $('.error-msg').remove();
+            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputCopyBoardName');
+        } else {
+            $('.error-msg').remove();
+            e.preventDefault();
+            var self = this;
+            var data = $(e.target).serializeObject();
+            data.user_id = authuser.user.id;
+            var board = new App.Board();
+            board.url = api_url + 'boards/' + this.model.id + '/copy.json';
+            board.save(data, {
+                success: function(model, response) {
+                    if (!_.isUndefined(board.get('id'))) {
+                        app.navigate('#/board/' + board.get('id'), {
+                            trigger: true,
+                            replace: true,
+                        });
+                        self.flash('success', i18next.t('Board copied successfully.'));
+                    } else {
+                        self.flash('danger', i18next.t('Unable to copy the board.'));
+                    }
                 }
-            }
-        });
+            });
+        }
         return false;
     },
 });

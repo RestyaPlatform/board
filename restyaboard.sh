@@ -359,7 +359,7 @@
 					echo "imagemagick installation failed with error code 9"
 					exit 1
 				fi
-				apt-get install -y php7.0-imagick
+				apt-get install -y php-imagick
 				if [ $? != 0 ]
 				then
 					echo "php7.0-imagick installation failed with error code 10"
@@ -446,8 +446,9 @@
 					fi
 				fi
 			fi
-			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/9.4/main/pg_hba.conf > /etc/postgresql/9.4/main/pg_hba.conf.1
-			cd /etc/postgresql/9.4/main || exit
+			PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf > /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf.1
+			cd /etc/postgresql/${PSQL_VERSION}/main || exit
 			mv pg_hba.conf pg_hba.conf_old
 			mv pg_hba.conf.1 pg_hba.conf
 			service postgresql restart

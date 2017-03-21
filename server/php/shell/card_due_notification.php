@@ -21,8 +21,8 @@ if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
 }
 if ($db_lnk) {
     $qry_val_arr = array();
-    $result = pg_query_params($db_lnk, "SELECT * FROM cards_listing WHERE notification_due_date BETWEEN ((now() + '1 day'::INTERVAL) - '300 seconds'::INTERVAL) AND (now() + '1 day'::INTERVAL)", $qry_val_arr);
-    while ($card = pg_fetch_assoc($result)) {
+    $result = executeQueryAll("SELECT * FROM cards_listing WHERE notification_due_date BETWEEN ((now() + '1 day'::INTERVAL) - '300 seconds'::INTERVAL) AND (now() + '1 day'::INTERVAL)", $qry_val_arr);
+    foreach ($result as $card) {
         $cards_users = json_decode($card['cards_users']);
         if (!empty($cards_users)) {
             $i = 0;
