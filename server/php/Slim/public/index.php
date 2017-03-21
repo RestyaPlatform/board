@@ -4340,7 +4340,7 @@ $app->POST('/api/v1/apps/settings.json', function ($request, $response, $args)
         $app['enabled'] = $args['enable'];
     } else {
         foreach ($args as $key => $val) {
-            if (!empty($app['settings'][$key]['is_encrypted']) && $app['settings'][$key]['is_encrypted'] === true) {
+            if (!empty($app['settings'][$key]['is_encrypted'])) {
                 if (!empty($val)) {
                     $value_encode = str_rot13($val);
                     $val = base64_encode($value_encode);
