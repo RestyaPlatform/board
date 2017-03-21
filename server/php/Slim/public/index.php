@@ -1756,7 +1756,7 @@ $app->POST('/api/v1/users/bulk_action.json', function ($request, $response, $arg
         $response = array(
             'success' => 'Checked users are deleted successfully.'
         );
-    }else if ($action_id == 4) {
+    } else if ($action_id == 4) {
         foreach ($user_ids as $user_id) {
             $data = array(
                 1,
@@ -2140,7 +2140,7 @@ $app->POST('/api/v1/users/{userId}/changepassword.json', function ($request, $re
     }
     return renderWithJson($response);
 });
-$app->POST('/api/v1/users/{userId}.json', function ($request, $response, $args)
+$app->POST('/api/v1/users/{userId:\d+}.json', function ($request, $response, $args)
 {
     $args = $request->getParsedBody();
     $r_resource_vars['users'] = $request->getAttribute('userId');
@@ -2286,13 +2286,21 @@ $app->POST('/api/v1/settings.json', function ($request, $response, $args)
 {
     $args = $request->getParsedBody();
     foreach ($args as $key => $value) {
+        if ($key == 'IMAP_EMAIL_PASSWORD') {
+            if (!empty($value)) {
+                $value_encode = str_rot13($value);
+                $value = base64_encode($value_encode);
+            } else {
+                break;
+            }
+        }
         $qry_val_arr = array(
             $value,
             trim($key)
         );
         executeQueryAll('UPDATE settings SET value = ? WHERE name = ?', $qry_val_arr);
     }
-    $response = array(
+    $results = array(
         'success' => 'Settings updated successfully.'
     );
     echo json_encode($results, JSON_NUMERIC_CHECK);
@@ -4332,6 +4340,14 @@ $app->POST('/api/v1/apps/settings.json', function ($request, $response, $args)
         $app['enabled'] = $args['enable'];
     } else {
         foreach ($args as $key => $val) {
+            if ($key == 'r_ldap_login_bind_password') {
+                if (!empty($val)) {
+                    $value_encode = str_rot13($val);
+                    $val = base64_encode($value_encode);
+                } else {
+                    break;
+                }
+            }
             $app['settings'][$key]['value'] = $val;
         }
     }
@@ -5203,7 +5219,7 @@ $app->DELETE('/api/v1/boards/{boardId}/lists/{listId}.json', function ($request,
 {
     global $authUser;
     $r_resource_vars['boards'] = $request->getAttribute('boardId');
-   $r_resource_vars['lists'] = $request->getAttribute('listId');
+    $r_resource_vars['lists'] = $request->getAttribute('listId');
     $qry_val_arr = array(
         $r_resource_vars['lists']
     );
