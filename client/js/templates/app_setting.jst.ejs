@@ -15,7 +15,11 @@ _.each(app_settings, function(app_setting) {
 	<div class="form-group col-xs-12">
 			  <label class="col-sm-2  control-label col-xs-12"><%- i18next.t(app_setting.label ) %></label>
 			  <div class=" col-sm-7  col-xs-12">
-				<input type="text" value="<%- app_setting.value %>" class="form-control" name="<%- app_setting.name %>" id="<%- app_setting.name %>">
+				<% if(!_.isUndefined(app_setting.is_encrypted) && (app_setting.is_encrypted === true)){ %>
+					<input type="text" value="" class="form-control" name="<%- app_setting.name %>" id="<%- app_setting.name %>">
+				<% } else { %>
+					<input type="text" value="<%- app_setting.value %>" class="form-control" name="<%- app_setting.name %>" id="<%- app_setting.name %>">					
+				<% } %>
 				<div><span class="help-block"><%- app_setting.info %></span></div>
 			  </div>
 	</div>
