@@ -1526,8 +1526,7 @@ App.ListView = Backbone.View.extend({
                 }
             };
             cards.reset(filtered_cards);
-            for (var i = 0; i < cards.models.length; i++) {
-                var card = cards.models[i];
+            cards.each(function(card) {
                 is_card_empty = false;
                 card.list_name = _.escape(self.model.attributes.name);
                 card.list_id = self.model.attributes.id;
@@ -1538,9 +1537,14 @@ App.ListView = Backbone.View.extend({
                 card.attachments.add(filter_attachments, {
                     silent: true
                 });
-                card.labels.add(card.attributes.card_labels, {
+                var filter_labels = self.model.labels.filter(function(model) {
+                    return parseInt(model.get('card_id')) === parseInt(card.id);
+                });
+                var labels = new App.CardLabelCollection();
+                labels.add(filter_labels, {
                     silent: true
                 });
+                card.labels = labels;
                 card.cards.add(self.model.cards, {
                     silent: true
                 });
@@ -1554,7 +1558,7 @@ App.ListView = Backbone.View.extend({
                     converter: self.converter
                 });
                 $('#js-card-listing-' + self.model.attributes.id).append(view.render().el);
-            }
+            });
         }
         if (is_card_empty) {
             view = new App.CardView({
