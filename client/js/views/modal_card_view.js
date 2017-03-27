@@ -1761,6 +1761,10 @@ App.ModalCardView = Backbone.View.extend({
             var self = this;
             var view_activity = this.$('#js-card-activities-' + self.model.id);
             view_activity.html('');
+            var activities = this.model.list.collection.board.activities.where({
+                card_id: parseInt(this.model.attributes.id)
+            });
+            this.model.activities.reset(activities);
             if (!_.isEmpty(this.model.activities)) {
                 this.model.activities.each(function(activity) {
                     $('#js-loader-img').removeClass('hide');
@@ -2207,7 +2211,6 @@ App.ModalCardView = Backbone.View.extend({
                         model: model,
                         board: self.model.list.collection.board
                     });
-                    self.model.activities.unshift(activity);
                     var current_card = self.model.list.collection.board.cards.get(self.model.id);
                     self.model.list.collection.board.cards.get(self.model.id).set('comment_count', parseInt(current_card.attributes.comment_count) + 1);
                     var view_activity = $('#js-card-activities-' + self.model.id);
