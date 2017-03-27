@@ -1,0 +1,1 @@
+ UPDATE "acl_board_links" SET "url" = '/boards/?/lists/?/cards/?/cards_users/?' WHERE "slug" = 'delete_card_user';
