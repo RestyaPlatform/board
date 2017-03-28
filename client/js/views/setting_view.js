@@ -38,14 +38,6 @@ App.SettingView = Backbone.View.extend({
         if (!_.isUndefined(data.DEFAULT_CARD_VIEW)) {
             DEFAULT_CARD_VIEW = data.DEFAULT_CARD_VIEW;
         }
-
-        if (!_.isUndefined(data.STANDARD_LOGIN_ENABLED) && $('.js-checkbox').is(":checked")) {
-            data.STANDARD_LOGIN_ENABLED = 'true';
-        } else {
-            if (parseInt(this.id) === 2) {
-                data.STANDARD_LOGIN_ENABLED = 'false';
-            }
-        }
         data.ENABLE_SSL_CONNECTIVITY = 'false';
         if (!_.isUndefined($("input[name='ENABLE_SSL_CONNECTIVITY']:checked").val())) {
             data.ENABLE_SSL_CONNECTIVITY = 'true';

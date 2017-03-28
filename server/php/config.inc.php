@@ -61,13 +61,6 @@ if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.
 $db_lnk = pg_connect('host=' . R_DB_HOST . ' port=' . R_DB_PORT . ' dbname=' . R_DB_NAME . ' user=' . R_DB_USER . ' password=' . R_DB_PASSWORD . ' options=--client_encoding=UTF8') or die('Database could not connect');
 $settings = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE setting_category_id in (1,2,3,10,11) OR setting_category_parent_id in (1,2,3)', array());
 while ($setting = pg_fetch_assoc($settings)) {
-    if ($setting['name'] == 'LDAP_LOGIN_ENABLED' || $setting['name'] == 'STANDARD_LOGIN_ENABLED') {
-        $setting_array = array(
-            'true'
-        );
-        $setting_val = strtolower($setting['value']);
-        $setting['value'] = (in_array($setting_val, $setting_array)) ? true : false;
-    }
     define($setting['name'], $setting['value']);
 }
 $thumbsizes = array(
