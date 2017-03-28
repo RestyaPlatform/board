@@ -1567,7 +1567,7 @@ $app->GET('/api/v1/acl_links.json', function ($request, $response, $args)
 });
 $app->GET('/api/v1/settings.json', function ($request, $response, $args)
 {
-    $s_sql = executeQueryAll('SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\'  OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'STANDARD_LOGIN_ENABLED\' OR name = \'PAGING_COUNT\' OR name = \'DEFAULT_CARD_VIEW\'', array());
+    $s_sql = executeQueryAll('SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\'  OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'PAGING_COUNT\' OR name = \'DEFAULT_CARD_VIEW\'', array());
     foreach ($s_sql as $row) {
         $results[$row['name']] = $row['value'];
     }
@@ -1968,7 +1968,7 @@ $app->POST('/api/v1/users/login.json', function ($request, $response, $args)
         $ldap_error = $ldap_response['ldap_error'];
         $user = $ldap_response['user'];
     }
-    if (STANDARD_LOGIN_ENABLED && !empty($log_user) && $log_user['is_ldap'] == 0) {
+    if (is_plugin_enabled('r_ldap_login') && !empty($log_user) && $log_user['is_ldap'] == 0) {
         $args['password'] = crypt($args['password'], $log_user['password']);
         $val_arr = array(
             $args['email'],
