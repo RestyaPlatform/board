@@ -1903,7 +1903,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $response['uuid'] = $uuid;
                     }
                     $emailFindReplace['##NAME##'] = $r_post['full_name'];
-                    $emailFindReplace['##ACTIVATION_URL##'] = 'http://' . $_SERVER['HTTP_HOST'] . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
+                    $emailFindReplace['##ACTIVATION_URL##'] = $_server_domain_url . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
                     sendMail('activation', $emailFindReplace, $r_post['email']);
                 }
             }
@@ -1953,7 +1953,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $response['uuid'] = $uuid;
                     }
                     $emailFindReplace['##NAME##'] = $r_post['full_name'];
-                    $emailFindReplace['##ACTIVATION_URL##'] = 'http://' . $_SERVER['HTTP_HOST'] . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
+                    $emailFindReplace['##ACTIVATION_URL##'] = $_server_domain_url . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
                     sendMail('activation', $emailFindReplace, $r_post['email']);
                 }
             }
@@ -3065,7 +3065,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         '##NAME##' => $user['full_name'],
                         '##CURRENT_USER##' => $authUser['full_name'],
                         '##BOARD_NAME##' => $previous_value['name'],
-                        '##BOARD_URL##' => 'http://' . $_SERVER['HTTP_HOST'] . '/#/board/' . $r_post['board_id'],
+                        '##BOARD_URL##' => $_server_domain_url . '/#/board/' . $r_post['board_id'],
                     );
                     sendMail('newprojectuser', $emailFindReplace, $user['email']);
                 }
