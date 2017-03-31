@@ -1884,7 +1884,7 @@ $app->POST('/api/v1/users.json', function ($request, $response, $args)
                     $results['uuid'] = $uuid;
                 }
                 $emailFindReplace['##NAME##'] = $args['full_name'];
-                $emailFindReplace['##ACTIVATION_URL##'] = 'http://' . $_SERVER['HTTP_HOST'] . '/#/users/activation/' . $row['id'] . '/' . md5($args['username']);
+                $emailFindReplace['##ACTIVATION_URL##'] = $_server_domain_url . '/#/users/activation/' . $row['id'] . '/' . md5($args['username']);
                 sendMail('activation', $emailFindReplace, $args['email']);
             }
         }
@@ -1935,7 +1935,7 @@ $app->POST('/api/v1/users/register.json', function ($request, $response, $args)
                     $results['uuid'] = $uuid;
                 }
                 $emailFindReplace['##NAME##'] = $args['full_name'];
-                $emailFindReplace['##ACTIVATION_URL##'] = 'http://' . $_SERVER['HTTP_HOST'] . '/#/users/activation/' . $row['id'] . '/' . md5($args['username']);
+                $emailFindReplace['##ACTIVATION_URL##'] = $_server_domain_url . '/#/users/activation/' . $row['id'] . '/' . md5($args['username']);
                 sendMail('activation', $emailFindReplace, $args['email']);
             }
         }
@@ -3061,7 +3061,7 @@ $app->POST('/api/v1/boards/{boardId}/users.json', function ($request, $response,
                     '##NAME##' => $user['full_name'],
                     '##CURRENT_USER##' => $authUser['full_name'],
                     '##BOARD_NAME##' => $previous_value['name'],
-                    '##BOARD_URL##' => 'http://' . $_SERVER['HTTP_HOST'] . '/#/board/' . $args['board_id'],
+                    '##BOARD_URL##' => $_server_domain_url . '/#/board/' . $args['board_id'],
                 );
                 sendMail('newprojectuser', $emailFindReplace, $user['email']);
             }
