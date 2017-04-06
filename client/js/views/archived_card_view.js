@@ -50,7 +50,7 @@ App.ArchivedCardView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             card: this.model
-                //board: this.model.list.collection.board
+            //board: this.model.list.collection.board
         }));
         this.showTooltip();
         return this;

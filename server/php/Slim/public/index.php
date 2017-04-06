@@ -442,7 +442,7 @@ $app->GET('/api/v1/users/{userId}.json', function ($request, $response, $args)
         if ($result = executeQueryAll($sql, $pg_params)) {
             $data = array();
             foreach ($result as $row) {
-                $row['timezone'] = ' '.$row['timezone'].' ';
+                $row['timezone'] = ' ' . $row['timezone'] . ' ';
                 $data = $row;
             }
             echo json_encode($data, JSON_NUMERIC_CHECK);
@@ -2028,7 +2028,7 @@ $app->POST('/api/v1/users/login.json', function ($request, $response, $args)
         $notify_count = executeQuery('SELECT max(id) AS last_activity_id, count(a.*) AS notify_count FROM activities a  WHERE a.id > ? AND board_id = ANY (?) ', $notify_val_arr);
         $notify_count['last_activity_id'] = (!empty($notify_count['last_activity_id'])) ? $notify_count['last_activity_id'] : $user['last_activity_id'];
         $user = array_merge($user, $notify_count);
-        $user['timezone'] = ' '.$user['timezone'].' ';
+        $user['timezone'] = ' ' . $user['timezone'] . ' ';
         $response['user'] = $user;
         $response['user']['organizations'] = json_decode($user['organizations'], true);
     } else {
