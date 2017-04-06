@@ -442,6 +442,7 @@ $app->GET('/api/v1/users/{userId}.json', function ($request, $response, $args)
         if ($result = executeQueryAll($sql, $pg_params)) {
             $data = array();
             foreach ($result as $row) {
+                $row['timezone'] = ' ' . $row['timezone'] . ' ';
                 $data = $row;
             }
             echo json_encode($data, JSON_NUMERIC_CHECK);
@@ -2027,6 +2028,7 @@ $app->POST('/api/v1/users/login.json', function ($request, $response, $args)
         $notify_count = executeQuery('SELECT max(id) AS last_activity_id, count(a.*) AS notify_count FROM activities a  WHERE a.id > ? AND board_id = ANY (?) ', $notify_val_arr);
         $notify_count['last_activity_id'] = (!empty($notify_count['last_activity_id'])) ? $notify_count['last_activity_id'] : $user['last_activity_id'];
         $user = array_merge($user, $notify_count);
+        $user['timezone'] = ' ' . $user['timezone'] . ' ';
         $response['user'] = $user;
         $response['user']['organizations'] = json_decode($user['organizations'], true);
     } else {
@@ -2142,6 +2144,7 @@ $app->POST('/api/v1/users/{userId}/changepassword.json', function ($request, $re
 });
 $app->POST('/api/v1/users/{userId:\d+}.json', function ($request, $response, $args)
 {
+    global $authUser;
     $args = $request->getParsedBody();
     $r_resource_vars['users'] = $request->getAttribute('userId');
     $pg_params = array();
@@ -2223,12 +2226,7 @@ $app->POST('/api/v1/users/{userId:\d+}.json', function ($request, $response, $ar
                 }
                 $sfields = '';
                 foreach ($put as $key => $value) {
-                    if ($key != 'id') {
-                        $fields.= ', ' . $key;
-                    }
-                    if ($key != 'id' && $key != 'position') {
-                        $sfields.= (empty($sfields)) ? $key : ", " . $key;
-                    }
+                    $sfields.= (empty($sfields)) ? $key : ", " . $key;
                 }
                 if (!empty($comment)) {
                     $qry_va_arr = array(
