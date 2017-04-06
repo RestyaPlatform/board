@@ -114,7 +114,13 @@
 
     parse: function(iso8601) {
       var s = $.trim(iso8601);
-	  s += " " + SITE_TIMEZONE;
+      var timezone = SITE_TIMEZONE; 
+      if (!_.isUndefined(authuser)) {
+        if(!_.isUndefined(authuser.user.timezone)) {
+          timezone = $.trim(authuser.user.timezone);
+        }
+      }
+  	  s += " " + timezone;
       s = s.replace(/\.\d+/,""); // remove milliseconds
       s = s.replace(/-/,"/").replace(/-/,"/");
       s = s.replace(/T/," ").replace(/Z/," UTC");

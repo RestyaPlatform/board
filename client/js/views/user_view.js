@@ -216,6 +216,7 @@ App.UserView = Backbone.View.extend({
                     self.model.set('profile_picture_path', response.activity.profile_picture_path);
                     var Auth = JSON.parse($.cookie('auth'));
                     Auth.user.profile_picture_path = response.activity.profile_picture_path;
+                    Auth.user.timezone = data.timezone;
                     $.cookie('auth', JSON.stringify(Auth));
                     authuser = Auth;
                     this.footerView = new App.FooterView({

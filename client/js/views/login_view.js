@@ -78,6 +78,7 @@ App.LoginView = Backbone.View.extend({
                         auth_response.user.role_id = response.user.role_id;
                         auth_response.user.username = response.user.username;
                         auth_response.user.full_name = response.user.full_name;
+                        auth_response.user.timezone = response.user.timezone;
                         auth_response.board_id = response.board_id;
                         auth_response.user.notify_count = response.user.notify_count;
                         auth_response.user.unread_activity_id = response.user.unread_activity_id;
