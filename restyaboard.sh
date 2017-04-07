@@ -239,9 +239,10 @@
 			
 			apt-get update -y
 			apt-get upgrade -y
-
+			apt-get install python-software-properties -y
 			add-apt-repository ppa:ondrej/php
 			apt-get update -y
+			apt-get install libjpeg8 -y --allow-unauthenticated
 			
 			echo "Checking nginx..."
 			if ! which nginx > /dev/null 2>&1; then
