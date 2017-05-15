@@ -18,30 +18,13 @@
 	OS_REQUIREMENT=$(lsb_release -i -s)
 	if [ $? != 0 ]
 	then
-		echo "lsb_release is not enabled, please install \"yum install -y redhat-lsb-core\" command before running install script"
+		echo "lsb_release is not enabled"
 		exit 1
 	fi
 	OS_VERSION=$(lsb_release -rs | cut -f1 -d.)
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 	then
-		sed -i -e 's/us.archive.ubuntu.com/archive.ubuntu.com/g' /etc/apt/sources.list
-		
-		echo "deb http://mirrors.linode.com/debian/ wheezy main contrib non-free" >> /etc/apt/sources.list
-		echo "deb-src http://mirrors.linode.com/debian/ wheezy main contrib non-free" >> /etc/apt/sources.list
-		echo "deb http://mirrors.linode.com/debian-security/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
-		echo "deb-src http://mirrors.linode.com/debian-security/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
-		echo "deb http://mirrors.linode.com/debian/ wheezy-updates main" >> /etc/apt/sources.list
-		echo "deb-src http://mirrors.linode.com/debian/ wheezy-updates main" >> /etc/apt/sources.list
-		sed -i -e 's/deb cdrom/#deb cdrom/g' /etc/apt/sources.list
-		apt-key update
 		apt-get update
-
-		echo "deb http://packages.dotdeb.org jessie all" >> /etc/apt/sources.list
-		echo "deb-src http://packages.dotdeb.org jessie all" >> /etc/apt/sources.list
-		wget https://www.dotdeb.org/dotdeb.gpg
-		apt-key add dotdeb.gpg
-		apt-get update
-
 		apt-get install -y curl unzip
 	else
 		yum install -y curl unzip
@@ -242,7 +225,7 @@
 			apt-get install python-software-properties -y
 			add-apt-repository ppa:ondrej/php
 			apt-get update -y
-			apt-get install libjpeg8 -y --allow-unauthenticated
+			apt-get install libjpeg8 -y
 			
 			echo "Checking nginx..."
 			if ! which nginx > /dev/null 2>&1; then
@@ -283,10 +266,6 @@
 				esac
 			fi
 
-			wget http://mirrors.kernel.org/ubuntu/pool/main/libn/libnl3/libnl-3-200_3.2.21-1ubuntu3_amd64.deb
-			wget http://mirrors.kernel.org/ubuntu/pool/main/libn/libnl3/libnl-genl-3-200_3.2.21-1ubuntu3_amd64.deb
-			dpkg -i *.deb
-			
 			echo "Installing PHP fpm and cli extension..."
 			apt-get install -y php7.0-fpm php7.0-cli
 			if [ $? != 0 ]
@@ -360,7 +339,7 @@
 					echo "imagemagick installation failed with error code 9"
 					exit 1
 				fi
-				apt-get install -y php-imagick
+				apt-get install -y php7.0-imagick
 				if [ $? != 0 ]
 				then
 					echo "php7.0-imagick installation failed with error code 10"
@@ -447,9 +426,8 @@
 					fi
 				fi
 			fi
-			PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
-			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf > /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf.1
-			cd /etc/postgresql/${PSQL_VERSION}/main || exit
+			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/9.4/main/pg_hba.conf > /etc/postgresql/9.4/main/pg_hba.conf.1
+			cd /etc/postgresql/9.4/main || exit
 			mv pg_hba.conf pg_hba.conf_old
 			mv pg_hba.conf.1 pg_hba.conf
 			service postgresql restart
@@ -547,6 +525,8 @@
 					echo "postfix installation failed with error code 16"
 				fi
 			echo "Changing permission..."
+			find $dir -type d -exec chmod 755 {} \;
+			find $dir -type f -exec chmod 644 {} \;
 			chmod -R go+w "$dir/media"
 			chmod -R go+w "$dir/client/img"
 			chmod -R go+w "$dir/tmp/cache"
@@ -1043,6 +1023,8 @@
 			cp -r "$DOWNLOAD_DIR"/* "$dir"
 
 			echo "Changing permission..."
+			find $dir -type d -exec chmod 755 {} \;
+			find $dir -type f -exec chmod 644 {} \;
 			chmod -R go+w "$dir/media"
 			chmod -R go+w "$dir/client/img"
 			chmod -R go+w "$dir/tmp/cache"

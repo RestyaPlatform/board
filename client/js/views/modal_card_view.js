@@ -717,6 +717,7 @@ App.ModalCardView = Backbone.View.extend({
         self.model.activities = new App.ActivityCollection();
         self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json';
         self.model.activities.fetch({
+            cache: false,
             success: function(model, response) {
                 self.renderActivitiesCollection();
             }
