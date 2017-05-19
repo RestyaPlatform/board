@@ -2173,7 +2173,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     foreach ($thumbsizes['User'] as $key => $value) {
                         $mediadir = APP_PATH . '/client/img/' . $key . '/User/' . $r_resource_vars['users'];
                         $list = glob($mediadir . '.*');
-                        if (!empty($list) && file_exists($list[0])) {
+                        if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                             unlink($list[0]);
                         }
                     }
@@ -3002,10 +3002,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     foreach ($thumbsizes['Board'] as $key => $value) {
                         $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Board' . DIRECTORY_SEPARATOR . $r_resource_vars['boards'];
                         $list = glob($mediadir . '.*');
-                        if (!empty($list)) {
-                            if (file_exists($list[0])) {
-                                unlink($list[0]);
-                            }
+                        if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
+                            unlink($list[0]);
                         }
                     }
                     $hash = md5(SECURITYSALT . 'Board' . $r_resource_vars['boards'] . 'jpg' . 'extra_large_thumb');
@@ -3511,7 +3509,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                 $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][0]['id'];
                 $list = glob($mediadir . '.*');
-                if (!empty($list) && file_exists($list[0])) {
+                if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                     unlink($list[0]);
                 }
             }
@@ -3550,7 +3548,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                             $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
                             $list = glob($imgdir . '.*');
-                            if (!empty($list) && file_exists($list[0])) {
+							if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                 unlink($list[0]);
                             }
                         }
@@ -3612,7 +3610,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                             $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['id'];
                             $list = glob($mediadir . '.*');
-                            if (file_exists($list[0])) {
+							if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                 unlink($list[0]);
                             }
                         }
@@ -4192,19 +4190,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $logo_url = $save_path . DIRECTORY_SEPARATOR . $file['name'];
                     foreach ($thumbsizes['Organization'] as $key => $value) {
                         $list = glob(APP_PATH . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'] . '.*');
-                        if (!empty($list)) {
-                            if (file_exists($list[0])) {
-                                unlink($list[0]);
-                            }
+                        if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
+                            unlink($list[0]);
                         }
                     }
                     foreach ($thumbsizes['Organization'] as $key => $value) {
                         $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $r_resource_vars['organizations'];
                         $list = glob($mediadir . '.*');
-                        if (!empty($list)) {
-                            if (file_exists($list[0])) {
-                                unlink($list[0]);
-                            }
+                        if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
+                            unlink($list[0]);
                         }
                     }
                     $qry_val_arr = array(
@@ -4969,7 +4963,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             foreach ($thumbsizes['Organization'] as $key => $value) {
                 $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $id;
                 $list = glob($mediadir . '.*');
-                if (file_exists($list[0])) {
+                if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                     unlink($list[0]);
                 }
             }
