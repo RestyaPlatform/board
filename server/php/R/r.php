@@ -1882,7 +1882,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['role_id'] = 2; // user
             $r_post['is_active'] = true;
             $r_post['is_email_confirmed'] = true;
-            $r_post['role_id'] = 2; // user
             $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
             $r_post['full_name'] = email2name($r_post['email']);
@@ -5093,15 +5092,20 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $qry_val_arr = array(
             $r_resource_vars['users']
         );
-        $s_result = pg_query_params($db_lnk, 'SELECT username FROM users WHERE id = $1', $qry_val_arr);
+        $s_result = pg_query_params($db_lnk, 'SELECT username, role_id FROM users WHERE id = $1', $qry_val_arr);
         $username = pg_fetch_assoc($s_result);
-        $foreign_id['user_id'] = $r_resource_vars['users'];
-        $comment = '##USER_NAME## deleted "' . $username['username'] . '"';
-        $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_user', $foreign_id);
-        $sql = 'DELETE FROM users WHERE id= $1';
-        array_push($pg_params, $r_resource_vars['users']);
-        if (is_plugin_enabled('r_chat') && $jabberHost) {
-            xmppDeleteSingleUser($username);
+        
+        if ($username['role_id'] == 1) {
+            $response['error'] = 'Admin users can\'t be deleted';
+        } else {
+            $foreign_id['user_id'] = $r_resource_vars['users'];
+            $comment = '##USER_NAME## deleted "' . $username['username'] . '"';
+            $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_user', $foreign_id);
+            $sql = 'DELETE FROM users WHERE id= $1';
+            array_push($pg_params, $r_resource_vars['users']);
+            if (is_plugin_enabled('r_chat') && $jabberHost) {
+                xmppDeleteSingleUser($username);
+            }
         }
         break;
 
