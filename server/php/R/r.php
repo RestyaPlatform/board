@@ -2063,7 +2063,20 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $qry_val_array = array(
             $r_resource_vars['users']
         );
-        if ($r_post['confirm_password'] == $r_post['password']) {
+ 
+        if (!isset($r_post['password'])) {
+            $response = array(
+                'error' => 'Password is required.'
+            );
+        } else if (!isset($r_post['confirm_password'])) {
+            $response = array(
+                'error' => 'Confirm password is required.'
+            );
+        } else if (empty($r_post['password'])) {
+            $response = array(
+                'error' => 'Passwords can\'t be empty.'
+            );
+        } else if ($r_post['confirm_password'] == $r_post['password']) {
             $user = executeQuery('SELECT * FROM users WHERE id = $1', $qry_val_array);
             if ($user) {
                 $res_val_arr = array(
@@ -2100,7 +2113,24 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $qry_val_array = array(
             $r_resource_vars['users']
         );
-        if ($r_post['confirm_password'] == $r_post['password']) {
+        
+        if (!isset($r_post['old_password']) && ($authUser['role_id'] == 2)) {
+            $response = array(
+                'error' => 'Old password is required.'
+            );
+        } else if (!isset($r_post['password'])) {
+            $response = array(
+                'error' => 'Password is required.'
+            );
+        } else if (!isset($r_post['confirm_password'])) {
+            $response = array(
+                'error' => 'Confirm password is required.'
+            );
+        } else if ((empty($r_post['old_password']) && ($authUser['role_id'] == 2)) || empty($r_post['password']) || empty($r_post['confirm_password'])) {
+            $response = array(
+                'error' => 'Passwords can\'t be empty.'
+            );
+        } else if ($r_post['confirm_password'] == $r_post['password']) {
             $user = executeQuery('SELECT * FROM users WHERE id = $1', $qry_val_array);
             if ($user) {
                 $cry_old_pass = crypt($r_post['old_password'], $user['password']);
