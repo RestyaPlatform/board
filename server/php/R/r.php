@@ -4511,6 +4511,9 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $comment = '';
             $response['success'] = 'Language changed successfully.';
         }
+        if (isset($r_put['password'])) {
+            unset($r_put['password']);
+        }
         $foreign_ids['user_id'] = $authUser['id'];
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
         echo json_encode($response);
