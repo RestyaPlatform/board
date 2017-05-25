@@ -16,9 +16,9 @@
 	whoami
 	echo $(cat /etc/issue)
 	OS_REQUIREMENT=$(lsb_release -i -s)
-	if [ $? != 0 ]
+	if [ $? != 0 || OS_REQUIREMENT = "" ]
 	then
-		echo "lsb_release is not enabled"
+		echo "lsb_release is not enabled, please install \"yum install -y redhat-lsb-core\" command before running install script"
 		exit 1
 	fi
 	OS_VERSION=$(lsb_release -rs | cut -f1 -d.)
@@ -265,7 +265,7 @@
 					fi
 				esac
 			fi
-
+			
 			echo "Installing PHP fpm and cli extension..."
 			apt-get install -y php7.0-fpm php7.0-cli
 			if [ $? != 0 ]
@@ -370,7 +370,7 @@
 					exit 1
 				fi
 			fi
-			
+
 			echo "Setting up timezone..."
 			timezone=$(cat /etc/timezone)
 			sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.0/fpm/php.ini
@@ -426,8 +426,9 @@
 					fi
 				fi
 			fi
-			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/9.4/main/pg_hba.conf > /etc/postgresql/9.4/main/pg_hba.conf.1
-			cd /etc/postgresql/9.4/main || exit
+			PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/9.4/main/pg_hba.conf > /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf.1
+			cd /etc/postgresql/${PSQL_VERSION}/main || exit
 			mv pg_hba.conf pg_hba.conf_old
 			mv pg_hba.conf.1 pg_hba.conf
 			service postgresql restart
@@ -547,7 +548,7 @@
 				echo "PostgreSQL user creation failed with error code 35 "
 				exit 1
 			fi
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 36"
@@ -808,7 +809,7 @@
 				fi
 				
 			fi
-			
+
 			echo "Checking xml..."
 			php -m | grep xml
 			if [ "$?" -gt 0 ]; then
@@ -1045,7 +1046,7 @@
 				echo "PostgreSQL user creation failed with error code 41"
 				exit 1
 			fi			
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 42"

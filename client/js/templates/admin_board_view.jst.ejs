@@ -24,7 +24,7 @@
 			%>
 			<a href="#/board/<%- board.id %>" class="avatar-sm pull-left" title="<%- board.attributes.name %>" ><span class="clearfix cover-image" style="<%= style %>"></span></a>
 			<% if(!_.isEmpty(role_links.where({slug: "view_board"}))){ %>
-				  <a href="#/board/<%- board.id %>" title="<%- board.attributes.name %>" class="col-xs-10 htruncate left-mar-sm">
+				  <a href="#/board/<%- board.id %>" title="<%- board.attributes.name %>" class="col-xs-10 htruncate left-mar-sm js-board-name-truncate">
 				<% } %>
 				<% if(board.attributes.organization_id > 0 && board.attributes.organization_id != null){ 
 					var logo_path = "img/default-organization.png"; 

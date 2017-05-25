@@ -4316,7 +4316,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         if (isset($r_post['enable'])) {
             $app['enabled'] = $r_post['enable'];
         } else {
-            foreach ($args as $key => $val) {
+            foreach ($r_post as $key => $val) {
                 if (!empty($app['settings'][$key]['is_encrypted'])) {
                     if (!empty($val)) {
                         $value_encode = str_rot13($val);
