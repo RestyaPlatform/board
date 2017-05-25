@@ -136,8 +136,8 @@ App.FooterView = Backbone.View.extend({
         }
         var getting_new_array = [];
         localforage.getItem('apps', function(err, value) {
-            var local_storage_apps = JSON.parse(value);
-            if (!_.isEmpty(local_storage_apps)) {
+            if (!_.isEmpty(value)) {
+                var local_storage_apps = JSON.parse(value);
                 apps_data = local_storage_apps;
                 var getss = apps_data;
                 var get_names = [];
@@ -152,23 +152,14 @@ App.FooterView = Backbone.View.extend({
                         }
                     });
                 });
-                self.$el.html(self.template({
-                    model: self.model,
-                    board_id: self.board_id,
-                    board: self.board,
-                    languages: $.cookie('languages').split(','),
-                    apps: getting_new_array
-                }));
-            } else {
-                getting_new_array = '';
-                self.$el.html(self.template({
-                    model: self.model,
-                    board_id: self.board_id,
-                    board: self.board,
-                    languages: $.cookie('languages').split(','),
-                    apps: getting_new_array
-                }));
             }
+            self.$el.html(self.template({
+                model: self.model,
+                board_id: self.board_id,
+                board: self.board,
+                languages: $.cookie('languages').split(','),
+                apps: getting_new_array
+            }));
         });
 
 
