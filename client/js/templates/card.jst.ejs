@@ -4,7 +4,7 @@
   <%
   	card.labels.each(function(label) {
             if (!_.isUndefined(label) && label.attributes.name !== "") { %>
-			<span class="cur"><i style="color:#<%- converter.colorCode(''+label.attributes.name).substring(0, 6) %>;" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- label.attributes.name %>" title="<%- label.attributes.name %>" class="<%= LABEL_ICON %> cur"></i></span>
+			<span class="cur"><i style="color:<%- (label.attributes.color) ? label.attributes.color : '#'+converter.colorCode(''+label.attributes.name).substring(0, 6) %>;" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- label.attributes.name %>" title="<%- label.attributes.name %>" class="<%= LABEL_ICON %> cur"></i></span>
                
    <%         }
         });%> 

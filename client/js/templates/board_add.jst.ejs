@@ -1,6 +1,8 @@
 <li>
 	<div class="col-xs-12 text-center clearfix">
-		<a href="#" class="js-show-organizations-board-from pull-left"><i class="icon-caret-left"></i></a>
+		<% if (!templates.page_mode) { %>
+			<a href="#" class="js-show-organizations-board-from pull-left"><i class="icon-caret-left"></i></a>
+		<% } %>
 		<span class="col-xs-10"><strong><%- i18next.t("Create Board") %></strong></span>
 		<a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
 	</div>
@@ -22,20 +24,26 @@
 					<% });%>
 				</select></div><% } %>
 				<div id="js-board-add-organization"></div>
-				<input id="inputBoardAddVisibility" name="board_visibility" type="hidden" value="0">
-				<div class="clearfix js-open-dropdown js-board-add-dropdown board-add-dropdown dropdown"> 
-					<span class="js-visibility-container">
-						<span class="pull-left">
-							<span class="pull-left navbar-btn"><%- i18next.t("This board will be") %> </span>
+				<% if (templates.page_mode && templates.page_mode === 2) { %>
+					<input id="inputBoardAddVisibility" name="board_visibility" type="hidden" value="1">
+				<% } else { %>
+					<input id="inputBoardAddVisibility" name="board_visibility" type="hidden" value="0">
+				<% } %>
+				<% if (!templates.page_mode || (templates.page_mode && templates.page_mode === 1)) { %>
+					<div class="clearfix js-open-dropdown js-board-add-dropdown board-add-dropdown dropdown"> 
+						<span class="js-visibility-container">
+							<span class="pull-left">
+								<span class="pull-left navbar-btn"><%- i18next.t("This board will be") %> </span>
+							</span>
+							<div class="btn-group pull-right">
+								<button type="button" class="btn btn-default btn-sm js-change-visibility"><i class="icon-lock"></i><%- i18next.t("Private") %></button>
+								<button type="button" class="btn btn-default btn-sm dropdown-toggle js-change-visibility" data-toggle="dropdown" aria-expanded="false">
+									<span><i class="icon-caret-down"></i></span>
+									<span class="sr-only"><%- i18next.t("Toggle Dropdown") %></span>
+								</button>
+							</div>
 						</span>
-						<div class="btn-group pull-right">
-							<button type="button" class="btn btn-default btn-sm js-change-visibility"><i class="icon-lock"></i><%- i18next.t("Private") %></button>
-							<button type="button" class="btn btn-default btn-sm dropdown-toggle js-change-visibility" data-toggle="dropdown" aria-expanded="false">
-								<span><i class="icon-caret-down"></i></span>
-								<span class="sr-only"><%- i18next.t("Toggle Dropdown") %></span>
-							</button>
-						</div>
-					</span>
-					<div class="js-visibility-chooser dropdown-menu"></div>
-				</div>
+						<div class="js-visibility-chooser dropdown-menu"></div>
+					</div>
+				<% } %>
 					<div class="submit"><input type="submit" value="<%- i18next.t('Add') %>" id="submitBoardAdd" class="btn btn-primary"></div></form></li>

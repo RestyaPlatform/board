@@ -1161,12 +1161,8 @@ App.BoardView = Backbone.View.extend({
                     uuid: data.uuid
                 });
                 App.boards.get(list.attributes.board_id).lists.add(list);
-                board_user = self.model.board_users.findWhere({
-                    board_id: parseInt(self.model.id),
-                    user_id: parseInt(self.authuser.id)
-                });
                 list.board_users = self.model.board_users;
-                list.board_user_role_id = board_user.attributes.board_user_role_id;
+                list.board_user_role_id = self.model.board_user_role_id;
                 if (!_.isUndefined(data.clone_list_id)) {
                     $(view.render().el).insertAfter($(e.target).parents('.js-board-list'));
                 } else {

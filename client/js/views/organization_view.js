@@ -320,6 +320,7 @@ App.OrganizationsView = Backbone.View.extend({
         var self = this;
         var view_board = this.$el.find('#js-organization-board-listing');
         view_board.html('');
+        var view;
         if (!_.isEmpty(this.model.boards.models)) {
             this.model.boards.each(function(board) {
                 if (board.attributes.is_closed === 0) {
@@ -331,18 +332,22 @@ App.OrganizationsView = Backbone.View.extend({
                             is_starred: 1
                         });
                     }
-                    var view = new App.OrganizationBoardView({
+                    view = new App.OrganizationBoardView({
                         model: board,
                         stared: stared
                     });
                     view_board.append(view.el);
                 }
             });
-        } else {
-            var view = new App.OrganizationBoardView({
+            view = new App.OrganizationBoardView({
                 model: null,
                 stared: null,
-                className: 'alert alert-info',
+            });
+            view_board.append(view.render().el);
+        } else {
+            view = new App.OrganizationBoardView({
+                model: null,
+                stared: null,
             });
             view_board.append(view.render().el);
         }

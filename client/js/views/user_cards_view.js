@@ -50,6 +50,7 @@ App.UserCardsView = Backbone.View.extend({
         var self = this;
         var cards = new App.Card();
         var card_id = $(e.currentTarget).data('id');
+        $('#js-card-modal-' + card_id).remove();
         var main_card = self.model.filter(function(model) {
             return parseInt(model.get('id')) === parseInt(card_id);
         });

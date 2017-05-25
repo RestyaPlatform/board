@@ -70,7 +70,17 @@
 	</div>
 </div>
 <% }else{ %>
-	<div class="alert alert-info">
-	<%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('boards')] }) %>
-</div>
+	<div class="panel">
+		<div class="panel-body bg-warning">
+			<div class="js-board-inner-view"></div>
+			<ul class="list-unstyled js-chart-block js-show-add-boards-list">
+				<li class="js-show-boards-list-response"></li>
+				<li class="js-show-add-org-boards list-group-item clearfix text-center btn-block js-back">
+					<a href="#" class="js-show-board-add-form col-xs-12 h6 navbar-btn">
+						<span class="show clearfix text-primary navbar-btn h3">Create new board</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</div>
 <%}%>

@@ -69,7 +69,7 @@ App.ApplicationView = Backbone.View.extend({
                             $.cookie('links', response.links);
                         }
                         $.cookie('languages', response.languages);
-                        localStorage.setItem('apps', response.apps);
+                        localforage.setItem('apps', response.apps);
                         role_links.add(JSON.parse(response.links));
                         settings.url = api_url + 'settings.json';
                         settings.fetch({
@@ -127,7 +127,7 @@ App.ApplicationView = Backbone.View.extend({
                         abortPending: true,
                         success: function(collection, settings_response) {
                             SITE_NAME = settings_response.SITE_NAME;
-                            localStorage.setItem('apps', settings_response.apps_data);
+                            localforage.setItem('apps', settings_response.apps_data);
                             page.set_page_title();
                             FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
                             DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
@@ -360,6 +360,16 @@ App.ApplicationView = Backbone.View.extend({
                         }
                     }
                     self.board_view_height();
+                },
+                error: function(model, response) {
+                    $.cookie('redirect_link', window.location.hash);
+                    $('#content').html(new App.Board404View({
+                        model: authuser
+                    }).el);
+                    this.headerView = new App.HeaderView({
+                        model: authuser
+                    });
+                    $('#header').html(this.headerView.el);
                 }
             });
 
@@ -724,6 +734,11 @@ App.ApplicationView = Backbone.View.extend({
                                                     starred_boards: response.starred_boards
                                                 }).el);
                                             });
+                                            $('.js-my-boards').append(new App.BoardSimpleView({
+                                                model: null,
+                                                id: 'js-my-board-empty',
+                                                className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad',
+                                            }).el);
                                             new App.FooterView({
                                                 model: authuser,
                                                 board_id: self.id,
@@ -732,10 +747,6 @@ App.ApplicationView = Backbone.View.extend({
                                         } else {
                                             $('.js-my-boards').append(new App.BoardSimpleView({
                                                 model: null,
-                                                message: i18next.t('No %s available.', {
-                                                    postProcess: 'sprintf',
-                                                    sprintf: [i18next.t('boards')]
-                                                }),
                                                 id: 'js-my-board-empty',
                                                 className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12'
                                             }).el);

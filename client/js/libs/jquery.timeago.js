@@ -120,7 +120,7 @@
           timezone = $.trim(authuser.user.timezone);
         }
       }
-  	  s += " " + timezone;
+	    s += " " + timezone;
       s = s.replace(/\.\d+/,""); // remove milliseconds
       s = s.replace(/-/,"/").replace(/-/,"/");
       s = s.replace(/T/," ").replace(/Z/," UTC");

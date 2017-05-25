@@ -89,6 +89,9 @@ App.BoardAddView = Backbone.View.extend({
         var data = $(e.target).serializeObject();
         var board = new App.Board();
         board.url = api_url + 'boards.json';
+        if (this.model.organization_id) {
+            data.organization_id = this.model.organization_id;
+        }
         board.save(data, {
             success: function(model, response) {
                 App.boards.add(response.simple_board);

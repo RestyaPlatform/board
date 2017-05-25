@@ -44,6 +44,7 @@ App.OrganizationBoardView = Backbone.View.extend({
         'click .js-show-board-organization': 'showBoardOrganization',
         'submit .js-save-board-visibility': 'saveBoardVisibility',
         'click .js-back-to-board-visibility': 'showBoardVisibility',
+        'click .js-show-board-add-form': 'showBoardAddForm',
     },
     /**
      * render()
@@ -83,6 +84,44 @@ App.OrganizationBoardView = Backbone.View.extend({
         }
         this.showTooltip();
         return this;
+    },
+    /**
+     * showBoardAddForm()
+     * show board add form
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showBoardAddForm: function(e) {
+        var self = this;
+        var current_param = Backbone.history.fragment.split('?');
+        var current_url = current_param[0].split('/');
+        var organization_id = (current_url[0] == 'organization') ? current_url[1] : null;
+
+        var workflow_template = new App.WorkFlowTemplateCollection();
+        workflow_template.url = api_url + 'workflow_templates.json';
+        workflow_template.fetch({
+            success: function(model, response) {
+                var templates = '';
+                var target = $(e.target);
+                var parent = target.parents('.js-show-add-boards-list');
+                $('li.js-back').addClass('hide');
+                var data = {};
+                data = workflow_template;
+                data.page_mode = 2;
+                data.organization_id = organization_id;
+                $('.js-show-boards-list-response', parent).html(new App.BoardAddView({
+                    model: data
+                }).el).find('#inputtemplatelist').select2({
+                    formatResult: function(repo) {
+                        markup = '<div class="clearfix"><span class="show">' + repo.text + '</span><span class="show small">' + repo.id + '</span></div>';
+                        return markup;
+                    }
+                });
+            }
+        });
+        return false;
     },
     /**
      * starBoard()
@@ -159,7 +198,8 @@ App.OrganizationBoardView = Backbone.View.extend({
     closePopup: function(e) {
         var el = this.$el;
         var target = el.find(e.target);
-        target.parents('.dropdown').removeClass('open');
+        target.parents('.js-show-add-boards-list').find('.js-show-add-org-boards').removeClass('hide');
+        target.parents('.js-show-add-boards-list').find('.js-show-boards-list-response').html('');
         return false;
     },
     /**

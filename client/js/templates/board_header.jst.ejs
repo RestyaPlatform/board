@@ -34,7 +34,7 @@
 					  <% } %>
 					  <% } %>
 					  <a href="#" class="js-star-load pull-left text-primary hide"><img src="img/star-load.gif" alt="[Images: Star]" title="
-<%- i18next.t('Star') %>"></a><a href="#" class="col-xs-8 nav htruncate <%if(!_.isUndefined(authuser.user)) {%>js-rename-board<%}else{%>js-no-action<%}%>" data-toggle="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: 'edit_board',board_user_role_id: parseInt(board.board_user_role_id)})))) { %>dropdown<% } %>" title="<%- board.attributes.name %>"><strong><%- board.attributes.name %></strong></a>
+<%- i18next.t('Star') %>"></a><a href="#" class="col-xs-8 js-board-name-truncate nav htruncate <%if(!_.isUndefined(authuser.user)) {%>js-rename-board<%}else{%>js-no-action<%}%>" data-toggle="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: 'edit_board',board_user_role_id: parseInt(board.board_user_role_id)})))) { %>dropdown<% } %>" title="<%- board.attributes.name %>"><strong><%- board.attributes.name %></strong></a>
 				  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>
 				  <ul class="dropdown-menu dropdown-menu-left arrow arrow-left">
 					<li class="js-rename-popup js-dropdown-popup dropdown-popup">
@@ -69,6 +69,12 @@
 			<nav class="navbar-collapse collapse mob-no-pad">
 			  <div class="navbar-right">
 			  <% if(!_.isUndefined(authuser.user)){ %>
+				<div class="btn-group pull-left js-clear-filter-btn hide">
+					<button type="button" class="btn btn-default">Clear Filter</button>
+					<button type="button" class="btn btn-primary">
+						<span class="icon-remove"></span>
+					</button>
+				</div>
 			  <ul class="nav nav-pills pull-left pillsuser-list navbar-btn h4 right-mar">
 				  <li class="dropdown"> <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle show clearfix navbar-btn h4">
 				  <% 

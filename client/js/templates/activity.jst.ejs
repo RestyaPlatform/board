@@ -87,7 +87,7 @@
 							</div></div>
 						<% } %>
 					<% }%>
-					<small class="pull-left">
+					<small>
 			<abbr class="timeago text-muted pull-left clearfix" title="<%- activity.attributes.created %>"><%- activity.attributes.created %></abbr>
 			<% if((activity.attributes.type == 'add_organization_attachment' || activity.attributes.type == 'change_visibility' || activity.attributes.type == 'add_organization_user' || activity.attributes.type == 'delete_organization_user') && (!_.isEmpty(activity.attributes.organization_name))) { %>
 				<a href="#/organization/<%= activity.attributes.organization_id %>">&nbsp;<%- i18next.t("on") %>&nbsp;<%- activity.attributes.organization_name %></a>

@@ -228,7 +228,7 @@ App.CardView = Backbone.View.extend({
                 converter: this.converter
             }));
             if (!_.isUndefined(this.model.attributes.name) && this.model.attributes.name !== '') {
-                this.$el.addClass('panel js-show-modal-card-view js-board-list-card cur').removeAttr('id').attr('data-toggle', 'modal').attr('data-target', '#myModal').attr('data-card_id', this.model.id).attr('id', 'js-card-' + this.model.id);
+                this.$el.addClass('panel js-show-modal-card-view js-board-list-card cur').removeAttr('id').attr('data-toggle', 'modal').attr('data-target', '#myModal').attr('data-card_id', this.model.id).attr('id', 'js-card-' + this.model.id).css("border-left-color", this.model.attributes.color).css("border-left-width", "5px");
             }
         } else if (self.model !== null && !_.isEmpty(self.model) && !_.isUndefined(self.model.attributes.id) && !_.isUndefined(this.model.list) && !_.isUndefined(this.model.list.collection)) {
             content += '<ul class="unstyled  hide js-card-labels">';

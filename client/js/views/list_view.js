@@ -121,6 +121,7 @@ App.ListView = Backbone.View.extend({
         'click .js-hide-edit-list-form': 'hideListEditForm',
         'listSort': 'listSort',
         'keyup[n] .js-board-list': 'keyboardShowAddCardForm',
+        'click .js-list-color-pick': 'colorPicker',
     },
     /**
      * listSort()
@@ -164,6 +165,32 @@ App.ListView = Backbone.View.extend({
                 });
             }
         });
+    },
+    /**
+     * colorPicker()
+     * add selected card in lis
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    colorPicker: function(e) {
+        var color_label = $(e.target).closest('li').data('color');
+        var data = {
+            color: color_label
+        };
+        var self = this;
+        var list_id = self.model.id;
+        self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + list_id + '.json';
+        self.model.save(data, {
+            patch: true,
+            success: function(model, response) {
+                $('#js-list-color-' + list_id).closest('#colorPicker').attr('style', 'padding-bottom:8px');
+                $('#js-list-color-' + list_id).attr('style', 'background-color: ' + color_label + ' !important');
+                $('#js-list-demo-' + list_id).attr('style', 'border-bottom: 2px solid' + color_label + ' !important');
+            }
+        });
+        return false;
     },
     /**
      * drop()
@@ -1050,6 +1077,7 @@ App.ListView = Backbone.View.extend({
     hideListEditForm: function(e) {
         e.preventDefault();
         var toggle = $(e.currentTarget);
+        toggle.parents('.js-board-list').find('#inputListName').val($('.get-name-' + this.model.attributes.id).html());
         toggle.parents('form').addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
         this.$('#js-show-list-actions-' + this.model.attributes.id + ', #js-show-sort-form-' + this.model.attributes.id).removeClass('hide');
         return false;

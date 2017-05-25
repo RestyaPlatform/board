@@ -68,10 +68,12 @@ App.UserIndexContainerView = Backbone.View.extend({
      *
      */
     renderUserCollection: function() {
+        var self = this;
         var view = this.$el.find('.js-user-list');
         this.model.setSortField(this.sortField, this.sortDirection);
         this.model.sort();
         this.model.each(function(user) {
+            user.roles = self.roles;
             view.append(new App.UserIndex({
                 model: user
             }).el);

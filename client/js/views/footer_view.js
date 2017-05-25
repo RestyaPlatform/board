@@ -115,6 +115,7 @@ App.FooterView = Backbone.View.extend({
      *
      */
     render: function() {
+        var self = this;
         this.model.is_show_enable_notification = false;
         var current_param = Backbone.history.fragment;
         var current_param_split = current_param.split('/');
@@ -134,32 +135,43 @@ App.FooterView = Backbone.View.extend({
             });
         }
         var getting_new_array = [];
-        if (!_.isEmpty(localStorage.getItem('apps'))) {
-            apps_data = JSON.parse(localStorage.getItem('apps'));
-            var getss = apps_data;
-            var get_names = [];
-            _.each(apps_data, function(data) {
-                get_names.push(data.name);
-            });
-            get_names.sort();
-            _.each(get_names, function(data) {
-                _.each(getss, function(datas) {
-                    if (data === datas.name) {
-                        getting_new_array.push(datas);
-                    }
+        localforage.getItem('apps', function(err, value) {
+            var local_storage_apps = JSON.parse(value);
+            if (!_.isEmpty(local_storage_apps)) {
+                apps_data = local_storage_apps;
+                var getss = apps_data;
+                var get_names = [];
+                _.each(apps_data, function(data) {
+                    get_names.push(data.name);
                 });
-            });
-        } else {
-            getting_new_array = '';
-        }
+                get_names.sort();
+                _.each(get_names, function(data) {
+                    _.each(getss, function(datas) {
+                        if (data === datas.name) {
+                            getting_new_array.push(datas);
+                        }
+                    });
+                });
+                self.$el.html(self.template({
+                    model: self.model,
+                    board_id: self.board_id,
+                    board: self.board,
+                    languages: $.cookie('languages').split(','),
+                    apps: getting_new_array
+                }));
+            } else {
+                getting_new_array = '';
+                self.$el.html(self.template({
+                    model: self.model,
+                    board_id: self.board_id,
+                    board: self.board,
+                    languages: $.cookie('languages').split(','),
+                    apps: getting_new_array
+                }));
+            }
+        });
 
-        this.$el.html(this.template({
-            model: this.model,
-            board_id: this.board_id,
-            board: this.board,
-            languages: $.cookie('languages').split(','),
-            apps: getting_new_array
-        }));
+
 
         if (_.isEmpty(this.board_id)) {
             if (!_.isUndefined(authuser.user)) {
@@ -1566,7 +1578,12 @@ App.FooterView = Backbone.View.extend({
                     });
                     self.flash('success', i18next.t('Imported successfully.'));
                 } else {
-                    self.flash('danger', i18next.t('Unable to import. please try again.'));
+                    if (response.error) {
+                        self.flash('danger', i18next.t(response.error));
+                    } else {
+                        self.flash('danger', i18next.t('Unable to import. please try again.'));
+                    }
+
                 }
             }
         });

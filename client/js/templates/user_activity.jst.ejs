@@ -22,7 +22,7 @@
 			<li class="media">
 				<a data-placement="bottom" title="<%- activity.attributes.full_name%> (<%- activity.attributes.username%>)" data-toggle="tooltip" href="#/user/<%- activity.attributes.user_id %>" class="pull-left">								
 					<% if(!_.isEmpty(activity.attributes.profile_picture_path)) { 
-						var profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'normal_thumb' );
+						var profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'normal_thumb' )+'?uid=' + Math.floor((Math.random() * 9999) + 1);
 					%>
 						<img src="<%-profile_picture_path %>" alt="[Image: <%-activity.attributes.full_name %>]" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" class="img-rounded img-responsive">
 					<% } else {%>

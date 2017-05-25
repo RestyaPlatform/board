@@ -32,7 +32,7 @@ App.CardLabelView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             label: this.model,
-            background: this.getLabelcolor('' + this.model.attributes.name).substring(0, 6)
+            background: (this.model.attributes.color) ? this.model.attributes.color : '#' + this.getLabelcolor('' + this.model.attributes.name).substring(0, 6)
         }));
         this.showTooltip();
         return this;

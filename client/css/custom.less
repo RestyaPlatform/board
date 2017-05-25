@@ -14,12 +14,12 @@ body {
 	cursor: -webkit-grabbing;
 }
 del, ins {
-	padding: 0px 3px;
+	padding: 3px 3px;
 	font-size: 90%;
 	line-height: 1;
 	text-align: center;
 	white-space: nowrap;
-	vertical-align: baseline;
+	vertical-align: middle;
 }
 ins {
 	background: #d1e1ad;
@@ -380,7 +380,7 @@ header {
 	}
 }
 .body-no-webkit-scrollbars:not(.firefox) .vertical-scrollbar {
-	padding-right: 12px;
+	padding-right: 4px;
 }
 .body-no-webkit-scrollbars .list-header span.show {
 	word-wrap: break-word;
@@ -2023,7 +2023,7 @@ footer, header, .dashboard-header {
 	}
 }
 .navbar-fixed-bottom{
-	z-index: 999999;
+	z-index: 99;
 }
 .dropdown-menu{
 	.alert{
@@ -2032,6 +2032,94 @@ footer, header, .dashboard-header {
 }
 .dropdown-menu {
 	.pre-scrollable{
-		overflow: inherit;
+		overflow: auto;
 	}
+}
+.activities-list {
+	&[class*=js-activity-]{
+		.panel-body{
+			padding:6px 8px;
+		}
+	}
+}
+.dycolorblk{
+	height:3px;
+	width: 100%;
+	position: absolute;
+	top:0;
+	left: 0;
+}
+.list-card-group-addon {
+	border: 0;
+	display: block;
+	width: auto;
+}
+.list-card-group-addon.panel-body {
+	&.color-popover-card,&.color-popover{
+		padding: 2px 8px 2px;
+	}
+}
+.js-colorpicker-dropdown {
+	max-width: 242px;
+}
+.js-show-add-boards {
+	height: 185px !important;
+    display: table-cell;
+    font-weight: 400;
+    vertical-align: middle;
+    width: 25%;
+}
+.js-show-add-org-boards {
+	height: 165px !important;
+    display: table-cell;
+    font-weight: 400;
+    vertical-align: middle;
+    width: 25%;
+}
+.list-color-alignment {
+	margin-left:0;
+	text-align: center;
+	li {
+	  margin-left:0;	
+	}
+}
+.alignemnt-card {
+	> li {
+		padding-left: 0;
+		padding-right: 0
+	}
+}
+.comment-block {
+	.emoji-scroll {
+		left: auto;
+		right: 0;
+	}
+}
+.comment-list {
+	.dropdown-menu {
+		left: auto;
+		right: 0;
+	}
+	.dropdown-menu.arrow:before,.dropdown-menu.arrow:after {
+    	right: 10px;
+		left: auto;
+	}
+}
+.wish-list {
+	.img-thumbnail {
+    	width: 100%;
+	}
+}
+.js-clear-filter-btn {
+	margin-top: 5px;
+}
+.board-list-view {
+	.list-content {
+		.panel:last-child {
+			margin-bottom: 0;
+		}
+	}
+}
+.js-board-name-truncate {
+	max-width:300px;
 }

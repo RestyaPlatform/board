@@ -110,12 +110,24 @@ App.HeaderView = Backbone.View.extend({
         return this;
     },
     renderList: function() {
-        $('#content').html(new App.UserIndexContainerView({
-            model: this.users,
-            sortField: this.sortField,
-            sortDirection: this.sortDirection
-        }).el);
-        $('.timeago', $('#content')).timeago();
+        var self = this;
+        self.current_page = (!_.isUndefined(self.current_page)) ? self.current_page : 1;
+        var users = new App.UserCollection();
+        users.url = api_url + 'users.json?page=' + self.current_page;
+        users.fetch({
+            cache: false,
+            abortPending: true,
+            success: function(users, response) {
+                $('#content').html(new App.UserIndexContainerView({
+                    model: users,
+                    filter_count: response.filter_count,
+                    roles: response.roles,
+                    sortField: self.sortField,
+                    sortDirection: self.sortDirection
+                }).el);
+                $('.timeago', $('#content')).timeago();
+            }
+        });
     },
     sortBy: function(e) {
         e.preventDefault();

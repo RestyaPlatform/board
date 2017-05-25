@@ -43,6 +43,7 @@ App.OrganizationAddView = Backbone.View.extend({
         return this;
     },
     addOrganization: function(e) {
+        $('#js-add-organization').addClass('disabled');
         var data = $(e.target).serializeObject();
         if ($.trim(data.name) === '' || $.trim(data.description) === '') {
             if ($.trim(data.name) === '' && $.trim(data.description) === '') {
@@ -68,6 +69,7 @@ App.OrganizationAddView = Backbone.View.extend({
             if (!_.isUndefined(data.name) && data.name !== null && $.trim(data.name) !== "") {
                 organization.save(data, {
                     success: function(model, response) {
+                        $('#js-add-organization').removeClass('disabled');
                         organization.set('id', parseInt(response.id));
                         auth_user_organizations.add(organization);
                         data.id = parseInt(response.id);

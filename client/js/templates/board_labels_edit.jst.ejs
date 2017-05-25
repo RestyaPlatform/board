@@ -1,0 +1,62 @@
+<div class="clearfix text-center col-xs-12">
+	<a href="#" class="js-back-to-sidebar pull-left btn btn-xs btn-link">
+			<i class="icon-caret-left"></i>
+	</a>
+	<span class="col-xs-10 navbar-btn"><strong><%- i18next.t('Edit Labels') %></strong></span>
+</div>
+<div class="col-xs-12 divider"></div>
+<div class="col-xs-12 member-modal js-pre-scrollable vertical-scrollbar clearfix">
+	<form role="form" class="form-horizontal js-edit-card-label">
+		<div class="form-group">
+			<div class="col-xs-12">
+				<input type="text" id="inputCardLabel" name="name" title="<%- i18next.t('Whitespace alone not allowed') %>" required pattern=".*\S+.*" value="<%-label.attributes.name %>" class="form-control" />
+				<input type="hidden" id="label_id" name="label_id" value="<%-label.attributes.label_id %>" />
+				<input type="hidden" id="color" name="color" value="<%-label.attributes.color %>" />
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-xs-12">
+				<ul class="list-inline col-xs-offset-0">
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#34495e"><span class="background-box show well-lg" style="background-color:#34495e"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#23719f"><span class="background-box show well-lg" style="background-color:#23719f"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#5a966e"><span class="background-box show well-lg" style="background-color:#5a966e"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#bf4a40"><span class="background-box show well-lg" style="background-color:#bf4a40"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#5f778e"><span class="background-box show well-lg" style="background-color:#5f778e"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#0091ff"><span class="background-box show well-lg" style="background-color:#0091ff"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#46ba97"><span class="background-box show well-lg" style="background-color:#46ba97"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#f47564"><span class="background-box show well-lg" style="background-color:#f47564"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#819da2"><span class="background-box show well-lg" style="background-color:#819da2"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#47b7cd"><span class="background-box show well-lg" style="background-color:#47b7cd"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#95d9ad"><span class="background-box show well-lg" style="background-color:#95d9ad"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#f7b09c"><span class="background-box show well-lg" style="background-color:#f7b09c"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#b3bec1"><span class="background-box show well-lg" style="background-color:#b3bec1"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#bee5f3"><span class="background-box show well-lg" style="background-color:#bee5f3"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#caefd2"><span class="background-box show well-lg" style="background-color:#caefd2"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#f7d2c8"><span class="background-box show well-lg" style="background-color:#f7d2c8"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#444444"><span class="background-box show well-lg" style="background-color:#444444"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#4f4d7e"><span class="background-box show well-lg" style="background-color:#4f4d7e"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#2f663c"><span class="background-box show well-lg" style="background-color:#2f663c"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#a37e58"><span class="background-box show well-lg" style="background-color:#a37e58"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#6b6b6b"><span class="background-box show well-lg" style="background-color:#6b6b6b"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#7b5cb3"><span class="background-box show well-lg" style="background-color:#7b5cb3"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#65ab36"><span class="background-box show well-lg" style="background-color:#65ab36"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#bd6f32"><span class="background-box show well-lg" style="background-color:#bd6f32"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#999999"><span class="background-box show well-lg" style="background-color:#999999"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#baa1e6"><span class="background-box show well-lg" style="background-color:#baa1e6"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#9dbb1d"><span class="background-box show well-lg" style="background-color:#9dbb1d"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#ffce54"><span class="background-box show well-lg" style="background-color:#ffce54"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#d5d5d5"><span class="background-box show well-lg" style="background-color:#d5d5d5"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#dbcff1"><span class="background-box show well-lg" style="background-color:#dbcff1"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#ccdc87"><span class="background-box show well-lg" style="background-color:#ccdc87"></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#f1eabf"><span class="background-box show well-lg" style="background-color:#f1eabf"></span></li>
+				</ul>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="sr-only col-sm-4 control-label hide" for="submit2"><%- i18next.t("Submit") %></label>
+			<div class="col-sm-12">
+				<input type="submit" name="Save" class="btn btn-primary" value="<%- i18next.t('Save') %>" />
+			</div>
+		</div>
+	</form>
+</div>
