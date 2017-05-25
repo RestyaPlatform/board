@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.2
--- Dumped by pg_dump version 9.5.2
+-- Dumped from database version 9.5.6
+-- Dumped by pg_dump version 9.5.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -227,29 +227,50 @@ $$;
 
 CREATE FUNCTION update_board_user_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-		UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
-	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 2) t WHERE "id" = OLD."user_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'UPDATE') THEN
-		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
-	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 2) t WHERE "id" = OLD."user_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'INSERT') THEN
-		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
-	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-	        UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 1) t WHERE "id" = NEW."user_id";
-	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 2) t WHERE "id" = NEW."user_id";
-		RETURN NEW;
-	END IF;
-END;
+    AS $$
+
+BEGIN
+
+	IF (TG_OP = 'DELETE') THEN
+
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+		UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" != 1) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" != 1) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
+	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 1) t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" != 1) t WHERE "id" = NEW."user_id";
+
+		RETURN NEW;
+
+	END IF;
+
+END;
+
 $$;
 
 
@@ -787,29 +808,52 @@ $$;
 
 CREATE FUNCTION update_organization_user_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
-	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
-	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = OLD."user_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'UPDATE') THEN
-		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
-	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
-	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = OLD."user_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'INSERT') THEN
-		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
-	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-	        UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = NEW."user_id";
-	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = NEW."user_id";
-		RETURN NEW;
-	END IF;
-END;
+    AS $$
+
+
+
+BEGIN
+
+	IF (TG_OP = 'DELETE') THEN
+
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" != 1) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" != 1) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
+
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" != 1) t WHERE "id" = NEW."user_id";
+
+		RETURN NEW;
+
+	END IF;
+
+END;
+
 $$;
 
 
@@ -1238,6 +1282,7 @@ CREATE TABLE cards (
     is_deleted boolean DEFAULT false NOT NULL,
     comment_count bigint DEFAULT (0)::bigint,
     custom_fields text,
+    color character varying(255),
     CONSTRAINT name CHECK ((char_length(name) > 0))
 );
 
@@ -1324,6 +1369,7 @@ CREATE TABLE labels (
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
     card_count bigint DEFAULT 0 NOT NULL,
+    color character varying,
     CONSTRAINT name CHECK ((char_length((name)::text) > 0))
 );
 
@@ -1357,6 +1403,7 @@ CREATE TABLE lists (
     lists_subscriber_count bigint DEFAULT 0,
     is_deleted boolean DEFAULT false NOT NULL,
     custom_fields text,
+    color character varying(255),
     CONSTRAINT name CHECK ((char_length((name)::text) > 0))
 );
 
@@ -2053,7 +2100,8 @@ CREATE VIEW cards_labels_listing AS
     c.name AS card_name,
     c.list_id,
     l.name,
-    cl.board_id
+    cl.board_id,
+    l.color
    FROM ((cards_labels cl
      LEFT JOIN cards c ON ((c.id = cl.card_id)))
      LEFT JOIN labels l ON ((l.id = cl.label_id)));
@@ -2219,7 +2267,8 @@ CREATE VIEW cards_listing AS
                     cards_labels.card_id,
                     cards_labels.list_id,
                     cards_labels.board_id,
-                    cards_labels.name
+                    cards_labels.name,
+                    cards_labels.color
                    FROM cards_labels_listing cards_labels
                   WHERE (cards_labels.card_id = cards.id)
                   ORDER BY cards_labels.name) cl) AS cards_labels,
@@ -2228,6 +2277,7 @@ CREATE VIEW cards_listing AS
     b.name AS board_name,
     l.name AS list_name,
     cards.custom_fields,
+    cards.color,
     cards.due_date AS notification_due_date
    FROM (((cards cards
      LEFT JOIN users u ON ((u.id = cards.user_id)))
@@ -2306,7 +2356,8 @@ CREATE VIEW lists_listing AS
                     cards_listing.cards_subscribers,
                     cards_listing.cards_labels,
                     cards_listing.comment_count,
-                    cards_listing.custom_fields
+                    cards_listing.custom_fields,
+                    cards_listing.color
                    FROM cards_listing cards_listing
                   WHERE (cards_listing.list_id = lists.id)
                   ORDER BY cards_listing."position") lc) AS cards,
@@ -2320,7 +2371,8 @@ CREATE VIEW lists_listing AS
                    FROM list_subscribers lists_subscribers
                   WHERE (lists_subscribers.list_id = lists.id)
                   ORDER BY lists_subscribers.id) ls) AS lists_subscribers,
-    lists.custom_fields
+    lists.custom_fields,
+    lists.color
    FROM lists lists;
 
 
@@ -2436,7 +2488,8 @@ CREATE VIEW boards_listing AS
                     lists_listing.lists_subscriber_count,
                     lists_listing.cards,
                     lists_listing.lists_subscribers,
-                    lists_listing.custom_fields
+                    lists_listing.custom_fields,
+                    lists_listing.color
                    FROM lists_listing lists_listing
                   WHERE (lists_listing.board_id = board.id)
                   ORDER BY lists_listing."position") bl) AS lists,
@@ -2489,6 +2542,7 @@ CREATE VIEW cards_elasticsearch_listing AS
             cards.checklist_item_completed_count,
             cards.card_voter_count,
             cards.cards_user_count,
+            cards.color,
             ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
                    FROM ( SELECT boards_users.user_id
                            FROM boards_users boards_users
@@ -3178,6 +3232,7 @@ CREATE VIEW simple_board_listing AS
                     (lists.is_archived)::integer AS is_archived,
                     lists.card_count,
                     lists.lists_subscriber_count,
+                    lists.color,
                     (lists.is_deleted)::integer AS is_deleted
                    FROM lists lists
                   WHERE (lists.board_id = board.id)
@@ -3296,6 +3351,7 @@ CREATE VIEW users_cards_listing AS
     c.card_voter_count,
     c.activity_count,
     c.user_id AS created_user_id,
+    c.color AS card_color,
     (c.is_deleted)::integer AS is_deleted,
     cu.user_id,
     c.comment_count
@@ -3513,7 +3569,6 @@ COPY acl_board_links (id, created, modified, name, url, method, slug, group_id, 
 38	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Move list cards	/boards/?/lists/?/cards	PUT	move_list_cards	4	0
 39	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Post comment to card	/boards/?/lists/?/cards/?/comments	POST	comment_card	4	0
 40	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove attachment from card	/boards/?/lists/?/cards/?/attachments/?	DELETE	remove_card_attachment	4	0
-42	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove card member	/boards/?/lists/?/cards/?/users/?	DELETE	delete_card_user	4	0
 45	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe board	/boards/?/board_subscribers	POST	subscribe_board	2	0
 46	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe card	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_card	4	0
 47	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe list	/boards/?/lists/?/list_subscribers	POST	subscribe_list	3	0
@@ -3533,6 +3588,8 @@ COPY acl_board_links (id, created, modified, name, url, method, slug, group_id, 
 44	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Search card to add in comment	/boards/?/cards/search	GET	view_card_search	4	0
 11	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Assign labels to card	/boards/?/lists/?/cards/?/labels	POST	add_labels	4	1
 41	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove board member	/boards/?/boards_users/?	DELETE	remove_board_user	2	0
+42	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove card member	/boards/?/lists/?/cards/?/cards_users/?	DELETE	delete_card_user	4	0
+62	2017-05-25 11:33:15.354082	2017-05-25 11:33:15.354082	Labels edit	/labels/?	PUT	edit_labels	4	1
 \.
 
 
@@ -3654,6 +3711,8 @@ COPY acl_board_links_boards_user_roles (id, created, modified, acl_board_link_id
 125	2016-02-22 12:49:43.194	2016-02-22 12:49:43.194	56	3
 126	2016-02-22 12:49:44.285	2016-02-22 12:49:44.285	59	3
 128	2016-02-22 12:49:49.309	2016-02-22 12:49:49.309	61	3
+129	2017-05-25 11:33:15.362364	2017-05-25 11:33:15.362364	62	1
+130	2017-05-25 11:33:15.370811	2017-05-25 11:33:15.370811	62	2
 \.
 
 
@@ -3661,7 +3720,7 @@ COPY acl_board_links_boards_user_roles (id, created, modified, acl_board_link_id
 -- Name: acl_board_links_boards_user_roles_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('acl_board_links_boards_user_roles_seq', 1, false);
+SELECT pg_catalog.setval('acl_board_links_boards_user_roles_seq', 128, true);
 
 
 --
@@ -3738,6 +3797,7 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_use
 139	2016-06-28 07:47:21.747	2016-06-28 07:47:21.747	Organization user role edit	/organization_user_roles/?	PUT	organization_user_role_edit	1	0	0	1	1
 125	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	Chat History	/boards/?/chat_history	GET	chat_history	2	1	0	1	0
 27	2016-02-18 20:11:14.482	2016-02-18 20:11:14.482	View board	/boards/?	GET	view_board	2	1	0	0	0
+141	2017-05-25 11:33:15.577516	2017-05-25 11:33:15.577516	Labels Edit	/labels/?	PUT	label_edit	1	0	0	1	1
 \.
 
 
@@ -3875,6 +3935,8 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 1263	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	138	1
 1264	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	131	1
 1265	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	139	1
+1266	2017-05-25 11:33:15.585906	2017-05-25 11:33:15.585906	141	1
+1267	2017-05-25 11:33:15.585906	2017-05-25 11:33:15.585906	141	2
 \.
 
 
@@ -3882,7 +3944,7 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 -- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1265, true);
+SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1267, true);
 
 
 --
@@ -4079,7 +4141,7 @@ SELECT pg_catalog.setval('card_voters_id_seq', 1, true);
 -- Data for Name: cards; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY cards (id, created, modified, board_id, list_id, name, description, due_date, "position", is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, cards_user_count, cards_subscriber_count, card_voter_count, activity_count, user_id, is_deleted, comment_count, custom_fields) FROM stdin;
+COPY cards (id, created, modified, board_id, list_id, name, description, due_date, "position", is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, cards_user_count, cards_subscriber_count, card_voter_count, activity_count, user_id, is_deleted, comment_count, custom_fields, color) FROM stdin;
 \.
 
 
@@ -4495,7 +4557,7 @@ SELECT pg_catalog.setval('ips_id_seq', 1, true);
 -- Data for Name: labels; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY labels (id, created, modified, name, card_count) FROM stdin;
+COPY labels (id, created, modified, name, card_count, color) FROM stdin;
 \.
 
 
@@ -4955,7 +5017,7 @@ SELECT pg_catalog.setval('list_subscribers_id_seq', 1, false);
 -- Data for Name: lists; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY lists (id, created, modified, board_id, user_id, name, "position", is_archived, card_count, lists_subscriber_count, is_deleted, custom_fields) FROM stdin;
+COPY lists (id, created, modified, board_id, user_id, name, "position", is_archived, card_count, lists_subscriber_count, is_deleted, custom_fields, color) FROM stdin;
 \.
 
 
@@ -5171,7 +5233,6 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 39	11	0	XMPP_CLIENT_RESOURCE_NAME		\N	text	\N	Client Resource Name	3
 30	3	0	DEFAULT_CONTACT_EMAIL_ADDRESS	board@restya.com	It is used in all outgoing emails	text	\N	Contact Email Address	4
 42	3	0	DEFAULT_CARD_VIEW	Maximized	\N	select	Maximized,Normal Dockmodal	Default Card Open	7
-22	3	0	STANDARD_LOGIN_ENABLED	true	\N	checkbox	\N	Standard login/register	8
 \.
 
 
