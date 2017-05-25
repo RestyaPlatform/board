@@ -25,7 +25,7 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
         $ical.= 'VERSION:2.0' . "\r\n";
         $ical.= 'PRODID:-//' . SITE_NAME . '//EN' . "\r\n";
         $ical.= 'X-PUBLISHED-TTL:PT1H' . "\r\n";
-        $ical.= 'X-ORIGINAL-URL:' . $_server_domain_url . "\r\n";
+        $ical.= 'X-ORIGINAL-URL:http://' . $_SERVER['HTTP_HOST'] . "\r\n";
         $ical.= 'CALSCALE:GREGORIAN' . "\r\n";
         $ical.= 'METHOD:PUBLISH' . "\r\n";
         if ($count > 0) {
@@ -37,7 +37,7 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                 $event.= 'DTSTART:' . date('Ymd\THis\Z', strtotime($row['due_date'])) . "\r\n";
                 $event.= 'DTEND:' . date('Ymd\THis\Z', strtotime($row['due_date'])) . "\r\n";
                 $event.= 'SUMMARY:' . $row['card_name'] . "\r\n";
-                $event.= 'URL:' . $_server_domain_url . '/client/#/board/' . $_GET['id'] . "\r\n";
+                $event.= 'URL:http://' . $_SERVER['HTTP_HOST'] . '/client/#/board/' . $_GET['id'] . "\r\n";
                 $event.= 'END:VEVENT' . "\r\n";
             }
             $ical.= 'X-WR-CALNAME:' . $board_name . ' (via ' . SITE_NAME . ')' . "\r\n";

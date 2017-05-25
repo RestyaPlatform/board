@@ -36,7 +36,7 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                     'jpg',
                     'png'
                 );
-                if (isset($_GET['view']) && in_array(strtolower($path_info['extension']), $image_extensions)) {
+                if (isset($_GET['view']) && in_array(strtolower($path_info['extension']) , $image_extensions)) {
                     if ($path_info['extension'] == 'jpg') {
                         header('Content-Type: image/jpeg');
                     } else {

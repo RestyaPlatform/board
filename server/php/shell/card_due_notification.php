@@ -13,15 +13,17 @@
  * @link       http://restya.com/
  */
 $app_path = dirname(dirname(__FILE__));
-require_once $app_path . '/config.inc.php';
+require_once $app_path . '/bootstrap.php';
 require_once $app_path . '/libs/core.php';
 global $_server_domain_url;
 if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
     include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
 }
-if ($db_lnk) {
+if ($db) {
     $qry_val_arr = array();
-    $result = executeQueryAll("SELECT * FROM cards_listing WHERE notification_due_date BETWEEN ((now() + '1 day'::INTERVAL) - '300 seconds'::INTERVAL) AND (now() + '1 day'::INTERVAL)", $qry_val_arr);
+    $sth = $db->prepare("SELECT * FROM cards_listing WHERE notification_due_date BETWEEN ((now() + '1 day'::INTERVAL) - '300 seconds'::INTERVAL) AND (now() + '1 day'::INTERVAL)");
+    $sth->execute($qry_val_arr);
+    $result = $sth->fetchAll();
     foreach ($result as $card) {
         $cards_users = json_decode($card['cards_users']);
         if (!empty($cards_users)) {

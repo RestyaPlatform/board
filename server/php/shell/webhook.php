@@ -13,19 +13,23 @@
  * @link       http://restya.com/
  */
 $app_path = dirname(dirname(__FILE__));
-require_once $app_path . '/config.inc.php';
-if ($db_lnk) {
+require_once $app_path . '/bootstrap.php';
+if ($db) {
     $qry_val_arr = array(
         'webhooks.last_processed_activity_id'
     );
-    $result = executeQuery('SELECT value FROM settings WHERE name = ?', $qry_val_arr);
+    $sth = $db->prepare('SELECT value FROM settings WHERE name = ?');
+    $sth->execute($qry_val_arr);
+    $result = $sth->fetch(PDO::FETCH_ASSOC);
     $row = $result;
     if (!empty($row)) {
         $qry_val_arr = array(
             $row['value'],
             0
         );
-        $activities = executeQueryAll("SELECT * FROM activities_listing WHERE id > ? AND card_id != ? AND card_id IS NOT NULL ORDER BY id ASC", $qry_val_arr);
+        $sth = $db->prepare("SELECT * FROM activities_listing WHERE id > ? AND card_id != ? AND card_id IS NOT NULL ORDER BY id ASC");
+        $sth->execute($qry_val_arr);
+        $activities = $sth->fetchAll();
         $count = count($activities);
         if ($count) {
             foreach ($activities as $activity) {
@@ -33,7 +37,9 @@ if ($db_lnk) {
                 $qry_val_arr = array(
                     true
                 );
-                $result = executeQueryAll("SELECT * FROM webhooks WHERE is_active = ?", $qry_val_arr);
+                $sth = $db->prepare("SELECT * FROM webhooks WHERE is_active = ?");
+                $sth->execute($qry_val_arr);
+                $result = $sth->fetchAll();
                 $count = count($result);
                 if ($count) {
                     $i = 1;
@@ -70,7 +76,9 @@ if ($db_lnk) {
                         $last_processed_activity_id,
                         'webhooks.last_processed_activity_id'
                     );
-                    executeQuery('UPDATE settings SET value = ? WHERE name = ?', $qry_val_arr);
+                    $sth = $db->prepare('UPDATE settings SET value = ? WHERE name = ?');
+                    $sth->execute($qry_val_arr);
+                    $res = $sth->fetch(PDO::FETCH_ASSOC);
                     curl_multi_close($mh);
                 }
             }

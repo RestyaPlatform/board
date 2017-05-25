@@ -13,19 +13,21 @@
  * @link       http://restya.com/
  */
 $app_path = dirname(dirname(__FILE__));
-require_once $app_path . '/config.inc.php';
+require_once $app_path . '/bootstrap.php';
 require_once $app_path . '/libs/vendors/finediff.php';
 require_once $app_path . '/libs/core.php';
 global $_server_domain_url;
 if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
     include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
 }
-if ($db_lnk) {
+if ($db) {
     $qry_val_arr = array(
         2
     );
-    $users_result = pg_query_params($db_lnk, 'SELECT users.id, users.username, users.email, users.full_name, users.last_email_notified_activity_id, users.timezone, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT bs.board_id FROM board_subscribers bs WHERE bs.user_id = users.id) d) AS board_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ls.list_id, l.board_id FROM list_subscribers ls, lists l WHERE ls.user_id = users.id AND l.id = ls.list_id) d) AS list_ids,(SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT cs.card_id, c.list_id, c.board_id FROM card_subscribers cs, cards c WHERE cs.user_id = users.id AND c.id = cs.card_id) d) AS card_ids FROM users WHERE is_send_newsletter = $1', $qry_val_arr);
-    while ($user = pg_fetch_assoc($users_result)) {
+    $sth = $db->prepare('SELECT users.id, users.username, users.email, users.full_name, users.last_email_notified_activity_id, users.timezone, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT bs.board_id FROM board_subscribers bs WHERE bs.user_id = users.id) d) AS board_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ls.list_id, l.board_id FROM list_subscribers ls, lists l WHERE ls.user_id = users.id AND l.id = ls.list_id) d) AS list_ids,(SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT cs.card_id, c.list_id, c.board_id FROM card_subscribers cs, cards c WHERE cs.user_id = users.id AND c.id = cs.card_id) d) AS card_ids FROM users WHERE is_send_newsletter = ?');
+    $sth->execute($qry_val_arr);
+    $users_result = $sth->fetchAll();
+    foreach ($users_result as $user) {
         $board_ids = $list_ids = $card_ids = array();
         $board_arr = (!empty($user['board_ids'])) ? array_filter(json_decode($user['board_ids'], true)) : '';
         $list_arr = (!empty($user['list_ids'])) ? array_filter(json_decode($user['list_ids'], true)) : '';
@@ -60,10 +62,12 @@ if ($db_lnk) {
                 $user['id'],
                 '{' . implode(',', $board_ids) . '}'
             );
-            $activities_result = pg_query_params($db_lnk, 'SELECT * FROM activities_listing WHERE id > $1 AND user_id != $2 AND board_id = ANY ($3) ORDER BY id DESC', $qry_arr);
+            $sth = $db->prepare('SELECT * FROM activities_listing WHERE id > ? AND user_id != ? AND board_id = ANY (?) ORDER BY id DESC');
+            $sth->execute($qry_arr);
+            $activities_result = $sth->fetchAll();
             $i = 0;
             $tmp_card_id = '';
-            while ($activity = pg_fetch_assoc($activities_result)) {
+            foreach ($activities_result as $activity) {
                 if (!empty($activity['profile_picture_path'])) {
                     $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb');
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
@@ -93,8 +97,9 @@ if ($db_lnk) {
                     $qry_arr = array(
                         $activity['card_id']
                     );
-                    $card = pg_query_params($db_lnk, 'SELECT * FROM cards WHERE id = $1', $qry_arr);
-                    $card = pg_fetch_assoc($card);
+                    $sth = $db->prepare('SELECT * FROM cards WHERE id = ?');
+                    $sth->execute($qry_arr);
+                    $card = $sth->fetch(PDO::FETCH_ASSOC);
                     $mail_to = 'mailto:' . $board_email . '?subject=RE:' . $card['name'];
                     if (empty($tmp_card_id) || $tmp_card_id == $activity['card_id']) {
                         $reply_to_mail = $board_email;
@@ -153,10 +158,12 @@ if ($db_lnk) {
                 $user['id'],
                 '{' . implode(',', $list_ids) . '}'
             );
-            $activities_result = pg_query_params($db_lnk, 'SELECT * FROM activities_listing WHERE id > $1 AND user_id != $2 AND list_id = ANY ($3) ORDER BY id DESC', $qry_arr);
+            $sth = $db->prepare('SELECT * FROM activities_listing WHERE id > ? AND user_id != ? AND list_id = ANY (?) ORDER BY id DESC');
+            $sth->execute($qry_arr);
+            $activities_result = $sth->fetchAll();
             $i = 0;
             $tmp_card_id = '';
-            while ($activity = pg_fetch_assoc($activities_result)) {
+            foreach ($activities_result as $activity) {
                 if (!empty($activity['profile_picture_path'])) {
                     $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb');
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
@@ -186,8 +193,9 @@ if ($db_lnk) {
                     $qry_arr = array(
                         $activity['card_id']
                     );
-                    $card = pg_query_params($db_lnk, 'SELECT * FROM cards WHERE id = $1', $qry_arr);
-                    $card = pg_fetch_assoc($card);
+                    $sth = $db->prepare('SELECT * FROM cards WHERE id = ?');
+                    $sth->execute($qry_arr);
+                    $card = $sth->fetch(PDO::FETCH_ASSOC);
                     $mail_to = 'mailto:' . $board_email . '?subject=RE:' . $card['name'];
                     if (empty($tmp_card_id) || $tmp_card_id == $activity['card_id']) {
                         $reply_to_mail = $board_email;
@@ -246,10 +254,12 @@ if ($db_lnk) {
                 $user['id'],
                 '{' . implode(',', $card_ids) . '}'
             );
-            $activities_result = pg_query_params($db_lnk, 'SELECT * FROM activities_listing WHERE id > $1 AND user_id != $2 AND card_id = ANY ($3) ORDER BY id DESC', $qry_arr);
+            $sth = $db->prepare('SELECT * FROM activities_listing WHERE id > ? AND user_id != ? AND card_id = ANY (?) ORDER BY id DESC');
+            $sth->execute($qry_arr);
+            $activities_result = $sth->fetchAll();
             $i = 0;
             $tmp_card_id = '';
-            while ($activity = pg_fetch_assoc($activities_result)) {
+            foreach ($activities_result as $activity) {
                 if (!empty($activity['profile_picture_path'])) {
                     $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb');
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
@@ -279,8 +289,9 @@ if ($db_lnk) {
                     $qry_arr = array(
                         $activity['card_id']
                     );
-                    $card = pg_query_params($db_lnk, 'SELECT * FROM cards WHERE id = $1', $qry_arr);
-                    $card = pg_fetch_assoc($card);
+                    $sth = $db->prepare('SELECT * FROM cards WHERE id = ?');
+                    $sth->execute($qry_arr);
+                    $card = $sth->fetch(PDO::FETCH_ASSOC);
                     $mail_to = 'mailto:' . $board_email . '?subject=RE:' . $card['name'];
                     if (empty($tmp_card_id) || $tmp_card_id == $activity['card_id']) {
                         $reply_to_mail = $board_email;
@@ -338,11 +349,17 @@ if ($db_lnk) {
                 max($activity_id) ,
                 $user['id']
             );
-            pg_query_params($db_lnk, 'UPDATE users SET last_email_notified_activity_id = $1 WHERE id = $2', $qry_arr);
+            $sth = $db->prepare('UPDATE users SET last_email_notified_activity_id = ? WHERE id = ?');
+            $sth->execute($qry_arr);
+            $res = $sth->fetch(PDO::FETCH_ASSOC);
             $emailFindReplace['##CONTENT##'] = $mail_content;
             $emailFindReplace['##NAME##'] = $user['full_name'];
             $emailFindReplace['##NOTIFICATION_COUNT##'] = $notification_count;
-            $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($user['timezone']));
+            if (!empty($user['timezone'])) {
+                $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($user['timezone']));
+            } else {
+                $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime(SITE_TIMEZONE));
+            }
             $emailFindReplace['##USER_ID##'] = $user['id'];
             sendMail('email_notification', $emailFindReplace, $user['email'], $reply_to_mail);
         }
