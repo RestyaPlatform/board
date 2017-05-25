@@ -2059,7 +2059,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         echo json_encode($response);
         break;
-        
+
     case '/users/?/adminchangepassword':
         $qry_val_array = array(
             $r_resource_vars['users']
@@ -2314,7 +2314,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         break;
 
     case '/settings': //settings update
-        foreach ($r_post as $key => $value) {
+        foreach ($args as $key => $value) {
+            if ($key == 'IMAP_EMAIL_PASSWORD') {
+                if (!empty($value)) {
+                    $value_encode = str_rot13($value);
+                    $value = base64_encode($value_encode);
+                } else {
+                    break;
+                }
+            }
             $qry_val_arr = array(
                 $value,
                 trim($key)
@@ -4308,7 +4316,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         if (isset($r_post['enable'])) {
             $app['enabled'] = $r_post['enable'];
         } else {
-            foreach ($r_post as $key => $val) {
+            foreach ($args as $key => $val) {
+                if (!empty($app['settings'][$key]['is_encrypted'])) {
+                    if (!empty($val)) {
+                        $value_encode = str_rot13($val);
+                        $val = base64_encode($value_encode);
+                    } else {
+                        break;
+                    }
+                }
                 $app['settings'][$key]['value'] = $val;
             }
         }
