@@ -104,56 +104,54 @@
 
 
 <td>
-   <ul class="list-inline list-group-item-text">
+   <ul class="list-inline btn-actions-list list-group-item-text">
 	   <li class="navbar-btn"><a href="#" title="<%- i18next.t('Activities') %>" class="btn btn-default btn-xs js-all-user-activities"><%- i18next.t("Activities") %></a></li>
 	   <li>
-		<ul class="list-inline">
-			<li class="navbar-btn">
-				<a href="#" class="btn btn-default btn-xs <%if(parseInt(user.attributes.is_active) === 1){%>js-block-user<%}else{%>js-unblock-user<%}%>"  title="<%- i18next.t('Block') %>" <% if(user.attributes.role_id == 1){%> disabled="disabled" <% } %>>
-	            <i class="icon-exclamation"></i>
-			    <span><%if(parseInt(user.attributes.is_active) === 1){%><%- i18next.t("Block") %><%}else{%><%- i18next.t("Unblock") %><%}%></span></a>
-		    </li>  
-			<li class="navbar-btn">
-				<div class="dropdown btn-group">  
-						<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button">
-							<%- i18next.t("Change Password") %>
-						</button>
-								<ul class="dropdown-menu arrow arrow-right" role="menu">
-											<div class="panel-body well-lg">
-												<form role="form" class = "js-admin-change-password" name="UserChangePasswordAdminForm" id="UserChangePasswordAdminForm">
-														<div class="form-group input password required">
-															<label class="sr-only control-label" for="inputPassword"><%- i18next.t('Enter a new Password') %></label>
-															<input type="password" class="form-control" placeholder="<%- i18next.t('Enter a new Password') %>" id="inputPassword" name="password" required title="<%- i18next.t('Enter a new Password') %>">
-														</div>
-														<div class="form-group input cpassword required">
-															<label class="sr-only control-label" for="inputConfirmPassword"><%- i18next.t('Confirm Password') %></label>
-															<input type="password" class="form-control" placeholder="<%- i18next.t('Confirm Password') %>" id="inputConfirmPassword" name="confirm_password" required title="<%- i18next.t('Confirm Password') %>">
-														</div>
-														<div class="form-group">
-															<label class="sr-only control-label" for="submit2"><%- i18next.t('Change Password') %></label>
-															<input type="submit" class="btn btn-primary col-xs-12" id="submitChangePasswordAdmin" value="<%- i18next.t('Change Password') %>" >
-														</div>
-												</form>
-										</div>
-								</ul>
-					</div>
-			</li> 
-			<li class="navbar-btn">
-			    <span class="dropdown navbar-btn">
-				<a aria-expanded="false" data-toggle="dropdown" class="btn btn-primary btn-xs" href="#" <% if(user.attributes.role_id == 1){%> disabled="disabled" <% } %> >
-					<i class="icon-remove"></i> <%- i18next.t("Delete") %>
-			    </a>
-				
-				<ul class="dropdown-menu dropdown-menu-right arrow arrow-right col-xs-12">
-						<li class="col-lg-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t("Delete User") + '?' %></strong></span><a class="js-close-popover pull-right" href="#/users"><i class="icon-remove "></i></a></div> </li>
-						<li class="col-lg-12 divider"></li>
-						<li class="col-lg-12 text-left">
-						   <span class="show"><%- i18next.t("Deleting an user is permanent. There is no undo.") %></span>
-							  <div class="col-xs-12 btn-block navbar-btn"><a title="<%- i18next.t('Delete User') %>" class="js-remove-user"><span class="btn btn-primary"><%- i18next.t("Delete") %></span></a></div>
-					   </li>
-	             </ul>
-			</li>
-		</ul>
+		<li class="navbar-btn">
+			<a href="#" class="btn btn-default btn-xs <%if(parseInt(user.attributes.is_active) === 1){%>js-block-user<%}else{%>js-unblock-user<%}%>"  title="<%- i18next.t('Block') %>" <% if(user.attributes.role_id == 1){%> disabled="disabled" <% } %>>
+			<i class="icon-exclamation"></i>
+			<span><%if(parseInt(user.attributes.is_active) === 1){%><%- i18next.t("Block") %><%}else{%><%- i18next.t("Unblock") %><%}%></span></a>
+		</li>  
+		<li class="navbar-btn">
+			<div class="dropdown btn-group">  
+					<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle btn-xs" type="button">
+						<%- i18next.t("Change Password") %>
+					</button>
+							<ul class="dropdown-menu arrow arrow-right" role="menu">
+										<div class="panel-body well-lg">
+											<form role="form" class = "js-admin-change-password" name="UserChangePasswordAdminForm" id="UserChangePasswordAdminForm">
+													<div class="form-group input password required">
+														<label class="sr-only control-label" for="inputPassword"><%- i18next.t('Enter a new Password') %></label>
+														<input type="password" class="form-control" placeholder="<%- i18next.t('Enter a new Password') %>" id="inputPassword" name="password" required title="<%- i18next.t('Enter a new Password') %>">
+													</div>
+													<div class="form-group input cpassword required">
+														<label class="sr-only control-label" for="inputConfirmPassword"><%- i18next.t('Confirm Password') %></label>
+														<input type="password" class="form-control" placeholder="<%- i18next.t('Confirm Password') %>" id="inputConfirmPassword" name="confirm_password" required title="<%- i18next.t('Confirm Password') %>">
+													</div>
+													<div class="form-group">
+														<label class="sr-only control-label" for="submit2"><%- i18next.t('Change Password') %></label>
+														<input type="submit" class="btn btn-primary col-xs-12" id="submitChangePasswordAdmin" value="<%- i18next.t('Change Password') %>" >
+													</div>
+											</form>
+									</div>
+							</ul>
+				</div>
+		</li> 
+		<li class="navbar-btn">
+			<span class="dropdown navbar-btn">
+			<a aria-expanded="false" data-toggle="dropdown" class="btn btn-primary btn-xs" href="#" <% if(user.attributes.role_id == 1){%> disabled="disabled" <% } %> >
+				<i class="icon-remove"></i> <%- i18next.t("Delete") %>
+			</a>
+			
+			<ul class="dropdown-menu dropdown-menu-right arrow arrow-right col-xs-12">
+					<li class="col-lg-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t("Delete User") + '?' %></strong></span><a class="js-close-popover pull-right" href="#/users"><i class="icon-remove "></i></a></div> </li>
+					<li class="col-lg-12 divider"></li>
+					<li class="col-lg-12 text-left">
+						<span class="show"><%- i18next.t("Deleting an user is permanent. There is no undo.") %></span>
+							<div class="col-xs-12 btn-block navbar-btn"><a title="<%- i18next.t('Delete User') %>" class="js-remove-user"><span class="btn btn-primary"><%- i18next.t("Delete") %></span></a></div>
+					</li>
+				</ul>
+		</li>
 	   </li>
     </ul>
 </td>

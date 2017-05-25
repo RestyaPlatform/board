@@ -226,9 +226,9 @@
 					  <h3 class="pull-left"><%- i18next.t('Actions') %></h3>
 				    </div>
 	
-				<ul class="js-card-actions list-inline navbar-btn">
+				<ul class="js-card-actions list-inline action-list navbar-btn">
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-					<li class="dropdown navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-move-card-form js-card-header-action even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><i class="icon-folder-close"></i><%- i18next.t('Move') %></a>
+					<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-move-card-form js-card-header-action even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><i class="icon-folder-close"></i><%- i18next.t('Move') %></a>
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 						<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 						<li class="col-xs-12 divider"></li>
@@ -300,7 +300,7 @@
 						</li>
 					<% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
-					<li class="dropdown navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-card-due-date-form even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><i class="icon-calendar"></i><%- i18next.t('Due Date') %></a>
+					<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-card-due-date-form even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><i class="icon-calendar"></i><%- i18next.t('Due Date') %></a>
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 						<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Due Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 						<li class="col-xs-12 divider"></li>
@@ -310,7 +310,7 @@
 					<li class = "check_start_date_set"></li>
 					<% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_checklists",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-						<li class="dropdown navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-checklist-add-form even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Checklist') %>" href="#"><i class="icon-list-ul"></i><%- i18next.t('Checklist') %></a>
+						<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-checklist-add-form even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Checklist') %>" href="#"><i class="icon-list-ul"></i><%- i18next.t('Checklist') %></a>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 							<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Add Checklist') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 							<li class="col-xs-12 divider"></li>
@@ -318,9 +318,7 @@
 						  </ul>
 						</li>
 					<% } %>
-				 </ul>
-				 <ul class="list-inline clearfix navbar-btn alignemnt-card">
-								<li class="dropdown navbar-btn"> 							
+								<li class="dropdown"> 							
 									<a class="pr btn btn-default dropdown-toggle even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Color') %>" href="#">
 									<% if(!_.isEmpty(card.attributes.color)){ %>
 										<span class="dycolorblk" id="js-card-color-demo-<%- card.id %>" style="background-color:<%- card.attributes.color %>;"></span>
@@ -603,8 +601,67 @@
 	  </li>
 	  <% } %>
 	  <% if(!_.isUndefined(authuser.user)) { %>
-	  <li class="dropdown-submenu dropdown"> <a href="#" title="<%- i18next.t('Actions') %>" class="dropdown-toggle js-open-popover" data-toggle="dropdown"><%- i18next.t('Actions') %></a>
+	  <li class="dropdown-submenu js-dropdown-submenu dropdown"> <a href="#" title="<%- i18next.t('Actions') %>" class="dropdown-toggle js-open-popover" data-toggle="dropdown"><%- i18next.t('Actions') %></a>
 		  <ul class="dropdown-menu">
+				<li class="dropdown js-show-color-settings-dropdown"><a class="dropdown-toggle js-show-color-settings" href="#" title="Color" data-toggle="dropdown"><i class="text-primary"></i>Color</a>
+					<ul class="dropdown-menu dropdown-menu-left dropdown-new arrow selectcolourdown col-xs-12">
+						<li class="col-xs-12 clearfix text-center">
+								<div><span class="col-xs-10"><strong><%- i18next.t('Select a color') %></strong></span><a class="js-close-popover pull-right"
+												href="#"><i class="icon-remove ">&nbsp;</i></a></div>
+						</li>
+						<li class="col-xs-12 divider"></li>
+						<ul class="list-color-pad list-inline list-color-alignment">
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#ffffff"><span class="btn btn-default show well-sm" style="background-color:#ffffff"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#C0C0C0"><span class="background-box show well-sm" style="background-color:#C0C0C0"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#808080"><span class="background-box show well-sm" style="background-color:#808080"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#000000"><span class="background-box show well-sm" style="background-color:#000000"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#FF0000"><span class="background-box show well-sm" style="background-color:#FF0000"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#800000"><span class="background-box show well-sm" style="background-color:#800000"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#FFFF00"><span class="background-box show well-sm" style="background-color:#FFFF00"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#808000"><span class="background-box show well-sm" style="background-color:#808000"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#00FF00"><span class="background-box show well-sm" style="background-color:#00FF00"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#008000"><span class="background-box show well-sm" style="background-color:#008000"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#00FFFF"><span class="background-box show well-sm" style="background-color:#00FFFF"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#008080"><span class="background-box show well-sm" style="background-color:#008080"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#0000FF"><span class="background-box show well-sm" style="background-color:#0000FF"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#000080"><span class="background-box show well-sm" style="background-color:#000080"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#FF00FF"><span class="background-box show well-sm" style="background-color:#FF00FF"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#800080"><span class="background-box show well-sm" style="background-color:#800080"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#34495e"><span class="background-box show well-sm" style="background-color:#34495e"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#23719f"><span class="background-box show well-sm" style="background-color:#23719f"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#5a966e"><span class="background-box show well-sm" style="background-color:#5a966e"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#bf4a40"><span class="background-box show well-sm" style="background-color:#bf4a40"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#5f778e"><span class="background-box show well-sm" style="background-color:#5f778e"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#0091ff"><span class="background-box show well-sm" style="background-color:#0091ff"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#46ba97"><span class="background-box show well-sm" style="background-color:#46ba97"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#02aff1"><span class="background-box show well-sm" style="background-color:#02aff1"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#819da2"><span class="background-box show well-sm" style="background-color:#819da2"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#47b7cd"><span class="background-box show well-sm" style="background-color:#47b7cd"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#95d9ad"><span class="background-box show well-sm" style="background-color:#95d9ad"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#f7b09c"><span class="background-box show well-sm" style="background-color:#f7b09c"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#b3bec1"><span class="background-box show well-sm" style="background-color:#b3bec1"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#bee5f3"><span class="background-box show well-sm" style="background-color:#bee5f3"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#caefd2"><span class="background-box show well-sm" style="background-color:#caefd2"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#f7d2c8"><span class="background-box show well-sm" style="background-color:#f7d2c8"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#444444"><span class="background-box show well-sm" style="background-color:#444444"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#4f4d7e"><span class="background-box show well-sm" style="background-color:#4f4d7e"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#2f663c"><span class="background-box show well-sm" style="background-color:#2f663c"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#a37e58"><span class="background-box show well-sm" style="background-color:#a37e58"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#6b6b6b"><span class="background-box show well-sm" style="background-color:#6b6b6b"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#7b5cb3"><span class="background-box show well-sm" style="background-color:#7b5cb3"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#65ab36"><span class="background-box show well-sm" style="background-color:#65ab36"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#bd6f32"><span class="background-box show well-sm" style="background-color:#bd6f32"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#999999"><span class="background-box show well-sm" style="background-color:#999999"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#baa1e6"><span class="background-box show well-sm" style="background-color:#baa1e6"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#9dbb1d"><span class="background-box show well-sm" style="background-color:#9dbb1d"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#ffce54"><span class="background-box show well-sm" style="background-color:#ffce54"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#d5d5d5"><span class="background-box show well-sm" style="background-color:#d5d5d5"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#dbcff1"><span class="background-box show well-sm" style="background-color:#dbcff1"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#ccdc87"><span class="background-box show well-sm" style="background-color:#ccdc87"></span></li>
+								<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#f1eabf"><span class="background-box show well-sm" style="background-color:#f1eabf"></span></li>
+						</ul>
+				</ul>
+			</li>
 			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			<li class="dropdown"> <a class="dropdown-toggle js-show-move-card-form js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><%- i18next.t('Move') %></a>
 			  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">

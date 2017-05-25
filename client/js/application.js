@@ -56,9 +56,8 @@ Backbone.View.prototype.board_view_height = function(type, message) {
     var headerH = $('header').height();
     var footerH = $('footer').height();
     var windowH = $(window).height();
-    var boardH = windowH - headerH - footerH - 14;
-    boardH += 'px';
-    $('.board-list-view').css('height', boardH);
+    var boardH = windowH - headerH - footerH - 50;
+    $(".board-list-view").css("height", (boardH + 'px'));
 };
 Backbone.View.prototype.showImage = function(model, id, size, is_random) {
     var hash = calcMD5(SecuritySalt + model + id + 'png' + size);

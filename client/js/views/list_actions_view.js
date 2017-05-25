@@ -30,6 +30,28 @@ App.ListActionsView = Backbone.View.extend({
     tagName: 'ul',
     className: 'dropdown-menu dropdown-menu-right arrow arrow-right js-list-actions-response',
     /**
+     * Events
+     * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
+     */
+    events: {
+        'click .js-show-list-color-settings': 'showColorPicker',
+
+    },
+    /**
+     * showColorPicker()
+     * show color picker
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showColorPicker: function(e) {
+        e.preventDefault();
+        $(e.target).parents('div.dropdown').addClass('open');
+        $('.js-show-list-color-settings-dropdown').addClass('open');
+        return false;
+    },
+    /**
      * render()
      * populate the html to the dom
      * @param NULL

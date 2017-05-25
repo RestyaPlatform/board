@@ -117,7 +117,7 @@
 				</span>
 			  <% i++; }}); } }%>
 			 
-			  <% if(_.isUndefined(board.normal_board_users) && _.isUndefined(board.admin_board_users)) { %>-<% } else {%> <span class="col-xs-3 label small hidden-xs"> 
+			  <% if(_.isUndefined(board.normal_board_users) && _.isUndefined(board.admin_board_users)) { %>-<% } else {%> <span class="table-members label small hidden-xs"> 
 				<span class="small navbar-btn">
 					<span class="show text-left text-muted" title="<%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %> "><%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %></span> 
 					<span class="show navbar-btn text-left text-muted" title="<%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %> "><%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %></span>

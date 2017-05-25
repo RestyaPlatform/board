@@ -104,6 +104,8 @@ App.ModalCardView = Backbone.View.extend({
         'keyup[space] .dockmodal': 'keyboardAddCardMember',
         'click .js-print-screen': 'printScreen',
         'click .js-color-focusout-card': 'colorPickerCard',
+        'click .js-show-color-settings': 'showColorPicker',
+
     },
     /**
      * Constructor
@@ -142,6 +144,20 @@ App.ModalCardView = Backbone.View.extend({
             });
         }
         this.boards = App.boards;
+    },
+    /**
+     * showColorPicker()
+     * show color picker
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showColorPicker: function(e) {
+        e.preventDefault();
+        $(e.target).parents('.js-dropdown-submenu, .docmodal-submenu').addClass('open');
+        $('.js-show-color-settings-dropdown').addClass('open');
+        return false;
     },
     /**
      * colorPicker()
@@ -466,7 +482,7 @@ App.ModalCardView = Backbone.View.extend({
         var current_label = self.model.labels.findWhere({
             'name': label.id
         });
-        if (current_label.attributes.color) {
+        if (current_label) {
             return '<span data-color="' + current_label.attributes.color + '" data-label="' + label.id + '">' + label.id + '</span>';
         }
         return label.id;
@@ -843,7 +859,7 @@ App.ModalCardView = Backbone.View.extend({
                 });
                 $('#dropzone' + self.model.id).on('dragleave', function(e) {
                     dragging--;
-                    if (dragging === 0 || !$.browser.chrome) {
+                    if (dragging === 0) {
                         $('#js-card-modal-' + self.model.id).removeClass('drophover');
                     }
                 });
@@ -1085,7 +1101,7 @@ App.ModalCardView = Backbone.View.extend({
             });
             $('#dropzone' + self.model.id).on('dragleave', function(e) {
                 dragging--;
-                if (dragging === 0 || !$.browser.chrome) {
+                if (dragging === 0) {
                     $('#js-card-modal-' + self.model.id).removeClass('drophover');
                 }
             });
