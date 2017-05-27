@@ -580,8 +580,8 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
     $emailFindReplace = array_merge($default_content, $replace_content);
     $templates = executeQuery('SELECT * FROM email_templates WHERE name = $1', $qry_val_arr);
     if ($templates) {
-        $message = strtr($templates['email_text_content'], $emailFindReplace);
-        $subject = strtr($templates['subject'], $emailFindReplace);
+        $message = decode_qprint(strtr($templates['email_text_content'], $emailFindReplace));
+        $subject = decode_qprint(strtr($templates['subject'], $emailFindReplace));
         $from_email = strtr($templates['from_email'], $emailFindReplace);
         $headers = 'From:' . $from_email . PHP_EOL;
         if (!empty($reply_to_mail)) {
@@ -1272,17 +1272,17 @@ function findAndReplaceVariables($activity)
         include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
     }
     $data = array(
-        '##ORGANIZATION_LINK##' => $activity['organization_name'],
-        '##CARD_LINK##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '/card/' . $activity['card_id'] . '">' . $activity['card_name'] . '</a>',
-        '##LABEL_NAME##' => $activity['label_name'],
-        '##CARD_NAME##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '/card/' . $activity['card_id'] . '">' . $activity['card_name'] . '</a>',
-        '##DESCRIPTION##' => $activity['card_description'],
-        '##LIST_NAME##' => $activity['list_name'],
-        '##BOARD_NAME##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '">' . $activity['board_name'] . '</a>',
-        '##USER_NAME##' => '<strong>' . $activity['full_name'] . '</strong>',
-        '##CHECKLIST_ITEM_NAME##' => $activity['checklist_item_name'],
-        '##CHECKLIST_ITEM_PARENT_NAME##' => $activity['checklist_item_parent_name'],
-        '##CHECKLIST_NAME##' => $activity['checklist_name']
+        '##ORGANIZATION_LINK##' => decode_qprint($activity['organization_name']),
+        '##CARD_LINK##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '/card/' . $activity['card_id'] . '">' . decode_qprint($activity['card_name']) . '</a>',
+        '##LABEL_NAME##' => decode_qprint($activity['label_name']),
+        '##CARD_NAME##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '/card/' . $activity['card_id'] . '">' . decode_qprint($activity['card_name']) . '</a>',
+        '##DESCRIPTION##' => decode_qprint($activity['card_description']),
+        '##LIST_NAME##' => decode_qprint($activity['list_name']),
+        '##BOARD_NAME##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '">' . decode_qprint($activity['board_name']) . '</a>',
+        '##USER_NAME##' => '<strong>' . decode_qprint($activity['full_name']) . '</strong>',
+        '##CHECKLIST_ITEM_NAME##' => decode_qprint($activity['checklist_item_name']),
+        '##CHECKLIST_ITEM_PARENT_NAME##' => decode_qprint($activity['checklist_item_parent_name']),
+        '##CHECKLIST_NAME##' => decode_qprint($activity['checklist_name'])
     );
     $comment = strtr($activity['comment'], $data);
     return $comment;
@@ -1607,4 +1607,11 @@ function is_plugin_enabled($plugin_name)
         }
     }
     return false;
+}
+function decode_qprint($str)
+{
+    $str = preg_replace("/\=([A-F][A-F0-9])/", "%$1", $str);
+    $str = urldecode($str);
+    $str = utf8_encode($str);
+    return $str;
 }
