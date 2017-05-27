@@ -9,15 +9,20 @@
 	<% if (board.labels.length > 0) { %>
 	<ul class="nav nav-pills nav-stacked js-board-labels">
 	<%
-	var labels = board.labels.pluck("name");
-	labels = _.uniq(labels, function(label) { 
-		return label;
-	});
-	 _.each(labels, function(label) { %> 
-		<li class="clearfix js-toggle-label-filter cur card-label-show h5 btn-link media">
-			<span style="background:#<%- converter.colorCode(''+label).substring(0, 6) %>;color:#ffffff" class="pull-left btn btn-xs"><i class="<%= LABEL_ICON %> icon-light"></i></span><div class="htruncate js-label"><%-label %></div>
-		</li> 
-	<% }); %>
+		var labels = board.labels.pluck("name");
+		labels = _.uniq(labels, function(label) { 
+			return label;
+		});
+		_.each(labels, function(label) { 
+			var current_label = board.labels.findWhere({
+				'name': label
+			});
+			if (current_label) { %>
+				<li class="clearfix js-toggle-label-filter cur card-label-show h5 btn-link media">
+					<span style="background:<%- (current_label.attributes.color) ? current_label.attributes.color : '#'+converter.colorCode(''+current_label.attributes.name).substring(0, 6) %>;color:#ffffff" class="pull-left btn btn-xs"><i class="<%= LABEL_ICON %> icon-light"></i></span><div class="htruncate js-label"><%-current_label.attributes.name %></div>
+				</li>
+		<% 	} 
+		}); %>
 	</ul>
 	<hr>
 	<% } %>
@@ -36,7 +41,7 @@
 						<i class="avatar avatar-color-194 img-rounded" title="<%- board_user.attributes.username%>"><%- board_user.attributes.initials%></i>
 					<% } %> 
 				</span>			
-				<span class="pull-left navbar-btn htruncate">
+				<span data-user = "<%-board_user.attributes.username %>" class="pull-left navbar-btn htruncate">
 					<%-board_user.attributes.username %>
 					<span class="js-user hide">user-filter-<%-board_user.attributes.user_id %></span>
 				</span>

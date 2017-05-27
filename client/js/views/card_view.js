@@ -199,7 +199,37 @@ App.CardView = Backbone.View.extend({
     render: function(ops) {
         var content = '';
         var self = this;
+        var query_params;
+        var filter_count = 0;
+        var filter_label_arr = [],
+            filter_user_arr = [],
+            filter_due_arr = [];
+        var current_param = Backbone.history.fragment.split('?');
+        var current_url = current_param[0].split('/');
+        var filter = 'grid';
+        if (current_url.length === 3 && current_url[2] == 'list') {
+            filter = 'list';
+        } else if (current_url.length === 3 && current_url[2] == 'gantt') {
+            filter = 'gantt';
+        }
+        if (current_param[1]) {
+            query_params = current_param[1].split(',');
+            query_params[0] = query_params[0].replace('filter=', '');
+            if (query_params.length > 0) {
+                $('.js-clear-filter-btn').removeClass('hide').addClass('show');
+            }
+            $.each(query_params, function(index, value) {
+                if (value.indexOf('label:') > -1) {
+                    filter_label_arr.push(value.replace('label:', ''));
+                } else if (value.indexOf('@') > -1) {
+                    filter_user_arr.push(value.replace('@', ''));
+                } else if (value.indexOf('due:') > -1) {
+                    filter_due_arr.push(value.replace('due:', ''));
+                }
+            });
+        }
         if (_.isUndefined(this.tmp) && self.model !== null && !_.isEmpty(self.model) && !_.isUndefined(this.model.list) && !_.isUndefined(this.model.list.collection)) {
+            filter_count = 0;
             content += '<ul class="unstyled  hide js-card-labels">';
             var filtered_labels = this.model.list.collection.board.labels.where({
                 card_id: self.model.id
@@ -213,24 +243,43 @@ App.CardView = Backbone.View.extend({
             });
             content += '</ul>';
             this.$el.html(content);
+            $(content).find('li').each(function(key, value) {
+                if ($.inArray($(value).text(), filter_label_arr) !== -1) {
+                    filter_count += 1;
+                }
+            });
             content = '<ul class="unstyled  js-card-users hide">';
             this.model.users.each(function(user) {
-                content += '<li>user-filter-' + user.get('user_id') + '</li>';
+                content += '<li>' + user.get('username') + '</li>';
             });
             content += '</ul>';
             this.$el.append(content);
+            $(content).find('li').each(function(key, value) {
+                if ($.inArray($(value).text(), filter_user_arr) !== -1) {
+                    filter_count += 1;
+                }
+            });
             content = '<ul class="unstyled  js-card-due hide">';
             content += this.getDue(this.model.get('due_date'));
             content += '</ul>';
             this.$el.append(content);
+            $(content).find('li').each(function(key, value) {
+                if ($.inArray($(value).text(), filter_due_arr) !== -1) {
+                    filter_count += 1;
+                }
+            });
             this.$el.append(this.template({
                 card: this.model,
                 converter: this.converter
             }));
+            if (filter_count === 0 && (query_params)) {
+                this.$el.css('display', 'none');
+            }
             if (!_.isUndefined(this.model.attributes.name) && this.model.attributes.name !== '') {
-                this.$el.addClass('panel js-show-modal-card-view js-board-list-card cur').removeAttr('id').attr('data-toggle', 'modal').attr('data-target', '#myModal').attr('data-card_id', this.model.id).attr('id', 'js-card-' + this.model.id).css("border-left-color", this.model.attributes.color).css("border-left-width", "5px");
+                this.$el.addClass('panel js-show-modal-card-view js-board-list-card cur').removeAttr('id').attr('data-toggle', 'modal').attr('data-target', '#myModal').attr('data-card_id', this.model.id).attr('id', 'js-card-' + this.model.id).css("border-left-color", this.model.attributes.color).css("border-left-width", "8px");
             }
         } else if (self.model !== null && !_.isEmpty(self.model) && !_.isUndefined(self.model.attributes.id) && !_.isUndefined(this.model.list) && !_.isUndefined(this.model.list.collection)) {
+            filter_count = 0;
             content += '<ul class="unstyled  hide js-card-labels">';
             var filtered_card_labels = this.model.list.collection.board.labels.where({
                 card_id: self.model.id
@@ -246,22 +295,40 @@ App.CardView = Backbone.View.extend({
             }
             content += '</ul>';
             this.$el.html(content);
+            $(content).find('li').each(function(key, value) {
+                if ($.inArray($(value).text(), filter_label_arr) !== -1) {
+                    filter_count += 1;
+                }
+            });
             content = '<ul class="unstyled  js-card-users hide">';
             var users = this.model.users;
             var card_users_length = users.models.length;
             for (var card_users_i = 0; card_users_i < card_users_length; card_users_i++) {
                 var user = users.models[card_users_i];
-                content += '<li>user-filter-' + user.attributes.user_id + '</li>';
+                content += '<li>' + user.attributes.username + '</li>';
             }
             content += '</ul>';
             this.$el.append(content);
+            $(content).find('li').each(function(key, value) {
+                if ($.inArray($(value).text(), filter_user_arr) !== -1) {
+                    filter_count += 1;
+                }
+            });
             content = '<ul class="unstyled  js-card-due hide">';
             content += this.getDue(this.model.get('due_date'));
             content += '</ul>';
             this.$el.append(content);
+            $(content).find('li').each(function(key, value) {
+                if ($.inArray($(value).text(), filter_due_arr) !== -1) {
+                    filter_count += 1;
+                }
+            });
             this.$el.append(self.template({
                 card: self.model
             }));
+            if (filter_count === 0 && (query_params)) {
+                this.$el.css('display', 'none');
+            }
         } else if (self.model === null) {
             $('.js-card-list-view-' + this.board_id).html(this.$el.append(self.template({
                 card: self.model
@@ -383,6 +450,12 @@ App.CardView = Backbone.View.extend({
             }));
         }
         var current_param = Backbone.history.fragment;
+        current_param = current_param.split('?');
+        var filter_param = '';
+        if (current_param[1]) {
+            filter_param = '?' + current_param[1];
+        }
+        current_param = current_param[0];
         if (!_.isUndefined(this.model.id) && (card_ids_ref[0] === 0 || _.indexOf(card_ids_ref, this.model.id) === -1)) {
             if (!card_ids_ref) {
                 card_ids_ref = [];
@@ -394,7 +467,7 @@ App.CardView = Backbone.View.extend({
                 current_param += '/card/' + this.model.id;
             }
             current_param = current_param.replace('/board', 'board');
-            app.navigate('#/' + current_param, {
+            app.navigate('#/' + current_param + filter_param, {
                 trigger: false,
                 trigger_function: false,
             });

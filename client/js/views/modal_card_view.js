@@ -179,7 +179,7 @@ App.ModalCardView = Backbone.View.extend({
             patch: true,
             success: function(model, response) {
                 $('#js-card-color-demo-' + card_id).css("background-color", color_label);
-                $('#js-card-' + card_id).css("border-left-color", color_label).css("border-left-width", "5px");
+                $('#js-card-' + card_id).css("border-left-color", color_label).css("border-left-width", "8px");
                 $('#js-carousel-card-' + card_id).css("border-left", '5px solid ' + color_label);
             }
         });
@@ -312,26 +312,20 @@ App.ModalCardView = Backbone.View.extend({
         var i = 0;
         var hide_class = '';
         var target = $(e.currentTarget);
-        var e_target = $(e.target).parents().find('#card_activities');
-        if (!$('#' + target.attr('id'), e_target).parent('ul').hasClass('called')) {
-            $('#' + target.attr('id'), e_target).parent('ul').addClass('called');
-            $('#' + target.attr('id'), e_target).toggleClass('active');
-            if (!$('#modal-comments', e_target).hasClass('active')) {
-                i++;
-                hide_class = hide_class + '.modal-comments, ';
-            }
-            if (!$('#modal-activities', e_target).hasClass('active')) {
-                i++;
-                hide_class = hide_class + '.modal-activities, ';
-            }
-            hide_class = hide_class.substring(0, hide_class.lastIndexOf(', '));
-            if (i === 2 || i === 0) {
-                $('.modal-comments, .modal-activities', e_target).parent('li').removeClass('hide');
-            }
-            if (i !== 2) {
-                $(hide_class, e_target).parent('li').addClass('hide');
-            }
-            $('#' + target.attr('id'), e_target).parent('ul').removeClass('called');
+        var e_target = $(e.target).parents().find('#all_activities');
+        if (target.attr('id') == 'modal-activities') {
+            $('#no-record').remove();
+            $('.modal-comments').parent('li').addClass('hide');
+            $('.modal-activities').parent('li').removeClass('hide');
+            $('.modal-activities-active').addClass('active');
+            $('.modal-comments-active').removeClass('active');
+        }
+        if (target.attr('id') == 'modal-comments') {
+            $('#no-record').remove();
+            $('.modal-activities').parent('li').addClass('hide');
+            $('.modal-comments').parent('li').removeClass('hide');
+            $('.modal-comments-active').addClass('active');
+            $('.modal-activities-active').removeClass('active');
         }
         return false;
     },
@@ -1909,6 +1903,7 @@ App.ModalCardView = Backbone.View.extend({
             }
             emojify.run();
         }
+        $('#modal-comments').click();
     },
     /**
      * renderChecklistsCollection()

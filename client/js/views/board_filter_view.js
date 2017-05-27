@@ -55,54 +55,62 @@ App.BoardFilterView = Backbone.View.extend({
      */
     filterBoard: function(e) {
         var self = this;
-        localforage.getItem('board_filter', function(err, value) {
-            if (value) {
-                var current_param = Backbone.history.fragment.split('?');
-                var current_url = current_param[0].split('/');
-                var filter = 'grid';
-                if (current_url.length === 3 && current_url[2] == 'list') {
-                    filter = 'list';
-                } else if (current_url.length === 3 && current_url[2] == 'gantt') {
-                    filter = 'gantt';
+        this.$el.find('.js-clear-filter-btn').removeClass('hide').addClass('show');
+        var filter_label_arr = [],
+            filter_user_arr = [],
+            filter_due_arr = [];
+        var current_param = Backbone.history.fragment.split('?');
+        var current_url = current_param[0].split('/');
+        var filter = 'grid';
+        if (current_url.length === 3 && current_url[2] == 'list') {
+            filter = 'list';
+        } else if (current_url.length === 3 && current_url[2] == 'gantt') {
+            filter = 'gantt';
+        }
+        if (current_param[1]) {
+            var query_params = current_param[1].split(',');
+            query_params[0] = query_params[0].replace('filter=', '');
+            $.each(query_params, function(index, value) {
+                if (value.indexOf('label:') > -1) {
+                    filter_label_arr.push(value.replace('label:', ''));
+                } else if (value.indexOf('@') > -1) {
+                    filter_user_arr.push(value.replace('@', ''));
+                } else if (value.indexOf('due:') > -1) {
+                    filter_due_arr.push(value.replace('due:', ''));
                 }
-                var arrays = [];
-                var filter_label_arr = (value.label.name) ? value.label.name : [];
-                var result_label_arr = (value.label.filter) ? value.label.filter : [];
-                var filter_user_arr = (value.user.name) ? value.user.name : [];
-                var result_user_arr = (value.user.filter) ? value.user.filter : [];
-                var filter_due_arr = (value.due.name) ? value.due.name : [];
-                var result_due_arr = (value.due.filter) ? value.due.filter : [];
-                /* jshint ignore:start */
-                if (!_.isEmpty(filter_label_arr)) {
-                    for (i = 0; i < filter_label_arr.length; i++) {
-                        self.$el.find('.js-board-labels > li').each(function(index) {
-                            if (($(this).find('.js-label').text() === filter_label_arr[i]) && ($(this).find('.js-label').next('i').length === 0)) {
-                                $(this).append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
-                            }
-                        });
-                    }
+            });
+            /* jshint ignore:start */
+            if (!_.isEmpty(filter_label_arr)) {
+                for (i = 0; i < filter_label_arr.length; i++) {
+                    self.$el.find('.js-board-labels > li').each(function(index) {
+                        if (($(this).find('.js-label').text() === filter_label_arr[i]) && ($(this).find('.js-label').next('i').length === 0)) {
+                            $(this).append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
+                            $(this).addClass('selected');
+                        }
+                    });
                 }
-                if (!_.isEmpty(filter_user_arr)) {
-                    for (i = 0; i < filter_user_arr.length; i++) {
-                        self.$el.find('.js-board-users > li').each(function(index) {
-                            if (($(this).find('.js-user').text() === filter_user_arr[i]) && ($(this).find('.js-user').next('i').length === 0)) {
-                                $(this).find('.media').append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
-                            }
-                        });
-                    }
-                }
-                if (!_.isEmpty(filter_due_arr)) {
-                    for (i = 0; i < filter_due_arr.length; i++) {
-                        self.$el.find('.js-board-dues > li').each(function(index) {
-                            if (($(this).find('.js-due').text() === filter_due_arr[i]) && ($(this).find('.js-due').next('i').length === 0)) {
-                                $(this).append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
-                            }
-                        });
-                    }
-                }
-                /* jshint ignore:end */
             }
-        });
+            if (!_.isEmpty(filter_user_arr)) {
+                for (i = 0; i < filter_user_arr.length; i++) {
+                    self.$el.find('.js-board-users > li').each(function(index) {
+                        if (($(this).find('.js-user').parent().data('user') === filter_user_arr[i]) && ($(this).find('.js-user').next('i').length === 0)) {
+                            $(this).find('.media').append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
+                            $(this).addClass('selected');
+                        }
+                    });
+                }
+            }
+            if (!_.isEmpty(filter_due_arr)) {
+                for (i = 0; i < filter_due_arr.length; i++) {
+                    self.$el.find('.js-board-dues > li').each(function(index) {
+                        if (($(this).find('.js-due').text() === filter_due_arr[i]) && ($(this).find('.js-due').next('i').length === 0)) {
+                            $(this).append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
+                            $(this).addClass('selected');
+                        }
+                    });
+                }
+            }
+            /* jshint ignore:end */
+        }
     }
-
 });

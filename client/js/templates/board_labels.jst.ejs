@@ -15,11 +15,15 @@
 				labels.push(label.attributes.name);
 		%>    
 		<li class="clearfix cur card-label-show h5 btn-link media">
-			<span  data-id="<%- label.attributes.label_id %>" style="background:<%- (label.attributes.color) ? label.attributes.color : '#'+converter.colorCode(label.attributes.name).substring(0, 6) %>;color:#ffffff" class="pull-left btn btn-xs col-xs-2 <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(board.acl_links.where({slug: "edit_labels",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>js-show-edit-card-label-form<% } %>">
-				<i class="<%= LABEL_ICON %> icon-light"></i>
-			</span>
-			<div data-id="<%- label.attributes.label_id %>" class='col-xs-9 htruncate <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(board.acl_links.where({slug: "edit_labels",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>js-show-edit-card-label-form<% } %>'><%-label.attributes.name %></div>
-			<div class='js-delete-labels-icon col-xs-1 pull-right'>
+			<div data-id="<%- label.attributes.label_id %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(board.acl_links.where({slug: "edit_labels",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>js-show-edit-card-label-form<% } %>">
+				<span  data-id="<%- label.attributes.label_id %>" style="background:<%- (label.attributes.color) ? label.attributes.color : '#'+converter.colorCode(label.attributes.name).substring(0, 6) %>;color:#ffffff" class="pull-left btn btn-xs <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(board.acl_links.where({slug: "edit_labels",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>js-show-edit-card-label-form<% } %>">
+					<i class="<%= LABEL_ICON %> icon-light"></i>
+				</span>
+				<div class="board-labels">
+					<div data-id="<%- label.attributes.label_id %>" class='htruncate <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(board.acl_links.where({slug: "edit_labels",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>js-show-edit-card-label-form<% } %>'><%-label.attributes.name %></div>
+				</div>
+			</div>
+			<div class='js-delete-labels-icon pull-right'>
 				<a data-id="<%- label.attributes.label_id %>" class="js-delete-labels btn btn-default btn-xs pull-right" data-toggle="dropdown">
 					<i class="icon-remove cur"></i>
 				</a>

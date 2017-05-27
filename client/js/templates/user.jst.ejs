@@ -7,28 +7,32 @@
     </div>
 </td>
 <td>
-<div class="clearfix"> 
-	<a  title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)" class="small-user pull-left show" href="#/user/<%- user.attributes.id%>">
-		<% if(!_.isEmpty(user.attributes.profile_picture_path)){ 
-		    var profile_picture_path = user.showImage('User', user.attributes.id, 'small_thumb' );
-	    %>
-			<img class="avatar-sm" src="<%- profile_picture_path%>" alt="[Images: <%- user.attributes.username%>]" title="<%- user.attributes.full_name %> (<%- user.attributes.username%>)" />
-			<% }else{ %>
-					<i class="avatar avatar-color-194 img-rounded avatar-sm" title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)"><%- user.attributes.initials%></i>
-			  <%  } %> 
-    </a>
-   <a class="col-xs-7 htruncate" href="#/user/<%- user.attributes.id%>"><%- user.attributes.full_name%></a><a><% if(!user.attributes.is_email_confirmed){ %>
-			<span class="label label-warning navbar-right"><%- i18next.t('Unconfirmed') %></span>
-		<% } %> 
-	<% if(user.attributes.is_ldap){ %>
-			<span class="label label-success navbar-right">LDAP</span>
-		<% } %>
-		</a>
-		
-</div>
-<div class="clearfix navbar-btn">
-	<span class="col-xs-12 htruncate nav"><%- user.attributes.email%></span>
-</div>
+	<div class="row">
+		<div class="col-xs-10">
+			<div class="clearfix"> 
+				<a  title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)" class="small-user pull-left show" href="#/user/<%- user.attributes.id%>">
+					<% if(!_.isEmpty(user.attributes.profile_picture_path)){ 
+						var profile_picture_path = user.showImage('User', user.attributes.id, 'small_thumb' );
+					%>
+						<img class="avatar-sm" src="<%- profile_picture_path%>" alt="[Images: <%- user.attributes.username%>]" title="<%- user.attributes.full_name %> (<%- user.attributes.username%>)" />
+						<% }else{ %>
+								<i class="avatar avatar-color-194 img-rounded avatar-sm" title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)"><%- user.attributes.initials%></i>
+						<%  } %> 
+				</a>
+			<a class="col-xs-10 htruncate left-mar-sm js-board-name-truncate" href="#/user/<%- user.attributes.id%>"><%- user.attributes.full_name%></a><a><% if(!user.attributes.is_email_confirmed){ %>
+						<span class="label label-warning navbar-right"><%- i18next.t('Unconfirmed') %></span>
+					<% } %> 
+				<% if(user.attributes.is_ldap){ %>
+						<span class="label label-success navbar-right">LDAP</span>
+					<% } %>
+					</a>
+					
+			</div>
+			<div class="clearfix navbar-btn">
+				<span class="col-xs-12 htruncate nav"><%- user.attributes.email%></span>
+			</div>
+		</div>
+	</div>
 </td> 
 <td class="text-center">
 	<div class="btn-group text-left navbar-btn dropdown">
@@ -84,7 +88,7 @@
 		<% } %>
 	<% if(!_.isEmpty(user.attributes.register_city_name)){ %> <span><%- user.attributes.register_city_name %></span><% } %>
 </td>
-<td class="text-center">
+<td class="text-center devices-td">
 	<div class="dropdown btn-group">  
 	<% _.each(user.roles, function(role){%>
 		<%if(user.attributes.role_id == role.id){%>  

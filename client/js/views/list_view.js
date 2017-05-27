@@ -997,7 +997,6 @@ App.ListView = Backbone.View.extend({
                 }
             });
         }
-
     },
     /**
      * showAddCardForm()
