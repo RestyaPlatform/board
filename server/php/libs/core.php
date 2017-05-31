@@ -1007,23 +1007,25 @@ function importTrelloBoard($board = array())
                 $cards[$card['id']] = $_card['id'];
                 if (!empty($card['labels'])) {
                     foreach ($card['labels'] as $label) {
-                        $qry_val_arr = array(
-                            utf8_decode($label['name'])
-                        );
-                        $check_label = executeQuery('SELECT id FROM labels WHERE name = $1', $qry_val_arr);
-                        if (empty($check_label)) {
+                        if(!empty($label['name'])) {
                             $qry_val_arr = array(
                                 utf8_decode($label['name'])
                             );
-                            $check_label = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO labels (created, modified, name) VALUES (now(), now(), $1) RETURNING id', $qry_val_arr));
+                            $check_label = executeQuery('SELECT id FROM labels WHERE name = $1', $qry_val_arr);
+                            if (empty($check_label)) {
+                                $qry_val_arr = array(
+                                    utf8_decode($label['name'])
+                                );
+                                $check_label = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO labels (created, modified, name) VALUES (now(), now(), $1) RETURNING id', $qry_val_arr));
+                            }
+                            $qry_val_arr = array(
+                                $new_board['id'],
+                                $lists[$card['idList']],
+                                $_card['id'],
+                                $check_label['id']
+                            );
+                            pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, board_id, list_id, card_id, label_id) VALUES (now(), now(), $1, $2, $3, $4)', $qry_val_arr);
                         }
-                        $qry_val_arr = array(
-                            $new_board['id'],
-                            $lists[$card['idList']],
-                            $_card['id'],
-                            $check_label['id']
-                        );
-                        pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, board_id, list_id, card_id, label_id) VALUES (now(), now(), $1, $2, $3, $4)', $qry_val_arr);
                     }
                 }
                 if (!empty($card['attachments'])) {
@@ -1096,6 +1098,7 @@ function importTrelloBoard($board = array())
         }
         if (!empty($board['actions'])) {
             $type = $comment = '';
+            $board['actions'] = array_msort($board['actions'], array('date'=>SORT_ASC));
             foreach ($board['actions'] as $action) {
                 if ($action['type'] == 'commentCard') {
                     $type = 'add_comment';
@@ -1614,4 +1617,28 @@ function decode_qprint($str)
     $str = urldecode($str);
     $str = utf8_encode($str);
     return $str;
+}
+function array_msort($array, $cols)
+{
+    $colarr = array();
+    foreach ($cols as $col => $order) {
+        $colarr[$col] = array();
+        foreach ($array as $k => $row) { $colarr[$col]['_'.$k] = strtolower($row[$col]); }
+    }
+    $eval = 'array_multisort(';
+    foreach ($cols as $col => $order) {
+        $eval .= '$colarr[\''.$col.'\'],'.$order.',';
+    }
+    $eval = substr($eval,0,-1).');';
+    eval($eval);
+    $ret = array();
+    foreach ($colarr as $col => $arr) {
+        foreach ($arr as $k => $v) {
+            $k = substr($k,1);
+            if (!isset($ret[$k])) $ret[$k] = $array[$k];
+            $ret[$k][$col] = $array[$k][$col];
+        }
+    }
+    return $ret;
+
 }
