@@ -2057,6 +2057,8 @@ footer, header, .dashboard-header {
 	border: 0;
 	display: block;
 	width: auto;
+	height:8px;
+	border-radius: 5px;
 }
 .list-card-group-addon.panel-body {
 	&.color-popover-card,&.color-popover{
@@ -2174,7 +2176,7 @@ footer, header, .dashboard-header {
 	float: left;
 }
 .js-show-edit-card-label-form {
-	line-height: 2;
+	line-height: normal;
 }
 .btn-actions-list {
 	.btn {
@@ -2185,4 +2187,26 @@ footer, header, .dashboard-header {
 		display: block;
 		text-align: center;	
 	}
+}
+.dropdown-menu > li {
+	.js-list-action-hover-icon {
+		&:hover,&:focus {
+			background-color: transparent;
+			color:#000;
+		}
+	}
+}
+.devices-td {
+    min-width: 180px;
+}
+.board-labels {
+	float: left;
+    padding-left: 10px;
+    width: 65%;
+	margin-top: 4px;
+}
+.js-list-inline > li {
+	display: inline-block;
+    padding-left: 5px;
+    padding-right: 3px;
 }
