@@ -2314,7 +2314,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         break;
 
     case '/settings': //settings update
-        foreach ($args as $key => $value) {
+        foreach ($r_post as $key => $value) {
             if ($key == 'IMAP_EMAIL_PASSWORD') {
                 if (!empty($value)) {
                     $value_encode = str_rot13($value);

@@ -153,7 +153,7 @@ function main()
                 echo json_encode($response);
                 exit;
             }
-            header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication 2 failed', true, 401);
+            header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication failed', true, 401);
         }
     } else {
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
