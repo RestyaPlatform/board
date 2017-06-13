@@ -1007,7 +1007,7 @@ function importTrelloBoard($board = array())
                 $cards[$card['id']] = $_card['id'];
                 if (!empty($card['labels'])) {
                     foreach ($card['labels'] as $label) {
-                        if(!empty($label['name'])) {
+                        if (!empty($label['name'])) {
                             $qry_val_arr = array(
                                 utf8_decode($label['name'])
                             );
@@ -1098,7 +1098,9 @@ function importTrelloBoard($board = array())
         }
         if (!empty($board['actions'])) {
             $type = $comment = '';
-            $board['actions'] = array_msort($board['actions'], array('date'=>SORT_ASC));
+            $board['actions'] = array_msort($board['actions'], array(
+                'date' => SORT_ASC
+            ));
             foreach ($board['actions'] as $action) {
                 if ($action['type'] == 'commentCard') {
                     $type = 'add_comment';
@@ -1198,7 +1200,7 @@ function importTrelloBoard($board = array())
                         $new_board['id'],
                         $users[$action['idMemberCreator']],
                         $type,
-                        preg_replace('/[^A-Za-z0-9\-# ]/', ' ', utf8_decode($comment))
+                        decode_qprint($comment)
                     );
                     pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
                 } else if (!empty($lists_key) && empty($cards_key)) {
@@ -1209,7 +1211,7 @@ function importTrelloBoard($board = array())
                         $lists_key,
                         $users[$action['idMemberCreator']],
                         $type,
-                        preg_replace('/[^A-Za-z0-9\-# ]/', ' ', utf8_decode($comment))
+                        decode_qprint($comment)
                     );
                     pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
                 } else if (empty($lists_key) && !empty($cards_key)) {
@@ -1220,7 +1222,7 @@ function importTrelloBoard($board = array())
                         $cards_key,
                         $users[$action['idMemberCreator']],
                         $type,
-                        preg_replace('/[^A-Za-z0-9\-# ]/', ' ', utf8_decode($comment))
+                        decode_qprint($comment)
                     );
                     pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
                 } else if (!empty($lists_key) && !empty($cards_key)) {
@@ -1232,7 +1234,7 @@ function importTrelloBoard($board = array())
                         $cards_key,
                         $users[$action['idMemberCreator']],
                         $type,
-                        preg_replace('/[^A-Za-z0-9\-# ]/', ' ', utf8_decode($comment))
+                        decode_qprint($comment)
                     );
                     pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                 }
@@ -1275,16 +1277,16 @@ function findAndReplaceVariables($activity)
         include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
     }
     $data = array(
-        '##ORGANIZATION_LINK##' => decode_qprint($activity['organization_name']),
+        '##ORGANIZATION_LINK##' => decode_qprint($activity['organization_name']) ,
         '##CARD_LINK##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '/card/' . $activity['card_id'] . '">' . decode_qprint($activity['card_name']) . '</a>',
-        '##LABEL_NAME##' => decode_qprint($activity['label_name']),
+        '##LABEL_NAME##' => decode_qprint($activity['label_name']) ,
         '##CARD_NAME##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '/card/' . $activity['card_id'] . '">' . decode_qprint($activity['card_name']) . '</a>',
-        '##DESCRIPTION##' => decode_qprint($activity['card_description']),
-        '##LIST_NAME##' => decode_qprint($activity['list_name']),
+        '##DESCRIPTION##' => decode_qprint($activity['card_description']) ,
+        '##LIST_NAME##' => decode_qprint($activity['list_name']) ,
         '##BOARD_NAME##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '">' . decode_qprint($activity['board_name']) . '</a>',
         '##USER_NAME##' => '<strong>' . decode_qprint($activity['full_name']) . '</strong>',
-        '##CHECKLIST_ITEM_NAME##' => decode_qprint($activity['checklist_item_name']),
-        '##CHECKLIST_ITEM_PARENT_NAME##' => decode_qprint($activity['checklist_item_parent_name']),
+        '##CHECKLIST_ITEM_NAME##' => decode_qprint($activity['checklist_item_name']) ,
+        '##CHECKLIST_ITEM_PARENT_NAME##' => decode_qprint($activity['checklist_item_parent_name']) ,
         '##CHECKLIST_NAME##' => decode_qprint($activity['checklist_name'])
     );
     $comment = strtr($activity['comment'], $data);
@@ -1623,22 +1625,23 @@ function array_msort($array, $cols)
     $colarr = array();
     foreach ($cols as $col => $order) {
         $colarr[$col] = array();
-        foreach ($array as $k => $row) { $colarr[$col]['_'.$k] = strtolower($row[$col]); }
+        foreach ($array as $k => $row) {
+            $colarr[$col]['_' . $k] = strtolower($row[$col]);
+        }
     }
     $eval = 'array_multisort(';
     foreach ($cols as $col => $order) {
-        $eval .= '$colarr[\''.$col.'\'],'.$order.',';
+        $eval.= '$colarr[\'' . $col . '\'],' . $order . ',';
     }
-    $eval = substr($eval,0,-1).');';
+    $eval = substr($eval, 0, -1) . ');';
     eval($eval);
     $ret = array();
     foreach ($colarr as $col => $arr) {
         foreach ($arr as $k => $v) {
-            $k = substr($k,1);
+            $k = substr($k, 1);
             if (!isset($ret[$k])) $ret[$k] = $array[$k];
             $ret[$k][$col] = $array[$k][$col];
         }
     }
     return $ret;
-
 }

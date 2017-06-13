@@ -16,7 +16,7 @@ require_once 'config.inc.php';
 if (!empty($_GET['id']) && !empty($_GET['hash'])) {
     $md5_hash = md5(SECURITYSALT . 'download' . $_GET['id']);
     if ($md5_hash == $_GET['hash']) {
-        if(isset($_COOKIE['auth'])) {
+        if (isset($_COOKIE['auth'])) {
             $auth = json_decode($_COOKIE['auth'], true);
             if ($db_lnk) {
                 $conditions = array(
@@ -31,20 +31,20 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                     header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
                     exit;
                 }
-                if(!empty($auth_response)) {
+                if (!empty($auth_response)) {
                     $val_array = array(
                         $_GET['id']
                     );
                     $result = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE id = $1', $val_array);
                     $attachment = pg_fetch_assoc($result);
-                    if(!empty($attachment)) {
+                    if (!empty($attachment)) {
                         $val_array = array(
                             $attachment['board_id'],
                             $auth_response['username']
                         );
                         $result = pg_query_params($db_lnk, 'SELECT bu.id FROM boards_users bu left join users u on u.id = bu.user_id WHERE bu.board_id = $1 and u.username = $2', $val_array);
                         $board_user = pg_fetch_assoc($result);
-                        if(!empty($board_user) || ($auth['user']['role_id'] == 1)) {
+                        if (!empty($board_user) || ($auth['user']['role_id'] == 1)) {
                             $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $attachment['card_id'];
                             $file = $mediadir . DIRECTORY_SEPARATOR . $attachment['name'];
                             if (file_exists($file)) {
@@ -59,7 +59,6 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                                     'jpg',
                                     'png'
                                 );
-                                
                                 if (isset($_GET['view']) && in_array(strtolower($path_info['extension']) , $image_extensions)) {
                                     if ($path_info['extension'] == 'jpg') {
                                         header('Content-Type: image/jpeg');
