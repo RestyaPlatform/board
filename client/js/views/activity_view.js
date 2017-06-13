@@ -84,6 +84,17 @@ App.ActivityView = Backbone.View.extend({
                 var col_offset = parseInt(this.model.attributes.depth);
                 this.$el.addClass('col-lg-offset-' + col_offset);
             }
+            var filter = ($.cookie('filter') === undefined || $.cookie('filter') === 'comment') ? 1 : 0;
+            filter = ($.cookie('filter') !== undefined && $.cookie('filter') === 'both') ? 2 : filter;
+            if (this.model.attributes.type == 'add_comment' || this.model.attributes.type == 'edit_comment') {
+                if (filter === 0) {
+                    this.$el.addClass('hide');
+                }
+            } else {
+                if (filter === 1) {
+                    this.$el.addClass('hide');
+                }
+            }
         }
         this.showTooltip();
         return this;

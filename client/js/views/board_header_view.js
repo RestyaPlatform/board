@@ -1645,8 +1645,8 @@ App.BoardHeaderView = Backbone.View.extend({
         }
         if (!_.isEmpty(show_due_arr)) {
             var due_arr = [];
-            $.each( show_due_arr, function( index, value ){
-                if(value !== undefined) {
+            $.each(show_due_arr, function(index, value) {
+                if (value !== undefined) {
                     due_arr.push(value);
                 }
             });

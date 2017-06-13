@@ -92,13 +92,13 @@
 	<div class="dropdown btn-group">  
 	<% _.each(user.roles, function(role){%>
 		<%if(user.attributes.role_id == role.id){%>  
-			<button class="btn btn-default" type="button"><%- role.name%></button>
+			<button class="btn btn-default btn-xs" type="button"><%- role.name%></button>
 		<%}%>
 	<%})%>
-		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button">
+		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default btn-xs dropdown-toggle" type="button">
 		    <span class="caret"></span><span class="sr-only"><%- i18next.t("Toggle Dropdown") %></span>
         </button>
-			    <ul class="dropdown-menu arrow arrow-right" role="menu">
+			    <ul class="dropdown-menu arrow arrow-right js-admin-list-user-role" role="menu">
 					<% _.each(user.roles, function(role){%>
 						<li><a href="#" class="<% if(user.attributes.role_id == role.id){%>js-no-action<%}else{%>js-change-user-role<%}%>" data-role-id="<%- role.id %>"><%- role.name%> <% if(user.attributes.role_id == role.id){%><i class="icon-ok"></i><%}%></a></li>
 					<%})%>
@@ -107,8 +107,9 @@
 </td>
 
 
-<td>
+<td class="actions-td">
    <ul class="list-inline btn-actions-list list-group-item-text">
+   		<div class="pull-left">
 	   <li class="navbar-btn"><a href="#" title="<%- i18next.t('Activities') %>" class="btn btn-default btn-xs js-all-user-activities"><%- i18next.t("Activities") %></a></li>
 	   <li>
 		<li class="navbar-btn">
@@ -116,6 +117,8 @@
 			<i class="icon-exclamation"></i>
 			<span><%if(parseInt(user.attributes.is_active) === 1){%><%- i18next.t("Block") %><%}else{%><%- i18next.t("Unblock") %><%}%></span></a>
 		</li>  
+		</div>
+		<div class="pull-right">
 		<li class="navbar-btn">
 			<div class="dropdown btn-group">  
 					<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle btn-xs" type="button">
@@ -157,5 +160,6 @@
 				</ul>
 		</li>
 	   </li>
+	   </div>
     </ul>
 </td>

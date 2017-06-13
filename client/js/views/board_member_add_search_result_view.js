@@ -61,6 +61,7 @@ App.BoardMemberAddSearchResultView = Backbone.View.extend({
             board_user_role_id: 2
         }, {
             success: function(model, response) {
+                $.removeCookie('chat_initialize');
                 response.boards_users.board_user_role_id = 2;
                 response.boards_users.user_id = parseInt(response.boards_users.user_id);
                 board_user.set(response.boards_users);

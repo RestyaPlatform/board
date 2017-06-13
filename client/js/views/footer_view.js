@@ -116,6 +116,7 @@ App.FooterView = Backbone.View.extend({
      */
     render: function() {
         var self = this;
+        $.removeCookie('filter');
         this.model.is_show_enable_notification = false;
         var current_param = Backbone.history.fragment;
         var current_param_split = current_param.split('/');
@@ -157,7 +158,7 @@ App.FooterView = Backbone.View.extend({
                 model: self.model,
                 board_id: self.board_id,
                 board: self.board,
-                languages: $.cookie('languages').split(','),
+                languages: ($.cookie('languages')) ? $.cookie('languages').split(',') : null,
                 apps: getting_new_array
             }));
         });
@@ -306,7 +307,7 @@ App.FooterView = Backbone.View.extend({
     showBackBoardsList: function(e) {
         var target = $(e.target);
         target.parents('li.dropdown').addClass('open');
-        $('li.js-back').remove();
+        this.$el.find('li.js-back').remove();
         this.showBoardsList(e);
         return false;
     },
@@ -365,12 +366,13 @@ App.FooterView = Backbone.View.extend({
      *
      */
     showBoardAddForm: function(e) {
+        var self = this;
         var workflow_template = new App.WorkFlowTemplateCollection();
         workflow_template.url = api_url + 'workflow_templates.json';
         workflow_template.fetch({
             success: function(model, response) {
                 var templates = '';
-                $('li.js-back').remove();
+                self.$el.find('li.js-back').remove();
                 var target = $(e.target);
                 var parent = target.parents('.js-show-add-boards-list');
                 var insert = $('.js-show-boards-list-response', parent);
@@ -395,7 +397,7 @@ App.FooterView = Backbone.View.extend({
      *
      */
     showOrganizationsAddForm: function(e) {
-        $('li.js-back').remove();
+        this.$el.find('li.js-back').remove();
         var target = $(e.target);
         var parent = target.parents('.js-show-add-boards-list');
         var insert = $('.js-show-boards-list-response', parent);
@@ -414,7 +416,7 @@ App.FooterView = Backbone.View.extend({
         $('.js-boards-list-container').addClass('hide');
         $('.js-qsearch-container').removeClass('hide');
         $('.js-show-boards-list-response').addClass('hide');
-        $('li.js-back').remove();
+        this.$el.find('li.js-back').remove();
         var recent_boards = '';
         var my_boards = '';
         var self = this;
@@ -1596,27 +1598,36 @@ App.FooterView = Backbone.View.extend({
         var i = 0;
         var hide_class = '';
         var target = $(e.currentTarget);
-        var e_target = $(e.target).parents().find('#all_activities');
         $('li#no-record').remove();
         if (target.attr('id') == 'modal-activities') {
-            $('.modal-comments').parent('li').addClass('hide');
-            $('.modal-activities').parent('li').removeClass('hide');
-            $('#modal-activities').addClass('active');
-            $('#modal-comments').removeClass('active');
-            if ($("li.js-activity:visible").length === 0) {
-                $("#js-all-activities").append('<li id="no-record">No Records Found</li>');
-                $("#js-board-activities").append('<li id="no-record">No Records Found</li>');
+            if ($('#modal-activities').hasClass('active')) {
+                $.cookie('filter', 'both');
+                $('#modal-activities').removeClass('active');
+                $('.modal-comments').parent('li').removeClass('hide');
+                $('.modal-activities').parent('li').removeClass('hide');
+            } else {
+                $.cookie('filter', 'activity');
+                $('#modal-activities').addClass('active');
+                $('.modal-comments').parent('li').addClass('hide');
+                $('.modal-activities').parent('li').removeClass('hide');
             }
         }
         if (target.attr('id') == 'modal-comments') {
-            $('.modal-activities').parent('li').addClass('hide');
-            $('.modal-comments').parent('li').removeClass('hide');
-            $('#modal-comments').addClass('active');
-            $('#modal-activities').removeClass('active');
-            if ($("li.js-activity:visible").length === 0) {
-                $("#js-all-activities").append('<li id="no-record">No Records Found</li>');
-                $("#js-board-activities").append('<li id="no-record">No Records Found</li>');
+            if ($('#modal-comments').hasClass('active')) {
+                $.cookie('filter', 'both');
+                $('#modal-comments').removeClass('active');
+                $('.modal-comments').parent('li').removeClass('hide');
+                $('.modal-activities').parent('li').removeClass('hide');
+            } else {
+                $.cookie('filter', 'comment');
+                $('#modal-comments').addClass('active');
+                $('.modal-activities').parent('li').addClass('hide');
+                $('.modal-comments').parent('li').removeClass('hide');
             }
+        }
+        if ($("li.js-activity:visible").length === 0) {
+            $("#js-all-activities").append('<li id="no-record">No Records Found</li>');
+            $("#js-board-activities").append('<li id="no-record">No Records Found</li>');
         }
         return false;
     },

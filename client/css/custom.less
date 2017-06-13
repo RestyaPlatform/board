@@ -1934,13 +1934,16 @@ footer, header, .dashboard-header {
 	}
 }
 .label-past{
-	background-color: #da0000;
+	background-color: #ff5050;
+	border-color: transparent;
 }
 .label-future{
 	background-color: #27c5c3;
+	border-color: transparent;
 }
 .label-present{
 	background-color: #f3c60e;
+	border-color: transparent;
 }
 .even-action{
 	width: 115px;
@@ -1948,7 +1951,7 @@ footer, header, .dashboard-header {
 .list-head-icon .list-inline > li {
     padding-right: 10px;
 	&:last-child {
-		padding-left: 30px;
+		//padding-left: 30px;
 	}
 }
 .list-view .list-inline > li {
@@ -2209,4 +2212,53 @@ footer, header, .dashboard-header {
 	display: inline-block;
     padding-left: 5px;
     padding-right: 3px;
+}
+.actions-td {
+	min-width: 260px;
+	.btn-actions-list{
+         padding: 0px 10px;
+		 max-width: 255px;
+    	 margin: auto;
+		 width: 100%;
+		 .btn {
+			min-width: 110px;
+			margin: auto;
+			margin-top: 5px;
+		 }
+	}
+}
+.js-remove-card-color {
+	margin: 5px;
+}
+.js-admin-list-user-role {
+	width: auto;
+}
+.js-show-add-boards-simple {
+	height: 168px !important;
+    display: table-cell;
+    font-weight: 400;
+    vertical-align: middle;
+    width: 25%;
+}
+.js-card-actions {
+	.btn {
+		text-align: left;
+	}
+}
+.card-checklist {
+	.checkbox {
+		margin-top: 0px;
+	}
+	.js-show-item-edit-form {
+		p {
+			margin: 0 0 5px;
+		}
+	}
+	label { 
+	    margin-right: 5px !important;
+		margin-top: 2px;
+	}
+	.form-group	 {
+		margin-bottom: 10px;
+	}
 }

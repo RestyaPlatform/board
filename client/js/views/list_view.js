@@ -122,6 +122,7 @@ App.ListView = Backbone.View.extend({
         'listSort': 'listSort',
         'keyup[n] .js-board-list': 'keyboardShowAddCardForm',
         'click .js-list-color-pick': 'colorPicker',
+        'click .js-remove-list-color': 'removelistColor',
     },
     /**
      * listSort()
@@ -167,6 +168,32 @@ App.ListView = Backbone.View.extend({
         });
     },
     /**
+     * removelistColor()
+     * add selected card in lis
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    removelistColor: function(e) {
+        var color_label = '';
+        var data = {
+            color: color_label
+        };
+        var self = this;
+        var list_id = self.model.id;
+        $('#js-list-color-' + list_id).closest('#colorPicker').attr('style', 'padding-bottom:8px');
+        $('#js-list-color-' + list_id).attr('style', 'background-color: ' + color_label + ' !important');
+        $('#js-list-demo-' + list_id).attr('style', 'border-bottom: ' + color_label);
+        $('.js-remove-list-color').addClass('hide');
+        self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + list_id + '.json';
+        self.model.save(data, {
+            patch: true,
+            success: function(model, response) {}
+        });
+        return false;
+    },
+    /**
      * colorPicker()
      * add selected card in lis
      * @param e
@@ -181,14 +208,14 @@ App.ListView = Backbone.View.extend({
         };
         var self = this;
         var list_id = self.model.id;
+        $('#js-list-color-' + list_id).closest('#colorPicker').attr('style', 'padding-bottom:8px');
+        $('#js-list-color-' + list_id).attr('style', 'background-color: ' + color_label + ' !important');
+        $('#js-list-demo-' + list_id).attr('style', 'border-bottom: 2px solid' + color_label + ' !important');
+        $('.js-remove-list-color').removeClass('hide');
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + list_id + '.json';
         self.model.save(data, {
             patch: true,
-            success: function(model, response) {
-                $('#js-list-color-' + list_id).closest('#colorPicker').attr('style', 'padding-bottom:8px');
-                $('#js-list-color-' + list_id).attr('style', 'background-color: ' + color_label + ' !important');
-                $('#js-list-demo-' + list_id).attr('style', 'border-bottom: 2px solid' + color_label + ' !important');
-            }
+            success: function(model, response) {}
         });
         return false;
     },
@@ -1098,10 +1125,13 @@ App.ListView = Backbone.View.extend({
             e.preventDefault();
             var self = this;
             var data = $(e.target).serializeObject();
-            $('.js-card-add-list').val(this.model.id);
-            $('.js-card-user-ids').val('');
-            $('.js-card-add-labels').val('');
-            $('.js-card-add-position').val('');
+            $(e.target).find('.js-card-add-list').val(this.model.id);
+            $(e.target).find('.js-card-user-ids').val('');
+            $(e.target).find('.js-card-add-labels').val('');
+            $(e.target).find('.js-card-label').val('');
+            $(e.target).find('.js-card-add-position').val('');
+            $(e.target).find('.js-users-list').find('ul').empty();
+            $(e.target).parents('.js-show-modal-card-view').find('.js-lables-list').empty();
             data.uuid = new Date().getTime();
             data.list_id = parseInt(data.list_id);
             data.board_id = parseInt(data.board_id);
@@ -1185,7 +1215,6 @@ App.ListView = Backbone.View.extend({
             $('#js-card-listing-' + this.model.id).scrollTop($('#js-card-listing-' + this.model.id)[0].scrollHeight);
             card.save(data, {
                 success: function(model, response, options) {
-                    $('.js-lables-list').empty();
                     if (_.isUndefined(options.temp_id)) {
                         card.set('is_offline', false);
                     }

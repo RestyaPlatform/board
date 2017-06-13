@@ -98,6 +98,7 @@ App.BoardAddView = Backbone.View.extend({
                 if (response.simple_board.lists !== null) {
                     App.boards.get(parseInt(response.simple_board.id)).lists.add(response.simple_board.lists);
                 }
+                $.removeCookie("chat_initialize");
                 app.navigate('#/board/' + response.id, {
                     trigger: true,
                     replace: true

@@ -1,7 +1,7 @@
 <section class="row js-card-dock-modal-<%- card.attributes.id %> js-card-container" id="dropzone<%- card.attributes.id %>">
   <div class="pull-right js-attachment-loader"></div>
   <div class="clearfix col-xs-12 printable">
-  <h3 class="navbar-btn"> <span class="icon-credit-card text-muted"></span> <a href="" title="<%- card.attributes.name %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-card-title-edit-form<% }else{ %> js-no-action<%}%>"><%- card.attributes.name %></a><small class = "no-print">&nbsp;<%- i18next.t('in list') %></small><span class="dropdown"><a class="dropdown-toggle <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'move_list_cards',board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-move-card-form<%}else{%>js-no-action<%}%>" data-toggle="dropdown" title="<%- list.attributes.name %>" href="#"><%- list.attributes.name %></a>
+  <h3 class="navbar-btn"> <span class="icon-credit-card text-muted"></span> <a href="" title="<%- card.attributes.name %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-card-title-edit-form<% }else{ %> js-no-action<%}%>"><%- card.attributes.name %></a><small class = "no-print">&nbsp;<%- i18next.t('in list') %>&nbsp;</small><span class="dropdown"><a class="dropdown-toggle <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'move_list_cards',board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-move-card-form<%}else{%>js-no-action<%}%>" data-toggle="dropdown" title="<%- list.attributes.name %>" href="#"><%- list.attributes.name %></a>
   <% if(!_.isUndefined(authuser.user)){ %>
 	<ul class="dropdown-menu arrow col-xs-12 panel-body">
 		<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
@@ -130,20 +130,37 @@
 					</ul>
 				  </li>
 				  <% } %>
+					<li class="after-start-date-<%- card.id %>">
+					</li>
 				  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 				  <% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL') { %>
 				  <li class="">
 					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Due Date') %></h4>
 					<ul class="list-inline clearfix">
 					<% 
-						var date_time = card.attributes.due_date.split('T');
-						date_time = date_time[0].split(' ');
+						var date_times = card.attributes.due_date.split('T');
+						date_time = date_times[0].split(' ');
+						if(_.isUndefined(date_times[1])){
+							var time_split =card.attributes.due_date.split(' ');
+							date_times[1] = time_split['1'];
+						}
+						if(!_.isEmpty(date_times[1])){
+							hours_mins = date_times[1].split(':');
+							var noon = '';
+							if(hours_mins[0] <=12){
+									noon = 'AM';  
+							}else{
+									noon = 'PM';
+									hours_mins[0] = hours_mins[0] - 12;
+							}
+							hours_mins = hours_mins[0] + ':' + hours_mins[1]+' '+noon;
+						}
 					%>
-					  <li class="dropdown"> <a class="btn btn-default dropdown-toggle <% if(!_.isUndefined(authuser.user)){ %>js-edit-card-due-date-form<%}else{%>js-no-action <%}%>" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><%= dateFormat(date_time[0], 'mediumDate')  %></a>
+					  <li class="dropdown"> <a class="btn btn-default dropdown-toggle <% if(!_.isUndefined(authuser.user)){ %>js-edit-card-due-date-form<%}else{%>js-no-action <%}%>" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><%= dateFormat(date_time[0], 'mediumDate')  %><%- ' at '+ hours_mins %></a>
 					  <% if(!_.isUndefined(authuser.user)){ %>
 						<ul class="dropdown-menu arrow col-xs-12 panel-body">
 						  <li>
-							<h4 class="text-center"><%- i18next.t('Due Date') %></h4>
+							<h4 class="text-center"><%- i18next.t('Due Date') %><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></h4>
 						  </li>
 						  <li class="divider"></li>
 						  <li class="js-edit-card-due-date-form-response">
@@ -157,8 +174,6 @@
 				  </li>
 				  <% } %>
 				  <% } %>
-					<li class="after-start-date">
-					</li>
 				</ul>
 					<div class="list-group-item-text clearfix">
 					  <h4 class="text-muted"><%- i18next.t('Description') %> 
@@ -270,9 +285,15 @@
 										<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#dbcff1"><span class="background-box  show well-sm" style="background-color:#dbcff1"></span></li>
 										<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#ccdc87"><span class="background-box  show well-sm" style="background-color:#ccdc87"></span></li>
 										<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#f1eabf"><span class="background-box  show well-sm" style="background-color:#f1eabf"></span></li>
+										<% if(!_.isEmpty(card.attributes.color)){ %>
+											<button type="button" class="btn btn-primary js-remove-card-color">Remove color</button>
+										<% }else{ %>
+											<button type="button" class="hide btn btn-primary js-remove-card-color">Remove color</button>
+										<% } %>
 								</ul>
 						</ul>
 					</li>
+					<li class = "check_start_date_set-<%- card.id%> js-gantt-card-app" data-card_id = "<%- card.id%>"></li>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 					<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-card-due-date-form even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><i class="icon-calendar"></i><%- i18next.t('Due Date') %></a>
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
@@ -281,7 +302,6 @@
 						<li class="js-show-card-due-date-form-response col-xs-12"> </li>
 					  </ul>
 					</li>
-					<li class = "check_start_date_set"></li>
 					<% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_checklists",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 						<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-checklist-add-form even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Checklist') %>" href="#"><i class="icon-list-ul"></i><%- i18next.t('Checklist') %></a>
@@ -490,7 +510,7 @@
   </div>
   <!-- Side Menu block start -->
   <%if(!_.isUndefined(authuser.user)) {%>
-  <div class="dropdown dockheader-dropdown docmodal-submenu">
+  <div class="dropdown dockheader-dropdown docmodal-submenu js-modal-settings hide">
   <a aria-expanded="true" data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle label"> <i class="icon-cog h3"></i></a>
   <ul role="menu" class="dropdown-menu arrow">
 		<li class="dropdown js-show-color-settings-dropdown"><a class="dropdown-toggle js-show-color-settings" href="#" title="Color" data-toggle="dropdown"><i class="text-primary"></i>Color</a>

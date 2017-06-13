@@ -394,6 +394,7 @@ var AppRouter = Backbone.Router.extend({
             success: function() {
                 $.removeCookie('auth');
                 delete(App.boards);
+                $.removeCookie('chat_initialize');
                 localforage.removeItem('r_zapier_access_token');
                 localforage.removeItem('board_filter');
                 api_token = '';

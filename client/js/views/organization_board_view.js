@@ -44,7 +44,7 @@ App.OrganizationBoardView = Backbone.View.extend({
         'click .js-show-board-organization': 'showBoardOrganization',
         'submit .js-save-board-visibility': 'saveBoardVisibility',
         'click .js-back-to-board-visibility': 'showBoardVisibility',
-        'click .js-show-board-add-form': 'showBoardAddForm',
+        'click .js-show-organization-board-add-form': 'showBoardAddForm',
     },
     /**
      * render()
@@ -105,13 +105,13 @@ App.OrganizationBoardView = Backbone.View.extend({
             success: function(model, response) {
                 var templates = '';
                 var target = $(e.target);
-                var parent = target.parents('.js-show-add-boards-list');
-                $('li.js-back').addClass('hide');
+                var parent = target.parents('.js-show-add-boards-list-organization');
+                self.$el.find('li.js-back').addClass('hide');
                 var data = {};
                 data = workflow_template;
                 data.page_mode = 2;
                 data.organization_id = organization_id;
-                $('.js-show-boards-list-response', parent).html(new App.BoardAddView({
+                $('.js-show-boards-organization-list-response', parent).html(new App.BoardAddView({
                     model: data
                 }).el).find('#inputtemplatelist').select2({
                     formatResult: function(repo) {
@@ -198,8 +198,8 @@ App.OrganizationBoardView = Backbone.View.extend({
     closePopup: function(e) {
         var el = this.$el;
         var target = el.find(e.target);
-        target.parents('.js-show-add-boards-list').find('.js-show-add-org-boards').removeClass('hide');
-        target.parents('.js-show-add-boards-list').find('.js-show-boards-list-response').html('');
+        target.parents('.js-show-add-boards-list-organization').find('.js-show-add-org-boards').removeClass('hide');
+        target.parents('.js-show-add-boards-list-organization').find('.js-show-boards-organization-list-response').html('');
         return false;
     },
     /**
