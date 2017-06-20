@@ -1,3 +1,6 @@
+<%
+	var icon = '<i class="icon-ok icon-light"></i>';
+%>
 <div class="clearfix text-center col-xs-12">
 	<a href="#" class="js-show-labels pull-left btn btn-xs btn-link">
 			<i class="icon-caret-left"></i>
@@ -16,39 +19,40 @@
 		</div>
 		<div class="form-group">
 			<div class="col-xs-12">
-				<ul class="list-inline col-xs-offset-0">
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#34495e"><span class="background-box show well-lg" style="background-color:#34495e"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#23719f"><span class="background-box show well-lg" style="background-color:#23719f"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#5a966e"><span class="background-box show well-lg" style="background-color:#5a966e"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#bf4a40"><span class="background-box show well-lg" style="background-color:#bf4a40"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#5f778e"><span class="background-box show well-lg" style="background-color:#5f778e"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#0091ff"><span class="background-box show well-lg" style="background-color:#0091ff"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#46ba97"><span class="background-box show well-lg" style="background-color:#46ba97"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#f47564"><span class="background-box show well-lg" style="background-color:#f47564"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#819da2"><span class="background-box show well-lg" style="background-color:#819da2"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#47b7cd"><span class="background-box show well-lg" style="background-color:#47b7cd"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#95d9ad"><span class="background-box show well-lg" style="background-color:#95d9ad"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#f7b09c"><span class="background-box show well-lg" style="background-color:#f7b09c"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#b3bec1"><span class="background-box show well-lg" style="background-color:#b3bec1"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#bee5f3"><span class="background-box show well-lg" style="background-color:#bee5f3"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#caefd2"><span class="background-box show well-lg" style="background-color:#caefd2"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#f7d2c8"><span class="background-box show well-lg" style="background-color:#f7d2c8"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#444444"><span class="background-box show well-lg" style="background-color:#444444"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#4f4d7e"><span class="background-box show well-lg" style="background-color:#4f4d7e"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#2f663c"><span class="background-box show well-lg" style="background-color:#2f663c"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#a37e58"><span class="background-box show well-lg" style="background-color:#a37e58"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#6b6b6b"><span class="background-box show well-lg" style="background-color:#6b6b6b"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#7b5cb3"><span class="background-box show well-lg" style="background-color:#7b5cb3"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#65ab36"><span class="background-box show well-lg" style="background-color:#65ab36"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#bd6f32"><span class="background-box show well-lg" style="background-color:#bd6f32"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#999999"><span class="background-box show well-lg" style="background-color:#999999"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#baa1e6"><span class="background-box show well-lg" style="background-color:#baa1e6"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#9dbb1d"><span class="background-box show well-lg" style="background-color:#9dbb1d"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#ffce54"><span class="background-box show well-lg" style="background-color:#ffce54"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#d5d5d5"><span class="background-box show well-lg" style="background-color:#d5d5d5"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#dbcff1"><span class="background-box show well-lg" style="background-color:#dbcff1"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#ccdc87"><span class="background-box show well-lg" style="background-color:#ccdc87"></span></li>
-					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#f1eabf"><span class="background-box show well-lg" style="background-color:#f1eabf"></span></li>
+				<ul class="list-inline col-xs-offset-0 js-label-background-list">
+					<li class="list-inline 
+					js-change-label-color navbar-btn cur" data-color="#34495e"><span class="background-box show well-lg" style="background-color:#34495e"><%= (label.attributes.color && label.attributes.color === '#34495e') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#23719f"><span class="background-box show well-lg" style="background-color:#23719f"><%= (label.attributes.color && label.attributes.color === '#23719f') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#5a966e"><span class="background-box show well-lg" style="background-color:#5a966e"><%= (label.attributes.color && label.attributes.color === '#5a966e') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#bf4a40"><span class="background-box show well-lg" style="background-color:#bf4a40"><%= (label.attributes.color && label.attributes.color === '#bf4a40') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#5f778e"><span class="background-box show well-lg" style="background-color:#5f778e"><%= (label.attributes.color && label.attributes.color === '#5f778e') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#0091ff"><span class="background-box show well-lg" style="background-color:#0091ff"><%= (label.attributes.color && label.attributes.color === '#0091ff') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#46ba97"><span class="background-box show well-lg" style="background-color:#46ba97"><%= (label.attributes.color && label.attributes.color === '#46ba97') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#f47564"><span class="background-box show well-lg" style="background-color:#f47564"><%= (label.attributes.color && label.attributes.color === '#f47564') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#819da2"><span class="background-box show well-lg" style="background-color:#819da2"><%= (label.attributes.color && label.attributes.color === '#819da2') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#47b7cd"><span class="background-box show well-lg" style="background-color:#47b7cd"><%= (label.attributes.color && label.attributes.color === '#47b7cd') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#95d9ad"><span class="background-box show well-lg" style="background-color:#95d9ad"><%= (label.attributes.color && label.attributes.color === '#95d9ad') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#f7b09c"><span class="background-box show well-lg" style="background-color:#f7b09c"><%= (label.attributes.color && label.attributes.color === '#f7b09c') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#b3bec1"><span class="background-box show well-lg" style="background-color:#b3bec1"><%= (label.attributes.color && label.attributes.color === '#b3bec1') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#bee5f3"><span class="background-box show well-lg" style="background-color:#bee5f3"><%= (label.attributes.color && label.attributes.color === '#bee5f3') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#caefd2"><span class="background-box show well-lg" style="background-color:#caefd2"><%= (label.attributes.color && label.attributes.color === '#caefd2') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#f7d2c8"><span class="background-box show well-lg" style="background-color:#f7d2c8"><%= (label.attributes.color && label.attributes.color === '#f7d2c8') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#444444"><span class="background-box show well-lg" style="background-color:#444444"><%= (label.attributes.color && label.attributes.color === '#444444') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#4f4d7e"><span class="background-box show well-lg" style="background-color:#4f4d7e"><%= (label.attributes.color && label.attributes.color === '#4f4d7e') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#2f663c"><span class="background-box show well-lg" style="background-color:#2f663c"><%= (label.attributes.color && label.attributes.color === '#2f663c') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#a37e58"><span class="background-box show well-lg" style="background-color:#a37e58"><%= (label.attributes.color && label.attributes.color === '#a37e58') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#6b6b6b"><span class="background-box show well-lg" style="background-color:#6b6b6b"><%= (label.attributes.color && label.attributes.color === '#6b6b6b') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#7b5cb3"><span class="background-box show well-lg" style="background-color:#7b5cb3"><%= (label.attributes.color && label.attributes.color === '#7b5cb3') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#65ab36"><span class="background-box show well-lg" style="background-color:#65ab36"><%= (label.attributes.color && label.attributes.color === '#65ab36') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#bd6f32"><span class="background-box show well-lg" style="background-color:#bd6f32"><%= (label.attributes.color && label.attributes.color === '#bd6f32') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#999999"><span class="background-box show well-lg" style="background-color:#999999"><%= (label.attributes.color && label.attributes.color === '#999999') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#baa1e6"><span class="background-box show well-lg" style="background-color:#baa1e6"><%= (label.attributes.color && label.attributes.color === '#baa1e6') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#9dbb1d"><span class="background-box show well-lg" style="background-color:#9dbb1d"><%= (label.attributes.color && label.attributes.color === '#9dbb1d') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#ffce54"><span class="background-box show well-lg" style="background-color:#ffce54"><%= (label.attributes.color && label.attributes.color === '#ffce54') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#d5d5d5"><span class="background-box show well-lg" style="background-color:#d5d5d5"><%= (label.attributes.color && label.attributes.color === '#d5d5d5') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#dbcff1"><span class="background-box show well-lg" style="background-color:#dbcff1"><%= (label.attributes.color && label.attributes.color === '#dbcff1') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#ccdc87"><span class="background-box show well-lg" style="background-color:#ccdc87"><%= (label.attributes.color && label.attributes.color === '#ccdc87') ? icon : '' %></span></li>
+					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#f1eabf"><span class="background-box show well-lg" style="background-color:#f1eabf"><%= (label.attributes.color && label.attributes.color === '#f1eabf') ? icon : '' %></span></li>
 				</ul>
 			</div>
 		</div>

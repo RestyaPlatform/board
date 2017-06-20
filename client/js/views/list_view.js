@@ -630,7 +630,7 @@ App.ListView = Backbone.View.extend({
             list_subscribe.save({
                 is_subscribed: 1
             });
-            if (!_.isUndefined(this.model.attributes.lists_subscribers)) {
+            if (!_.isUndefined(this.model.attributes.lists_subscribers) && this.model.attributes.lists_subscribers !== null) {
                 this.model.attributes.lists_subscribers.forEach(function(list) {
                     if (list.user_id === parseInt(authuser.user.id)) {
                         list.is_subscribed = 1;
@@ -671,7 +671,7 @@ App.ListView = Backbone.View.extend({
             list_subscribe.save({
                 is_subscribed: 0
             });
-            if (!_.isUndefined(this.model.attributes.lists_subscribers)) {
+            if (!_.isUndefined(this.model.attributes.lists_subscribers) && this.model.attributes.lists_subscribers !== null) {
                 this.model.attributes.lists_subscribers.forEach(function(list) {
                     if (list.user_id === parseInt(authuser.user.id)) {
                         list.is_subscribed = 0;
@@ -831,6 +831,11 @@ App.ListView = Backbone.View.extend({
                     slug: 'move_list_cards',
                     board_user_role_id: parseInt(this.model.board_user_role_id)
                 })))) {
+                var setintervalid = '',
+                    is_moving_right = '',
+                    previous_offset = 0,
+                    previous_move = '',
+                    is_create_setinterval = true;
                 $('.js-board-list-cards', this.$el).sortable({
                     containment: 'window',
                     items: 'div.js-board-list-card',
@@ -950,6 +955,44 @@ App.ListView = Backbone.View.extend({
                         }
                         App.sortable.previous_offset_vertical = ui.offset.top;
                         App.sortable.previous_move_vertical = App.sortable.is_moving_top;
+                        $.browser.device = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
+                        if ($.browser.device) {
+                            var list_per_page = Math.floor($(window).width() / 230);
+                            if (previous_offset !== 0 && previous_offset != ui.offset.left) {
+                                if (previous_offset > ui.offset.left) {
+                                    is_moving_right = false;
+                                } else {
+                                    is_moving_right = true;
+                                }
+                            }
+                            if (previous_move !== is_moving_right) {
+                                clearInterval(setintervalid);
+                                is_create_setinterval = true;
+                            }
+                            if (is_moving_right === true && ui.offset.left > (list_per_page - 1) * 230) {
+                                if (is_create_setinterval) {
+                                    setintervalid = setInterval(function() {
+                                        scrollLeft = parseInt($('#js-board-lists').scrollLeft()) + 50;
+                                        $('#js-board-lists').animate({
+                                            scrollLeft: scrollLeft
+                                        }, 10);
+                                    }, 100);
+                                    is_create_setinterval = false;
+                                }
+                            } else if (is_moving_right === false && ui.offset.left < 50) {
+                                if (is_create_setinterval) {
+                                    setintervalid = setInterval(function() {
+                                        scrollLeft = parseInt($('#js-board-lists').scrollLeft()) - 50;
+                                        $('#js-board-lists').animate({
+                                            scrollLeft: scrollLeft
+                                        }, 10);
+                                    }, 100);
+                                    is_create_setinterval = false;
+                                }
+                            }
+                            previous_offset = ui.offset.left;
+                            previous_move = is_moving_right;
+                        }
                     }
                 });
             }
@@ -1125,6 +1168,7 @@ App.ListView = Backbone.View.extend({
             e.preventDefault();
             var self = this;
             var data = $(e.target).serializeObject();
+            $('.js-remove-card-template').remove();
             $(e.target).find('.js-card-add-list').val(this.model.id);
             $(e.target).find('.js-card-user-ids').val('');
             $(e.target).find('.js-card-add-labels').val('');
@@ -1215,6 +1259,7 @@ App.ListView = Backbone.View.extend({
             $('#js-card-listing-' + this.model.id).scrollTop($('#js-card-listing-' + this.model.id)[0].scrollHeight);
             card.save(data, {
                 success: function(model, response, options) {
+                    card.set('description', response.activity.card_description);
                     if (_.isUndefined(options.temp_id)) {
                         card.set('is_offline', false);
                     }

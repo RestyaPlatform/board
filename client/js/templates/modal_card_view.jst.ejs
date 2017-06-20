@@ -363,19 +363,33 @@
 						<%
 							var subscribe_disabled = '';
 							var subscribe_title = i18next.t('Subscribe');
+							var subscribe_class = 'js-card-subscribe';
+
 							var subscribed = card.list.collection.board.board_subscribers.findWhere({
 								user_id: parseInt(authuser.user.id),
 								is_subscribed: 1
 							}); 
+							var list_subscribed = card.list.lists_subscribers.findWhere({
+								user_id: parseInt(authuser.user.id),
+								is_subscribed: 1
+							});
+							if(!_.isEmpty(cards_subscribers)) {
+								subscribe_class = 'js-card-unsubscribe';
+							}
 							if (subscribed) {
 								subscribe_disabled = 'disabled';
+								subscribe_class = 'js-no-action';
 								subscribe_title = i18next.t('Board wise subscription already enabled');
+							} else if(list_subscribed) {
+								subscribe_disabled = 'disabled';
+								subscribe_class = 'js-no-action';
+								subscribe_title = i18next.t('List wise subscription already enabled');
 							}
 						%>
-						<li class="<%= subscribe_disabled %> navbar-btn"> 
-							<a class="btn btn-default <% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%> even-action htruncate" title="<%- subscribe_title %> " href="">
+						<li class="navbar-btn">
+							<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href="">
 							<% if(!_.isEmpty(cards_subscribers)){ %>
-								<i class="icon-eye-open"></i>
+								<i class="icon-eye-open">&nbsp;</i>
 						    <% } else { %>
 								<i class="icon-eye-close"></i>
 							<% } %>
@@ -393,6 +407,7 @@
 							</a> 
 						</li>
 					<% } %>
+					<li class = "card_templete_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
 					</ul>	
 				</div>
 				<% } %>
@@ -692,16 +707,30 @@
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && _.isEmpty(cards_subscribers)) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && !_.isEmpty(cards_subscribers)))  || (!_.isEmpty(role_links.where({slug: "subscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2)))) { %>
 			<%
 				var subscribe_disabled = '';
+				var subscribe_title = i18next.t('Subscribe');
+				var subscribe_class = 'js-card-subscribe';
 				var subscribed = card.list.collection.board.board_subscribers.findWhere({
 					user_id: parseInt(authuser.user.id),
 					is_subscribed: 1
-				}); 
+				});
+				var list_subscribed = card.list.lists_subscribers.findWhere({
+					user_id: parseInt(authuser.user.id),
+					is_subscribed: 1
+				});
+				if(!_.isEmpty(cards_subscribers)){
+					subscribe_class = 'js-card-unsubscribe';
+				} 
 				if (subscribed) {
 					subscribe_disabled = 'disabled';
+					subscribe_class = 'js-no-action';
 					subscribe_title = i18next.t('Board wise subscription already enabled');
+				} else if(list_subscribed) {
+					subscribe_disabled = 'disabled';
+					subscribe_class = 'js-no-action';
+					subscribe_title = i18next.t('List wise subscription already enabled');
 				}
 			%>
-				<li class="<%= subscribe_disabled %>"> <a class="<% if(!_.isEmpty(cards_subscribers)){%> js-card-unsubscribe <% } else {%>js-card-subscribe <% }%>" title="<%- subscribe_title %> " href=""><%- i18next.t('Subscribe') %>
+				<li class="<%- subscribe_disabled %>"> <a class="<%- subscribe_class %>" title="<%- subscribe_title %> " href=""><%- i18next.t('Subscribe') %>
 					<% if(!_.isEmpty(cards_subscribers)){ %>
 				<i class="icon-ok"></i>
 				<% } %>
@@ -737,6 +766,7 @@
 			</a> 
 		</li>
 		<% } %>
+		<li class = "card_templete_action_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
 			<% if(parseInt(card.attributes.is_archived) === 1 && (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_card",board_user_role_id: parseInt(list.board_user_role_id)}))))){ %>
 		<li >
 			<ul class="list-unstyled panel-body">

@@ -46,17 +46,8 @@ App.BoardLabelsEditView = Backbone.View.extend({
         var data = {};
         data.color = $(e.currentTarget).data('color');
         $(e.target).closest('form').find('#color').val(data.color);
-        data.label_id = $(e.target).closest('form').find('#label_id').val();
-        self.model.url = api_url + 'labels/' + data.label_id + '.json';
-        self.model.save(data, {
-            patch: true,
-            catch: false,
-            success: function(model, response) {
-                self.model.labels.findWhere({
-                    label_id: parseInt(data.label_id)
-                }).set('color', data.color);
-            }
-        });
+        $(e.currentTarget).parent('ul').find('span').html('');
+        $(e.currentTarget).find('span').append('<i class="icon-ok icon-light"></i>');
         return false;
     },
     /**
@@ -72,15 +63,31 @@ App.BoardLabelsEditView = Backbone.View.extend({
         var data = {};
         data.label_id = $(e.target).closest('form').find('#label_id').val();
         data.name = $(e.target).closest('form').find('#inputCardLabel').val();
-        self.model.url = api_url + 'labels/' + data.label_id + '.json';
-        self.model.save(data, {
+        data.color = $(e.target).closest('form').find('#color').val();
+        var card_label = new App.Label();
+        card_label.set('board_id', self.model.id);
+        card_label.set('id', data.label_id);
+        if (!_.isEmpty(data.color)) {
+            card_label.set('color', data.color);
+        }
+        card_label.set('name', data.name);
+        self.model.labels.each(function(label) {
+            if (parseInt(label.attributes.label_id) === parseInt(data.label_id)) {
+                label.set({
+                    name: data.name
+                });
+                if (!_.isEmpty(data.color)) {
+                    label.set({
+                        color: data.color
+                    });
+                }
+            }
+        });
+        card_label.url = api_url + 'labels/' + data.label_id + '.json';
+        card_label.save(data, {
             patch: true,
             catch: false,
-            success: function(model, response) {
-                self.model.labels.findWhere({
-                    label_id: parseInt(data.label_id)
-                }).set('name', data.name);
-            }
+            success: function(model, response) {}
         });
         return false;
     },

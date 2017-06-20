@@ -246,6 +246,7 @@ App.UserIndexContainerView = Backbone.View.extend({
             success: function(users, response) {
                 $('.js-user-list').html('');
                 users.each(function(user) {
+                    user.roles = response.roles;
                     $('.js-user-list').append(new App.UserIndex({
                         model: user
                     }).el);

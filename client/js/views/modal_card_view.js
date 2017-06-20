@@ -328,34 +328,57 @@ App.ModalCardView = Backbone.View.extend({
      */
     showActivity: function(e) {
         e.preventDefault();
+        var self = this;
         var i = 0;
         var hide_class = '';
         var target = $(e.currentTarget);
         $('li#no-record').remove();
         if (target.attr('id') == 'modal-activities') {
-            if ($('#modal-activities').hasClass('active')) {
-                $.cookie('filter', 'both');
-                $('#modal-activities').removeClass('active');
-                $('.modal-comments').parent('li').removeClass('hide');
-                $('.modal-activities').parent('li').removeClass('hide');
+            self.$el.find('#modal-activities').toggleClass('active');
+            if (self.$el.find('#modal-activities').hasClass('active')) {
+                if (self.$el.find('#modal-comments').hasClass('active')) {
+                    $.cookie('filter', 'both');
+                    self.$el.find('.modal-activities').parent('li').removeClass('hide');
+                    self.$el.find('.modal-comments').parent('li').removeClass('hide');
+                } else {
+                    $.cookie('filter', 'activity');
+                    self.$el.find('.modal-activities').parent('li').removeClass('hide');
+                    self.$el.find('.modal-comments').parent('li').addClass('hide');
+                }
             } else {
-                $.cookie('filter', 'activity');
-                $('#modal-activities').addClass('active');
-                $('.modal-comments').parent('li').addClass('hide');
-                $('.modal-activities').parent('li').removeClass('hide');
+                if (self.$el.find('#modal-comments').hasClass('active')) {
+                    $.cookie('filter', 'comment');
+                    self.$el.find('.modal-activities').parent('li').addClass('hide');
+                    self.$el.find('.modal-comments').parent('li').removeClass('hide');
+                } else {
+                    $.cookie('filter', 'both');
+                    self.$el.find('.modal-activities').parent('li').removeClass('hide');
+                    self.$el.find('.modal-comments').parent('li').removeClass('hide');
+                }
             }
         }
         if (target.attr('id') == 'modal-comments') {
-            if ($('#modal-comments').hasClass('active')) {
-                $.cookie('filter', 'both');
-                $('#modal-comments').removeClass('active');
-                $('.modal-comments').parent('li').removeClass('hide');
-                $('.modal-activities').parent('li').removeClass('hide');
+            self.$el.find('#modal-comments').toggleClass('active');
+            if (self.$el.find('#modal-comments').hasClass('active')) {
+                if (self.$el.find('#modal-activities').hasClass('active')) {
+                    $.cookie('filter', 'both');
+                    self.$el.find('.modal-comments').parent('li').removeClass('hide');
+                    self.$el.find('.modal-activities').parent('li').removeClass('hide');
+                } else {
+                    $.cookie('filter', 'comment');
+                    self.$el.find('.modal-comments').parent('li').removeClass('hide');
+                    self.$el.find('.modal-activities').parent('li').addClass('hide');
+                }
             } else {
-                $.cookie('filter', 'comment');
-                $('#modal-comments').addClass('active');
-                $('.modal-activities').parent('li').addClass('hide');
-                $('.modal-comments').parent('li').removeClass('hide');
+                if (self.$el.find('#modal-activities').hasClass('active')) {
+                    $.cookie('filter', 'activity');
+                    self.$el.find('.modal-comments').parent('li').addClass('hide');
+                    self.$el.find('.modal-activities').parent('li').removeClass('hide');
+                } else {
+                    $.cookie('filter', 'both');
+                    self.$el.find('.modal-comments').parent('li').removeClass('hide');
+                    self.$el.find('.modal-activities').parent('li').removeClass('hide');
+                }
             }
         }
         return false;
@@ -394,74 +417,71 @@ App.ModalCardView = Backbone.View.extend({
         card_label.set('card_id', self.model.id);
         var newLabelList = data.name;
         var oldLabelList = data.hiddenName;
-        var compareList = oldLabelList.localeCompare(newLabelList);
-        if (compareList !== 0) {
-            card_label.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/labels.json';
-            card_label.save(data, {
-                success: function(model, response, options) {
-                    if (_.isUndefined(options.temp_id)) {
-                        card_label.set('is_offline', false);
-                    }
-                    if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
-                        card_label.set({
-                            id: parseInt(response.id)
-                        });
-                    } else {
-                        global_uuid[data.uuid] = options.temp_id;
-                        card_label.set('id', data.uuid);
-                    }
-                    card_label.set('card_name', self.model.get('name'));
-                    var labels = data.name.split(',');
-                    var view_label = self.$el.find('.js-card-labels-list');
-                    self.$el.find('.js-card-label-show').remove();
-                    self.model.labels.reset();
-                    if (!_.isUndefined(response.cards_labels)) {
-                        labels = response.cards_labels;
-                    }
-                    if (labels.length > 0) {
-                        _.each(labels, function(label) {
-                            var new_label = new App.Label();
-                            new_label.set(label);
-                            if (!_.isUndefined(label.id)) {
-                                new_label.set('id', parseInt(label.id));
-                                new_label.set('label_id', parseInt(label.label_id));
-                            } else {
-                                new_label.set('name', label);
-                            }
-                            new_label.set('board_id', self.model.attributes.board_id);
-                            new_label.set('list_id', self.model.attributes.list_id);
-                            new_label.set('card_id', self.model.id);
-                            self.model.list.collection.board.labels.add(new_label, {
-                                silent: true
-                            });
-                            self.model.labels.add(new_label);
-                            var view = new App.CardLabelView({
-                                model: new_label,
-                                background: self.getLabelcolor('' + new_label.attributes.name).substring(0, 6)
-                            });
-                            view_label.prepend(view.render().el);
-                            $('#js-card-' + self.model.id).addClass('active');
-                            $('.js-label-dropdown').removeClass('open');
-                        });
-                    } else {
-                        $('.js-card-label-section-' + self.model.id).html("");
-                    }
-                    if (!_.isUndefined(response.activity) && response.activity !== false) {
-                        var activity = new App.Activity();
-                        activity.set(response.activity);
-                        activity.board_users = self.model.board_users;
-                        var view = new App.ActivityView({
-                            model: activity,
-                            board: self.model.list.collection.board
-                        });
-                        self.model.activities.unshift(activity);
-                        var view_activity = $('#js-card-activities-' + self.model.id);
-                        view_activity.prepend(view.render().el).find('.timeago').timeago();
-                        emojify.run();
-                    }
+        card_label.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/labels.json';
+        card_label.save(data, {
+            success: function(model, response, options) {
+                if (_.isUndefined(options.temp_id)) {
+                    card_label.set('is_offline', false);
                 }
-            });
-        }
+                if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
+                    card_label.set({
+                        id: parseInt(response.id)
+                    });
+                } else {
+                    global_uuid[data.uuid] = options.temp_id;
+                    card_label.set('id', data.uuid);
+                }
+                card_label.set('card_name', self.model.get('name'));
+                var labels = data.name.split(',');
+                var view_label = self.$el.find('.js-card-labels-list');
+                self.$el.find('.js-card-label-show').remove();
+                self.model.labels.reset();
+                if (!_.isUndefined(response.cards_labels)) {
+                    labels = response.cards_labels;
+                }
+                if (labels.length > 0) {
+                    _.each(labels, function(label) {
+                        var new_label = new App.Label();
+                        new_label.set(label);
+                        if (!_.isUndefined(label.id)) {
+                            new_label.set('id', parseInt(label.id));
+                            new_label.set('label_id', parseInt(label.label_id));
+                        } else {
+                            new_label.set('name', label);
+                        }
+                        new_label.set('board_id', self.model.attributes.board_id);
+                        new_label.set('list_id', self.model.attributes.list_id);
+                        new_label.set('card_id', self.model.id);
+                        self.model.list.collection.board.labels.add(new_label, {
+                            silent: true
+                        });
+                        self.model.labels.add(new_label);
+                        var view = new App.CardLabelView({
+                            model: new_label,
+                            background: self.getLabelcolor('' + new_label.attributes.name).substring(0, 6)
+                        });
+                        view_label.prepend(view.render().el);
+                        $('#js-card-' + self.model.id).addClass('active');
+                        $('.js-label-dropdown').removeClass('open');
+                    });
+                } else {
+                    $('.js-card-label-section-' + self.model.id).html("");
+                }
+                if (!_.isUndefined(response.activity) && response.activity !== false) {
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    activity.board_users = self.model.board_users;
+                    var view = new App.ActivityView({
+                        model: activity,
+                        board: self.model.list.collection.board
+                    });
+                    self.model.activities.unshift(activity);
+                    var view_activity = $('#js-card-activities-' + self.model.id);
+                    view_activity.prepend(view.render().el).find('.timeago').timeago();
+                    emojify.run();
+                }
+            }
+        });
         return false;
     },
     /**
@@ -755,6 +775,7 @@ App.ModalCardView = Backbone.View.extend({
                             }
                         });
                         self.model.set('due_date', data.start);
+                        self.model.set('title', response.activity.card_name);
                     }
                     if (!_.isEmpty(data.start_date)) {
                         self.model.list.collection.board.lists.each(function(list) {
@@ -768,6 +789,7 @@ App.ModalCardView = Backbone.View.extend({
                             }
                         });
                         self.model.set('start_date', data.start);
+                        self.model.set('title', response.activity.card_name);
                     }
                 }
             });
@@ -849,6 +871,7 @@ App.ModalCardView = Backbone.View.extend({
                 converter: this.converter,
                 list: this.model.list
             })).dockmodal('refreshLayout');
+            self.$el.find('.js-modal-settings').removeClass('hide');
             _(function() {
                 Backbone.TemplateManager.baseUrl = '{name}';
                 var uploadManager = new Backbone.UploadManager({

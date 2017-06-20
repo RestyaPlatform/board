@@ -163,8 +163,6 @@ App.FooterView = Backbone.View.extend({
             }));
         });
 
-
-
         if (_.isEmpty(this.board_id)) {
             if (!_.isUndefined(authuser.user)) {
                 var board_activities = new App.FooterView({
@@ -1420,8 +1418,10 @@ App.FooterView = Backbone.View.extend({
         e.preventDefault();
         $('#js-board-activities, #js-all-activities').empty();
         if (!_.isEmpty(this.board_id)) {
+            this.$el.find('#modal-comments').addClass('active');
             this.$el.find('.js-board-activities').click();
         } else {
+            this.$el.find('#modal-comments').addClass('active');
             this.$el.find('.js-all-activities').click();
         }
     },
@@ -1600,29 +1600,51 @@ App.FooterView = Backbone.View.extend({
         var target = $(e.currentTarget);
         $('li#no-record').remove();
         if (target.attr('id') == 'modal-activities') {
-            if ($('#modal-activities').hasClass('active')) {
-                $.cookie('filter', 'both');
-                $('#modal-activities').removeClass('active');
-                $('.modal-comments').parent('li').removeClass('hide');
-                $('.modal-activities').parent('li').removeClass('hide');
+            $('#all_activities').find('#modal-activities').toggleClass('active');
+            if ($('#all_activities').find('#modal-activities').hasClass('active')) {
+                if ($('#all_activities').find('#modal-comments').hasClass('active')) {
+                    $.cookie('filter', 'both');
+                    $('#all_activities').find('.modal-activities').parent('li').removeClass('hide');
+                    $('#all_activities').find('.modal-comments').parent('li').removeClass('hide');
+                } else {
+                    $.cookie('filter', 'activity');
+                    $('#all_activities').find('.modal-activities').parent('li').removeClass('hide');
+                    $('#all_activities').find('.modal-comments').parent('li').addClass('hide');
+                }
             } else {
-                $.cookie('filter', 'activity');
-                $('#modal-activities').addClass('active');
-                $('.modal-comments').parent('li').addClass('hide');
-                $('.modal-activities').parent('li').removeClass('hide');
+                if ($('#all_activities').find('#modal-comments').hasClass('active')) {
+                    $.cookie('filter', 'comment');
+                    $('#all_activities').find('.modal-activities').parent('li').addClass('hide');
+                    $('#all_activities').find('.modal-comments').parent('li').removeClass('hide');
+                } else {
+                    $.cookie('filter', 'both');
+                    $('#all_activities').find('.modal-activities').parent('li').removeClass('hide');
+                    $('#all_activities').find('.modal-comments').parent('li').removeClass('hide');
+                }
             }
         }
         if (target.attr('id') == 'modal-comments') {
-            if ($('#modal-comments').hasClass('active')) {
-                $.cookie('filter', 'both');
-                $('#modal-comments').removeClass('active');
-                $('.modal-comments').parent('li').removeClass('hide');
-                $('.modal-activities').parent('li').removeClass('hide');
+            $('#all_activities').find('#modal-comments').toggleClass('active');
+            if ($('#all_activities').find('#modal-comments').hasClass('active')) {
+                if ($('#all_activities').find('#modal-activities').hasClass('active')) {
+                    $.cookie('filter', 'both');
+                    $('#all_activities').find('.modal-comments').parent('li').removeClass('hide');
+                    $('#all_activities').find('.modal-activities').parent('li').removeClass('hide');
+                } else {
+                    $.cookie('filter', 'comment');
+                    $('#all_activities').find('.modal-comments').parent('li').removeClass('hide');
+                    $('#all_activities').find('.modal-activities').parent('li').addClass('hide');
+                }
             } else {
-                $.cookie('filter', 'comment');
-                $('#modal-comments').addClass('active');
-                $('.modal-activities').parent('li').addClass('hide');
-                $('.modal-comments').parent('li').removeClass('hide');
+                if ($('#all_activities').find('#modal-activities').hasClass('active')) {
+                    $.cookie('filter', 'activity');
+                    $('#all_activities').find('.modal-comments').parent('li').addClass('hide');
+                    $('#all_activities').find('.modal-activities').parent('li').removeClass('hide');
+                } else {
+                    $.cookie('filter', 'both');
+                    $('#all_activities').find('.modal-comments').parent('li').removeClass('hide');
+                    $('#all_activities').find('.modal-activities').parent('li').removeClass('hide');
+                }
             }
         }
         if ($("li.js-activity:visible").length === 0) {

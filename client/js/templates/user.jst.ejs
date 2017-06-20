@@ -98,27 +98,24 @@
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default btn-xs dropdown-toggle" type="button">
 		    <span class="caret"></span><span class="sr-only"><%- i18next.t("Toggle Dropdown") %></span>
         </button>
-			    <ul class="dropdown-menu arrow arrow-right js-admin-list-user-role" role="menu">
-					<% _.each(user.roles, function(role){%>
-						<li><a href="#" class="<% if(user.attributes.role_id == role.id){%>js-no-action<%}else{%>js-change-user-role<%}%>" data-role-id="<%- role.id %>"><%- role.name%> <% if(user.attributes.role_id == role.id){%><i class="icon-ok"></i><%}%></a></li>
-					<%})%>
-				</ul>
+		<ul class="dropdown-menu arrow arrow-right js-admin-list-user-role" role="menu">
+			<% _.each(user.roles, function(role){%>
+				<li class="text-left"><a href="#" class="<% if(user.attributes.role_id == role.id){%>js-no-action<%}else{%>js-change-user-role<%}%>" data-role-id="<%- role.id %>"><%- role.name%> <% if(user.attributes.role_id == role.id){%><i class="icon-ok"></i><%}%></a></li>
+			<%})%>
+		</ul>
 	</div>
 </td>
 
 
-<td class="actions-td">
-   <ul class="list-inline btn-actions-list list-group-item-text">
-   		<div class="pull-left">
-	   <li class="navbar-btn"><a href="#" title="<%- i18next.t('Activities') %>" class="btn btn-default btn-xs js-all-user-activities"><%- i18next.t("Activities") %></a></li>
-	   <li>
+<td>
+   <ul class="list-inline list-group-item-text">
+	   	<li class="navbar-btn"><a href="#" title="<%- i18next.t('Activities') %>" class="btn btn-default btn-xs js-all-user-activities"><%- i18next.t("Activities") %></a></li>
+	   	
 		<li class="navbar-btn">
 			<a href="#" class="btn btn-default btn-xs <%if(parseInt(user.attributes.is_active) === 1){%>js-block-user<%}else{%>js-unblock-user<%}%>"  title="<%- i18next.t('Block') %>" <% if(user.attributes.role_id == 1){%> disabled="disabled" <% } %>>
 			<i class="icon-exclamation"></i>
 			<span><%if(parseInt(user.attributes.is_active) === 1){%><%- i18next.t("Block") %><%}else{%><%- i18next.t("Unblock") %><%}%></span></a>
 		</li>  
-		</div>
-		<div class="pull-right">
 		<li class="navbar-btn">
 			<div class="dropdown btn-group">  
 					<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle btn-xs" type="button">
@@ -149,17 +146,14 @@
 			<a aria-expanded="false" data-toggle="dropdown" class="btn btn-primary btn-xs" href="#" <% if(user.attributes.role_id == 1){%> disabled="disabled" <% } %> >
 				<i class="icon-remove"></i> <%- i18next.t("Delete") %>
 			</a>
-			
 			<ul class="dropdown-menu dropdown-menu-right arrow arrow-right col-xs-12">
-					<li class="col-lg-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t("Delete User") + '?' %></strong></span><a class="js-close-popover pull-right" href="#/users"><i class="icon-remove "></i></a></div> </li>
-					<li class="col-lg-12 divider"></li>
-					<li class="col-lg-12 text-left">
-						<span class="show"><%- i18next.t("Deleting an user is permanent. There is no undo.") %></span>
-							<div class="col-xs-12 btn-block navbar-btn"><a title="<%- i18next.t('Delete User') %>" class="js-remove-user"><span class="btn btn-primary"><%- i18next.t("Delete") %></span></a></div>
-					</li>
-				</ul>
+				<li class="col-lg-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t("Delete User") + '?' %></strong></span><a class="js-close-popover pull-right" href="#/users"><i class="icon-remove "></i></a></div> </li>
+				<li class="col-lg-12 divider"></li>
+				<li class="col-lg-12 text-left">
+					<span class="show"><%- i18next.t("Deleting an user is permanent. There is no undo.") %></span>
+						<div class="col-xs-12 btn-block navbar-btn"><a title="<%- i18next.t('Delete User') %>" class="js-remove-user"><span class="btn btn-primary"><%- i18next.t("Delete") %></span></a></div>
+				</li>
+			</ul>
 		</li>
-	   </li>
-	   </div>
     </ul>
 </td>

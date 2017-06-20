@@ -27,7 +27,6 @@ App.BoardLabelsView = Backbone.View.extend({
      */
     events: {
         'click .js-delete-labels': 'deleteLabels',
-        'submit form.js-edit-card-label': 'editLabels',
         'click .js-show-edit-card-label-form': 'showCardLabelEditForm',
         'click .js-card-label-color-pick': 'colorPicker',
         'click .js-hide-edit-card-label-form': 'hideCardLabelEditForm',
@@ -85,31 +84,6 @@ App.BoardLabelsView = Backbone.View.extend({
         e.preventDefault();
         $(e.currentTarget).parents('form').addClass('hide').prev('.js-show-edit-card-label-form').removeClass('hide');
         $(e.currentTarget).closest('li').find('.js-delete-labels-icon').removeClass('hide');
-        return false;
-    },
-    /**
-     * editLabels()
-     * update Labels
-     * @param e
-     * @type Object(DOM event)
-     * @return false
-     *
-     */
-    editLabels: function(e) {
-        var self = this;
-        //var list_id = self.model.id;
-        var data = $(e.target).serializeObject();
-        data.id = data.label_id;
-        self.model.url = api_url + 'labels/' + data.label_id + '.json';
-        self.model.save(data, {
-            patch: true,
-            success: function(model, response) {
-                self.model.labels.findWhere({
-                    label_id: parseInt(data.label_id)
-                }).set('name', data.name);
-            }
-        });
-        this.hideCardLabelEditForm(e);
         return false;
     },
     /**

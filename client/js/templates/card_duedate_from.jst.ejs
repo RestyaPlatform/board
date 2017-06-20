@@ -1,12 +1,13 @@
 <%
 	var currentdate = new Date();
 	var date = currentdate.getFullYear() + '-' + (((currentdate.getMonth()+1)<10)? '0'+ (currentdate.getMonth()+1) : (currentdate.getMonth()+1)) + '-' + ((currentdate.getDate()<10)? '0' + currentdate.getDate() : currentdate.getDate());
-	var time = currentdate.getHours() + ':' + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes() + ':' + (currentdate.getSeconds()<10?'0':'') + currentdate.getSeconds();
+	var time = currentdate.getHours() + ':' + (currentdate.getMinutes()<10?'0':'') + currentdate.getMinutes();
 	if (!_.isUndefined(this.model.attributes.due_date) && this.model.attributes.due_date !== null && this.model.attributes.due_date !== 'NULL') {
 		var date_time = this.model.attributes.due_date.replace('T',' ');
 		date_time = date_time.split(' ');
 		date = date_time[0];
 		time = date_time[1];
+		time = time.substring(0, time.length - 3);
 	}
 %>
 <div class="form-group">
@@ -18,7 +19,7 @@
 	<div class="col-xs-6">
 		<label><%- i18next.t('Time') %>
 		</label>
-		<input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm:ss" value="<%= time %>" required>
+		<input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm" value="<%= time %>" required>
 	</div>
 </div>
 <div class="form-group">
