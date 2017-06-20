@@ -334,6 +334,10 @@ if ($db_lnk) {
             }
         }
         if (!empty($mail_content)) {
+            $timezone = SITE_TIMEZONE;
+            if (!empty($user['timezone'])) {
+                $timezone = trim($user['timezone']);
+            }
             $qry_arr = array(
                 max($activity_id) ,
                 $user['id']
@@ -342,7 +346,7 @@ if ($db_lnk) {
             $emailFindReplace['##CONTENT##'] = $mail_content;
             $emailFindReplace['##NAME##'] = $user['full_name'];
             $emailFindReplace['##NOTIFICATION_COUNT##'] = $notification_count;
-            $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($user['timezone']));
+            $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($timezone));
             $emailFindReplace['##USER_ID##'] = $user['id'];
             sendMail('email_notification', $emailFindReplace, $user['email'], $reply_to_mail);
         }
