@@ -63,7 +63,7 @@
 								activity.attributes.comment = stripScripts(activity.attributes.comment);
 							%>
 							<%= converter.makeHtml(makeLink(activity.attributes.comment, activity.attributes.board_id)) %>
-							<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment'], activity.attributes.type)) { %>
+							<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color', 'delete_list_color'], activity.attributes.type)) { %>
 						<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text">
 							<% _.each(activity.attributes.difference, function(difference) { %>
 								<%= converter.makeHtml(difference) %>
@@ -71,12 +71,12 @@
 						</div>
 					<% } %>
 							</div></div>
-					<% } else {%>
+					<% } else { %>
 						<%if(_.isUndefined(activity.from_footer)) { %>
 							<div class="panel no-mar"><div class="panel-body">
 						<% } %>
 							<%= converter.makeHtml(makeLink(activity.attributes.comment, activity.attributes.board_id)) %>
-							<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card'], activity.attributes.type)) { %>
+							<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'edit_list_color', 'delete_list_color', 'edit_card_color', 'delete_card_color'], activity.attributes.type)) { %>
 						<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text">
 							<% _.each(activity.attributes.difference, function(difference) { %>
 								<%= converter.makeHtml(difference) %>

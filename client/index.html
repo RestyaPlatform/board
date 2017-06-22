@@ -43,12 +43,10 @@
   var template_url = './client/';
   </script>
   <script>
-        window.addEventListener('load', function(e){
-            window.applicationCache.addEventListener('updateready', function(e){
-                window.applicationCache.update();
-                if (window.applicationCache.status == window.applicationCache.UPDATEREADY){
-                    window.applicationCache.swapCache();
-                    if (confirm('A new version of this site is available. Load it?')){
+        window.addEventListener('load', function(e) {
+            window.applicationCache.addEventListener('updateready', function(e) {
+                if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+                    if (confirm('A new version of this site is available. Load it?')) {
                         window.location.reload();
                     }
                 }

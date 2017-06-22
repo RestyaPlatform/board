@@ -568,6 +568,11 @@
 							<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#dbcff1"><span class="btn btn-default show well-sm" style="background-color:#dbcff1"></span></li>
 							<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#ccdc87"><span class="btn btn-default show well-sm" style="background-color:#ccdc87"></span></li>
 							<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#f1eabf"><span class="btn btn-default show well-sm" style="background-color:#f1eabf"></span></li>
+							<% if(!_.isEmpty(card.attributes.color)){ %>
+								<button type="button" class="btn btn-primary js-remove-card-color">Remove color</button>
+							<% }else{ %>
+								<button type="button" class="hide btn btn-primary js-remove-card-color">Remove color</button>
+							<% } %>
 					</ul>
 			</ul>
 		</li>

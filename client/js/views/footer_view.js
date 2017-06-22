@@ -793,7 +793,8 @@ App.FooterView = Backbone.View.extend({
                         var view = new App.ActivityView({
                             model: activity,
                             type: 'all',
-                            board: self.board
+                            board: self.board,
+                            flag: '2'
                         });
                         $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         if (mode == 1) {
@@ -1348,7 +1349,8 @@ App.FooterView = Backbone.View.extend({
                         var all_activity = $('#js-all-activities');
                         var view = new App.ActivityView({
                             model: activity,
-                            board: self.board
+                            board: self.board,
+                            flag: '2'
                         });
                         $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         if ($('.js-list-activity-' + activity.id, view_activity).length === 0) {
@@ -1418,10 +1420,8 @@ App.FooterView = Backbone.View.extend({
         e.preventDefault();
         $('#js-board-activities, #js-all-activities').empty();
         if (!_.isEmpty(this.board_id)) {
-            this.$el.find('#modal-comments').addClass('active');
             this.$el.find('.js-board-activities').click();
         } else {
-            this.$el.find('#modal-comments').addClass('active');
             this.$el.find('.js-all-activities').click();
         }
     },
@@ -1499,7 +1499,8 @@ App.FooterView = Backbone.View.extend({
                         var view = new App.ActivityView({
                             model: activity,
                             board: self.board,
-                            type: modeType
+                            type: modeType,
+                            flag: '2'
                         });
                         $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         view_activity.append(view.render().el).find('.timeago').timeago();
@@ -1646,10 +1647,6 @@ App.FooterView = Backbone.View.extend({
                     $('#all_activities').find('.modal-activities').parent('li').removeClass('hide');
                 }
             }
-        }
-        if ($("li.js-activity:visible").length === 0) {
-            $("#js-all-activities").append('<li id="no-record">No Records Found</li>');
-            $("#js-board-activities").append('<li id="no-record">No Records Found</li>');
         }
         return false;
     },
