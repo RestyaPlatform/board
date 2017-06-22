@@ -805,7 +805,38 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
         } else {
-            echo json_encode($response);
+            if (is_plugin_enabled('r_chart')) {
+                $data = array();
+                $board_lists = array();
+                if (!empty($_metadata)) {
+                    $data['_metadata'] = $_metadata;
+                }
+                require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chart' . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+                $passed_values = array();
+                $passed_values['sort'] = $sort;
+                $passed_values['field'] = $field;
+                $passed_values['sort_by'] = $sort_by;
+                $passed_values['query_timeout'] = $query_timeout;
+                $passed_values['limit'] = $limit;
+                $passed_values['conditions'] = $conditions;
+                $passed_values['r_resource_cmd'] = $r_resource_cmd;
+                $passed_values['r_resource_vars'] = $r_resource_vars;
+                $passed_values['r_resource_filters'] = $r_resource_filters;
+                $passed_values['authUser'] = $authUser;
+                $passed_values['val_arr'] = $val_arr;
+                $passed_values['board_lists'] = $board_lists;
+                $plugin_return = call_user_func('Chart_r_get', $passed_values);
+                if (!empty($plugin_return)) {
+                    foreach ($plugin_return as $return_plugin_key => $return_plugin_values) {
+                        $ {
+                            $return_plugin_key
+                        } = $return_plugin_values;
+                    }
+                }
+                echo json_encode(array_merge($data, $response));
+            } else {
+                echo json_encode($response);
+            }
         }
         break;
 
@@ -4722,10 +4753,11 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             } else if (!empty($previous_value) && isset($r_put['color']) && $r_put['color'] != $previous_value['color']) {
                 if (empty($r_put['color'])) {
                     $comment = '##USER_NAME## removed list color - ' . $previous_value['color'] . ' from ##LIST_NAME##';
+                    $activity_type = 'delete_list_color';
                 } else {
                     $comment = '##USER_NAME## updated list color - ' . $r_put['color'] . ' on ##LIST_NAME##';
+                    $activity_type = 'edit_list_color';
                 }
-                $activity_type = 'edit_list_color';
             }
         } else {
             $id = $r_resource_vars['lists'];
@@ -4917,10 +4949,11 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         } else if (!empty($previous_value) && isset($r_put['color']) && $r_put['color'] != $previous_value['color']) {
             if (empty($r_put['color'])) {
                 $comment = '##USER_NAME## removed card color - ' . $previous_value['color'] . ' from ##CARD_LINK##';
+                $activity_type = 'delete_card_color';
             } else {
                 $comment = '##USER_NAME## updated card color - ' . $r_put['color'] . ' on ##CARD_LINK##';
+                $activity_type = 'edit_card_color';
             }
-            $activity_type = 'edit_card_color';
         }
         unset($r_put['start']);
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
