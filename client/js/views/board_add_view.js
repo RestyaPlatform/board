@@ -89,12 +89,16 @@ App.BoardAddView = Backbone.View.extend({
         var data = $(e.target).serializeObject();
         var board = new App.Board();
         board.url = api_url + 'boards.json';
+        if (this.model.organization_id) {
+            data.organization_id = this.model.organization_id;
+        }
         board.save(data, {
             success: function(model, response) {
                 App.boards.add(response.simple_board);
                 if (response.simple_board.lists !== null) {
                     App.boards.get(parseInt(response.simple_board.id)).lists.add(response.simple_board.lists);
                 }
+                $.removeCookie("chat_initialize");
                 app.navigate('#/board/' + response.id, {
                     trigger: true,
                     replace: true

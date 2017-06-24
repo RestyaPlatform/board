@@ -27,6 +27,13 @@ App.AttachmentDeleteConfirmFormView = Backbone.View.extend({
     template: JST['templates/attachment_delete_confirm_form'],
     tagName: 'div',
     /**
+     * Events
+     * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
+     */
+    events: {
+        'click .js-close-popup': 'closePopup'
+    },
+    /**
      * render()
      * populate the html to the dom
      * @param NULL
@@ -39,5 +46,18 @@ App.AttachmentDeleteConfirmFormView = Backbone.View.extend({
         }));
         this.showTooltip();
         return this;
-    }
+    },
+    /**
+     * closePopup()
+     * close opened dropdwon
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    closePopup: function(e) {
+        var target = $(e.target);
+        target.parents('li.dropdown:first, div.dropdown:first').removeClass('open');
+        return false;
+    },
 });

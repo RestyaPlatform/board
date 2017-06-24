@@ -24,7 +24,7 @@
 			%>
 			<a href="#/board/<%- board.id %>" class="avatar-sm pull-left" title="<%- board.attributes.name %>" ><span class="clearfix cover-image" style="<%= style %>"></span></a>
 			<% if(!_.isEmpty(role_links.where({slug: "view_board"}))){ %>
-				  <a href="#/board/<%- board.id %>" title="<%- board.attributes.name %>" class="col-xs-10 htruncate left-mar-sm">
+				  <a href="#/board/<%- board.id %>" title="<%- board.attributes.name %>" class="col-xs-10 htruncate left-mar-sm js-board-name-truncate">
 				<% } %>
 				<% if(board.attributes.organization_id > 0 && board.attributes.organization_id != null){ 
 					var logo_path = "img/default-organization.png"; 
@@ -117,7 +117,7 @@
 				</span>
 			  <% i++; }}); } }%>
 			 
-			  <% if(_.isUndefined(board.normal_board_users) && _.isUndefined(board.admin_board_users)) { %>-<% } else {%> <span class="col-xs-3 label small hidden-xs"> 
+			  <% if(_.isUndefined(board.normal_board_users) && _.isUndefined(board.admin_board_users)) { %>-<% } else {%> <span class="table-members label small hidden-xs"> 
 				<span class="small navbar-btn">
 					<span class="show text-left text-muted" title="<%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %> "><%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %></span> 
 					<span class="show navbar-btn text-left text-muted" title="<%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %> "><%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %></span>
@@ -133,7 +133,7 @@
 						<ul class="list-unstyled clearfix js-get-board-member-lists-response">
 							<% board.board_users.each(function(user) { %>
 								<li class="form-inline navbar-btn btn-xs pull-left js-board-user-avatar-click dropdown nav">
-										<a href="#/user/<%-user.attributes.id %>">
+										<a href="#/user/<%-user.attributes.user_id %>">
 										<span data-placement="bottom" title="<%- user.attributes.full_name %> (<%-user.attributes.username %>)" data-toggle="tooltip" class="col-xs-12 btn-block navbar-btn">				
 										<% if(!_.isEmpty(user.attributes.profile_picture_path)) { 
 											var profile_picture_path = board.showImage('User', user.attributes.user_id, 'small_thumb' );

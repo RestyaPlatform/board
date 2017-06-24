@@ -115,6 +115,8 @@ App.FooterView = Backbone.View.extend({
      *
      */
     render: function() {
+        var self = this;
+        $.removeCookie('filter');
         this.model.is_show_enable_notification = false;
         var current_param = Backbone.history.fragment;
         var current_param_split = current_param.split('/');
@@ -134,32 +136,32 @@ App.FooterView = Backbone.View.extend({
             });
         }
         var getting_new_array = [];
-        if (!_.isEmpty(localStorage.getItem('apps'))) {
-            apps_data = JSON.parse(localStorage.getItem('apps'));
-            var getss = apps_data;
-            var get_names = [];
-            _.each(apps_data, function(data) {
-                get_names.push(data.name);
-            });
-            get_names.sort();
-            _.each(get_names, function(data) {
-                _.each(getss, function(datas) {
-                    if (data === datas.name) {
-                        getting_new_array.push(datas);
-                    }
+        localforage.getItem('apps', function(err, value) {
+            if (!_.isEmpty(value)) {
+                var local_storage_apps = JSON.parse(value);
+                apps_data = local_storage_apps;
+                var getss = apps_data;
+                var get_names = [];
+                _.each(apps_data, function(data) {
+                    get_names.push(data.name);
                 });
-            });
-        } else {
-            getting_new_array = '';
-        }
-
-        this.$el.html(this.template({
-            model: this.model,
-            board_id: this.board_id,
-            board: this.board,
-            languages: $.cookie('languages').split(','),
-            apps: getting_new_array
-        }));
+                get_names.sort();
+                _.each(get_names, function(data) {
+                    _.each(getss, function(datas) {
+                        if (data === datas.name) {
+                            getting_new_array.push(datas);
+                        }
+                    });
+                });
+            }
+            self.$el.html(self.template({
+                model: self.model,
+                board_id: self.board_id,
+                board: self.board,
+                languages: ($.cookie('languages')) ? $.cookie('languages').split(',') : null,
+                apps: getting_new_array
+            }));
+        });
 
         if (_.isEmpty(this.board_id)) {
             if (!_.isUndefined(authuser.user)) {
@@ -303,7 +305,7 @@ App.FooterView = Backbone.View.extend({
     showBackBoardsList: function(e) {
         var target = $(e.target);
         target.parents('li.dropdown').addClass('open');
-        $('li.js-back').remove();
+        this.$el.find('li.js-back').remove();
         this.showBoardsList(e);
         return false;
     },
@@ -362,12 +364,13 @@ App.FooterView = Backbone.View.extend({
      *
      */
     showBoardAddForm: function(e) {
+        var self = this;
         var workflow_template = new App.WorkFlowTemplateCollection();
         workflow_template.url = api_url + 'workflow_templates.json';
         workflow_template.fetch({
             success: function(model, response) {
                 var templates = '';
-                $('li.js-back').remove();
+                self.$el.find('li.js-back').remove();
                 var target = $(e.target);
                 var parent = target.parents('.js-show-add-boards-list');
                 var insert = $('.js-show-boards-list-response', parent);
@@ -392,7 +395,7 @@ App.FooterView = Backbone.View.extend({
      *
      */
     showOrganizationsAddForm: function(e) {
-        $('li.js-back').remove();
+        this.$el.find('li.js-back').remove();
         var target = $(e.target);
         var parent = target.parents('.js-show-add-boards-list');
         var insert = $('.js-show-boards-list-response', parent);
@@ -411,7 +414,7 @@ App.FooterView = Backbone.View.extend({
         $('.js-boards-list-container').addClass('hide');
         $('.js-qsearch-container').removeClass('hide');
         $('.js-show-boards-list-response').addClass('hide');
-        $('li.js-back').remove();
+        this.$el.find('li.js-back').remove();
         var recent_boards = '';
         var my_boards = '';
         var self = this;
@@ -685,11 +688,14 @@ App.FooterView = Backbone.View.extend({
         var self = this;
         var activities = new App.ActivityCollection();
         var view_activity = $('#js-all-activities');
-        var Auth = JSON.parse($.cookie('auth'));
-        if (_.isUndefined(authuser.user.last_activity_id)) {
-            authuser.user.last_activity_id = Auth.user.last_activity_id;
+        var Auth, favCount;
+        if ($.cookie('auth')) {
+            Auth = JSON.parse($.cookie('auth'));
+            if (_.isUndefined(authuser.user.last_activity_id)) {
+                authuser.user.last_activity_id = Auth.user.last_activity_id;
+            }
+            favCount = parseInt(Auth.user.notify_count);
         }
-        favCount = parseInt(Auth.user.notify_count);
         if (mode == 1) {
             query_string = '&last_activity_id=' + authuser.user.last_activity_id;
             activities.url = api_url + 'users/' + authuser.user.id + '/activities.json?type=all' + query_string;
@@ -727,26 +733,29 @@ App.FooterView = Backbone.View.extend({
                         } else {
                             $('.js-notification-count').addClass('hide');
                         }
-                        Auth = JSON.parse($.cookie('auth'));
-                        Auth.user.last_activity_id = update_last_activity.id;
-                        Auth.user.notify_count = favCount;
-                        $.cookie('auth', JSON.stringify(Auth));
+                        if ($.cookie('auth')) {
+                            Auth = JSON.parse($.cookie('auth'));
+                            Auth.user.last_activity_id = update_last_activity.id;
+                            Auth.user.notify_count = favCount;
+                            $.cookie('auth', JSON.stringify(Auth));
+                        }
                         authuser.user.last_activity_id = update_last_activity.id;
                     } else if (mode == 2) {
                         if (favCount > 0) {
-                            Auth = JSON.parse($.cookie('auth'));
-                            var user = new App.User();
-                            user.url = api_url + 'users/' + authuser.user.id + '.json';
-                            user.set('id', parseInt(authuser.user.id));
-                            user.save({
-                                'last_activity_id': update_last_activity.id
-                            });
-                            authuser.user.notify_count = 0;
-                            Auth.user.notify_count = 0;
-                            favicon.badge(0);
-                            $('.js-notification-count').addClass('hide');
-                            $.cookie('auth', JSON.stringify(Auth));
-
+                            if ($.cookie('auth')) {
+                                Auth = JSON.parse($.cookie('auth'));
+                                var user = new App.User();
+                                user.url = api_url + 'users/' + authuser.user.id + '.json';
+                                user.set('id', parseInt(authuser.user.id));
+                                user.save({
+                                    'last_activity_id': update_last_activity.id
+                                });
+                                authuser.user.notify_count = 0;
+                                Auth.user.notify_count = 0;
+                                favicon.badge(0);
+                                $('.js-notification-count').addClass('hide');
+                                $.cookie('auth', JSON.stringify(Auth));
+                            }
                         }
                     }
                     activities.each(function(activity) {
@@ -784,7 +793,8 @@ App.FooterView = Backbone.View.extend({
                         var view = new App.ActivityView({
                             model: activity,
                             type: 'all',
-                            board: self.board
+                            board: self.board,
+                            flag: '2'
                         });
                         $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         if (mode == 1) {
@@ -1278,10 +1288,12 @@ App.FooterView = Backbone.View.extend({
                         var unread_activity_id = _.max(activities.models, function(activity) {
                             return activity.id;
                         });
-                        Auth = JSON.parse($.cookie('auth'));
-                        Auth.user.unread_activity_id = unread_activity_id.id;
-                        authuser.user.unread_activity_id = unread_activity_id.id;
-                        $.cookie('auth', JSON.stringify(Auth));
+                        if ($.cookie('auth')) {
+                            Auth = JSON.parse($.cookie('auth'));
+                            Auth.user.unread_activity_id = unread_activity_id.id;
+                            authuser.user.unread_activity_id = unread_activity_id.id;
+                            $.cookie('auth', JSON.stringify(Auth));
+                        }
                     }
                 } else {
                     if (parseInt(authuser.user.last_activity_id) === 0 || authuser.user.last_activity_id === null) {
@@ -1299,6 +1311,10 @@ App.FooterView = Backbone.View.extend({
                     'height': notificationH - 100,
                     'overflow-y': 'scroll'
                 });
+            },
+            error: function(models, response, options) {
+                console.log(options);
+                console.log(response);
             }
         });
     },
@@ -1333,7 +1349,8 @@ App.FooterView = Backbone.View.extend({
                         var all_activity = $('#js-all-activities');
                         var view = new App.ActivityView({
                             model: activity,
-                            board: self.board
+                            board: self.board,
+                            flag: '2'
                         });
                         $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         if ($('.js-list-activity-' + activity.id, view_activity).length === 0) {
@@ -1482,7 +1499,8 @@ App.FooterView = Backbone.View.extend({
                         var view = new App.ActivityView({
                             model: activity,
                             board: self.board,
-                            type: modeType
+                            type: modeType,
+                            flag: '2'
                         });
                         $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         view_activity.append(view.render().el).find('.timeago').timeago();
@@ -1566,7 +1584,12 @@ App.FooterView = Backbone.View.extend({
                     });
                     self.flash('success', i18next.t('Imported successfully.'));
                 } else {
-                    self.flash('danger', i18next.t('Unable to import. please try again.'));
+                    if (response.error) {
+                        self.flash('danger', i18next.t(response.error));
+                    } else {
+                        self.flash('danger', i18next.t('Unable to import. please try again.'));
+                    }
+
                 }
             }
         });
@@ -1576,25 +1599,53 @@ App.FooterView = Backbone.View.extend({
         var i = 0;
         var hide_class = '';
         var target = $(e.currentTarget);
-        var e_target = $(e.target).parents().find('#all_activities');
+        $('li#no-record').remove();
         if (target.attr('id') == 'modal-activities') {
-            $('#no-record').remove();
-            $('.modal-comments').parent('li').addClass('hide');
-            $('.modal-activities').parent('li').removeClass('hide');
-            $('#modal-activities').addClass('active');
-            $('#modal-comments').removeClass('active');
-            if ($("li.js-activity:visible").length === 0) {
-                $("#js-all-activities").append('<li id="no-record">No Records Found</li>');
+            $('#all_activities').find('#modal-activities').toggleClass('active');
+            if ($('#all_activities').find('#modal-activities').hasClass('active')) {
+                if ($('#all_activities').find('#modal-comments').hasClass('active')) {
+                    $.cookie('filter', 'both');
+                    $('#all_activities').find('.modal-activities').parent('li').removeClass('hide');
+                    $('#all_activities').find('.modal-comments').parent('li').removeClass('hide');
+                } else {
+                    $.cookie('filter', 'activity');
+                    $('#all_activities').find('.modal-activities').parent('li').removeClass('hide');
+                    $('#all_activities').find('.modal-comments').parent('li').addClass('hide');
+                }
+            } else {
+                if ($('#all_activities').find('#modal-comments').hasClass('active')) {
+                    $.cookie('filter', 'comment');
+                    $('#all_activities').find('.modal-activities').parent('li').addClass('hide');
+                    $('#all_activities').find('.modal-comments').parent('li').removeClass('hide');
+                } else {
+                    $.cookie('filter', 'both');
+                    $('#all_activities').find('.modal-activities').parent('li').removeClass('hide');
+                    $('#all_activities').find('.modal-comments').parent('li').removeClass('hide');
+                }
             }
         }
         if (target.attr('id') == 'modal-comments') {
-            $('#no-record').remove();
-            $('.modal-activities').parent('li').addClass('hide');
-            $('.modal-comments').parent('li').removeClass('hide');
-            $('#modal-comments').addClass('active');
-            $('#modal-activities').removeClass('active');
-            if ($("li.js-activity:visible").length === 0) {
-                $("#js-all-activities").append('<li id="no-record">No Records Found</li>');
+            $('#all_activities').find('#modal-comments').toggleClass('active');
+            if ($('#all_activities').find('#modal-comments').hasClass('active')) {
+                if ($('#all_activities').find('#modal-activities').hasClass('active')) {
+                    $.cookie('filter', 'both');
+                    $('#all_activities').find('.modal-comments').parent('li').removeClass('hide');
+                    $('#all_activities').find('.modal-activities').parent('li').removeClass('hide');
+                } else {
+                    $.cookie('filter', 'comment');
+                    $('#all_activities').find('.modal-comments').parent('li').removeClass('hide');
+                    $('#all_activities').find('.modal-activities').parent('li').addClass('hide');
+                }
+            } else {
+                if ($('#all_activities').find('#modal-activities').hasClass('active')) {
+                    $.cookie('filter', 'activity');
+                    $('#all_activities').find('.modal-comments').parent('li').addClass('hide');
+                    $('#all_activities').find('.modal-activities').parent('li').removeClass('hide');
+                } else {
+                    $.cookie('filter', 'both');
+                    $('#all_activities').find('.modal-comments').parent('li').removeClass('hide');
+                    $('#all_activities').find('.modal-activities').parent('li').removeClass('hide');
+                }
             }
         }
         return false;

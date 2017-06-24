@@ -11,7 +11,6 @@
   <link rel="manifest" href="manifest.json">
   <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
   <!-- build:css css/default.cache.css -->
-  <link type="text/css" rel="stylesheet" media="screen" href="./css/converse.css" />
   <link rel="stylesheet" type="text/css" href="./css/fullcalendar.css">
   <link rel="stylesheet" type="text/css" href="./css/bootstrap-datetimepicker.min.css">
   <link rel="stylesheet" type="text/css" href="./css/bootstrap.css">
@@ -44,12 +43,10 @@
   var template_url = './client/';
   </script>
   <script>
-        window.addEventListener('load', function(e){
-            window.applicationCache.addEventListener('updateready', function(e){
-                window.applicationCache.update();
-                if (window.applicationCache.status == window.applicationCache.UPDATEREADY){
-                    window.applicationCache.swapCache();
-                    if (confirm('A new version of this site is available. Load it?')){
+        window.addEventListener('load', function(e) {
+            window.applicationCache.addEventListener('updateready', function(e) {
+                if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+                    if (confirm('A new version of this site is available. Load it?')) {
                         window.location.reload();
                     }
                 }
@@ -103,6 +100,7 @@
   <script src="./js/libs/backbone-batch-operations.js"></script>
   <script src="./js/libs/jquery-bootstrap-pagination.js"></script>
   <script src="./js/libs/jquery.sparkline.js"></script>
+  <script src="./js/libs/localforage.js"></script>
   <script src="./js/libs/locale.js"></script>
   <script src="./js/libs/splitter.js"></script>
   <script src="./js/libs/musical.js"></script>
@@ -115,6 +113,7 @@
   <script src="./js/libs/backbone-forms.js"></script>
   <script src="./js/libs/jquery.cookie.js"></script>
   <script src="./js/libs/jquery.printPage.js"></script>
+  <script src="./js/libs/jquery.ui.touch-punch.min.js"></script>
   <script src="./js/models/oauth.js"></script>
   <script src="./js/models/user.js"></script>
   <script src="./js/models/board.js"></script>
@@ -128,6 +127,7 @@
   <script src="./js/models/boards_user.js"></script>
   <script src="./js/models/activity.js"></script>
   <script src="./js/models/card_voter.js"></script>
+  <script src="./js/models/card_label.js"></script>
   <script src="./js/models/card_subscriber.js"></script>
   <script src="./js/models/card_attachment.js"></script>
   <script src="./js/models/label.js"></script>
@@ -235,6 +235,7 @@
   <script src="./js/views/board_background_view.js"></script>
   <script src="./js/views/board_filter_view.js"></script>
   <script src="./js/views/board_labels_view.js"></script>
+  <script src="./js/views/board_labels_edit_view.js"></script>
   <script src="./js/views/board_user_activity_view.js"></script>
   <script src="./js/views/board_user_remove_confirm_view.js"></script>
   <script src="./js/views/card_copy_view.js"></script>

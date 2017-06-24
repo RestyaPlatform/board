@@ -17,6 +17,14 @@ App.CardLabelFormView = Backbone.View.extend({
     template: JST['templates/card_label_form'],
     tagName: 'li',
     /**
+     * Events
+     * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
+     */
+    events: {
+        'click .js-show-card-label-colorpicker': 'showCardLabelColorpicker'
+    },
+
+    /**
      * Constructor
      * initialize default values and actions
      */
@@ -27,6 +35,20 @@ App.CardLabelFormView = Backbone.View.extend({
         this.card = options.card;
         this.render();
     },
+    /**
+     * showCardLabelColorpicker()
+     * show card label colorpicker form
+     * @param e
+     * @type Object(DOM event)
+     */
+    showCardLabelColorpicker: function(e) {
+        e.preventDefault();
+        var target = $(e.target);
+        $('li.dropdown').removeClass('open');
+        target.parents('div.dropdown').addClass('open');
+        return false;
+    },
+
     /**
      * render()
      * populate the html to the dom

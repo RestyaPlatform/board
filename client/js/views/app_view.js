@@ -42,7 +42,7 @@ App.AppsView = Backbone.View.extend({
         _app.save(data, {
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
-                    localStorage.removeItem('apps');
+                    localforage.removeItem('apps');
                     self.flash('success', i18next.t('App updated successfully'));
                     location.reload();
                 } else {

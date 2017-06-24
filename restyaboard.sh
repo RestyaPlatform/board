@@ -16,32 +16,15 @@
 	whoami
 	echo $(cat /etc/issue)
 	OS_REQUIREMENT=$(lsb_release -i -s)
-	if [ $? != 0 ]
+	if [ $? != 0 || OS_REQUIREMENT = "" ]
 	then
-		echo "lsb_release is not enabled"
+		echo "lsb_release is not enabled, please install \"yum install -y redhat-lsb-core\" command before running install script"
 		exit 1
 	fi
 	OS_VERSION=$(lsb_release -rs | cut -f1 -d.)
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 	then
-		sed -i -e 's/us.archive.ubuntu.com/archive.ubuntu.com/g' /etc/apt/sources.list
-		
-		echo "deb http://mirrors.linode.com/debian/ wheezy main contrib non-free" >> /etc/apt/sources.list
-		echo "deb-src http://mirrors.linode.com/debian/ wheezy main contrib non-free" >> /etc/apt/sources.list
-		echo "deb http://mirrors.linode.com/debian-security/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
-		echo "deb-src http://mirrors.linode.com/debian-security/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
-		echo "deb http://mirrors.linode.com/debian/ wheezy-updates main" >> /etc/apt/sources.list
-		echo "deb-src http://mirrors.linode.com/debian/ wheezy-updates main" >> /etc/apt/sources.list
-		sed -i -e 's/deb cdrom/#deb cdrom/g' /etc/apt/sources.list
-		apt-key update
 		apt-get update
-
-		echo "deb http://packages.dotdeb.org jessie all" >> /etc/apt/sources.list
-		echo "deb-src http://packages.dotdeb.org jessie all" >> /etc/apt/sources.list
-		wget https://www.dotdeb.org/dotdeb.gpg
-		apt-key add dotdeb.gpg
-		apt-get update
-
 		apt-get install -y curl unzip
 	else
 		yum install -y curl unzip
@@ -116,66 +99,11 @@
 			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 
-			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/chat_activities.sh//" /var/spool/cron/crontabs/root
-			sed -i "s/0 * * * * $dir\/server\/php\/shell\/periodic_chat_email_notification.sh//" /var/spool/cron/crontabs/root
-			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/indexing_to_elasticsearch.sh//" /var/spool/cron/crontabs/root
-
-			rm $dir/server/php/shell/chat_activities.sh
-			rm $dir/server/php/shell/chat_activities.php
-			rm $dir/server/php/shell/indexing_to_elasticsearch.sh
-			rm $dir/server/php/shell/indexing_to_elasticsearch.php
-			rm $dir/server/php/shell/periodic_chat_email_notification.sh
-			rm $dir/server/php/shell/periodic_chat_email_notification.php
-			rm $dir/server/php/shell/upgrade_v0.2.1_v0.3.php
-
-			rm -rf $dir/client/apps/
-
-			rm -rf $dir/server/php/libs/vendors/xmpp/
-			rm -rf $dir/server/php/libs/vendors/jaxl3/
-			rm -rf $dir/server/php/libs/vendors/xmpp-prebind-php/
-			
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
-				if ! hash jq 2>&-;
-				then
-					echo "Installing jq..."
-					apt-get install -y jq
-					if [ $? != 0 ]
-					then
-						echo "jq installation failed with error code 53"
-					fi
-				fi
-				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
-				chmod -R go+w "/tmp/apps.json"
-				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
-				do
-					mkdir "$dir/client/apps"
-					chmod -R go+w "$dir/client/apps"
-					curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-					unzip /tmp/$fid.zip -d "$dir/client/apps"
-				done
 				service nginx restart
 				service php7.0-fpm restart
 			else
-				if ! hash jq 2>&-;
-				then
-					echo "Installing jq..."
-					yum install -y jq
-					if [ $? != 0 ]
-					then
-						echo "jq installation failed with error code 49"
-						exit 1
-					fi
-				fi
-				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
-				chmod -R go+w "/tmp/apps.json"
-				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
-				do
-					mkdir "$dir/client/apps"
-					chmod -R go+w "$dir/client/apps"
-					curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-					unzip /tmp/$fid.zip -d "$dir/client/apps"
-				done
 				ps -q 1 | grep -q -c "systemd"
 				if [ "$?" -eq 0 ];
 				then
@@ -282,10 +210,6 @@
 					fi
 				esac
 			fi
-
-			wget http://mirrors.kernel.org/ubuntu/pool/main/libn/libnl3/libnl-3-200_3.2.21-1ubuntu3_amd64.deb
-			wget http://mirrors.kernel.org/ubuntu/pool/main/libn/libnl3/libnl-genl-3-200_3.2.21-1ubuntu3_amd64.deb
-			dpkg -i *.deb
 			
 			echo "Installing PHP fpm and cli extension..."
 			apt-get install -y php7.0-fpm php7.0-cli
@@ -391,7 +315,7 @@
 					exit 1
 				fi
 			fi
-			
+
 			echo "Setting up timezone..."
 			timezone=$(cat /etc/timezone)
 			sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.0/fpm/php.ini
@@ -447,8 +371,9 @@
 					fi
 				fi
 			fi
-			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/9.4/main/pg_hba.conf > /etc/postgresql/9.4/main/pg_hba.conf.1
-			cd /etc/postgresql/9.4/main || exit
+			PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/9.4/main/pg_hba.conf > /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf.1
+			cd /etc/postgresql/${PSQL_VERSION}/main || exit
 			mv pg_hba.conf pg_hba.conf_old
 			mv pg_hba.conf.1 pg_hba.conf
 			service postgresql restart
@@ -546,6 +471,8 @@
 					echo "postfix installation failed with error code 16"
 				fi
 			echo "Changing permission..."
+			find $dir -type d -exec chmod 755 {} \;
+			find $dir -type f -exec chmod 644 {} \;
 			chmod -R go+w "$dir/media"
 			chmod -R go+w "$dir/client/img"
 			chmod -R go+w "$dir/tmp/cache"
@@ -566,7 +493,7 @@
 				echo "PostgreSQL user creation failed with error code 35 "
 				exit 1
 			fi
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 36"
@@ -827,7 +754,7 @@
 				fi
 				
 			fi
-			
+
 			echo "Checking xml..."
 			php -m | grep xml
 			if [ "$?" -gt 0 ]; then
@@ -1042,6 +969,8 @@
 			cp -r "$DOWNLOAD_DIR"/* "$dir"
 
 			echo "Changing permission..."
+			find $dir -type d -exec chmod 755 {} \;
+			find $dir -type f -exec chmod 644 {} \;
 			chmod -R go+w "$dir/media"
 			chmod -R go+w "$dir/client/img"
 			chmod -R go+w "$dir/tmp/cache"
@@ -1062,7 +991,7 @@
 				echo "PostgreSQL user creation failed with error code 41"
 				exit 1
 			fi			
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 42"

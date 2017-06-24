@@ -3,7 +3,7 @@
 		<input id="checklist<%- checklist_item.get('id') %>" type="checkbox" class="hide no-print <% if(!_.isUndefined(authuser.user)){ if(parseInt(checklist_item.get('is_completed')) === 1){ %> js-markas-incomplete <% } else{%> js-markas-completed <% } } %>" <% if(parseInt(checklist_item.get('is_completed')) === 1){ %>checked<% } %> <% if(_.isUndefined(authuser.user)){%> disabled<%}%> >
 		<label for="checklist<%- checklist_item.get('id') %>" class="pull-left js-checklist-item-head">
 		</label>
-		<div class="col-xs-11 row">
+		<div class="col-xs-11 row text-justify">
 			<span id="js-checklist-item-<%- checklist_item.get('id') %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(checklist_item.board_users.board.acl_links.where({slug: 'edit_checklist_item',board_user_role_id: parseInt(checklist_item.board_user_role_id)})))){ %>js-show-item-edit-form<% }else{ %>js-no-action<%}%>  <% if(parseInt(checklist_item.get('is_completed')) === 1){ %> strike-through-text <% } %>" ><%= converter.makeHtml(_.escape(checklist_item.get('name'))) %></span>
 		</div>
 	</div>

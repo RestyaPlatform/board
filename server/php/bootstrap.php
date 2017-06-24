@@ -46,7 +46,7 @@ function main()
         if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/client.php') && !empty($_server_domain_url)) {
             doPost('http://restya.com/clients', array(
                 'app' => 'board',
-                'ver' => '0.4.2',
+                'ver' => '0.5',
                 'url' => $_server_domain_url
             ));
             $fh = fopen(APP_PATH . '/tmp/cache/client.php', 'a');
@@ -92,12 +92,7 @@ function main()
             $r_put = json_decode(file_get_contents('php://input'));
             $post_data = $r_put = (array)$r_put;
         }
-        $url_arrays = array(
-            '/users/logout',
-            '/users/register',
-            '/oauth'
-        );
-        if (in_array($r_resource_cmd, $url_arrays) || checkAclLinks($_SERVER['REQUEST_METHOD'], $r_resource_cmd, $r_resource_vars, $post_data)) {
+        if (in_array($r_resource_cmd, $token_exception_url) || checkAclLinks($_SERVER['REQUEST_METHOD'], $r_resource_cmd, $r_resource_vars, $post_data)) {
             // /users/5/products/10 -> array('users' => 5, 'products' => 10) ...
             $scope = array();
             if (!empty($response['scope'])) {
@@ -108,7 +103,7 @@ function main()
                 // Server...
                 switch ($_SERVER['REQUEST_METHOD']) {
                 case 'GET':
-                    if (in_array('read', $scope) || $r_resource_cmd == '/oauth') {
+                    if ((in_array('read', $scope) || $r_resource_cmd == '/oauth' || $r_resource_cmd == '/users/logout') || in_array($r_resource_cmd, $scope_exception_url)) {
                         r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters);
                         $is_valid_req = true;
                     } else {
@@ -158,7 +153,7 @@ function main()
                 echo json_encode($response);
                 exit;
             }
-            header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication 2 failed', true, 401);
+            header($_SERVER['SERVER_PROTOCOL'] . ' 401 Authentication failed', true, 401);
         }
     } else {
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);

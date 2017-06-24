@@ -45,6 +45,14 @@ App.UnsubscribeBoardConfirmView = Backbone.View.extend({
             boardSubscriber.save(data, {
                 success: function(model, response) {
                     self.model.board_subscriber.attributes.is_subscribed = 0;
+                    if (_.isUndefined(self.model.board_subscriber)) {
+                        self.model.board_subscriber = boardSubscriber;
+                        self.model.board_subscribers.add(boardSubscriber, {
+                            silent: true
+                        });
+                    } else {
+                        self.model.board_subscriber.attributes.is_subscribed = 0;
+                    }
                     $('.js-back-to-sidebar').trigger('click');
                 }
             });

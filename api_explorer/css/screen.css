@@ -1298,3 +1298,15 @@
 .swagger-section .swagger-expand:before {
   content: "+";
 }
+.token-link {
+  line-height: 1;
+  text-decoration: none;
+  font-family: "Droid Sans", sans-serif;
+  max-width: 960px;
+  float: right;
+  padding: 5px;
+  margin-right: 100px;
+}
+.token-link > a {
+  text-decoration: none;
+}

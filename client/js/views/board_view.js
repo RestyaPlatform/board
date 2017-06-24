@@ -1011,6 +1011,10 @@ App.BoardView = Backbone.View.extend({
         var target = $(e.target);
         var view_list = el.find('#js-board-lists');
         var data = target.serializeObject();
+        if ($.trim(data.name) === '') {
+            this.flash('danger', i18next.t('Whitespace alone not allowed'));
+            return false;
+        }
         target[0].reset();
         target.parents('.dropdown').removeClass('open');
         target.prev().prev('.js-show-add-list-form').removeClass('hide').addClass('toggle-show').next('.js-show-list-actions').removeClass('hide');
@@ -1158,6 +1162,7 @@ App.BoardView = Backbone.View.extend({
                 });
                 App.boards.get(list.attributes.board_id).lists.add(list);
                 list.board_users = self.model.board_users;
+                list.board_user_role_id = self.model.board_user_role_id;
                 if (!_.isUndefined(data.clone_list_id)) {
                     $(view.render().el).insertAfter($(e.target).parents('.js-board-list'));
                 } else {

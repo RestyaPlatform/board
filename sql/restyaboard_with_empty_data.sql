@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.2
--- Dumped by pg_dump version 9.5.2
+-- Dumped from database version 9.5.6
+-- Dumped by pg_dump version 9.5.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -227,29 +227,50 @@ $$;
 
 CREATE FUNCTION update_board_user_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-		UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
-	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 2) t WHERE "id" = OLD."user_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'UPDATE') THEN
-		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
-	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
-	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 2) t WHERE "id" = OLD."user_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'INSERT') THEN
-		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
-	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-	        UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 1) t WHERE "id" = NEW."user_id";
-	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 2) t WHERE "id" = NEW."user_id";
-		RETURN NEW;
-	END IF;
-END;
+    AS $$
+
+BEGIN
+
+	IF (TG_OP = 'DELETE') THEN
+
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+		UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" != 1) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = OLD."user_id" AND "board_user_role_id" != 1) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+		UPDATE "boards" SET "boards_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
+	        UPDATE "users" SET "joined_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "owner_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" = 1) t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "member_board_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "boards_users" WHERE "user_id" = NEW."user_id" AND "board_user_role_id" != 1) t WHERE "id" = NEW."user_id";
+
+		RETURN NEW;
+
+	END IF;
+
+END;
+
 $$;
 
 
@@ -787,29 +808,52 @@ $$;
 
 CREATE FUNCTION update_organization_user_count() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
-	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
-	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = OLD."user_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'UPDATE') THEN
-		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
-	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
-		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
-	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = OLD."user_id";
-		RETURN OLD;
-	ELSIF (TG_OP = 'INSERT') THEN
-		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
-	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
-	        UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = NEW."user_id";
-	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 2) t WHERE "id" = NEW."user_id";
-		RETURN NEW;
-	END IF;
-END;
+    AS $$
+
+
+
+BEGIN
+
+	IF (TG_OP = 'DELETE') THEN
+
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" != 1) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = OLD."organization_id") t WHERE "id" = OLD."organization_id";
+
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = OLD."user_id";
+
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = OLD."user_id" AND "organization_user_role_id" != 1) t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+		UPDATE "organizations" SET "organizations_user_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "organization_id" = NEW."organization_id") t WHERE "id" = NEW."organization_id";
+
+	        UPDATE "users" SET "joined_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "owner_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" = 1) t WHERE "id" = NEW."user_id";
+
+	        UPDATE "users" SET "member_organization_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "organizations_users" WHERE "user_id" = NEW."user_id" AND "organization_user_role_id" != 1) t WHERE "id" = NEW."user_id";
+
+		RETURN NEW;
+
+	END IF;
+
+END;
+
 $$;
 
 
@@ -1238,6 +1282,7 @@ CREATE TABLE cards (
     is_deleted boolean DEFAULT false NOT NULL,
     comment_count bigint DEFAULT (0)::bigint,
     custom_fields text,
+    color character varying(255),
     CONSTRAINT name CHECK ((char_length(name) > 0))
 );
 
@@ -1324,6 +1369,7 @@ CREATE TABLE labels (
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
     card_count bigint DEFAULT 0 NOT NULL,
+    color character varying,
     CONSTRAINT name CHECK ((char_length((name)::text) > 0))
 );
 
@@ -1357,6 +1403,7 @@ CREATE TABLE lists (
     lists_subscriber_count bigint DEFAULT 0,
     is_deleted boolean DEFAULT false NOT NULL,
     custom_fields text,
+    color character varying(255),
     CONSTRAINT name CHECK ((char_length((name)::text) > 0))
 );
 
@@ -2053,7 +2100,8 @@ CREATE VIEW cards_labels_listing AS
     c.name AS card_name,
     c.list_id,
     l.name,
-    cl.board_id
+    cl.board_id,
+    l.color
    FROM ((cards_labels cl
      LEFT JOIN cards c ON ((c.id = cl.card_id)))
      LEFT JOIN labels l ON ((l.id = cl.label_id)));
@@ -2219,7 +2267,8 @@ CREATE VIEW cards_listing AS
                     cards_labels.card_id,
                     cards_labels.list_id,
                     cards_labels.board_id,
-                    cards_labels.name
+                    cards_labels.name,
+                    cards_labels.color
                    FROM cards_labels_listing cards_labels
                   WHERE (cards_labels.card_id = cards.id)
                   ORDER BY cards_labels.name) cl) AS cards_labels,
@@ -2228,6 +2277,7 @@ CREATE VIEW cards_listing AS
     b.name AS board_name,
     l.name AS list_name,
     cards.custom_fields,
+    cards.color,
     cards.due_date AS notification_due_date
    FROM (((cards cards
      LEFT JOIN users u ON ((u.id = cards.user_id)))
@@ -2306,7 +2356,8 @@ CREATE VIEW lists_listing AS
                     cards_listing.cards_subscribers,
                     cards_listing.cards_labels,
                     cards_listing.comment_count,
-                    cards_listing.custom_fields
+                    cards_listing.custom_fields,
+                    cards_listing.color
                    FROM cards_listing cards_listing
                   WHERE (cards_listing.list_id = lists.id)
                   ORDER BY cards_listing."position") lc) AS cards,
@@ -2320,7 +2371,8 @@ CREATE VIEW lists_listing AS
                    FROM list_subscribers lists_subscribers
                   WHERE (lists_subscribers.list_id = lists.id)
                   ORDER BY lists_subscribers.id) ls) AS lists_subscribers,
-    lists.custom_fields
+    lists.custom_fields,
+    lists.color
    FROM lists lists;
 
 
@@ -2436,7 +2488,8 @@ CREATE VIEW boards_listing AS
                     lists_listing.lists_subscriber_count,
                     lists_listing.cards,
                     lists_listing.lists_subscribers,
-                    lists_listing.custom_fields
+                    lists_listing.custom_fields,
+                    lists_listing.color
                    FROM lists_listing lists_listing
                   WHERE (lists_listing.board_id = board.id)
                   ORDER BY lists_listing."position") bl) AS lists,
@@ -2489,6 +2542,7 @@ CREATE VIEW cards_elasticsearch_listing AS
             cards.checklist_item_completed_count,
             cards.card_voter_count,
             cards.cards_user_count,
+            cards.color,
             ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
                    FROM ( SELECT boards_users.user_id
                            FROM boards_users boards_users
@@ -3178,6 +3232,7 @@ CREATE VIEW simple_board_listing AS
                     (lists.is_archived)::integer AS is_archived,
                     lists.card_count,
                     lists.lists_subscriber_count,
+                    lists.color,
                     (lists.is_deleted)::integer AS is_deleted
                    FROM lists lists
                   WHERE (lists.board_id = board.id)
@@ -3296,6 +3351,7 @@ CREATE VIEW users_cards_listing AS
     c.card_voter_count,
     c.activity_count,
     c.user_id AS created_user_id,
+    c.color AS card_color,
     (c.is_deleted)::integer AS is_deleted,
     cu.user_id,
     c.comment_count
@@ -3513,7 +3569,6 @@ COPY acl_board_links (id, created, modified, name, url, method, slug, group_id, 
 38	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Move list cards	/boards/?/lists/?/cards	PUT	move_list_cards	4	0
 39	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Post comment to card	/boards/?/lists/?/cards/?/comments	POST	comment_card	4	0
 40	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove attachment from card	/boards/?/lists/?/cards/?/attachments/?	DELETE	remove_card_attachment	4	0
-42	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove card member	/boards/?/lists/?/cards/?/users/?	DELETE	delete_card_user	4	0
 45	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe board	/boards/?/board_subscribers	POST	subscribe_board	2	0
 46	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe card	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_card	4	0
 47	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Subscribe list	/boards/?/lists/?/list_subscribers	POST	subscribe_list	3	0
@@ -3533,6 +3588,8 @@ COPY acl_board_links (id, created, modified, name, url, method, slug, group_id, 
 44	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Search card to add in comment	/boards/?/cards/search	GET	view_card_search	4	0
 11	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Assign labels to card	/boards/?/lists/?/cards/?/labels	POST	add_labels	4	1
 41	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove board member	/boards/?/boards_users/?	DELETE	remove_board_user	2	0
+42	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove card member	/boards/?/lists/?/cards/?/cards_users/?	DELETE	delete_card_user	4	0
+62	2017-06-13 13:52:45.626123	2017-06-13 13:52:45.626123	Labels edit	/labels/?	PUT	edit_labels	4	1
 \.
 
 
@@ -3654,6 +3711,8 @@ COPY acl_board_links_boards_user_roles (id, created, modified, acl_board_link_id
 125	2016-02-22 12:49:43.194	2016-02-22 12:49:43.194	56	3
 126	2016-02-22 12:49:44.285	2016-02-22 12:49:44.285	59	3
 128	2016-02-22 12:49:49.309	2016-02-22 12:49:49.309	61	3
+129	2017-06-13 13:52:45.634449	2017-06-13 13:52:45.634449	62	1
+130	2017-06-13 13:52:45.642858	2017-06-13 13:52:45.642858	62	2
 \.
 
 
@@ -3661,7 +3720,7 @@ COPY acl_board_links_boards_user_roles (id, created, modified, acl_board_link_id
 -- Name: acl_board_links_boards_user_roles_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('acl_board_links_boards_user_roles_seq', 1, false);
+SELECT pg_catalog.setval('acl_board_links_boards_user_roles_seq', 128, true);
 
 
 --
@@ -3738,6 +3797,7 @@ COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_use
 139	2016-06-28 07:47:21.747	2016-06-28 07:47:21.747	Organization user role edit	/organization_user_roles/?	PUT	organization_user_role_edit	1	0	0	1	1
 125	2015-10-05 13:14:18.2	2015-10-05 13:14:18.2	Chat History	/boards/?/chat_history	GET	chat_history	2	1	0	1	0
 27	2016-02-18 20:11:14.482	2016-02-18 20:11:14.482	View board	/boards/?	GET	view_board	2	1	0	0	0
+141	2017-06-13 13:52:45.854008	2017-06-13 13:52:45.854008	Labels Edit	/labels/?	PUT	label_edit	1	0	0	1	1
 \.
 
 
@@ -3875,6 +3935,8 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 1263	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	138	1
 1264	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	131	1
 1265	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	139	1
+1266	2017-06-13 13:52:45.862325	2017-06-13 13:52:45.862325	141	1
+1267	2017-06-13 13:52:45.862325	2017-06-13 13:52:45.862325	141	2
 \.
 
 
@@ -3882,7 +3944,7 @@ COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 -- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1265, true);
+SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1267, true);
 
 
 --
@@ -4079,7 +4141,7 @@ SELECT pg_catalog.setval('card_voters_id_seq', 1, true);
 -- Data for Name: cards; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY cards (id, created, modified, board_id, list_id, name, description, due_date, "position", is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, cards_user_count, cards_subscriber_count, card_voter_count, activity_count, user_id, is_deleted, comment_count, custom_fields) FROM stdin;
+COPY cards (id, created, modified, board_id, list_id, name, description, due_date, "position", is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, cards_user_count, cards_subscriber_count, card_voter_count, activity_count, user_id, is_deleted, comment_count, custom_fields, color) FROM stdin;
 \.
 
 
@@ -4458,13 +4520,13 @@ SELECT pg_catalog.setval('countries_id_seq1', 1, false);
 
 COPY email_templates (id, created, modified, from_email, reply_to_email, name, description, subject, email_text_content, email_variables, display_name) FROM stdin;
 4	2014-05-08 12:13:50.69	2014-05-08 12:13:50.69	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	changepassword	We will send this mail to user, when admin change users password.	Restyaboard / Password changed	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">Admin reset your password for your ##SITE_NAME## account.<br>Your new password: ##PASSWORD##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=change_password_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_NAME, SITE_URL, PASSWORD	Change Password
-6	2015-10-09 06:15:49.891	2015-10-09 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	email_notification	We will send this mail, when user activities in this site.	Restyaboard / ##NOTIFICATION_COUNT## new notifications since ##SINCE##	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="Restyaboard"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="Restyaboard"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<div style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;margin-top:30px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Here's what you missed…</h2>\n<div style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</div>\n</div>\n</div>\n</div>\n<div style="text-align:center;margin:5px 15px;padding:10px 0px;">\n<a href="##SITE_URL##/#/user/##USER_ID##/settings">Change email preferences</a>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\n</h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTENT, NAME, NOTIFICATION_COUNT, SINCE	Email Notification
 1	2014-05-08 12:13:37.268	2014-05-08 12:13:37.268	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	activation	We will send this mail, when user registering an account he/she will get an activation request.	Restyaboard / Account confirmation	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,\n</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">You are one step ahead. Please click the below URL to activate your account.<br>##ACTIVATION_URL##<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=activation_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME, ACTIVATION_URL	Activation
 2	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	welcome	We will send this mail, when user register in this site and get activate.	Restyaboard / Welcome	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We wish to say a quick hello and thanks for registering at ##SITE_NAME##.<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME	Welcome
 5	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	newprojectuser	We will send this mail, when user added for board.	Restyaboard / ##BOARD_NAME## assigned by ##CURRENT_USER##	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%\nCREA;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2>\n<p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CURRENT_USER## has added you to the board ##BOARD_NAME## ##BOARD_URL##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=new_board_member_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, NAME, BOARD_NAME, CURRENT_USER, BOARD_URL	New Board User
 3	2014-05-08 12:13:59.784	2014-05-08 12:13:59.784	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	forgetpassword	We will send this mail, when user submit the forgot password form	Restyaboard / Password reset	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We have received a password reset request for your account at ##SITE_NAME##.<br>New password: ##PASSWORD##<br>If you didn't requested this action and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=forgot_password_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_NAME, SITE_URL, CONTACT_EMAIL, NAME, PASSWORD	Forgot Password
 7	2016-01-10 06:15:49.891	2016-01-10 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	due_date_notification	We will send this mail, One day before when the card due date end.	##SUBJECT##	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;">\n<h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Due soon…</h2>\n<p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=due_date_notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\n</h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, SUBJECT, CONTENT	Due Date Notification
 8	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	ldap_welcome	We will send this mail, when admin imports from LDAP.	Restyaboard / Welcome	<html>\n<head></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">Admin imported your LDAP account in ##SITE_NAME##. You can login with your LDAP username and password in ##SITE_URL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME	LDAP Welcome
+6	2015-10-09 06:15:49.891	2015-10-09 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	email_notification	We will send this mail, when user activities in this site.	Restyaboard / ##NOTIFICATION_COUNT## new notifications since ##SINCE##	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="Restyaboard"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="Restyaboard"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<div style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;margin-top:30px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Here's what you missed...</h2>\n<div style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</div>\n</div>\n</div>\n</div>\n<div style="text-align:center;margin:5px 15px;padding:10px 0px;">\n<a href="##SITE_URL##/#/user/##USER_ID##/settings">Change email preferences</a>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\n</h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTENT, NAME, NOTIFICATION_COUNT, SINCE	Email Notification
 \.
 
 
@@ -4495,7 +4557,7 @@ SELECT pg_catalog.setval('ips_id_seq', 1, true);
 -- Data for Name: labels; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY labels (id, created, modified, name, card_count) FROM stdin;
+COPY labels (id, created, modified, name, card_count, color) FROM stdin;
 \.
 
 
@@ -4955,7 +5017,7 @@ SELECT pg_catalog.setval('list_subscribers_id_seq', 1, false);
 -- Data for Name: lists; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY lists (id, created, modified, board_id, user_id, name, "position", is_archived, card_count, lists_subscriber_count, is_deleted, custom_fields) FROM stdin;
+COPY lists (id, created, modified, board_id, user_id, name, "position", is_archived, card_count, lists_subscriber_count, is_deleted, custom_fields, color) FROM stdin;
 \.
 
 
@@ -5171,7 +5233,6 @@ COPY settings (id, setting_category_id, setting_category_parent_id, name, value,
 39	11	0	XMPP_CLIENT_RESOURCE_NAME		\N	text	\N	Client Resource Name	3
 30	3	0	DEFAULT_CONTACT_EMAIL_ADDRESS	board@restya.com	It is used in all outgoing emails	text	\N	Contact Email Address	4
 42	3	0	DEFAULT_CARD_VIEW	Maximized	\N	select	Maximized,Normal Dockmodal	Default Card Open	7
-22	3	0	STANDARD_LOGIN_ENABLED	true	\N	checkbox	\N	Standard login/register	8
 \.
 
 
@@ -6263,13 +6324,6 @@ CREATE TRIGGER update_board_user_count AFTER INSERT OR DELETE OR UPDATE ON board
 
 
 --
--- Name: update_card_activity_count; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_card_activity_count AFTER INSERT OR DELETE OR UPDATE ON activities FOR EACH ROW EXECUTE PROCEDURE update_card_activity_count();
-
-
---
 -- Name: update_card_attachment_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -6316,13 +6370,6 @@ CREATE TRIGGER update_card_user_count AFTER INSERT OR DELETE OR UPDATE ON cards_
 --
 
 CREATE TRIGGER update_card_voters_count AFTER INSERT OR DELETE OR UPDATE ON card_voters FOR EACH ROW EXECUTE PROCEDURE update_card_voters_count();
-
-
---
--- Name: update_comment_count; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_comment_count AFTER INSERT OR DELETE OR UPDATE ON activities FOR EACH ROW EXECUTE PROCEDURE update_comment_count();
 
 
 --

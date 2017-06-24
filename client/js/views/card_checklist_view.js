@@ -17,7 +17,7 @@ if (typeof App === 'undefined') {
 App.CardCheckListView = Backbone.View.extend({
     template: JST['templates/card_checklist'],
     tagName: 'div',
-    className: 'js-card-checklist',
+    className: 'js-card-checklist card-checklist',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)

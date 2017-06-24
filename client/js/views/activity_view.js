@@ -26,6 +26,10 @@ App.ActivityView = Backbone.View.extend({
         }
         _.bindAll(this, 'render', 'undo', 'undo_all');
         this.type = options.type;
+        this.flag = 2;
+        if (!_.isUndefined(options.flag)) {
+            this.flag = options.flag;
+        }
         if (!_.isUndefined(options.board)) {
             this.board = options.board;
         }
@@ -83,6 +87,20 @@ App.ActivityView = Backbone.View.extend({
             if (this.model.attributes.depth !== 0) {
                 var col_offset = parseInt(this.model.attributes.depth);
                 this.$el.addClass('col-lg-offset-' + col_offset);
+            }
+            var filter = ($.cookie('filter') === undefined || $.cookie('filter') === 'comment') ? 1 : 0;
+            filter = ($.cookie('filter') !== undefined && $.cookie('filter') === 'both') ? 2 : filter;
+            if (this.flag === '2') {
+                filter = 2;
+            }
+            if (this.model.attributes.type == 'add_comment' || this.model.attributes.type == 'edit_comment') {
+                if (filter === 0) {
+                    this.$el.addClass('hide');
+                }
+            } else {
+                if (filter === 1) {
+                    this.$el.addClass('hide');
+                }
             }
         }
         this.showTooltip();

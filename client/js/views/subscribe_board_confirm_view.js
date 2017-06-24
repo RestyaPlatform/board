@@ -44,6 +44,9 @@ App.SubscribeBoardConfirmView = Backbone.View.extend({
             success: function(model, response) {
                 if (_.isUndefined(self.model.board_subscriber)) {
                     self.model.board_subscriber = boardSubscriber;
+                    self.model.board_subscribers.add(boardSubscriber, {
+                        silent: true
+                    });
                 } else {
                     self.model.board_subscriber.attributes.is_subscribed = 1;
                 }

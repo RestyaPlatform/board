@@ -43,29 +43,55 @@ App.ChangepasswordView = Backbone.View.extend({
     changepassword: function(e) {
         var target = $(e.target);
         var data = $('form#UserChangePasswordForm').serializeObject();
-        target[0].reset();
-        var user = new App.User();
-        var self = this;
-        user.url = api_url + 'users/' + this.model.user_id + '/changepassword.json';
-        user.save(data, {
-            success: function(model, response) {
-                if (response.error) {
-                    if (parseInt(response.error) === 1) {
-                        self.flash('danger', i18next.t('Your old password is incorrect, please try again.'));
-                    } else if (parseInt(response.error) === 2) {
-                        self.flash('danger', i18next.t('Unable to change password. Please try again.'));
-                    } else if (parseInt(response.error) === 3) {
-                        self.flash('danger', i18next.t('New and confirm password field must match, please try again.'));
-                    }
-                } else {
-                    self.flash('success', i18next.t('Password has been changed successfully.'));
-                    app.navigate('#/users/logout', {
-                        trigger: true,
-                        replace: true
-                    });
-                }
+        if ($.trim(data.confirm_password) === '' || $.trim(data.old_password) === '' || $.trim(data.password) === '') {
+            if ($.trim(data.confirm_password) === '' && $.trim(data.old_password) === '' && $.trim(data.password) === '') {
+                $('.error-msg-confirm').remove();
+                $('.error-msg-password').remove();
+                $('.error-msg-old').remove();
+                $('<div class="error-msg-confirm text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputConfirmPassword');
+                $('<div class="error-msg-password text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputPassword');
+                $('<div class="error-msg-old text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputOldPassword');
+            } else if ($.trim(data.confirm_password) === '') {
+                $('.error-msg-confirm').remove();
+                $('.error-msg-password').remove();
+                $('.error-msg-old').remove();
+                $('<div class="error-msg-confirm text-primary h6">' + i18next.t('whitespace alone not allowed') + '</div>').insertAfter('#inputConfirmPassword');
+            } else if ($.trim(data.old_password) === '') {
+                $('.error-msg-confirm').remove();
+                $('.error-msg-password').remove();
+                $('.error-msg-old').remove();
+                $('<div class="error-msg-old text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputOldPassword');
+            } else if ($.trim(data.password) === '') {
+                $('.error-msg-confirm').remove();
+                $('.error-msg-password').remove();
+                $('.error-msg-old').remove();
+                $('<div class="error-msg-password text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputPassword');
             }
-        });
+        } else {
+            target[0].reset();
+            var user = new App.User();
+            var self = this;
+            user.url = api_url + 'users/' + this.model.user_id + '/changepassword.json';
+            user.save(data, {
+                success: function(model, response) {
+                    if (response.error) {
+                        if (parseInt(response.error) === 1) {
+                            self.flash('danger', i18next.t('Your old password is incorrect, please try again.'));
+                        } else if (parseInt(response.error) === 2) {
+                            self.flash('danger', i18next.t('Unable to change password. Please try again.'));
+                        } else if (parseInt(response.error) === 3) {
+                            self.flash('danger', i18next.t('New and confirm password field must match, please try again.'));
+                        }
+                    } else {
+                        self.flash('success', i18next.t('Password has been changed successfully.'));
+                        app.navigate('#/users/logout', {
+                            trigger: true,
+                            replace: true
+                        });
+                    }
+                }
+            });
+        }
         return false;
     },
     /**

@@ -52,7 +52,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.board_users.bind('add', this.showFilters, this);
         this.model.board_users.bind('remove', this.showFilters, this);
         this.model.labels.bind('add', this.showFilters, this);
-        this.model.labels.bind('change', this.showFilters, this);
+        this.model.labels.bind('change', this.showLabels, this);
         this.model.labels.bind('remove', this.showLabels, this);
         this.authuser = authuser.user;
         this.renderAdminBoardUsers();
@@ -102,6 +102,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-close-board': 'closeBoard',
         'click .js-toggle-label-filter': 'toggleCardFilter',
         'click .js-toggle-member-filter': 'toggleCardFilter',
+        'click .js-clear-filter-btn': 'clearAll',
         'click .js-due-filter': 'toggleCardFilter',
         'click .js-back-to-sidebar': 'backToSidebar',
         'click .js-board-user-avatar-click': 'boardUserAvatarDropdown',
@@ -818,8 +819,8 @@ App.BoardHeaderView = Backbone.View.extend({
                     var day = 1000 * 60 * 60 * 24;
                     var days = Math.floor(diff / day);
                     if (days < -1) {
-                        element.addClass('label-past');
-                        element.find('.fc-event-skin').addClass('label-past');
+                        element.addClass('label-danger');
+                        element.find('.fc-event-skin').addClass('label-danger');
                     } else if (days == -1) {
                         element.addClass('label-present');
                         element.find('.fc-event-skin').addClass('label-present');
@@ -1528,8 +1529,13 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     cardFilter: function(e) {
+        this.$el.find('.js-clear-filter-btn').removeClass('hide').addClass('show');
         var filter_label_arr = [],
             filter_user_arr = [],
+            filter_data = [],
+            label_filter = [],
+            user_filter = [],
+            due_filter = [],
             filter_due_arr = [];
         $('i.js-filter-icon').remove();
         $('.js-show-modal-card-view').show();
@@ -1541,20 +1547,24 @@ App.BoardHeaderView = Backbone.View.extend({
         } else if (current_url.length === 3 && current_url[2] == 'gantt') {
             filter = 'gantt';
         }
+        var filter_query = '';
         $('li.selected > div.js-label', $('ul.js-board-labels')).each(function() {
             filter_label_arr.push($(this).html());
+            filter_query += 'label:' + $(this).html() + ',';
             if ($(this).next('i').length === 0) {
                 $(this).after('<i class="icon-ok js-filter-icon cur pull-right"></i>');
             }
         });
         $('li.selected > div.media > span.navbar-btn > span.js-user', $('ul.js-board-users')).each(function() {
-            filter_user_arr.push($(this).html());
+            filter_user_arr.push($(this).parent().data('user'));
+            filter_query += '@' + $(this).parent().data('user') + ',';
             if ($(this).next('i').length === 0) {
                 $(this).parent().parent().append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
             }
         });
         $('li.selected > div.media > span.js-due', $('ul.js-board-dues')).each(function() {
             filter_due_arr.push($(this).html());
+            filter_query += 'due:' + $(this).html() + ',';
             if ($(this).next('i').length === 0) {
                 $(this).parent().parent().append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
             }
@@ -1634,8 +1644,14 @@ App.BoardHeaderView = Backbone.View.extend({
             }
         }
         if (!_.isEmpty(show_due_arr)) {
-            result_due_arr = show_due_arr.shift().filter(function(v) {
-                return show_due_arr.every(function(a) {
+            var due_arr = [];
+            $.each(show_due_arr, function(index, value) {
+                if (value !== undefined) {
+                    due_arr.push(value);
+                }
+            });
+            result_due_arr = due_arr.shift().filter(function(v) {
+                return due_arr.every(function(a) {
                     return a.indexOf(v) !== -1;
                 });
             });
@@ -1650,6 +1666,7 @@ App.BoardHeaderView = Backbone.View.extend({
         if (!_.isEmpty(filter_due_arr)) {
             arrays.push(result_due_arr);
         }
+
         if (!_.isEmpty(arrays)) {
             var result = arrays.shift().filter(function(v) {
                 return arrays.every(function(a) {
@@ -1681,6 +1698,21 @@ App.BoardHeaderView = Backbone.View.extend({
         }
         if ($('.js-clear-all').hasClass('text-muted')) {
             $('.js-clear-all').removeClass('text-muted');
+        }
+        if (filter_query) {
+            filter_query = '?filter=' + filter_query.slice(0, -1);
+            app.navigate('#/' + current_param[0] + filter_query, {
+                trigger: true,
+                trigger_function: false,
+                replace: true
+            });
+        } else {
+            this.$el.find('.js-clear-filter-btn').removeClass('show').addClass('hide');
+            app.navigate('#/' + current_param[0], {
+                trigger: true,
+                trigger_function: false,
+                replace: true
+            });
         }
     },
     /**
@@ -1804,6 +1836,12 @@ App.BoardHeaderView = Backbone.View.extend({
         $('.js-board-dues, .js-board-users, .js-board-labels').children().removeClass('selected');
         $('.js-clear-all').addClass('text-muted');
         $('.js-show-modal-card-view').show();
+        app.navigate('#/board/' + this.model.attributes.id, {
+            trigger: false,
+            trigger_function: false,
+            replace: true
+        });
+        this.$el.find('.js-clear-filter-btn').removeClass('show').addClass('hide');
         return false;
     },
     /**

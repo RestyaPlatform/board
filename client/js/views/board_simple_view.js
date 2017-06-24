@@ -49,6 +49,7 @@ App.BoardSimpleView = Backbone.View.extend({
         'submit .js-save-board-visibility': 'saveBoardVisibility',
         'click .js-close-span-popover': 'closeSpanPopover',
         'click .js-back-to-board-visibility': 'showBoardVisibility',
+        'click .js-show-board-list-add-form': 'showBoardListAddForm',
     },
     /**
      * render()
@@ -90,6 +91,38 @@ App.BoardSimpleView = Backbone.View.extend({
         }
         this.showTooltip();
         return this;
+    },
+    /**
+     * showBoardAddForm()
+     * show board add form
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showBoardListAddForm: function(e) {
+        var workflow_template = new App.WorkFlowTemplateCollection();
+        workflow_template.url = api_url + 'workflow_templates.json';
+        workflow_template.fetch({
+            success: function(model, response) {
+                var templates = '';
+                var target = $(e.target);
+                var parent = target.parents('.js-show-add-boards-list-simple');
+                $('li.js-back').addClass('hide');
+                var data = {};
+                data = workflow_template;
+                data.page_mode = 1;
+                $('.js-show-boards-list-simple-response', parent).html(new App.BoardAddView({
+                    model: data
+                }).el).find('#inputtemplatelist').select2({
+                    formatResult: function(repo) {
+                        markup = '<div class="clearfix"><span class="show">' + repo.text + '</span><span class="show small">' + repo.id + '</span></div>';
+                        return markup;
+                    }
+                });
+            }
+        });
+        return false;
     },
     /**
      * closeSpanPopover()
@@ -196,7 +229,8 @@ App.BoardSimpleView = Backbone.View.extend({
     closePopup: function(e) {
         var el = this.$el;
         var target = el.find(e.target);
-        target.parents('.dropdown').removeClass('open');
+        target.parents('.js-show-add-boards-list-simple').find('.js-show-add-boards-simple').removeClass('hide');
+        target.parents('.js-show-add-boards-list-simple').find('.js-show-boards-list-simple-response').html('');
         return false;
     },
     /**

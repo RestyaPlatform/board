@@ -2,10 +2,20 @@
 	var port = (window.location.port) ? ':'+window.location.port : '';
 %>
 <div class="dockmodal-phone" title="<%- i18next.t('View in iOS App') %>" id="phone-block">
-      <div class="clearfix phone-content">
-	<div class="phone-text">
-	        <p class="pull-left col-sm-12 col-xs-12"><%- i18next.t('Single unified notifier app to track many Restyaboards.') %></p>
-	        <h2 class="pull-left col-sm-12"> <%- i18next.t('Coming soon.....') %></h2>
-	</div>          
-      </div>
-      </div>
+	<div class="clearfix phone-content">
+		<div class="phone-text">
+			<p class="pull-left col-sm-8 col-xs-12">
+				<%- i18next.t('Scan QR code in iPhone or iPad Safari. Will launch MyRestyaboards app.') %>
+			</p>
+			<div class="pull-right">
+				<a title="<%- i18next.t('QR code') %>" href="http://restya.com/board/launch_mobile_app?board=<%- window.location.protocol+'//'+window.location.hostname+port%>" target="_blank"><img width="115" height="115" src="https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=http://restya.com/board/launch_mobile_app?board=<%- window.location.protocol+'//'+window.location.hostname+port%>" title="<%- i18next.t('QR code') %>" alt="[Image: QR code]" class="img-responsive"></a>
+			</div>
+			<div class="col-xs-12">
+				<%- i18next.t('MyRestyaboards - Single unified notifier app to track many Restyaboards. Available in AppStore.') %>
+			</div>
+			<div class="col-xs-12 text-center h3">
+				<a class='btn btn-default' title="<%- i18next.t('More About MyRestyaboards App') %>" href="http://restya.com/board/mobile-app?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=mobile_apps_footer" target="_blank">More About MyRestyaboards App</a>
+			</div>
+		</div>
+	</div>
+</div>

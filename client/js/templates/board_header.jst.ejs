@@ -34,7 +34,7 @@
 					  <% } %>
 					  <% } %>
 					  <a href="#" class="js-star-load pull-left text-primary hide"><img src="img/star-load.gif" alt="[Images: Star]" title="
-<%- i18next.t('Star') %>"></a><a href="#" class="col-xs-8 nav htruncate <%if(!_.isUndefined(authuser.user)) {%>js-rename-board<%}else{%>js-no-action<%}%>" data-toggle="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: 'edit_board',board_user_role_id: parseInt(board.board_user_role_id)})))) { %>dropdown<% } %>" title="<%- board.attributes.name %>"><strong><%- board.attributes.name %></strong></a>
+<%- i18next.t('Star') %>"></a><a href="#" class="col-xs-2 js-board-name-truncate nav htruncate <%if(!_.isUndefined(authuser.user)) {%>js-rename-board<%}else{%>js-no-action<%}%>" data-toggle="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: 'edit_board',board_user_role_id: parseInt(board.board_user_role_id)})))) { %>dropdown<% } %>" title="<%- board.attributes.name %>"><strong><%- board.attributes.name %></strong></a>
 				  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>
 				  <ul class="dropdown-menu dropdown-menu-left arrow arrow-left">
 					<li class="js-rename-popup js-dropdown-popup dropdown-popup">
@@ -69,6 +69,12 @@
 			<nav class="navbar-collapse collapse mob-no-pad">
 			  <div class="navbar-right">
 			  <% if(!_.isUndefined(authuser.user)){ %>
+				<div class="btn-group pull-left js-clear-filter-btn hide">
+					<button type="button" class="btn btn-default">Clear Filter</button>
+					<button type="button" class="btn btn-primary">
+						<span class="icon-remove"></span>
+					</button>
+				</div>
 			  <ul class="nav nav-pills pull-left pillsuser-list navbar-btn h4 right-mar">
 				  <li class="dropdown"> <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle show clearfix navbar-btn h4">
 				  <% 
@@ -112,8 +118,8 @@
 					</span>
 				</span>
 			  <% i++; }}); }%>
-				  <span class="col-xs-3 label small hidden-xs"> <span class="small"><span class="show text-left" title="<%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %>"><%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %></span> <span class="show text-left" title="<%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %>"><%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %></span></span> </span> </a>
-					<ul class="list-unstyled js-visibility-chooser dropdown-menu arrow arrow-right">
+				  <span class="table-members  label small hidden-xs"> <span class="small"><span class="show text-left" title="<%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %>"><%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %></span> <span class="show text-left" title="<%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %>"><%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %></span></span> </span> </a>
+					<ul class="list-unstyled js-visibility-chooser dropdown-menu-left dropdown-menu arrow arrow-left">
 					  <li class="text-center">
 						<strong><%- i18next.t('Members') %></strong>
 						<span href="#" class="js-close-popover pull-right col-xs-2"><i class="icon-remove cur"></i></span>
@@ -264,7 +270,7 @@
 							<% } %>
 							<% }%>
 							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "copy_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
-							<li class="js-sync-google-dropdown inner-dropdown"><a data-toggle="dropdown" href="#" class="js-show-copy-board"><%- i18next.t('Copy board') %></a>
+							<li class="js-sync-google-dropdown inner-dropdown"><a data-toggle="dropdown" href="#" class="js-show-copy-board"><%- i18next.t('Copy Board') %></a>
 							</li>
 							<% }%>
 							<% }%>
@@ -273,11 +279,11 @@
 							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
 							<li><a href="#" class="js-additional-settings"><%- i18next.t('Additional Settings') %></a></li>
 							<li class="divider"></li>
-							<li class="dropdown js-open-dropdown inner-dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-sm icon-warning-sign icon-type text-primary"></i><%- i18next.t('Close board') %></a>
+							<li class="dropdown js-open-dropdown inner-dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-sm icon-warning-sign icon-type text-primary"></i><%- i18next.t('Close Board') %></a>
 							  <ul class="dropdown-menu arrow pull-right">
 								<li class="js-dropdown-popup dropdown-popup">
 								  <div class="clearfix text-center col-xs-12">
-									<span class="col-xs-10"><strong><%- i18next.t('Close board') %></strong></span><a class="js-close-sub-popover pull-right" href="#"><i class="icon-remove"></i></a>						
+									<span class="col-xs-10"><strong><%- i18next.t('Close Board') %></strong></span><a class="js-close-sub-popover pull-right" href="#"><i class="icon-remove"></i></a>						
 								  </div>
 								  <div class="col-xs-12 divider"></div>
 								  <div class="col-xs-12">

@@ -23,6 +23,7 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
      */
     events: {
         'click .js-close-popover': 'closePopup',
+        'click #js-admin-activites-load-more': 'loadActivities',
     },
     /**
      * Constructor
@@ -50,13 +51,43 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
         this.$el.html(this.template({
             list: this.model
         }));
-        this.renderUserActivitiesCollection();
+        this.getListing();
         this.$el.modal({
             show: true,
             backdrop: false
         });
         this.showTooltip();
         return this;
+    },
+    /** 
+     * getListing()
+     * get settings
+     * @return false
+     */
+    getListing: function() {
+        var self = this;
+        var view_user_activities = this.$('#js-list-user-activities-list');
+        view_user_activities.html('');
+        var activities = new App.ActivityCollection();
+        activities.url = api_url + 'users/' + this.user_id + '/activities.json?board_id=' + this.model.attributes.board_id;
+        activities.fetch({
+            success: function(response) {
+                if (!_.isEmpty(activities.models)) {
+                    var last_activity = _.min(activities.models, function(activity) {
+                        return activity.id;
+                    });
+                    console.log(last_activity);
+                    self.last_activity_id = last_activity.id;
+                    self.$('#js-admin-activites-load-more').removeClass('hide');
+                    self.renderActivitiesCollection(activities);
+                } else {
+                    var view = new App.ActivityView({
+                        model: null,
+                    });
+                    view_user_activities.html(view.render().el).find('.timeago').timeago();
+                }
+            }
+        });
     },
     /**
      * show()
@@ -79,31 +110,45 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
         return false;
     },
     /**
-     * renderUserActivitiesCollection()
-     * render activities
+     * loadActivities()
+     * display load Activities
      */
-    renderUserActivitiesCollection: function() {
-        var view_user_activities = this.$('#js-list-user-activities-list');
-        view_user_activities.html('');
+    loadActivities: function() {
+        //e.preventDefault();
+        var self = this;
+        var query_string = (this.last_activity_id !== 0) ? '?last_activity_id=' + this.last_activity_id : '';
         var activities = new App.ActivityCollection();
-        activities.url = api_url + 'users/' + this.user_id + '/activities.json?board_id=' + this.model.attributes.board_id;
+        activities.url = api_url + 'users/' + this.user_id + '/activities.json' + query_string + '&board_id=' + this.model.attributes.board_id;
         activities.fetch({
-            success: function(response) {
-                if (activities.length > 0) {
-                    activities.each(function(activity) {
-                        activity.from_footer = true;
-                        var view = new App.ActivityView({
-                            model: activity
-                        });
-                        view_user_activities.append(view.render().el).find('.timeago').timeago();
+            cache: false,
+            success: function(user, response) {
+                if (!_.isEmpty(activities) && !_.isEmpty(activities.models)) {
+                    var last_activity = _.min(activities.models, function(activity) {
+                        return activity.id;
                     });
-                } else {
-                    var view = new App.ActivityView({
-                        model: null
-                    });
-                    view_user_activities.append(view.render().el);
+                    console.log(last_activity);
+                    self.last_activity_id = last_activity.id;
+                    self.renderActivitiesCollection(activities);
                 }
             }
         });
+    },
+    /**
+     * renderUserActivitiesCollection()
+     * render activities
+     */
+    renderActivitiesCollection: function(activities) {
+        var view_user_activities = this.$('#js-list-user-activities-list');
+        view_user_activities.html('');
+        if (!_.isEmpty(activities)) {
+            for (var i = 0; i < activities.models.length; i++) {
+                var activity = activities.models[i];
+                activity.from_footer = true;
+                var view = new App.ActivityView({
+                    model: activity,
+                });
+                view_user_activities.append(view.render().el).find('.timeago').timeago();
+            }
+        }
     }
 });

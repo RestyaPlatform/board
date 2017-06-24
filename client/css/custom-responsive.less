@@ -1,5 +1,6 @@
 @media (min-width:768px) and (max-width:1024px) {
 	body {
+	
 		.popped-out {
 			textarea.form-control {
 				height: 100px;
@@ -40,6 +41,51 @@
 		}
 	}
 }
+@media (min-width:992px) and (max-width:1300px) {
+	.new-sample-border{
+		min-height:314px;
+		.timer{
+			width: 100%;
+			float: none;
+			text-align: center;
+			margin: 0 auto;
+			&.mauto{
+				max-width:85px;
+			}
+		}
+		&.hgt-this-alone{
+			.thumbnail{
+				min-height:302px;
+			}
+			.navbar-btn{
+				bottom: 22px;
+				position: absolute;
+				right: 4px;
+				&.rdbtn{
+					bottom:24px !important;
+				}
+				&:last-child{
+					    bottom: 3px;
+						position: absolute;
+						right: 7px;
+				}
+			}
+		}
+		.dounet-calender2{
+			margin:auto;
+		}
+		ul.list-unstyled{
+			text-align: center;
+			max-width: 130px;
+			width: 100%;
+			margin: auto;
+		}
+		.circle-blk{
+			float:none;
+		}
+	}
+	
+}	
 @media (max-width:767px) {
 	body {
 		.content {
@@ -374,6 +420,28 @@
 		.ui-autocomplete, .ui-autocomplete.ui-menu.search-block {
 			display: none;
 		}
+		.mob-text-center{
+		text-align:center;
+		float:none;
+	}
+	.circle-blk{
+		width:100%;
+		text-align:center;
+   	}
+   .datecalendar{
+	   text-align:Center;
+	   margin:0 auto;
+   }
+   .mob-no-pad{
+	   padding:0;
+   }
+   .new-sample-border{
+	   //padding:0;
+	   margin-top:10px;
+	   .thumbnail{
+		   margin-bottom:0px;
+	   }
+   }
 	}
 	.popped-out {
 		ul.card-view-mn {
@@ -404,6 +472,16 @@
 			margin-left: 0;
 		}
 	}
+	.date-schedule{
+		width:56px;
+		margin:0 auto;
+	}
+	.circle-chart{
+		    width: 125px;
+    		height:133px;
+    	margin: 10px auto 10px !important;
+	}
+	
 }
 @media (max-width:767px) and (orientation:portrait) {
 	body {
@@ -502,6 +580,11 @@
 			}
 		 }
 	}
+	.attachement-list {
+		float: none;
+		width: 100%;
+		margin: 15px auto;
+	}
 }
 @media (max-width:1024px) {
 	.dockmodal {
@@ -513,3 +596,75 @@
 		}
 	}
 }
+@media (min-width: 481px) and (max-width: 767px) {
+	.attachement-list {
+		width: 43.5%;
+	}
+	
+}
+@media (min-width: 768px) and (max-width: 991px) {
+		.new-sample-border{
+			margin-top:10px;
+			&.hgt-this-alone{
+				    min-height: 200px;
+			}
+	}
+		.dashboard-rp-calender{
+			 max-width: 130px;
+			display: block;
+			width: 100%;
+			margin: auto;
+			float: none;	
+         }
+		 .min-hgt-4res{
+		     min-height: 206px;
+			 .navbar-btn{
+				     margin-top: 24px;
+			 }
+		 }
+		 .dounet-calender2{
+			 li{
+			     margin: 18px auto;
+			 }	
+		 }
+		 .dounet-chart-responsive{
+			margin: 18px auto;
+			display: inline-block;
+			max-width: 58px;
+			width: 100%;
+		 }
+	.attachement-list {
+		width: 28.6%;
+	}
+	.mob-text-center{
+		text-align:center;
+		float:none;
+	}
+	.circle-blk{
+		float:none;
+		width:100%;
+		text-align:center;
+		overflow: hidden;
+   }
+   .datecalendar{
+	   text-align:Center;
+	   margin:0 auto;
+   }
+   .new-sample-border{
+	   
+	    	min-height:314px;
+      
+	   .thumbnail{
+		   //margin-bottom:0px;
+	   }
+   }
+   .mauto{
+		margin:0 auto;
+	}
+	.charttopspce{
+		//margin:20px 0 0;
+	}
+	.chartbotspce{
+		//margin:0 0 20px;
+	}
+}		

@@ -255,7 +255,7 @@ if ($db_lnk) {
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
-                    $user_avatar = '<i style="border-radius:4px;text-shadow:#6f6f6f 0.02em 0.02em 0.02em;width:32px;height:32px;line-height:32px;font-size:16px;display:inline-block;font-style:normal;text-align:center;text-transform:uppercase;color:#f47564 !important;background-color:#ffffff !important;border:1px solid #d7d9db;margin-right: 10px;">' . $activity['initials'] . '</i>' . "\n";
+                    $user_avatar = '<i style="border-radius:4px;text-shadow:#6f6f6f 0.02em 0.02em 0.02em;width:32px;height:32px;line-height:32px;font-size:16px;display:inline-block;font-style:normal;text-align:center;text-transform:uppercase;color:#02aff1 !important;background-color:#ffffff !important;border:1px solid #d7d9db;margin-right: 10px;">' . $activity['initials'] . '</i>' . "\n";
                 }
                 if (empty($i)) {
                     $activity_id[] = $activity['id'];
@@ -334,6 +334,10 @@ if ($db_lnk) {
             }
         }
         if (!empty($mail_content)) {
+            $timezone = SITE_TIMEZONE;
+            if (!empty($user['timezone'])) {
+                $timezone = trim($user['timezone']);
+            }
             $qry_arr = array(
                 max($activity_id) ,
                 $user['id']
@@ -342,7 +346,7 @@ if ($db_lnk) {
             $emailFindReplace['##CONTENT##'] = $mail_content;
             $emailFindReplace['##NAME##'] = $user['full_name'];
             $emailFindReplace['##NOTIFICATION_COUNT##'] = $notification_count;
-            $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($user['timezone']));
+            $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($timezone));
             $emailFindReplace['##USER_ID##'] = $user['id'];
             sendMail('email_notification', $emailFindReplace, $user['email'], $reply_to_mail);
         }

@@ -69,14 +69,66 @@ App.ApplicationView = Backbone.View.extend({
                             $.cookie('links', response.links);
                         }
                         $.cookie('languages', response.languages);
-                        localStorage.setItem('apps', response.apps);
-                        role_links.add(JSON.parse(response.links));
-                        settings.url = api_url + 'settings.json';
-                        settings.fetch({
-                            cache: false,
-                            abortPending: true,
-                            success: function(collection, settings_response) {
-                                SITE_NAME = settings_response.SITE_NAME;
+                        localforage.setItem('apps', response.apps).then(function() {
+                            role_links.add(JSON.parse(response.links));
+                            settings.url = api_url + 'settings.json';
+                            settings.fetch({
+                                cache: false,
+                                abortPending: true,
+                                success: function(collection, settings_response) {
+                                    SITE_NAME = settings_response.SITE_NAME;
+                                    page.set_page_title();
+                                    FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
+                                    DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
+                                    LABEL_ICON = settings_response.LABEL_ICON;
+                                    SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
+                                    DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
+                                    PAGING_COUNT = settings_response.PAGING_COUNT;
+                                    APPS = settings_response.apps;
+                                    IMAP_EMAIL = settings_response.IMAP_EMAIL;
+                                    DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
+                                    var current_language = DEFAULT_LANGUAGE;
+                                    if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
+                                        current_language = authuser.user.language;
+                                    }
+                                    i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
+                                        lng: current_language,
+                                        fallbackLng: current_language,
+                                        load: "all",
+                                        keySeparator: '~',
+                                        nsSeparator: '^',
+                                        backend: {
+                                            loadPath: "locales/{{lng}}/{{ns}}.json"
+                                        }
+                                    }, function() {
+                                        if (page.model === "admin_user_add" || page.model === "register") {
+                                            //@Todo
+                                            page.call_function();
+
+                                        } else {
+
+                                            page.call_function();
+                                        }
+                                    });
+                                }
+                            });
+                        });
+                    },
+                    error: function() {
+                        app.navigate('#/users/login', {
+                            trigger: true,
+                            replace: true
+                        });
+                    },
+                });
+            } else {
+                if (settings.length === 0) {
+                    settings.fetch({
+                        cache: false,
+                        abortPending: true,
+                        success: function(collection, settings_response) {
+                            SITE_NAME = settings_response.SITE_NAME;
+                            localforage.setItem('apps', settings_response.apps_data).then(function() {
                                 page.set_page_title();
                                 FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
                                 DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
@@ -88,7 +140,7 @@ App.ApplicationView = Backbone.View.extend({
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
                                 var current_language = DEFAULT_LANGUAGE;
-                                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
+                                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && authuser.user.language !== undefined) {
                                     current_language = authuser.user.language;
                                 }
                                 i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
@@ -106,59 +158,9 @@ App.ApplicationView = Backbone.View.extend({
                                         page.call_function();
 
                                     } else {
-
                                         page.call_function();
                                     }
                                 });
-                            }
-                        });
-                    },
-                    error: function() {
-                        app.navigate('#/users/login', {
-                            trigger: true,
-                            replace: true
-                        });
-                    },
-                });
-            } else {
-                if (settings.length === 0) {
-                    settings.fetch({
-                        cache: false,
-                        abortPending: true,
-                        success: function(collection, settings_response) {
-                            SITE_NAME = settings_response.SITE_NAME;
-                            localStorage.setItem('apps', settings_response.apps_data);
-                            page.set_page_title();
-                            FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
-                            DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
-                            LABEL_ICON = settings_response.LABEL_ICON;
-                            SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
-                            DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
-                            PAGING_COUNT = settings_response.PAGING_COUNT;
-                            APPS = settings_response.apps;
-                            IMAP_EMAIL = settings_response.IMAP_EMAIL;
-                            DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-                            var current_language = DEFAULT_LANGUAGE;
-                            if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && authuser.user.language !== undefined) {
-                                current_language = authuser.user.language;
-                            }
-                            i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
-                                lng: current_language,
-                                fallbackLng: current_language,
-                                load: "all",
-                                keySeparator: '~',
-                                nsSeparator: '^',
-                                backend: {
-                                    loadPath: "locales/{{lng}}/{{ns}}.json"
-                                }
-                            }, function() {
-                                if (page.model === "admin_user_add" || page.model === "register") {
-                                    //@Todo
-                                    page.call_function();
-
-                                } else {
-                                    page.call_function();
-                                }
                             });
                         }
                     });
@@ -360,6 +362,16 @@ App.ApplicationView = Backbone.View.extend({
                         }
                     }
                     self.board_view_height();
+                },
+                error: function(model, response) {
+                    $.cookie('redirect_link', window.location.hash);
+                    $('#content').html(new App.Board404View({
+                        model: authuser
+                    }).el);
+                    this.headerView = new App.HeaderView({
+                        model: authuser
+                    });
+                    $('#header').html(this.headerView.el);
                 }
             });
 
@@ -724,6 +736,11 @@ App.ApplicationView = Backbone.View.extend({
                                                     starred_boards: response.starred_boards
                                                 }).el);
                                             });
+                                            $('.js-my-boards').append(new App.BoardSimpleView({
+                                                model: null,
+                                                id: 'js-my-board-empty',
+                                                className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad',
+                                            }).el);
                                             new App.FooterView({
                                                 model: authuser,
                                                 board_id: self.id,
@@ -732,10 +749,6 @@ App.ApplicationView = Backbone.View.extend({
                                         } else {
                                             $('.js-my-boards').append(new App.BoardSimpleView({
                                                 model: null,
-                                                message: i18next.t('No %s available.', {
-                                                    postProcess: 'sprintf',
-                                                    sprintf: [i18next.t('boards')]
-                                                }),
                                                 id: 'js-my-board-empty',
                                                 className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12'
                                             }).el);

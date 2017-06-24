@@ -24,7 +24,7 @@ App.CardLabelsFormView = Backbone.View.extend({
         }
         this.render();
     },
-    template: JST['templates/card_labels_form'],
+    template: JST['templates/card_label_form'],
     tagName: 'div',
     /**
      * render()
@@ -35,7 +35,7 @@ App.CardLabelsFormView = Backbone.View.extend({
      */
     render: function() {
         this.$el.html(this.template({
-            card: this.model
+            labels: this.model
         }));
         this.showTooltip();
         return this;

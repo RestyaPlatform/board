@@ -19,9 +19,8 @@ var LABEL_ICON = '';
 var SITE_TIMEZONE = '';
 var LDAP_LOGIN_ENABLED = '';
 var DEFAULT_LANGUAGE = '';
-var STANDARD_LOGIN_ENABLED = '';
 var IMAP_EMAIL = '';
-var ANIMATION_SPEED = 300;
+var ANIMATION_SPEED = 1;
 var DEFAULT_CARD_VIEW = '';
 var PAGING_COUNT = '';
 var last_activity = '';
@@ -57,9 +56,8 @@ Backbone.View.prototype.board_view_height = function(type, message) {
     var headerH = $('header').height();
     var footerH = $('footer').height();
     var windowH = $(window).height();
-    var boardH = windowH - headerH - footerH - 14;
-    boardH += 'px';
-    $('.board-list-view').css('height', boardH);
+    var boardH = windowH - headerH - footerH - 50;
+    $(".board-list-view").css("height", (boardH + 'px'));
 };
 Backbone.View.prototype.showImage = function(model, id, size, is_random) {
     var hash = calcMD5(SecuritySalt + model + id + 'png' + size);
@@ -101,16 +99,17 @@ callbackTranslator = {
             } else {
                 is_offline_data = false;
             }
-            if (hasOfflineStatusCode(options)) {
+            if (hasOfflineStatusCode(model)) {
                 $.cookie('is_offline_data', true);
                 is_offline_data = true;
                 model.is_offline = true;
                 $('.js-hide-on-offline').addClass('hide');
                 $('#js-activity-loader').remove();
-                $('#js-footer-brand-img').attr('title', i18next.t('Site is in offline')).attr('src', 'img/logo-icon-offline.png').tooltip("show");
+                $('#js-footer-brand-img').attr('title', i18next.t('Site is in offline')).attr('src', 'img/logo-icon-offline.png').attr('data-original-title', i18next.t('Site is in offline')).tooltip("show");
             } else {
                 is_online = true;
                 $('.js-hide-on-offline').removeClass('hide');
+                $('#js-footer-brand-img').attr('title', i18next.t(SITE_NAME)).attr('src', 'img/logo-icon.png').attr('data-original-title', i18next.t(SITE_NAME)).tooltip("hide");
                 delete model.is_offline;
             }
             if (is_online && is_offline_data) {
@@ -396,7 +395,9 @@ var AppRouter = Backbone.Router.extend({
             success: function() {
                 $.removeCookie('auth');
                 delete(App.boards);
-                localStorage.removeItem('r_zapier_access_token');
+                $.removeCookie('chat_initialize');
+                localforage.removeItem('r_zapier_access_token');
+                localforage.removeItem('board_filter');
                 api_token = '';
                 authuser = new App.User();
                 app.navigate('#/users/login', {
