@@ -99,66 +99,11 @@
 			sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 
-			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/chat_activities.sh//" /var/spool/cron/crontabs/root
-			sed -i "s/0 * * * * $dir\/server\/php\/shell\/periodic_chat_email_notification.sh//" /var/spool/cron/crontabs/root
-			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/indexing_to_elasticsearch.sh//" /var/spool/cron/crontabs/root
-
-			rm $dir/server/php/shell/chat_activities.sh
-			rm $dir/server/php/shell/chat_activities.php
-			rm $dir/server/php/shell/indexing_to_elasticsearch.sh
-			rm $dir/server/php/shell/indexing_to_elasticsearch.php
-			rm $dir/server/php/shell/periodic_chat_email_notification.sh
-			rm $dir/server/php/shell/periodic_chat_email_notification.php
-			rm $dir/server/php/shell/upgrade_v0.2.1_v0.3.php
-
-			rm -rf $dir/client/apps/
-
-			rm -rf $dir/server/php/libs/vendors/xmpp/
-			rm -rf $dir/server/php/libs/vendors/jaxl3/
-			rm -rf $dir/server/php/libs/vendors/xmpp-prebind-php/
-			
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
-				if ! hash jq 2>&-;
-				then
-					echo "Installing jq..."
-					apt-get install -y jq
-					if [ $? != 0 ]
-					then
-						echo "jq installation failed with error code 53"
-					fi
-				fi
-				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
-				chmod -R go+w "/tmp/apps.json"
-				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
-				do
-					mkdir "$dir/client/apps"
-					chmod -R go+w "$dir/client/apps"
-					curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-					unzip /tmp/$fid.zip -d "$dir/client/apps"
-				done
 				service nginx restart
 				service php7.0-fpm restart
 			else
-				if ! hash jq 2>&-;
-				then
-					echo "Installing jq..."
-					yum install -y jq
-					if [ $? != 0 ]
-					then
-						echo "jq installation failed with error code 49"
-						exit 1
-					fi
-				fi
-				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
-				chmod -R go+w "/tmp/apps.json"
-				for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
-				do
-					mkdir "$dir/client/apps"
-					chmod -R go+w "$dir/client/apps"
-					curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-					unzip /tmp/$fid.zip -d "$dir/client/apps"
-				done
 				ps -q 1 | grep -q -c "systemd"
 				if [ "$?" -eq 0 ];
 				then
