@@ -11,19 +11,11 @@ if (_.isEmpty(role_links.where({
 <section class="action-block action-content">
 <div class="row navbar navbar-default list-group-item-text">
 <ul class="nav nav-pills navbar-left"> 
-  <li class="footer-logo visible-xs active"> 
-  	<a href="javascript:void(0);" title="<%- SITE_NAME %>" class="js-start"><sup class="badge notification-count js-notification-count"></sup><img src="img/logo-icon.png" alt="[Images: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" id="js-footer-brand-img" /></a>
+  <li class="footer-logo active"> 
+  	<a href="javascript:void(0);" title="<%- SITE_NAME %>" class="js-start"><img src="img/logo-icon.png" alt="[Images: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" id="js-footer-brand-img" /></a>
 	<!-- Todo: quick fix. load image before offline. call after when goes offline
 	<img src="img/logo-icon-offline.png" alt="[Images: <%- SITE_NAME %>]" style="display:none;" />--->
   </li>
-  <li class="hidden-xs about-btn">
-	<a href="#/boards" title="RestyaBoard">
-		<img title="Restya" alt="[Image: <%- SITE_NAME %>]" src="img/logo-icon.png">
-		<span class="hidden-lg hidden-md hidden-sm navbar-btn">&nbsp;<%- i18next.t("About") %></span>
-		<!-- Todo: quick fix. load image before offline. call after when goes offline--->
-		<img src="img/logo-icon-offline.png" alt="[Images: <%- SITE_NAME %>]" style="display:none;" />
-	</a>
-   </li>   
   <% if(!_.isUndefined(authuser.user)){%>
 	<li class="hidden-xs music-btn pa"> 
 		<% if(board_id !== undefined && board_id !== null && board_id !== "" && !_.isEmpty(this.music_content) && this.music_content !== ''){ %>

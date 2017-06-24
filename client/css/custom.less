@@ -571,7 +571,7 @@ input[type=checkbox] {
 }
 .search-loader {
 	position: absolute;
-	right: 60px;
+	right: 40px;
 	top: 7px;
 }
 /* cssloader style */
@@ -1509,6 +1509,11 @@ footer {
 			line-height: 30px;
 			width: 35px;
 			font-size: 16px;
+			//padding: 0 0 0 10px !important;
+			cursor: pointer;
+			&:focus{
+    		cursor: pointer;
+			}
 		}
 	}
 }
@@ -2286,5 +2291,19 @@ footer, header, .dashboard-header {
 			position: absolute;
 
 		}
+	}
+}
+.circle-blk{
+	float:right;
+}
+.mauto{
+	margin:0 auto;
+}
+.new-sample-border{
+	.dashboard-btn {
+		position: absolute;
+		bottom: 3px;
+		right: 3px;
+		padding: 0px 15px;
 	}
 }

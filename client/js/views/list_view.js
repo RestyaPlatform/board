@@ -831,11 +831,6 @@ App.ListView = Backbone.View.extend({
                     slug: 'move_list_cards',
                     board_user_role_id: parseInt(this.model.board_user_role_id)
                 })))) {
-                var setintervalid = '',
-                    is_moving_right = '',
-                    previous_offset = 0,
-                    previous_move = '',
-                    is_create_setinterval = true;
                 $('.js-board-list-cards', this.$el).sortable({
                     containment: 'window',
                     items: 'div.js-board-list-card',
@@ -866,6 +861,11 @@ App.ListView = Backbone.View.extend({
                         App.sortable.is_create_setinterval_vertical = true;
                         App.sortable.previous_offset_horizontal = 0;
                         App.sortable.previous_offset_vertical = 0;
+                        App.sortable.is_create_setinterval_mobile = true;
+                        App.sortable.previous_offset_mobile = 0;
+                        clearInterval(App.sortable.setintervalidMobile);
+                        App.sortable.is_moving_right_mobile = 0;
+                        App.sortable.previous_move_mobile = 0;
                     },
                     over: function(ev, ui) {
                         if ($(ui.placeholder).parents('.js-board-list-cards').attr('id') == App.sortable.previous_id) {
@@ -958,40 +958,40 @@ App.ListView = Backbone.View.extend({
                         $.browser.device = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
                         if ($.browser.device) {
                             var list_per_page = Math.floor($(window).width() / 230);
-                            if (previous_offset !== 0 && previous_offset != ui.offset.left) {
-                                if (previous_offset > ui.offset.left) {
-                                    is_moving_right = false;
+                            if (App.sortable.previous_offset_mobile !== 0 && App.sortable.previous_offset_mobile != ui.offset.left) {
+                                if (App.sortable.previous_offset_mobile > ui.offset.left) {
+                                    App.sortable.is_moving_right_mobile = false;
                                 } else {
-                                    is_moving_right = true;
+                                    App.sortable.is_moving_right_mobile = true;
                                 }
                             }
-                            if (previous_move !== is_moving_right) {
-                                clearInterval(setintervalid);
-                                is_create_setinterval = true;
+                            if (App.sortable.previous_move_mobile !== App.sortable.is_moving_right_mobile) {
+                                clearInterval(App.sortable.setintervalidMobile);
+                                App.sortable.is_create_setinterval_mobile = true;
                             }
-                            if (is_moving_right === true && ui.offset.left > (list_per_page - 1) * 230) {
-                                if (is_create_setinterval) {
-                                    setintervalid = setInterval(function() {
+                            if (App.sortable.is_moving_right_mobile === true && ui.offset.left > (list_per_page - 1) * 230) {
+                                if (App.sortable.is_create_setinterval_mobile) {
+                                    App.sortable.setintervalidMobile = setInterval(function() {
                                         scrollLeft = parseInt($('#js-board-lists').scrollLeft()) + 50;
                                         $('#js-board-lists').animate({
                                             scrollLeft: scrollLeft
                                         }, 10);
                                     }, 100);
-                                    is_create_setinterval = false;
+                                    App.sortable.is_create_setinterval_mobile = false;
                                 }
-                            } else if (is_moving_right === false && ui.offset.left < 50) {
-                                if (is_create_setinterval) {
-                                    setintervalid = setInterval(function() {
+                            } else if (App.sortable.is_moving_right_mobile === false && ui.offset.left < 50) {
+                                if (App.sortable.is_create_setinterval_mobile) {
+                                    App.sortable.setintervalidMobile = setInterval(function() {
                                         scrollLeft = parseInt($('#js-board-lists').scrollLeft()) - 50;
                                         $('#js-board-lists').animate({
                                             scrollLeft: scrollLeft
                                         }, 10);
                                     }, 100);
-                                    is_create_setinterval = false;
+                                    App.sortable.is_create_setinterval_mobile = false;
                                 }
                             }
-                            previous_offset = ui.offset.left;
-                            previous_move = is_moving_right;
+                            App.sortable.previous_offset_mobile = ui.offset.left;
+                            App.sortable.previous_move_mobile = App.sortable.is_moving_right_mobile;
                         }
                     }
                 });

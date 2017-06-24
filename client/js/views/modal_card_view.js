@@ -1117,9 +1117,7 @@ App.ModalCardView = Backbone.View.extend({
             doc.dockmodal('restore');
         }
         this.$el.find('.js-organization-member-search-response').html('');
-        this.renderBoardUsers();
         this.$el.find('.js-comment-member-search-response').nextAll().remove();
-        this.renderActivityBoardUsers();
         _(function() {
             Backbone.TemplateManager.baseUrl = '{name}';
             var uploadManager = new Backbone.UploadManager({
@@ -2013,7 +2011,6 @@ App.ModalCardView = Backbone.View.extend({
         var view_user = this.$('#js-card-user-add-container');
         this.$el.find('.js-organization-member-search-response').html('');
         view_user.prevAll().remove();
-        this.renderBoardUsers();
         var content = '';
         var self = this;
         this.model.users.each(function(user) {
@@ -2182,6 +2179,7 @@ App.ModalCardView = Backbone.View.extend({
             users: this.model.users,
             card: this.model
         }).el);
+        this.renderBoardUsers();
         this.showTooltip();
         var target = $(e.target);
         $('li.dropdown').removeClass('open');

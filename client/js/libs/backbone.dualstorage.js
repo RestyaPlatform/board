@@ -259,11 +259,12 @@ as that.
 			if(localStorage.syncDataCount){
 				if(Number(localStorage.syncDataCount) == 0){
 					localStorage.removeItem("syncDataCount"); 
+                    $('#js-footer-brand-img').attr('title', i18next.t(SITE_NAME)).attr('src', 'img/logo-icon-sync.gif').attr('data-original-title', i18next.t(SITE_NAME)).tooltip("show");
 					$('#js-footer-brand-img').attr('src', 'img/logo-icon.png').tooltip("hide");
 					location.reload(true);
 				}			
 			}else{
-				$('#js-footer-brand-img').attr('src', 'img/logo-icon.png').tooltip("hide");
+                $('#js-footer-brand-img').attr('title', i18next.t(SITE_NAME)).attr('src', 'img/logo-icon.png').attr('data-original-title', i18next.t(SITE_NAME)).tooltip("hide");
 			}
 		}, 10000); // Execute every 10 seconds.
         return _results;

@@ -347,7 +347,7 @@
 							  <form role="form" method="post" class="js-copy-card">
 								<div class="form-group">
 								  <label for="card-title"><%- i18next.t('Title') %></label>
-								  <textarea id="card-title" class="form-control" rows="4" name="name"><%- card.attributes.name%></textarea>
+								  <input type="text" id="card-title" class="form-control" name="name" value="<%- card.attributes.name%>">
 								</div>
 								<div class="js-show-copy-card-form-response"> </div>
 								<div class="form-group clearfix panel-body">
@@ -697,7 +697,7 @@
 					<form role="form" method="post" class="js-copy-card">
 					<div class="form-group">
 						<label for="card-title"><%- i18next.t('Title') %></label>
-						<textarea id="card-title" class="form-control" rows="4" name="name"><%- card.attributes.name%></textarea>
+						<input type="text" id="card-title" class="form-control" name="name" value="<%- card.attributes.name%>">
 					</div>
 					<div class="js-show-copy-card-form-response"> </div>
 					<div class="form-group clearfix panel-body">
