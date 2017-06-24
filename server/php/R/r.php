@@ -4811,6 +4811,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
     case '/boards/?/lists/?/cards/?': //cards update
         $table_name = 'cards';
         $final_custom_array = array();
+        $present_custom_fields = array();
+        $previous_custom_fields = array();
         $comment = '';
         $id = $r_resource_vars['cards'];
         $foreign_ids['board_id'] = !empty($r_put['board_id']) ? $r_put['board_id'] : $r_resource_vars['boards'];
@@ -4823,12 +4825,11 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $s_result = pg_query_params($db_lnk, 'SELECT name, board_id, list_id, position, description, custom_fields, due_date, color FROM ' . $table_name . ' WHERE id = $1', $qry_val_arr);
         $previous_value = pg_fetch_assoc($s_result);
         if (!empty($r_put['custom_fields'])) {
-            $custom_decode = array();
             if ($previous_value && !empty($previous_value['custom_fields'])) {
-                $custom_decode = json_decode($previous_value['custom_fields'], true);
+                $previous_custom_fields = json_decode($previous_value['custom_fields'], true);
             }
-            $present_custom_decode = json_decode($r_put['custom_fields'], true);
-            $final_custom_array = array_merge($custom_decode, $present_custom_decode);
+            $present_custom_fields = json_decode($r_put['custom_fields'], true);
+            $final_custom_array = array_merge($previous_custom_fields, $present_custom_fields);
             $custom_field_encode = json_encode($final_custom_array);
             $r_put['custom_fields'] = $custom_field_encode;
         }
@@ -4886,30 +4887,30 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $activity_type = 'delete_card_duedate';
         }
         if (is_plugin_enabled('r_gantt_view')) {
-            if (isset($final_custom_array['start_date']) && $final_custom_array['start_date'] != 'NULL') {
-                if (isset($previous_value['custom_fields']['start_date']) && ($previous_value['custom_fields']['start_date'] != 'null' && $previous_value['custom_fields']['start_date'] != '')) {
-                    $comment = 'Start date - ' . $final_custom_array['start_date'] . ' was updated to this card ##CARD_LINK##';
+            if (isset($present_custom_fields['start_date']) && $present_custom_fields['start_date'] != 'NULL') {
+                if (isset($previous_custom_fields['start_date']) && ($previous_custom_fields['start_date'] != 'null' && $previous_custom_fields['start_date'] != '')) {
+                    $comment = '##USER_NAME## updated Start date - ' . $present_custom_fields['start_date'] . ' to this card ##CARD_LINK##';
                     $activity_type = 'edit_card_startdate';
                 } else {
-                    $comment = '##USER_NAME## set start date - ' . $final_custom_array['start_date'] . ' to this card ##CARD_LINK##';
+                    $comment = '##USER_NAME## set start date - ' . $present_custom_fields['start_date'] . ' to this card ##CARD_LINK##';
                     $activity_type = 'add_card_startdate';
                 }
-            } else if (isset($final_custom_array['start_date'])) {
-                $comment = 'Start date - ' . $previous_value['custom_fields']['start_date'] . ' was removed to this card ##CARD_LINK##';
+            } else if (isset($present_custom_fields['start_date'])) {
+                $comment = 'Start date - ' . $previous_custom_fields['start_date'] . ' was removed to this card ##CARD_LINK##';
                 $activity_type = 'delete_card_startdate';
             }
         }
         if (is_plugin_enabled('r_estimated_time')) {
-            if (isset($final_custom_array['hour']) && $final_custom_array['hour'] != 'NULL') {
-                if (isset($previous_value['custom_fields']['hour']) && ($previous_value['custom_fields']['hour'] != 'null' && $previous_value['custom_fields']['hour'] != '')) {
-                    $comment = 'Estimated time - ' . $final_custom_array['hour'] . ':' . $final_custom_array['min'] . ' was updated to this card ##CARD_LINK##';
+            if (isset($present_custom_fields['hour']) && $present_custom_fields['hour'] != 'NULL') {
+                if (isset($previous_custom_fields['hour']) && ($previous_custom_fields['hour'] != 'null' && $previous_custom_fields['hour'] != '')) {
+                    $comment = '##USER_NAME## updated estimated time - ' . $present_custom_fields['hour'] . ':' . $present_custom_fields['min'] . ' to this card ##CARD_LINK##';
                     $activity_type = 'edit_card_estimatedtime';
                 } else {
-                    $comment = '##USER_NAME## set estimated time - ' . $final_custom_array['hour'] . ':' . $final_custom_array['min'] . ' to this card ##CARD_LINK##';
+                    $comment = '##USER_NAME## set estimated time - ' . $present_custom_fields['hour'] . ':' . $present_custom_fields['min'] . ' to this card ##CARD_LINK##';
                     $activity_type = 'add_card_estimatedtime';
                 }
-            } else if (isset($final_custom_array['hour'])) {
-                $comment = 'Estimated time - ' . $previous_value['custom_fields']['hour'] . ':' . $previous_value['custom_fields']['min'] . ' was removed to this card ##CARD_LINK##';
+            } else if (isset($present_custom_fields['hour'])) {
+                $comment = 'Estimated time - ' . $previous_custom_fields['hour'] . ':' . $previous_custom_fields['min'] . ' was removed to this card ##CARD_LINK##';
                 $activity_type = 'delete_card_estimatedtime';
             }
         }
