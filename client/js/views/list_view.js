@@ -1017,6 +1017,8 @@ App.ListView = Backbone.View.extend({
      */
     renderCardsCollection: function() {
         var self = this;
+        $('#js-list-card-add-form-' + this.model.id).remove();
+        $('.js-show-add-card-form', $('#js-card-listing-' + this.model.id).next()).removeClass('hide');
         var view_card = this.$('#js-card-listing-' + this.model.id);
         view_card.html('&nbsp;');
         this.model.cards.sortByColumn('position');
