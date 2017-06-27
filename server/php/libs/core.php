@@ -580,15 +580,15 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
     $emailFindReplace = array_merge($default_content, $replace_content);
     $templates = executeQuery('SELECT * FROM email_templates WHERE name = $1', $qry_val_arr);
     if ($templates) {
-        $message = decode_qprint(strtr($templates['email_text_content'], $emailFindReplace));
-        $subject = decode_qprint(strtr($templates['subject'], $emailFindReplace));
+        $message = strtr($templates['email_text_content'], $emailFindReplace);
+        $subject = strtr($templates['subject'], $emailFindReplace);
         $from_email = strtr($templates['from_email'], $emailFindReplace);
         $headers = 'From:' . $from_email . PHP_EOL;
         if (!empty($reply_to_mail)) {
             $headers.= 'Reply-To:' . $reply_to_mail . PHP_EOL;
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
-        $headers.= "Content-Type: text/html; charset=ISO-8859-1" . PHP_EOL;
+        $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
         $headers.= "X-Mailer: Restyaboard (0.5; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         mail($to, $subject, $message, $headers);
@@ -1277,17 +1277,17 @@ function findAndReplaceVariables($activity)
         include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
     }
     $data = array(
-        '##ORGANIZATION_LINK##' => decode_qprint($activity['organization_name']) ,
-        '##CARD_LINK##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '/card/' . $activity['card_id'] . '">' . decode_qprint($activity['card_name']) . '</a>',
-        '##LABEL_NAME##' => decode_qprint($activity['label_name']) ,
-        '##CARD_NAME##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '/card/' . $activity['card_id'] . '">' . decode_qprint($activity['card_name']) . '</a>',
-        '##DESCRIPTION##' => decode_qprint($activity['card_description']) ,
-        '##LIST_NAME##' => decode_qprint($activity['list_name']) ,
-        '##BOARD_NAME##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '">' . decode_qprint($activity['board_name']) . '</a>',
-        '##USER_NAME##' => '<strong>' . decode_qprint($activity['full_name']) . '</strong>',
-        '##CHECKLIST_ITEM_NAME##' => decode_qprint($activity['checklist_item_name']) ,
-        '##CHECKLIST_ITEM_PARENT_NAME##' => decode_qprint($activity['checklist_item_parent_name']) ,
-        '##CHECKLIST_NAME##' => decode_qprint($activity['checklist_name'])
+        '##ORGANIZATION_LINK##' => $activity['organization_name'],
+        '##CARD_LINK##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '/card/' . $activity['card_id'] . '">' . $activity['card_name'] . '</a>',
+        '##LABEL_NAME##' => $activity['label_name'],
+        '##CARD_NAME##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '/card/' . $activity['card_id'] . '">' . $activity['card_name'] . '</a>',
+        '##DESCRIPTION##' => $activity['card_description'],
+        '##LIST_NAME##' => $activity['list_name'],
+        '##BOARD_NAME##' => '<a href="' . $_server_domain_url . '/#/board/' . $activity['board_id'] . '">' . $activity['board_name'] . '</a>',
+        '##USER_NAME##' => '<strong>' . $activity['full_name'] . '</strong>',
+        '##CHECKLIST_ITEM_NAME##' => $activity['checklist_item_name'],
+        '##CHECKLIST_ITEM_PARENT_NAME##' => $activity['checklist_item_parent_name'],
+        '##CHECKLIST_NAME##' => $activity['checklist_name']
     );
     $comment = strtr($activity['comment'], $data);
     return $comment;
