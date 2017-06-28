@@ -1017,6 +1017,8 @@ App.ListView = Backbone.View.extend({
      */
     renderCardsCollection: function() {
         var self = this;
+        $('#js-list-card-add-form-' + this.model.id).remove();
+        $('.js-show-add-card-form', $('#js-card-listing-' + this.model.id).next()).removeClass('hide');
         var view_card = this.$('#js-card-listing-' + this.model.id);
         view_card.html('&nbsp;');
         this.model.cards.sortByColumn('position');
@@ -1259,6 +1261,7 @@ App.ListView = Backbone.View.extend({
             $('#js-card-listing-' + this.model.id).scrollTop($('#js-card-listing-' + this.model.id)[0].scrollHeight);
             card.save(data, {
                 success: function(model, response, options) {
+                    card.set('created', response.activity.created);
                     card.set('description', response.activity.card_description);
                     if (_.isUndefined(options.temp_id)) {
                         card.set('is_offline', false);
@@ -1290,6 +1293,7 @@ App.ListView = Backbone.View.extend({
                     self.model.collection.board.cards.add(card, {
                         silent: true
                     });
+                    console.log(card);
                     self.model.cards.add(card, {
                         silent: true
                     });

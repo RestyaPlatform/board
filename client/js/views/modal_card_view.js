@@ -1668,6 +1668,7 @@ App.ModalCardView = Backbone.View.extend({
                 }
             }
         });
+        self.$el.find('.js-modal-settings').removeClass('hide');
         return false;
     },
     /**
