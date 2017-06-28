@@ -338,6 +338,9 @@ App.CardView = Backbone.View.extend({
                 card: self.model
             })));
         }
+        _(function() {
+            $('body').trigger('cardRendered', self.model.id, self.model);
+        }).defer();
         return this;
     },
     /**
