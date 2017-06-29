@@ -7,8 +7,9 @@
     </div>
 </td>
 <td>
+<div class="user-table-width">
 	<div class="row">
-		<div class="col-xs-10">
+		<div class="col-xs-12">
 			<div class="clearfix"> 
 				<a  title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)" class="small-user pull-left show" href="#/user/<%- user.attributes.id%>">
 					<% if(!_.isEmpty(user.attributes.profile_picture_path)){ 
@@ -32,6 +33,7 @@
 				<span class="col-xs-12 htruncate nav"><%- user.attributes.email%></span>
 			</div>
 		</div>
+	</div>
 	</div>
 </td> 
 <td class="text-center">
@@ -88,7 +90,7 @@
 		<% } %>
 	<% if(!_.isEmpty(user.attributes.register_city_name)){ %> <span><%- user.attributes.register_city_name %></span><% } %>
 </td>
-<td class="text-center devices-td">
+<td class="text-center devices-td devices-td-new">
 	<div class="dropdown btn-group">  
 	<% _.each(user.roles, function(role){%>
 		<%if(user.attributes.role_id == role.id){%>  

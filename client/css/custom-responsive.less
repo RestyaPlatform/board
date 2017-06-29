@@ -43,17 +43,67 @@
 }
 @media (min-width:992px) and (max-width:1300px) {
 	.new-sample-border{
-		min-height:314px;
+		min-height: 193px;
+		h4{
+			font-size:13px;
+		}
+		&:first-child{
+			.mauto{
+				max-width: 55px;
+				margin: 0;
+				padding: 0;
+				float: left;
+			}
+			.circle-blk{
+				margin: 0 0 0 10px;
+				float: left;
+				max-width: 120px;
+			}
+		}
+		&.new-sample-border1{
+			padding: 0 5px;
+			.thumbnail{
+			    padding: 0;
+			}
+			.timer{
+				padding: 0;
+    			float: left;
+			}
+			.week-chart-date {
+				margin: 0;
+				li{
+			    width: 40px;
+					.list-group-item-heading{
+						font-size: 13px;
+					}
+				}
+			}
+			.circle-blk{
+				margin: 0;
+				padding: 0;
+				float: left;
+				max-width: 121px;
+			}
+		}
 		.timer{
-			width: 100%;
 			float: none;
 			text-align: center;
 			margin: 0 auto;
-			&.mauto{
-				max-width:85px;
-			}
 		}
 		&.hgt-this-alone{
+			.timer{
+				margin: 0;
+				padding: 0;
+				float: left;
+				width: 32%;
+			}
+			.circle-blk{
+				margin: 0;
+    			float: left;
+			    max-width: 120px;
+			}
+		}
+		/*&.hgt-this-alone{
 			.thumbnail{
 				min-height:302px;
 			}
@@ -70,7 +120,7 @@
 						right: 7px;
 				}
 			}
-		}
+		}*/
 		.dounet-calender2{
 			margin:auto;
 		}
