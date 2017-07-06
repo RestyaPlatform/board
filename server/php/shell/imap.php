@@ -24,7 +24,7 @@ $imap_email_password = IMAP_EMAIL_PASSWORD;
 $imap_email_password_decode = base64_decode($imap_email_password);
 $imap_email_password = str_rot13($imap_email_password_decode);
 $is_ssl = (IMAP_PORT === '993') ? 'ssl/' : '';
-$connection = imap_open('{' . IMAP_HOST . ':' . IMAP_PORT . '/imap/' . $is_ssl . 'novalidate-cert}INBOX', IMAP_EMAIL, IMAP_EMAIL_PASSWORD, NULL, 1, array(
+$connection = imap_open('{' . IMAP_HOST . ':' . IMAP_PORT . '/imap/' . $is_ssl . 'novalidate-cert}INBOX', IMAP_EMAIL, $imap_email_password, NULL, 1, array(
     'DISABLE_AUTHENTICATOR' => 'PLAIN'
 ));
 if (!$connection) {
