@@ -24,13 +24,6 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                 );
                 $result = pg_query_params($db_lnk, 'SELECT user_id as username, expires, scope, client_id FROM oauth_access_tokens WHERE access_token = $1', $conditions);
                 $auth_response = pg_fetch_assoc($result);
-                $expires = strtotime($auth_response['expires']);
-                if (empty($auth_response) || !empty($auth_response['error']) || ($auth_response['client_id'] != 6664115227792148 && $auth_response['client_id'] != OAUTH_CLIENTID) || ($expires > 0 && $expires < time() && $auth_response['client_id'] != 7857596005287233 && $auth_response['client_id'] != 1193674816623028)) {
-                    $auth_response['error']['type'] = 'OAuth';
-                    echo json_encode($auth_response);
-                    header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
-                    exit;
-                }
                 if (!empty($auth_response)) {
                     $val_array = array(
                         $_GET['id']
