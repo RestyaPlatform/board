@@ -16,6 +16,10 @@
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
 			} else {
 				var comment = activity.attributes.full_name + ' commented in card ' + cardLink;
+				var patt = /@\w+/g;
+				if(patt.test(activity.attributes.comment)) {
+					comment = activity.attributes.full_name + ' mentioned you in card ' + cardLink;
+				}
 			}
 		%>   
 		<ul class="media-list">

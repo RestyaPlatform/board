@@ -38,9 +38,31 @@ App.SettingView = Backbone.View.extend({
         if (!_.isUndefined(data.DEFAULT_CARD_VIEW)) {
             DEFAULT_CARD_VIEW = data.DEFAULT_CARD_VIEW;
         }
-        data.ENABLE_SSL_CONNECTIVITY = 'false';
-        if (!_.isUndefined($("input[name='ENABLE_SSL_CONNECTIVITY']:checked").val())) {
-            data.ENABLE_SSL_CONNECTIVITY = 'true';
+        if ($(e.target).find('#input_setting_category_id').val() === '14') {
+            data.IS_LIST_NOTIFICATIONS_ENABLED = 'false';
+            if (!_.isUndefined($("input[name='IS_LIST_NOTIFICATIONS_ENABLED']:checked").val())) {
+                data.IS_LIST_NOTIFICATIONS_ENABLED = 'true';
+            }
+            data.IS_CARD_NOTIFICATIONS_ENABLED = 'false';
+            if (!_.isUndefined($("input[name='IS_CARD_NOTIFICATIONS_ENABLED']:checked").val())) {
+                data.IS_CARD_NOTIFICATIONS_ENABLED = 'true';
+            }
+            data.IS_CARD_MEMBERS_NOTIFICATIONS_ENABLED = 'false';
+            if (!_.isUndefined($("input[name='IS_CARD_MEMBERS_NOTIFICATIONS_ENABLED']:checked").val())) {
+                data.IS_CARD_MEMBERS_NOTIFICATIONS_ENABLED = 'true';
+            }
+            data.IS_CARD_LABELS_NOTIFICATIONS_ENABLED = 'false';
+            if (!_.isUndefined($("input[name='IS_CARD_LABELS_NOTIFICATIONS_ENABLED']:checked").val())) {
+                data.IS_CARD_LABELS_NOTIFICATIONS_ENABLED = 'true';
+            }
+            data.IS_CARD_CHECKLISTS_NOTIFICATIONS_ENABLED = 'false';
+            if (!_.isUndefined($("input[name='IS_CARD_CHECKLISTS_NOTIFICATIONS_ENABLED']:checked").val())) {
+                data.IS_CARD_CHECKLISTS_NOTIFICATIONS_ENABLED = 'true';
+            }
+            data.IS_CARD_ATTACHMENTS_NOTIFICATIONS_ENABLED = 'false';
+            if (!_.isUndefined($("input[name='IS_CARD_ATTACHMENTS_NOTIFICATIONS_ENABLED']:checked").val())) {
+                data.IS_CARD_ATTACHMENTS_NOTIFICATIONS_ENABLED = 'true';
+            }
         }
         var self = this;
         var settingModel = new App.SettingCategory();

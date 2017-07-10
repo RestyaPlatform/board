@@ -61,16 +61,6 @@
 									<input type="text" id="inputtimezone" class="form-control initialism" name="timezone" value="<%- user.attributes.timezone %>" required>
 								</div>
 							</div>
-							<div class="form-group">
-								<label for="is_send_newsletter" class="col-sm-4 control-label"><%- i18next.t("Notifications") %></label>
-								<div class="col-sm-8">
-									<select  id="is_send_newsletter" class="js-chosen-select" name="is_send_newsletter">
-										<option value="0"><%- i18next.t("Never, Don't send email notifications") %></option>
-										<option value="1"><%- i18next.t("Periodically, Send email notification every 1 hour") %></option>
-										<option value="2"><%- i18next.t("Instantly, Send email notification every 5 minutes") %></option>
-									</select>
-								</div>
-							</div>
 							<% if(!_.isEmpty(role_links.where({slug: "add_user_profile_picture"}))){ %>
 								<div class="form-group" id="dropzone">
 									<label for="inputAttachment" class="col-sm-4 control-label sr-only"><%- i18next.t("Upload Avatar") %></label>
@@ -91,6 +81,92 @@
 								</div>
 								</span>
 								</span>
+							<% } %>
+							<fieldset>
+								<legend><span class="show h4"><%- i18next.t('Notifications') %></span></legend>
+								<fieldset class="col-sm-offset-1 well-sm">
+									<legend><span class="show h4"><%- i18next.t('Email Notification') %></span></legend>
+									<p class="hide alert alert-info text-justify col-sm-4"><%- i18next.t('In order to get email notification, you should subscribe to the card, list or board. In case, if someone mentions you with @') %><%- user.attributes.username %><%- i18next.t(', you\'ll be auto subscribed to the card to get email notification.') %></p>
+									<div class="form-group">
+										<label for="is_send_newsletter" class="col-sm-3 control-label"><%- i18next.t("Email Notification") %></label>
+										<div class="col-sm-8">
+											<select  id="is_send_newsletter" class="js-chosen-select" name="is_send_newsletter">
+												<option value="0"><%- i18next.t("Never, Don't send email notifications") %></option>
+												<option value="1"><%- i18next.t("Periodically, Send email notification every 1 hour") %></option>
+												<option value="2"><%- i18next.t("Instantly, Send email notification every 5 minutes") %></option>
+											</select>
+										</div>
+									</div>
+								</fieldset>
+								<fieldset class="col-sm-offset-1 well-sm">
+									<legend><span class="show h4"><%- i18next.t('Desktop Notification') %></span></legend>
+										<% if (typeof Notification != 'undefined' && (Notification.permission !== 'granted')) { %>
+											<p class="alert alert-info text-justify"><%- i18next.t('Browser notification is in disabled mode, please enable to receive the desktop notification. Click ') %> <a href ="#" class="js-enable-user-desktop-notification" title="<%- i18next.t('To enable browser notification') %>"><%- i18next.t('here') %></a><%- i18next.t(' to enable the browser notification') %></p>
+											<div class="form-group">
+												<label for="default_desktop_notification" class="col-sm-3 control-label"><%- i18next.t("Desktop Notification") %></label>
+												<div class="col-sm-8">
+													<select  id="default_desktop_notification" class="form-control" name="default_desktop_notification">
+														<option value="Enabled" <% if(user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'true') { %>selected <% }%> ><%- i18next.t("Enabled") %></option>
+														<option value="Disabled" <% if(!user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'false') { %>selected <% }%> ><%- i18next.t("Disabled") %></option>
+													</select>
+												</div>
+											</div>
+										<% } else { %>
+										 	<% if(!user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'false') { %>
+												<p class="alert alert-info text-justify"><%- i18next.t('Browser notification is in enabled mode, But you turned off it. Please enable to receive the desktop notification.') %></p>
+											<% } %>
+											<div class="form-group">
+												<label for="default_desktop_notification" class="col-sm-3 control-label"><%- i18next.t("Desktop Notification") %></label>
+												<div class="col-sm-8">
+													<select  id="default_desktop_notification" class="form-control" name="default_desktop_notification">
+														<option value="Enabled" <% if(user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'true') { %>selected <% }%> ><%- i18next.t("Enabled") %></option>
+														<option value="Disabled" <% if(!user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'false') { %>selected <% }%> ><%- i18next.t("Disabled") %></option>
+													</select>
+												</div>
+											</div>
+										<% } %>
+								</fieldset>
+								<% if (typeof Notification != 'undefined' && Notification.permission === 'granted') { %>
+									<fieldset class="col-sm-offset-1 well-sm">
+										<legend><span class="show h4"><%- i18next.t('Refine Your Desktop Notification') %></span></legend>
+										<div class="form-group">
+											<div class="col-sm-offset-3 col-sm-8">
+												<input type="checkbox" value="<%- user.attributes.is_list_notifications_enabled %>" name="is_list_notifications_enabled" id="is_list_notifications_enabled" <% if(user.attributes.is_list_notifications_enabled === true || user.attributes.is_list_notifications_enabled === 'true') { %> checked="checked" <% } %> >
+												<label for="is_list_notifications_enabled"><%- i18next.t('List level notification - when updating color, card, move, archive, unarchive, delete') %> </label>
+											</div>
+										</div>
+										<div class="form-group">
+											<div class="col-sm-offset-3 col-sm-8">
+												<input type="checkbox" value="<%- user.attributes.is_card_notifications_enabled %>" name="is_card_notifications_enabled" id="is_card_notifications_enabled" <% if(user.attributes.is_card_notifications_enabled === true || user.attributes.is_card_notifications_enabled === 'true') { %> checked="checked" <% } %> >
+												<label for="is_card_notifications_enabled"><%- i18next.t('Card level notification #1 - when updating color, due date, description, move, archive, unarchive, delete') %> </label>
+											</div>
+										</div>
+										<div class="form-group">
+											<div class="col-sm-offset-3 col-sm-8">
+												<input type="checkbox" value="<%- user.attributes.is_card_members_notifications_enabled %>" name="is_card_members_notifications_enabled" id="is_card_members_notifications_enabled" <% if(user.attributes.is_card_members_notifications_enabled === true || user.attributes.is_card_members_notifications_enabled === 'true') { %> checked="checked" <% } %> >
+												<label for="is_card_members_notifications_enabled"><%- i18next.t('Card level notification #2 - when updating members') %> </label>
+											</div>
+										</div>
+										<div class="form-group">
+											<div class="col-sm-offset-3 col-sm-8">
+												<input type="checkbox" value="<%- user.attributes.is_card_labels_notifications_enabled %>" name="is_card_labels_notifications_enabled" id="is_card_labels_notifications_enabled" <% if(user.attributes.is_card_labels_notifications_enabled === true || user.attributes.is_card_labels_notifications_enabled === 'true') { %> checked="checked" <% } %> >
+												<label for="is_card_labels_notifications_enabled"><%- i18next.t('Card level notification #3 - when updating labels') %> </label>
+											</div>
+										</div>
+										<div class="form-group">
+											<div class="col-sm-offset-3 col-sm-8">
+												<input type="checkbox" value="<%- user.attributes.is_card_checklists_notifications_enabled %>" name="is_card_checklists_notifications_enabled" id="is_card_checklists_notifications_enabled" <% if(user.attributes.is_card_checklists_notifications_enabled === true || user.attributes.is_card_checklists_notifications_enabled === 'true') { %> checked="checked" <% } %> >
+												<label for="is_card_checklists_notifications_enabled"><%- i18next.t('Card level notification #4 - when updating checklist') %> </label>
+											</div>
+										</div>
+										<div class="form-group">
+											<div class="col-sm-offset-3 col-sm-8">
+												<input type="checkbox" value="<%- user.attributes.is_card_attachments_notifications_enabled %>" name="is_card_attachments_notifications_enabled" id="is_card_attachments_notifications_enabled" <% if(user.attributes.is_card_attachments_notifications_enabled === true || user.attributes.is_card_attachments_notifications_enabled === 'true') { %> checked="checked" <% } %> >
+												<label for="is_card_attachments_notifications_enabled"><%- i18next.t('Card level notification #5 - when updating attachment') %> </label>
+											</div>
+										</div>
+									</fieldset>
+								</fieldset>
 							<% } %>
 							<div class="col-xs-9 pull-right clearfix">
 								<div class="form-group">

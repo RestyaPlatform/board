@@ -84,6 +84,13 @@ App.LoginView = Backbone.View.extend({
                         auth_response.user.unread_activity_id = response.user.unread_activity_id;
                         auth_response.user.last_activity_id = response.user.last_activity_id;
                         auth_response.user.language = response.user.language;
+                        auth_response.user.default_desktop_notification = response.user.default_desktop_notification;
+                        auth_response.user.is_list_notifications_enabled = response.user.is_list_notifications_enabled;
+                        auth_response.user.is_card_notifications_enabled = response.user.is_card_notifications_enabled;
+                        auth_response.user.is_card_members_notifications_enabled = response.user.is_card_members_notifications_enabled;
+                        auth_response.user.is_card_labels_notifications_enabled = response.user.is_card_labels_notifications_enabled;
+                        auth_response.user.is_card_checklists_notifications_enabled = response.user.is_card_checklists_notifications_enabled;
+                        auth_response.user.is_card_attachments_notifications_enabled = response.user.is_card_attachments_notifications_enabled;
                         auth_response.user.is_ldap = response.user.is_ldap;
                         $.cookie('auth', JSON.stringify(auth_response));
                         i18next.changeLanguage(response.user.language);

@@ -129,6 +129,8 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-change-color': 'changeBackgroundColor',
         'click .js-send-list-to-board': 'sendListToboard',
         'click .js-enable-covers': 'toggleAdditionalSettings',
+        'click .js-enable-board-notification': 'toggleBoardNotification',
+        'click .js-enable-card-notification': 'toggleCardNotification',
         'click .js-computer-open-board-background': 'computerOpenBoardBackground',
         'change #js-custom-background-attachment': 'addBoardBackground',
         'click .js-no-action': 'noAction',
@@ -1431,9 +1433,22 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.set('background_picture_url', '');
         this.model.set('background_pattern_url', '');
         this.model.set('custom_background_url', '');
+        App.boards.get(this.model.id).set('background_picture_url', '', {
+            silent: true
+        });
+        App.boards.get(this.model.id).set('custom_background_url', '', {
+            silent: true
+        });
+        App.boards.get(this.model.id).set('background_pattern_url', '', {
+            silent: true
+        });
+        App.boards.get(this.model.id).set('background_color', color, {
+            silent: true
+        });
         data = {
             background_color: color,
             background_picture_url: null,
+            custom_background_url: null,
             background_pattern_url: null
         };
         this.model.save(data, {
@@ -1501,6 +1516,68 @@ App.BoardHeaderView = Backbone.View.extend({
             $('.js-AdditionalSettings-enabled').removeClass('hide');
             $('.js-AdditionalSettings-enable').addClass('hide');
             this.model.set('is_show_image_front_of_card', 1);
+        }
+        var board = new App.Board();
+        board.url = api_url + 'boards/' + this.model.attributes.id + '.json';
+        board.set('id', this.model.attributes.id);
+        board.save(data);
+        return false;
+    },
+    /**
+     * toggleBoardNotification()
+     * toggle thr label filter list
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    toggleBoardNotification: function(e) {
+        var target = $(e.currentTarget);
+        if (target.hasClass('js-auto_subscribe_on_board-enabled')) {
+            data = {
+                'auto_subscribe_on_board': false
+            };
+            $('.js-auto_subscribe_on_board-enabled').addClass('hide');
+            $('.js-auto_subscribe_on_board-enable').removeClass('hide');
+            this.model.set('auto_subscribe_on_board', false);
+        } else {
+            data = {
+                'auto_subscribe_on_board': true
+            };
+            $('.js-auto_subscribe_on_board-enabled').removeClass('hide');
+            $('.js-auto_subscribe_on_board-enable').addClass('hide');
+            this.model.set('auto_subscribe_on_board', true);
+        }
+        var board = new App.Board();
+        board.url = api_url + 'boards/' + this.model.attributes.id + '.json';
+        board.set('id', this.model.attributes.id);
+        board.save(data);
+        return false;
+    },
+    /**
+     * toggleCardNotification()
+     * toggle thr label filter list
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    toggleCardNotification: function(e) {
+        var target = $(e.currentTarget);
+        if (target.hasClass('js-auto_subscribe_on_card-enabled')) {
+            data = {
+                'auto_subscribe_on_card': false
+            };
+            $('div.js-card-attachment-image').addClass('hide');
+            $('.js-auto_subscribe_on_card-enabled').addClass('hide');
+            $('.js-auto_subscribe_on_card-enable').removeClass('hide');
+            this.model.set('auto_subscribe_on_card', false);
+        } else {
+            data = {
+                'auto_subscribe_on_card': true
+            };
+            $('div.js-card-attachment-image').removeClass('hide');
+            $('.js-auto_subscribe_on_card-enabled').removeClass('hide');
+            $('.js-auto_subscribe_on_card-enable').addClass('hide');
+            this.model.set('auto_subscribe_on_card', true);
         }
         var board = new App.Board();
         board.url = api_url + 'boards/' + this.model.attributes.id + '.json';
@@ -1755,14 +1832,27 @@ App.BoardHeaderView = Backbone.View.extend({
                 if (response.error) {
                     self.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
                 } else {
+                    image = response.background_picture_url + '?' + Date.now();
+                    self.model.set('background_color', '');
+                    self.model.set('background_pattern_url', '');
+                    self.model.set('custom_background_url', '');
+                    self.model.set('background_picture_url', '');
                     self.model.set({
-                        background_picture_url: ''
-                    }, {
+                        background_picture_url: image
+                    });
+                    App.boards.get(self.model.id).set('custom_background_url', '', {
                         silent: true
                     });
-                    self.model.set({
-                        background_picture_url: response.background_picture_url + '?' + Date.now()
+                    App.boards.get(self.model.id).set('background_pattern_url', '', {
+                        silent: true
                     });
+                    App.boards.get(self.model.id).set('background_color', '', {
+                        silent: true
+                    });
+                    App.boards.get(self.model.id).set('background_picture_url', image, {
+                        silent: true
+                    });
+
                 }
             }
         });

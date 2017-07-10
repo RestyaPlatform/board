@@ -689,6 +689,14 @@ App.FooterView = Backbone.View.extend({
         var activities = new App.ActivityCollection();
         var view_activity = $('#js-all-activities');
         var Auth, favCount;
+        var list_notifications_array = ['add_list_color', 'edit_list_color', 'delete_list_color', 'add_card', 'change_list_position', 'archive_list', 'unarchive_list', 'delete_list'];
+        var card_notifications_array = ['add_card_color', 'edit_card_color', 'delete_card_color', 'add_card_duedate', 'edit_card_duedate', 'delete_card_duedate', 'move_card', 'archived_card',
+            'unarchived_card', 'delete_card'
+        ];
+        var card_members_notifications_array = ['add_card_user', 'delete_card_users'];
+        var card_labels_notifications_array = ['add_card_label', 'delete_card_label'];
+        var card_checklists_notifications_array = ['add_card_checklist', 'add_checklist_item', '	update_card_checklist', 'update_card_checklist_item', 'delete_checklist_item', 'delete_checklist'];
+        var card_attachments_notifications_array = ['add_card_attachment', 'delete_card_attachment'];
         if ($.cookie('auth')) {
             Auth = JSON.parse($.cookie('auth'));
             if (_.isUndefined(authuser.user.last_activity_id)) {
@@ -784,11 +792,39 @@ App.FooterView = Backbone.View.extend({
                                 activity.attributes.comment = stripScripts(activity.attributes.comment);
                             } else if (activity.attributes.type === 'add_comment') {
                                 activity.attributes.comment = _.escape(activity.attributes.full_name) + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                var patt = /@\w+/g;
+                                if (patt.test(activity.attributes.comment)) {
+                                    activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned you in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                }
                                 activity.attributes.comment = stripScripts(activity.attributes.comment);
                             }
-                            new Notification(activity.attributes.comment, {
-                                icon: icon
-                            });
+                            if (authuser.user.default_desktop_notification === true || authuser.user.default_desktop_notification === 'true' || authuser.user.default_desktop_notification === 't') {
+                                if ((authuser.user.is_list_notifications_enabled === true || authuser.user.is_list_notifications_enabled === 'true' || authuser.user.is_list_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, list_notifications_array) !== -1)) {
+                                    new Notification(activity.attributes.comment, {
+                                        icon: icon
+                                    });
+                                } else if ((authuser.user.is_card_notifications_enabled === true || authuser.user.is_card_notifications_enabled === 'true' || authuser.user.is_card_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_notifications_array) !== -1)) {
+                                    new Notification(activity.attributes.comment, {
+                                        icon: icon
+                                    });
+                                } else if ((authuser.user.is_card_members_notifications_enabled === true || authuser.user.is_card_members_notifications_enabled === 'true' || authuser.user.is_card_members_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_members_notifications_array) !== -1)) {
+                                    new Notification(activity.attributes.comment, {
+                                        icon: icon
+                                    });
+                                } else if ((authuser.user.is_card_labels_notifications_enabled === true || authuser.user.is_card_labels_notifications_enabled === 'true' || authuser.user.is_card_labels_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_labels_notifications_array) !== -1)) {
+                                    new Notification(activity.attributes.comment, {
+                                        icon: icon
+                                    });
+                                } else if ((authuser.user.is_card_checklists_notifications_enabled === true || authuser.user.is_card_checklists_notifications_enabled === 'true' || authuser.user.is_card_checklists_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_checklists_notifications_array) !== -1)) {
+                                    new Notification(activity.attributes.comment, {
+                                        icon: icon
+                                    });
+                                } else if ((authuser.user.is_card_attachments_notifications_enabled === true || authuser.user.is_card_attachments_notifications_enabled === 'true' || authuser.user.is_card_attachments_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_attachments_notifications_array) !== -1)) {
+                                    new Notification(activity.attributes.comment, {
+                                        icon: icon
+                                    });
+                                }
+                            }
                         }
                         var view = new App.ActivityView({
                             model: activity,

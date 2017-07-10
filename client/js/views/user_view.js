@@ -28,6 +28,7 @@ App.UserView = Backbone.View.extend({
         'click .js-remove-image': 'removeImage',
         'click .js-use-uploaded-avatar': 'computerOpenUserProfile',
         'change #js-user-profile-attachment': 'addUserProfile',
+        'click .js-enable-user-desktop-notification': 'enabledesktopNotification'
 
     },
     /**
@@ -49,6 +50,28 @@ App.UserView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         this.render();
+    },
+    /**
+     * enabledesktopNotification()
+     * enable desktop notification
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    enabledesktopNotification: function(e) {
+        e.preventDefault();
+        var self = this;
+        Notification.requestPermission(function(permission) {
+            // Whatever the user answers, we make sure we store the information
+            if (!('permission' in Notification)) {
+                Notification.permission = permission;
+            }
+            // If the user is okay, let's create a notification
+            if (permission === 'granted') {
+                var notification = new Notification('Desktop notification enabled.');
+                location.reload();
+            }
+        });
     },
     /**
      * render()
@@ -187,6 +210,34 @@ App.UserView = Backbone.View.extend({
         var form = $(e.target);
         var fileData = new FormData(form[0]);
         var data = $(e.target).serializeObject();
+        data.default_desktop_notification = 'false';
+        if ($("#default_desktop_notification").val() === 'Enabled') {
+            data.default_desktop_notification = 'true';
+        }
+        data.is_list_notifications_enabled = 'false';
+        if (!_.isUndefined($("input[name='is_list_notifications_enabled']:checked").val())) {
+            data.is_list_notifications_enabled = 'true';
+        }
+        data.is_card_notifications_enabled = 'false';
+        if (!_.isUndefined($("input[name='is_card_notifications_enabled']:checked").val())) {
+            data.is_card_notifications_enabled = 'true';
+        }
+        data.is_card_members_notifications_enabled = 'false';
+        if (!_.isUndefined($("input[name='is_card_members_notifications_enabled']:checked").val())) {
+            data.is_card_members_notifications_enabled = 'true';
+        }
+        data.is_card_labels_notifications_enabled = 'false';
+        if (!_.isUndefined($("input[name='is_card_labels_notifications_enabled']:checked").val())) {
+            data.is_card_labels_notifications_enabled = 'true';
+        }
+        data.is_card_checklists_notifications_enabled = 'false';
+        if (!_.isUndefined($("input[name='is_card_checklists_notifications_enabled']:checked").val())) {
+            data.is_card_checklists_notifications_enabled = 'true';
+        }
+        data.is_card_attachments_notifications_enabled = 'false';
+        if (!_.isUndefined($("input[name='is_card_attachments_notifications_enabled']:checked").val())) {
+            data.is_card_attachments_notifications_enabled = 'true';
+        }
         this.model.set(data);
         this.render();
         this.model.url = api_url + 'users/' + this.model.id + '.json';
@@ -201,6 +252,16 @@ App.UserView = Backbone.View.extend({
                 self.flash('danger', i18next.t('Unable to update. Please try again.'));
             },
             success: function(model, response) {
+                var Auth = JSON.parse($.cookie('auth'));
+                Auth.user.default_desktop_notification = response.activity.default_desktop_notification;
+                Auth.user.is_list_notifications_enabled = response.activity.is_list_notifications_enabled;
+                Auth.user.is_card_notifications_enabled = response.activity.is_card_notifications_enabled;
+                Auth.user.is_card_members_notifications_enabled = response.activity.is_card_members_notifications_enabled;
+                Auth.user.is_card_labels_notifications_enabled = response.activity.is_card_labels_notifications_enabled;
+                Auth.user.is_card_checklists_notifications_enabled = response.activity.is_card_checklists_notifications_enabled;
+                Auth.user.is_card_attachments_notifications_enabled = response.activity.is_card_attachments_notifications_enabled;
+                $.cookie('auth', JSON.stringify(Auth));
+                authuser = Auth;
                 if (!_.isEmpty(response.success)) {
                     self.flash('success', i18next.t('User Profile has been updated.'));
                 } else if (response.error) {
@@ -214,7 +275,7 @@ App.UserView = Backbone.View.extend({
                 }
                 if (!_.isUndefined(response.activity.profile_picture_path) && response.activity.profile_picture_path !== null) {
                     self.model.set('profile_picture_path', response.activity.profile_picture_path);
-                    var Auth = JSON.parse($.cookie('auth'));
+                    Auth = JSON.parse($.cookie('auth'));
                     Auth.user.profile_picture_path = response.activity.profile_picture_path;
                     Auth.user.timezone = data.timezone;
                     $.cookie('auth', JSON.stringify(Auth));
