@@ -116,7 +116,23 @@
 					/etc/init.d/nginx restart
 				fi
 			fi
-			
+
+			set +x
+			echo "Do you want to run upgrade sql from v0.4.2 to v0.5?"
+			read -r answer
+			set -x
+			case "${answer}" in
+				[Yy])
+				echo "Updating SQL..."
+				psql -d ${POSTGRES_DBNAME} -f "$dir/sql/v0.5.sql" -U ${POSTGRES_DBUSER}
+				/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
+				if [ $? != 0 ]
+				then
+					echo "PostgreSQL updation of SQL failed with error code 33"
+					exit 1
+				fi
+			esac
+
 			echo "Updating SQL..."
 			psql -d ${POSTGRES_DBNAME} -f "$dir/sql/${RESTYABOARD_VERSION}.sql" -U ${POSTGRES_DBUSER}
 			/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
@@ -125,7 +141,6 @@
 				echo "PostgreSQL updation of SQL failed with error code 33"
 				exit 1
 			fi
-
 		esac
 	}
 	
@@ -493,7 +508,8 @@
 				echo "PostgreSQL user creation failed with error code 35 "
 				exit 1
 			fi
-			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};"
+			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0;"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 36"
@@ -525,19 +541,19 @@
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
-			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/crontabs/root
+			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh > /dev/null 2> /dev/nul" >> /var/spool/cron/crontabs/root
 			
 			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
-			echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh" >> /var/spool/cron/crontabs/root
+			echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh > /dev/null 2> /dev/nul" >> /var/spool/cron/crontabs/root
 			
 			echo "Setting up cron for every 30 minutes to fetch IMAP email..."
-			echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/crontabs/root
+			echo "*/30 * * * * $dir/server/php/shell/imap.sh > /dev/null 2> /dev/nul" >> /var/spool/cron/crontabs/root
 			
 			echo "Setting up cron for every 5 minutes to send activities to webhook..."
-			echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/crontabs/root
+			echo "*/5 * * * * $dir/server/php/shell/webhook.sh > /dev/null 2> /dev/nul" >> /var/spool/cron/crontabs/root
 			
 			echo "Setting up cron for every 5 minutes to send email notification to past due..."
-			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/crontabs/root
+			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/nul" >> /var/spool/cron/crontabs/root
 
 			set +x
 			echo "Do you want to setup SMTP configuration (y/n)?"
@@ -990,8 +1006,9 @@
 			then
 				echo "PostgreSQL user creation failed with error code 41"
 				exit 1
-			fi			
-			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+			fi
+			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};"
+			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0;"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 42"
@@ -1023,19 +1040,19 @@
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
 			echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
-			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh" >> /var/spool/cron/root
+			echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh > /dev/null 2> /dev/nul" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
-			echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh" >> /var/spool/cron/root
+			echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh > /dev/null 2> /dev/nul" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 30 minutes to fetch IMAP email..."
-			echo "*/30 * * * * $dir/server/php/shell/imap.sh" >> /var/spool/cron/root
+			echo "*/30 * * * * $dir/server/php/shell/imap.sh > /dev/null 2> /dev/nul" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 5 minutes to send activities to webhook..."
-			echo "*/5 * * * * $dir/server/php/shell/webhook.sh" >> /var/spool/cron/root
+			echo "*/5 * * * * $dir/server/php/shell/webhook.sh > /dev/null 2> /dev/nul" >> /var/spool/cron/root
 			
 			echo "Setting up cron for every 5 minutes to send email notification to past due..."
-			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh" >> /var/spool/cron/root
+			echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/nul" >> /var/spool/cron/root
 			
 			echo "Reset php-fpm (use unix socket mode)..."
 			sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf
