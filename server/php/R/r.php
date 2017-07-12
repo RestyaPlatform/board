@@ -2304,7 +2304,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
             }
             if ($no_error) {
-                $_POST['initials'] = strtoupper($_POST['initials']);
+                 $_POST['initials'] = strtoupper($_POST['initials']);
                 $qry_val_arr = array(
                     $_POST['full_name'],
                     $_POST['about_me'],
@@ -2328,7 +2328,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     }
                     if ($key != 'id' && $key != 'position') {
                         $sfields.= (empty($sfields)) ? $key : ", " . $key;
-                    }
+}
                 }
                 pg_query_params($db_lnk, 'UPDATE users SET full_name = $1, about_me = $2, initials = $3, is_send_newsletter = $4, timezone = $5 WHERE id = $6', $qry_val_arr);
                 if (!empty($_POST['email'])) {
@@ -2379,7 +2379,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             }
                         }
                     }
-                    if (isset($diff)) {
+                   if (isset($diff)) {
                         $response['activity']['difference'] = $diff;
                     }
                 }
@@ -2517,9 +2517,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $authUser['id'],
                                 $position
                             );
-                            $s_sql = 'INSERT INTO lists (created, modified, board_id, name, user_id, position) VALUES';
-                            $s_sql.= '(now(), now(), $1, $2, $3, $4)';
-                            pg_query_params($db_lnk, $s_sql, $qry_val_arr);
+                            $s_sql = 'INSERT INTO lists (created, modified, board_id, name, user_id, position) VALUES (now(), now(), $1, $2, $3, $4) RETURNING id';
+                            $result = pg_query_params($db_lnk, $s_sql, $qry_val_arr);
+                            if($position === 1) {
+                                $result_response = pg_fetch_assoc($result);
+                                $qry_val_arr = array(
+                                    $result_response['id'],
+                                    $response['id']
+                                );
+                                pg_query_params($db_lnk, 'UPDATE boards SET default_email_list_id = $1 WHERE id = $2', $qry_val_arr);
+                            }
                             $position++;
                         }
                     }
