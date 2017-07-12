@@ -35,7 +35,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
     // Fetch email header
     $header = imap_header($connection, $counter);
     // Fetch email body
-    $body = imap_fetchbody($connection, $counter, 1.1);
+    $body = imap_fetchbody($connection, $counter, 1);
     $mail = explode('+', $header->to[0]->mailbox);
     // Email format for board - board+##board_id##+hash@restya.com
     // Email format for card  - board+##board_id##+##card_id##+hash@restya.com
