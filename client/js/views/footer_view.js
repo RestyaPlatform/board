@@ -132,6 +132,7 @@ App.FooterView = Backbone.View.extend({
                 }
                 if (permission === 'granted') {
                     var notification = new Notification('Desktop notification enabled.');
+                    location.reload();
                 }
             });
         }
@@ -799,6 +800,7 @@ App.FooterView = Backbone.View.extend({
                                 activity.attributes.comment = stripScripts(activity.attributes.comment);
                             }
                             if (authuser.user.default_desktop_notification === true || authuser.user.default_desktop_notification === 'true' || authuser.user.default_desktop_notification === 't') {
+                                var patt_match = activity.attributes.comment.match(/@\w+/g);
                                 if ((authuser.user.is_list_notifications_enabled === true || authuser.user.is_list_notifications_enabled === 'true' || authuser.user.is_list_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, list_notifications_array) !== -1)) {
                                     new Notification(activity.attributes.comment, {
                                         icon: icon
@@ -822,6 +824,14 @@ App.FooterView = Backbone.View.extend({
                                 } else if ((authuser.user.is_card_attachments_notifications_enabled === true || authuser.user.is_card_attachments_notifications_enabled === 'true' || authuser.user.is_card_attachments_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_attachments_notifications_array) !== -1)) {
                                     new Notification(activity.attributes.comment, {
                                         icon: icon
+                                    });
+                                } else if (patt_match.length > 0) {
+                                    $.each(patt_match, function(index, user) {
+                                        if (user === '@' + authuser.user.username) {
+                                            new Notification(activity.attributes.comment, {
+                                                icon: icon
+                                            });
+                                        }
                                     });
                                 }
                             }
@@ -1571,6 +1581,7 @@ App.FooterView = Backbone.View.extend({
             // If the user is okay, let's create a notification
             if (permission === 'granted') {
                 var notification = new Notification('Desktop notification enabled.');
+                location.reload();
             }
         });
     },

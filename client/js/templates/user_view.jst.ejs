@@ -86,7 +86,7 @@
 								<legend><span class="show h4"><%- i18next.t('Notifications') %></span></legend>
 								<fieldset class="col-sm-offset-1 well-sm">
 									<legend><span class="show h4"><%- i18next.t('Email Notification') %></span></legend>
-									<p class="hide alert alert-info text-justify col-sm-4"><%- i18next.t('In order to get email notification, you should subscribe to the card, list or board. In case, if someone mentions you with @') %><%- user.attributes.username %><%- i18next.t(', you\'ll be auto subscribed to the card to get email notification.') %></p>
+									<div class="hide alert alert-info text-justify js-user-settings-info"><%- i18next.t('In order to get email notification, you should subscribe to the card, list or board. In case, if someone mentions you with @') %><%- user.attributes.username %><%- i18next.t(', you\'ll be auto subscribed to the card to get email notification.') %></div>
 									<div class="form-group">
 										<label for="is_send_newsletter" class="col-sm-3 control-label"><%- i18next.t("Email Notification") %></label>
 										<div class="col-sm-8">
@@ -100,30 +100,40 @@
 								</fieldset>
 								<fieldset class="col-sm-offset-1 well-sm">
 									<legend><span class="show h4"><%- i18next.t('Desktop Notification') %></span></legend>
-										<% if (typeof Notification != 'undefined' && (Notification.permission !== 'granted')) { %>
-											<p class="alert alert-info text-justify"><%- i18next.t('Browser notification is in disabled mode, please enable to receive the desktop notification. Click ') %> <a href ="#" class="js-enable-user-desktop-notification" title="<%- i18next.t('To enable browser notification') %>"><%- i18next.t('here') %></a><%- i18next.t(' to enable the browser notification') %></p>
-											<div class="form-group">
-												<label for="default_desktop_notification" class="col-sm-3 control-label"><%- i18next.t("Desktop Notification") %></label>
-												<div class="col-sm-8">
-													<select  id="default_desktop_notification" class="form-control" name="default_desktop_notification">
-														<option value="Enabled" <% if(user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'true') { %>selected <% }%> ><%- i18next.t("Enabled") %></option>
-														<option value="Disabled" <% if(!user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'false') { %>selected <% }%> ><%- i18next.t("Disabled") %></option>
-													</select>
+										<% 
+										if (typeof Notification != 'undefined' && (Notification.permission !== 'granted')) { %>
+											<% if (Notification.permission === 'denied') { %>
+												<div class="alert alert-info text-justify js-user-settings-info"><%- i18next.t('Note: Notifications have been disabled in this browser.') %> <a href ="http://restya.com/board/docs/desktop-notifications" class="text-primary" target="_blank" title="<%- i18next.t('Learn more') %>"><%- i18next.t('Learn more') %></a></div>
+											<% } else {  %>
+												<div class="alert alert-info text-justify js-user-settings-info"><%- i18next.t('Click ') %> <a href ="#" class="js-enable-user-desktop-notification text-primary" title="<%- i18next.t('To enable browser notification') %>"><%- i18next.t('here') %></a><%- i18next.t(' to enable desktop notifications.') %> <a href ="http://restya.com/board/docs/desktop-notifications" class="text-primary" target="_blank" title="<%- i18next.t('Learn more') %>"><%- i18next.t('Learn more') %></a></div>
+											<% } %>
+											<% if (typeof Notification != 'undefined' && Notification.permission === 'granted') { %>
+												<div class="form-group">
+													<label for="default_desktop_notification" class="col-sm-3 control-label"><%- i18next.t("Desktop Notification") %></label>
+													<div class="col-sm-8">
+														<select  id="default_desktop_notification" class="form-control" name="default_desktop_notification">
+															<option value="Enabled" <% if(user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'true') { %>selected <% }%> ><%- i18next.t("Enabled") %></option>
+															<option value="Disabled" <% if(!user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'false') { %>selected <% }%> ><%- i18next.t("Disabled") %></option>
+														</select>
+													</div>
 												</div>
-											</div>
+											<% } %>
 										<% } else { %>
 										 	<% if(!user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'false') { %>
-												<p class="alert alert-info text-justify"><%- i18next.t('Browser notification is in enabled mode, But you turned off it. Please enable to receive the desktop notification.') %></p>
+												<p class="alert alert-info text-justify"><%- i18next.t('Browser notification is in enabled in your browser. But, you have turned it off below.') %> <a href ="http://restya.com/board/docs/desktop-notifications" class="text-primary" target="_blank" title="<%- i18next.t('Learn more') %>"><%- i18next.t('Learn more') %></a></p>
 											<% } %>
-											<div class="form-group">
-												<label for="default_desktop_notification" class="col-sm-3 control-label"><%- i18next.t("Desktop Notification") %></label>
-												<div class="col-sm-8">
-													<select  id="default_desktop_notification" class="form-control" name="default_desktop_notification">
-														<option value="Enabled" <% if(user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'true') { %>selected <% }%> ><%- i18next.t("Enabled") %></option>
-														<option value="Disabled" <% if(!user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'false') { %>selected <% }%> ><%- i18next.t("Disabled") %></option>
-													</select>
+											<div class="js-user-settings-info">&nbsp;</div>
+											<% if (typeof Notification != 'undefined' && Notification.permission === 'granted') { %>
+												<div class="form-group">
+													<label for="default_desktop_notification" class="col-sm-3 control-label"><%- i18next.t("Desktop Notification") %></label>
+													<div class="col-sm-8">
+														<select  id="default_desktop_notification" class="form-control" name="default_desktop_notification">
+															<option value="Enabled" <% if(user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'true') { %>selected <% }%> ><%- i18next.t("Enabled") %></option>
+															<option value="Disabled" <% if(!user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'false') { %>selected <% }%> ><%- i18next.t("Disabled") %></option>
+														</select>
+													</div>
 												</div>
-											</div>
+											<% } %>
 										<% } %>
 								</fieldset>
 								<% if (typeof Notification != 'undefined' && Notification.permission === 'granted') { %>

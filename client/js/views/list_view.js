@@ -1293,7 +1293,6 @@ App.ListView = Backbone.View.extend({
                     self.model.collection.board.cards.add(card, {
                         silent: true
                     });
-                    console.log(card);
                     self.model.cards.add(card, {
                         silent: true
                     });

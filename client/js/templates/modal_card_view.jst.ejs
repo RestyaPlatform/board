@@ -242,13 +242,11 @@
 					</div>
 					<ul class="js-card-actions js-card-add list-inline action-list navbar-btn">
 						<li class="dropdown">
-								<a class="pr btn btn-default dropdown-toggle even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Color') %>" href="#">
 								<% if(!_.isEmpty(card.attributes.color)){ %>
-									<span class="dycolorblk" id="js-card-color-demo-<%- card.id %>" style="background-color:<%- card.attributes.color %>;"></span>
+									<a class="pr btn btn-default dropdown-toggle even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Color') %>" href="#"><span class="dycolorblk" id="js-card-color-demo-<%- card.id %>" style="background-color:<%- card.attributes.color %>;"></span><i class="icon-pencil">&nbsp;</i><%- i18next.t('Color') %></a>
 								<% } else {%>
-									<span class="dycolorblk" id="js-card-color-demo-<%- card.id %>"></span>
+									<a class="pr btn btn-default dropdown-toggle even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Color') %>" href="#"><span class="dycolorblk" id="js-card-color-demo-<%- card.id %>"></span><i class="icon-pencil">&nbsp;</i><%- i18next.t('Color') %></a>
 								<% } %>
-								<i class="icon-pencil">&nbsp;</i><%- i18next.t('Color') %></a>
 								<ul class="dropdown-menu dropdown-menu-left dropdown-new arrow selectcolourdown col-xs-12">
 									<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Select a color') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove ">&nbsp;</i></a></div> </li>
 									<li class="col-xs-12 divider"></li>
@@ -364,18 +362,18 @@
 							var subscribe_disabled = '';
 							var subscribe_title = i18next.t('Subscribe');
 							var subscribe_class = 'js-card-subscribe';
-
 							var subscribed = card.list.collection.board.board_subscribers.findWhere({
 								user_id: parseInt(authuser.user.id),
 								is_subscribed: 1
-							}); 
+							});
 							var list_subscribed = card.list.lists_subscribers.findWhere({
 								user_id: parseInt(authuser.user.id),
 								is_subscribed: 1
 							});
-							if(!_.isEmpty(cards_subscribers)) {
+							if(!_.isEmpty(cards_subscribers)){
+								subscribe_title = i18next.t('Unsubscribe');
 								subscribe_class = 'js-card-unsubscribe';
-							}
+							} 
 							if (subscribed) {
 								subscribe_disabled = 'disabled';
 								subscribe_class = 'js-no-action';
@@ -387,24 +385,16 @@
 							}
 						%>
 						<li class="navbar-btn">
-							<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href="">
 							<% if(!_.isEmpty(cards_subscribers)){ %>
-								<i class="icon-eye-open">&nbsp;</i>
-						    <% } else { %>
-								<i class="icon-eye-close"></i>
+								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-open"></i><%- i18next.t('Unsubsribe') %></a> 
+							<% } else { %>
+								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-close"></i><%- i18next.t('Subscribe') %></a>
 							<% } %>
-							<%- i18next.t('Subscribe') %>
-							</a> 
 					  </li>
 				   <% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-						<li class="navbar-btn"> <a class="btn btn-default  <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)})))) { %> js-card-send-to-board <% } %> even-action htruncate" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><%}%>" href=""><i class="icon-cloud-download"></i>
-						<% if(parseInt(card.attributes.is_archived) === 0){ %>
-							<%- i18next.t('Archive') %>
-						<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-							  <%- i18next.t('Send to board') %>
-						<% } %>
-							</a> 
+						<li class="navbar-btn"> 
+							<a class="btn btn-default  <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)})))) { %> js-card-send-to-board <% } %> even-action htruncate" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><%}%>" href=""><i class="icon-cloud-download"></i><% if(parseInt(card.attributes.is_archived) === 0){ %><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><% } %></a> 
 						</li>
 					<% } %>
 					<li class = "card_templete_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
@@ -723,6 +713,7 @@
 					is_subscribed: 1
 				});
 				if(!_.isEmpty(cards_subscribers)){
+					subscribe_title = i18next.t('Unsubscribe');
 					subscribe_class = 'js-card-unsubscribe';
 				} 
 				if (subscribed) {
@@ -735,9 +726,12 @@
 					subscribe_title = i18next.t('List wise subscription already enabled');
 				}
 			%>
-				<li class="<%- subscribe_disabled %>"> <a class="<%- subscribe_class %>" title="<%- subscribe_title %> " href=""><%- i18next.t('Subscribe') %>
+				<li class="<%- subscribe_disabled %>"> <a class="<%- subscribe_class %>" title="<%- subscribe_title %> " href="">
 					<% if(!_.isEmpty(cards_subscribers)){ %>
-				<i class="icon-ok"></i>
+						<%- i18next.t('Unsubscribe') %>
+						<i class="icon-ok"></i>
+				<% } else { %>
+						<%- i18next.t('Subscribe') %>
 				<% } %>
 				</a> 
 			</li>
