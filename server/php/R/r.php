@@ -2304,15 +2304,25 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
             }
             if ($no_error) {
-                 $_POST['initials'] = strtoupper($_POST['initials']);
                 $qry_val_arr = array(
-                    $_POST['full_name'],
-                    $_POST['about_me'],
-                    $_POST['initials'],
-                    $_POST['is_send_newsletter'],
-                    $_POST['timezone'],
+                    ($_POST['default_desktop_notification'] === 'Enabled') ? 'true' : 'false',
+                    (isset($_POST['is_list_notifications_enabled'])) ? 'true' : 'false',
+                    (isset($_POST['is_card_notifications_enabled'])) ? 'true' : 'false',
+                    (isset($_POST['is_card_members_notifications_enabled'])) ? 'true' : 'false',
+                    (isset($_POST['is_card_labels_notifications_enabled'])) ? 'true' : 'false',
+                    (isset($_POST['is_card_checklists_notifications_enabled'])) ? 'true' : 'false',
+                    (isset($_POST['is_card_attachments_notifications_enabled'])) ? 'true' : 'false',
                     $r_resource_vars['users']
                 );
+                pg_query_params($db_lnk, 'UPDATE users SET default_desktop_notification= $1, is_list_notifications_enabled= $2, is_card_notifications_enabled= $3, is_card_members_notifications_enabled= $4, is_card_labels_notifications_enabled= $5, is_card_checklists_notifications_enabled= $6, is_card_attachments_notifications_enabled= $7 WHERE id = $8', $qry_val_arr);
+                unset($_POST['default_desktop_notification']);
+                unset($_POST['is_list_notifications_enabled']);
+                unset($_POST['is_card_notifications_enabled']);
+                unset($_POST['is_card_members_notifications_enabled']);
+                unset($_POST['is_card_labels_notifications_enabled']);
+                unset($_POST['is_card_checklists_notifications_enabled']);
+                unset($_POST['is_card_attachments_notifications_enabled']);
+                $_POST['initials'] = strtoupper($_POST['initials']);
                 $comment = '##USER_NAME## updated the profile.';
                 $foreign_ids['user_id'] = $authUser['id'];
                 $table_name = 'users';
@@ -2328,27 +2338,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     }
                     if ($key != 'id' && $key != 'position') {
                         $sfields.= (empty($sfields)) ? $key : ", " . $key;
-}
+                    }
                 }
-                pg_query_params($db_lnk, 'UPDATE users SET full_name = $1, about_me = $2, initials = $3, is_send_newsletter = $4, timezone = $5 WHERE id = $6', $qry_val_arr);
-                if (!empty($_POST['email'])) {
-                    $qry_val_arr = array(
-                        $_POST['email'],
-                        $r_resource_vars['users']
-                    );
-                    pg_query_params($db_lnk, 'UPDATE users SET email= $1 WHERE id = $2', $qry_val_arr);
-                }
-                $qry_val_arr = array(
-                    ($_POST['default_desktop_notification'] === 'Enabled') ? 'true' : 'false',
-                    (isset($_POST['is_list_notifications_enabled'])) ? 'true' : 'false',
-                    (isset($_POST['is_card_notifications_enabled'])) ? 'true' : 'false',
-                    (isset($_POST['is_card_members_notifications_enabled'])) ? 'true' : 'false',
-                    (isset($_POST['is_card_labels_notifications_enabled'])) ? 'true' : 'false',
-                    (isset($_POST['is_card_checklists_notifications_enabled'])) ? 'true' : 'false',
-                    (isset($_POST['is_card_attachments_notifications_enabled'])) ? 'true' : 'false',
-                    $r_resource_vars['users']
-                );
-                pg_query_params($db_lnk, 'UPDATE users SET default_desktop_notification= $1, is_list_notifications_enabled= $2, is_card_notifications_enabled= $3, is_card_members_notifications_enabled= $4, is_card_labels_notifications_enabled= $5, is_card_checklists_notifications_enabled= $6, is_card_attachments_notifications_enabled= $7 WHERE id = $8', $qry_val_arr);
+                $is_send_newsletter = $_POST['is_send_newsletter'];
                 if (!empty($comment)) {
                     $qry_va_arr = array(
                         $id
@@ -2379,9 +2371,25 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             }
                         }
                     }
-                   if (isset($diff)) {
+                    if (isset($diff)) {
                         $response['activity']['difference'] = $diff;
                     }
+                }
+                $qry_val_arr = array(
+                    $_POST['full_name'],
+                    $_POST['about_me'],
+                    $_POST['initials'],
+                    $is_send_newsletter,
+                    $_POST['timezone'],
+                    $r_resource_vars['users']
+                );
+                pg_query_params($db_lnk, 'UPDATE users SET full_name = $1, about_me = $2, initials = $3, is_send_newsletter = $4, timezone = $5 WHERE id = $6', $qry_val_arr);
+                if (!empty($_POST['email'])) {
+                    $qry_val_arr = array(
+                        $_POST['email'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET email= $1 WHERE id = $2', $qry_val_arr);
                 }
             }
         }
@@ -2519,7 +2527,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             );
                             $s_sql = 'INSERT INTO lists (created, modified, board_id, name, user_id, position) VALUES (now(), now(), $1, $2, $3, $4) RETURNING id';
                             $result = pg_query_params($db_lnk, $s_sql, $qry_val_arr);
-                            if($position === 1) {
+                            if ($position === 1) {
                                 $result_response = pg_fetch_assoc($result);
                                 $qry_val_arr = array(
                                     $result_response['id'],
@@ -3568,7 +3576,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_resource_vars['cards'],
             $r_post['user_id']
         );
-        $s_result = pg_query_params($db_lnk, 'SELECT is_subscribed FROM card_subscribers WHERE card_id = $1 and user_id = $2', $qry_val_arr);
+        $s_result = pg_query_params($db_lnk, 'SELECT id, is_subscribed FROM card_subscribers WHERE card_id = $1 and user_id = $2', $qry_val_arr);
         $check_subscribed = pg_fetch_assoc($s_result);
         if (!empty($check_subscribed)) {
             $is_subscribed = ($r_post['is_subscribed']) ? 'true' : 'false';
@@ -3601,6 +3609,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     pg_free_result($result);
                 }
             }
+            $response['id'] = $check_subscribed['id'];
+            echo json_encode($response);
         } else {
             $r_post['card_id'] = $r_resource_vars['cards'];
             $r_post['user_id'] = $r_post['user_id'];
@@ -3809,13 +3819,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $qry_val_arr = array(
             $r_resource_vars['cards']
         );
+        $label_names = pg_query_params($db_lnk, 'SELECT l.name FROM labels l inner join cards_labels cl on cl.label_id = l.id WHERE card_id = $1', $qry_val_arr);
         $delete_labels = pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE card_id = $1 RETURNING label_id', $qry_val_arr);
         $delete_label = pg_fetch_assoc($delete_labels);
         $delete_labels_count = pg_affected_rows($delete_labels);
+        $names = '';
         if (!empty($r_post['name'])) {
             $label_names = explode(',', $r_post['name']);
             unset($r_post['name']);
             foreach ($label_names as $label_name) {
+                $names.= $label_name . ', ';
                 $qry_val_arr = array(
                     $label_name
                 );
@@ -3843,22 +3856,23 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $s_result = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE card_id = $1', $qry_val_arr);
             $cards_labels = pg_fetch_all($s_result);
             $response['cards_labels'] = $cards_labels;
-            $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ##LABEL_NAME##';
+            $names = substr($names, 0, -2);
+            $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ' . $names;
             $type = 'add_card_label';
         } else {
             $response['cards_labels'] = array();
-            $comment = '##USER_NAME## removed label(s) in this card ##CARD_LINK## - ##LABEL_NAME##';
-            $foreign_ids['foreign_id'] = $delete_label['label_id'];
+            while ($labels_data = pg_fetch_assoc($label_names)) {
+                $names.= $labels_data['name'] . ', ';
+            }
+            $names = substr($names, 0, -2);
+            $comment = '##USER_NAME## removed label(s) in this card ##CARD_LINK## - ' . $names;
+            $r_post['label_id'] = $delete_label['label_id'];
             $type = 'delete_card_label';
         }
         $foreign_ids['board_id'] = $r_post['board_id'];
         $foreign_ids['list_id'] = $r_post['list_id'];
         $foreign_ids['card_id'] = $r_post['card_id'];
-        if (!empty($delete_labels_count)) {
-            if (!empty($r_post['label_id'])) {
-                $response['activity'] = insertActivity($authUser['id'], $comment, $type, $foreign_ids, null, $r_post['label_id']);
-            }
-        }
+        $response['activity'] = insertActivity($authUser['id'], $comment, $type, $foreign_ids, null, $r_post['label_id']);
         echo json_encode($response);
         break;
 
@@ -5645,7 +5659,12 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $foreign_ids['board_id'] = $r_resource_vars['boards'];
         $foreign_ids['list_id'] = $r_resource_vars['lists'];
         $foreign_ids['card_id'] = $r_resource_vars['cards'];
-        $comment = '##USER_NAME## deleted checklist ##CHECKLIST_NAME## item from card ##CARD_LINK##';
+        $qry_val_arr = array(
+            $r_resource_vars['items']
+        );
+        $s_result = pg_query_params($db_lnk, 'SELECT name FROM checklist_items WHERE id = $1', $qry_val_arr);
+        $checklist_item = pg_fetch_assoc($s_result);
+        $comment = '##USER_NAME## deleted checklist ' . $checklist_item['name'] . ' item from card ##CARD_LINK##';
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_checklist_item', $foreign_ids, null, $r_resource_vars['items']);
         $sql = 'DELETE FROM checklist_items WHERE id = $1';
         array_push($pg_params, $r_resource_vars['items']);
