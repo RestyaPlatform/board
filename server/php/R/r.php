@@ -1925,8 +1925,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $table_name = 'users';
             $r_post['password'] = getCryptHash($r_post['password']);
             $r_post['role_id'] = 2; // user
-            $r_post['is_active'] = true;
-            $r_post['is_email_confirmed'] = true;
             $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
             $r_post['full_name'] = email2name($r_post['email']);
@@ -1953,16 +1951,36 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if ($result) {
                     $row = pg_fetch_assoc($result);
                     $response['id'] = $row['id'];
-                    if ($is_return_vlaue) {
-                        $row = convertBooleanValues($table_name, $row);
-                        $response[$table_name] = $row;
+                    $val_arr = array(
+                        3,
+                        'user_activation'
+                    );
+                    $activation_permission = executeQuery('SELECT * FROM acl_links al left join acl_links_roles alr on alr.acl_link_id = al.id where alr.role_id = $1 and slug = $2', $val_arr);
+                    if ($activation_permission) {
+                        $response['activation'] = 1;
+                        $qry_val_arr = array(
+                            'true',
+                            'true',
+                            $response['id']
+                        );
+                        $sql = pg_query_params($db_lnk, "UPDATE users SET is_email_confirmed = $1, is_active = $2 WHERE id = $3", $qry_val_arr);
+                        $emailFindReplace = array(
+                            '##NAME##' => $r_post['full_name'],
+                        );
+                        sendMail('welcome', $emailFindReplace, $r_post['email']);
+                    } else {
+                        $response['activation'] = 0;
+                        if ($is_return_vlaue) {
+                            $row = convertBooleanValues($table_name, $row);
+                            $response[$table_name] = $row;
+                        }
+                        if (!empty($uuid)) {
+                            $response['uuid'] = $uuid;
+                        }
+                        $emailFindReplace['##NAME##'] = $r_post['full_name'];
+                        $emailFindReplace['##ACTIVATION_URL##'] = $_server_domain_url . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
+                        sendMail('activation', $emailFindReplace, $r_post['email']);
                     }
-                    if (!empty($uuid)) {
-                        $response['uuid'] = $uuid;
-                    }
-                    $emailFindReplace['##NAME##'] = $r_post['full_name'];
-                    $emailFindReplace['##ACTIVATION_URL##'] = $_server_domain_url . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
-                    sendMail('activation', $emailFindReplace, $r_post['email']);
                 }
             }
         } else {
@@ -2017,16 +2035,36 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if ($result) {
                     $row = pg_fetch_assoc($result);
                     $response['id'] = $row['id'];
-                    if ($is_return_vlaue) {
-                        $row = convertBooleanValues($table_name, $row);
-                        $response[$table_name] = $row;
+                    $val_arr = array(
+                        3,
+                        'user_activation'
+                    );
+                    $activation_permission = executeQuery('SELECT * FROM acl_links al left join acl_links_roles alr on alr.acl_link_id = al.id where alr.role_id = $1 and slug = $2', $val_arr);
+                    if ($activation_permission) {
+                        $response['activation'] = 1;
+                        $qry_val_arr = array(
+                            'true',
+                            'true',
+                            $response['id']
+                        );
+                        $sql = pg_query_params($db_lnk, "UPDATE users SET is_email_confirmed = $1, is_active = $2 WHERE id = $3", $qry_val_arr);
+                        $emailFindReplace = array(
+                            '##NAME##' => $r_post['full_name'],
+                        );
+                        sendMail('welcome', $emailFindReplace, $r_post['email']);
+                    } else {
+                        $response['activation'] = 0;
+                        if ($is_return_vlaue) {
+                            $row = convertBooleanValues($table_name, $row);
+                            $response[$table_name] = $row;
+                        }
+                        if (!empty($uuid)) {
+                            $response['uuid'] = $uuid;
+                        }
+                        $emailFindReplace['##NAME##'] = $r_post['full_name'];
+                        $emailFindReplace['##ACTIVATION_URL##'] = $_server_domain_url . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
+                        sendMail('activation', $emailFindReplace, $r_post['email']);
                     }
-                    if (!empty($uuid)) {
-                        $response['uuid'] = $uuid;
-                    }
-                    $emailFindReplace['##NAME##'] = $r_post['full_name'];
-                    $emailFindReplace['##ACTIVATION_URL##'] = $_server_domain_url . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
-                    sendMail('activation', $emailFindReplace, $r_post['email']);
                 }
             }
         } else {
@@ -2305,7 +2343,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             }
             if ($no_error) {
                 $qry_val_arr = array(
-                    ($_POST['default_desktop_notification'] === 'Enabled') ? 'true' : 'false',
+                    (isset($_POST['default_desktop_notification']) && $_POST['default_desktop_notification'] === 'Enabled') ? 'true' : 'false',
                     (isset($_POST['is_list_notifications_enabled'])) ? 'true' : 'false',
                     (isset($_POST['is_card_notifications_enabled'])) ? 'true' : 'false',
                     (isset($_POST['is_card_members_notifications_enabled'])) ? 'true' : 'false',

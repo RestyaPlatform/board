@@ -59,9 +59,15 @@ App.RegisterView = Backbone.View.extend({
                     }
                     $('#inputPassword').val('');
                 } else {
-                    $('#submitRegister').removeAttr('disabled');
-                    self.flash('success', i18next.t('You have successfully registered with our site and your activation mail has been sent to your mail inbox.'));
-                    target[0].reset();
+                    if(response.activation === 1) {
+                        $('#submitRegister').removeAttr('disabled');
+                        target[0].reset();
+                        self.flash('success', i18next.t('You have successfully registered with our site. You can now login to the site.'));
+                    } else {
+                        $('#submitRegister').removeAttr('disabled');
+                        self.flash('success', i18next.t('You have successfully registered with our site and your activation mail has been sent to your mail inbox.'));
+                        target[0].reset();
+                    }
                 }
             }
         });
