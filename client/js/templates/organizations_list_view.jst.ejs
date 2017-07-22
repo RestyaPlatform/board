@@ -1,4 +1,6 @@
-<% if(organization != null){ %>
+<% if(organization != null){ 
+var organization_user_role_id = 0;
+%>
 <td class="col-lg-5 col-md-3 col-sm-6 col-xs-5">
 	<div class="media">
 		<%
@@ -28,7 +30,11 @@
 				<a title="<%- i18next.t('New Board') %>" class="btn btn-default <% if(organization.attributes.organizations_user_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.organizations_user_count != 0){ %>data-toggle="dropdown"<%}%>><%- organization.attributes.organizations_user_count%> <%- i18next.t('Members') %></a>
 				<% if(organization.attributes.organizations_user_count != 0){ %>
 					<ul class="dropdown-menu arrow arrow-left  text-left" role="boards">
-						<% _.each(organization.attributes.organizations_users, function(organizations_user){%>
+						<% _.each(organization.attributes.organizations_users, function(organizations_user){
+							if(organization_user_role_id === 0) {
+								organization_user_role_id = (parseInt(organizations_user.id) === parseInt(authuser.user.id)) ? organizations_user.id : 0;
+							}
+						%>
 							<li><a href="#/user/<%-organizations_user.user_id%>"><%-organizations_user.username%></a></li>
 						<%})%>
 					</ul>
@@ -67,12 +73,18 @@
 					<%}%>
 				</div>
 			</li>
-			<li class="dropdown navbar-btn pull-right">
-				<a class="btn btn-primary dropdown-toggle js-show-confirm-delete-organization" data-organization_id="<%- organization.attributes.id %>" data-toggle="dropdown" href="#"><span><i class="icon-remove"></i></span><span><%- i18next.t('Delete') %></span></a>
-				<ul class="dropdown-menu dropdown-menu-right arrow arrow-right col-xs-12">
-					<li class="js-show-confirm-delete-organization-response js-dropdown-popup dropdown-popup"></li>
-				</ul>
-			</li>
+			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "delete_organization",organization_user_role_id: parseInt(organization_user_role_id)})))){%>
+				<li class="dropdown navbar-btn pull-right">
+					<a class="btn btn-primary dropdown-toggle js-show-confirm-delete-organization" data-organization_id="<%- organization.attributes.id %>" data-toggle="dropdown" href="#"><span><i class="icon-remove"></i></span><span><%- i18next.t('Delete') %></span></a>
+					<ul class="dropdown-menu dropdown-menu-right arrow arrow-right col-xs-12">
+						<li class="js-show-confirm-delete-organization-response js-dropdown-popup dropdown-popup"></li>
+					</ul>
+				</li>
+			<% } else { %>
+				<li class="dropdown navbar-btn pull-right">
+					<a class="btn btn-primary js-no-action" disabled href="#"><span><i class="icon-remove"></i></span><span><%- i18next.t('Delete') %></span></a>
+				</li>
+			<% } %>
 			</ul>
 		</li>
 		<li class="pull-right text-center">

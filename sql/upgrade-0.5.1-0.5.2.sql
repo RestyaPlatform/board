@@ -325,3 +325,9 @@ SELECT activity.id,
      LEFT JOIN checklists checklist1 ON ((checklist1.id = activity.foreign_id)))
      LEFT JOIN users users ON ((users.id = activity.user_id)))
      LEFT JOIN organizations organizations ON ((organizations.id = activity.organization_id)));
+
+SELECT pg_catalog.setval('acl_organization_links_organizations_user_roles_seq', (SELECT MAX(id) FROM acl_organization_links_organizations_user_roles), true);
+
+SELECT pg_catalog.setval('acl_board_links_boards_user_roles_seq', (SELECT MAX(id) FROM acl_board_links_boards_user_roles), true);
+
+SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', (SELECT MAX(id) FROM acl_links_roles), true);
