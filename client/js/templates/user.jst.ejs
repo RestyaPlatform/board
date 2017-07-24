@@ -117,7 +117,8 @@
 			<a href="#" class="btn btn-default btn-xs <%if(parseInt(user.attributes.is_active) === 1){%>js-block-user<%}else{%>js-unblock-user<%}%>"  title="<%- i18next.t('Block') %>" <% if(user.attributes.role_id == 1){%> disabled="disabled" <% } %>>
 			<i class="icon-exclamation"></i>
 			<span><%if(parseInt(user.attributes.is_active) === 1){%><%- i18next.t("Block") %><%}else{%><%- i18next.t("Unblock") %><%}%></span></a>
-		</li>  
+		</li>
+		<% if(parseInt(user.attributes.is_ldap) === 0){ %>
 		<li class="navbar-btn">
 			<div class="dropdown btn-group">  
 					<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle btn-xs" type="button">
@@ -143,6 +144,15 @@
 							</ul>
 				</div>
 		</li> 
+		<% } else { %>
+		<li class="navbar-btn">
+			<div class="btn-group">  
+				<button class="btn btn-default btn-xs js-no-action" disabled type="button">
+					<%- i18next.t("Change Password") %>
+				</button>
+			</div>
+		</li> 
+		<% } %>
 		<li class="navbar-btn">
 			<span class="dropdown navbar-btn">
 			<a aria-expanded="false" data-toggle="dropdown" class="btn btn-primary btn-xs" href="#" <% if(user.attributes.role_id == 1){%> disabled="disabled" <% } %> >
