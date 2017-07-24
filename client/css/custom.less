@@ -1909,7 +1909,22 @@ footer, header, .dashboard-header {
 .edit-comment{
 		.media, .media-body {
 			overflow:visible !important;
-			display: inline-block;
+		}
+		.media-body {
+			display: table-cell;
+			float: none;
+		}
+		.media {
+			display: table;
+			vertical-align: top;
+			width: 100%;
+			> a {
+				display: table-cell;
+				vertical-align: top;
+				float: none !important;
+				width: 42px;
+				padding: 0 10px 0 0;
+			}
 		}
 	}
 .user-filter { 
@@ -2316,4 +2331,10 @@ footer, header, .dashboard-header {
 .js-user-settings-info {
 	min-width:600px;
 	max-width:600px;
+}
+.emoji-list {
+	margin: 5px 0px 10px 0px;
+	.radio-inline, .checkbox-inline {
+    	padding: 0 15px 0px 0px;
+	}
 }
