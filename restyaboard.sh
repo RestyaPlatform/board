@@ -508,8 +508,7 @@
 				echo "PostgreSQL user creation failed with error code 35 "
 				exit 1
 			fi
-			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};"
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0;"
+			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 36"
@@ -1006,9 +1005,8 @@
 			then
 				echo "PostgreSQL user creation failed with error code 41"
 				exit 1
-			fi
-			psql -U postgres -c "DROP DATABASE IF EXISTS ${POSTGRES_DBNAME};"
-			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0;"
+			fi			
+			psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
 			if [ $? != 0 ]
 			then
 				echo "PostgreSQL database creation failed with error code 42"
