@@ -185,7 +185,7 @@
 			apt-get install python-software-properties -y
 			add-apt-repository ppa:ondrej/php
 			apt-get update -y
-			apt-get install libjpeg8 -y
+			apt-get install libjpeg8 -y --allow-unauthenticated
 			
 			echo "Checking nginx..."
 			if ! which nginx > /dev/null 2>&1; then
@@ -356,10 +356,10 @@
 					wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 					apt-key add ACCC4CF8.asc
 					apt-get update
-					apt-get install -y postgresql-9.4 --allow-unauthenticated
+					apt-get install -y postgresql-9.6 --allow-unauthenticated
 					if [ $? != 0 ]
 					then
-						echo "postgresql-9.4 installation failed with error code 13"
+						echo "postgresql-9.6 installation failed with error code 13"
 						exit 1
 					fi
 				esac
@@ -367,7 +367,7 @@
 				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
 				if [[ $PSQL_VERSION < 9.3 ]]; then
 					set +x
-					echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.4"
+					echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
 					sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 					apt-get install wget ca-certificates
 					if [ $? != 0 ]
@@ -378,16 +378,16 @@
 					apt-key add ACCC4CF8.asc
 					apt-get update
 					apt-get upgrade
-					apt-get install -y postgresql-9.4 --allow-unauthenticated
+					apt-get install -y postgresql-9.6 --allow-unauthenticated
 					if [ $? != 0 ]
 					then
-						echo "postgresql-9.4 installation failed with error code 13"
+						echo "postgresql-9.6 installation failed with error code 13"
 						exit 1
 					fi
 				fi
 			fi
 			PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
-			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/9.4/main/pg_hba.conf > /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf.1
+			sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf > /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf.1
 			cd /etc/postgresql/${PSQL_VERSION}/main || exit
 			mv pg_hba.conf pg_hba.conf_old
 			mv pg_hba.conf.1 pg_hba.conf
@@ -804,9 +804,9 @@
 					echo "Installing PostgreSQL..."
 					if [ $(getconf LONG_BIT) = "32" ]; then
 						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-							rpm -Uvh "http://yum.postgresql.org/9.5/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora95-9.5-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora96-9.6-3.noarch.rpm"
 						else
-							rpm -Uvh "http://yum.postgresql.org/9.5/redhat/rhel-${OS_VERSION}-i386/pgdg-centos95-9.5-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-centos96-9.6-3.noarch.rpm"
 						fi
 
 						yum install -y postgresql95-server postgresql95
@@ -818,12 +818,12 @@
 					fi
 					if [ $(getconf LONG_BIT) = "64" ]; then
 						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-							rpm -Uvh "http://yum.postgresql.org/9.5/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora95-9.5-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora96-9.6-3.noarch.rpm"
 						else
-							rpm -Uvh "http://yum.postgresql.org/9.5/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos95-9.5-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos96-9.6-3.noarch.rpm"
 						fi
 
-						yum install -y postgresql95-server postgresql95
+						yum install -y postgresql96-server postgresql96
 						if [ $? != 0 ]
 						then
 							echo "Installing PostgreSQL 64 fail with error code 28"
@@ -831,10 +831,10 @@
 						fi
 					fi
 
-					yum install -y postgresql95-contrib
+					yum install -y postgresql96-contrib
 					if [ $? != 0 ]
 					then
-						echo "postgresql95-contrib installation failed with error code 29"
+						echo "postgresql96-contrib installation failed with error code 29"
 						exit 1
 					fi
 				esac
@@ -842,37 +842,37 @@
 				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
 				if [[ $PSQL_VERSION < 9.3 ]]; then
 					set +x
-					echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.5"
+					echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
 					if [ $(getconf LONG_BIT) = "32" ]; then
-						if [[ $OS_REQUIREMENT == "Fedora" ]]; then
-							rpm -Uvh "http://yum.postgresql.org/9.5/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora95-9.5-3.noarch.rpm"
+						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
+							rpm -Uvh "http://yum.postgresql.org/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora96-9.6-3.noarch.rpm"
 						else
-							rpm -Uvh "http://yum.postgresql.org/9.5/redhat/rhel-${OS_VERSION}-i386/pgdg-centos95-9.5-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-centos96-9.6-3.noarch.rpm"
 						fi
 
-						yum install -y postgresql95-server postgresql95
+						yum install -y postgresql96-server postgresql96
 						if [ $? != 0 ]
 						then
 							echo "Installing PostgreSQL 32 fail with error code 27"
 						fi
 					else
 						if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-							rpm -Uvh "http://yum.postgresql.org/9.5/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora95-9.5-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora96-9.6-3.noarch.rpm"
 						else
-							rpm -Uvh "http://yum.postgresql.org/9.5/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos95-9.5-3.noarch.rpm"
+							rpm -Uvh "http://yum.postgresql.org/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos96-9.6-3.noarch.rpm"
 						fi
 
-						yum install -y postgresql95-server postgresql95
+						yum install -y postgresql96-server postgresql96
 						if [ $? != 0 ]
 						then
 							echo "Installing PostgreSQL 64 fail with error code 28"
 						fi
 					fi
 
-					yum install -y postgresql95-contrib
+					yum install -y postgresql96-contrib
 					if [ $? != 0 ]
 					then
-						echo "postgresql95-contrib installation failed with error code 29"
+						echo "postgresql96-contrib installation failed with error code 29"
 						exit 1
 					fi
 				fi
