@@ -1118,5 +1118,6 @@
 		esac
 	fi
 	set +x
+	echo "Restyaboard URL : $webdir"
 	echo "Login with username admin and password restya"
 } 2>&1 | tee -a restyaboard_install.log
