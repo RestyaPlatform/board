@@ -694,12 +694,12 @@ App.ModalCardView = Backbone.View.extend({
         var edit_mode = $(e.target).closest('form').find('.js-card-input').data('edit_mode');
         if (edit_mode === 1 && $.trim(data.name) === '') {
             $('.error-msg-name').remove();
-            $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputCardName');
+            $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputCardName');
             return false;
         }
         if (edit_mode === 2 && $.trim(data.description) === '') {
             $('.error-msg-name').remove();
-            $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputCarddescription');
+            $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputCarddescription');
             return false;
         }
         if (!_.isUndefined(data.due_date) || !_.isUndefined(data.due_time)) {
@@ -725,7 +725,7 @@ App.ModalCardView = Backbone.View.extend({
         if (!_.isUndefined(data.description)) {
             if (!$.trim($('#inputCarddescription').val()).length) {
                 $('.error-msg').remove();
-                $('<div class="error-msg text-primary h6">Whitespace alone not allowed</div>').insertAfter('#inputCarddescription');
+                $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter('#inputCarddescription');
                 validation = false;
                 this.$el.find('#cardDescriptionEditForm').removeClass('hide').show();
             } else {
@@ -2348,7 +2348,7 @@ App.ModalCardView = Backbone.View.extend({
         e.preventDefault();
         if (!$.trim($(e.target).find('#inputAddComment').val()).length) {
             $(e.target).find('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">Whitespace alone not allowed</div>').insertAfter($(e.target).find('#inputAddComment'));
+            $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter($(e.target).find('#inputAddComment'));
         } else {
             $(e.target).find('.error-msg').remove();
             var self = this;
@@ -2458,7 +2458,7 @@ App.ModalCardView = Backbone.View.extend({
         e.preventDefault();
         if (!$.trim($('.js-inputComment').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('.js-inputComment');
+            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('.js-inputComment');
         } else {
             $('.error-msg').remove();
             var self = this;
@@ -3056,6 +3056,7 @@ App.ModalCardView = Backbone.View.extend({
     renderBoardUsers: function() {
         var self = this;
         var view = this.$el.find('.js-organization-member-search-response');
+        view.html('');
         this.model.list.collection.board.board_users.each(function(board_user) {
             var added_user = self.model.users.findWhere({
                 card_id: self.model.id,
