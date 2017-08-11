@@ -68,7 +68,7 @@
 								</div>
 							</div>
 							<% if(!_.isEmpty(role_links.where({slug: "add_user_profile_picture"}))){ %>
-								<div class="form-group" id="dropzone" data-mode="1">
+								<div class="form-group" id="dropzone">
 									<label for="inputAttachment" class="col-sm-4 control-label sr-only"><%- i18next.t("Upload Avatar") %></label>
 									<div class="col-xs-8">
 										<a data-placement="bottom" title="<%- user.attributes.username%>" data-toggle="tooltip" href="#" class="avatar-option js-use-uploaded-avatar drag-box navbar-left"> 
