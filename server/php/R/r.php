@@ -1955,7 +1955,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         3,
                         'user_activation'
                     );
-                    $activation_permission = executeQuery('SELECT * FROM acl_links al left join acl_links_roles alr on alr.acl_link_id = al.id where alr.role_id = $1 and slug = $2', $val_arr);
+                     $activation_permission = executeQuery('SELECT * FROM acl_links al left join acl_links_roles alr on alr.acl_link_id = al.id where alr.role_id = $1 and slug = $2', $val_arr);
                     if ($activation_permission) {
                         $response['activation'] = 1;
                         $qry_val_arr = array(
@@ -5436,7 +5436,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
  */
 function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 {
-    global $r_debug, $db_lnk, $authUser, $_server_domain_url, $jabberHost;
+    global $r_debug, $db_lnk, $authUser, $_server_domain_url, $jabberHost, $thumbsizes;
     $sql = false;
     $pg_params = $diff = $response = $conditions = $foreign_ids = $foreign_id = $revisions_del = array();
     $activity_type = '';
@@ -5675,6 +5675,25 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $foreign_ids['card_id'] = $r_resource_vars['cards'];
         $comment = '##USER_NAME## deleted attachment from card ##CARD_LINK##';
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_card_attachment', $foreign_ids, null, $r_resource_vars['attachments']);
+        $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_resource_vars['cards'];
+        $qry_val_arr = array(
+            $r_resource_vars['attachments']
+        );
+        $attachment = executeQuery('SELECT name, path FROM card_attachments WHERE id =  $1', $qry_val_arr);
+        if (!empty($attachment)) {
+            $file = APP_PATH . DIRECTORY_SEPARATOR . $attachment['path'];
+            if (file_exists($file)) {
+                unlink($file);
+            }
+            foreach ($thumbsizes['CardAttachment'] as $key => $value) {
+                $file_ext = explode('.', $attachment['name']);
+                $hash = md5(SECURITYSALT . 'CardAttachment' .  $r_resource_vars['attachments'] . $file_ext[1] . $key);
+                $thumb_file = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $r_resource_vars['attachments'] .'.'.$hash.'.'.$file_ext[1];
+                if (file_exists($thumb_file)) {
+                    unlink($thumb_file);
+                }
+            }
+        }
         break;
 
     case '/boards/?/lists/?/cards/?/checklists/?': // delete checklist
