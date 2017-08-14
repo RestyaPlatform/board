@@ -43,7 +43,7 @@ App.ActivityView = Backbone.View.extend({
         }
         emojify.run();
     },
-    converter: new showdown.Converter(),
+    converter: new showdown.Converter({extensions: ['targetblank']}),
     template: JST['templates/activity'],
     tagName: 'li',
     className: 'btn-block col-xs-12 js-activity',

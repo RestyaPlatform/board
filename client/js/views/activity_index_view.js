@@ -29,7 +29,7 @@ App.ActivityIndexView = Backbone.View.extend({
         'click #js-admin-activites-load-more': 'loadActivities',
     },
     template: JST['templates/activity_index'],
-    converter: new showdown.Converter(),
+    converter: new showdown.Converter({extensions: ['targetblank']}),
     /** 
      * getListing()
      * get settings

@@ -20,7 +20,7 @@ App.AdminActivityIndexView = Backbone.View.extend({
         emojify.run();
     },
     template: JST['templates/admin_activity_index'],
-    converter: new showdown.Converter(),
+    converter: new showdown.Converter({extensions: ['targetblank']}),
     tagName: 'li',
     className: 'row col-xs-12',
     /**

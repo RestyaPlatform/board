@@ -20,7 +20,7 @@ App.BoardLabelsEditView = Backbone.View.extend({
     },
     template: JST['templates/board_labels_edit'],
     tagName: 'li',
-    converter: new showdown.Converter(),
+    converter: new showdown.Converter({extensions: ['targetblank']}),
     /** 
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)

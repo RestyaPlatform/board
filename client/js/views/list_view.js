@@ -21,7 +21,7 @@ if (typeof App === 'undefined') {
 App.ListView = Backbone.View.extend({
     tagName: 'div',
     className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 js-board-list list',
-    converter: new showdown.Converter(),
+    converter: new showdown.Converter({extensions: ['targetblank']}),
     /**
      * Constructor
      * initialize default values and actions
@@ -703,7 +703,7 @@ App.ListView = Backbone.View.extend({
     showMoveCardListForm: function(e) {
         var list_id = this.model.id;
         var board_list = new App.ListCollection();
-        board_list.add(this.model.collection.models);
+        board_list.add(this.model.board.lists.models);
         var filtered_lists = board_list.where({
             is_archived: 0
         });
@@ -1163,7 +1163,7 @@ App.ListView = Backbone.View.extend({
     addCard: function(e) {
         if (!$.trim($('#AddCard').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">Whitespace alone not allowed</div>').insertAfter('#AddCard');
+            $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter('#AddCard');
             return false;
         } else {
             $('.error-msg').remove();

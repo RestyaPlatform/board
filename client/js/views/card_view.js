@@ -23,7 +23,7 @@ if (typeof App === 'undefined') {
  */
 App.CardView = Backbone.View.extend({
     template: JST['templates/card'],
-    converter: new showdown.Converter(),
+    converter: new showdown.Converter({extensions: ['targetblank']}),
     /**
      * Constructor
      * initialize default values and actions

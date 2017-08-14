@@ -28,7 +28,7 @@ App.BoardFilterView = Backbone.View.extend({
     },
     template: JST['templates/board_filter'],
     tagName: 'li',
-    converter: new showdown.Converter(),
+    converter: new showdown.Converter({extensions: ['targetblank']}),
     /**
      * render()
      * populate the html to the dom
