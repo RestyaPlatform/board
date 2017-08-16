@@ -1,5 +1,6 @@
 <% if(!_.isEmpty(activity) && activity != null){  %> 
-	<% 
+	<%
+				activity.attributes.comment = strip(activity.attributes.comment); 
 				var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + _.escape(activity.attributes.card_name) + '</a>';
 				var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + _.escape(activity.attributes.organization_name) + '</a>';
 			if(activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {

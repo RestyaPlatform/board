@@ -2471,7 +2471,8 @@ App.ModalCardView = Backbone.View.extend({
             var list_id = current_card.attributes.list_id;
             var card_id = current_card.attributes.card_id;
             var data = $(e.target).serializeObject();
-            $('.js-activity-' + activity_id).html(this.converter.makeHtml(data.comment));
+            var comment = strip(data.comment);
+            $('.js-activity-' + activity_id).html(this.converter.makeHtml(comment));
             $('.js-acticity-action-' + activity_id).removeClass('hide');
             //Update in list table
             var activity = new App.Activity();
@@ -2511,7 +2512,9 @@ App.ModalCardView = Backbone.View.extend({
         var current_card = this.model.activities.get({
             id: activity_id
         });
-        var html_content = '<div class="panel no-mar"><div class="panel-body">' + this.converter.makeHtml(_.escape(current_card.attributes.comment)) + '</di></div><small class="pull-left"><abbr class="timeago text-muted pull-left clearfix" title="' + current_card.attributes.created + '">' + current_card.attributes.created + '</abbr><div class="js-acticity-action-' + current_card.attributes.id + ' pull-left navbar-btn col-xs-8"><ul class="list-inline"><li><a title="Edit" class="js-show-edit-activity js-edit-activity-link-' + current_card.attributes.id + '" href="#" data-activity-id="' + current_card.attributes.id + '"  data-activity-temp-id="' + current_card.attributes.temp_id + '"><i class="icon-edit"></i>' + i18next.t("Edit") + '</a></li><li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-' + current_card.attributes.id + '" href="#" data-activity-id="' + current_card.attributes.id + '"><i class="icon-repeat"></i>' + i18next.t("Reply") + '</a></li><li class="dropdown"><a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete" data-toggle="dropdown" href="#" data-activity-id="' + current_card.attributes.id + '"><i class="icon-remove"></i>' + i18next.t("Delete") + '</a><ul class="dropdown-menu arrow arrow-right"><li id="js-acticity-actions-response-' + current_card.attributes.id + '" class="js-dropdown-popup dropdown-popup"></li></ul></li></ul></div></small>';
+        var current_card_created = parse_date(current_card.attributes.created, authuser);
+        var comment = strip(current_card.attributes.comment);
+        var html_content = '<div class="panel no-mar"><div class="panel-body">' + this.converter.makeHtml(_.escape(comment)) + '</di></div><small class="pull-left"><abbr class="timeago text-muted pull-left clearfix" title="' + current_card.attributes.created + '">' + current_card_created + '</abbr><div class="js-acticity-action-' + current_card.attributes.id + ' pull-left navbar-btn col-xs-8"><ul class="list-inline"><li><a title="Edit" class="js-show-edit-activity js-edit-activity-link-' + current_card.attributes.id + '" href="#" data-activity-id="' + current_card.attributes.id + '"  data-activity-temp-id="' + current_card.attributes.temp_id + '"><i class="icon-edit"></i>' + i18next.t("Edit") + '</a></li><li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-' + current_card.attributes.id + '" href="#" data-activity-id="' + current_card.attributes.id + '"><i class="icon-repeat"></i>' + i18next.t("Reply") + '</a></li><li class="dropdown"><a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete" data-toggle="dropdown" href="#" data-activity-id="' + current_card.attributes.id + '"><i class="icon-remove"></i>' + i18next.t("Delete") + '</a><ul class="dropdown-menu arrow arrow-right"><li id="js-acticity-actions-response-' + current_card.attributes.id + '" class="js-dropdown-popup dropdown-popup"></li></ul></li></ul></div></small>';
         //.find('.timeago').timeago()
         this.$el.find('.js-hide-edit-comment-form').parents('div.js-activity-' + activity_id).html(html_content).find('.timeago').timeago();
         $('.js-acticity-action-' + activity_id).removeClass('hide');
