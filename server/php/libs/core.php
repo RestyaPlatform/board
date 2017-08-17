@@ -937,6 +937,22 @@ function importTrelloBoard($board = array())
                 }
             }
         }
+        if (!empty($board['labelNames'])) {
+            foreach ($board['labelNames'] as $label) {
+                if (!empty($label['name'])) {
+                    $qry_val_arr = array(
+                        utf8_decode($label['name'])
+                    );
+                    $check_label = executeQuery('SELECT id FROM labels WHERE name = $1', $qry_val_arr);
+                    if (empty($check_label)) {
+                        $qry_val_arr = array(
+                            utf8_decode($label['name'])
+                        );
+                        $check_label = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO labels (created, modified, name) VALUES (now(), now(), $1) RETURNING id', $qry_val_arr));
+                    }
+                }
+            }
+        }
         if (!empty($board['members'])) {
             foreach ($board['members'] as $member) {
                 $qry_val_arr = array(
