@@ -393,13 +393,22 @@
 							<% } %>
 					  </li>
 				   <% } %>
-					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+
+					 <li class = "card_templete_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
+					 </ul>	
+				</div>
+				<div class="list-group-item-text clearfix no-print">	
+					<div class="col-xs-12 row">
+						<h3 class="pull-left"><%- i18next.t('Archive') %></h3>
+					</div>
+					<ul class="js-card-actions list-inline action-list navbar-btn">
+						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 						<li class="navbar-btn"> 
 							<a class="btn btn-default  <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)})))) { %> js-card-send-to-board <% } %> even-action htruncate" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><%}%>" href=""><i class="icon-cloud-download"></i><% if(parseInt(card.attributes.is_archived) === 0){ %><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><% } %></a> 
 						</li>
 					<% } %>
 					<% if(parseInt(card.attributes.is_archived) === 1 && (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_card",board_user_role_id: parseInt(list.board_user_role_id)}))))){ %>
-						<li class="navbar-btn dropdown"> <a class="btn btn-default dropdown-toggle js-open-dropdown even-action htruncate" href="#" role="button" data-toggle="dropdown" title="<%- i18next.t('Delete') %>"><i class="icon-remove"></i><%- i18next.t('Delete') %></a>
+						<li class="navbar-btn dropdown"> <a class="btn btn-primary dropdown-toggle js-open-dropdown even-action htruncate" href="#" role="button" data-toggle="dropdown" title="<%- i18next.t('Delete') %>"><i class="icon-remove"></i><%- i18next.t('Delete') %></a>
 							<ul class="dropdown-menu dropdown-menu-left arrow">
 								<li class="js-dropdown-popup dropdown-popup">
 									<div class="clearfix text-center col-xs-12"> <span class="col-xs-10"><strong><%- i18next.t('Delete Card') %>?</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a> </div>
@@ -410,10 +419,9 @@
 									</div>
 								</li>
 							</ul>
-					</li>
+						</li>
 					<% } %>
-					<li class = "card_templete_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
-					</ul>	
+					</ul>
 				</div>
 				<% } %>
 			  </li>
@@ -771,6 +779,8 @@
 			<% } }%>
 		</li>
 		<% } %>
+		<li class = "card_templete_action_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
+		<li class="col-xs-12 divider"></li>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 		<li> <a class="panel-heading show <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)})))) { %> js-card-send-to-board<% } %>" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><%}%>" href="">
 				<% if(parseInt(card.attributes.is_archived) === 0){ %>
@@ -794,7 +804,6 @@
 				</ul>
 			</li>
 		<% } %>
-		<li class = "card_templete_action_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
 	  <% } %>
 	  <li class="dropdown js-more-dropdown">
 	  <div class="col-xs-12 divider"></div>
