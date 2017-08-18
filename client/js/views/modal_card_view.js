@@ -83,6 +83,7 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-add-comment-member': 'AddCommentMember',
         'focus .js-comment': 'showActions',
         'keyup .js-comment': 'showMemberSearch',
+        'keydown .js-comment': 'showMemberSearchKeyDown',
         'keyup .js-search-users': 'showSearchUsers',
         'click .js-load-dropbox': 'loadDropbox',
         'click .js-no-action': 'noAction',
@@ -629,6 +630,16 @@ App.ModalCardView = Backbone.View.extend({
         this.$el.find('.js-show-card-desc').next('p').show();
         this.$el.find('#cardDescriptionEditForm').hide();
         return false;
+    },
+    showMemberSearchKeyDown: function(e) {
+        $(".js-comment").removeClass("current-comment-box");
+        $(e.target).addClass("current-comment-box");
+        var keyCode = e.which || e.keyCode;
+        var q = $(e.target).val();
+        if (e.key === '@') {
+            this.autoMentionSelectionStart = e.target.selectionStart;
+            $('.js-show-members').parents('.dropdown:first').addClass('open');
+        }
     },
     /**
      * showMemberSearch()
