@@ -16,7 +16,7 @@
 	whoami
 	echo $(cat /etc/issue)
 	OS_REQUIREMENT=$(lsb_release -i -s)
-	if [ $? != 0 || OS_REQUIREMENT = "" ]
+	if ([ "$OS_REQUIREMENT" = "" ])
 	then
 		echo "lsb_release is not enabled, please install \"yum install -y redhat-lsb-core\" command before running install script"
 		exit 1
