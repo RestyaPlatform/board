@@ -1574,11 +1574,17 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                         }
                     }
-                    foreach ($data['assets']['js'] as $jsfiles) {
-                        $response['apps']['js'][] = $jsfiles;
-                    }
-                    foreach ($data['assets']['css'] as $cssfiles) {
-                        $response['apps']['css'][] = $cssfiles;
+                    if (!empty($data['assets'])) {
+                        if(!empty($data['assets']['js'])) {
+                            foreach ($data['assets']['js'] as $jsfiles) {
+                                $response['apps']['js'][] = $jsfiles;
+                            }
+                        }
+                        if(!empty($data['assets']['css'])) {
+                            foreach ($data['assets']['css'] as $cssfiles) {
+                                $response['apps']['css'][] = $cssfiles;
+                            }
+                        }
                     }
                 }
             }
