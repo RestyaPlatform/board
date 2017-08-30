@@ -12,7 +12,7 @@
 	<form role="form" class="form-horizontal js-edit-card-label">
 		<div class="form-group">
 			<div class="col-xs-12">
-				<input type="text" id="inputCardLabel" name="name" title="<%- i18next.t('Whitespace alone not allowed') %>" required pattern=".*\S+.*" value="<%-label.attributes.name %>" class="form-control" />
+				<input type="text" id="inputCardLabel" name="name" title="<%- i18next.t('Whitespace is not allowed') %>" required pattern=".*\S+.*" value="<%-label.attributes.name %>" class="form-control" />
 				<input type="hidden" id="label_id" name="label_id" value="<%-label.attributes.label_id %>" />
 				<input type="hidden" id="color" name="color" value="<%-label.attributes.color %>" />
 			</div>

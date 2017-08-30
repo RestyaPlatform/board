@@ -78,6 +78,8 @@ App.FooterView = Backbone.View.extend({
         'click .js-enable-desktop-notification': 'enabledesktopNotification',
         'click .js-show-board-import-form': 'showBoardImportForm',
         'change .js-board-import-file': 'importBoard',
+        'click .js-show-board-import-wekan-form': 'showBoardImportWekanForm',
+        'change .js-board-import-wekan-file': 'importWekanBoard',
         'click .js-closed-boards': 'renderClosedBoards',
         'click .js-starred-boards': 'renderStarredBoards',
         'click .js-my-boards-listing': 'renderMyBoards',
@@ -274,8 +276,8 @@ App.FooterView = Backbone.View.extend({
                 i18next.changeLanguage($(e.currentTarget).data('lang'));
                 if (!_.isEmpty(response.success)) {
                     $('.js-change-language-form-response').find('i').remove();
-                    location.reload();
                 }
+                location.reload();
             }
         });
         return false;
@@ -844,10 +846,10 @@ App.FooterView = Backbone.View.extend({
                         });
                         $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         if (mode == 1) {
-                            view_activity.prepend(view.render().el).find('.timeago').timeago();
+                            view_activity.prepend(view.render().el);
                         } else {
                             if ($('.js-list-activity-' + activity.id, view_activity).length === 0) {
-                                view_activity.append(view.render().el).find('.timeago').timeago();
+                                view_activity.append(view.render().el);
                             }
                         }
                         if (bool) {
@@ -1400,7 +1402,7 @@ App.FooterView = Backbone.View.extend({
                         });
                         $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         if ($('.js-list-activity-' + activity.id, view_activity).length === 0) {
-                            view_activity.append(view.render().el).find('.timeago').timeago();
+                            view_activity.append(view.render().el);
                         }
                     });
                     var unread_activity_id = _.max(activities.models, function(activity) {
@@ -1549,7 +1551,7 @@ App.FooterView = Backbone.View.extend({
                             flag: '2'
                         });
                         $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
-                        view_activity.append(view.render().el).find('.timeago').timeago();
+                        view_activity.append(view.render().el);
                     });
                 } else {
                     if (type == 'user') {
@@ -1599,6 +1601,62 @@ App.FooterView = Backbone.View.extend({
         return false;
     },
     /**
+     * showBoardImportWekanForm()
+     * show Board Import Form
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    showBoardImportWekanForm: function(e) {
+        e.preventDefault();
+        var form = $('#js-board-import-wekan');
+        $('.js-board-import-wekan-file', form).trigger('click');
+        return false;
+    },
+    /**
+     * importWekanBoard()
+     * import Board
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    importWekanBoard: function(e) {
+        e.preventDefault();
+        $('#js-board-import-loader').removeClass('hide');
+        var self = this;
+        var form = $('form#js-board-import-wekan');
+        var fileData = new FormData(form[0]);
+        var board = new App.Board();
+        board.url = api_url + 'boards.json';
+        board.save(fileData, {
+            type: 'POST',
+            data: fileData,
+            processData: false,
+            cache: false,
+            contentType: false,
+            error: function(e, s) {
+                $('#js-board-import-loader', '.js-show-board-import-wekan-form').parent('.js-show-board-import-wekan-form').addClass('hide');
+            },
+            success: function(model, response) {
+                $('#js-board-import-loader', '.js-show-board-import-wekan-form').addClass('hide');
+                if (!_.isUndefined(response.id)) {
+                    app.navigate('#/board/' + response.id, {
+                        trigger: true,
+                        replace: true
+                    });
+                    self.flash('success', i18next.t('Imported successfully.'));
+                } else {
+                    if (response.error) {
+                        self.flash('danger', i18next.t(response.error));
+                    } else {
+                        self.flash('danger', i18next.t('Unable to import. please try again.'));
+                    }
+
+                }
+            }
+        });
+    },
+    /**
      * importBoard()
      * import Board
      * @param e
@@ -1620,10 +1678,10 @@ App.FooterView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                $('#js-board-import-loader').addClass('hide');
+                $('#js-board-import-loader', '.js-show-board-import-form').addClass('hide');
             },
             success: function(model, response) {
-                $('#js-board-import-loader').addClass('hide');
+                $('#js-board-import-loader', '.js-show-board-import-form').addClass('hide');
                 if (!_.isUndefined(response.id)) {
                     app.navigate('#/board/' + response.id, {
                         trigger: true,

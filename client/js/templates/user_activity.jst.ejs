@@ -52,7 +52,10 @@
 								<% }); %>
 							</div>
 						<% } %>
-						<small class="pull-left"><abbr class="timeago pull-left text-muted" title="<%- activity.attributes.created %>"><%- activity.attributes.created %></abbr><% if(!_.isEmpty(activity.attributes.board_name)){ %><a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;on&nbsp;<%- activity.attributes.board_name %></a><% } %></small>
+						<small class="pull-left">
+						<% var created = parse_date(activity.attributes.created, authuser); %>
+						<abbr class="pull-left text-muted" title="<%- created.datetime %>"><%- created.timeago %></abbr>
+						<% if(!_.isEmpty(activity.attributes.board_name)){ %><a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;on&nbsp;<%- activity.attributes.board_name %></a><% } %></small>
 						<div class="clearfix">
 								<small class="pull-left">
 									<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all") { %>

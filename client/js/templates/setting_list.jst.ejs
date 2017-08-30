@@ -3,17 +3,21 @@
   <div class="col-xs-12">
 	<div class="clearfix">
 		<ul class="nav nav-tabs no-bor h3">
-		<% 
+		<%
+			var timezones; 
 			var i = 0;
 			if (list.models.length > 0 ) { 
 				_.each(list.models, function(settingCategory) {				
 					var settings = settingCategory.get('settings');
+					if(timezones !== '') {
+						timezones = settingCategory.get('timezones');
+					}
 		%>
 				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>"><%- i18next.t(settingCategory.get('name')) %></a></li>
 		<% 
 					i++;
 				});
-			} 
+			}
 		%>
 		</ul>
 	</div>
@@ -206,12 +210,25 @@
 								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
 								  <% } %>
 								  <% if(setting.type == 'select'){ %>
-									  <select name="<%- i18next.t(setting.name) %>" id="inputSetting<%- setting.id %>" class="form-control">
-									 <% var options = setting.options.split(',');
-									 _.each(options, function(v, k) { %>
-										<option <% if(v === setting.value) { %>selected <% }%> value="<%- v %>"><%- v %></option>
-									<% }); %>
-									</select>
+										<% if(setting.name === 'SITE_TIMEZONE') { %>
+											<select  id="inputSetting<%- setting.id %>" class="form-control" name="<%- i18next.t(setting.name) %>">
+											<% _.each(timezones, function(timezone) { %>
+												<% if(setting.value.toString() == timezone.code.toString()) { %> 
+													<option selected value="<%- timezone.code %>"><%- timezone.name %></option>
+												<% } else { %>
+													<option value="<%- timezone.code %>"><%- timezone.name %></option>
+												<% } %>
+											<% }); %>
+											</select>
+										<% } else { %>
+											<select name="<%- i18next.t(setting.name) %>" id="inputSetting<%- setting.id %>" class="form-control">
+										<% var options = setting.options.split(',');
+										_.each(options, function(v, k) { %>
+												<option <% if(v === setting.value) { %>selected <% }%> value="<%- v %>"><%- v %></option>
+											<% }); %>
+											</select>
+										<% } %>
+									  
 								  <% } else if(setting.type == 'password') {%>
 									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" />
 								  <% } else if(setting.type == 'textarea') {%>

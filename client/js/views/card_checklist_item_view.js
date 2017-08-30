@@ -31,7 +31,9 @@ App.CardCheckListItemView = Backbone.View.extend({
             this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
         }
     },
-    converter: new showdown.Converter({extensions: ['targetblank']}),
+    converter: new showdown.Converter({
+        extensions: ['targetblank']
+    }),
     template: JST['templates/card_checklist_item'],
     className: function() {
         var class_name = 'js-checklist-item btn-block pull-left';
@@ -104,6 +106,7 @@ App.CardCheckListItemView = Backbone.View.extend({
      *
      */
     render: function() {
+        this.converter.setFlavor('github');
         this.$el.html(this.template({
             checklist_item: this.model,
             converter: this.converter
@@ -282,7 +285,7 @@ App.CardCheckListItemView = Backbone.View.extend({
                     silent: true
                 });
                 var view_activity = $('#js-card-activities-' + self.model.card.id);
-                view_activity.prepend(view.render().el).find('.timeago').timeago();
+                view_activity.prepend(view.render().el);
             }
         });
     },
@@ -318,7 +321,7 @@ App.CardCheckListItemView = Backbone.View.extend({
                     silent: true
                 });
                 var view_activity = $('#js-card-activities-' + self.model.card.id);
-                view_activity.prepend(view.render().el).find('.timeago').timeago();
+                view_activity.prepend(view.render().el);
             }
         });
     },

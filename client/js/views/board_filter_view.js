@@ -28,7 +28,9 @@ App.BoardFilterView = Backbone.View.extend({
     },
     template: JST['templates/board_filter'],
     tagName: 'li',
-    converter: new showdown.Converter({extensions: ['targetblank']}),
+    converter: new showdown.Converter({
+        extensions: ['targetblank']
+    }),
     /**
      * render()
      * populate the html to the dom
@@ -37,6 +39,7 @@ App.BoardFilterView = Backbone.View.extend({
      *
      */
     render: function() {
+        this.converter.setFlavor('github');
         this.$el.html(this.template({
             board: this.model,
             board_labels: this.labels,

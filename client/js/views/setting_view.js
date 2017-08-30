@@ -94,6 +94,7 @@ App.SettingView = Backbone.View.extend({
             cache: false,
             abortPending: true,
             success: function(collections, response) {
+                console.log(collections);
                 self.render(collections);
             }
         });

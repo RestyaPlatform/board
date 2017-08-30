@@ -59,7 +59,7 @@ App.RegisterView = Backbone.View.extend({
                     }
                     $('#inputPassword').val('');
                 } else {
-                    if(response.activation === 1) {
+                    if (response.activation === 1) {
                         $('#submitRegister').removeAttr('disabled');
                         target[0].reset();
                         self.flash('success', i18next.t('You have successfully registered with our site. You can now login to the site.'));

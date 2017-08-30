@@ -12,7 +12,13 @@
 			<span class="show text-primary navbar-btn h5"><%- organization_user_role.name %>  
 			<% if(organization_user_role.id == organization_user.attributes.organization_user_role_id){%><i class="icon-check well-sm"></i><%}%>	
 			</span>
-			<span class="show"><%- i18next.t('Can view, create and edit org boards, and change settings for the organization.') %></span>
+			<% if(organization_user_role.name === 'Viewer'){ %>
+				<span class="show"><%- i18next.t('Can view organizations members and can change organizations visibility only.') %></span>
+			<% } else if(organization_user_role.name === 'Editor'){ %>
+				<span class="show"><%- i18next.t('Can view, create and edit Organizations, view organizations members and change visibility for the organization.') %></span>
+			<% } else { %>
+				<span class="show"><%- i18next.t('Can view, create, edit and delete organizations and organizations members, can change organizations visibility,  and can change settings for the organization.') %></span>
+			<% } %>
 		</a>
 	</li>
 	<li class="divider col-xs-12 btn-block"></li>

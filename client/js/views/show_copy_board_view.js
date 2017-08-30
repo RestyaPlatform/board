@@ -59,7 +59,7 @@ App.ShowCopyBoardView = Backbone.View.extend({
     copyNewBoard: function(e) {
         if (!$.trim($('#inputCopyBoardName').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputCopyBoardName');
+            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputCopyBoardName');
         } else {
             $('.error-msg').remove();
             e.preventDefault();

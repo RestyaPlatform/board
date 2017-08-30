@@ -128,8 +128,22 @@ function stripScripts(s) {
     }
     return div.innerHTML;
 }
+
+function parse_date(dateTime, logged_user) {
+    var obj = {};
+    var s = dateTime.replace("T", " ");
+    s = moment.tz(s, SITE_TIMEZONE);
+    var tz = s;
+    if (logged_user && logged_user.user) {
+        tz = moment.tz(s, logged_user.user.timezone);
+    }
+    obj.datetime = tz.format();
+    obj.timeago = tz.fromNow();
+    return obj;
+}
+
 function strip(html) {
-   var tmp = document.createElement("DIV");
-   tmp.innerHTML = html;
-   return tmp.textContent||tmp.innerText;
+    var tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText;
 }

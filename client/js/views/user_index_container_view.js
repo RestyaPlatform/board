@@ -113,7 +113,6 @@ App.UserIndexContainerView = Backbone.View.extend({
                 }
                 $('.js-filter-list').children().removeClass('active');
                 $(e.currentTarget).parent().addClass('active');
-                $('.js-user-list').find('.timeago').timeago();
                 $('.pagination-boxes').unbind();
                 $('.pagination-boxes').pagination({
                     total_pages: response._metadata.noOfPages,
@@ -159,7 +158,6 @@ App.UserIndexContainerView = Backbone.View.extend({
                 } else {
                     $('.js-user-list').html('<tr><td class="text-center" colspan="15">No record found</td></tr>');
                 }
-                $('.js-user-list').find('.timeago').timeago();
                 $('.pagination-boxes').unbind();
                 $('.pagination-boxes').pagination({
                     total_pages: response._metadata.noOfPages,
@@ -251,7 +249,6 @@ App.UserIndexContainerView = Backbone.View.extend({
                         model: user
                     }).el);
                 });
-                $('.js-user-list').find('.timeago').timeago();
                 $('.pagination-boxes').unbind();
                 $('.pagination-boxes').pagination({
                     total_pages: response._metadata.noOfPages,

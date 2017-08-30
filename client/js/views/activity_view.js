@@ -43,10 +43,12 @@ App.ActivityView = Backbone.View.extend({
         }
         emojify.run();
     },
-    converter: new showdown.Converter({extensions: ['targetblank']}),
+    converter: new showdown.Converter({
+        extensions: ['targetblank']
+    }),
     template: JST['templates/activity'],
     tagName: 'li',
-    className: 'btn-block col-xs-12 js-activity',
+    className: 'btn-block col-xs-12 js-activity activity-github-styles',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
@@ -76,6 +78,7 @@ App.ActivityView = Backbone.View.extend({
      *
      */
     render: function() {
+        this.converter.setFlavor('github');
         this.$el.html(this.template({
             activity: this.model,
             type: this.type,
@@ -150,7 +153,7 @@ App.ActivityView = Backbone.View.extend({
                                 model: activity,
                                 board: self.board
                             });
-                            view_activity.append(view.render().el).find('.timeago').timeago();
+                            view_activity.append(view.render().el);
                             emojify.run();
                             $('#js-loader-img').addClass('hide');
                         });
@@ -224,7 +227,7 @@ App.ActivityView = Backbone.View.extend({
                                 model: activity,
                                 board: self.board
                             });
-                            view_activity.append(view.render().el).find('.timeago').timeago();
+                            view_activity.append(view.render().el);
                             emojify.run();
                             $('#js-loader-img').addClass('hide');
                         });

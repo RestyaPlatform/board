@@ -1,4 +1,4 @@
-<section class="row js-card-dock-modal-<%- card.attributes.id %> js-card-container" id="dropzone<%- card.attributes.id %>" data-board_id = "<%- card.attributes.board_id %>" data-list_id = "<%- card.attributes.list_id %>">
+<section class="row js-card-dock-modal-<%- card.attributes.id %> js-card-container" id="dropzone<%- card.attributes.id %>" data-mode="1" data-board_id = "<%- card.attributes.board_id %>" data-list_id = "<%- card.attributes.list_id %>">
   <div class="pull-right js-attachment-loader"></div>
   <div class="clearfix col-xs-12 printable">
   <h3 class="navbar-btn"> <span class="icon-credit-card text-muted"></span> <a href="" title="<%- card.attributes.name %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-card-title-edit-form<% }else{ %> js-no-action<%}%>"><%- card.attributes.name %></a><small class = "no-print">&nbsp;<%- i18next.t('in list') %>&nbsp;</small><span class="dropdown"><a class="dropdown-toggle <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'move_list_cards',board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-move-card-form<%}else{%>js-no-action<%}%>" data-toggle="dropdown" title="<%- list.attributes.name %>" href="#"><%- list.attributes.name %></a>
@@ -193,7 +193,7 @@
 						<div class="form-group required">
 						  <textarea rows="4" data-edit_mode='2' id="inputCarddescription" name="description" class="form-control js-card-input" required><%- card.attributes.description %></textarea>
 						</div>
-						<div class="col-xs-12 list-group-item-text navbar-right well-sm"><a target="_blank" title="<%- i18next.t('Markdown') %>" href="http://restya.com/board/docs/markdown?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=markdown_help"><img src="img/markdown.png" alt="[Images: Markdown]">&nbsp;Styling with Markdown is supported</a></div>
+						<div class="col-xs-12 list-group-item-text navbar-right"><a target="_blank" class="pull-right text-muted btn-xs" title="<%- i18next.t('Markdown') %>" href="http://restya.com/board/docs/markdown?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=markdown_help">Styling with Markdown is supported</a></div>
 						<div class="submit panel-body">
 						  <input type="submit" value="<%- i18next.t('Save') %>" id="submitCardDescriptionEditForm" class="btn btn-primary">
 						  <a class="js-cancel-card-description-edit"><i class="icon-remove btn btn-link"></i></a> </div>
@@ -223,7 +223,7 @@
 						  <span class="col-xs-10 sr-only"><%- i18next.t('Attach a Link') %></span>
 						  <form class="js-card-attachment-link-form col-xs-12" method="post" role="form">
 							<div class="form-group row">  
-							  <input type="url" id="AttachList" class="form-control input-sm" name="image_link" placeHolder="<%- i18next.t('Paste any link here') %>" title="<%- i18next.t('Whitespace alone not allowed') %>" required pattern=".*\S+.*">
+							  <input type="url" id="AttachList" class="form-control input-sm" name="image_link" placeHolder="<%- i18next.t('Paste any link here') %>" title="<%- i18next.t('Whitespace is not allowed') %>" required pattern=".*\S+.*">
 							</div>
 							<div class="form-group row">
 							  <input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary btn-sm">
@@ -465,7 +465,7 @@
 								<textarea id="inputAddComment" class="form-control input-sm js-comment" rows="4" name="comment" placeHolder="<%- i18next.t('Write a comment') %>" required title="<%- i18next.t('Write a comment') %>"></textarea>	
 							</div>
 						</div>
-						<div class="col-xs-12 list-group-item-text navbar-right well-sm"><a target="_blank" title="<%- i18next.t('Markdown') %>" href="http://restya.com/board/docs/markdown?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=markdown_help"><img src="img/markdown.png" alt="[Images: Markdown]">&nbsp;Styling with Markdown is supported</a></div>
+						<div class="col-xs-12 list-group-item-text navbar-right well-sm"><a target="_blank" class="text-muted pull-right btn-xs" title="<%- i18next.t('Markdown') %>" href="http://restya.com/board/docs/markdown?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=markdown_help">Styling with Markdown is supported</a></div>
 					  </div>
 					</div>
 					</li>
@@ -671,7 +671,7 @@
 				  <span class="col-xs-10 sr-only"><%- i18next.t('Attach a Link') %></span>
 				  <form class="js-card-attachment-link-form col-xs-12" method="post" role="form">
 					<div class="form-group row">
-					  <input type="url" class="form-control input-sm"   id="" name="image_link" placeHolder="<%- i18next.t('Paste any link here') %>" title="<%- i18next.t('Whitespace alone not allowed') %>" required pattern=".*\S+.*">
+					  <input type="url" class="form-control input-sm"   id="" name="image_link" placeHolder="<%- i18next.t('Paste any link here') %>" title="<%- i18next.t('Whitespace is not allowed') %>" required pattern=".*\S+.*">
 					</div>
 					<div class="form-group row">    
 					  <input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary btn-sm">

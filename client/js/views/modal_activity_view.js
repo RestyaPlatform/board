@@ -119,7 +119,7 @@ App.ModalActivityView = Backbone.View.extend({
                 model: activity,
                 type: 'all'
             });
-            self.$el.find('#js-activities-list').append(view.render().el).find('.timeago').timeago();
+            self.$el.find('#js-activities-list').append(view.render().el);
         });
         if (!is_load_more && this.activities.models.length === 0) {
             var view = new App.ActivityView({

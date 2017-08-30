@@ -98,7 +98,7 @@ App.ModalListView = Backbone.View.extend({
                     model: attachment,
                     board: self.model.board
                 });
-                view_attachment.append(view.render().el).find('.timeago').timeago();
+                view_attachment.append(view.render().el);
             });
         } else {
             var view = new App.AttachmentView({

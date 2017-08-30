@@ -44,16 +44,16 @@ App.ModalMusicView = Backbone.View.extend({
             if (!$.trim(music_name).length && !$.trim(music_content).length) {
                 $('.error-msg-name').remove();
                 $('.error-msg-content').remove();
-                $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('.js-music_name');
-                $('<div class="error-msg-content text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('.js-music_content');
+                $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('.js-music_name');
+                $('<div class="error-msg-content text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('.js-music_content');
             } else if (!$.trim(music_name).length) {
                 $('.error-msg-name').remove();
                 $('.error-msg-content').remove();
-                $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('.js-music_name');
+                $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('.js-music_name');
             } else if (!$.trim(music_content).length) {
                 $('.error-msg-name').remove();
                 $('.error-msg-content').remove();
-                $('<div class="error-msg-content text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('.js-music_content');
+                $('<div class="error-msg-content text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('.js-music_content');
             }
         } else {
             $('.error-msg-name').remove();

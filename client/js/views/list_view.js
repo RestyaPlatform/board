@@ -21,7 +21,9 @@ if (typeof App === 'undefined') {
 App.ListView = Backbone.View.extend({
     tagName: 'div',
     className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 js-board-list list',
-    converter: new showdown.Converter({extensions: ['targetblank']}),
+    converter: new showdown.Converter({
+        extensions: ['targetblank']
+    }),
     /**
      * Constructor
      * initialize default values and actions
@@ -822,6 +824,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     render: function() {
+        this.converter.setFlavor('github');
         this.$el.html(this.template({
             list: this.model
         }));
@@ -1016,6 +1019,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     renderCardsCollection: function() {
+        this.converter.setFlavor('github');
         var self = this;
         $('#js-list-card-add-form-' + this.model.id).remove();
         $('.js-show-add-card-form', $('#js-card-listing-' + this.model.id).next()).removeClass('hide');
@@ -1541,7 +1545,7 @@ App.ListView = Backbone.View.extend({
                     model: activity
                 });
                 var view_activity = $('#js-card-activities-' + data.copied_card_id);
-                view_activity.prepend(view.render().el).find('.timeago').timeago();
+                view_activity.prepend(view.render().el);
             }
         });
     },

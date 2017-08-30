@@ -168,10 +168,16 @@
 	<%- board.attributes.archived_card_count%> 
 </td> 
 <td class="text-center">
-    <a href="#" class="js-no-action"><abbr class="timeago" title="<%-board.attributes.created%>"><%-board.attributes.created%></abbr></a>
+    <a href="#" class="js-no-action">
+		<% var created = parse_date(board.attributes.created, authuser); %>
+		<abbr class="" title="<%- created.datetime %>"><%- created.timeago %></abbr>
+	</a>
 </td>
 <td class="text-center">
-    <a href="#" class="js-no-action"><abbr class="timeago" title="<%-board.attributes.modified%>"><%-board.attributes.modified%></abbr></a>
+    <a href="#" class="js-no-action">
+	<% var modified = parse_date(board.attributes.modified, authuser); %>
+	<abbr class="" title="<%-modified.datetime%>"><%- modified.timeago %></abbr>
+	</a>
 </td>
 <td class="text-center">
     <div class="btn-group navbar-btn js-visibility-list-dropdown dropdown">

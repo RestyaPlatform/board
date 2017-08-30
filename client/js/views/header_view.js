@@ -125,7 +125,6 @@ App.HeaderView = Backbone.View.extend({
                     sortField: self.sortField,
                     sortDirection: self.sortDirection
                 }).el);
-                $('.timeago', $('#content')).timeago();
             }
         });
     },

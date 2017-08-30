@@ -144,7 +144,7 @@ App.ModalChatHistoryView = Backbone.View.extend({
                 var view = new App.ChatHistoryView({
                     model: chat_history
                 });
-                view_user_chats.append(view.render().el).find('.timeago').timeago();
+                view_user_chats.append(view.render().el);
             });
         }
     }

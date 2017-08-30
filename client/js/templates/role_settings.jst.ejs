@@ -125,6 +125,9 @@
 											<div class="checkbox">
 												<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
 												<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
+												<% if (acl_link.attributes.name === 'User activation') { %>
+													<a  data-placement="left" id="js-question-mark" href="#" data-toggle="tooltip" title="By clicking this, user can't login after registration without confirm the email"><i class="icon-question-sign" aria-hidden="true"></i></a>
+												<% } %>
 											</div>
 										</td>
 									<% } else { %>

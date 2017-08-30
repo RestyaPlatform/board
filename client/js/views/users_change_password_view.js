@@ -48,24 +48,24 @@ App.ChangepasswordView = Backbone.View.extend({
                 $('.error-msg-confirm').remove();
                 $('.error-msg-password').remove();
                 $('.error-msg-old').remove();
-                $('<div class="error-msg-confirm text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputConfirmPassword');
-                $('<div class="error-msg-password text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputPassword');
-                $('<div class="error-msg-old text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputOldPassword');
+                $('<div class="error-msg-confirm text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputConfirmPassword');
+                $('<div class="error-msg-password text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputPassword');
+                $('<div class="error-msg-old text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputOldPassword');
             } else if ($.trim(data.confirm_password) === '') {
                 $('.error-msg-confirm').remove();
                 $('.error-msg-password').remove();
                 $('.error-msg-old').remove();
-                $('<div class="error-msg-confirm text-primary h6">' + i18next.t('whitespace alone not allowed') + '</div>').insertAfter('#inputConfirmPassword');
+                $('<div class="error-msg-confirm text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputConfirmPassword');
             } else if ($.trim(data.old_password) === '') {
                 $('.error-msg-confirm').remove();
                 $('.error-msg-password').remove();
                 $('.error-msg-old').remove();
-                $('<div class="error-msg-old text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputOldPassword');
+                $('<div class="error-msg-old text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputOldPassword');
             } else if ($.trim(data.password) === '') {
                 $('.error-msg-confirm').remove();
                 $('.error-msg-password').remove();
                 $('.error-msg-old').remove();
-                $('<div class="error-msg-password text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputPassword');
+                $('<div class="error-msg-password text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputPassword');
             }
         } else {
             target[0].reset();

@@ -59,16 +59,24 @@
 								<label for="inputtimezone" class="col-sm-4 control-label"><%- i18next.t("Timezone") %></label>
 								<div class="col-sm-8">
 									<%
-										timezone = SITE_TIMEZONE;
+										user_timezone = SITE_TIMEZONE;
 										if(user.attributes.timezone) {
-											timezone = user.attributes.timezone;
+											user_timezone = user.attributes.timezone;
 										}
 									%>
-									<input type="text" id="inputtimezone" class="form-control initialism" name="timezone" value="<%- timezone %>">
+									<select  id="inputtimezone" class="js-chosen-select form-control" name="timezone">
+										<% _.each(user.attributes.timezones, function(timezone) { %>
+										 	<% if(user_timezone.toString() == timezone.code.toString()) { %> 
+												<option selected value="<%- timezone.code %>"><%- timezone.name %></option>
+											<% } else { %>
+												<option value="<%- timezone.code %>"><%- timezone.name %></option>
+											<% } %>
+										<% }); %>
+									</select>
 								</div>
 							</div>
 							<% if(!_.isEmpty(role_links.where({slug: "add_user_profile_picture"}))){ %>
-								<div class="form-group" id="dropzone">
+								<div class="form-group" id="dropzone" data-mode="1">
 									<label for="inputAttachment" class="col-sm-4 control-label sr-only"><%- i18next.t("Upload Avatar") %></label>
 									<div class="col-xs-8">
 										<a data-placement="bottom" title="<%- user.attributes.username%>" data-toggle="tooltip" href="#" class="avatar-option js-use-uploaded-avatar drag-box navbar-left"> 

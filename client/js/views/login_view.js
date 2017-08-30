@@ -49,14 +49,14 @@ App.LoginView = Backbone.View.extend({
             if ($.trim(data.email) === '' && $.trim(data.password) === '') {
                 $('.error-msg-username').remove();
                 $('.error-msg-password').remove();
-                $('<div class="error-msg-username text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputEmail');
-                $('<div class="error-msg-password text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputPassword');
+                $('<div class="error-msg-username text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputEmail');
+                $('<div class="error-msg-password text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputPassword');
             } else if ($.trim(data.email) === '') {
                 $('.error-msg-username').remove();
-                $('<div class="error-msg-username text-primary h6">' + i18next.t('whitespace alone not allowed') + '</div>').insertAfter('#inputEmail');
+                $('<div class="error-msg-username text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputEmail');
             } else if ($.trim(data.password) === '') {
                 $('.error-msg-password').remove();
-                $('<div class="error-msg-password text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputPassword');
+                $('<div class="error-msg-password text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputPassword');
             }
         } else {
             $('.error-msg-username').remove();
@@ -120,7 +120,11 @@ App.LoginView = Backbone.View.extend({
                         if (is_offline_data) {
                             self.flash('danger', i18next.t('Sorry, login failed. Internet connection not available.'));
                         } else {
-                            self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
+                            if (response.code === 'LDAP' && response.error === 'ERROR_LDAP_USER_LIMIT_EXCEED') {
+                                self.flash('danger', i18next.t('Sorry, LDAP users limit exceed.'));
+                            } else {
+                                self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
+                            }
                         }
                     }
                 }

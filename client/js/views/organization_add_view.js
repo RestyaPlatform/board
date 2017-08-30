@@ -31,7 +31,7 @@ App.OrganizationAddView = Backbone.View.extend({
         'submit #OrganizationAddForm': 'addOrganization',
 
     },
-     /**
+    /**
      * validateDescription()
      * to validate description textarea
      * @param NULL
@@ -49,7 +49,7 @@ App.OrganizationAddView = Backbone.View.extend({
             self.$el.find('.error-msg-name').remove();
             self.$el.find('.error-msg-description').remove();
             self.$el.find('#js-add-organization').addClass('disabled');
-            $('<div class="error-msg-description text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputOrganizationDescription');
+            $('<div class="error-msg-description text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputOrganizationDescription');
         }
     },
     /**
@@ -71,16 +71,16 @@ App.OrganizationAddView = Backbone.View.extend({
             if ($.trim(data.name) === '' && $.trim(data.description) === '') {
                 $('.error-msg-name').remove();
                 $('.error-msg-description').remove();
-                $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputOrganizationName');
-                $('<div class="error-msg-description text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputOrganizationDescription');
+                $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputOrganizationName');
+                $('<div class="error-msg-description text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputOrganizationDescription');
             } else if ($.trim(data.name) === '') {
                 $('.error-msg-name').remove();
                 $('.error-msg-description').remove();
-                $('<div class="error-msg-name text-primary h6">' + i18next.t('whitespace alone not allowed') + '</div>').insertAfter('#inputOrganizationName');
+                $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputOrganizationName');
             } else if ($.trim(data.description) === '') {
                 $('.error-msg-name').remove();
                 $('.error-msg-description').remove();
-                $('<div class="error-msg-description text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputOrganizationDescription');
+                $('<div class="error-msg-description text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputOrganizationDescription');
             }
         } else {
             $('.error-msg-name').remove();

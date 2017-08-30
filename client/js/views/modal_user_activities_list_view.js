@@ -83,7 +83,7 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
                     var view = new App.ActivityView({
                         model: null,
                     });
-                    view_user_activities.html(view.render().el).find('.timeago').timeago();
+                    view_user_activities.html(view.render().el);
                 }
             }
         });
@@ -145,7 +145,7 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
                 var view = new App.ActivityView({
                     model: activity,
                 });
-                view_user_activities.append(view.render().el).find('.timeago').timeago();
+                view_user_activities.append(view.render().el);
             }
         }
     }

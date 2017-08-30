@@ -20,9 +20,11 @@ App.AdminActivityIndexView = Backbone.View.extend({
         emojify.run();
     },
     template: JST['templates/admin_activity_index'],
-    converter: new showdown.Converter({extensions: ['targetblank']}),
+    converter: new showdown.Converter({
+        extensions: ['targetblank']
+    }),
     tagName: 'li',
-    className: 'row col-xs-12',
+    className: 'row col-xs-12 activity-github-styles',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
@@ -38,12 +40,12 @@ App.AdminActivityIndexView = Backbone.View.extend({
      *
      */
     render: function() {
+        this.converter.setFlavor('github');
         this.$el.html(this.template({
             activity: this.model,
             type: 'all',
             converter: this.converter,
         }));
-        this.$('.timeago').timeago();
     },
     /**
      * undo_all()

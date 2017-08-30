@@ -107,7 +107,7 @@ App.UserView = Backbone.View.extend({
                             self.$('#js-user-activites').append(new App.UserActivityView({
                                 model: activity,
                                 type: self.type
-                            }).el).find('.timeago').timeago();
+                            }).el);
                         }
                     } else {
                         $('#js-user-activites-load-more').addClass('hide');
@@ -368,7 +368,7 @@ App.UserView = Backbone.View.extend({
                         var activity = activities.models[i];
                         self.$('#js-user-activites').append(new App.UserActivityView({
                             model: activity
-                        }).el).find('.timeago').timeago();
+                        }).el);
                     }
                     var last_activity = _.min(activities.models, function(activity) {
                         return activity.id;

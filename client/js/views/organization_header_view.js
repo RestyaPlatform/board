@@ -79,7 +79,7 @@ App.OrganizationHeaderView = Backbone.View.extend({
     editOrganization: function(e) {
         if (!$.trim($('#inputOrganizationName').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#inputOrganizationName');
+            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputOrganizationName');
             return false;
         } else {
             $('.error-msg').remove();

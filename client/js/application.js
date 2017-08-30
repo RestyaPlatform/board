@@ -410,7 +410,7 @@ var AppRouter = Backbone.Router.extend({
                 }
                 $('#conversejs').remove();
                 var view = new Backbone.View();
-                view.flash('success', i18next.t('Logout successfully.'));
+                view.flash('success', 'Logout successfully.');
             }
         });
     },

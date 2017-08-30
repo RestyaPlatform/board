@@ -92,14 +92,21 @@ var organization_user_role_id = 0;
 				<li>
 					<dl class="clearfix text-center list-group-item-heading">
 						<dt>
-							<div class="btn-group navbar-btn list-activity"> <a href="#" class="btn btn-default js-no-action htruncate"><abbr class="timeago" title="<%- organization.attributes.modified %>"><%- organization.attributes.modified %></abbr></a> </div>
+							<div class="btn-group navbar-btn list-activity"> <a href="#" class="btn btn-default js-no-action htruncate">
+							<% var modified = parse_date(organization.attributes.modified, authuser); %>
+							<abbr class="" title="<%- modified.datetime %>"><%- modified.timeago %></abbr>
+							</a> </div>
 						</dt>
 						<dd><h6 class="text-center h4 navbar-btn"><%- i18next.t('Recent activity') %></h6></dd>
 					</dl></li>
 				<li>
 					<dl class="clearfix text-center list-group-item-heading">
 						<dt>
-							<div class="btn-group navbar-btn list-activity"> <a href="#" class="btn btn-default js-no-action htruncate"><abbr class="timeago" title="<%- organization.attributes.created %>"><%- organization.attributes.created %></abbr></a> </div>
+							<div class="btn-group navbar-btn list-activity"> <a href="#" class="btn btn-default js-no-action htruncate">
+							<% var created = parse_date(organization.attributes.created, authuser); %>
+							<abbr class="" title="<%- created.datetime %>"><%- created.timeago %></abbr>
+
+							</a> </div>
 						</dt>
 						<dd><h6 class="text-center h4 navbar-btn"><%- i18next.t('Created') %></h6></dd>
 					</dl>

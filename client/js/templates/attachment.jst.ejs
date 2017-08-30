@@ -27,10 +27,16 @@
 	<div class="clearfix">
 
 		<% if(_.isEmpty(attachment.attributes.link) && !_.isEmpty(attachment.attributes.name)){ %>
-			<a target="_blank" href="<%= attachment.downloadLink('download', attachment.attributes.id) %>" title="<%- attachment.attributes.name %>"><span class="htruncate col-xs-12 btn-block"><%- attachment.attributes.name %></span><span class="show btn-block col-xs-12"><%- i18next.t('Added') %> <small class="text-muted"><abbr class="timeago" title="<%- attachment.attributes.created %>"><%- attachment.attributes.created %></abbr></small></span></a>
+			<a target="_blank" href="<%= attachment.downloadLink('download', attachment.attributes.id) %>" title="<%- attachment.attributes.name %>"><span class="htruncate col-xs-12 btn-block"><%- attachment.attributes.name %></span><span class="show btn-block col-xs-12"><%- i18next.t('Added') %> <small class="text-muted">
+			<% var created = parse_date(attachment.attributes.created, authuser); %>
+			<abbr class="" title="<%- created.datetime %>"><%- created.timeago %></abbr>
+			</small></span></a>
 		<% } else if(!_.isEmpty(attachment.attributes.link)){ %>
 			<a target="_blank" href="<%= attachment.attributes.link %>" title="<%- attachment.attributes.link %>">
-				<span class="htruncate col-xs-12 btn-block"><%- attachment.attributes.link %></span><span class="show btn-block col-xs-12"><%- i18next.t('Added') %> <small class="text-muted"><abbr class="timeago" title="<%- attachment.attributes.created %>"><%- attachment.attributes.created %></abbr></small></span>
+				<span class="htruncate col-xs-12 btn-block"><%- attachment.attributes.link %></span><span class="show btn-block col-xs-12"><%- i18next.t('Added') %> <small class="text-muted">
+				<% var created = parse_date(attachment.attributes.created, authuser); %>
+				<abbr class="" title="<%- created.datetime %>"><%- created.timeago %></abbr>
+				</small></span>
 			</a>
 		<% } %>
 		<%if(!_.isUndefined(authuser.user)) {%>
