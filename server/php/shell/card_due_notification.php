@@ -61,7 +61,6 @@ if ($db_lnk) {
             foreach ($val as $mail) {
                 $emailFindReplace['##SUBJECT##'] = $mail['subject'];
                 $emailFindReplace['##CONTENT##'] = $mail['content'];
-                echo $emailFindReplace['##SUBJECT##'];
                 sendMail('due_date_notification', $emailFindReplace, $to_mail);
             }
         }

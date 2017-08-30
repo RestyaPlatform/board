@@ -33,23 +33,23 @@ if (!$connection) {
 $message_count = imap_num_msg($connection);
 for ($counter = 1; $counter <= $message_count; $counter++) {
     $header = imap_header($connection, $counter);
-    foreach($header->to as $to) {
+    foreach ($header->to as $to) {
         $mail = explode('+', $to->mailbox);
         // Email format for board - board+##board_id##+hash@restya.com
         // Email format for card  - board+##board_id##+##card_id##+hash@restya.com
         // Check to email address contains atleast one "+" symbol
         if (count($mail) > 1) {
             // Fetch email body
-            $s = imap_fetchstructure($connection,$counter);
-            if (!$s->parts)  // simple
-                $body_data = imapBodyDecode($connection, $counter, $s, 0);  // pass 0 as part-number
-            else {  // multipart: cycle through each part
-                foreach ($s->parts as $partno0=>$p) {
-                    $body_data[] = imapBodyDecode($connection, $counter, $p,$partno0+1);
+            $s = imap_fetchstructure($connection, $counter);
+            if (!$s->parts) // simple
+            $body_data = imapBodyDecode($connection, $counter, $s, 0); // pass 0 as part-number
+            else { // multipart: cycle through each part
+                foreach ($s->parts as $partno0 => $p) {
+                    $body_data[] = imapBodyDecode($connection, $counter, $p, $partno0 + 1);
                 }
             }
-            if($body_data) {
-                if($body_data[0] && is_array($body_data[0])) {
+            if ($body_data) {
+                if ($body_data[0] && is_array($body_data[0])) {
                     $body = $body_data[0][0];
                 } else {
                     $body = $body_data[0];
@@ -92,7 +92,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                             $board_id,
                             $list_id,
                             $title,
-                            $body ,
+                            $body,
                             $position,
                             $board['user_id']
                         );
@@ -208,33 +208,32 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
             }
         }
     }
-   // Deleting the email
+    // Deleting the email
     imap_delete($connection, trim($header->Msgno));
 }
 // Closing the imap connection
 imap_expunge($connection);
-function imapBodyDecode($mbox,$mid,$p,$partno) {
+function imapBodyDecode($mbox, $mid, $p, $partno)
+{
     // $partno = '1', '2', '2.1', '2.1.3', etc for multipart, 0 if simple
     $message = '';
     // DECODE DATA
-    $data = ($partno)?
-        imap_fetchbody($mbox,$mid,$partno):  // multipart
-        imap_body($mbox,$mid);  // simple
+    $data = ($partno) ? imap_fetchbody($mbox, $mid, $partno) : // multipart
+    imap_body($mbox, $mid); // simple
     // Any part may be encoded, even plain text messages, so check everything.
-    if ($p->encoding==4) {
+    if ($p->encoding == 4) {
         $data = quoted_printable_decode($data);
-    } elseif ($p->encoding==3) {
+    } elseif ($p->encoding == 3) {
         $data = base64_decode($data);
     }
-    
     // TEXT
-    if ($p->type==0 && $data) {
+    if ($p->type == 0 && $data) {
         // Messages may be split in different parts because of inline attachments,
         // so append parts together with blank row.
-        if (strtolower($p->subtype)=='plain') {
-            $message .= trim($data) ."\n\n";
+        if (strtolower($p->subtype) == 'plain') {
+            $message.= trim($data) . "\n\n";
         } else {
-            $message .= $data ."<br><br>";
+            $message.= $data . "<br><br>";
         }
     }
     // EMBEDDED MESSAGE
@@ -242,13 +241,13 @@ function imapBodyDecode($mbox,$mid,$p,$partno) {
     // but AOL uses type 1 (multipart), which is not handled here.
     // There are no PHP functions to parse embedded messages,
     // so this just appends the raw source to the main message.
-    elseif ($p->type==2 && $data) {
-        $message .= $data."\n\n";
+    elseif ($p->type == 2 && $data) {
+        $message.= $data . "\n\n";
     }
     // SUBPART RECURSION
     if ($p->parts) {
-        foreach ($p->parts as $partno0=>$p2)
-            $message[] = imapBodyDecode($mbox,$mid,$p2,$partno.'.'.($partno0+1));  // 1.2, 1.2.1, etc.
+        foreach ($p->parts as $partno0 => $p2) $message[] = imapBodyDecode($mbox, $mid, $p2, $partno . '.' . ($partno0 + 1)); // 1.2, 1.2.1, etc.
+        
     }
     return $message;
 }

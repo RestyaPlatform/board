@@ -460,6 +460,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $obj = json_decode($row[0], true);
                     $data = $obj;
                 }
+                $s_result = pg_query_params($db_lnk, 'SELECT * FROM timezones order by utc_offset::int', array());
+                $data['timezones'] = array();
+                while ($row = pg_fetch_assoc($s_result)) {
+                    $data['timezones'][] = $row;
+                }
                 echo json_encode($data);
             } else {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
@@ -859,6 +864,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             $response[] = $row;
         }
+        $timezones_result = pg_query_params($db_lnk, 'SELECT * FROM timezones order by utc_offset::int', array());
+        $timezones = array();
+        while ($timezones_row = pg_fetch_assoc($timezones_result)) {
+            $timezones[] = $timezones_row;
+        }
+        $response[]['timezones'] = $timezones;
         echo json_encode($response);
         break;
 
@@ -1575,12 +1586,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         }
                     }
                     if (!empty($data['assets'])) {
-                        if(!empty($data['assets']['js'])) {
+                        if (!empty($data['assets']['js'])) {
                             foreach ($data['assets']['js'] as $jsfiles) {
                                 $response['apps']['js'][] = $jsfiles;
                             }
                         }
-                        if(!empty($data['assets']['css'])) {
+                        if (!empty($data['assets']['css'])) {
                             foreach ($data['assets']['css'] as $cssfiles) {
                                 $response['apps']['css'][] = $cssfiles;
                             }
@@ -1961,20 +1972,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         3,
                         'user_activation'
                     );
-                     $activation_permission = executeQuery('SELECT * FROM acl_links al left join acl_links_roles alr on alr.acl_link_id = al.id where alr.role_id = $1 and slug = $2', $val_arr);
+                    $activation_permission = executeQuery('SELECT * FROM acl_links al left join acl_links_roles alr on alr.acl_link_id = al.id where alr.role_id = $1 and slug = $2', $val_arr);
                     if ($activation_permission) {
-                        $response['activation'] = 1;
-                        $qry_val_arr = array(
-                            'true',
-                            'true',
-                            $response['id']
-                        );
-                        $sql = pg_query_params($db_lnk, "UPDATE users SET is_email_confirmed = $1, is_active = $2 WHERE id = $3", $qry_val_arr);
-                        $emailFindReplace = array(
-                            '##NAME##' => $r_post['full_name'],
-                        );
-                        sendMail('welcome', $emailFindReplace, $r_post['email']);
-                    } else {
                         $response['activation'] = 0;
                         if ($is_return_vlaue) {
                             $row = convertBooleanValues($table_name, $row);
@@ -1986,6 +1985,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $emailFindReplace['##NAME##'] = $r_post['full_name'];
                         $emailFindReplace['##ACTIVATION_URL##'] = $_server_domain_url . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
                         sendMail('activation', $emailFindReplace, $r_post['email']);
+                    } else {
+                        $response['activation'] = 1;
+                        $qry_val_arr = array(
+                            'true',
+                            'true',
+                            $response['id']
+                        );
+                        $sql = pg_query_params($db_lnk, "UPDATE users SET is_email_confirmed = $1, is_active = $2 WHERE id = $3", $qry_val_arr);
+                        $emailFindReplace = array(
+                            '##NAME##' => $r_post['full_name'],
+                        );
+                        sendMail('welcome', $emailFindReplace, $r_post['email']);
                     }
                 }
             }
@@ -2047,18 +2058,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     $activation_permission = executeQuery('SELECT * FROM acl_links al left join acl_links_roles alr on alr.acl_link_id = al.id where alr.role_id = $1 and slug = $2', $val_arr);
                     if ($activation_permission) {
-                        $response['activation'] = 1;
-                        $qry_val_arr = array(
-                            'true',
-                            'true',
-                            $response['id']
-                        );
-                        $sql = pg_query_params($db_lnk, "UPDATE users SET is_email_confirmed = $1, is_active = $2 WHERE id = $3", $qry_val_arr);
-                        $emailFindReplace = array(
-                            '##NAME##' => $r_post['full_name'],
-                        );
-                        sendMail('welcome', $emailFindReplace, $r_post['email']);
-                    } else {
                         $response['activation'] = 0;
                         if ($is_return_vlaue) {
                             $row = convertBooleanValues($table_name, $row);
@@ -2070,6 +2069,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $emailFindReplace['##NAME##'] = $r_post['full_name'];
                         $emailFindReplace['##ACTIVATION_URL##'] = $_server_domain_url . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
                         sendMail('activation', $emailFindReplace, $r_post['email']);
+                    } else {
+                        $response['activation'] = 1;
+                        $qry_val_arr = array(
+                            'true',
+                            'true',
+                            $response['id']
+                        );
+                        $sql = pg_query_params($db_lnk, "UPDATE users SET is_email_confirmed = $1, is_active = $2 WHERE id = $3", $qry_val_arr);
+                        $emailFindReplace = array(
+                            '##NAME##' => $r_post['full_name'],
+                        );
+                        sendMail('welcome', $emailFindReplace, $r_post['email']);
                     }
                 }
             }
@@ -2479,6 +2490,24 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 if (!empty($imported_board) && !empty($imported_board['prefs'])) {
                     $board = importTrelloBoard($imported_board);
+                    $response['id'] = $board['id'];
+                } else {
+                    $response['error'] = 'Invalid file format. Upload json file';
+                }
+            } else {
+                $response['error'] = 'Unable to import. please try again.';
+            }
+        } elseif (!empty($_FILES['board_import_wekan'])) {
+            if ($_FILES['board_import_wekan']['error'] == 0) {
+                $get_files = file_get_contents($_FILES['board_import_wekan']['tmp_name']);
+                $utf8_encoded_content = utf8_encode($get_files);
+                if (version_compare(phpversion() , '5.4.0', '<')) {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512);
+                } else {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512, JSON_UNESCAPED_UNICODE);
+                }
+                if (!empty($imported_board)) {
+                    $board = importWekanBoard($imported_board);
                     $response['id'] = $board['id'];
                 } else {
                     $response['error'] = 'Invalid file format. Upload json file';
@@ -5698,8 +5727,8 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                 $file_ext = explode('.', $attachment['name']);
-                $hash = md5(SECURITYSALT . 'CardAttachment' .  $r_resource_vars['attachments'] . $file_ext[1] . $key);
-                $thumb_file = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $r_resource_vars['attachments'] .'.'.$hash.'.'.$file_ext[1];
+                $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
+                $thumb_file = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
                 if (file_exists($thumb_file)) {
                     unlink($thumb_file);
                 }
