@@ -5053,6 +5053,11 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $foreign_ids['list_id'] = $r_resource_vars['lists'];
         }
         if (isset($r_put['due_date']) && $r_put['due_date'] != 'NULL') {
+            $data_val = array(
+                'false',
+                $r_resource_vars['cards']
+            );
+            pg_query_params($db_lnk, 'update cards set is_due_date_notification_sent = $1 where id = $2', $data_val);
             if (isset($previous_value['due_date']) && ($previous_value['due_date'] != 'null' && $previous_value['due_date'] != '')) {
                 $comment = 'Due date - ' . $r_put['due_date'] . ' was updated to this card ##CARD_LINK##';
                 $activity_type = 'edit_card_duedate';
