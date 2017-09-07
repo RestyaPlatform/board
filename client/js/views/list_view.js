@@ -825,6 +825,7 @@ App.ListView = Backbone.View.extend({
      */
     render: function() {
         this.converter.setFlavor('github');
+        touchPunchDelay = 100;
         this.$el.html(this.template({
             list: this.model
         }));
@@ -869,6 +870,8 @@ App.ListView = Backbone.View.extend({
                         clearInterval(App.sortable.setintervalidMobile);
                         App.sortable.is_moving_right_mobile = 0;
                         App.sortable.previous_move_mobile = 0;
+                        App.sortable.previous_move_horizontal = 0;
+                        App.sortable.previous_move_vertical = 0;
                     },
                     over: function(ev, ui) {
                         if ($(ui.placeholder).parents('.js-board-list-cards').attr('id') == App.sortable.previous_id) {
@@ -912,52 +915,6 @@ App.ListView = Backbone.View.extend({
                         App.sortable.previous_move_horizontal = App.sortable.is_moving_right;
                     },
                     sort: function(event, ui) {
-                        App.sortable.previous_id = $(ui.placeholder).parents('.js-board-list-cards').attr('id');
-                        var scrollTop = 0;
-                        var decrease_height = 0;
-                        var list_height = $('#' + App.sortable.previous_id).height();
-                        var additional_top = parseInt($('#js-board-lists').position().top) + parseInt($('#' + App.sortable.previous_id).position().top);
-                        var total_top = parseInt(list_height) + parseInt(additional_top);
-                        if (ui.placeholder.height() > list_height) {
-                            decrease_height = parseInt(ui.placeholder.height()) - parseInt(list_height);
-                        } else {
-                            decrease_height = parseInt(list_height) - parseInt(ui.placeholder.height());
-                        }
-                        var total_top1 = (parseInt($('#js-board-lists').position().top) + parseInt(ui.placeholder.position().top)) - decrease_height;
-                        if (App.sortable.previous_offset_vertical !== 0) {
-                            if (App.sortable.previous_offset_vertical > ui.offset.top) {
-                                App.sortable.is_moving_top = false;
-                            } else {
-                                App.sortable.is_moving_top = true;
-                            }
-                        }
-                        if (App.sortable.previous_move_vertical !== App.sortable.is_moving_top) {
-                            clearInterval(App.sortable.setintervalid_vertical);
-                            App.sortable.is_create_setinterval_vertical = true;
-                        }
-                        if (App.sortable.is_moving_top === true && (ui.offset.top > total_top || (total_top1 > 0 && ui.offset.top > total_top1))) {
-                            if (App.sortable.is_create_setinterval_vertical) {
-                                App.sortable.setintervalid_vertical = setInterval(function() {
-                                    scrollTop = parseInt($('#' + App.sortable.previous_id).scrollTop()) + 50;
-                                    $('#' + App.sortable.previous_id).animate({
-                                        scrollTop: scrollTop
-                                    }, 50);
-                                }, 100);
-                                App.sortable.is_create_setinterval_vertical = false;
-                            }
-                        } else if (App.sortable.is_moving_top === false && ui.offset.top < (additional_top - 20)) {
-                            if (App.sortable.is_create_setinterval_vertical) {
-                                App.sortable.setintervalid_vertical = setInterval(function() {
-                                    scrollTop = parseInt($('#' + App.sortable.previous_id).scrollTop()) - 50;
-                                    $('#' + App.sortable.previous_id).animate({
-                                        scrollTop: scrollTop
-                                    }, 50);
-                                }, 100);
-                                App.sortable.is_create_setinterval_vertical = false;
-                            }
-                        }
-                        App.sortable.previous_offset_vertical = ui.offset.top;
-                        App.sortable.previous_move_vertical = App.sortable.is_moving_top;
                         $.browser.device = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
                         if ($.browser.device) {
                             var list_per_page = Math.floor($(window).width() / 230);
@@ -993,8 +950,57 @@ App.ListView = Backbone.View.extend({
                                     App.sortable.is_create_setinterval_mobile = false;
                                 }
                             }
+
                             App.sortable.previous_offset_mobile = ui.offset.left;
                             App.sortable.previous_move_mobile = App.sortable.is_moving_right_mobile;
+
+                        } else {
+                            App.sortable.previous_id = $(ui.placeholder).parents('.js-board-list-cards').attr('id');
+                            var scrollTop = 0;
+                            var decrease_height = 0;
+                            var list_height = $('#' + App.sortable.previous_id).height();
+                            var additional_top = parseInt($('#js-board-lists').position().top) + parseInt($('#' + App.sortable.previous_id).position().top);
+                            var total_top = parseInt(list_height) + parseInt(additional_top);
+                            if (ui.placeholder.height() > list_height) {
+                                decrease_height = parseInt(ui.placeholder.height()) - parseInt(list_height);
+                            } else {
+                                decrease_height = parseInt(list_height) - parseInt(ui.placeholder.height());
+                            }
+                            var total_top1 = (parseInt($('#js-board-lists').position().top) + parseInt(ui.placeholder.position().top)) - decrease_height;
+                            if (App.sortable.previous_offset_vertical !== 0) {
+                                if (App.sortable.previous_offset_vertical > ui.offset.top) {
+                                    App.sortable.is_moving_top = false;
+                                } else {
+                                    App.sortable.is_moving_top = true;
+                                }
+                            }
+                            if (App.sortable.previous_move_vertical !== App.sortable.is_moving_top) {
+                                clearInterval(App.sortable.setintervalid_vertical);
+                                App.sortable.is_create_setinterval_vertical = true;
+                            }
+                            if (App.sortable.is_moving_top === true && (ui.offset.top > total_top || (total_top1 > 0 && ui.offset.top > total_top1))) {
+                                if (App.sortable.is_create_setinterval_vertical) {
+                                    App.sortable.setintervalid_vertical = setInterval(function() {
+                                        scrollTop = parseInt($('#' + App.sortable.previous_id).scrollTop()) + 50;
+                                        $('#' + App.sortable.previous_id).animate({
+                                            scrollTop: scrollTop
+                                        }, 50);
+                                    }, 100);
+                                    App.sortable.is_create_setinterval_vertical = false;
+                                }
+                            } else if (App.sortable.is_moving_top === false && ui.offset.top < (additional_top - 20)) {
+                                if (App.sortable.is_create_setinterval_vertical) {
+                                    App.sortable.setintervalid_vertical = setInterval(function() {
+                                        scrollTop = parseInt($('#' + App.sortable.previous_id).scrollTop()) - 50;
+                                        $('#' + App.sortable.previous_id).animate({
+                                            scrollTop: scrollTop
+                                        }, 50);
+                                    }, 100);
+                                    App.sortable.is_create_setinterval_vertical = false;
+                                }
+                            }
+                            App.sortable.previous_offset_vertical = ui.offset.top;
+                            App.sortable.previous_move_vertical = App.sortable.is_moving_top;
                         }
                     }
                 });

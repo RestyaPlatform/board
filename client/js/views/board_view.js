@@ -631,6 +631,7 @@ App.BoardView = Backbone.View.extend({
      *
      */
     render: function() {
+        touchPunchDelay = 100;
         var self = this;
         $('body').addClass('modal-open');
         $('#header').html(new App.BoardHeaderView({
