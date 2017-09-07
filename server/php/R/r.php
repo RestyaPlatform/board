@@ -2372,16 +2372,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $msg = 2;
                 }
             }
-            if (!empty($_POST['username'])) {
-                $usr_val_arr = array(
-                    $_POST['username']
-                );
-                $user = executeQuery('SELECT * FROM users WHERE username = $1', $usr_val_arr);
-                if ($user['id'] != $r_resource_vars['users'] && $user['username'] == $_POST['username']) {
-                    $no_error = false;
-                    $msg = 3;
-                }
-            }
             if ($no_error) {
                 $qry_val_arr = array(
                     (isset($_POST['default_desktop_notification']) && $_POST['default_desktop_notification'] === 'Enabled') ? 'true' : 'false',
@@ -2469,19 +2459,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $r_resource_vars['users']
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET email= $1 WHERE id = $2', $qry_val_arr);
-                }
-                if (!empty($_POST['username'])) {
-                    $qry_val_arr = array(
-                        $_POST['username'],
-                        $r_resource_vars['users']
-                    );
-                    pg_query_params($db_lnk, 'UPDATE users SET username= $1 WHERE id = $2', $qry_val_arr);
-                    $conditions = array(
-                        $_POST['username'],
-                        $authUser['username']
-                    );
-                    pg_query_params($db_lnk, 'UPDATE oauth_access_tokens set user_id = $1 WHERE user_id= $2', $conditions);
-                    pg_query_params($db_lnk, 'UPDATE oauth_refresh_tokens set user_id = $1 WHERE user_id= $2', $conditions);
                 }
             }
         }
