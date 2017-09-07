@@ -2140,6 +2140,20 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $user_agent
             );
             pg_query_params($db_lnk, 'INSERT INTO user_logins (created, modified, user_id, ip_id, user_agent) VALUES (now(), now(), $1, $2, $3)', $val_arr);
+            $conditions = array(
+                true
+            );
+            $acl_links = pg_query_params($db_lnk, "SELECT * FROM acl_links where is_default = $1", $conditions);
+            while ($acl_link = pg_fetch_assoc($acl_links)) {
+                $qry_val_arr = array(
+                    $acl_link['id'],
+                    $user['role_id']
+                );
+                $acl_link_role = executeQuery('SELECT * FROM acl_links_roles WHERE acl_link_id = $1 and role_id = $2', $qry_val_arr);
+                if (empty($acl_link_role)) {
+                    pg_query_params($db_lnk, 'INSERT INTO acl_links_roles (created, modified, acl_link_id, role_id) VALUES (now(), now(), $1, $2)', $qry_val_arr);
+                }
+            }
             $role_val_arr = array(
                 $user['role_id']
             );
@@ -2358,6 +2372,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $msg = 2;
                 }
             }
+            if (!empty($_POST['username'])) {
+                $usr_val_arr = array(
+                    $_POST['username']
+                );
+                $user = executeQuery('SELECT * FROM users WHERE username = $1', $usr_val_arr);
+                if ($user['id'] != $r_resource_vars['users'] && $user['username'] == $_POST['username']) {
+                    $no_error = false;
+                    $msg = 3;
+                }
+            }
             if ($no_error) {
                 $qry_val_arr = array(
                     (isset($_POST['default_desktop_notification']) && $_POST['default_desktop_notification'] === 'Enabled') ? 'true' : 'false',
@@ -2445,6 +2469,19 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $r_resource_vars['users']
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET email= $1 WHERE id = $2', $qry_val_arr);
+                }
+                if (!empty($_POST['username'])) {
+                    $qry_val_arr = array(
+                        $_POST['username'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET username= $1 WHERE id = $2', $qry_val_arr);
+                    $conditions = array(
+                        $_POST['username'],
+                        $authUser['username']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE oauth_access_tokens set user_id = $1 WHERE user_id= $2', $conditions);
+                    pg_query_params($db_lnk, 'UPDATE oauth_refresh_tokens set user_id = $1 WHERE user_id= $2', $conditions);
                 }
             }
         }
@@ -4617,6 +4654,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             if ($result) {
                 $row = pg_fetch_assoc($result);
                 $response['id'] = $row['id'];
+                $conditions = array(
+                    true
+                );
+                $acl_links = pg_query_params($db_lnk, "SELECT * FROM acl_links where is_default = $1", $conditions);
+                while ($acl_link = pg_fetch_assoc($acl_links)) {
+                    $qry_val_arr = array(
+                        $acl_link['id'],
+                        $row['id']
+                    );
+                    pg_query_params($db_lnk, 'INSERT INTO acl_links_roles (created, modified, acl_link_id, role_id) VALUES (now(), now(), $1, $2)', $qry_val_arr);
+                }
             }
         }
         echo json_encode($response);

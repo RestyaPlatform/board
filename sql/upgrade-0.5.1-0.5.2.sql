@@ -859,3 +859,41 @@ SELECT lists.id,
     lists.custom_fields,
     lists.color
    FROM lists lists;
+
+ALTER TABLE "acl_links" ADD "is_default" boolean NOT NULL DEFAULT 'false';
+
+CREATE OR REPLACE VIEW acl_links_listing AS
+SELECT aclr.role_id,
+    acl.slug,
+    acl.url,
+    acl.method,
+    acl.is_default
+   FROM (acl_links_roles aclr
+     JOIN acl_links acl ON ((acl.id = aclr.acl_link_id)));
+
+update acl_links set is_default = true where slug = any('{user_detail,
+activities_listing,
+connect_imap,
+user_activation,
+view_user,
+add_user_profile_picture,
+view_user_activities,
+user_changepassword,
+connect_my_inbox,
+create_stripe_customer,
+upgrade_downgraded_stripe_subscription,
+view_search,
+edit_user_details,
+view_board_activities,
+get_timezone,
+view_board_listing,
+view_user_board,
+view_board,
+view_my_boards,
+load_settings,
+view_card_isting,
+view_assigned_cards,
+view_user_cards,
+view_card_activities,
+view_organization_listing,
+view_workflow_templates}');
