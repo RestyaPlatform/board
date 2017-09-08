@@ -798,6 +798,8 @@ SELECT cards.id,
      LEFT JOIN boards b ON ((b.id = cards.board_id)))
      LEFT JOIN lists l ON ((l.id = cards.list_id)));
 
+-----------
+
 CREATE OR REPLACE VIEW lists_listing AS
 SELECT lists.id,
     to_char(lists.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
