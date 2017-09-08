@@ -25,7 +25,7 @@ App.ModalCardView = Backbone.View.extend({
     id: 'base-modal',
     className: '',
     converter: new showdown.Converter({
-        extensions: ['targetblank']
+        extensions: ['targetblank', 'xssfilter']
     }),
     template: JST['templates/modal_card_view'],
     /**
@@ -634,14 +634,30 @@ App.ModalCardView = Backbone.View.extend({
         return false;
     },
     showMemberSearchKeyDown: function(e) {
-        $(".js-comment").removeClass("current-comment-box");
-        $(e.target).addClass("current-comment-box");
-        var keyCode = e.which || e.keyCode;
-        var q = $(e.target).val();
-        if (e.key === '@') {
-            this.autoMentionSelectionStart = e.target.selectionStart;
-            $('.js-show-members').parents('.dropdown:first').addClass('open');
+        var position = $(e.target).getCursorPosition();
+        var deleted = '';
+        var val = $(e.target).val();
+        if (e.which == 8) {
+            if (position[0] == position[1]) {
+                if (position[0] === 0)
+                    deleted = '';
+                else
+                    deleted = val.substr(position[0] - 1, 1);
+            } else {
+                deleted = val.substring(position[0], position[1]);
+            }
+        } else if (e.which == 46) {
+            val = $(e.target).val();
+            if (position[0] == position[1]) {
+                if (position[0] === val.length)
+                    deleted = '';
+                else
+                    deleted = val.substr(position[0], 1);
+            } else {
+                deleted = val.substring(position[0], position[1]);
+            }
         }
+        this.deletedKey = deleted;
     },
     /**
      * showMemberSearch()
@@ -651,11 +667,19 @@ App.ModalCardView = Backbone.View.extend({
      * @return false
      */
     showMemberSearch: function(e) {
+        var open = false;
+        if (e.key == "Shift") {
+            this.prevKey = e.key;
+        } else if (e.key == "2" && this.prevKey == "Shift") {
+            open = true;
+        } else {
+            this.prevKey = '';
+        }
         $(".js-comment").removeClass("current-comment-box");
         $(e.target).addClass("current-comment-box");
         var q = $(e.target).val();
         var keyCode = e.which || e.keyCode;
-        if (keyCode === 50 && (e.shiftKey || e.metaKey)) {
+        if (e.key == '@' || open) {
             this.autoMentionSelectionStart = e.target.selectionStart;
             $('.js-show-members').parents('.dropdown:first').addClass('open');
         } else if (this.autoMentionSelectionStart) {
@@ -663,7 +687,7 @@ App.ModalCardView = Backbone.View.extend({
                 this.autoMentionSelectionStart = 0;
                 $('.js-show-members').parents('.dropdown:first').removeClass('open');
             } else {
-                var regex = / /gi,
+                var regex = /\s/gi,
                     result, indice;
                 while ((result = regex.exec(q))) {
                     if (result.index >= this.autoMentionSelectionStart) {
@@ -674,8 +698,14 @@ App.ModalCardView = Backbone.View.extend({
                 if (!indice) {
                     indice = q.length;
                 }
-                $('.js-search-member').val(q.substr(this.autoMentionSelectionStart, indice - this.autoMentionSelectionStart)).trigger('keyup');
+                var text = q.substr(this.autoMentionSelectionStart, (indice) - this.autoMentionSelectionStart);
+                var data = text.split(" ");
+                $('.js-search-member').val(data[0]).trigger('keyup');
             }
+        }
+        if (this.deletedKey === '@' || q === '' || e.key == 'Space') {
+            this.autoMentionSelectionStart = 0;
+            $('.js-show-members').parents('.dropdown:first').removeClass('open');
         }
         return false;
     },
@@ -2476,7 +2506,6 @@ App.ModalCardView = Backbone.View.extend({
             var list_id = current_card.attributes.list_id;
             var card_id = current_card.attributes.card_id;
             var data = $(e.target).serializeObject();
-            var comment = strip(data.comment);
             $('.js-activity-' + activity_id).html(this.converter.makeHtml(comment));
             $('.js-acticity-action-' + activity_id).removeClass('hide');
             //Update in list table
@@ -2514,12 +2543,12 @@ App.ModalCardView = Backbone.View.extend({
      */
     hideEditCommentForm: function() {
         var activity_id = this.$el.find('.js-hide-edit-comment-form').data('activity-id');
+        var comment = this.$el.find('.js-hide-edit-comment-form').closest('form').find('.js-inputComment').val();
         var current_card = this.model.activities.get({
             id: activity_id
         });
         var current_card_created = parse_date(current_card.attributes.created, authuser);
-        var comment = strip(current_card.attributes.comment);
-        var html_content = '<div class="panel no-mar"><div class="panel-body">' + this.converter.makeHtml(_.escape(comment)) + '</di></div><small class="pull-left"><abbr class="text-muted pull-left clearfix" title="' + current_card.datetime + '">' + current_card_created.timeago + '</abbr><div class="js-acticity-action-' + current_card.attributes.id + ' pull-left navbar-btn col-xs-8"><ul class="list-inline"><li><a title="Edit" class="js-show-edit-activity js-edit-activity-link-' + current_card.attributes.id + '" href="#" data-activity-id="' + current_card.attributes.id + '"  data-activity-temp-id="' + current_card.attributes.temp_id + '"><i class="icon-edit"></i>' + i18next.t("Edit") + '</a></li><li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-' + current_card.attributes.id + '" href="#" data-activity-id="' + current_card.attributes.id + '"><i class="icon-repeat"></i>' + i18next.t("Reply") + '</a></li><li class="dropdown"><a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete" data-toggle="dropdown" href="#" data-activity-id="' + current_card.attributes.id + '"><i class="icon-remove"></i>' + i18next.t("Delete") + '</a><ul class="dropdown-menu arrow arrow-right"><li id="js-acticity-actions-response-' + current_card.attributes.id + '" class="js-dropdown-popup dropdown-popup"></li></ul></li></ul></div></small>';
+        var html_content = '<div class="panel no-mar"><div class="panel-body">' + makeLink(this.converter.makeHtml(comment), current_card.attributes.board_id) + '</di></div><small><abbr class="text-muted pull-left clearfix" title="' + current_card.datetime + '">' + current_card_created.timeago + '</abbr><div class="js-acticity-action-' + current_card.attributes.id + ' pull-left navbar-btn col-xs-8"><ul class="list-inline"><li><a title="Edit" class="js-show-edit-activity js-edit-activity-link-' + current_card.attributes.id + '" href="#" data-activity-id="' + current_card.attributes.id + '"  data-activity-temp-id="' + current_card.attributes.temp_id + '"><i class="icon-edit"></i>' + i18next.t("Edit") + '</a></li><li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-' + current_card.attributes.id + '" href="#" data-activity-id="' + current_card.attributes.id + '"><i class="icon-repeat"></i>' + i18next.t("Reply") + '</a></li><li class="dropdown"><a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete" data-toggle="dropdown" href="#" data-activity-id="' + current_card.attributes.id + '"><i class="icon-remove"></i>' + i18next.t("Delete") + '</a><ul class="dropdown-menu arrow arrow-right"><li id="js-acticity-actions-response-' + current_card.attributes.id + '" class="js-dropdown-popup dropdown-popup"></li></ul></li></ul></div><span class="pull-left col-xs-12 js-activity-reply-form-response-' + current_card.attributes.id + '"></span></small>';
         this.$el.find('.js-hide-edit-comment-form').parents('div.js-activity-' + activity_id).html(html_content);
         $('.js-acticity-action-' + activity_id).removeClass('hide');
     },

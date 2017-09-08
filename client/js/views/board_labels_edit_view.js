@@ -21,7 +21,7 @@ App.BoardLabelsEditView = Backbone.View.extend({
     template: JST['templates/board_labels_edit'],
     tagName: 'li',
     converter: new showdown.Converter({
-        extensions: ['targetblank']
+        extensions: ['targetblank', 'xssfilter']
     }),
     /** 
      * Events

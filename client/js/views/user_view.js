@@ -252,44 +252,54 @@ App.UserView = Backbone.View.extend({
                 self.flash('danger', i18next.t('Unable to update. Please try again.'));
             },
             success: function(model, response) {
-                var Auth = JSON.parse($.cookie('auth'));
-                Auth.user.default_desktop_notification = response.activity.default_desktop_notification;
-                Auth.user.is_list_notifications_enabled = response.activity.is_list_notifications_enabled;
-                Auth.user.is_card_notifications_enabled = response.activity.is_card_notifications_enabled;
-                Auth.user.is_card_members_notifications_enabled = response.activity.is_card_members_notifications_enabled;
-                Auth.user.is_card_labels_notifications_enabled = response.activity.is_card_labels_notifications_enabled;
-                Auth.user.is_card_checklists_notifications_enabled = response.activity.is_card_checklists_notifications_enabled;
-                Auth.user.is_card_attachments_notifications_enabled = response.activity.is_card_attachments_notifications_enabled;
-                $.cookie('auth', JSON.stringify(Auth));
-                authuser = Auth;
                 if (!_.isEmpty(response.success)) {
+                    var Auth = JSON.parse($.cookie('auth'));
+                    Auth.user.default_desktop_notification = response.activity.default_desktop_notification;
+                    Auth.user.is_list_notifications_enabled = response.activity.is_list_notifications_enabled;
+                    Auth.user.is_card_notifications_enabled = response.activity.is_card_notifications_enabled;
+                    Auth.user.is_card_members_notifications_enabled = response.activity.is_card_members_notifications_enabled;
+                    Auth.user.is_card_labels_notifications_enabled = response.activity.is_card_labels_notifications_enabled;
+                    Auth.user.is_card_checklists_notifications_enabled = response.activity.is_card_checklists_notifications_enabled;
+                    Auth.user.is_card_attachments_notifications_enabled = response.activity.is_card_attachments_notifications_enabled;
+                    $.cookie('auth', JSON.stringify(Auth));
+                    authuser = Auth;
+                    if (!_.isUndefined(response.activity.username) && response.activity.username !== null) {
+                        self.model.set('username', response.activity.username);
+                        Auth = JSON.parse($.cookie('auth'));
+                        Auth.user.username = response.activity.username;
+                        $.cookie('auth', JSON.stringify(Auth));
+                        authuser = Auth;
+                    }
+                    if (!_.isUndefined(response.activity.profile_picture_path) && response.activity.profile_picture_path !== null) {
+                        self.model.set('profile_picture_path', response.activity.profile_picture_path);
+                        Auth = JSON.parse($.cookie('auth'));
+                        Auth.user.profile_picture_path = response.activity.profile_picture_path;
+                        Auth.user.timezone = data.timezone;
+                        $.cookie('auth', JSON.stringify(Auth));
+                        authuser = Auth;
+                        this.footerView = new App.FooterView({
+                            model: Auth,
+                        }).render();
+                        $('#footer').html(this.footerView.el);
+                    } else {
+                        self.model.set('profile_picture_path', null);
+                        self.model.set('initials', $('#inputinitials').val());
+                        self.model.set('is_send_newsletter', data.is_send_newsletter);
+                        $('.js-user-img').html('<i class="avatar avatar-color-194 avatar-sm">' + $('#inputinitials').val() + '</i>');
+                    }
                     self.flash('success', i18next.t('User Profile has been updated.'));
                 } else if (response.error) {
                     if (response.error === 1) {
                         self.flash('danger', i18next.t('File extension not supported. It supports only jpg, png, bmp and gif.'));
                     } else if (response.error === 2) {
                         self.flash('danger', i18next.t('Email address already exist. User Profile could not be updated. Please, try again.'));
+                    } else if (response.error === 3) {
+                        self.flash('danger', i18next.t('Username already exist. User Profile could not be updated. Please, try again.'));
                     }
                 } else {
                     self.flash('danger', i18next.t('User Profile could not be updated. Please, try again.'));
                 }
-                if (!_.isUndefined(response.activity.profile_picture_path) && response.activity.profile_picture_path !== null) {
-                    self.model.set('profile_picture_path', response.activity.profile_picture_path);
-                    Auth = JSON.parse($.cookie('auth'));
-                    Auth.user.profile_picture_path = response.activity.profile_picture_path;
-                    Auth.user.timezone = data.timezone;
-                    $.cookie('auth', JSON.stringify(Auth));
-                    authuser = Auth;
-                    this.footerView = new App.FooterView({
-                        model: Auth,
-                    }).render();
-                    $('#footer').html(this.footerView.el);
-                } else {
-                    self.model.set('profile_picture_path', null);
-                    self.model.set('initials', $('#inputinitials').val());
-                    self.model.set('is_send_newsletter', data.is_send_newsletter);
-                    $('.js-user-img').html('<i class="avatar avatar-color-194 avatar-sm">' + $('#inputinitials').val() + '</i>');
-                }
+
             }
         });
     },

@@ -193,7 +193,7 @@ var showdown = {},
         simpleLineBreaks:                     true,
         requireSpaceBeforeHeadingText:        true,
         ghCompatibleHeaderId:                 true,
-        ghMentions:                           true,
+        ghMentions:                           false,
         backslashEscapesHTMLTags:             true
       },
       original: {
@@ -2989,3 +2989,18 @@ if (typeof module !== 'undefined' && module.exports) {
 }).call(this);
 
 //# sourceMappingURL=showdown.js.map
+showdown.extension("blockquote", function() {
+  'use strict';
+  return [{
+    type: 'lang',
+    filter: function(text, converter, options) {
+      var mainRegex = new RegExp("[\s\t]?((?:\:\>[\s\t]?.*\n*)+)", "g");
+      text = text.replace(mainRegex, function(match, content) {
+        var foo = converter.makeHtml(content.replace(":>", ""));
+        return '<blockquote class="foo">' + foo + '</blockquote>';
+      });
+      console.log(text);
+      return text;
+    }
+  }]
+});

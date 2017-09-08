@@ -44,7 +44,7 @@ App.ActivityView = Backbone.View.extend({
         emojify.run();
     },
     converter: new showdown.Converter({
-        extensions: ['targetblank']
+        extensions: ['targetblank', 'xssfilter']
     }),
     template: JST['templates/activity'],
     tagName: 'li',
@@ -85,11 +85,17 @@ App.ActivityView = Backbone.View.extend({
             converter: this.converter,
             board: this.board
         }));
+        var listing_type = '';
+        if (this.type) {
+            listing_type = this.type;
+        }
         if (!_.isEmpty(this.model)) {
             this.$el.addClass('js-list-activity-' + this.model.attributes.id);
             if (this.model.attributes.depth !== 0) {
-                var col_offset = parseInt(this.model.attributes.depth);
-                this.$el.addClass('col-lg-offset-' + col_offset);
+                if (listing_type === '') {
+                    var col_offset = parseInt(this.model.attributes.depth);
+                    this.$el.addClass('col-lg-offset-' + col_offset);
+                }
             }
             var filter = ($.cookie('filter') === undefined || $.cookie('filter') === 'comment') ? 1 : 0;
             filter = ($.cookie('filter') !== undefined && $.cookie('filter') === 'both') ? 2 : filter;

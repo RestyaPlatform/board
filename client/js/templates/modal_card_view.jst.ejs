@@ -186,7 +186,7 @@
 					  <% } %>
 					  </h4>
 					  <% if(!_.isEmpty(card.attributes.description)){ %>
-					  <p class="js-show-card-desc"><%= converter.makeHtml(_.escape(card.attributes.description)) %></p>
+					  <p class="js-show-card-desc"><%= converter.makeHtml((card.attributes.description)) %></p>
 					  <% } %>
 					   <%if(!_.isUndefined(authuser.user)) {%>
 					  <form class="hide js-card-edit-form" name="cardDescriptionEditForm" id="cardDescriptionEditForm">
@@ -393,8 +393,9 @@
 							<% } %>
 					  </li>
 				   <% } %>
-
+					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "card_template_add",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 					 <li class = "card_templete_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
+					 <% } %> 
 					 </ul>	
 				</div>
 				<div class="list-group-item-text clearfix no-print">	

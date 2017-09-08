@@ -697,6 +697,7 @@
     "User records not available.": "User records not available.",
     "User removed from this organization": "User removed from this organization",
     "Username": "Username",
+    "Username already exist. User Profile could not be updated. Please, try again.": "Username already exist. User Profile could not be updated. Please, try again.",
     "Username already exists. Your registration process is not completed. Please, try again.": "Username already exists. Your registration process is not completed. Please, try again.",
     "Username. Minimum 3 characters and Maximum 15 characters and spaces not allowed": "Username. Minimum 3 characters and Maximum 15 characters and spaces not allowed",
     "Users": "Users",

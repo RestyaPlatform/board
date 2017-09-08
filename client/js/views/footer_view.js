@@ -792,14 +792,12 @@ App.FooterView = Backbone.View.extend({
                                 if (!_.isUndefined(activity.attributes.checklist_item_parent_name)) {
                                     activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', activity.attributes.checklist_item_parent_name);
                                 }
-                                activity.attributes.comment = stripScripts(activity.attributes.comment);
                             } else if (activity.attributes.type === 'add_comment') {
                                 activity.attributes.comment = _.escape(activity.attributes.full_name) + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
                                 var patt = /@\w+/g;
                                 if (patt.test(activity.attributes.comment)) {
                                     activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned you in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
                                 }
-                                activity.attributes.comment = stripScripts(activity.attributes.comment);
                             }
                             if (authuser.user.default_desktop_notification === true || authuser.user.default_desktop_notification === 'true' || authuser.user.default_desktop_notification === 't') {
                                 var patt_match = activity.attributes.comment.match(/@\w+/g);
@@ -1381,7 +1379,7 @@ App.FooterView = Backbone.View.extend({
         var clicked_notification_count = 0,
             clicked_all_notification_count = 0;
         var activities = new App.ActivityCollection();
-        activities.url = api_url + 'boards/' + authuser.board_id + '/activities.json';
+        activities.url = api_url + 'boards/' + authuser.board_id + '/activities.json?mode=1';
         activities.storeName = 'activity';
         $('#js-activity-loader').remove();
         view_activity.append('<li class="col-xs-12" id="js-activity-loader" style="min-height: 200px;"><span class="cssloader"></span></li>');
