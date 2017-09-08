@@ -929,6 +929,23 @@ function importTrelloBoard($board = array())
             $board_visibility
         );
         $new_board = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards (created, modified, name, background_color, background_picture_url, background_pattern_url, user_id, board_visibility) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
+        $server = strtolower($_SERVER['SERVER_SOFTWARE']);
+        if (strpos($server, 'apache') !== false) {
+            ob_end_clean();
+            header("Connection: close\r\n");
+            header("Content-Encoding: none\r\n");
+            ignore_user_abort(true); // optional
+            ob_start();
+            echo json_encode($new_board);
+            $size = ob_get_length();
+            header("Content-Length: $size");
+            ob_end_flush(); // Strange behaviour, will not work
+            flush(); // Unless both are called !
+            ob_end_clean();
+        } else {
+            echo json_encode($new_board);
+            fastcgi_finish_request();
+        }
         $admin_user_id = array();
         if (!empty($board['members'])) {
             foreach ($board['memberships'] as $membership) {

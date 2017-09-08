@@ -1155,7 +1155,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (!empty($r_resource_filters['limit'])) {
                 $limit = $r_resource_filters['limit'];
             }
-            $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ORDER BY al.id DESC LIMIT ' . $limit . ') as d ';
+            $order = 'ORDER BY freshness_ts DESC, materialized_path ASC';
+            if (isset($r_resource_filters['mode']) && $r_resource_filters['mode'] == '1') {
+                $order = 'ORDER BY al.id DESC';
+            }
+            $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ' . $order . ' LIMIT ' . $limit . ') as d ';
             if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1' . $condition;
             }
@@ -2372,6 +2376,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $msg = 2;
                 }
             }
+            if (!empty($_POST['username'])) {
+                $usr_val_arr = array(
+                    $_POST['username']
+                );
+                $user = executeQuery('SELECT * FROM users WHERE username = $1', $usr_val_arr);
+                if ($user['id'] != $r_resource_vars['users'] && $user['username'] == $_POST['username']) {
+                    $no_error = false;
+                    $msg = 3;
+                }
+            }
             if ($no_error) {
                 $qry_val_arr = array(
                     (isset($_POST['default_desktop_notification']) && $_POST['default_desktop_notification'] === 'Enabled') ? 'true' : 'false',
@@ -2459,6 +2473,19 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $r_resource_vars['users']
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET email= $1 WHERE id = $2', $qry_val_arr);
+                }
+                if (!empty($_POST['username'])) {
+                    $qry_val_arr = array(
+                        $_POST['username'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET username= $1 WHERE id = $2', $qry_val_arr);
+                    $conditions = array(
+                        $_POST['username'],
+                        $authUser['username']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE oauth_access_tokens set user_id = $1 WHERE user_id= $2', $conditions);
+                    pg_query_params($db_lnk, 'UPDATE oauth_refresh_tokens set user_id = $1 WHERE user_id= $2', $conditions);
                 }
             }
         }
