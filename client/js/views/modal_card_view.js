@@ -2506,7 +2506,7 @@ App.ModalCardView = Backbone.View.extend({
             var list_id = current_card.attributes.list_id;
             var card_id = current_card.attributes.card_id;
             var data = $(e.target).serializeObject();
-            $('.js-activity-' + activity_id).html(this.converter.makeHtml(comment));
+            $('.js-activity-' + activity_id).html(this.converter.makeHtml(data.comment));
             $('.js-acticity-action-' + activity_id).removeClass('hide');
             //Update in list table
             var activity = new App.Activity();

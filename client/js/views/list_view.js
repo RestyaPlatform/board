@@ -932,7 +932,7 @@ App.ListView = Backbone.View.extend({
                             if (App.sortable.is_moving_right_mobile === true && ui.offset.left > (list_per_page - 1) * 230) {
                                 if (App.sortable.is_create_setinterval_mobile) {
                                     App.sortable.setintervalidMobile = setInterval(function() {
-                                        scrollLeft = parseInt($('#js-board-lists').scrollLeft()) + 50;
+                                        scrollLeft = parseInt($('#js-board-lists').scrollLeft()) + 10;
                                         $('#js-board-lists').animate({
                                             scrollLeft: scrollLeft
                                         }, 10);
@@ -942,7 +942,7 @@ App.ListView = Backbone.View.extend({
                             } else if (App.sortable.is_moving_right_mobile === false && ui.offset.left < 50) {
                                 if (App.sortable.is_create_setinterval_mobile) {
                                     App.sortable.setintervalidMobile = setInterval(function() {
-                                        scrollLeft = parseInt($('#js-board-lists').scrollLeft()) - 50;
+                                        scrollLeft = parseInt($('#js-board-lists').scrollLeft()) - 10;
                                         $('#js-board-lists').animate({
                                             scrollLeft: scrollLeft
                                         }, 10);
@@ -984,7 +984,7 @@ App.ListView = Backbone.View.extend({
                                         scrollTop = parseInt($('#' + App.sortable.previous_id).scrollTop()) + 50;
                                         $('#' + App.sortable.previous_id).animate({
                                             scrollTop: scrollTop
-                                        }, 50);
+                                        }, 10);
                                     }, 100);
                                     App.sortable.is_create_setinterval_vertical = false;
                                 }
@@ -994,7 +994,7 @@ App.ListView = Backbone.View.extend({
                                         scrollTop = parseInt($('#' + App.sortable.previous_id).scrollTop()) - 50;
                                         $('#' + App.sortable.previous_id).animate({
                                             scrollTop: scrollTop
-                                        }, 50);
+                                        }, 10);
                                     }, 100);
                                     App.sortable.is_create_setinterval_vertical = false;
                                 }

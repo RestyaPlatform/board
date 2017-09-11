@@ -1642,7 +1642,7 @@ App.FooterView = Backbone.View.extend({
                         trigger: true,
                         replace: true
                     });
-                    self.flash('success', i18next.t('Imported successfully.'));
+                    self.flash('info', i18next.t('Board is been currently imported. Based on the size of file, it may take few seconds to minutes. Please refresh or check after some time..'), 1800000);
                 } else {
                     if (response.error) {
                         self.flash('danger', i18next.t(response.error));
@@ -1685,7 +1685,7 @@ App.FooterView = Backbone.View.extend({
                         trigger: true,
                         replace: true
                     });
-                    self.flash('success', i18next.t('Imported successfully.'));
+                    self.flash('info', i18next.t('Board is been currently imported. Based on the size of file, it may take few seconds to minutes. Please refresh or check after some time..'), 1800000);
                 } else {
                     if (response.error) {
                         self.flash('danger', i18next.t(response.error));
