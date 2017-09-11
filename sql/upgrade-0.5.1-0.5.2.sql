@@ -899,3 +899,5 @@ view_user_cards,
 view_card_activities,
 view_organization_listing,
 view_workflow_templates}');
+
+update cards set is_due_date_notification_sent = true;
