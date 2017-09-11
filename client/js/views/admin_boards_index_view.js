@@ -140,7 +140,6 @@ App.AdminBoardsIndexView = Backbone.View.extend({
                 }
                 $('.js-filter-list').children().removeClass('active');
                 $("[data-filter=" + _this.filterField + "]").parent().addClass('active');
-                $('.js-my-boards').find('.timeago').timeago();
                 $('.pagination-boxes').unbind();
                 $('.pagination-boxes').pagination({
                     total_pages: response._metadata.noOfPages,
@@ -187,7 +186,6 @@ App.AdminBoardsIndexView = Backbone.View.extend({
                 } else {
                     $('.js-my-boards').html('<tr><td class="text-center" colspan="15">No record found</td></tr>');
                 }
-                $('.js-my-boards').find('.timeago').timeago();
                 $('.pagination-boxes').unbind();
                 $('.pagination-boxes').pagination({
                     total_pages: response._metadata.noOfPages,
@@ -262,7 +260,6 @@ App.AdminBoardsIndexView = Backbone.View.extend({
                         board_user_roles: response.board_user_roles
                     }).el);
                 });
-                $('.js-my-boards').find('.timeago').timeago();
                 $('.pagination-boxes').unbind();
                 $('.pagination-boxes').pagination({
                     total_pages: response._metadata.noOfPages,

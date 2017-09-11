@@ -12,7 +12,7 @@
 	<form class="col-xs-12" name="BoardAddForm" id="BoardAddForm">
 		<div class="form-group">
 			<label for="inputBoardName"><%- i18next.t("Name") %></label>
-			<input class="form-control input-sm" type="text" id="inputBoardName" name="name" title="<%- i18next.t('Whitespace alone not allowed') %>" required pattern=".*\S+.*">
+			<input class="form-control input-sm" type="text" id="inputBoardName" name="name" title="<%- i18next.t('Whitespace is not allowed') %>" required pattern=".*\S+.*">
 		</div>
 		<% if (templates.models.length > 0 && !_.isEmpty(role_links.where({slug: "view_organization_visibility"}))) { %>
 			<div class="form-group">

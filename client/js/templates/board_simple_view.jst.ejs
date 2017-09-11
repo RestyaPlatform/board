@@ -66,6 +66,11 @@
   </div>
 </div>
 <% } else { %>
+		<%
+			if (!_.isEmpty(role_links.where({
+				slug: "add_board"
+			}))) {
+		%>
 	<hr>
 	<div class="panel">
 		<div class="panel-body bg-warning">
@@ -80,4 +85,5 @@
 				</ul>
 			</div>
 	</div>
-<%}%>
+	<% } %>
+<% } %>

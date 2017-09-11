@@ -86,6 +86,7 @@ App.BoardAddView = Backbone.View.extend({
     },
     submitBoardAdd: function(e) {
         e.preventDefault();
+        $(e.target).find('#submitBoardAdd').addClass('disabled');
         var data = $(e.target).serializeObject();
         var board = new App.Board();
         board.url = api_url + 'boards.json';
@@ -94,6 +95,7 @@ App.BoardAddView = Backbone.View.extend({
         }
         board.save(data, {
             success: function(model, response) {
+                $(e.target).find('#submitBoardAdd').removeClass('disabled');
                 App.boards.add(response.simple_board);
                 if (response.simple_board.lists !== null) {
                     App.boards.get(parseInt(response.simple_board.id)).lists.add(response.simple_board.lists);

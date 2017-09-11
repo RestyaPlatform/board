@@ -76,7 +76,6 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
                     var last_activity = _.min(activities.models, function(activity) {
                         return activity.id;
                     });
-                    console.log(last_activity);
                     self.last_activity_id = last_activity.id;
                     self.$('#js-admin-activites-load-more').removeClass('hide');
                     self.renderActivitiesCollection(activities);
@@ -84,7 +83,7 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
                     var view = new App.ActivityView({
                         model: null,
                     });
-                    view_user_activities.html(view.render().el).find('.timeago').timeago();
+                    view_user_activities.html(view.render().el);
                 }
             }
         });
@@ -126,7 +125,6 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
                     var last_activity = _.min(activities.models, function(activity) {
                         return activity.id;
                     });
-                    console.log(last_activity);
                     self.last_activity_id = last_activity.id;
                     self.renderActivitiesCollection(activities);
                 }
@@ -147,7 +145,7 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
                 var view = new App.ActivityView({
                     model: activity,
                 });
-                view_user_activities.append(view.render().el).find('.timeago').timeago();
+                view_user_activities.append(view.render().el);
             }
         }
     }

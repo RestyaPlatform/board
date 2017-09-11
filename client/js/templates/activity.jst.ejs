@@ -20,24 +20,24 @@
     	<% if(activity.attributes.type == 'add_comment' && activity.attributes.type == 'edit_comment' ) { 
 		%>
 		<div class="media-heading">			
-            <span class="js-activity-<%- activity.attributes.id %>"><%= converter.makeHtml(makeLink(''+ _.escape(activity.attributes.comment), activity.attributes.board_id)) %></span>
+            <span class="js-activity-<%- activity.attributes.id %>"><%= makeLink(converter.makeHtml((activity.attributes.comment)), activity.attributes.board_id) %></span>
 		</div>   
         <% } else {%>
 		<% 
-			var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + _.escape(activity.attributes.card_name) + '</a>';
-			var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + _.escape(activity.attributes.organization_name) + '</a>';
+			var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
+			var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
 			if(activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
 				activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
 				activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
-				activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', _.escape(activity.attributes.label_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', _.escape(activity.attributes.card_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', _.escape(activity.attributes.card_description));
-				activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', _.escape(activity.attributes.list_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', _.escape(activity.attributes.board_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');
-				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', _.escape(activity.attributes.checklist_item_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', _.escape(activity.attributes.checklist_item_parent_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
+				activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', (activity.attributes.label_name));
+				activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', (activity.attributes.card_name));
+				activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
+				activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
+				activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', (activity.attributes.board_name));
+				activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+(activity.attributes.full_name)+'</span>');
+				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
+				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
+				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
 			} else {
 				if(!_.isUndefined(activity.from_footer)) {
 					var comment = '<span class="h5">' + activity.attributes.full_name + '</span> commented in card ' + cardLink;
@@ -59,10 +59,7 @@
 							<span><%= comment %></span>
 						<% } %>
 							<div class="panel no-mar"><div class="panel-body">
-							<%
-								activity.attributes.comment = stripScripts(activity.attributes.comment);
-							%>
-							<%= converter.makeHtml(makeLink(activity.attributes.comment, activity.attributes.board_id)) %>
+							<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
 							<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color', 'delete_list_color'], activity.attributes.type)) { %>
 						<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text">
 							<% _.each(activity.attributes.difference, function(difference) { %>
@@ -75,7 +72,7 @@
 						<%if(_.isUndefined(activity.from_footer)) { %>
 							<div class="panel no-mar"><div class="panel-body">
 						<% } %>
-							<%= converter.makeHtml(makeLink(activity.attributes.comment, activity.attributes.board_id)) %>
+							<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
 							<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'edit_list_color', 'delete_list_color', 'edit_card_color', 'delete_card_color'], activity.attributes.type)) { %>
 						<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text">
 							<% _.each(activity.attributes.difference, function(difference) { %>
@@ -88,7 +85,8 @@
 						<% } %>
 					<% }%>
 					<small>
-			<abbr class="timeago text-muted pull-left clearfix" title="<%- activity.attributes.created %>"><%- activity.attributes.created %></abbr>
+			<% var created = parse_date(activity.attributes.created, authuser); %>
+			<abbr class="pull-left text-muted clearfix" title="<%- created.datetime %>"><%- created.timeago %></abbr>
 			<% if((activity.attributes.type == 'add_organization_attachment' || activity.attributes.type == 'change_visibility' || activity.attributes.type == 'add_organization_user' || activity.attributes.type == 'delete_organization_user') && (!_.isEmpty(activity.attributes.organization_name))) { %>
 				<a href="#/organization/<%= activity.attributes.organization_id %>">&nbsp;<%- i18next.t("on") %>&nbsp;<%- activity.attributes.organization_name %></a>
 			<% } else if(type == 'all' && activity.attributes.type != 'edit_organization' && activity.attributes.type != 'add_organization' && (!_.isEmpty(activity.attributes.board_name))) { %>

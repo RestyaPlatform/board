@@ -1909,7 +1909,22 @@ footer, header, .dashboard-header {
 .edit-comment{
 		.media, .media-body {
 			overflow:visible !important;
-			display: inline-block;
+		}
+		.media-body {
+			display: table-cell;
+			float: none;
+		}
+		.media {
+			display: table;
+			vertical-align: top;
+			width: 100%;
+			> a {
+				display: table-cell;
+				vertical-align: top;
+				float: none !important;
+				width: 42px;
+				padding: 0 10px 0 0;
+			}
 		}
 	}
 .user-filter { 
@@ -2135,7 +2150,7 @@ footer, header, .dashboard-header {
 	}
 }
 .js-board-name-truncate {
-	max-width:300px;
+	max-width:800px;
 }
 .attachement-list {
 	float: left;
@@ -2312,4 +2327,44 @@ footer, header, .dashboard-header {
 }
 .devices-td-new{
 	min-width:100px;	
+}
+.js-user-settings-info {
+	min-width:600px;
+	max-width:600px;
+}
+.emoji-list {
+	margin: 5px 0px 10px 0px;
+	.radio-inline, .checkbox-inline {
+    	padding: 0 15px 0px 0px;
+	}
+}
+.activity-github-styles input[type=checkbox]{
+	display:inline;
+}
+.activity-github-styles blockquote{
+	font-size: 14px;
+	color: #999;
+}
+.attachddown{
+	.dropdown-menu{
+		bottom: 35px;
+		top: auto;
+		left: -15px;
+		&:after{
+			border-top: 6px solid #ffffff;
+			border-bottom-color:transparent;
+			bottom: -12px;
+			top:auto;
+		}
+		&:before{
+			border-top: 7px solid #ccc;
+    		border-top-color: rgba(0, 0, 0, 0.15);
+			border-bottom-color:transparent;
+			bottom: -14px;
+			top:auto;
+		}
+	}
+}
+.cardattachmentblk{
+	padding: 0 0 0 45px;
 }

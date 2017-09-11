@@ -23,7 +23,9 @@ if (typeof App === 'undefined') {
  */
 App.CardView = Backbone.View.extend({
     template: JST['templates/card'],
-    converter: new showdown.Converter(),
+    converter: new showdown.Converter({
+        extensions: ['targetblank', 'xssfilter']
+    }),
     /**
      * Constructor
      * initialize default values and actions
@@ -197,6 +199,7 @@ App.CardView = Backbone.View.extend({
      *
      */
     render: function(ops) {
+        this.converter.setFlavor('github');
         var content = '';
         var self = this;
         var query_params;

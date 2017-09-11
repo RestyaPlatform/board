@@ -61,7 +61,6 @@ App.AdminUserIndexView = Backbone.View.extend({
                         model: user
                     }).el);
                 });
-                $('.js-user-list').find('.timeago').timeago();
                 $('.pagination-boxes').unbind();
                 $('.pagination-boxes').pagination({
                     total_pages: response._metadata.noOfPages,

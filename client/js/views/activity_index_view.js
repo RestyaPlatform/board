@@ -29,7 +29,9 @@ App.ActivityIndexView = Backbone.View.extend({
         'click #js-admin-activites-load-more': 'loadActivities',
     },
     template: JST['templates/activity_index'],
-    converter: new showdown.Converter(),
+    converter: new showdown.Converter({
+        extensions: ['targetblank', 'xssfilter']
+    }),
     /** 
      * getListing()
      * get settings
@@ -75,8 +77,6 @@ App.ActivityIndexView = Backbone.View.extend({
         this.$el.html(this.template({
             type: 'all',
         }));
-
-        this.$('.timeago').timeago();
         $('.js-admin-activity-menu').addClass('active');
         $('.js-admin-email-menu, .js-admin-user-menu, .js-admin-role-menu, .js-admin-setting-menu, .js-admin-board-menu').removeClass('active');
         return this;
@@ -119,7 +119,7 @@ App.ActivityIndexView = Backbone.View.extend({
                 var view = new App.AdminActivityIndexView({
                     model: activity,
                 });
-                view_activity.append(view.el).find('.timeago').timeago();
+                view_activity.append(view.el);
             }
         }
     }

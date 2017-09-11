@@ -25,9 +25,11 @@ App.UserActivityView = Backbone.View.extend({
         this.render();
         emojify.run();
     },
-    converter: new showdown.Converter(),
+    converter: new showdown.Converter({
+        extensions: ['targetblank', 'xssfilter']
+    }),
     template: JST['templates/user_activity'],
-    className: 'list-group-item-text',
+    className: 'list-group-item-text activity-github-styles',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
@@ -43,6 +45,7 @@ App.UserActivityView = Backbone.View.extend({
      *
      */
     render: function() {
+        this.converter.setFlavor('github');
         this.$el.html(this.template({
             activity: this.model,
             type: this.type,

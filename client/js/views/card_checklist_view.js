@@ -190,7 +190,7 @@ App.CardCheckListView = Backbone.View.extend({
                     });
                     self.model.activities.unshift(activity);
                     var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
-                    view_activity.prepend(view_act.render().el).find('.timeago').timeago();
+                    view_activity.prepend(view_act.render().el);
                 }
             }
         });
@@ -258,7 +258,7 @@ App.CardCheckListView = Backbone.View.extend({
     updateChecklist: function(e) {
         if (!$.trim($('#checklistEditName').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#checklistEditName');
+            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#checklistEditName');
         } else {
             $('.error-msg').remove();
             e.preventDefault();
@@ -378,7 +378,7 @@ App.CardCheckListView = Backbone.View.extend({
     addChecklistItem: function(e) {
         if (!$.trim($('#ChecklistItem').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace alone not allowed') + '</div>').insertAfter('#ChecklistItem');
+            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#ChecklistItem');
             return false;
         } else {
             $('.error-msg').remove();
@@ -424,7 +424,7 @@ App.CardCheckListView = Backbone.View.extend({
                                     });
                                     self.model.set('activities', activity);
                                     var view_activity = $('#js-card-activities-' + self.model.card.attributes.id);
-                                    view_activity.prepend(view.render().el).find('.timeago').timeago();
+                                    view_activity.prepend(view.render().el);
                                 });
                             }
                         }

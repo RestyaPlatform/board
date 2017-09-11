@@ -95,7 +95,6 @@ App.ModalBoardView = Backbone.View.extend({
                 });
                 view_attachment.append(view.render().el);
             }
-            view_attachment.find('.timeago').timeago();
         } else {
             var empty_view = new App.AttachmentView({
                 model: null

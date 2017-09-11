@@ -57,7 +57,6 @@ App.ChatHistoryView = Backbone.View.extend({
             chat_history: this.model,
             'title': 'Chat History'
         }));
-        this.$('.timeago').timeago();
         this.showTooltip();
         return this;
     }

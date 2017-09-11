@@ -90,6 +90,24 @@ $dc.ready(function() {
         });
         return o;
     };
+
+    $.fn.getCursorPosition = function() {
+        var el = $(this).get(0);
+        var pos = 0;
+        var posEnd = 0;
+        if ('selectionStart' in el) {
+            pos = el.selectionStart;
+            posEnd = el.selectionEnd;
+        } else if ('selection' in document) {
+            el.focus();
+            var Sel = document.selection.createRange();
+            var SelLength = document.selection.createRange().text.length;
+            Sel.moveStart('character', -el.value.length);
+            pos = Sel.text.length - SelLength;
+            posEnd = Sel.text.length;
+        }
+        return [pos, posEnd];
+    };
 })
 (jQuery);
 
@@ -110,7 +128,7 @@ function checkKeycode(keycode, c) {
 
 function makeLink(text, board_id) {
     text = text.replace(/#(\d+)/g, '<a class="js-open-card-view" data-card_id="$1" href="#/board/' + board_id + '/card/$1">#$1</a>');
-    text = text.replace(/(@[^\s]*)/g, '<span class="atMention">$1</span>');
+    text = text.replace(/(?!\b)(@\w+\b)/g, '<span class="atMention">$1</span>');
     return text;
 }
 
@@ -118,13 +136,15 @@ var favicon = new Favico({
     animation: 'popFade'
 });
 
-function stripScripts(s) {
-    var div = document.createElement('div');
-    div.innerHTML = s;
-    var scripts = div.getElementsByTagName('script');
-    var i = scripts.length;
-    while (i--) {
-        scripts[i].parentNode.removeChild(scripts[i]);
+function parse_date(dateTime, logged_user) {
+    var obj = {};
+    var s = dateTime.replace("T", " ");
+    s = moment.tz(s, SITE_TIMEZONE);
+    var tz = s;
+    if (logged_user && logged_user.user) {
+        tz = moment.tz(s, logged_user.user.timezone);
     }
-    return div.innerHTML;
+    obj.datetime = tz.format();
+    obj.timeago = tz.fromNow();
+    return obj;
 }

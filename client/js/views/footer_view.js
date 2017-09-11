@@ -78,6 +78,8 @@ App.FooterView = Backbone.View.extend({
         'click .js-enable-desktop-notification': 'enabledesktopNotification',
         'click .js-show-board-import-form': 'showBoardImportForm',
         'change .js-board-import-file': 'importBoard',
+        'click .js-show-board-import-wekan-form': 'showBoardImportWekanForm',
+        'change .js-board-import-wekan-file': 'importWekanBoard',
         'click .js-closed-boards': 'renderClosedBoards',
         'click .js-starred-boards': 'renderStarredBoards',
         'click .js-my-boards-listing': 'renderMyBoards',
@@ -132,6 +134,7 @@ App.FooterView = Backbone.View.extend({
                 }
                 if (permission === 'granted') {
                     var notification = new Notification('Desktop notification enabled.');
+                    location.reload();
                 }
             });
         }
@@ -273,8 +276,8 @@ App.FooterView = Backbone.View.extend({
                 i18next.changeLanguage($(e.currentTarget).data('lang'));
                 if (!_.isEmpty(response.success)) {
                     $('.js-change-language-form-response').find('i').remove();
-                    location.reload();
                 }
+                location.reload();
             }
         });
         return false;
@@ -689,6 +692,14 @@ App.FooterView = Backbone.View.extend({
         var activities = new App.ActivityCollection();
         var view_activity = $('#js-all-activities');
         var Auth, favCount;
+        var list_notifications_array = ['add_list_color', 'edit_list_color', 'delete_list_color', 'add_card', 'change_list_position', 'archive_list', 'unarchive_list', 'delete_list'];
+        var card_notifications_array = ['add_card_color', 'edit_card_color', 'delete_card_color', 'add_card_duedate', 'edit_card_duedate', 'delete_card_duedate', 'move_card', 'archived_card',
+            'unarchived_card', 'delete_card'
+        ];
+        var card_members_notifications_array = ['add_card_user', 'delete_card_users'];
+        var card_labels_notifications_array = ['add_card_label', 'delete_card_label'];
+        var card_checklists_notifications_array = ['add_card_checklist', 'add_checklist_item', '	update_card_checklist', 'update_card_checklist_item', 'delete_checklist_item', 'delete_checklist'];
+        var card_attachments_notifications_array = ['add_card_attachment', 'delete_card_attachment'];
         if ($.cookie('auth')) {
             Auth = JSON.parse($.cookie('auth'));
             if (_.isUndefined(authuser.user.last_activity_id)) {
@@ -781,14 +792,49 @@ App.FooterView = Backbone.View.extend({
                                 if (!_.isUndefined(activity.attributes.checklist_item_parent_name)) {
                                     activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', activity.attributes.checklist_item_parent_name);
                                 }
-                                activity.attributes.comment = stripScripts(activity.attributes.comment);
                             } else if (activity.attributes.type === 'add_comment') {
                                 activity.attributes.comment = _.escape(activity.attributes.full_name) + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
-                                activity.attributes.comment = stripScripts(activity.attributes.comment);
+                                var patt = /@\w+/g;
+                                if (patt.test(activity.attributes.comment)) {
+                                    activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned you in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                }
                             }
-                            new Notification(activity.attributes.comment, {
-                                icon: icon
-                            });
+                            if (authuser.user.default_desktop_notification === true || authuser.user.default_desktop_notification === 'true' || authuser.user.default_desktop_notification === 't') {
+                                var patt_match = activity.attributes.comment.match(/@\w+/g);
+                                if ((authuser.user.is_list_notifications_enabled === true || authuser.user.is_list_notifications_enabled === 'true' || authuser.user.is_list_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, list_notifications_array) !== -1)) {
+                                    new Notification(activity.attributes.comment, {
+                                        icon: icon
+                                    });
+                                } else if ((authuser.user.is_card_notifications_enabled === true || authuser.user.is_card_notifications_enabled === 'true' || authuser.user.is_card_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_notifications_array) !== -1)) {
+                                    new Notification(activity.attributes.comment, {
+                                        icon: icon
+                                    });
+                                } else if ((authuser.user.is_card_members_notifications_enabled === true || authuser.user.is_card_members_notifications_enabled === 'true' || authuser.user.is_card_members_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_members_notifications_array) !== -1)) {
+                                    new Notification(activity.attributes.comment, {
+                                        icon: icon
+                                    });
+                                } else if ((authuser.user.is_card_labels_notifications_enabled === true || authuser.user.is_card_labels_notifications_enabled === 'true' || authuser.user.is_card_labels_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_labels_notifications_array) !== -1)) {
+                                    new Notification(activity.attributes.comment, {
+                                        icon: icon
+                                    });
+                                } else if ((authuser.user.is_card_checklists_notifications_enabled === true || authuser.user.is_card_checklists_notifications_enabled === 'true' || authuser.user.is_card_checklists_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_checklists_notifications_array) !== -1)) {
+                                    new Notification(activity.attributes.comment, {
+                                        icon: icon
+                                    });
+                                } else if ((authuser.user.is_card_attachments_notifications_enabled === true || authuser.user.is_card_attachments_notifications_enabled === 'true' || authuser.user.is_card_attachments_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_attachments_notifications_array) !== -1)) {
+                                    new Notification(activity.attributes.comment, {
+                                        icon: icon
+                                    });
+                                } else if (patt_match.length > 0) {
+                                    $.each(patt_match, function(index, user) {
+                                        if (user === '@' + authuser.user.username) {
+                                            new Notification(activity.attributes.comment, {
+                                                icon: icon
+                                            });
+                                        }
+                                    });
+                                }
+                            }
                         }
                         var view = new App.ActivityView({
                             model: activity,
@@ -798,10 +844,10 @@ App.FooterView = Backbone.View.extend({
                         });
                         $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         if (mode == 1) {
-                            view_activity.prepend(view.render().el).find('.timeago').timeago();
+                            view_activity.prepend(view.render().el);
                         } else {
                             if ($('.js-list-activity-' + activity.id, view_activity).length === 0) {
-                                view_activity.append(view.render().el).find('.timeago').timeago();
+                                view_activity.append(view.render().el);
                             }
                         }
                         if (bool) {
@@ -1333,7 +1379,7 @@ App.FooterView = Backbone.View.extend({
         var clicked_notification_count = 0,
             clicked_all_notification_count = 0;
         var activities = new App.ActivityCollection();
-        activities.url = api_url + 'boards/' + authuser.board_id + '/activities.json';
+        activities.url = api_url + 'boards/' + authuser.board_id + '/activities.json?mode=1';
         activities.storeName = 'activity';
         $('#js-activity-loader').remove();
         view_activity.append('<li class="col-xs-12" id="js-activity-loader" style="min-height: 200px;"><span class="cssloader"></span></li>');
@@ -1354,7 +1400,7 @@ App.FooterView = Backbone.View.extend({
                         });
                         $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         if ($('.js-list-activity-' + activity.id, view_activity).length === 0) {
-                            view_activity.append(view.render().el).find('.timeago').timeago();
+                            view_activity.append(view.render().el);
                         }
                     });
                     var unread_activity_id = _.max(activities.models, function(activity) {
@@ -1503,7 +1549,7 @@ App.FooterView = Backbone.View.extend({
                             flag: '2'
                         });
                         $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
-                        view_activity.append(view.render().el).find('.timeago').timeago();
+                        view_activity.append(view.render().el);
                     });
                 } else {
                     if (type == 'user') {
@@ -1535,6 +1581,7 @@ App.FooterView = Backbone.View.extend({
             // If the user is okay, let's create a notification
             if (permission === 'granted') {
                 var notification = new Notification('Desktop notification enabled.');
+                location.reload();
             }
         });
     },
@@ -1550,6 +1597,62 @@ App.FooterView = Backbone.View.extend({
         var form = $('#js-board-import');
         $('.js-board-import-file', form).trigger('click');
         return false;
+    },
+    /**
+     * showBoardImportWekanForm()
+     * show Board Import Form
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    showBoardImportWekanForm: function(e) {
+        e.preventDefault();
+        var form = $('#js-board-import-wekan');
+        $('.js-board-import-wekan-file', form).trigger('click');
+        return false;
+    },
+    /**
+     * importWekanBoard()
+     * import Board
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    importWekanBoard: function(e) {
+        e.preventDefault();
+        $('#js-board-import-loader').removeClass('hide');
+        var self = this;
+        var form = $('form#js-board-import-wekan');
+        var fileData = new FormData(form[0]);
+        var board = new App.Board();
+        board.url = api_url + 'boards.json';
+        board.save(fileData, {
+            type: 'POST',
+            data: fileData,
+            processData: false,
+            cache: false,
+            contentType: false,
+            error: function(e, s) {
+                $('#js-board-import-loader', '.js-show-board-import-wekan-form').parent('.js-show-board-import-wekan-form').addClass('hide');
+            },
+            success: function(model, response) {
+                $('#js-board-import-loader', '.js-show-board-import-wekan-form').addClass('hide');
+                if (!_.isUndefined(response.id)) {
+                    app.navigate('#/board/' + response.id, {
+                        trigger: true,
+                        replace: true
+                    });
+                    self.flash('info', i18next.t('Board is been currently imported. Based on the size of file, it may take few seconds to minutes. Please refresh or check after some time..'), 1800000);
+                } else {
+                    if (response.error) {
+                        self.flash('danger', i18next.t(response.error));
+                    } else {
+                        self.flash('danger', i18next.t('Unable to import. please try again.'));
+                    }
+
+                }
+            }
+        });
     },
     /**
      * importBoard()
@@ -1573,16 +1676,16 @@ App.FooterView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                $('#js-board-import-loader').addClass('hide');
+                $('#js-board-import-loader', '.js-show-board-import-form').addClass('hide');
             },
             success: function(model, response) {
-                $('#js-board-import-loader').addClass('hide');
+                $('#js-board-import-loader', '.js-show-board-import-form').addClass('hide');
                 if (!_.isUndefined(response.id)) {
                     app.navigate('#/board/' + response.id, {
                         trigger: true,
                         replace: true
                     });
-                    self.flash('success', i18next.t('Imported successfully.'));
+                    self.flash('info', i18next.t('Board is been currently imported. Based on the size of file, it may take few seconds to minutes. Please refresh or check after some time..'), 1800000);
                 } else {
                     if (response.error) {
                         self.flash('danger', i18next.t(response.error));

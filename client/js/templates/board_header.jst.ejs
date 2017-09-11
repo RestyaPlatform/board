@@ -34,7 +34,7 @@
 					  <% } %>
 					  <% } %>
 					  <a href="#" class="js-star-load pull-left text-primary hide"><img src="img/star-load.gif" alt="[Images: Star]" title="
-<%- i18next.t('Star') %>"></a><a href="#" class="col-xs-2 js-board-name-truncate nav htruncate <%if(!_.isUndefined(authuser.user)) {%>js-rename-board<%}else{%>js-no-action<%}%>" data-toggle="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: 'edit_board',board_user_role_id: parseInt(board.board_user_role_id)})))) { %>dropdown<% } %>" title="<%- board.attributes.name %>"><strong><%- board.attributes.name %></strong></a>
+<%- i18next.t('Star') %>"></a><a href="#" class="col-xs-10 js-board-name-truncate nav htruncate <%if(!_.isUndefined(authuser.user)) {%>js-rename-board<%}else{%>js-no-action<%}%>" data-toggle="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: 'edit_board',board_user_role_id: parseInt(board.board_user_role_id)})))) { %>dropdown<% } %>" title="<%- board.attributes.name %>"><strong><%- board.attributes.name %></strong></a>
 				  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>
 				  <ul class="dropdown-menu dropdown-menu-left arrow arrow-left">
 					<li class="js-rename-popup js-dropdown-popup dropdown-popup">
@@ -49,7 +49,7 @@
 							<label for="inputBoardName">
 <%- i18next.t('Name') %></label>
 							<input type="text" id="inputBoardName" name="name" class="form-control input-sm" title="
-<%- i18next.t('Whitespace alone not allowed') %>" required pattern=".*\S+.*" value="<%- board.attributes.name %>">
+<%- i18next.t('Whitespace is not allowed') %>" required pattern=".*\S+.*" value="<%- board.attributes.name %>">
 						  </div>
 						  <div class="submit">
 							<input type="submit" value="

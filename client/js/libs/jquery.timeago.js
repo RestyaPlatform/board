@@ -118,9 +118,10 @@
 
     parse: function(iso8601) {
       var s = $.trim(iso8601);
-      var timezone = SITE_TIMEZONE; 
+      var timezone = SITE_TIMEZONE;
+       
       if (!_.isUndefined(authuser)) {
-        if(!_.isUndefined(authuser.user.timezone)) {
+        if(!_.isUndefined(authuser.user) && !_.isUndefined(authuser.user.timezone)) {
           timezone = $.trim(authuser.user.timezone);
         }
       }

@@ -21,7 +21,9 @@ if (typeof App === 'undefined') {
 App.ListView = Backbone.View.extend({
     tagName: 'div',
     className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 js-board-list list',
-    converter: new showdown.Converter(),
+    converter: new showdown.Converter({
+        extensions: ['targetblank', 'xssfilter']
+    }),
     /**
      * Constructor
      * initialize default values and actions
@@ -703,7 +705,7 @@ App.ListView = Backbone.View.extend({
     showMoveCardListForm: function(e) {
         var list_id = this.model.id;
         var board_list = new App.ListCollection();
-        board_list.add(this.model.collection.models);
+        board_list.add(this.model.board.lists.models);
         var filtered_lists = board_list.where({
             is_archived: 0
         });
@@ -822,6 +824,8 @@ App.ListView = Backbone.View.extend({
      *
      */
     render: function() {
+        this.converter.setFlavor('github');
+        touchPunchDelay = 100;
         this.$el.html(this.template({
             list: this.model
         }));
@@ -866,6 +870,8 @@ App.ListView = Backbone.View.extend({
                         clearInterval(App.sortable.setintervalidMobile);
                         App.sortable.is_moving_right_mobile = 0;
                         App.sortable.previous_move_mobile = 0;
+                        App.sortable.previous_move_horizontal = 0;
+                        App.sortable.previous_move_vertical = 0;
                     },
                     over: function(ev, ui) {
                         if ($(ui.placeholder).parents('.js-board-list-cards').attr('id') == App.sortable.previous_id) {
@@ -909,52 +915,6 @@ App.ListView = Backbone.View.extend({
                         App.sortable.previous_move_horizontal = App.sortable.is_moving_right;
                     },
                     sort: function(event, ui) {
-                        App.sortable.previous_id = $(ui.placeholder).parents('.js-board-list-cards').attr('id');
-                        var scrollTop = 0;
-                        var decrease_height = 0;
-                        var list_height = $('#' + App.sortable.previous_id).height();
-                        var additional_top = parseInt($('#js-board-lists').position().top) + parseInt($('#' + App.sortable.previous_id).position().top);
-                        var total_top = parseInt(list_height) + parseInt(additional_top);
-                        if (ui.placeholder.height() > list_height) {
-                            decrease_height = parseInt(ui.placeholder.height()) - parseInt(list_height);
-                        } else {
-                            decrease_height = parseInt(list_height) - parseInt(ui.placeholder.height());
-                        }
-                        var total_top1 = (parseInt($('#js-board-lists').position().top) + parseInt(ui.placeholder.position().top)) - decrease_height;
-                        if (App.sortable.previous_offset_vertical !== 0) {
-                            if (App.sortable.previous_offset_vertical > ui.offset.top) {
-                                App.sortable.is_moving_top = false;
-                            } else {
-                                App.sortable.is_moving_top = true;
-                            }
-                        }
-                        if (App.sortable.previous_move_vertical !== App.sortable.is_moving_top) {
-                            clearInterval(App.sortable.setintervalid_vertical);
-                            App.sortable.is_create_setinterval_vertical = true;
-                        }
-                        if (App.sortable.is_moving_top === true && (ui.offset.top > total_top || (total_top1 > 0 && ui.offset.top > total_top1))) {
-                            if (App.sortable.is_create_setinterval_vertical) {
-                                App.sortable.setintervalid_vertical = setInterval(function() {
-                                    scrollTop = parseInt($('#' + App.sortable.previous_id).scrollTop()) + 50;
-                                    $('#' + App.sortable.previous_id).animate({
-                                        scrollTop: scrollTop
-                                    }, 50);
-                                }, 100);
-                                App.sortable.is_create_setinterval_vertical = false;
-                            }
-                        } else if (App.sortable.is_moving_top === false && ui.offset.top < (additional_top - 20)) {
-                            if (App.sortable.is_create_setinterval_vertical) {
-                                App.sortable.setintervalid_vertical = setInterval(function() {
-                                    scrollTop = parseInt($('#' + App.sortable.previous_id).scrollTop()) - 50;
-                                    $('#' + App.sortable.previous_id).animate({
-                                        scrollTop: scrollTop
-                                    }, 50);
-                                }, 100);
-                                App.sortable.is_create_setinterval_vertical = false;
-                            }
-                        }
-                        App.sortable.previous_offset_vertical = ui.offset.top;
-                        App.sortable.previous_move_vertical = App.sortable.is_moving_top;
                         $.browser.device = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
                         if ($.browser.device) {
                             var list_per_page = Math.floor($(window).width() / 230);
@@ -972,7 +932,7 @@ App.ListView = Backbone.View.extend({
                             if (App.sortable.is_moving_right_mobile === true && ui.offset.left > (list_per_page - 1) * 230) {
                                 if (App.sortable.is_create_setinterval_mobile) {
                                     App.sortable.setintervalidMobile = setInterval(function() {
-                                        scrollLeft = parseInt($('#js-board-lists').scrollLeft()) + 50;
+                                        scrollLeft = parseInt($('#js-board-lists').scrollLeft()) + 10;
                                         $('#js-board-lists').animate({
                                             scrollLeft: scrollLeft
                                         }, 10);
@@ -982,7 +942,7 @@ App.ListView = Backbone.View.extend({
                             } else if (App.sortable.is_moving_right_mobile === false && ui.offset.left < 50) {
                                 if (App.sortable.is_create_setinterval_mobile) {
                                     App.sortable.setintervalidMobile = setInterval(function() {
-                                        scrollLeft = parseInt($('#js-board-lists').scrollLeft()) - 50;
+                                        scrollLeft = parseInt($('#js-board-lists').scrollLeft()) - 10;
                                         $('#js-board-lists').animate({
                                             scrollLeft: scrollLeft
                                         }, 10);
@@ -990,8 +950,57 @@ App.ListView = Backbone.View.extend({
                                     App.sortable.is_create_setinterval_mobile = false;
                                 }
                             }
+
                             App.sortable.previous_offset_mobile = ui.offset.left;
                             App.sortable.previous_move_mobile = App.sortable.is_moving_right_mobile;
+
+                        } else {
+                            App.sortable.previous_id = $(ui.placeholder).parents('.js-board-list-cards').attr('id');
+                            var scrollTop = 0;
+                            var decrease_height = 0;
+                            var list_height = $('#' + App.sortable.previous_id).height();
+                            var additional_top = parseInt($('#js-board-lists').position().top) + parseInt($('#' + App.sortable.previous_id).position().top);
+                            var total_top = parseInt(list_height) + parseInt(additional_top);
+                            if (ui.placeholder.height() > list_height) {
+                                decrease_height = parseInt(ui.placeholder.height()) - parseInt(list_height);
+                            } else {
+                                decrease_height = parseInt(list_height) - parseInt(ui.placeholder.height());
+                            }
+                            var total_top1 = (parseInt($('#js-board-lists').position().top) + parseInt(ui.placeholder.position().top)) - decrease_height;
+                            if (App.sortable.previous_offset_vertical !== 0) {
+                                if (App.sortable.previous_offset_vertical > ui.offset.top) {
+                                    App.sortable.is_moving_top = false;
+                                } else {
+                                    App.sortable.is_moving_top = true;
+                                }
+                            }
+                            if (App.sortable.previous_move_vertical !== App.sortable.is_moving_top) {
+                                clearInterval(App.sortable.setintervalid_vertical);
+                                App.sortable.is_create_setinterval_vertical = true;
+                            }
+                            if (App.sortable.is_moving_top === true && (ui.offset.top > total_top || (total_top1 > 0 && ui.offset.top > total_top1))) {
+                                if (App.sortable.is_create_setinterval_vertical) {
+                                    App.sortable.setintervalid_vertical = setInterval(function() {
+                                        scrollTop = parseInt($('#' + App.sortable.previous_id).scrollTop()) + 50;
+                                        $('#' + App.sortable.previous_id).animate({
+                                            scrollTop: scrollTop
+                                        }, 10);
+                                    }, 100);
+                                    App.sortable.is_create_setinterval_vertical = false;
+                                }
+                            } else if (App.sortable.is_moving_top === false && ui.offset.top < (additional_top - 20)) {
+                                if (App.sortable.is_create_setinterval_vertical) {
+                                    App.sortable.setintervalid_vertical = setInterval(function() {
+                                        scrollTop = parseInt($('#' + App.sortable.previous_id).scrollTop()) - 50;
+                                        $('#' + App.sortable.previous_id).animate({
+                                            scrollTop: scrollTop
+                                        }, 10);
+                                    }, 100);
+                                    App.sortable.is_create_setinterval_vertical = false;
+                                }
+                            }
+                            App.sortable.previous_offset_vertical = ui.offset.top;
+                            App.sortable.previous_move_vertical = App.sortable.is_moving_top;
                         }
                     }
                 });
@@ -1016,6 +1025,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     renderCardsCollection: function() {
+        this.converter.setFlavor('github');
         var self = this;
         $('#js-list-card-add-form-' + this.model.id).remove();
         $('.js-show-add-card-form', $('#js-card-listing-' + this.model.id).next()).removeClass('hide');
@@ -1163,7 +1173,7 @@ App.ListView = Backbone.View.extend({
     addCard: function(e) {
         if (!$.trim($('#AddCard').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">Whitespace alone not allowed</div>').insertAfter('#AddCard');
+            $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter('#AddCard');
             return false;
         } else {
             $('.error-msg').remove();
@@ -1293,7 +1303,6 @@ App.ListView = Backbone.View.extend({
                     self.model.collection.board.cards.add(card, {
                         silent: true
                     });
-                    console.log(card);
                     self.model.cards.add(card, {
                         silent: true
                     });
@@ -1542,7 +1551,7 @@ App.ListView = Backbone.View.extend({
                     model: activity
                 });
                 var view_activity = $('#js-card-activities-' + data.copied_card_id);
-                view_activity.prepend(view.render().el).find('.timeago').timeago();
+                view_activity.prepend(view.render().el);
             }
         });
     },

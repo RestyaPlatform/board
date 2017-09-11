@@ -631,6 +631,7 @@ App.BoardView = Backbone.View.extend({
      *
      */
     render: function() {
+        touchPunchDelay = 100;
         var self = this;
         $('body').addClass('modal-open');
         $('#header').html(new App.BoardHeaderView({
@@ -1012,7 +1013,7 @@ App.BoardView = Backbone.View.extend({
         var view_list = el.find('#js-board-lists');
         var data = target.serializeObject();
         if ($.trim(data.name) === '') {
-            this.flash('danger', i18next.t('Whitespace alone not allowed'));
+            this.flash('danger', i18next.t('Whitespace is not allowed'));
             return false;
         }
         target[0].reset();

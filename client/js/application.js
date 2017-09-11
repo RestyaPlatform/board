@@ -35,7 +35,10 @@ var APPS = [];
 var load_count = 1;
 var from_url = '';
 var custom_fields = {};
-Backbone.View.prototype.flash = function(type, message) {
+Backbone.View.prototype.flash = function(type, message, delay) {
+    if (!delay) {
+        delay = 4000;
+    }
     $.bootstrapGrowl(message, {
         type: type,
         offset: {
@@ -44,7 +47,7 @@ Backbone.View.prototype.flash = function(type, message) {
         },
         align: 'right',
         width: 250,
-        delay: 4000,
+        delay: delay,
         allow_dismiss: true,
         stackup_spacing: 10
     });
@@ -410,7 +413,7 @@ var AppRouter = Backbone.Router.extend({
                 }
                 $('#conversejs').remove();
                 var view = new Backbone.View();
-                view.flash('success', i18next.t('Logout successfully.'));
+                view.flash('success', 'Logout successfully.');
             }
         });
     },

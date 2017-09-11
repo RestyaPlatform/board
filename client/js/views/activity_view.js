@@ -43,10 +43,12 @@ App.ActivityView = Backbone.View.extend({
         }
         emojify.run();
     },
-    converter: new showdown.Converter(),
+    converter: new showdown.Converter({
+        extensions: ['targetblank', 'xssfilter']
+    }),
     template: JST['templates/activity'],
     tagName: 'li',
-    className: 'btn-block col-xs-12 js-activity',
+    className: 'btn-block col-xs-12 js-activity activity-github-styles',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
@@ -76,17 +78,24 @@ App.ActivityView = Backbone.View.extend({
      *
      */
     render: function() {
+        this.converter.setFlavor('github');
         this.$el.html(this.template({
             activity: this.model,
             type: this.type,
             converter: this.converter,
             board: this.board
         }));
+        var listing_type = '';
+        if (this.type) {
+            listing_type = this.type;
+        }
         if (!_.isEmpty(this.model)) {
             this.$el.addClass('js-list-activity-' + this.model.attributes.id);
             if (this.model.attributes.depth !== 0) {
-                var col_offset = parseInt(this.model.attributes.depth);
-                this.$el.addClass('col-lg-offset-' + col_offset);
+                if (listing_type === '') {
+                    var col_offset = parseInt(this.model.attributes.depth);
+                    this.$el.addClass('col-lg-offset-' + col_offset);
+                }
             }
             var filter = ($.cookie('filter') === undefined || $.cookie('filter') === 'comment') ? 1 : 0;
             filter = ($.cookie('filter') !== undefined && $.cookie('filter') === 'both') ? 2 : filter;
@@ -150,7 +159,7 @@ App.ActivityView = Backbone.View.extend({
                                 model: activity,
                                 board: self.board
                             });
-                            view_activity.append(view.render().el).find('.timeago').timeago();
+                            view_activity.append(view.render().el);
                             emojify.run();
                             $('#js-loader-img').addClass('hide');
                         });
@@ -224,7 +233,7 @@ App.ActivityView = Backbone.View.extend({
                                 model: activity,
                                 board: self.board
                             });
-                            view_activity.append(view.render().el).find('.timeago').timeago();
+                            view_activity.append(view.render().el);
                             emojify.run();
                             $('#js-loader-img').addClass('hide');
                         });

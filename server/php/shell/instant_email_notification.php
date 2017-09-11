@@ -16,6 +16,7 @@ $app_path = dirname(dirname(__FILE__));
 require_once $app_path . '/config.inc.php';
 require_once $app_path . '/libs/vendors/finediff.php';
 require_once $app_path . '/libs/core.php';
+date_default_timezone_set('GMT');
 global $_server_domain_url;
 if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
     include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
@@ -24,7 +25,7 @@ if ($db_lnk) {
     $qry_val_arr = array(
         2
     );
-    $users_result = pg_query_params($db_lnk, 'SELECT users.id, users.username, users.email, users.full_name, users.last_email_notified_activity_id, users.timezone, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT bs.board_id FROM board_subscribers bs WHERE bs.user_id = users.id) d) AS board_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ls.list_id, l.board_id FROM list_subscribers ls, lists l WHERE ls.user_id = users.id AND l.id = ls.list_id) d) AS list_ids,(SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT cs.card_id, c.list_id, c.board_id FROM card_subscribers cs, cards c WHERE cs.user_id = users.id AND c.id = cs.card_id) d) AS card_ids FROM users WHERE is_send_newsletter = $1', $qry_val_arr);
+    $users_result = pg_query_params($db_lnk, 'SELECT users.id, users.username, users.email, users.full_name, users.last_email_notified_activity_id, users.timezone, users.language, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT bs.board_id FROM board_subscribers bs WHERE bs.user_id = users.id) d) AS board_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ls.list_id, l.board_id FROM list_subscribers ls, lists l WHERE ls.user_id = users.id AND l.id = ls.list_id) d) AS list_ids,(SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT cs.card_id, c.list_id, c.board_id FROM card_subscribers cs, cards c WHERE cs.user_id = users.id AND c.id = cs.card_id) d) AS card_ids FROM users WHERE is_send_newsletter = $1', $qry_val_arr);
     while ($user = pg_fetch_assoc($users_result)) {
         $board_ids = $list_ids = $card_ids = array();
         $board_arr = (!empty($user['board_ids'])) ? array_filter(json_decode($user['board_ids'], true)) : '';
@@ -88,7 +89,7 @@ if ($db_lnk) {
                     $br = '<div style="line-height:40px;">&nbsp;</div>';
                 }
                 if (!empty($activity['card_id']) && IMAP_EMAIL) {
-                    $imap_email = split("@", IMAP_EMAIL);
+                    $imap_email = explode("@", IMAP_EMAIL);
                     $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
                         $activity['card_id']
@@ -181,7 +182,7 @@ if ($db_lnk) {
                     $br = '<div style="line-height:40px;">&nbsp;</div>';
                 }
                 if (!empty($activity['card_id']) && IMAP_EMAIL) {
-                    $imap_email = split("@", IMAP_EMAIL);
+                    $imap_email = explode("@", IMAP_EMAIL);
                     $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
                         $activity['card_id']
@@ -274,7 +275,7 @@ if ($db_lnk) {
                     $br = '<div style="line-height:40px;">&nbsp;</div>';
                 }
                 if (!empty($activity['card_id']) && IMAP_EMAIL) {
-                    $imap_email = split("@", IMAP_EMAIL);
+                    $imap_email = explode("@", IMAP_EMAIL);
                     $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
                     $qry_arr = array(
                         $activity['card_id']
@@ -338,6 +339,17 @@ if ($db_lnk) {
             if (!empty($user['timezone'])) {
                 $timezone = trim($user['timezone']);
             }
+            $conditions = array(
+                $timezone
+            );
+            $timezone = executeQuery("select * from timezones WHERE code = $1", $conditions);
+            $timezone_hours = substr($timezone['utc_offset'], 0, -2);
+            $timezone_minutes = substr($timezone['utc_offset'], -2);
+            $language = DEFAULT_LANGUAGE;
+            if (!empty($user['language'])) {
+                $language = $user['language'];
+            }
+            setlocale(LC_TIME, $language);
             $qry_arr = array(
                 max($activity_id) ,
                 $user['id']
@@ -346,7 +358,7 @@ if ($db_lnk) {
             $emailFindReplace['##CONTENT##'] = $mail_content;
             $emailFindReplace['##NAME##'] = $user['full_name'];
             $emailFindReplace['##NOTIFICATION_COUNT##'] = $notification_count;
-            $emailFindReplace['##SINCE##'] = date("h:i A (F j, Y)", strtotime($timezone));
+            $emailFindReplace['##SINCE##'] = strftime("%I:%M %p ( %B %e, %Y)", strtotime($timezone_hours . 'hours ' . $timezone_minutes . 'minutes'));
             $emailFindReplace['##USER_ID##'] = $user['id'];
             sendMail('email_notification', $emailFindReplace, $user['email'], $reply_to_mail);
         }

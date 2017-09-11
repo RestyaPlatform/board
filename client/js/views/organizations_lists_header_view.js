@@ -58,7 +58,6 @@ App.OrganizationsListsHeaderView = Backbone.View.extend({
             sortField: this.sortField,
             sortDirection: this.sortDirection
         }).el);
-        $('.timeago', $('#content')).timeago();
     },
     sortBy: function(e) {
         e.preventDefault();

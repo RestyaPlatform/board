@@ -22,6 +22,7 @@ App.OrganizationsListView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
+        this.populateAclLinks();
         this.render();
     },
     template: JST['templates/organizations_list_view'],
@@ -48,6 +49,15 @@ App.OrganizationsListView = Backbone.View.extend({
         }));
         this.showTooltip();
         return this;
+    },
+    // Resets this boards acl_links collection
+    populateAclLinks: function() {
+        if (this.model) {
+            var acl_links = this.model.get('acl_links') || [];
+            this.model.acl_links.reset(acl_links, {
+                silent: true
+            });
+        }
     },
     /**
      * showConfirmDeleteOrganization()

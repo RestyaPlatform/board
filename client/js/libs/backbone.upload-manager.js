@@ -43,7 +43,6 @@
         {
 			// Merge options
             this.options = $.extend(this.defaults, options);
-
             // Update template name
            // this.templateName = this.options.templates.main;
             // Create the file list
@@ -64,8 +63,19 @@
 				acceptFileTypes: this.options.acceptFileTypes,
             });
 
-            // Add upload process events handlers 
-            this.bindProcessEvents();
+            var mode = 0;
+            if($(this.options.dropZone[0])) {
+                if($(this.options.dropZone[0]).data('mode')) {
+                    // Add upload process events handlers
+                    this.bindProcessEvents($(this.options.dropZone[0]).data('mode'));
+                } else {
+                    // Add upload process events handlers
+                    this.bindProcessEvents(mode);    
+                }
+            } else {
+                // Add upload process events handlers
+                this.bindProcessEvents(mode);
+            }
 
             // Add local events handlers
             this.bindLocal();
@@ -127,10 +137,12 @@
          * Bind events on the upload processor.
          *
          */
-        bindProcessEvents: function ()
+        bindProcessEvents: function (mode)
         {
 			if(!_.isUndefined(authuser.user)){
-				this.$el.html(i18next.t('Drop files to upload'));
+                if(mode === 1) {
+                    this.$el.html(i18next.t('Drop files to upload'));
+                }
 			}
             var self = this;
             this.uploadProcess.on('fileuploaddragover', function (e) {

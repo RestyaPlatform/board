@@ -60,7 +60,6 @@ App.AdminBoardsListView = Backbone.View.extend({
                         board_user_roles: response.board_user_roles
                     }).el);
                 });
-                $('.js-my-boards').find('.timeago').timeago();
                 $('.pagination-boxes').unbind();
                 $('.pagination-boxes').pagination({
                     total_pages: response._metadata.noOfPages,
