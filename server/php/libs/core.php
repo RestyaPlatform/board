@@ -1330,6 +1330,23 @@ function importWekanBoard($board = array())
             $board_visibility
         );
         $new_board = board_creation($qry_val_arr, $db_lnk);
+        $server = strtolower($_SERVER['SERVER_SOFTWARE']);
+        if (strpos($server, 'apache') !== false) {
+            ob_end_clean();
+            header("Connection: close\r\n");
+            header("Content-Encoding: none\r\n");
+            ignore_user_abort(true); // optional
+            ob_start();
+            echo json_encode($new_board);
+            $size = ob_get_length();
+            header("Content-Length: $size");
+            ob_end_flush(); // Strange behaviour, will not work
+            flush(); // Unless both are called !
+            ob_end_clean();
+        } else {
+            echo json_encode($new_board);
+            fastcgi_finish_request();
+        }
         if (!empty($board['labels'])) {
             foreach ($board['labels'] as $label) {
                 if (!empty($label['name'])) {
