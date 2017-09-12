@@ -118,22 +118,6 @@
 					fi
 				fi
 
-				set +x
-				echo "Do you want to run upgrade sql from v0.4.2 to v0.5?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					echo "Updating SQL..."
-					psql -d ${POSTGRES_DBNAME} -f "$dir/sql/v0.5.sql" -U ${POSTGRES_DBUSER}
-					/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
-					if [ $? != 0 ]
-					then
-						echo "PostgreSQL updation of SQL failed with error code 33"
-						return 33
-					fi
-				esac
-
 				echo "Updating SQL..."
 				psql -d ${POSTGRES_DBNAME} -f "$dir/sql/${RESTYABOARD_VERSION}.sql" -U ${POSTGRES_DBUSER}
 				/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
