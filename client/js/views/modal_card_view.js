@@ -123,7 +123,7 @@ App.ModalCardView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         var self = this;
-        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderUsersCollection', 'refreshdock');
+        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock');
         this.model.bind('change:name change:description change:board_id  change:cards_checklists  change:cards_labels  change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
         this.model.cards_subscribers.bind('add remove', this.refreshdock);
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
@@ -135,8 +135,8 @@ App.ModalCardView = Backbone.View.extend({
         self.authuser = authuser.user;
         this.model.card_voters.bind('add', this.refreshdock);
         this.model.card_voters.bind('remove', this.refreshdock);
-        this.model.attachments.bind('add', this.refreshdock);
-        this.model.attachments.bind('remove', this.refreshdock);
+        this.model.attachments.bind('add', this.renderAttachmentsCollection);
+        this.model.attachments.bind('remove', this.renderAttachmentsCollection);
         this.board = self.model.list.collection.board;
         _(this).bindAll('show');
         this.boards = App.boards;
