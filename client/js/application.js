@@ -187,7 +187,13 @@ callbackTranslator = {
 };
 Backbone.sync = function(method, model, options) {
     if (!_.isUndefined(model.storeName) && model.storeName === 'activity') {
-        $('#js-footer-brand-img').attr('src', 'img/logo-icon-sync.gif');
+         if (is_online && is_offline_data) {
+            is_offline_data = false;
+            $.removeCookie('is_offline_data');
+            $('#js-footer-brand-img').attr('title', i18next.t('Syncing...')).attr('src', 'img/logo-icon-sync.gif').attr('data-original-title', i18next.t('Syncing...')).tooltip("show");
+            var offline_data = new App.ListCollection();
+            offline_data.syncDirty();
+         }
     } else {
         if ($('#progress').length === 0) {
             $('body').append($('<div><dt/><dd/></div>').attr('id', 'progress'));
