@@ -473,7 +473,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/users/?/boards':
-        if (!empty($authUser)) {
+        if (!empty($authUser['id'])) {
             $val_array = array(
                 $authUser['id']
             );
