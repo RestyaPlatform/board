@@ -13,6 +13,10 @@
  * @link       http://restya.com/
  */
 require_once 'config.inc.php';
+global $_server_domain_url;
+if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
+    include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
+}
 if (!empty($_GET['id']) && !empty($_GET['hash'])) {
     $md5_hash = md5(SECURITYSALT . $_GET['id']);
     if ($md5_hash == $_GET['hash']) {
