@@ -16,6 +16,14 @@ require_once 'config.inc.php';
 if (!empty($_GET['id']) && !empty($_GET['hash'])) {
     $md5_hash = md5(SECURITYSALT . $_GET['id']);
     if ($md5_hash == $_GET['hash']) {
+        $timezone = SITE_TIMEZONE;
+        $conditions = array(
+            $timezone
+        );
+        $result = pg_query_params($db_lnk, 'select * from timezones WHERE code = $1', $conditions);
+        $timezone = pg_fetch_assoc($result); 
+        $timezone_hours = substr($timezone['utc_offset'], 0, -2);
+        $timezone_minutes = substr($timezone['utc_offset'], -2);
         $val_array = array(
             $_GET['id']
         );
@@ -32,10 +40,11 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
             $event = $board_name = '';
             while ($row = pg_fetch_assoc($result)) {
                 $board_name = $row['name'];
+                $due_date =  $row[$due_date].' '.$timezone_hours . 'hours ' . $timezone_minutes . 'minutes';
                 $event.= 'BEGIN:VEVENT' . "\r\n";
                 $event.= 'UID:' . $row['id'] . "\r\n";
-                $event.= 'DTSTART:' . date('Ymd\THis\Z', strtotime($row['due_date'])) . "\r\n";
-                $event.= 'DTEND:' . date('Ymd\THis\Z', strtotime($row['due_date'])) . "\r\n";
+                $event.= 'DTSTART:' . date('Ymd\THis\Z', strtotime($due_date)) . "\r\n";
+                $event.= 'DTEND:' . date('Ymd\THis\Z', strtotime($due_date)) . "\r\n";
                 $event.= 'SUMMARY:' . $row['card_name'] . "\r\n";
                 $event.= 'URL:' . $_server_domain_url . '/client/#/board/' . $_GET['id'] . "\r\n";
                 $event.= 'END:VEVENT' . "\r\n";
