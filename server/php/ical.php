@@ -44,7 +44,7 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
             $event = $board_name = '';
             while ($row = pg_fetch_assoc($result)) {
                 $board_name = $row['name'];
-                $due_date =  $row[$due_date].' '.$timezone_hours . 'hours ' . $timezone_minutes . 'minutes';
+                $due_date =  $row['due_date'].' '.$timezone_hours . 'hours ' . $timezone_minutes . 'minutes';
                 $event.= 'BEGIN:VEVENT' . "\r\n";
                 $event.= 'UID:' . $row['id'] . "\r\n";
                 $event.= 'DTSTART:' . date('Ymd\THis\Z', strtotime($due_date)) . "\r\n";
