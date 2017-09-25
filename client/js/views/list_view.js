@@ -1300,12 +1300,8 @@ App.ListView = Backbone.View.extend({
                         global_uuid[data.uuid] = options.temp_id;
                         card.set('id', data.uuid);
                     }
-                    self.model.collection.board.cards.add(card, {
-                        silent: true
-                    });
-                    self.model.cards.add(card, {
-                        silent: true
-                    });
+                    self.model.collection.board.cards.add(card);
+                    self.model.cards.add(card);
                 }
             });
         }

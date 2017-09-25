@@ -679,8 +679,12 @@ App.CardView = Backbone.View.extend({
         var user_id = target.data('user-id');
         this.card_users.push(parseInt(user_id));
         $.unique(this.card_users);
-        var get_val = $('.js-card-user-ids').val();
-        this.$el.find('.js-card-user-ids').val(get_val + ',' + user_id);
+        var get_val = this.$el.find('.js-card-user-ids').val();
+        if(!_.isEmpty(get_val)) {
+            this.$el.find('.js-card-user-ids').val(get_val + ',' + user_id);    
+        } else {
+            this.$el.find('.js-card-user-ids').val(user_id);
+        }
         var user_data = target.data();
         var profile = '<i class="avatar avatar-color-194 img-rounded">' + user_data.userInitial + '</i>';
         if (!_.isEmpty(user_data.userProfilePicturePath)) {
