@@ -1558,6 +1558,7 @@ function importWekanBoard($board = array())
                     $type = 'add_board_user';
                     $comment = '##USER_NAME## added member to board';
                 }
+                $comment = utf8_decode($comment);
                 $created = $modified = $action['createdAt'];
                 if (!empty($action['listId'])) {
                     if (array_key_exists($action['listId'], $lists)) {
@@ -1580,7 +1581,7 @@ function importWekanBoard($board = array())
                         $new_board['id'],
                         $users[$action['userId']],
                         $type,
-                        decode_qprint($comment)
+                        $comment
                     );
                     pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
                 } else if (!empty($lists_key) && empty($cards_key)) {
@@ -1591,7 +1592,7 @@ function importWekanBoard($board = array())
                         $lists_key,
                         $users[$action['userId']],
                         $type,
-                        decode_qprint($comment)
+                        $comment
                     );
                     pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
                 } else if (empty($lists_key) && !empty($cards_key)) {
@@ -1602,7 +1603,7 @@ function importWekanBoard($board = array())
                         $cards_key,
                         $users[$action['userId']],
                         $type,
-                        decode_qprint($comment)
+                        $comment
                     );
                     pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
                 } else if (!empty($lists_key) && !empty($cards_key)) {
@@ -1614,7 +1615,7 @@ function importWekanBoard($board = array())
                         $cards_key,
                         $users[$action['userId']],
                         $type,
-                        decode_qprint($comment)
+                        $comment
                     );
                     pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                 }
@@ -1992,13 +1993,6 @@ function is_plugin_enabled($plugin_name)
         }
     }
     return false;
-}
-function decode_qprint($str)
-{
-    $str = preg_replace("/\=([A-F][A-F0-9])/", "%$1", $str);
-    $str = urldecode($str);
-    $str = utf8_encode($str);
-    return $str;
 }
 function array_msort($array, $cols)
 {
