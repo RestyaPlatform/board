@@ -338,17 +338,12 @@ if ($db_lnk) {
             if (!empty($user['timezone'])) {
                 $timezone = trim($user['timezone']);
             }
-            $conditions = array(
-                $timezone
-            );
-            $timezone = executeQuery("select * from timezones WHERE code = $1", $conditions);
-            $timezone_hours = substr($timezone['utc_offset'], 0, -2);
-            $timezone_minutes = substr($timezone['utc_offset'], -2);
             $language = DEFAULT_LANGUAGE;
             if (!empty($user['language'])) {
                 $language = $user['language'];
             }
             setlocale(LC_TIME, $language);
+            date_default_timezone_set($timezone);
             $qry_arr = array(
                 max($activity_id) ,
                 $user['id']
@@ -357,7 +352,7 @@ if ($db_lnk) {
             $emailFindReplace['##CONTENT##'] = $mail_content;
             $emailFindReplace['##NAME##'] = $user['full_name'];
             $emailFindReplace['##NOTIFICATION_COUNT##'] = $notification_count;
-            $emailFindReplace['##SINCE##'] = strftime("%I:%M %p ( %B %e, %Y)", strtotime($timezone_hours . 'hours ' . $timezone_minutes . 'minutes'));
+            $emailFindReplace['##SINCE##'] = strftime("%I:%M %p ( %B %e, %Y)");
             $emailFindReplace['##USER_ID##'] = $user['id'];
             sendMail('email_notification', $emailFindReplace, $user['email'], $reply_to_mail);
         }

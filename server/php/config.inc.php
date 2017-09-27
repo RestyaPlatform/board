@@ -62,6 +62,7 @@ $settings = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE set
 while ($setting = pg_fetch_assoc($settings)) {
     define($setting['name'], $setting['value']);
 }
+date_default_timezone_set(SITE_TIMEZONE);
 $thumbsizes = array(
     'User' => array(
         'micro_thumb' => '16x16',
