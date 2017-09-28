@@ -1081,23 +1081,38 @@ function importTrelloBoard($board = array())
                 }
                 if (!empty($card['attachments'])) {
                     foreach ($card['attachments'] as $attachment) {
-                        $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
-                        $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
-                        $save_path = str_replace('\\', '/', $save_path);
-                        $filename = curlExecute($attachment['url'], 'get', $mediadir, 'image');
-                        $path = $save_path . DIRECTORY_SEPARATOR . $filename['file_name'];
                         $created = $modified = $attachment['date'];
-                        $qry_val_arr = array(
-                            $created,
-                            $modified,
-                            $new_board['id'],
-                            $lists[$card['idList']],
-                            $_card['id'],
-                            $filename['file_name'],
-                            $path,
-                            $attachment['mimeType']
-                        );
-                        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, board_id, list_id, card_id, name, path, mimetype) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                        if($attachment['isUpload']) {
+                            $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
+                            $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
+                            $save_path = str_replace('\\', '/', $save_path);
+                            $filename = curlExecute($attachment['url'], 'get', $mediadir, 'image');
+                            $path = $save_path . DIRECTORY_SEPARATOR . $filename['file_name'];
+                            $qry_val_arr = array(
+                                $created,
+                                $modified,
+                                $new_board['id'],
+                                $lists[$card['idList']],
+                                $_card['id'],
+                                $filename['file_name'],
+                                $path,
+                                $attachment['mimeType']
+                            );
+                            pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, board_id, list_id, card_id, name, path, mimetype) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                        } else {
+                            $qry_val_arr = array(
+                                $created,
+                                $modified,
+                                $_card['id'],
+                                $attachment['url'],
+                                'NULL',
+                                $lists[$card['idList']],
+                                $new_board['id'],
+                                'NULL',
+                                $attachment['url']
+                            );
+                            pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype, link) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', $qry_val_arr));
+                        }
                     }
                 }
                 if (!empty($card['idMembersVoted'])) {
