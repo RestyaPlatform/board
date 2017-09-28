@@ -194,7 +194,8 @@ var showdown = {},
         requireSpaceBeforeHeadingText:        true,
         ghCompatibleHeaderId:                 true,
         ghMentions:                           false,
-        backslashEscapesHTMLTags:             true
+        backslashEscapesHTMLTags:             true,
+        encodeEmails:                         false
       },
       original: {
         noHeaderId:                           true,
