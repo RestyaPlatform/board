@@ -483,7 +483,7 @@ App.CardView = Backbone.View.extend({
             });
         }
         var initialState = (DEFAULT_CARD_VIEW === 'Maximized') ? 'modal' : 'docked';
-        if (e.ctrlKey || e.metaKey) {
+        if (!_.isUndefined(e) && (e.ctrlKey || e.metaKey)) {
             initialState = 'modal';
         }
         if (!_.isUndefined(this.model.id)) {
@@ -680,8 +680,8 @@ App.CardView = Backbone.View.extend({
         this.card_users.push(parseInt(user_id));
         $.unique(this.card_users);
         var get_val = this.$el.find('.js-card-user-ids').val();
-        if(!_.isEmpty(get_val)) {
-            this.$el.find('.js-card-user-ids').val(get_val + ',' + user_id);    
+        if (!_.isEmpty(get_val)) {
+            this.$el.find('.js-card-user-ids').val(get_val + ',' + user_id);
         } else {
             this.$el.find('.js-card-user-ids').val(user_id);
         }
