@@ -63,8 +63,8 @@ function main()
                 $expires = strtotime($response['expires']);
                 if (empty($response) || !empty($response['error']) || ($response['client_id'] != 6664115227792148 && $response['client_id'] != OAUTH_CLIENTID) || ($expires > 0 && $expires < time() && $response['client_id'] != 7857596005287233 && $response['client_id'] != 1193674816623028)) {
                     $response['error']['type'] = 'OAuth';
-                    echo json_encode($response);
                     header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+                    echo json_encode($response);
                     exit;
                 }
                 $user = $role_links = array();
