@@ -124,7 +124,7 @@ App.ModalCardView = Backbone.View.extend({
         }
         var self = this;
         _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock');
-        this.model.bind('change:name change:description change:board_id  change:cards_checklists  change:cards_labels  change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
+        this.model.bind('change:name  change:description  change:board_id  change:cards_checklists  change:cards_labels  change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
         this.model.cards_subscribers.bind('add remove', this.refreshdock);
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
         this.model.checklists.bind('add', this.renderChecklistsCollection);
@@ -783,7 +783,6 @@ App.ModalCardView = Backbone.View.extend({
             this.model.save(data, {
                 patch: true,
                 success: function(model, response, options) {
-
                     if (_.isUndefined(options.temp_id)) {
                         self.model.set('is_offline', false);
                     } else {
@@ -910,6 +909,10 @@ App.ModalCardView = Backbone.View.extend({
                 text = i18next.t('This card is archived.');
             }
             $('.title-text', doc.parent().prev('.dockmodal-header')).html('<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + text + '</span>');
+            var comment = this.$el.find('.js-comment').val();
+            var description = this.$el.find('.js-card-input').val();
+            var checklistEditName = this.$el.find('#checklistEditName').val();
+            var ChecklistItem = this.$el.find('#ChecklistItem').val();
             doc.html(this.template({
                 card: this.model,
                 checklist_lists: this.checklist_list,
@@ -986,6 +989,10 @@ App.ModalCardView = Backbone.View.extend({
             this.renderUsersCollection();
             this.renderActivitiesCollection();
             this.renderChecklistsCollection();
+            this.$el.find('.js-comment').val(comment);
+            this.$el.find('.js-card-input').val(description);
+            this.$el.find('#checklistEditName').val(checklistEditName);
+            this.$el.find('#ChecklistItem').val(ChecklistItem);
         }
     },
     /** 
@@ -2431,8 +2438,12 @@ App.ModalCardView = Backbone.View.extend({
                     activity.set('username', authuser.user.username);
                     activity.set('profile_picture_path', authuser.user.profile_picture_path);
                     activity.set('initials', authuser.user.initials);
-                    self.model.activities.unshift(activity);
-                    self.model.list.collection.board.activities.add(activity);
+                    self.model.activities.unshift(activity, {
+                        silent: true
+                    });
+                    self.model.list.collection.board.activities.add(activity, {
+                        silent: true
+                    });
                     model.board_users = self.model.board_users;
                     var view = new App.ActivityView({
                         model: model,
