@@ -29,7 +29,7 @@ App.BoardFilterView = Backbone.View.extend({
     template: JST['templates/board_filter'],
     tagName: 'li',
     converter: new showdown.Converter({
-        extensions: ['targetblank', 'xssfilter']
+        extensions: ['targetblank', 'xssfilter', 'codehighlight']
     }),
     /**
      * render()

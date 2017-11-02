@@ -16,6 +16,7 @@ $(window).resize(function() {
 });
 var $dc = $(document);
 $dc.ready(function() {
+    hljs.initHighlightingOnLoad();
     $dc.on('click', '.js-cancel-organization', function(e) {
         var target = $(e.target);
         target.parents('li.dropdown').removeClass('open');

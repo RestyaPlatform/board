@@ -25,7 +25,7 @@ App.ModalCardView = Backbone.View.extend({
     id: 'base-modal',
     className: '',
     converter: new showdown.Converter({
-        extensions: ['targetblank', 'xssfilter']
+        extensions: ['targetblank', 'xssfilter', 'codehighlight']
     }),
     template: JST['templates/modal_card_view'],
     /**

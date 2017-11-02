@@ -32,7 +32,7 @@ App.CardCheckListItemView = Backbone.View.extend({
         }
     },
     converter: new showdown.Converter({
-        extensions: ['targetblank', 'xssfilter']
+        extensions: ['targetblank', 'xssfilter', 'codehighlight']
     }),
     template: JST['templates/card_checklist_item'],
     className: function() {
