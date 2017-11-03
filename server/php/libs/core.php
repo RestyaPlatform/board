@@ -581,6 +581,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
     $templates = executeQuery('SELECT * FROM email_templates WHERE name = $1', $qry_val_arr);
     if ($templates) {
         $message = strtr($templates['email_text_content'], $emailFindReplace);
+        $message .= '<div itemscope itemtype="http://schema.org/EmailMessage"><div itemprop="potentialAction" itemscope itemtype="http://schema.org/ViewAction"><link itemprop="target" href="'.$_server_domain_url.'"/><meta itemprop="name" content="View on Restyaboard"/></div><meta itemprop="description" content="View on Restyaboard"/></div>';
         $subject = strtr($templates['subject'], $emailFindReplace);
         $from_email = strtr($templates['from_email'], $emailFindReplace);
         $headers = 'From:' . $from_email . PHP_EOL;
