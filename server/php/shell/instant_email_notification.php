@@ -339,7 +339,6 @@ if ($db_lnk) {
             if (!empty($user['timezone'])) {
                 $timezone = trim($user['timezone']);
             }
-            
             $language = DEFAULT_LANGUAGE;
             if (!empty($user['language'])) {
                 $language = $user['language'];

@@ -581,7 +581,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
     $templates = executeQuery('SELECT * FROM email_templates WHERE name = $1', $qry_val_arr);
     if ($templates) {
         $message = strtr($templates['email_text_content'], $emailFindReplace);
-        $message .= '<div itemscope itemtype="http://schema.org/EmailMessage"><div itemprop="potentialAction" itemscope itemtype="http://schema.org/ViewAction"><link itemprop="target" href="'.$_server_domain_url.'"/><meta itemprop="name" content="View on Restyaboard"/></div><meta itemprop="description" content="View on Restyaboard"/></div>';
+        $message.= '<div itemscope itemtype="http://schema.org/EmailMessage"><div itemprop="potentialAction" itemscope itemtype="http://schema.org/ViewAction"><link itemprop="target" href="' . $_server_domain_url . '"/><meta itemprop="name" content="View on Restyaboard"/></div><meta itemprop="description" content="View on Restyaboard"/></div>';
         $subject = strtr($templates['subject'], $emailFindReplace);
         $from_email = strtr($templates['from_email'], $emailFindReplace);
         $headers = 'From:' . $from_email . PHP_EOL;
@@ -590,7 +590,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.5.2; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.6; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         mail($to, $subject, $message, $headers);
     }
@@ -1083,7 +1083,7 @@ function importTrelloBoard($board = array())
                 if (!empty($card['attachments'])) {
                     foreach ($card['attachments'] as $attachment) {
                         $created = $modified = $attachment['date'];
-                        if($attachment['isUpload']) {
+                        if ($attachment['isUpload']) {
                             $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
                             $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
                             $save_path = str_replace('\\', '/', $save_path);
