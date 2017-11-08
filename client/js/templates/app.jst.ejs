@@ -2,7 +2,7 @@
 <%
 	if (apps.length > 0 ) { 
 		_.each(apps, function(app) {
-%>
+%>  
 	<div class="clearfix">
 		<div class="col-xs-1">
 			<div class="pull-left"><img width="80" height="80" src="<%- app.icon %>"></div>
@@ -23,12 +23,22 @@
 							<% if(app.settings){%>
 								<li><a title="<%- i18next.t('Settings') %>" href="#/apps/<%- app.folder %>"><i class="icon-cog"></i><%- i18next.t('Settings') %></a></li>
 							<% } %>
+							<% if (app.settings_links) {%>
+								<% _.each(app.settings_links, function(link) { %>
+									<li>
+										<a title="<%- link.name %>" href="<%- link.url%>">
+											<i class="<%- link.icon %>"></i><%- link.name %>
+										</a>
+									</li>
+								<% });%>
+							<% } %>
 						</ul>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+	
 	<hr/>
 <%
 		}); 

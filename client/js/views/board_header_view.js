@@ -150,7 +150,9 @@ App.BoardHeaderView = Backbone.View.extend({
         'keyup[k] body': 'keyboardShowPrevCardModal',
         'keyup[j] body': 'keyboardShowNextCardModal',
         'click .js-show-chat-modal': 'showChatListModal',
-        'click .js-show-chat-history-modal': 'showChatHistoryModal'
+        'click .js-show-chat-history-modal': 'showChatHistoryModal',
+        'click .js-load-more-archived-cards': 'loadMoreArchivedCardsList',
+        'click .js-load-more-archived-lists': 'loadMoreArchivedListLists'
     },
     /**
      * loadBoardName()
@@ -431,6 +433,14 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showArchivedItems: function(e) {
+        this.page = 1;
+        this.start = 0;
+        this.start_filter = 0;
+        this.page_filter = 1;
+        this.listpage = 1;
+        this.liststart = 0;
+        this.liststart_filter = 0;
+        this.listpage_filter = 1;
         var el = this.$el;
         e.preventDefault();
         el.find('.side-bar').addClass('side-bar-large');
@@ -454,7 +464,25 @@ App.BoardHeaderView = Backbone.View.extend({
      * @return false
      *
      */
-    showArchivedCardsList: function() {
+    showArchivedCardsList: function(e) {
+        if (!_.isUndefined(e)) {
+            this.start = 0;
+            this.liststart = 0;
+            this.page = 1;
+            this.listpage = 1;
+        }
+        this.start = (this.start !== 0) ? this.start : 0;
+        this.page = (this.page !== 1) ? this.page : 1;
+        this.liststart = (this.liststart !== 0) ? this.liststart : 0;
+        this.listpage = (this.listpage !== 1) ? this.listpage : 1;
+        if (this.$el.find('#js-load-more-archived-cards').hasClass('hide')) {
+            this.$el.find('#js-load-more-archived-cards').removeClass('hide').addClass('show');
+        }
+        if (this.$el.find('#js-load-more-archived-lists').hasClass('show')) {
+            this.$el.find('.js-load-more-archived-lists').removeClass('show').addClass('hide');
+        } else {
+            this.$el.find('.js-load-more-archived-lists').addClass('hide');
+        }
         var self = this;
         if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
                 slug: 'view_archived_cards',
@@ -464,25 +492,96 @@ App.BoardHeaderView = Backbone.View.extend({
             var filtered_cards = this.model.cards.where({
                 is_archived: 1
             });
-            el.find('.js-archived-items-container').html(new App.ArchivedCardsView({
-                model: this.model
-            }).el);
-            if (!_.isEmpty(filtered_cards)) {
-                $('.js-delete-all-archived-cards-confirm').removeClass('hide');
-                _.each(filtered_cards, function(card) {
-                    card.acl_links = self.model.acl_links;
-                    card.board_users = self.model.board_users;
-                    el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
-                        model: card
+            var archived_card = '';
+            if (!_.isEmpty(this.q)) {
+                if (self.page_filter == 1) {
+                    el.find('.js-archived-items-container').html(new App.ArchivedCardsView({
+                        model: this.model
                     }).el);
+                }
+                archived_card = el.find('.js-archived-cards-container');
+                filtered_cards = filtered_cards.filter(function(model) {
+                    return ~model.get('name').toUpperCase().indexOf(self.q.toUpperCase());
                 });
+                if (!_.isEmpty(filtered_cards)) {
+                    $('.js-delete-all-archived-cards-confirm').removeClass('hide');
+                    _.each(filtered_cards, function(card, key) {
+                        count = self.page_filter * 9;
+                        if (key === self.start_filter) {
+                            if (count > (self.start_filter)) {
+                                self.start_filter++;
+                                card.acl_links = self.model.acl_links;
+                                card.board_users = self.model.board_users;
+                                var view = new App.ArchivedCardView({
+                                    model: card
+                                });
+                                archived_card.append(view.render().el);
+                            }
+                            if (filtered_cards.length == self.start_filter) {
+                                self.$el.find('.js-load-more-archived-cards').removeClass('show').addClass('hide');
+                            }
+                        }
+                    });
+                } else {
+                    $('.js-delete-all-archived-cards-confirm').addClass('hide');
+                    $('.js-delete-all-archived-cards').addClass('hide');
+                    this.$el.find('.js-load-more-archived-cards').removeClass('show').addClass('hide');
+                    archived_card.append(new App.ArchivedCardView({
+                        model: null
+                    }).el);
+                }
             } else {
-                $('.js-delete-all-archived-cards-confirm').addClass('hide');
-                $('.js-delete-all-archived-cards').addClass('hide');
-                el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
-                    model: null
-                }).el);
+                if (self.page == 1) {
+                    el.find('.js-archived-items-container').html(new App.ArchivedCardsView({
+                        model: this.model
+                    }).el);
+                }
+                archived_card = el.find('.js-archived-cards-container');
+                if (!_.isEmpty(filtered_cards)) {
+                    $('.js-delete-all-archived-cards-confirm').removeClass('hide');
+                    _.each(filtered_cards, function(card, key) {
+                        count = self.page * 10;
+                        if (key === self.start) {
+                            if (count > (self.start)) {
+                                self.start++;
+                                card.acl_links = self.model.acl_links;
+                                card.board_users = self.model.board_users;
+                                var view = new App.ArchivedCardView({
+                                    model: card
+                                });
+                                archived_card.append(view.render().el);
+                            }
+                            if (filtered_cards.length == self.start) {
+                                self.$el.find('.js-load-more-archived-cards').removeClass('show').addClass('hide');
+                            }
+                        }
+                    });
+                } else {
+                    $('.js-delete-all-archived-cards-confirm').addClass('hide');
+                    $('.js-delete-all-archived-cards').addClass('hide');
+                    this.$el.find('.js-load-more-archived-cards').removeClass('show').addClass('hide');
+                    archived_card.append(new App.ArchivedCardView({
+                        model: null
+                    }).el);
+                }
             }
+        }
+        return false;
+    },
+    /**
+     * loadMoreArchivedCardsList()
+     * display the archived cards list
+     * @return false
+     *
+     */
+    loadMoreArchivedCardsList: function(e) {
+        e.preventDefault();
+        if (!_.isEmpty(this.q)) {
+            this.page_filter++;
+            this.showArchivedCardsList();
+        } else {
+            this.page++;
+            this.showArchivedCardsList();
         }
         return false;
     },
@@ -493,39 +592,39 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showFilteredArchivedCardsList: function(e) {
+        e.preventDefault();
+        var self = this;
+        self.start_filter = 0;
         if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
                 slug: 'view_archived_cards',
                 board_user_role_id: parseInt(this.model.board_user_role_id)
             })))) {
             var el = this.$el;
-            var search_q = $(e.currentTarget).val();
-            var filtered_cards = '';
-            if (!_.isEmpty(search_q)) {
-                filtered_cards = this.model.cards.filter(function(model) {
-                    return ~model.get('name').indexOf(search_q);
-                });
-            } else {
-                filtered_cards = this.model.cards.where({
-                    is_archived: 1
+            this.q = $(e.currentTarget).val();
+            var filtered_cards = this.model.cards.where({
+                is_archived: 1
+            });
+            if (!_.isEmpty(this.q)) {
+                filtered_cards = filtered_cards.filter(function(model) {
+                    return ~model.get('name').toUpperCase().indexOf(self.q.toUpperCase());
                 });
             }
             el.find('.js-archived-cards-container').html('');
             if (!_.isEmpty(filtered_cards)) {
-                var _i = 0;
-                _.each(filtered_cards, function(card) {
-                    if (parseInt(card.attributes.is_archived) === 1) {
-                        el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
-                            model: card
-                        }).el);
-                        _i++;
+                _.each(filtered_cards, function(card, key) {
+                    count = self.page_filter * 9;
+                    if (key === self.start_filter) {
+                        if (count >= (self.start_filter)) {
+                            self.start_filter++;
+                            el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
+                                model: card
+                            }).el);
+                        }
+                        if (filtered_cards.length == self.start_filter) {
+                            self.$el.find('.js-load-more-archived-cards').removeClass('show').addClass('hide');
+                        }
                     }
                 });
-                if (_i === 0) {
-                    el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
-                        model: null
-                    }).el);
-                }
-
             } else {
                 el.find('.js-archived-cards-container').append(new App.ArchivedCardView({
                     model: null
@@ -995,6 +1094,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.board_users.sortBy('board_user_role_id');
         this.model.board_users.each(function(board_user) {
             board_user.board_user_roles = self.model.board_user_roles;
+            board_user.board_users_count = self.model.board_users.length;
             self.$('.js-get-board-member-lists-response').append(new App.BoardUsersView({
                 model: board_user,
             }).el);
@@ -1157,32 +1257,109 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showArchivedListLists: function() {
+        if (this.start !== 0) {
+            this.start = 0;
+        }
+        if (this.page !== 1) {
+            this.page = 1;
+        }
+        var self = this;
+        if (this.$el.find('.js-load-more-archived-cards').hasClass('show')) {
+            this.$el.find('.js-load-more-archived-cards').removeClass('show').addClass('hide');
+        } else {
+            this.$el.find('.js-load-more-archived-cards').addClass('hide');
+        }
+        if (this.$el.find('.js-load-more-archived-lists').hasClass('hide')) {
+            this.$el.find('.js-load-more-archived-lists').removeClass('hide').addClass('show');
+        }
         if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
                 slug: 'view_archived_lists',
                 board_user_role_id: parseInt(this.model.board_user_role_id)
             })))) {
             var el = this.$el;
-
-            el.find('.js-archived-items-container').html(new App.ArchivedListsView({
-                model: this.model
-            }).el);
             var filtered_lists = this.model.lists.where({
                 is_archived: 1
             });
-            if (!_.isEmpty(filtered_lists)) {
-                $('.js-delete-all-archived-lists-confirm').removeClass('hide');
-                _.each(filtered_lists, function(list) {
-                    list.board = self.model;
-                    el.find('.js-archived-cards-container').append(new App.ArchivedListView({
-                        model: list
+            if (!_.isEmpty(this.listq)) {
+                if (self.listpage_filter == 1) {
+                    el.find('.js-archived-items-container').html(new App.ArchivedListsView({
+                        model: this.model
                     }).el);
+                }
+                filtered_lists = this.model.lists.filter(function(model) {
+                    return ~model.get('name').toUpperCase().indexOf(self.listq.toUpperCase());
                 });
+                if (!_.isEmpty(filtered_lists)) {
+                    $('.js-delete-all-archived-lists-confirm').removeClass('hide');
+                    _.each(filtered_lists, function(list, key) {
+                        count = self.listpage_filter * 9;
+                        if (key === self.liststart_filter) {
+                            if (count > (self.liststart_filter)) {
+                                self.liststart_filter++;
+                                list.board = self.model;
+                                el.find('.js-archived-lists-container').append(new App.ArchivedListView({
+                                    model: list
+                                }).el);
+                            }
+                            if (filtered_lists.length == self.liststart_filter) {
+                                self.$el.find('.js-load-more-archived-lists').removeClass('show').addClass('hide');
+                            }
+                        }
+                    });
+                } else {
+                    $('.js-delete-all-archived-lists-confirm').addClass('hide');
+                    this.$el.find('.js-load-more-archived-lists').removeClass('show').addClass('hide');
+                    el.find('.js-archived-lists-container').append(new App.ArchivedListView({
+                        model: null
+                    }).el);
+                }
             } else {
-                $('.js-delete-all-archived-lists-confirm').addClass('hide');
-                el.find('.js-archived-cards-container').append(new App.ArchivedListView({
-                    model: null
-                }).el);
+                if (self.listpage == 1) {
+                    el.find('.js-archived-items-container').html(new App.ArchivedListsView({
+                        model: this.model
+                    }).el);
+                }
+                if (!_.isEmpty(filtered_lists)) {
+                    _.each(filtered_lists, function(list, key) {
+                        count = self.listpage * 9;
+                        if (key === self.liststart) {
+                            if (count > (self.liststart)) {
+                                self.liststart++;
+                                list.board = self.model;
+                                el.find('.js-archived-lists-container').append(new App.ArchivedListView({
+                                    model: list
+                                }).el);
+                            }
+                            if (filtered_lists.length == self.liststart) {
+                                self.$el.find('.js-load-more-archived-lists').removeClass('show').addClass('hide');
+                            }
+                        }
+                    });
+                } else {
+                    this.$el.find('.js-load-more-archived-lists').removeClass('show').addClass('hide');
+                    $('.js-delete-all-archived-lists-confirm').addClass('hide');
+                    el.find('.js-archived-lists-container').append(new App.ArchivedListView({
+                        model: null
+                    }).el);
+                }
             }
+        }
+        return false;
+    },
+    /**
+     * loadMoreArchivedListLists()
+     * display the archived cards list
+     * @return false
+     *
+     */
+    loadMoreArchivedListLists: function(e) {
+        e.preventDefault();
+        if (!_.isEmpty(this.listq)) {
+            this.listpage_filter++;
+            this.showArchivedListLists();
+        } else {
+            this.listpage++;
+            this.showArchivedListLists();
         }
         return false;
     },
@@ -1193,40 +1370,40 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showFilteredArchivedListLists: function(e) {
+        var self = this;
+        self.liststart_filter = 0;
         if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
                 slug: 'view_archived_lists',
                 board_user_role_id: parseInt(this.model.board_user_role_id)
             })))) {
             var el = this.$el;
-            var search_q = $(e.currentTarget).val();
-            var filtered_lists = '';
-            if (!_.isEmpty(search_q)) {
-                filtered_lists = this.model.lists.filter(function(model) {
-                    return ~model.get('name').indexOf(search_q);
-                });
-            } else {
-                filtered_lists = this.model.lists.where({
-                    is_archived: 1
+            this.listq = $(e.currentTarget).val();
+            var filtered_lists = this.model.lists.where({
+                is_archived: 1
+            });
+            if (!_.isEmpty(this.listq)) {
+                filtered_lists = filtered_lists.filter(function(model) {
+                    return ~model.get('name').toUpperCase().indexOf(self.listq.toUpperCase());
                 });
             }
-            el.find('.js-archived-cards-container').html('');
+            el.find('.js-archived-lists-container').html('');
             if (!_.isEmpty(filtered_lists)) {
-                var _i = 0;
-                _.each(filtered_lists, function(list) {
-                    if (parseInt(list.attributes.is_archived) === 1) {
-                        el.find('.js-archived-cards-container').append(new App.ArchivedListView({
-                            model: list
-                        }).el);
-                        _i++;
+                _.each(filtered_lists, function(list, key) {
+                    count = self.listpage_filter * 9;
+                    if (key === self.liststart_filter) {
+                        if (count >= (self.liststart_filter)) {
+                            self.liststart_filter++;
+                            el.find('.js-archived-lists-container').append(new App.ArchivedListView({
+                                model: list
+                            }).el);
+                        }
+                        if (filtered_lists.length == self.liststart_filter) {
+                            self.$el.find('.js-load-more-archived-lists').removeClass('show').addClass('hide');
+                        }
                     }
                 });
-                if (_i === 0) {
-                    el.find('.js-archived-cards-container').append(new App.ArchivedListView({
-                        model: null
-                    }).el);
-                }
             } else {
-                el.find('.js-archived-cards-container').append(new App.ArchivedListView({
+                el.find('.js-archived-lists-container').append(new App.ArchivedListView({
                     model: null
                 }).el);
             }

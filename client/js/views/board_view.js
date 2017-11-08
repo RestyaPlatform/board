@@ -1247,10 +1247,10 @@ App.BoardView = Backbone.View.extend({
         } else {
             lists = self.model.lists;
         }
-        el.find('.js-archived-cards-container').html('');
+        el.find('.js-archived-lists-container').html('');
         lists.each(function(list) {
             if (list.attributes.is_archived === 1) {
-                el.find('.js-archived-cards-container').append(new App.ArchivedListView({
+                el.find('.js-archived-lists-container').append(new App.ArchivedListView({
                     model: list
                 }).el);
             }

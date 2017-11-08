@@ -39,6 +39,23 @@ App.ArchivedCardView = Backbone.View.extend({
      */
     events: {
         'click .js-delete-archived-card': 'deleteArchivedCard',
+        'click .js-show-modal-card-view': 'showCardModal'
+    },
+    /**
+     * showCardModal()
+     * show card detail in docmodal
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showCardModal: function(e) {
+        e.preventDefault();
+        var self = this;
+        app.navigate('#/board/' + this.model.attributes.board_id + '/card/' + this.model.attributes.id, {
+            trigger: true,
+            replace: true
+        });
     },
     /**
      * render()
@@ -50,9 +67,7 @@ App.ArchivedCardView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             card: this.model
-            //board: this.model.list.collection.board
         }));
-        this.showTooltip();
         return this;
     },
     /**

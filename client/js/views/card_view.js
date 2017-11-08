@@ -24,7 +24,7 @@ if (typeof App === 'undefined') {
 App.CardView = Backbone.View.extend({
     template: JST['templates/card'],
     converter: new showdown.Converter({
-        extensions: ['targetblank', 'xssfilter']
+        extensions: ['targetblank', 'xssfilter', 'codehighlight']
     }),
     /**
      * Constructor
@@ -43,7 +43,7 @@ App.CardView = Backbone.View.extend({
             this.template = JST['templates/card_list_view'];
         }
         if (!_.isEmpty(this.model)) {
-            this.model.bind('change:id change:name change:description change:board_id  change:cards_checklists  change:cards_labels  change:cards_subscribers  change:is_archived  change:due_date change:list_id  change:title change:is_offline change:checklist_item_count change:checklist_item_completed_count', this.render);
+            this.model.bind('change:id change:name change:description change:board_id  change:cards_checklists  change:cards_labels  change:comment_count  change:color change:cards_subscribers  change:is_archived  change:due_date change:list_id  change:title change:is_offline change:checklist_item_count change:checklist_item_completed_count', this.render);
             this.model.bind('change:list_id', this.renderListChange);
             if (this.model.has('list')) {
                 this.list = this.model.get('list');
@@ -80,8 +80,8 @@ App.CardView = Backbone.View.extend({
                 });
             }
             this.model.attachments.bind('add', this.render);
-            this.model.bind('change:id', this.render);
             this.model.attachments.bind('remove', this.render);
+            this.model.bind('change:id', this.render);
             this.model.labels.bind('remove', this.render);
             this.model.labels.bind('add', this.render);
             this.model.labels.bind('change', this.render);
@@ -483,7 +483,7 @@ App.CardView = Backbone.View.extend({
             });
         }
         var initialState = (DEFAULT_CARD_VIEW === 'Maximized') ? 'modal' : 'docked';
-        if (e.ctrlKey || e.metaKey) {
+        if (!_.isUndefined(e) && (e.ctrlKey || e.metaKey)) {
             initialState = 'modal';
         }
         if (!_.isUndefined(this.model.id)) {
@@ -679,8 +679,12 @@ App.CardView = Backbone.View.extend({
         var user_id = target.data('user-id');
         this.card_users.push(parseInt(user_id));
         $.unique(this.card_users);
-        var get_val = $('.js-card-user-ids').val();
-        this.$el.find('.js-card-user-ids').val(get_val + ',' + user_id);
+        var get_val = this.$el.find('.js-card-user-ids').val();
+        if (!_.isEmpty(get_val)) {
+            this.$el.find('.js-card-user-ids').val(get_val + ',' + user_id);
+        } else {
+            this.$el.find('.js-card-user-ids').val(user_id);
+        }
         var user_data = target.data();
         var profile = '<i class="avatar avatar-color-194 img-rounded">' + user_data.userInitial + '</i>';
         if (!_.isEmpty(user_data.userProfilePicturePath)) {

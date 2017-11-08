@@ -26,6 +26,7 @@ App.ApplicationView = Backbone.View.extend({
         $('#content').html('');
         $('#footer').removeClass('action-open');
         var page = this;
+        page.options = options;
         page.page_view_type = options.type;
         page.page_view_id = options.id;
         page.page_view_hash = options.hash;
@@ -241,6 +242,9 @@ App.ApplicationView = Backbone.View.extend({
         }
         if (this.model == 'apps' || this.model == 'app_settings') {
             changeTitle(i18next.t('Apps'));
+        }
+        if (this.model == 'apps' || this.model == 'app_settings_manage') {
+            changeTitle(i18next.t('Apps Manage'));
         }
         if (this.model == 'organizations_index') {
             changeTitle(i18next.t('Organizations'));
@@ -900,6 +904,12 @@ App.ApplicationView = Backbone.View.extend({
                         }).el);
                     }
                 });
+            } else if (page.model == 'app_settings_manage') {
+                changeTitle(i18next.t('App Settings Manage'));
+                $('#js-navbar-default').remove();
+                if (page.options.name === 'r_custom_fields') {
+                    $('#content').html(new App.admin_custom_fields_view().el);
+                }
             } else if (page.model == 'email_template_type') {
                 changeTitle(i18next.t('Email Templates'));
                 $('#js-navbar-default').remove();

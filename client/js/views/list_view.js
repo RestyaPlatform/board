@@ -22,7 +22,7 @@ App.ListView = Backbone.View.extend({
     tagName: 'div',
     className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 js-board-list list',
     converter: new showdown.Converter({
-        extensions: ['targetblank', 'xssfilter']
+        extensions: ['targetblank', 'xssfilter', 'codehighlight']
     }),
     /**
      * Constructor
@@ -1024,60 +1024,100 @@ App.ListView = Backbone.View.extend({
      * display cards in list
      *
      */
-    renderCardsCollection: function() {
+    renderCardsCollection: function(e) {
         this.converter.setFlavor('github');
+        var filtered_cards = '';
         var self = this;
-        $('#js-list-card-add-form-' + this.model.id).remove();
-        $('.js-show-add-card-form', $('#js-card-listing-' + this.model.id).next()).removeClass('hide');
-        var view_card = this.$('#js-card-listing-' + this.model.id);
-        view_card.html('&nbsp;');
-        this.model.cards.sortByColumn('position');
-        if (!_.isUndefined(this.model.collection)) {
-            var filtered_cards = this.model.collection.board.cards.where({
-                list_id: parseInt(this.model.id)
-            });
-            var cards = new App.CardCollection();
-            cards.reset(filtered_cards);
-            this.model.cards.add(cards.toJSON(), {
-                silent: true
-            });
-            this.model.cards.sortByColumn('position');
-            cards.sortByColumn('position');
-            cards.each(function(card) {
-                var card_id = card.id;
-                if (parseInt(card.get('is_archived')) === 0) {
-                    card.board_users = self.model.board_users;
-                    var filter_labels = self.model.labels.filter(function(model) {
-                        return parseInt(model.get('card_id')) === parseInt(card_id);
-                    });
-                    var labels = new App.CardLabelCollection();
-                    labels.add(filter_labels, {
-                        silent: true
-                    });
-                    card.labels = labels;
-                    card.card_voters.add(card.get('card_voters'), {
-                        silent: true
-                    });
-                    card.cards = self.model.collection.board.cards;
-                    card.list = self.model;
-                    card.board_activities.add(self.model.activities, {
-                        silent: true
-                    });
-                    filter_attachments = self.model.attachments.where({
-                        card_id: card.id
-                    });
-                    card.attachments.add(filter_attachments, {
-                        silent: true
-                    });
-                    card.board = self.model.board;
-                    var view = new App.CardView({
-                        tagName: 'div',
-                        model: card,
-                        converter: this.converter
-                    });
-                    view_card.append(view.render().el);
+        if (!_.isUndefined(e) && e.storeName === 'card') {
+            if (e.attributes.list_id === self.model.id) {
+                var view = new App.CardView({
+                    tagName: 'div',
+                    model: e,
+                    converter: self.converter
+                });
+                if (parseInt(e.attributes.is_archived) === 0) {
+                    if ($('#js-card-' + e.attributes.id).length) {
+                        $('#js-card-' + e.attributes.id).replaceWith(view.render().el);
+                    } else {
+                        filtered_cards = self.model.cards.where({
+                            is_archived: 0
+                        });
+                        if (filtered_cards.length === 1 || self.model.cards.length === 0) {
+                            $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
+                        } else {
+                            self.model.cards.sortByColumn('position');
+                            self.model.cards.reset(filtered_cards);
+                            var bool = true;
+                            i = 0;
+                            var cards_length = self.model.cards.length;
+                            self.model.cards.each(function(card) {
+                                i++;
+                                if (card.attributes.position >= e.attributes.position && card.attributes.id !== e.attributes.id && bool) {
+                                    $('#js-card-' + card.attributes.id).before(view.render().el);
+                                    bool = false;
+                                } else if (cards_length === i) {
+                                    $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
+                                }
+                            });
+                        }
+                    }
+                } else {
+                    $('#js-card-' + e.attributes.id).remove();
                 }
-            });
+            }
+        } else {
+            $('#js-list-card-add-form-' + this.model.id).remove();
+            $('.js-show-add-card-form', $('#js-card-listing-' + this.model.id).next()).removeClass('hide');
+            var view_card = this.$('#js-card-listing-' + this.model.id);
+            view_card.html('&nbsp;');
+            this.model.cards.sortByColumn('position');
+            if (!_.isUndefined(this.model.collection)) {
+                filtered_cards = this.model.collection.board.cards.where({
+                    list_id: parseInt(this.model.id)
+                });
+                var cards = new App.CardCollection();
+                cards.reset(filtered_cards);
+                this.model.cards.add(cards.toJSON(), {
+                    silent: true
+                });
+                this.model.cards.sortByColumn('position');
+                cards.sortByColumn('position');
+                cards.each(function(card) {
+                    var card_id = card.id;
+                    if (parseInt(card.get('is_archived')) === 0) {
+                        card.board_users = self.model.board_users;
+                        var filter_labels = self.model.labels.filter(function(model) {
+                            return parseInt(model.get('card_id')) === parseInt(card_id);
+                        });
+                        var labels = new App.CardLabelCollection();
+                        labels.add(filter_labels, {
+                            silent: true
+                        });
+                        card.labels = labels;
+                        card.card_voters.add(card.get('card_voters'), {
+                            silent: true
+                        });
+                        card.cards = self.model.collection.board.cards;
+                        card.list = self.model;
+                        card.board_activities.add(self.model.activities, {
+                            silent: true
+                        });
+                        filter_attachments = self.model.attachments.where({
+                            card_id: card.id
+                        });
+                        card.attachments.add(filter_attachments, {
+                            silent: true
+                        });
+                        card.board = self.model.board;
+                        var view = new App.CardView({
+                            tagName: 'div',
+                            model: card,
+                            converter: this.converter
+                        });
+                        view_card.append(view.render().el);
+                    }
+                });
+            }
         }
     },
     /**
@@ -1223,8 +1263,8 @@ App.ListView = Backbone.View.extend({
                 model: card,
                 converter: this.converter
             });
-            var next = view_card.find('.js-board-list-card:nth-child(' + data.position + ')');
-            var prev = view_card.find('.js-board-list-card:nth-child(' + (data.position - 1) + ')');
+            var next = view_card.find('.js-board-list-card:nth-child(' + parseInt(data.position) + ')');
+            var prev = view_card.find('.js-board-list-card:nth-child(' + (parseInt(data.position) - 1) + ')');
             var before = '';
             var after = '';
             var difference = '';
@@ -1266,7 +1306,6 @@ App.ListView = Backbone.View.extend({
                 next.before(view.render().el);
             } else {
                 view_card.append(view.render().el);
-                data.position = 1;
             }
             $('#js-card-listing-' + this.model.id).scrollTop($('#js-card-listing-' + this.model.id)[0].scrollHeight);
             card.save(data, {
@@ -1300,12 +1339,8 @@ App.ListView = Backbone.View.extend({
                         global_uuid[data.uuid] = options.temp_id;
                         card.set('id', data.uuid);
                     }
-                    self.model.collection.board.cards.add(card, {
-                        silent: true
-                    });
-                    self.model.cards.add(card, {
-                        silent: true
-                    });
+                    self.model.collection.board.cards.add(card);
+                    self.model.cards.add(card);
                 }
             });
         }

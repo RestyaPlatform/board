@@ -18,6 +18,7 @@ $r_debug = '';
 $authUser = $client = $form = array();
 $_server_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
 $_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST']; // http://localhost
+header('x-response-url:' . $_SERVER[REQUEST_URI]);
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: *');
 require_once '../config.inc.php';
@@ -473,7 +474,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/users/?/boards':
-        if (!empty($authUser)) {
+        if (!empty($authUser['id'])) {
             $val_array = array(
                 $authUser['id']
             );
@@ -919,8 +920,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         while ($row = pg_fetch_row($result)) {
                             $obj = json_decode($row[0], true);
                             global $_server_domain_url;
-                            $md5_hash = md5(SECURITYSALT . $r_resource_vars['boards']);
-                            $obj['google_syn_url'] = $_server_domain_url . '/ical/' . $r_resource_vars['boards'] . '/' . $md5_hash . '.ics';
+                            $md5_hash = md5(SECURITYSALT . $r_resource_vars['boards'] . $authUser['id']);
+                            $obj['google_syn_url'] = $_server_domain_url . '/ical/' . $r_resource_vars['boards'] . '/' . $authUser['id'] . '/' . $md5_hash . '.ics';
                             $acl_links_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM acl_board_links_listing) as d';
                             $acl_links_result = pg_query_params($db_lnk, $acl_links_sql, array());
                             $obj['acl_links'] = array();
@@ -1592,12 +1593,21 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     if (!empty($data['assets'])) {
                         if (!empty($data['assets']['js'])) {
                             foreach ($data['assets']['js'] as $jsfiles) {
-                                $response['apps']['js'][] = $jsfiles;
+                                if (file_exists(APP_PATH . '/client/' . $jsfiles)) {
+                                    $response['apps']['js'][] = $jsfiles;
+                                }
                             }
                         }
                         if (!empty($data['assets']['css'])) {
                             foreach ($data['assets']['css'] as $cssfiles) {
-                                $response['apps']['css'][] = $cssfiles;
+                                if (file_exists(APP_PATH . '/client/' . $cssfiles)) {
+                                    $response['apps']['css'][] = $cssfiles;
+                                }
+                            }
+                        }
+                        if (!empty($data['assets']['html'])) {
+                            foreach ($data['assets']['html'] as $htmlfiles) {
+                                $response['apps']['html'][] = $htmlfiles;
                             }
                         }
                     }
@@ -1732,6 +1742,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $plugin_url['Chart'] = array(
             '/boards'
         );
+        $plugin_url['CustomFields'] = array(
+            '/custom_fields',
+            '/custom_fields/?',
+            '/cards/?/cards_custom_fields',
+            '/cards/?/cards_custom_fields/?'
+        );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
                 $pluginToBePassed = $plugin_key;
@@ -1739,10 +1755,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
         }
         if (!empty($pluginToBePassed)) {
-            if ($pluginToBePassed === 'r_card_template') {
-                $pluginToBePassed = 'CardTemplate';
-                $plugin_key = 'CardTemplate';
-            }
             require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginToBePassed . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
             $passed_values = array();
             $passed_values['sort'] = $sort;
@@ -1757,11 +1769,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $passed_values['authUser'] = $authUser;
             $passed_values['val_arr'] = $val_arr;
             $passed_values['board_lists'] = $board_lists;
-            if ($plugin_key == 'r_ldap_login') {
-                $plugin_key = 'Ldap';
-            }
             $plugin_return = call_user_func($plugin_key . '_r_get', $passed_values);
             if ($pluginToBePassed === 'CardTemplate') {
+                echo json_encode($plugin_return);
+            } else if ($pluginToBePassed === 'CustomFields') {
                 echo json_encode($plugin_return);
             } else {
                 if (!empty($plugin_return)) {
@@ -2474,6 +2485,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET email= $1 WHERE id = $2', $qry_val_arr);
                 }
+                if (!empty($_POST['is_intro_video_skipped'])) {
+                    $qry_val_arr = array(
+                        $_POST['is_intro_video_skipped'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET is_intro_video_skipped= $1 WHERE id = $2', $qry_val_arr);
+                }
                 if (!empty($_POST['username'])) {
                     $qry_val_arr = array(
                         $_POST['username'],
@@ -2676,49 +2694,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $authUser['id']
             );
             $result = pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, board_id, user_id, is_starred) VALUES (now(), now(), $1, $2, true) RETURNING id', $qry_val_arr);
+            $star = pg_fetch_assoc($result);
+            $response['id'] = $star['id'];
         } else {
-            $subcriber = convertBooleanValues($table_name, $subcriber);
-            if ($subcriber['is_starred'] == 1) {
-                $qry_val_arr = array(
-                    0,
-                    $r_resource_vars['boards'],
-                    $authUser['id']
-                );
-                $result = pg_query_params($db_lnk, 'UPDATE ' . $table_name . ' SET is_starred = $1 Where  board_id = $2 and user_id = $3 RETURNING id', $qry_val_arr);
-            } else {
-                $qry_val_arr = array(
-                    1,
-                    $r_resource_vars['boards'],
-                    $authUser['id']
-                );
-                $result = pg_query_params($db_lnk, 'UPDATE ' . $table_name . ' SET is_starred = $1 Where  board_id = $2 and user_id = $3 RETURNING id', $qry_val_arr);
-            }
+            $conditions = array(
+                $r_resource_vars['boards'],
+                $authUser['id']
+            );
+            pg_query_params($db_lnk, 'DELETE FROM board_stars WHERE board_id = $1 AND user_id = $2', $conditions);
+            $response['id'] = $subcriber['id'];
         }
-        $star = pg_fetch_assoc($result);
-        $response['id'] = $star['id'];
-        if ($sql && ($sql !== true) && !empty($json) && !empty($response['id'])) {
-            if ($result = pg_query_params($db_lnk, $sql, array())) {
-                $count = pg_num_rows($result);
-                $i = 0;
-                while ($row = pg_fetch_row($result)) {
-                    if ($i == 0 && $count > 1) {
-                        echo '[';
-                    }
-                    echo $row[0];
-                    $i++;
-                    if ($i < $count) {
-                        echo ',';
-                    } else {
-                        if ($count > 1) {
-                            echo ']';
-                        }
-                    }
-                }
-                pg_free_result($result);
-            }
-        } else {
-            echo json_encode($response);
-        }
+        echo json_encode($response);
         break;
 
     case '/boards/?/board_subscribers': //subscriber add
@@ -4817,11 +4803,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         break;
 
     default:
-        $plugin_url['r_ldap_login'] = array(
+        $plugin_url['LdapLogin'] = array(
             '/users/import'
         );
-        $plugin_url['r_card_template'] = array(
+        $plugin_url['CardTemplate'] = array(
             '/boards/?/cards/?/card_template'
+        );
+        $plugin_url['CustomFields'] = array(
+            '/custom_fields',
+            '/cards/?/cards_custom_fields'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -4830,14 +4820,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             }
         }
         if (!empty($pluginToBePassed)) {
-            if ($pluginToBePassed === 'r_ldap_login') {
-                $pluginToBePassed = 'LdapLogin';
-                $plugin_key = 'LdapLogin';
-            }
-            if ($pluginToBePassed === 'r_card_template') {
-                $pluginToBePassed = 'CardTemplate';
-                $plugin_key = 'CardTemplate';
-            }
             require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginToBePassed . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
             $passed_values = array();
             $passed_values['sql'] = $sql;
@@ -5217,6 +5199,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     $foreign_ids['card_id']
                 );
                 pg_query_params($db_lnk, 'UPDATE card_attachments SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
+                pg_query_params($db_lnk, 'UPDATE activities SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
             }
             $qry_val_arr = array(
                 $current_list_id
@@ -5624,9 +5607,37 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         break;
 
     default:
-        $plugin_url['r_ldap_login'] = array(
-            '/users/import'
+        $plugin_url['CustomFields'] = array(
+            '/custom_fields/?'
         );
+        foreach ($plugin_url as $plugin_key => $plugin_values) {
+            if (in_array($r_resource_cmd, $plugin_values)) {
+                $pluginToBePassed = $plugin_key;
+                break;
+            }
+        }
+        if (!empty($pluginToBePassed)) {
+            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginToBePassed . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+            $passed_values = array();
+            $passed_values['sql'] = $sql;
+            $passed_values['r_resource_cmd'] = $r_resource_cmd;
+            $passed_values['r_resource_vars'] = $r_resource_vars;
+            $passed_values['r_resource_filters'] = $r_resource_filters;
+            $passed_values['authUser'] = $authUser;
+            $passed_values['r_put'] = $r_put;
+            if (!empty($table_name)) {
+                $passed_values['table_name'] = $table_name;
+            }
+            if (!empty($siteCurrencyCode)) {
+                $passed_values['siteCurrencyCode'] = $siteCurrencyCode;
+            }
+            if (!empty($enabledPlugins)) {
+                $passed_values['enabledPlugins'] = $enabledPlugins;
+            }
+            $plugin_return = call_user_func($plugin_key . '_r_put', $passed_values);
+            echo json_encode($plugin_return);
+            break;
+        }
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
         break;
     }
@@ -5718,6 +5729,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $board_user['board_id'],
                 $board_user['user_id']
             );
+            pg_query_params($db_lnk, 'DELETE FROM board_stars WHERE board_id = $1 AND user_id = $2', $conditions);
             pg_query_params($db_lnk, 'DELETE FROM board_subscribers WHERE board_id = $1 AND user_id = $2', $conditions);
         }
         array_push($pg_params, $r_resource_vars['boards_users']);
@@ -5792,6 +5804,10 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_card', $foreign_id);
         $sql = 'DELETE FROM cards WHERE id = $1';
         array_push($pg_params, $r_resource_vars['cards']);
+        if (is_plugin_enabled('r_elasticsearch')) {
+            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'ElasticSearch' . DIRECTORY_SEPARATOR . 'functions.php';
+            deleteCardFromElastica($r_resource_vars['cards']);
+        }
         break;
 
     case '/boards/?/lists/?/cards/?/card_voters/?': // delete card voters
@@ -5989,6 +6005,36 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     default:
+        $plugin_url['CustomFields'] = array(
+            '/custom_fields/?'
+        );
+        foreach ($plugin_url as $plugin_key => $plugin_values) {
+            if (in_array($r_resource_cmd, $plugin_values)) {
+                $pluginToBePassed = $plugin_key;
+                break;
+            }
+        }
+        if (!empty($pluginToBePassed)) {
+            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginToBePassed . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+            $passed_values = array();
+            $passed_values['sql'] = $sql;
+            $passed_values['r_resource_cmd'] = $r_resource_cmd;
+            $passed_values['r_resource_vars'] = $r_resource_vars;
+            $passed_values['r_resource_filters'] = $r_resource_filters;
+            $passed_values['authUser'] = $authUser;
+            if (!empty($table_name)) {
+                $passed_values['table_name'] = $table_name;
+            }
+            if (!empty($siteCurrencyCode)) {
+                $passed_values['siteCurrencyCode'] = $siteCurrencyCode;
+            }
+            if (!empty($enabledPlugins)) {
+                $passed_values['enabledPlugins'] = $enabledPlugins;
+            }
+            $plugin_return = call_user_func($plugin_key . '_r_delete', $passed_values);
+            echo json_encode($plugin_return);
+            break;
+        }
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
         break;
     }

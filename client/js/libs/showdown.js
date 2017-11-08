@@ -194,7 +194,8 @@ var showdown = {},
         requireSpaceBeforeHeadingText:        true,
         ghCompatibleHeaderId:                 true,
         ghMentions:                           false,
-        backslashEscapesHTMLTags:             true
+        backslashEscapesHTMLTags:             true,
+        encodeEmails:                         false
       },
       original: {
         noHeaderId:                           true,
@@ -2969,6 +2970,34 @@ showdown.subParser('unescapeSpecialChars', function (text, options, globals) {
   return text;
 });
 
+showdown.extension('codehighlight', function() {
+  function htmlunencode(text) {
+    return (
+      text
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+      );
+  }
+  return [
+    {
+      type: 'output',
+      filter: function (text, converter, options) {
+        // use new shodown's regexp engine to conditionally parse codeblocks
+        var left  = '<pre><code\\b[^>]*>',
+            right = '</code></pre>',
+            flags = 'g',
+            replacement = function (wholeMatch, match, left, right) {
+              // unescape match to prevent double escaping
+              match = htmlunencode(match);
+              return left + hljs.highlightAuto(match).value + right;
+            };
+        return showdown.helper.replaceRecursiveRegExp(text, replacement, left, right, flags);
+      }
+    }
+  ];
+});
+
 var root = this;
 
 // CommonJS/nodeJS Loader
@@ -2987,20 +3016,3 @@ if (typeof module !== 'undefined' && module.exports) {
   root.showdown = showdown;
 }
 }).call(this);
-
-//# sourceMappingURL=showdown.js.map
-showdown.extension("blockquote", function() {
-  'use strict';
-  return [{
-    type: 'lang',
-    filter: function(text, converter, options) {
-      var mainRegex = new RegExp("[\s\t]?((?:\:\>[\s\t]?.*\n*)+)", "g");
-      text = text.replace(mainRegex, function(match, content) {
-        var foo = converter.makeHtml(content.replace(":>", ""));
-        return '<blockquote class="foo">' + foo + '</blockquote>';
-      });
-      console.log(text);
-      return text;
-    }
-  }]
-});

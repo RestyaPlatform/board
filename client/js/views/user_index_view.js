@@ -31,6 +31,7 @@ App.UserIndex = Backbone.View.extend({
         'click .js-remove-user': 'removeUser',
         'click .js-all-user-activities': 'showUserActivities',
         'submit .js-admin-change-password': 'changePassword',
+        'click .js-user-view': 'gotoUserView'
     },
     /**
      * Constructor
@@ -63,6 +64,22 @@ App.UserIndex = Backbone.View.extend({
         $('.js-admin-activity-menu, .js-admin-setting-menu, .js-admin-email-menu, .js-admin-role-menu, .js-admin-board-menu').removeClass('active');
         this.showTooltip();
         return this;
+    },
+    /**
+     * gotoUserView()
+     * To go to userview
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    gotoUserView: function(e) {
+        e.preventDefault();
+        var self = this;
+        var user_id = $(e.target).data('user_id');
+        app.navigate('#/user/' + user_id, {
+            trigger: true,
+            replace: true
+        });
     },
     /**
      * deleteUser()
