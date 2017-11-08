@@ -101,27 +101,45 @@
 												</ul>
 											</div>
 										</li>
-										<li class="dropdown navbar-btn text-left js-show-confirm-delete-organization-member-dropdown">
-											<% 
-											if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "remove_organization_user",organization_user_role_id: parseInt(organization.organization_user_role_id)})))){%>
-													<a class="btn btn-primary dropdown-toggle js-show-confirm-delete-organization-member" data-organizations_user_id="<%- organizations_user.attributes.id %>" data-toggle="dropdown" href="#"><span><i class="icon-remove"></i></span>
-													<span>
-													<% if(!_.isUndefined(authuser.user) && organizations_user.attributes.user_id == authuser.user.id) { %>
-														<%- i18next.t('Leave') %>
-													<% } else { %>
-														<%- i18next.t('Remove') %>
-													<% } %>
-													</span></a>
-													<ul class="dropdown-menu js-dropdown-popup arrow arrow-right">
-														<li class="clearfix">
-															<div class="col-xs-12 text-center clearfix">	
-																<span class="col-xs-10"><strong><%- i18next.t('Remove Member') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
-															</div>
-														</li>
-														<li class="js-show-confirm-delete-organization-member-response divider"></li>
-													</ul>
-											<% } %>
-										</li>
+										<% if(organizations_users.length !== 1) { %>
+											<li class="dropdown navbar-btn text-left js-show-confirm-delete-organization-member-dropdown">
+												<% 
+												if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "remove_organization_user",organization_user_role_id: parseInt(organization.organization_user_role_id)})))){%>
+														<a class="btn btn-primary dropdown-toggle js-show-confirm-delete-organization-member" data-organizations_user_id="<%- organizations_user.attributes.id %>" data-toggle="dropdown" href="#"><span><i class="icon-remove"></i></span>
+														<span>
+														<% if(!_.isUndefined(authuser.user) && organizations_user.attributes.user_id == authuser.user.id) { %>
+															<%- i18next.t('Leave') %>
+														<% } else { %>
+															<%- i18next.t('Remove') %>
+														<% } %>
+														</span></a>
+														<ul class="dropdown-menu js-dropdown-popup arrow arrow-right">
+															<li class="clearfix">
+																<div class="col-xs-12 text-center clearfix">	
+																	<span class="col-xs-10"><strong><%- i18next.t('Remove Member') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
+																</div>
+															</li>
+															<li class="js-show-confirm-delete-organization-member-response divider"></li>
+														</ul>
+												<% } %>
+											</li>
+										<% } else { %>
+											<li class="dropdown navbar-btn text-left js-no-action disabled">
+												<% 
+												if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "remove_organization_user",organization_user_role_id: parseInt(organization.organization_user_role_id)})))){%>
+														<a class="btn btn-primary js-no-action disabled" href="#">
+															<span><i class="icon-remove"></i></span>
+															<span>
+															<% if(!_.isUndefined(authuser.user) && organizations_user.attributes.user_id == authuser.user.id) { %>
+																<%- i18next.t('Leave') %>
+															<% } else { %>
+																<%- i18next.t('Remove') %>
+															<% } %>
+															</span>
+														</a>
+												<% } %>
+											</li>
+										<% } %>
 										<% } %>
 										<%}%>
 									</ul>

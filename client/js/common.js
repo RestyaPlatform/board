@@ -121,6 +121,11 @@ function changeTitle(title) {
     }
 }
 
+function appPageCallBack(e) {
+    console.log(e);
+    appManage(e);
+}
+
 function checkKeycode(keycode, c) {
     for (var b = 0, d = keycode.length; b < d; b++)
         if (b in keycode && keycode[b] === c) return b;
@@ -148,4 +153,15 @@ function parse_date(dateTime, logged_user) {
     obj.datetime = tz.format();
     obj.timeago = tz.fromNow();
     return obj;
+}
+
+function stripScripts(s) {
+    var div = document.createElement('div');
+    div.innerHTML = s;
+    var scripts = div.getElementsByTagName('script');
+    var i = scripts.length;
+    while (i--) {
+        scripts[i].parentNode.removeChild(scripts[i]);
+    }
+    return div.innerHTML;
 }

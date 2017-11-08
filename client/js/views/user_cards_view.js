@@ -136,7 +136,14 @@ App.UserCardsView = Backbone.View.extend({
                             silent: true
                         });
                         list.attachments = board.attachments;
-                        list.board_user_role_id = board.board_user_role_id;
+                        if (!_.isUndefined(authuser.user)) {
+                            var board_user_role_id = list.board_users.findWhere({
+                                user_id: parseInt(authuser.user.id)
+                            });
+                            if (!_.isEmpty(board_user_role_id)) {
+                                list.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+                            }
+                        }
                         list.board = board;
                         list.activities.add(board.activities, {
                             silent: true
@@ -153,6 +160,14 @@ App.UserCardsView = Backbone.View.extend({
                             if (card.id === card_id) {
                                 if (parseInt(card.get('is_archived')) === 0) {
                                     card.board_users = list.board_users;
+                                    if (!_.isUndefined(authuser.user)) {
+                                        var board_user_role_id = card.board_users.findWhere({
+                                            user_id: parseInt(authuser.user.id)
+                                        });
+                                        if (!_.isEmpty(board_user_role_id)) {
+                                            card.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+                                        }
+                                    }
                                     var filter_labels = list.labels.filter(function(model) {
                                         return parseInt(model.get('card_id')) === parseInt(card_id);
                                     });
@@ -170,6 +185,13 @@ App.UserCardsView = Backbone.View.extend({
                                     card.checklists.add(card.get('cards_checklists'), {
                                         silent: true
                                     });
+                                    card.checklists.each(function(checklist) {
+                                        var checklist_items = card.collection.list.collection.board.checklist_items.where({
+                                            card_id: parseInt(card.id),
+                                            checklist_id: parseInt(checklist.attributes.id)
+                                        });
+                                        checklist.checklist_items.reset(checklist_items);
+                                    });
                                     card.cards = list.collection.board.cards;
                                     card.list = list;
                                     card.board_activities.add(list.activities, {
@@ -182,7 +204,6 @@ App.UserCardsView = Backbone.View.extend({
                                         silent: true
                                     });
                                     card.board = list.board;
-
                                     var users = card.get('cards_users') || [];
                                     if (!_.isEmpty(users)) {
                                         card.users.add(users, {
@@ -197,6 +218,7 @@ App.UserCardsView = Backbone.View.extend({
                                         model: card,
                                         initialState: initialState
                                     });
+                                    $('#js-card-modal-' + card.id).remove();
                                     var view_card = this.$('#js-card-listing-' + card.id);
                                     view_card.html('&nbsp;');
                                     modalView.show();

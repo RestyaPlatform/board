@@ -105,6 +105,20 @@ App.HeaderView = Backbone.View.extend({
                         document.head.appendChild(l);
                     });
                 }
+                if (key === 'html') {
+                    _.each(app, function(html, key) {
+                        l = document.createElement('link');
+                        l.rel = 'import';
+                        l.href = html;
+                        l.onload = function(e) {
+                            console.log('Loaded import: ' + e.target.href);
+                        };
+                        l.onerror = function(e) {
+                            console.log('Error loading import: ' + e.target.href);
+                        };
+                        document.head.appendChild(l);
+                    });
+                }
             });
         }
         return this;

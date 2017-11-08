@@ -35,14 +35,20 @@ var APPS = [];
 var load_count = 1;
 var from_url = '';
 var custom_fields = {};
-Backbone.View.prototype.flash = function(type, message, delay) {
+Backbone.View.prototype.flash = function(type, message, delay, position) {
     if (!delay) {
         delay = 4000;
     }
+    if (position) {
+        position = 'bottom';
+    } else {
+        position = 'top';
+    }
+
     $.bootstrapGrowl(message, {
         type: type,
         offset: {
-            from: 'top',
+            from: position,
             amount: 20
         },
         align: 'right',
@@ -187,13 +193,13 @@ callbackTranslator = {
 };
 Backbone.sync = function(method, model, options) {
     if (!_.isUndefined(model.storeName) && model.storeName === 'activity') {
-         if (is_online && is_offline_data) {
+        if (is_online && is_offline_data) {
             is_offline_data = false;
             $.removeCookie('is_offline_data');
             $('#js-footer-brand-img').attr('title', i18next.t('Syncing...')).attr('src', 'img/logo-icon-sync.gif').attr('data-original-title', i18next.t('Syncing...')).tooltip("show");
             var offline_data = new App.ListCollection();
             offline_data.syncDirty();
-         }
+        }
     } else {
         if ($('#progress').length === 0) {
             $('body').append($('<div><dt/><dd/></div>').attr('id', 'progress'));
@@ -318,6 +324,7 @@ var AppRouter = Backbone.Router.extend({
         'oauth_clients/edit/:id': 'edit_oauth_client',
         'apps': 'apps',
         'apps/:name': 'app_settings',
+        'apps/:name/manage': 'app_settings_manage',
         'settings': 'settings',
         'settings/:id': 'settings_type',
         'email_templates': 'email_templates',
@@ -404,6 +411,7 @@ var AppRouter = Backbone.Router.extend({
             success: function() {
                 $.removeCookie('auth');
                 delete(App.boards);
+                custom_fields = {};
                 $.removeCookie('chat_initialize');
                 localforage.removeItem('r_zapier_access_token');
                 localforage.removeItem('board_filter');
@@ -571,6 +579,12 @@ var AppRouter = Backbone.Router.extend({
         new App.ApplicationView({
             model: 'app_settings',
             id: id
+        });
+    },
+    app_settings_manage: function(name) {
+        new App.ApplicationView({
+            model: 'app_settings_manage',
+            name: name
         });
     },
     organizations_index: function() {
