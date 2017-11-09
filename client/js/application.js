@@ -8,6 +8,7 @@ var card_ids, card_ids_ref = '';
 var view_type, view_type_ref = '';
 var trigger_dockmodal = false;
 var viewed_board = new App.Board();
+var is_online = true;
 var is_offline_data = false;
 var set_interval_id = '';
 var isRunning = false;
@@ -102,13 +103,13 @@ callbackTranslator = {
             $('#progress').width('101%').delay(200).fadeOut(400, function() {
                 $(this).remove();
             });
-            var is_online = false;
             if ((($.cookie('is_offline_data') !== undefined && $.cookie('is_offline_data') !== null) && $.cookie('is_offline_data') === "true")) {
                 is_offline_data = true;
             } else {
                 is_offline_data = false;
             }
             if (hasOfflineStatusCode(model)) {
+                is_online = false;
                 $.cookie('is_offline_data', true);
                 is_offline_data = true;
                 model.is_offline = true;
