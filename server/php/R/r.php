@@ -18,7 +18,7 @@ $r_debug = '';
 $authUser = $client = $form = array();
 $_server_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
 $_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST']; // http://localhost
-header('x-response-url:' . $_SERVER[REQUEST_URI]);
+header('x-response-url:' . $_SERVER['REQUEST_URI']);
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: *');
 require_once '../config.inc.php';
