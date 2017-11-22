@@ -192,8 +192,16 @@
 					  <% } %>
 					   <%if(!_.isUndefined(authuser.user)) {%>
 					  <form class="hide js-card-edit-form" name="cardDescriptionEditForm" id="cardDescriptionEditForm">
+						<ul class="nav nav-tabs no-bor h3">
+							<li class="active js-show-description show-description-<%-card.attributes.id%> cur" data-id="<%-card.attributes.id%>"><a><%- i18next.t("Write") %></a></li>
+							 <li class="js-preview-description preview-description-<%-card.attributes.id%> cur" data-id="<%-card.attributes.id%>"><a><%- i18next.t("Preview") %></a></li>
+						</ul>
+						<div class="well-sm"></div>
 						<div class="form-group required">
 						  <textarea rows="4" data-edit_mode='2' id="inputCarddescriptions" name="description" class="form-control js-card-input" required><%- card.attributes.description %></textarea>
+							<div class="panel js-card-desc-edit-panel hide no-mar">
+													<div class="panel-body js-card-desc-edit-preview"></div>
+							</div>
 						</div>
 						<div class="col-xs-12 list-group-item-text navbar-right"><a target="_blank" class="pull-right text-muted btn-xs" title="<%- i18next.t('Markdown') %>" href="http://restya.com/board/docs/markdown?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=markdown_help">Styling with Markdown is supported</a></div>
 						<div class="submit panel-body">
@@ -448,83 +456,91 @@
 			<div class="list-group-item-text">
 			  <ul class="media-list comment-list">
 				<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || ((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "comment_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(role_links.where({slug: "comment_card"})) && card.list.collection.board.attributes.board_visibility == 2)))){ %>
-				<li class="media media-comment comment-block"> 
-				  <form method="post" class="form-horizontal js-add-comment no-print">
-				  <ul class="media-list">
-						<li class="media">
-						<a title="<%-authuser.user.full_name %> (<%- authuser.user.username %>)" data-toggle="tooltip" class="pull-left" href="#/user/<%- authuser.id %>">
-				  <% if(!_.isEmpty(authuser.user.profile_picture_path)) { 
-					var profile_picture_path = card.showImage('User', authuser.user.id, 'small_thumb' );
-				  %>
-				  <img src="<%=profile_picture_path %>" alt="[Image: <%-authuser.user.username %>]" class="img-rounded img-responsive avatar">
-				  <% } else {%>
-				  <i class="avatar avatar-color-194 img-rounded"><%- authuser.user.initials %></i>
-				  <% } %>
-				  </a>
-					<div class="media-body">
-					  <div class="media-heading clearfix">
-						<div class="form-group list-group-item-text">
-							<div class="col-xs-12 list-group-item-text navbar-right">
-								<label class="sr-only"><%- i18next.t('Comment') %></label>
-								<textarea id="inputAddComment" class="form-control input-sm js-comment" rows="4" name="comment" placeHolder="<%- i18next.t('Write a comment') %>" required title="<%- i18next.t('Write a comment') %>"></textarea>	
-							</div>
-						</div>
-						<div class="col-xs-12 list-group-item-text navbar-right well-sm"><a target="_blank" class="text-muted pull-right btn-xs" title="<%- i18next.t('Markdown') %>" href="http://restya.com/board/docs/markdown?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=markdown_help">Styling with Markdown is supported</a></div>
-					  </div>
-					</div>
-					</li>
-					<li class="js-new-comment hide clearfix btn-block navbar-btn">
-					<div class="col-xs-11 radio pull-right btn-block">
-						<ul class="list-unstyled clearfix col-xs-12">
-							<li class="pull-left radio-inline">
-								<div class="clearfix dropdown js-show-emoji-list-response"> <a class="js-show-emoji-list show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Emoji') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Emoji') %></span> </a>
-								</div>
-							</li>
-							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "view_card_search", board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-								<li class="pull-left radio radio-inline">
-								  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Card') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Card') %></span> </a>
-									<ul class="dropdown-menu arrow col-xs-3 list-group">
-									  <li class="col-xs-12 clearfix text-center">
-										<div><span class="col-xs-10"><strong><%- i18next.t('Add Card') %></strong></span>
-										<a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div>
-									  </li>
-									  <li class="col-xs-12 divider"></li>
-									  <li class="col-xs-12 js_activity_card_search_response">
-										  <div class="clearfix">
-											<label class="sr-only"><%- i18next.t('Search Card') %></label>                            
-											  <input type="text" placeholder="<%- i18next.t('Search Card') %>" name="card" class="js-search-card form-control input-sm  js-no-action" title="<%- i18next.t('Search Card') %>">
-										  </div>
-									  </li>
+				<li class="media media-comment comment-block">
+						<ul class="nav nav-tabs no-bor h3">
+							<li class="active js-show-comment show-comment-<%-card.attributes.id%> cur" data-id="<%-card.attributes.id%>"><a><%- i18next.t("Write") %></a></li>
+							 <li class="js-preview-comment preview-comment-<%-card.attributes.id%> cur" data-id="<%-card.attributes.id%>"><a><%- i18next.t("Preview") %></a></li>
+						</ul>
+						<div class="well-sm"></div>
+						<div class="row">
+							<form method="post" class="form-horizontal js-add-comment no-print">
+								<ul class="media-list">
+									<li class="media">
+									<a title="<%-authuser.user.full_name %> (<%- authuser.user.username %>)" data-toggle="tooltip" class="pull-left" href="#/user/<%- authuser.id %>">
+									<% if(!_.isEmpty(authuser.user.profile_picture_path)) { 
+									var profile_picture_path = card.showImage('User', authuser.user.id, 'small_thumb' );
+									%>
+									<img src="<%=profile_picture_path %>" alt="[Image: <%-authuser.user.username %>]" class="img-rounded img-responsive avatar">
+									<% } else {%>
+									<i class="avatar avatar-color-194 img-rounded"><%- authuser.user.initials %></i>
+									<% } %>
+									</a>
+									<div class="media-body">
+										<div class="media-heading clearfix">
+										<div class="form-group list-group-item-text">
+											<div class="col-xs-12 list-group-item-text navbar-right">
+												<label class="sr-only"><%- i18next.t('Comment') %></label>
+												<textarea id="inputAddComment" class="form-control input-sm js-comment" rows="4" name="comment" placeHolder="<%- i18next.t('Write a comment') %>" required title="<%- i18next.t('Write a comment') %>"></textarea>	
+												<div class="panel js-card-comment-preview-panel hide no-mar">
+													<div class="panel-body js-preview js-card-comment-preview"></div>
+												</div>
+										</div>
+										<div class="col-xs-12 list-group-item-text navbar-right well-sm"><a target="_blank" class="text-muted pull-right btn-xs" title="<%- i18next.t('Markdown') %>" href="http://restya.com/board/docs/markdown?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=markdown_help">Styling with Markdown is supported</a></div>
+										</div>
+									</div>
+									</li>
+									<li class="js-new-comment hide clearfix btn-block navbar-btn">
+									<div class="col-xs-11 radio pull-right btn-block">
+										<ul class="list-unstyled clearfix col-xs-12">
+											<li class="pull-left radio-inline">
+												<div class="clearfix dropdown js-show-emoji-list-response"> <a class="js-show-emoji-list show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Emoji') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Emoji') %></span> </a>
+												</div>
+											</li>
+											<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "view_card_search", board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+												<li class="pull-left radio radio-inline">
+													<div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Card') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Card') %></span> </a>
+													<ul class="dropdown-menu arrow col-xs-3 list-group">
+														<li class="col-xs-12 clearfix text-center">
+														<div><span class="col-xs-10"><strong><%- i18next.t('Add Card') %></strong></span>
+														<a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div>
+														</li>
+														<li class="col-xs-12 divider"></li>
+														<li class="col-xs-12 js_activity_card_search_response">
+															<div class="clearfix">
+															<label class="sr-only"><%- i18next.t('Search Card') %></label>                            
+																<input type="text" placeholder="<%- i18next.t('Search Card') %>" name="card" class="js-search-card form-control input-sm  js-no-action" title="<%- i18next.t('Search Card') %>">
+															</div>
+														</li>
+													</ul>
+													</div>
+												</li>
+											<% } %>
+											<li class="dropdown pull-left radio-inline radio">
+												<div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block js-show-members" role="button" data-toggle="dropdown" title="<%- i18next.t('Mention a member') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Mention a member') %></span> </a>
+												<ul class="dropdown-menu arrow col-xs-3">
+													<li class="col-xs-12 clearfix text-center"><div><span class="col-xs-10"><strong><%- i18next.t('Mention a member') %></strong></span> <a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
+													<li class="col-xs-12 divider"></li>
+													<li class="col-xs-12 js-comment-member-search-response">
+														<div class="clearfix">
+														<label class="sr-only"><%- i18next.t('Search Member') %></label>
+														<input type="text" autocomplete="off" placeholder="<%- i18next.t('Search Members') %>" name="member" class="js-search-member form-control input-sm js-no-action" title="<%- i18next.t('Search Members') %>">
+														</div>
+													</li>
+												</ul>
+												</div>
+											</li>
+											</ul>
+									<div class="pull-left col-xs-12">
+										<label class="sr-only" for="submit2"><%- i18next.t('Submit') %></label>
+										<div class="radio-inline">
+											<input type="submit" id="submitCommentAdd" class="btn btn-primary" value="<%- i18next.t('Comment') %>"/>
+										</div>
+									</div>
+									</div>
+									</li>
 									</ul>
-								  </div>
-								</li>
-							<% } %>
-							<li class="dropdown pull-left radio-inline radio">
-							  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block js-show-members" role="button" data-toggle="dropdown" title="<%- i18next.t('Mention a member') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Mention a member') %></span> </a>
-								<ul class="dropdown-menu arrow col-xs-3">
-								  <li class="col-xs-12 clearfix text-center"><div><span class="col-xs-10"><strong><%- i18next.t('Mention a member') %></strong></span> <a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
-								  <li class="col-xs-12 divider"></li>
-								  <li class="col-xs-12 js-comment-member-search-response">
-									  <div class="clearfix">
-										<label class="sr-only"><%- i18next.t('Search Member') %></label>
-										<input type="text" autocomplete="off" placeholder="<%- i18next.t('Search Members') %>" name="member" class="js-search-member form-control input-sm js-no-action" title="<%- i18next.t('Search Members') %>">
-									  </div>
-								  </li>
-								</ul>
-							   </div>
-							</li>
-					    </ul>
-					<div class="pull-left col-xs-12">
-					  <label class="sr-only" for="submit2"><%- i18next.t('Submit') %></label>
-					  <div class="radio-inline">
-						  <input type="submit" id="submitCommentAdd" class="btn btn-primary" value="<%- i18next.t('Comment') %>"/>
-					  </div>
+								</form>		
 					</div>
-				  </div>
-				  </li>
-				  </ul>
-				 </form>
-				  
 				</li>
 				<% } %>
 				<li> </li>

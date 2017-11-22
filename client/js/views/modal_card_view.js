@@ -39,6 +39,8 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-cancel-card-title-edit': 'cancelCardTitleEditForm',
         'submit form.js-card-edit-form': 'editCard',
         'click .js-show-card-desc-edit-form': 'showCardDescEditForm',
+        'click .js-show-description': 'showCardDesc',
+        'click .js-preview-description': 'previewCardDesc',
         'click .js-cancel-card-description-edit': 'cancelCardDescEditForm',
         'click .js-show-card-due-date-form': 'showCardDueDateForm',
         'click .js-edit-card-due-date-form': 'editCardDueDateForm',
@@ -108,7 +110,9 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-print-screen': 'printScreen',
         'click .js-color-focusout-card': 'colorPickerCard',
         'click .js-show-color-settings': 'showColorPicker',
-        'click .js-remove-card-color': 'removeCardColor'
+        'click .js-remove-card-color': 'removeCardColor',
+        'click .js-show-comment' : 'showComment',
+        'click .js-preview-comment' : 'previewComment'
     },
     /**
      * Constructor
@@ -139,6 +143,52 @@ App.ModalCardView = Backbone.View.extend({
         this.board = self.model.list.collection.board;
         _(this).bindAll('show');
         this.boards = App.boards;
+    },
+    /**
+     * showComment()
+     * show textarea for comment
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    showComment: function(e){
+        e.preventDefault();
+        var target = e.currentTarget;        
+        var cardId=$(target).attr("data-id");
+        if(!$('.show-comment-'+cardId).hasClass('active')){
+            $('.show-comment-'+cardId).addClass('active');
+            $('.preview-comment-'+cardId).removeClass('active');
+        }
+        $(target).parents('#card_activities').find('textarea#inputAddComment').removeClass('hide').addClass('show');
+        $(target).parents('#card_activities').find('.js-card-comment-preview-panel').removeClass('show').addClass('hide');
+    },
+    /**
+     * previewComment()
+     * show html formatted comment
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    previewComment: function(e){
+        e.preventDefault();
+        var target=e.currentTarget;
+        var cardId=$(target).attr("data-id");
+        $('.show-comment-'+cardId).removeClass('active');
+        $('.preview-comment-'+cardId).addClass('active');
+        if($(target).parents('#card_activities').find('textarea#inputAddComment').hasClass('show')){
+            $(target).parents('#card_activities').find('textarea#inputAddComment').removeClass('show').addClass('hide');
+        }
+        else{
+            $(target).parents('#card_activities').find('textarea#inputAddComment').addClass('hide');
+        }
+        var value = $(target).parents('#card_activities').find('textarea#inputAddComment').val();
+        if(value !== ""){
+            $(target).parents('#card_activities').find('.js-card-comment-preview').html(this.converter.makeHtml(value));
+        }
+        else{
+            $(target).parents('#card_activities').find('.js-card-comment-preview').html("<p>Nothing to preview</p>");
+        }
+        $(target).parents('#card_activities').find('.js-card-comment-preview-panel').removeClass('hide').addClass('show');
     },
     /**
      * showColorPicker()
@@ -720,6 +770,36 @@ App.ModalCardView = Backbone.View.extend({
         this.$el.find('.js-show-card-desc').next('p').hide();
         this.$el.find('#cardDescriptionEditForm').removeClass('hide').show();
         return false;
+    },
+    showCardDesc: function(e){
+        e.preventDefault();
+        var cardId = $(e.currentTarget).attr("data-id");
+        if(!$('.show-description-'+cardId).hasClass('active')){
+            $('.show-description-'+cardId).addClass('active');
+            $('.preview-description-'+cardId).removeClass('active');
+        }
+        this.$el.find('textarea#inputCarddescriptions').removeClass('hide').addClass('show');
+        this.$el.find('.js-card-desc-edit-panel').addClass('hide');
+    },
+    previewCardDesc: function(e) {
+        e.preventDefault();        
+        var cardId = $(e.currentTarget).attr("data-id");
+        $('.show-description-'+cardId).removeClass('active');
+        $('.preview-description-'+cardId).addClass('active');
+        if(this.$el.find('textarea#inputCarddescriptions').hasClass('show')){
+            this.$el.find('textarea#inputCarddescriptions').removeClass('show').addClass('hide');
+        }
+        else{
+            this.$el.find('textarea#inputCarddescriptions').addClass('hide');
+        }
+        var value = this.$el.find('textarea#inputCarddescriptions').val();
+        if(value !== ""){
+            this.$el.find('.js-card-desc-edit-preview').html(this.converter.makeHtml(value));
+        }
+        else{
+            this.$el.find('.js-card-desc-edit-preview').html("<p>Nothing to preview</p>");
+        }
+        this.$el.find('.js-card-desc-edit-panel').removeClass('hide').show();
     },
     /**
      * editCard()
