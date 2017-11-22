@@ -80,8 +80,11 @@
 <div class="clearfix col-xs-12">
 	<div class="clearfix col-xs-12">
 		<small class="col-xs-12 pull-left">
-			<% var created = parse_date(activity.attributes.created, authuser); %>
-			<abbr class="pull-left text-muted" title="<%- created.datetime %>"><%- created.timeago %></abbr>
+			<% setInterval(function() {%>
+				<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
+			<% }, 10000); %>
+			<span class="js-timeago-<%- activity.attributes.id %>"></span>
+			<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
 			<% if((activity.attributes.type == 'add_organization_attachment' || activity.attributes.type == 'change_visibility' || activity.attributes.type == 'add_organization_user' || activity.attributes.type == 'delete_organization_user') && (!_.isEmpty(activity.attributes.organization_name))) { %>
 				<a class="pull-left" href="#/organization/<%= activity.attributes.organization_id %>">&nbsp;<%- i18next.t('on') %>&nbsp;<%- activity.attributes.organization_name %></a>
 			<% } else if((type == 'all' && activity.attributes.type != 'update_profile' && activity.attributes.type != 'edit_organization' && activity.attributes.type != 'add_organization') && (!_.isEmpty(activity.attributes.board_name))) { %>
