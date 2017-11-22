@@ -66,6 +66,7 @@
 	<% if(!_.isUndefined(card.id) && (_.isUndefined(card.attributes.is_offline) || card.attributes.is_offline == false)){ %>
 	<li class="pull-right card-id"><strong>#<%- card.id %></strong></li>
 	<%}%>
+	<li id="js-card-customfields-list-<%- card.attributes.id %>"></li>
 	<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){
 		var date_time = card.attributes.due_date.split('T');
 		date_time = date_time[0].split(' ');
