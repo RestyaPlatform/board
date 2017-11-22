@@ -49,8 +49,11 @@
 							</div>
 						<% } %>
 						<small class="pull-left">
-						<% var created = parse_date(activity.attributes.created, authuser); %>
-						<abbr class="pull-left text-muted" title="<%- created.datetime %>"><%- created.timeago %></abbr>
+						<% setInterval(function() {%>
+							<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
+						<% }, 10000); %>
+						<span class="js-timeago-<%- activity.attributes.id %>"></span>
+						<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
 						<% if(!_.isEmpty(activity.attributes.board_name)){ %><a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;on&nbsp;<%- activity.attributes.board_name %></a><% } %></small>
 						<div class="clearfix">
 								<small class="pull-left">
