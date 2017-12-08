@@ -362,7 +362,7 @@ module.exports = function(grunt) {
             grunt.task.run(['jshint', 'phplint', 'less', 'jst', 'concat', 'cssmin', 'uglify', 'filerev', 'usemin', 'htmlmin', 'regex-replace:deploy', 'manifest', 'lineending', 'zip:deploy']);
         } else {
             grunt.config.set('config', grunt.file.readJSON('build/' + env + '.json'));
-            grunt.task.run(['jshint', 'phplint', 'less', 'jst', 'concat', 'cssmin', 'uglify', 'filerev', 'usemin', 'htmlmin', 'regex-replace:replace', 'regex-replace:app', 'manifest', 'lineending', 'zip:main']);
+            grunt.task.run(['jshint', 'phplint', 'less', 'jst', 'concat', 'cssmin', 'uglify', 'filerev', 'usemin', 'htmlmin', 'regex-replace:replace', 'manifest', 'lineending', 'zip:main']);
         }
     });
 };
