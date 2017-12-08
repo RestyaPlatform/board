@@ -3,6 +3,10 @@
 	<input id="inputListName" type="text" placeholder=" <%- i18next.t('Title') %>
 " autocomplete="off" class="form-control input-sm" name="name" value="Checklist" title="<%- i18next.t('Whitespace is not allowed') %> " required pattern=".*\S+.*">
 </div>
+<% var currenturl = window.location.hash;
+	var splits = currenturl.split('/');
+	if(splits['1'] === 'board'){
+%>
 <div class="form-group">
 	<label for="copy-items"><%- i18next.t('Copy Items From') %></label>
 	<input type="hidden" name="board_id" value="<%- card.attributes.board_id %>" />
@@ -51,6 +55,7 @@
         <%= content %>
 	</select>
 </div>
+<% } %>
 <div class="form-group">
 	<label for="submit" class="sr-only col-sm-4 control-label"><%- i18next.t('submit') %></label>
 	<input type="submit" name="Save" class="btn btn-primary" value="<%- i18next.t('Add') %>">
