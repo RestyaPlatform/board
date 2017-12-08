@@ -678,7 +678,7 @@ App.ModalCardView = Backbone.View.extend({
      * @return false
      */
     cancelCardDescEditForm: function(e) {
-        this.$el.find('.js-show-card-desc').next('p').show();
+        this.$el.find('.js-show-card-desc').next().show();
         this.$el.find('#cardDescriptionEditForm').hide();
         return false;
     },
@@ -767,7 +767,7 @@ App.ModalCardView = Backbone.View.extend({
      */
     showCardDescEditForm: function(e) {
         e.preventDefault();
-        this.$el.find('.js-show-card-desc').next('p').hide();
+        this.$el.find('.js-show-card-desc').next().hide();
         this.$el.find('#cardDescriptionEditForm').removeClass('hide').show();
         return false;
     },
@@ -3078,6 +3078,8 @@ App.ModalCardView = Backbone.View.extend({
                     card.set('list_id', parseInt(response.cards.list_id));
                     card.set('board_id', parseInt(response.cards.board_id));
                     card.set('id', parseInt(response.id));
+                    card.board_users = self.model.list.board_users;
+                    card.list = self.model.list;
                     if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
                         card.set({
                             id: parseInt(response.id)
