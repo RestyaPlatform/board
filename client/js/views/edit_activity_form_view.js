@@ -24,9 +24,20 @@ App.EditActivityFormView = Backbone.View.extend({
         }
         this.render();
     },
+    converter: new showdown.Converter({
+        extensions: ['targetblank', 'xssfilter', 'codehighlight']
+    }),
     template: JST['templates/edit_activity_form'],
     tagName: 'form',
     className: 'js-edit-comment',
+    /**
+     * Events
+     * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
+     */
+    events: {
+        'click .js-show-editComment' : 'showEditComment',
+        'click .js-preview-editComment' : 'previewEditComment'
+    },
     /**
      * render()
      * populate the html to the dom
@@ -40,5 +51,51 @@ App.EditActivityFormView = Backbone.View.extend({
         }));
         this.showTooltip();
         return this;
+    },
+    /**
+     * showEditComment()
+     * show textarea for comment
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    showEditComment: function(e){
+        e.preventDefault();
+        var target = e.currentTarget;        
+        var commentId=$(target).attr("data-id");
+        if(!$('.show-editComment-'+commentId).hasClass('active')){
+            $('.show-editComment-'+commentId).addClass('active');
+            $('.preview-editComment-'+commentId).removeClass('active');
+        }
+        $(target).parents('.js-edit-comment').find('textarea.js-inputComment').removeClass('hide').addClass('show');
+        $(target).parents('.js-edit-comment').find('.js-card-editComment-preview-panel').removeClass('show').addClass('hide');
+    },
+    /**
+     * previewEditComment()
+     * show html formatted comment
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    previewEditComment: function(e){
+        e.preventDefault();
+        var target=e.currentTarget;
+        var commentId=$(target).attr("data-id");
+        $('.show-editComment-'+commentId).removeClass('active');
+        $('.preview-editComment-'+commentId).addClass('active');
+        if($(target).parents('.js-edit-comment').find('textarea.js-inputComment').hasClass('show')){
+            $(target).parents('.js-edit-comment').find('textarea.js-inputComment').removeClass('show').addClass('hide');
+        }
+        else{
+            $(target).parents('.js-edit-comment').find('textarea.js-inputComment').addClass('hide');
+        }
+        var value = $(target).parents('.js-edit-comment').find('textarea.js-inputComment').val();
+        if(value !== ""){
+            $(target).parents('.js-edit-comment').find('.js-card-editComment-preview').html(this.converter.makeHtml(value));
+        }
+        else{
+            $(target).parents('.js-edit-comment').find('.js-card-editComment-preview').html("<p>Nothing to preview</p>");
+        }
+        $(target).parents('.js-edit-comment').find('.js-card-editComment-preview-panel').removeClass('hide').addClass('show');
     }
 });

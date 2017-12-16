@@ -1,7 +1,15 @@
 <ul class="media-list comment-list">
 <li class="media comment-block">
+<ul class="nav nav-tabs no-bor h3">
+	<li class="active js-show-replyComment show-replyComment-<%- activity.attributes.id%> cur" data-id="<%- activity.attributes.id%>"><a><%- i18next.t("Write") %></a></li>
+		<li class="js-preview-replyComment preview-replyComment-<%- activity.attributes.id%> cur" data-id="<%- activity.attributes.id%>"><a><%- i18next.t("Preview") %></a></li>
+</ul>
+<div class="well-sm"></div>
 <div class="form-group required">
 	<textarea rows="4" id="inputAddComment" name="comment" class="form-control input-sm js-comment" placeholder="<%- i18next.t('Write a comment') %>" title="<%- i18next.t('Write a comment') %>" required></textarea>
+	<div class="panel js-card-replyComment-preview-panel hide no-mar">
+		<div class="panel-body js-card-replyComment-preview"></div>
+	</div>
 </div>
 </li>
 <li class="js-new-comment clearfix btn-block navbar-btn">
