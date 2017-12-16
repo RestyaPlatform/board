@@ -1308,6 +1308,20 @@ function importTrelloBoard($board = array())
                 }
             }
         }
+        if(!empty($cards)){
+            foreach($cards as $value){
+                $conditions = array(
+                    $value
+                );
+                $activity_count = executeQuery("SELECT COUNT(id) as total_count FROM activities WHERE type = 'add_comment' AND card_id = $1", $conditions);
+                $activity_count = (!empty($activity_count)) ? $activity_count['total_count'] : 0;
+                $qry_val_arr = array(
+                    $activity_count,
+                    $value
+                );
+                pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
+            }
+        }
         return $new_board;
     }
 }
