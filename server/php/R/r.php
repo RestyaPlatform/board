@@ -461,16 +461,20 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $obj = json_decode($row[0], true);
                     $data = $obj;
                 }
-                $s_result = pg_query_params($db_lnk, 'SELECT * FROM timezones order by utc_offset::int', array());
-                $data['timezones'] = array();
-                while ($row = pg_fetch_assoc($s_result)) {
-                    $data['timezones'][] = $row;
+                if ($data['id'] != $authUser['id']) {
+                    header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+                } else {
+                    $s_result = pg_query_params($db_lnk, 'SELECT * FROM timezones order by utc_offset::int', array());
+                    $data['timezones'] = array();
+                    while ($row = pg_fetch_assoc($s_result)) {
+                        $data['timezones'][] = $row;
+                    }
+                    if (is_plugin_enabled('r_custom_fields')) {
+                        require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
+                        $data = customFieldAfterFetchUser($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
+                    }
+                    echo json_encode($data);
                 }
-                if (is_plugin_enabled('r_custom_fields')) {
-                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
-                    $data = customFieldAfterFetchUser($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
-                }
-                echo json_encode($data);
             } else {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
@@ -2303,40 +2307,44 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
         } else if ($r_post['confirm_password'] == $r_post['password']) {
             $user = executeQuery('SELECT * FROM users WHERE id = $1', $qry_val_array);
-            if ($user) {
-                $cry_old_pass = crypt($r_post['old_password'], $user['password']);
-                if ((($authUser['role_id'] == 2) && ($user['password'] == $cry_old_pass)) || ($authUser['role_id'] == 1)) {
-                    $res_val_arr = array(
-                        getCryptHash($r_post['password']) ,
-                        $r_resource_vars['users']
-                    );
-                    pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
-                    if (is_plugin_enabled('r_chat') && $jabberHost) {
-                        xmppChangePassword($r_post, $user);
-                    }
-                    $conditions = array(
-                        $authUser['username']
-                    );
-                    pg_query_params($db_lnk, 'DELETE FROM oauth_access_tokens WHERE user_id= $1', $conditions);
-                    pg_query_params($db_lnk, 'DELETE FROM oauth_refresh_tokens WHERE user_id= $1', $conditions);
-                    if ($authUser['role_id'] == 1) {
-                        $emailFindReplace = array(
-                            '##PASSWORD##' => $r_post['password']
+            if ($user['id'] != $authUser['id']) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+            } else {
+                if ($user) {
+                    $cry_old_pass = crypt($r_post['old_password'], $user['password']);
+                    if ((($authUser['role_id'] == 2) && ($user['password'] == $cry_old_pass)) || ($authUser['role_id'] == 1)) {
+                        $res_val_arr = array(
+                            getCryptHash($r_post['password']) ,
+                            $r_resource_vars['users']
                         );
-                        sendMail('changepassword', $emailFindReplace, $user['email']);
+                        pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
+                        if (is_plugin_enabled('r_chat') && $jabberHost) {
+                            xmppChangePassword($r_post, $user);
+                        }
+                        $conditions = array(
+                            $authUser['username']
+                        );
+                        pg_query_params($db_lnk, 'DELETE FROM oauth_access_tokens WHERE user_id= $1', $conditions);
+                        pg_query_params($db_lnk, 'DELETE FROM oauth_refresh_tokens WHERE user_id= $1', $conditions);
+                        if ($authUser['role_id'] == 1) {
+                            $emailFindReplace = array(
+                                '##PASSWORD##' => $r_post['password']
+                            );
+                            sendMail('changepassword', $emailFindReplace, $user['email']);
+                            $response = array(
+                                'success' => 'Password change successfully. Please login.'
+                            );
+                        }
+                    } else {
                         $response = array(
-                            'success' => 'Password change successfully. Please login.'
+                            'error' => 1
                         );
                     }
                 } else {
                     $response = array(
-                        'error' => 1
+                        'error' => 2
                     );
                 }
-            } else {
-                $response = array(
-                    'error' => 2
-                );
             }
         } else {
             $response = array(
