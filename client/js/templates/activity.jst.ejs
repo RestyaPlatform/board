@@ -27,11 +27,15 @@
 			var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
 			var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
 			if(activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
+				if(!_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
+					activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.difference['0']));
+				}else{
+						activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
+				}
 				activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
 				activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
 				activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', (activity.attributes.label_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', (activity.attributes.card_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
 				activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', (activity.attributes.board_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+(activity.attributes.full_name)+'</span>');
@@ -73,6 +77,11 @@
 							<div class="panel no-mar"><div class="panel-body">
 						<% } %>
 							<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
+							<% if(activity.attributes.type == 'add_card_desc'){ %>
+								<div class="thumbnail list-group-item-text">
+									<%= makeLink(converter.makeHtml(activity.attributes.description), activity.attributes.board_id) %>
+								</div>
+							<% } %>
 							<% if(activity.attributes.difference != null && _.contains(['update_card_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'edit_list_color', 'delete_list_color', 'edit_card_color', 'delete_card_color', 'edit_card_desc'], activity.attributes.type)) { %>
 						<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text">
 							<% _.each(activity.attributes.difference, function(difference) { %>
