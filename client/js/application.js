@@ -36,6 +36,7 @@ var APPS = [];
 var load_count = 1;
 var from_url = '';
 var custom_fields = {};
+
 Backbone.View.prototype.flash = function(type, message, delay, position) {
     if (!delay) {
         delay = 4000;
@@ -529,11 +530,40 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     user_view_type: function(id, type) {
-        new App.ApplicationView({
-            model: 'user_view',
-            'id': id,
-            type: type
-        });
+        var Auth_check = JSON.parse($.cookie('auth'));
+        if ($.cookie('auth') !== null) {
+            if (Auth_check.user.id == id || Auth_check.user.role_id == '1') {
+                new App.ApplicationView({
+                    model: 'user_view',
+                    'id': id,
+                    type: type
+                });
+            } else {
+                $('.dockmodal, .dockmodal-overlay').remove();
+                var User = new App.User();
+                User.url = api_url + 'users/logout.json';
+                User.fetch({
+                    cache: false,
+                    success: function() {
+                        $.removeCookie('auth');
+                        api_token = '';
+                        authuser = new App.User();
+                        app.navigate('#/users/login', {
+                            trigger: true,
+                            replace: true
+                        });
+                        clearInterval(set_interval_id);
+                    }
+                });
+            }
+        } else {
+            $.cookie('redirect_link', window.location.hash);
+            new App.ApplicationView({
+                model: 'user_view',
+                'id': id,
+                type: type
+            });
+        }
     },
     role_settings: function() {
         new App.ApplicationView({
