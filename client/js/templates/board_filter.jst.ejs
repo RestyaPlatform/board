@@ -58,6 +58,22 @@
 		<li class="clearfix js-due-filter cur card-label-show h5 btn-link"><div class="navbar-btn clearfix media htruncate"><%- i18next.t('Overdue') %> <span class="js-due hide">overdue</span></div></li>
 	</ul>
 	<hr>
+	<ul class="nav nav-pills nav-stacked js-filter-conjunction">
+		<li class="clearfix js-filter-mode cur card-label-show h5 btn-link" id="js-mode-or">
+			<div class="navbar-btn clearfix media">
+				<%- i18next.t('Matches any label and any member') %>
+				<span class="js-filter hide">or</span>
+			</div>
+			<i class="icon-ok js-filter_mode-icon cur pull-right"></i>
+		</li>
+		<li class="clearfix js-filter-mode cur card-label-show h5 btn-link" id="js-mode-and">
+			<div class="navbar-btn clearfix media">
+				<%- i18next.t('Matches all labels and all members') %>
+				<span class="js-filter hide">and</span>
+			</div>
+		</li>
+	</ul>
+	<hr>
 	<ul class="nav nav-pills nav-stacked">
 		<li class="clearfix h5 btn-link">
 			<span class="js-clear-all text-muted"><%- i18next.t('Clear Filter') %></span>
