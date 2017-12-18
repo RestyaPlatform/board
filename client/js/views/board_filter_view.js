@@ -62,7 +62,7 @@ App.BoardFilterView = Backbone.View.extend({
         var filter_label_arr = [],
             filter_user_arr = [],
             filter_due_arr = [];
-        var filter_mode; 
+        var filter_mode;
         var current_param = Backbone.history.fragment.split('?');
         var current_url = current_param[0].split('/');
         var filter = 'grid';
@@ -84,10 +84,10 @@ App.BoardFilterView = Backbone.View.extend({
                     filter_due_arr.push(value.replace('due:', ''));
                 } else if (value.indexOf('mode:') > -1) {
                     var mode = value.replace('mode:', '');
-                    if(mode === 'and'){
+                    if (mode === 'and') {
                         filter_mode = 'and';
                     }
-                } 
+                }
             });
             /* jshint ignore:start */
             if (!_.isEmpty(filter_label_arr)) {
@@ -122,11 +122,11 @@ App.BoardFilterView = Backbone.View.extend({
             }
             if (!_.isEmpty(filter_mode)) {
                 _(function() {
-                    if ( $('ul.js-filter-conjunction > li#js-mode-or > i.js-filter_mode-icon').length === 1) {
+                    if ($('ul.js-filter-conjunction > li#js-mode-or > i.js-filter_mode-icon').length === 1) {
                         $('li#js-mode-or > i.js-filter_mode-icon').remove();
                     }
                 }).defer();
-                self.$el.find('.js-filter-conjunction > li#js-mode-and').each(function(index){
+                self.$el.find('.js-filter-conjunction > li#js-mode-and').each(function(index) {
                     if (($(this).find('.js-filter').text() === 'and') && ($(this).find('.js-filter').next('i').length === 0)) {
                         $(this).append('<i class="icon-ok js-filter_mode-icon cur pull-right"></i>');
                         $(this).addClass('selected');

@@ -235,7 +235,7 @@ App.CardView = Backbone.View.extend({
                     filter_due_arr.push(value.replace('due:', ''));
                 } else if (value.indexOf('mode:') > -1) {
                     var mode = value.replace('mode:', '');
-                    if(mode === 'and'){
+                    if (mode === 'and') {
                         filter_mode = 'and';
                     }
                 }
@@ -257,22 +257,20 @@ App.CardView = Backbone.View.extend({
             content += '</ul>';
             this.$el.html(content);
             $(content).find('li').each(function(key, value) {
-                if(!_.isEmpty(filter_mode)){
-                    if(filter_mode === 'and'){
+                if (!_.isEmpty(filter_mode)) {
+                    if (filter_mode === 'and') {
                         if ($.inArray($(value).text(), filter_label_arr) !== -1) {
                             filter_count += 1;
-                        }    
+                        }
                     }
-                }
-                else{
-                    if(filter_label_arr.length != 1){
-                        $(filter_label_arr).each(function(key,label){
+                } else {
+                    if (filter_label_arr.length != 1) {
+                        $(filter_label_arr).each(function(key, label) {
                             if ($.inArray($(value).text(), filter_label_arr) !== -1) {
                                 filter_count += 1;
                             }
                         });
-                    }
-                    else{
+                    } else {
                         if ($.inArray($(value).text(), filter_label_arr) !== -1) {
                             filter_count += 1;
                         }
@@ -286,22 +284,20 @@ App.CardView = Backbone.View.extend({
             content += '</ul>';
             this.$el.append(content);
             $(content).find('li').each(function(key, value) {
-                if(!_.isEmpty(filter_mode)){
-                    if(filter_mode === 'and'){
+                if (!_.isEmpty(filter_mode)) {
+                    if (filter_mode === 'and') {
                         if ($.inArray($(value).text(), filter_user_arr) !== -1) {
                             filter_count += 1;
-                        }    
+                        }
                     }
-                }
-                else{
-                    if(filter_user_arr.length != 1){
-                        $(filter_user_arr).each(function(key,label){
+                } else {
+                    if (filter_user_arr.length != 1) {
+                        $(filter_user_arr).each(function(key, label) {
                             if ($.inArray($(value).text(), filter_user_arr) !== -1) {
                                 filter_count += 1;
                             }
                         });
-                    }
-                    else{
+                    } else {
                         if ($.inArray($(value).text(), filter_user_arr) !== -1) {
                             filter_count += 1;
                         }
@@ -345,22 +341,20 @@ App.CardView = Backbone.View.extend({
             content += '</ul>';
             this.$el.html(content);
             $(content).find('li').each(function(key, value) {
-                if(!_.isEmpty(filter_mode)){
-                    if(filter_mode === 'and'){
+                if (!_.isEmpty(filter_mode)) {
+                    if (filter_mode === 'and') {
                         if ($.inArray($(value).text(), filter_label_arr) !== -1) {
                             filter_count += 1;
-                        }    
+                        }
                     }
-                }
-                else{
-                    if(filter_label_arr.length != 1){
-                        $(filter_label_arr).each(function(key,label){
+                } else {
+                    if (filter_label_arr.length != 1) {
+                        $(filter_label_arr).each(function(key, label) {
                             if ($.inArray($(value).text(), filter_label_arr) !== -1) {
                                 filter_count += 1;
                             }
                         });
-                    }
-                    else{
+                    } else {
                         if ($.inArray($(value).text(), filter_label_arr) !== -1) {
                             filter_count += 1;
                         }
@@ -377,22 +371,20 @@ App.CardView = Backbone.View.extend({
             content += '</ul>';
             this.$el.append(content);
             $(content).find('li').each(function(key, value) {
-                if(!_.isEmpty(filter_mode)){
-                    if(filter_mode === 'and'){
+                if (!_.isEmpty(filter_mode)) {
+                    if (filter_mode === 'and') {
                         if ($.inArray($(value).text(), filter_user_arr) !== -1) {
                             filter_count += 1;
-                        }    
+                        }
                     }
-                }
-                else{
-                    if(filter_user_arr.length != 1){
-                        $(filter_user_arr).each(function(key,label){
+                } else {
+                    if (filter_user_arr.length != 1) {
+                        $(filter_user_arr).each(function(key, label) {
                             if ($.inArray($(value).text(), filter_user_arr) !== -1) {
                                 filter_count += 1;
                             }
                         });
-                    }
-                    else{
+                    } else {
                         if ($.inArray($(value).text(), filter_user_arr) !== -1) {
                             filter_count += 1;
                         }

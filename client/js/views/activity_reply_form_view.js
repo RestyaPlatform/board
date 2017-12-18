@@ -36,8 +36,8 @@ App.ActivityReplyFormView = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
-        'click .js-show-replyComment' : 'showReplyComment',
-        'click .js-preview-replyComment' : 'previewReplyComment'
+        'click .js-show-replyComment': 'showReplyComment',
+        'click .js-preview-replyComment': 'previewReplyComment'
     },
     /**
      * render()
@@ -60,13 +60,13 @@ App.ActivityReplyFormView = Backbone.View.extend({
      * @type Object(DOM event)
      *
      */
-    showReplyComment: function(e){
+    showReplyComment: function(e) {
         e.preventDefault();
-        var target = e.currentTarget;        
-        var commentId=$(target).attr("data-id");
-        if(!$('.show-replyComment-'+commentId).hasClass('active')){
-            $('.show-replyComment-'+commentId).addClass('active');
-            $('.preview-replyComment-'+commentId).removeClass('active');
+        var target = e.currentTarget;
+        var commentId = $(target).attr("data-id");
+        if (!$('.show-replyComment-' + commentId).hasClass('active')) {
+            $('.show-replyComment-' + commentId).addClass('active');
+            $('.preview-replyComment-' + commentId).removeClass('active');
         }
         $(target).parents('.js-reply-form').find('textarea#inputAddComment').removeClass('hide').addClass('show');
         $(target).parents('.js-reply-form').find('.js-card-replyComment-preview-panel').removeClass('show').addClass('hide');
@@ -78,23 +78,21 @@ App.ActivityReplyFormView = Backbone.View.extend({
      * @type Object(DOM event)
      *
      */
-    previewReplyComment: function(e){
+    previewReplyComment: function(e) {
         e.preventDefault();
-        var target=e.currentTarget;
-        var commentId=$(target).attr("data-id");
-        $('.show-replyComment-'+commentId).removeClass('active');
-        $('.preview-replyComment-'+commentId).addClass('active');
-        if($(target).parents('.js-reply-form').find('textarea#inputAddComment').hasClass('show')){
+        var target = e.currentTarget;
+        var commentId = $(target).attr("data-id");
+        $('.show-replyComment-' + commentId).removeClass('active');
+        $('.preview-replyComment-' + commentId).addClass('active');
+        if ($(target).parents('.js-reply-form').find('textarea#inputAddComment').hasClass('show')) {
             $(target).parents('.js-reply-form').find('textarea#inputAddComment').removeClass('show').addClass('hide');
-        }
-        else{
+        } else {
             $(target).parents('.js-reply-form').find('textarea#inputAddComment').addClass('hide');
         }
         var value = $(target).parents('.js-reply-form').find('textarea#inputAddComment').val();
-        if(value !== ""){
+        if (value !== "") {
             $(target).parents('.js-reply-form').find('.js-card-replyComment-preview').html(this.converter.makeHtml(value));
-        }
-        else{
+        } else {
             $(target).parents('.js-reply-form').find('.js-card-replyComment-preview').html("<p>Nothing to preview</p>");
         }
         $(target).parents('.js-reply-form').find('.js-card-replyComment-preview-panel').removeClass('hide').addClass('show');

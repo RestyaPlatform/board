@@ -142,7 +142,7 @@ var favicon = new Favico({
     animation: 'popFade'
 });
 
-function parse_date(dateTime, logged_user,classname) {
+function parse_date(dateTime, logged_user, classname) {
     var obj = {};
     var s = dateTime.replace("T", " ");
     s = moment.tz(s, SITE_TIMEZONE);
