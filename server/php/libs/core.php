@@ -592,7 +592,15 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
         $headers.= "X-Mailer: Restyaboard (0.6; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
-        mail($to, $subject, $message, $headers);
+        $result = mail($to, $subject, $message, $headers);
+        if (R_DEBUG) {
+            if (!$result) {
+                $compose_string = 'F, ' . $from_email . ', ' . $to . ', ' . $subject;
+            } else {
+                $compose_string = 'S, ' . $from_email . ', ' . $to . ', ' . $subject;
+            }
+            error_log($compose_string, 3, APP_PATH . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'mail.log');
+        }
     }
 }
 /**
@@ -1308,8 +1316,8 @@ function importTrelloBoard($board = array())
                 }
             }
         }
-        if(!empty($cards)){
-            foreach($cards as $value){
+        if (!empty($cards)) {
+            foreach ($cards as $value) {
                 $conditions = array(
                     $value
                 );

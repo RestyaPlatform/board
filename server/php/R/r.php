@@ -466,6 +466,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 while ($row = pg_fetch_assoc($s_result)) {
                     $data['timezones'][] = $row;
                 }
+                if (is_plugin_enabled('r_custom_fields')) {
+                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
+                    $data = customFieldAfterFetchUser($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
+                }
                 echo json_encode($data);
             } else {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
@@ -936,6 +940,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                             $data = $obj;
                         }
+                        if (is_plugin_enabled('r_custom_fields')) {
+                            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
+                            $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
+                            array_merge($data, $data);
+                        }
                         echo json_encode($data);
                         pg_free_result($result);
                     } else {
@@ -1352,6 +1361,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             if (!empty($_metadata)) {
                 $data['_metadata'] = $_metadata;
+            }
+            if (is_plugin_enabled('r_custom_fields')) {
+                require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
+                $data = customFieldAfterFetchBoardsListsCards($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
             }
             echo json_encode($data);
         } else {
@@ -4707,14 +4720,27 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         break;
 
     case '/oauth/token':
-        $post_val = array(
-            'grant_type' => 'authorization_code',
-            'code' => $r_post['code'],
-            'redirect_uri' => $r_post['redirect_uri'],
-            'client_id' => OAUTH_CLIENTID,
-            'client_secret' => OAUTH_CLIENT_SECRET
-        );
+        if (!empty($_POST['code'])) {
+            $post_val = array(
+                'grant_type' => 'authorization_code',
+                'code' => $_POST['code'],
+                'redirect_uri' => $_POST['redirect_uri'],
+                'client_id' => $_POST['client_id'],
+                'client_secret' => $_POST['client_secret']
+            );
+        } else {
+            $post_val = array(
+                'grant_type' => 'authorization_code',
+                'code' => $r_post['code'],
+                'redirect_uri' => $r_post['redirect_uri'],
+                'client_id' => OAUTH_CLIENTID,
+                'client_secret' => OAUTH_CLIENT_SECRET
+            );
+        }
         $response = getToken($post_val);
+        if (!empty($_POST['code']) && !empty($response['expires'])) {
+            unset($response['expires']);
+        }
         echo json_encode($response);
         break;
 
@@ -4811,6 +4837,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
+            '/cards_custom_fields',
             '/cards/?/cards_custom_fields'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
@@ -5288,7 +5315,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             if (empty($r_put['description'])) {
                 $comment = '##USER_NAME## removed description from ##CARD_LINK##';
             } else {
-                $comment = '##USER_NAME## updated description on ##CARD_LINK## - ##DESCRIPTION##';
+                $comment = '##USER_NAME## updated description on ##CARD_LINK##';
             }
             $activity_type = 'edit_card_desc';
         }

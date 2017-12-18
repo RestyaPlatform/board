@@ -908,7 +908,9 @@ App.ApplicationView = Backbone.View.extend({
                 changeTitle(i18next.t('App Settings Manage'));
                 $('#js-navbar-default').remove();
                 if (page.options.name === 'r_custom_fields') {
-                    $('#content').html(new App.admin_custom_fields_view().el);
+                    _(function() {
+                        $('#content').html(new App.admin_custom_fields_view().el);
+                    }).defer();
                 }
             } else if (page.model == 'email_template_type') {
                 changeTitle(i18next.t('Email Templates'));

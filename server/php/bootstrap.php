@@ -61,7 +61,12 @@ function main()
                 );
                 $response = executeQuery("SELECT user_id as username, expires, scope, client_id FROM oauth_access_tokens WHERE access_token = $1", $conditions);
                 $expires = strtotime($response['expires']);
-                if (empty($response) || !empty($response['error']) || ($response['client_id'] != 6664115227792148 && $response['client_id'] != OAUTH_CLIENTID) || ($expires > 0 && $expires < time() && $response['client_id'] != 7857596005287233 && $response['client_id'] != 1193674816623028)) {
+                if (empty($response) || !empty($response['error']) || ($expires > 0 && $expires < time() && !in_array($response['client_id'], array(
+                    7857596005287233,
+                    1193674816623028,
+                    6664115227792148,
+                    OAUTH_CLIENTID
+                )))) {
                     $response['error']['type'] = 'OAuth';
                     header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
                     echo json_encode($response);
