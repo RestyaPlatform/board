@@ -1169,7 +1169,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (isset($r_resource_filters['mode']) && $r_resource_filters['mode'] == '1') {
                 $order = 'ORDER BY al.id DESC';
             }
-            $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ' . $order . ' LIMIT ' . $limit . ') as d ';
+            if (isset($r_resource_filters['page'])) {
+                $offset_val = $r_resource_filters['page'] * 20;
+                $construct_offset = ' offset ' . $offset_val;
+            }
+            $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ' . $order . ' LIMIT ' . $limit . ' ' . $construct_offset . ') as d ';
             if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1' . $condition;
             }
