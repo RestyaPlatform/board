@@ -104,6 +104,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-toggle-member-filter': 'toggleCardFilter',
         'click .js-clear-filter-btn': 'clearAll',
         'click .js-due-filter': 'toggleCardFilter',
+        'click .js-filter-mode': 'toggleCardFilter',
         'click .js-back-to-sidebar': 'backToSidebar',
         'click .js-board-user-avatar-click': 'boardUserAvatarDropdown',
         'click .js-close-board-user-avatar': 'closeBoardUserAvatarDropdown',
@@ -1771,7 +1772,27 @@ App.BoardHeaderView = Backbone.View.extend({
      */
     toggleCardFilter: function(e) {
         var target = $(e.currentTarget);
-        target.toggleClass('selected', !target.hasClass('selected'));
+        if(target.parent().hasClass('js-filter-conjunction')){
+            if(target.attr('id') == 'js-mode-or'){
+                if(!$(target).hasClass('selected')){
+                    $(target).addClass('selected');
+                }
+                if($('li#js-mode-and').hasClass('selected')){
+                    $('li#js-mode-and').removeClass('selected');
+                }
+            }
+            if(target.attr('id') == 'js-mode-and'){
+                if(!$(target).hasClass('selected')){
+                    $(target).addClass('selected');
+                }
+                if($('li#js-mode-or').hasClass('selected')){
+                    $('li#js-mode-or').removeClass('selected');
+                }
+            }
+        }
+        else{
+            target.toggleClass('selected', !target.hasClass('selected'));    
+        }
         this.cardFilter();
         return false;
     },
@@ -1791,6 +1812,7 @@ App.BoardHeaderView = Backbone.View.extend({
             user_filter = [],
             due_filter = [],
             filter_due_arr = [];
+        var filter_mode; 
         $('i.js-filter-icon').remove();
         $('.js-show-modal-card-view').show();
         var current_param = Backbone.history.fragment.split('?');
@@ -1823,6 +1845,28 @@ App.BoardHeaderView = Backbone.View.extend({
                 $(this).parent().parent().append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
             }
         });
+        $('li.selected > div.media > span.js-filter', $('ul.js-filter-conjunction')).each(function() {
+            if($(this).html() === 'or'){
+                if($('li#js-mode-and > i.js-filter_mode-icon').length === 1){
+                    $('li#js-mode-and > i.js-filter_mode-icon').remove();
+                }
+                if($('li#js-mode-or > i.js-filter_mode-icon').length === 0){
+                    $('li#js-mode-or').append('<i class="icon-ok js-filter_mode-icon cur pull-right"></i>');
+                }
+            }
+            if($(this).html() === 'and'){
+                filter_mode = 'and';
+                if(filter_query){
+                    filter_query += 'mode:' + $(this).html() + ',';
+                }
+                if($('li#js-mode-or > i.js-filter_mode-icon').length === 1){
+                    $('li#js-mode-or > i.js-filter_mode-icon').remove();
+                }
+                if($('li#js-mode-and > i.js-filter_mode-icon').length === 0){
+                    $('li#js-mode-and').append('<i class="icon-ok js-filter_mode-icon cur pull-right"></i>');
+                }
+            }
+        });
         var show_label_arr = [],
             result_label_arr = [];
         if (!_.isEmpty(filter_label_arr)) {
@@ -1843,12 +1887,19 @@ App.BoardHeaderView = Backbone.View.extend({
                 show_label_arr = [];
             }
         }
-        if (!_.isEmpty(show_label_arr)) {
-            result_label_arr = show_label_arr.shift().filter(function(v) {
-                return show_label_arr.every(function(a) {
-                    return a.indexOf(v) !== -1;
-                });
-            });
+        if(!_.isEmpty(filter_mode)){
+            if(filter_mode === 'and'){
+                if (!_.isEmpty(show_label_arr)) {
+                    result_label_arr = show_label_arr.shift().filter(function(v) {
+                        return show_label_arr.every(function(a) {
+                            return a.indexOf(v) !== -1;
+                        });
+                    });
+                }
+            }
+        } 
+        else if (!_.isEmpty(show_label_arr)) {
+            result_label_arr =  _.union.apply(_, show_label_arr);
         }
         var show_user_arr = [],
             result_user_arr = [];
@@ -1870,12 +1921,19 @@ App.BoardHeaderView = Backbone.View.extend({
                 show_user_arr = [];
             }
         }
-        if (!_.isEmpty(show_user_arr)) {
-            result_user_arr = show_user_arr.shift().filter(function(v) {
-                return show_user_arr.every(function(a) {
-                    return a.indexOf(v) !== -1;
-                });
-            });
+        if(!_.isEmpty(filter_mode)){
+            if(filter_mode === 'and'){
+                if (!_.isEmpty(show_user_arr)) {
+                    result_user_arr = show_user_arr.shift().filter(function(v) {
+                        return show_user_arr.every(function(a) {
+                            return a.indexOf(v) !== -1;
+                        });
+                    });
+                }
+            }
+        }
+        else if (!_.isEmpty(show_user_arr)) {
+            result_user_arr =  _.union.apply(_, show_user_arr);
         }
         var show_due_arr = [],
             result_due_arr = [];
@@ -1908,7 +1966,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 return due_arr.every(function(a) {
                     return a.indexOf(v) !== -1;
                 });
-            });
+            }); 
         }
         var arrays = [];
         if (!_.isEmpty(filter_label_arr)) {
@@ -1920,7 +1978,7 @@ App.BoardHeaderView = Backbone.View.extend({
         if (!_.isEmpty(filter_due_arr)) {
             arrays.push(result_due_arr);
         }
-
+        
         if (!_.isEmpty(arrays)) {
             var result = arrays.shift().filter(function(v) {
                 return arrays.every(function(a) {
@@ -1950,10 +2008,10 @@ App.BoardHeaderView = Backbone.View.extend({
             gantt_card_ids = [];
             this.ganttView(gantt_card_ids, false);
         }
-        if ($('.js-clear-all').hasClass('text-muted')) {
-            $('.js-clear-all').removeClass('text-muted');
-        }
         if (filter_query) {
+            if ($('.js-clear-all').hasClass('text-muted')) {
+                $('.js-clear-all').removeClass('text-muted');
+            }
             filter_query = '?filter=' + filter_query.slice(0, -1);
             app.navigate('#/' + current_param[0] + filter_query, {
                 trigger: true,
@@ -2100,10 +2158,30 @@ App.BoardHeaderView = Backbone.View.extend({
      */
     clearAll: function() {
         $('.js-board-dues, .js-board-users, .js-board-labels').find('.js-filter-icon').remove();
+        if($('li#js-mode-and > i.js-filter_mode-icon').length === 1){
+            $('#js-mode-and').find('.js-filter_mode-icon').remove();
+        }
+        if($('li#js-mode-or > i.js-filter_mode-icon').length === 0){
+            $('li#js-mode-or').append('<i class="icon-ok js-filter_mode-icon cur pull-right"></i>');
+        }
         $('.js-board-dues, .js-board-users, .js-board-labels').children().removeClass('selected');
+        if($('#js-mode-and').hasClass('selected')){
+            $('#js-mode-and').removeClass('selected');
+        }
         $('.js-clear-all').addClass('text-muted');
+        var current_param = Backbone.history.fragment.split('?');
+        var current_url = current_param[0].split('/');
+        var filter = '';
+        if (current_url.length === 3 && current_url[2] == 'list') {
+            filter = 'list';
+        } else if (current_url.length === 3 && current_url[2] == 'gantt') {
+            filter = 'gantt';
+        }
+       if(!_.isEmpty(filter)){
+            filter = '/' + filter;
+        }
         $('.js-show-modal-card-view').show();
-        app.navigate('#/board/' + this.model.attributes.id, {
+        app.navigate('#/board/' + this.model.attributes.id + filter, {
             trigger: false,
             trigger_function: false,
             replace: true

@@ -70,9 +70,9 @@
 			  <div class="navbar-right">
 			  <% if(!_.isUndefined(authuser.user)){ %>
 				<div class="btn-group pull-left js-clear-filter-btn hide">
-					<button type="button" class="btn btn-default">Clear Filter</button>
+					<button type="button" class="btn btn-default"><%- i18next.t('Clear Filter') %></button>
 					<button type="button" class="btn btn-primary">
-						<span class="icon-remove"></span>
+						<span class="icon-remove cur"></span>
 					</button>
 				</div>
 			  <ul class="nav nav-pills pull-left pillsuser-list navbar-btn h4 right-mar">
