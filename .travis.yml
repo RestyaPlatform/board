@@ -1,5 +1,6 @@
 language: php
 script:
+  - npm i -g npm
   - npm cache clean
   - npm install
   - grunt pre-commit
