@@ -2591,6 +2591,7 @@ App.ModalCardView = Backbone.View.extend({
         var activity_id = $(e.target).data('activity-id');
         var temp_id = $(e.target).data('activity-temp-id');
         $('.js-acticity-action-' + activity_id).addClass('hide');
+        $('.js-timeago-' + activity_id).addClass('hide');
         var activitiy = this.model.activities.get({
             id: activity_id
         });
@@ -2630,8 +2631,9 @@ App.ModalCardView = Backbone.View.extend({
             var list_id = current_card.attributes.list_id;
             var card_id = current_card.attributes.card_id;
             var data = $(e.target).serializeObject();
-            $('.js-activity-' + activity_id).html(this.converter.makeHtml(data.comment));
+            $('.js-activity-' + activity_id).html('<div class="panel no-mar"><div class="panel-body">' + this.converter.makeHtml(data.comment) + '</div></div>');
             $('.js-acticity-action-' + activity_id).removeClass('hide');
+            $('.js-timeago-' + activity_id).removeClass('hide');
             //Update in list table
             var activity = new App.Activity();
             activity.id = parseInt(activity_id);
@@ -2640,6 +2642,10 @@ App.ModalCardView = Backbone.View.extend({
             activity.url = api_url + 'boards/' + board_id + '/lists/' + list_id + '/cards/' + card_id + '/comments/' + activity_id + '.json';
             activity.save(data, {
                 success: function(model, response) {
+                    var current_comment = self.model.activities.get({
+                        id: activity_id
+                    });
+                    current_comment.set('comment', data.comment);
                     var activity = new App.Activity();
                     activity.set(response.activity);
                     activity.board_users = self.model.board_users;
@@ -2672,9 +2678,10 @@ App.ModalCardView = Backbone.View.extend({
             id: activity_id
         });
         parse_date(current_card.attributes.created, authuser, 'js-timeago-' + current_card.attributes.id);
-        var html_content = '<div class="panel no-mar"><div class="panel-body">' + makeLink(this.converter.makeHtml(comment), current_card.attributes.board_id) + '</div></div><small><span class="js-timeago-' + current_card.attributes.id + '"></span><div class="js-acticity-action-' + current_card.attributes.id + ' pull-left navbar-btn col-md-10 col-xs-12"><ul class="list-inline"><li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-' + current_card.attributes.id + '" href="#" data-activity-id="' + current_card.attributes.id + '"><i class="icon-repeat"></i>' + i18next.t("Reply") + '</a></li><li class="dropdown pull-right"><a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete text-danger" data-toggle="dropdown" href="#" data-activity-id="' + current_card.attributes.id + '"><i class="icon-remove"></i>' + i18next.t("Delete") + '</a><ul class="dropdown-menu arrow arrow-right"><li id="js-acticity-actions-response-' + current_card.attributes.id + '" class="js-dropdown-popup dropdown-popup"></li></ul></li><li class="pull-right"><a title="Edit" class="js-show-edit-activity js-edit-activity-link-' + current_card.attributes.id + '" href="#" data-activity-id="' + current_card.attributes.id + '"  data-activity-temp-id="' + current_card.attributes.temp_id + '"><i class="icon-edit"></i>' + i18next.t("Edit") + '</a></li></ul></div><span class="pull-left col-xs-12 js-activity-reply-form-response-' + current_card.attributes.id + '"></span></small>';
+        var html_content = '<div class="panel no-mar"><div class="panel-body">' + makeLink(this.converter.makeHtml(comment), current_card.attributes.board_id) + '</div></div>';
         this.$el.find('.js-hide-edit-comment-form').parents('div.js-activity-' + activity_id).html(html_content);
         $('.js-acticity-action-' + activity_id).removeClass('hide');
+        $('.js-timeago-' + activity_id).removeClass('hide');
     },
     /**
      * hideReplyCommentForm()

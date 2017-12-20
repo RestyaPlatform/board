@@ -93,6 +93,8 @@
 							</div></div>
 						<% } %>
 					<% }%>
+					
+					</div>
 					<small>
 			<% setInterval(function() {%>
 				<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
@@ -135,7 +137,6 @@
 				<% } %>
 				<span class="pull-left col-xs-12 js-activity-reply-form-response-<%- activity.attributes.id %>"></span>
 		</small>
-					</div>
 		</div>
         <% } %>
 	</div>
