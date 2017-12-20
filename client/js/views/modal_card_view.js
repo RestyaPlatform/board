@@ -2118,7 +2118,7 @@ App.ModalCardView = Backbone.View.extend({
                     i++;
                 });
                 if (this.model.attributes.comment_count > 20 || this.model.attributes.activity_count > 20) {
-                    $('#js-card-activities-' + self.model.id).after('<div class="btn btn-primary pull-right js-card-activites-load-more js-remove-card-activity" data-attr="1">Load more</div>');
+                    $('#js-card-activities-' + self.model.id).after('<div class="text-center"><div class="btn btn-primary js-card-activites-load-more js-remove-card-activity" data-attr="1">Load more</div></div>');
                 }
             }
             emojify.run();
@@ -2512,6 +2512,8 @@ App.ModalCardView = Backbone.View.extend({
             var is_reply = $(e.target).hasClass('js-reply-form');
             if (!is_reply) {
                 $(e.target)[0].reset();
+                var doc = $('#js-card-modal-' + this.model.id);
+                $(doc).find('.js-show-comment').trigger('click');
             }
             // Create UUID and push into list and render immediately
             data.uuid = new Date().getTime();
@@ -3353,8 +3355,12 @@ App.ModalCardView = Backbone.View.extend({
         self.model.activities.fetch({
             cache: false,
             success: function(model, response) {
-                self.renderActivitiesCollection();
-                $('.js-card-activites-load-more').attr('data-attr', parseInt(page_no) + 1);
+                if (!_.isUndefined(response.data) && !_.isEmpty(response.data)) {
+                    self.renderActivitiesCollection();
+                    $('.js-card-activites-load-more').attr('data-attr', parseInt(page_no) + 1);
+                } else {
+                    $('.js-card-activites-load-more').remove();
+                }
             }
         });
         return false;
