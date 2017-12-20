@@ -47,6 +47,7 @@ App.ActivityReplyFormView = Backbone.View.extend({
      *
      */
     render: function() {
+        this.converter.setFlavor('github');
         this.$el.html(this.template({
             activity: this.model
         }));
