@@ -130,18 +130,18 @@
 					</button>
 							<ul class="dropdown-menu arrow arrow-right" role="menu">
 										<div class="panel-body well-lg">
-											<form role="form" class = "js-admin-change-password" name="UserChangePasswordAdminForm" id="UserChangePasswordAdminForm">
+											<form role="form" class = "js-admin-change-password" name="UserChangePasswordAdminForm" id="UserChangePasswordAdminForm-<%- user.attributes.id %>">
 													<div class="form-group input password required">
-														<label class="sr-only control-label" for="inputPassword"><%- i18next.t('Enter a new Password') %></label>
-														<input type="password" class="form-control" placeholder="<%- i18next.t('Enter a new Password') %>" id="inputPassword" name="password" required title="<%- i18next.t('Enter a new Password') %>">
+														<label class="sr-only control-label" for="inputPassword-<%- user.attributes.id %>"><%- i18next.t('Enter a new Password') %></label>
+														<input type="password" class="form-control" placeholder="<%- i18next.t('Enter a new Password') %>" id="inputPassword-<%- user.attributes.id %>" name="password" required title="<%- i18next.t('Enter a new Password') %>">
 													</div>
 													<div class="form-group input cpassword required">
-														<label class="sr-only control-label" for="inputConfirmPassword"><%- i18next.t('Confirm Password') %></label>
-														<input type="password" class="form-control" placeholder="<%- i18next.t('Confirm Password') %>" id="inputConfirmPassword" name="confirm_password" required title="<%- i18next.t('Confirm Password') %>">
+														<label class="sr-only control-label" for="inputConfirmPassword-<%- user.attributes.id %>"><%- i18next.t('Confirm Password') %></label>
+														<input type="password" class="form-control" placeholder="<%- i18next.t('Confirm Password') %>" id="inputConfirmPassword-<%- user.attributes.id %>" name="confirm_password" required title="<%- i18next.t('Confirm Password') %>">
 													</div>
 													<div class="form-group">
-														<label class="sr-only control-label" for="submit2"><%- i18next.t('Change Password') %></label>
-														<input type="submit" class="btn btn-primary col-xs-12" id="submitChangePasswordAdmin" value="<%- i18next.t('Change Password') %>" >
+														<label class="sr-only control-label" for="submitChangePasswordAdmin-<%- user.attributes.id %>"><%- i18next.t('Change Password') %></label>
+														<input type="submit" class="btn btn-primary col-xs-12" id="submitChangePasswordAdmin-<%- user.attributes.id %>" value="<%- i18next.t('Change Password') %>" >
 													</div>
 											</form>
 									</div>
