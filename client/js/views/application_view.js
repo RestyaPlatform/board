@@ -8,7 +8,7 @@ if (typeof App === 'undefined') {
     App = {};
 }
 var loginExceptionUrl = ['register', 'login', 'forgotpassword', 'user_activation', 'aboutus'];
-var adminUrl = ['roles', 'activities', 'users', 'oauth_clients', 'apps', 'settings', 'email_templates'];
+var adminUrl = ['roles', 'activities', 'users', 'boards/list', 'oauth_clients', 'apps', 'settings', 'email_templates'];
 /**
  * Application View
  * @class ApplicationView
@@ -446,6 +446,8 @@ App.ApplicationView = Backbone.View.extend({
                 load_boards = true;
             }
         }
+        var fragment = Backbone.history.fragment.split('?');
+        fragment = fragment['0'];
         if ((App.boards === undefined || load_boards) && !_.isUndefined(authuser.user)) {
             var boards = new App.BoardCollection();
             boards.url = api_url + 'boards.json?type=simple';
@@ -463,7 +465,7 @@ App.ApplicationView = Backbone.View.extend({
                         abortPending: true,
                         success: function(collections, response) {
                             auth_user_organizations = organizations;
-                            if ((_.indexOf(adminUrl, Backbone.history.fragment) >= 0 && !_.isEmpty(authuser.user) && authuser.user.role_id == 1) || _.indexOf(adminUrl, Backbone.history.fragment) < 0) {
+                            if ((_.indexOf(adminUrl, fragment) >= 0 && !_.isEmpty(authuser.user) && authuser.user.role_id == 1) || _.indexOf(adminUrl, fragment) < 0) {
                                 page.callback();
                             } else {
                                 app.navigate('#/boards', {
@@ -476,7 +478,7 @@ App.ApplicationView = Backbone.View.extend({
                 }
             });
         } else {
-            if ((_.indexOf(adminUrl, Backbone.history.fragment) >= 0 && !_.isEmpty(authuser.user) && authuser.user.role_id == 1) || _.indexOf(adminUrl, Backbone.history.fragment) < 0) {
+            if ((_.indexOf(adminUrl, fragment) >= 0 && !_.isEmpty(authuser.user) && authuser.user.role_id == 1) || _.indexOf(adminUrl, fragment) < 0) {
                 page.callback();
             } else {
                 app.navigate('#/boards', {
