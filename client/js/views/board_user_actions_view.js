@@ -65,7 +65,8 @@ App.BoardUserActionsView = Backbone.View.extend({
         var user_id = $(e.currentTarget).data('user-id');
         var modalView = new App.ModalUserActivitiesListView({
             model: this.model,
-            user_id: user_id
+            user_id: user_id,
+            is_from: 'board_user'
         });
         modalView.show();
         return false;

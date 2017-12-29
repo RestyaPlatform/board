@@ -31,6 +31,7 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
      */
     initialize: function(options) {
         this.user_id = options.user_id;
+        this.is_from = options.is_from;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
@@ -136,6 +137,7 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
      * render activities
      */
     renderActivitiesCollection: function(activities) {
+        var self = this;
         var view_user_activities = this.$('#js-list-user-activities-list');
         view_user_activities.html('');
         if (!_.isEmpty(activities)) {
@@ -144,6 +146,7 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
                 activity.from_footer = true;
                 var view = new App.ActivityView({
                     model: activity,
+                    is_from: self.is_from
                 });
                 view_user_activities.append(view.render().el);
             }
