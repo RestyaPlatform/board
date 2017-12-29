@@ -15,12 +15,12 @@
 				labels.push(label.attributes.name);
 		%>    
 		<li class="clearfix cur card-label-show h5 btn-link media">
-			<div data-id="<%- label.attributes.label_id %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(board.acl_links.where({slug: "edit_labels",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>js-show-edit-card-label-form<% } %>">
-				<span  data-id="<%- label.attributes.label_id %>" style="background:<%- (label.attributes.color) ? label.attributes.color : '#'+converter.colorCode(label.attributes.name).substring(0, 6) %>;color:#ffffff" class="pull-left btn btn-xs <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(board.acl_links.where({slug: "edit_labels",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>js-show-edit-card-label-form<% } %>">
-					<i class="<%= LABEL_ICON %> icon-light"></i>
+			<div data-id="<%- label.attributes.label_id %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(board.acl_links.where({slug: "edit_labels",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>js-show-edit-card-label-form cur<% } %>">
+				<span style="background:<%- (label.attributes.color) ? label.attributes.color : '#'+converter.colorCode(label.attributes.name).substring(0, 6) %>;color:#ffffff" class="pull-left btn btn-xs">
+					<i class="<%= LABEL_ICON %> icon-light cur"></i>
 				</span>
 				<div class="board-labels">
-					<div data-id="<%- label.attributes.label_id %>" class='htruncate <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(board.acl_links.where({slug: "edit_labels",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>js-show-edit-card-label-form<% } %>'><%-label.attributes.name %></div>
+					<div class="htruncate"><%-label.attributes.name %></div>
 				</div>
 			</div>
 			<div class='js-delete-labels-icon pull-right'>
