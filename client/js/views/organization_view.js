@@ -392,7 +392,8 @@ App.OrganizationsView = Backbone.View.extend({
         var modalView = new App.ModalActivityView({
             model: user_id,
             organization_id: this.model.id,
-            type: 'org_user_listing'
+            type: 'org_user_listing',
+            is_from: 'org_user_lists'
         });
         modalView.show();
         return false;

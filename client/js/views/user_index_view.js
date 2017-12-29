@@ -223,7 +223,8 @@ App.UserIndex = Backbone.View.extend({
         e.preventDefault();
         var modalView = new App.ModalActivityView({
             model: this.model,
-            type: 'user_listing'
+            type: 'user_listing',
+            is_from: 'user_lists'
         });
         modalView.show();
         return false;
