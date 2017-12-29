@@ -104,6 +104,7 @@ App.UserIndexContainerView = Backbone.View.extend({
                 $('.js-user-list').html('');
                 if (users.length !== 0) {
                     users.each(function(user) {
+                        user.roles = response.roles;
                         $('.js-user-list').append(new App.UserIndex({
                             model: user
                         }).el);
@@ -151,6 +152,7 @@ App.UserIndexContainerView = Backbone.View.extend({
                 $('.js-user-list').html('');
                 if (users.length !== 0) {
                     users.each(function(user) {
+                        user.roles = response.roles;
                         $('.js-user-list').append(new App.UserIndex({
                             model: user
                         }).el);
