@@ -267,7 +267,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/users/?/activities':
         $condition = '';
-        if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users'] && empty($r_resource_filters['board_id'])) {
+        if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users'] && empty($r_resource_filters['organization_id']) && empty($r_resource_filters['board_id'])) {
             if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
                 $condition = (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE al.id < $1' : '';
             } else {
@@ -308,7 +308,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             while ($row = pg_fetch_assoc($org_users)) {
                 $org_ids[] = $row['organization_id'];
             }
-            if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
+            if (!empty($r_resource_filters['organization_id'])) {
+                if (!empty($r_resource_filters['last_activity_id'])) {
+                    $condition = ' AND al.id > $4';
+                }
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition;
+                array_push($pg_params, $r_resource_vars['users'], $r_resource_filters['organization_id'], '{' . $r_resource_filters['organization_id'] . '}');
+            } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
                 $i = 1;
                 $str = 'user_id = $' . $i;
                 array_push($pg_params, $r_resource_vars['users']);
@@ -323,13 +330,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ' . $str . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str;
-            } else if (!empty($r_resource_filters['organization_id'])) {
-                if (!empty($r_resource_filters['last_activity_id'])) {
-                    $condition = ' AND al.id > $4';
-                }
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition;
-                array_push($pg_params, $r_resource_vars['users'], $r_resource_filters['organization_id'], '{' . $r_resource_filters['organization_id'] . '}');
             } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] = 'all') {
                 if (!empty($r_resource_filters['last_activity_id'])) {
                     $condition = ' AND al.id > $3';
@@ -461,8 +461,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $obj = json_decode($row[0], true);
                     $data = $obj;
                 }
-                if ($data['id'] != $authUser['id']) {
-                    header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+                if ($data['id'] != $authUser['id'] && $authUser['role_id'] != 1) {
+                    $jsonArr = array(
+                        'id' => $data['id'],
+                        'role_id' => $data['role_id'],
+                        'username' => $data['username'],
+                        'full_name' => $data['full_name'],
+                    );
+                    echo json_encode($jsonArr);
                 } else {
                     $s_result = pg_query_params($db_lnk, 'SELECT * FROM timezones order by utc_offset::int', array());
                     $data['timezones'] = array();

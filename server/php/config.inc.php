@@ -33,11 +33,6 @@ if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
     define('OAUTH_CLIENTID', '7742632501382313');
     define('OAUTH_CLIENT_SECRET', '4g7C4l1Y2b0S6a7L8c1E7B3K0e');
 }
-$default_timezone = 'Europe/Berlin';
-if (ini_get('date.timezone')) {
-    $default_timezone = ini_get('date.timezone');
-}
-date_default_timezone_set($default_timezone);
 define('R_DB_HOST', 'localhost');
 define('R_DB_USER', 'restya');
 define('R_DB_PASSWORD', 'hjVl2!rGd');
@@ -58,7 +53,7 @@ if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.
     fclose($fh);
 }
 $db_lnk = pg_connect('host=' . R_DB_HOST . ' port=' . R_DB_PORT . ' dbname=' . R_DB_NAME . ' user=' . R_DB_USER . ' password=' . R_DB_PASSWORD . ' options=--client_encoding=UTF8') or die('Database could not connect');
-$settings = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE setting_category_id in (1,2,3,10,11,14) OR setting_category_parent_id in (1,2,3)', array());
+$settings = pg_query_params($db_lnk, 'SELECT name, value FROM settings', array());
 while ($setting = pg_fetch_assoc($settings)) {
     define($setting['name'], $setting['value']);
 }
