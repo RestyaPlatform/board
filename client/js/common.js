@@ -122,7 +122,6 @@ function changeTitle(title) {
 }
 
 function appPageCallBack(e) {
-    console.log(e);
     appManage(e);
 }
 

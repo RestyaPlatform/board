@@ -1479,10 +1479,6 @@ App.FooterView = Backbone.View.extend({
                     'height': notificationH - 100,
                     'overflow-y': 'scroll'
                 });
-            },
-            error: function(models, response, options) {
-                console.log(options);
-                console.log(response);
             }
         });
     },
