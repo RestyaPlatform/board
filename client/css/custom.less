@@ -1957,6 +1957,9 @@ footer, header, .dashboard-header {
 .no-mar{
 	margin: 0px;
 }
+.no-top-mar{
+	margin-top:0 !important;
+}
 .activities-list { 
 	p {
 		margin: 0px;
@@ -2142,6 +2145,19 @@ footer, header, .dashboard-header {
     	right: 10px;
 		left: auto;
 	}
+	&.activity-mod-comments{
+		.js-new-comment{
+			.dropdown-menu {
+				right: auto;
+				left: 0;
+				max-width: 245px;
+				&:after,&:before{
+					right: auto;
+					left: 0;
+				}
+			}
+		}
+	}
 }
 .wish-list {
 	.img-thumbnail {
@@ -2260,6 +2276,10 @@ footer, header, .dashboard-header {
 .js-admin-list-user-role {
 	min-width: 100px !important;
 	max-width: 100px !important;
+	&.max-wid{
+		min-width: 107px !important;
+    	max-width: 107px !important;
+	}
 }
 .js-show-add-boards-simple {
 	height: 168px !important;
@@ -2395,4 +2415,23 @@ footer, header, .dashboard-header {
 }
 .custom-filed-btn{
 	width:83.4%;
+}
+.txt-aligns{
+	li{
+		label{	
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			display: inline-block;
+			width: 115px;
+			line-height: 14px;
+			vertical-align: top;
+		}
+	}
+}
+.pad-left-22{
+	padding-left: 24px;
+}
+.no-pad{
+	padding:0 !important;
 }
