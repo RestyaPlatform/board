@@ -110,6 +110,6 @@ Required sofware: nginx, php-fpm (with mbstring), PostgreSQL, ElasticSearch, Gru
 
 ### License
 
-Copyright (c) 2014-2017 [Restya](http://restya.com/).
+Copyright (c) 2014-2018 [Restya](http://restya.com/).
 
 Dual License ([OSL 3.0](LICENSE.txt) & [Commercial License](http://restya.com/contact))
