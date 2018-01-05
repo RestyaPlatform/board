@@ -104,7 +104,7 @@
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default btn-xs dropdown-toggle" type="button">
 		    <span class="caret"></span><span class="sr-only"><%- i18next.t("Toggle Dropdown") %></span>
         </button>
-		<ul class="dropdown-menu arrow arrow-right js-admin-list-user-role" role="menu">
+		<ul class="dropdown-menu arrow arrow-right js-admin-list-user-role max-wid" role="menu">
 			<% _.each(user.roles, function(role){%>
 				<li class="text-left"><a href="#" class="<% if(user.attributes.role_id == role.id){%>js-no-action<%}else{%>js-change-user-role<%}%>" data-role-id="<%- role.id %>"><%- role.name%> <% if(user.attributes.role_id == role.id){%><i class="icon-ok"></i><%}%></a></li>
 			<%})%>
