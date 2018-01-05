@@ -2118,7 +2118,7 @@ App.ModalCardView = Backbone.View.extend({
                     i++;
                 });
                 if (this.model.attributes.comment_count > 20 || this.model.attributes.activity_count > 20) {
-                    $('#js-card-activities-' + self.model.id).after('<div class="text-center"><div class="btn btn-primary js-card-activites-load-more js-remove-card-activity" data-attr="1">Load more</div></div>');
+                    $('#js-card-activities-' + self.model.id).after('<div class="text-center"><div class="btn btn-primary js-card-activites-load-more js-remove-card-activity" title="Load next '+ PAGING_COUNT +' of ' + this.model.attributes.activity_count +'" data-attr="1">' + i18next.t('Load next '+ PAGING_COUNT +' of ' + this.model.attributes.activity_count ) + '</div></div>');
                 }
             }
             emojify.run();
