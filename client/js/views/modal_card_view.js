@@ -3207,22 +3207,50 @@ App.ModalCardView = Backbone.View.extend({
     AddCommentMember: function(e) {
         e.preventDefault();
         var str = this.$el.find('.current-comment-box').val();
-        var space = '';
-        var pos = '';
+        var member = '';
         if (_.isEmpty(this.$el.find('.js-search-member').val())) {
-            space = _.isEmpty(this.$el.find('.current-comment-box').val()) ? '' : ' ';
-            pos = str.lastIndexOf('@');
-            str = str.substring(0, pos) + str.substring(pos + 1);
-            this.$el.find('.current-comment-box').val(str + space + '@' + $(e.currentTarget).data('user-name')).focus();
+            this.$el.find(".current-comment-box").each(function(i) {
+                member = '@' + $(e.currentTarget).data('user-name');
+                if (document.selection) {
+                    //For browsers like Internet Explorer
+                    sel = document.selection.createRange();
+                    sel.text = member;
+                    this.focus();
+                } else if (this.selectionStart || this.selectionStart == '0') {
+                    //For browsers like Firefox and Webkit based
+                    var start = this.selectionStart;
+                    var end = this.selectionEnd;
+                    var scrollTop = this.scrollTop;
+                    var search = this.value.substring(0, start);
+                    search = search.lastIndexOf('@');
+                    this.value = this.value.substring(0, search) + member + this.value.substring(end, this.value.length);
+                    this.focus();
+                    this.selectionStart = start + member.length;
+                    this.selectionEnd = start + member.length;
+                    this.scrollTop = scrollTop;
+                }
+            });
         } else {
-            if (str.indexOf('@')) {
-                space = _.isEmpty(this.$el.find('.current-comment-box').val()) ? '' : ' ';
-                pos = str.lastIndexOf('@');
-                str = str.substring(0, pos) + str.substring(pos + 1);
-                this.$el.find('.current-comment-box').val(str + space + '@' + $(e.currentTarget).data('user-name')).focus();
-            } else {
-                this.$el.find('.current-comment-box').val(str.replace('@' + this.$el.find('.js-search-member').val(), '@' + $(e.currentTarget).data('user-name'))).focus();
-            }
+            this.$el.find(".current-comment-box").each(function(i) {
+                member = '@' + $(e.currentTarget).data('user-name');
+                if (document.selection) {
+                    //For browsers like Internet Explorer
+                    sel = document.selection.createRange();
+                    sel.text = member;
+                    this.focus();
+                } else if (this.selectionStart) {
+                    //For browsers like Firefox and Webkit based
+                    var start = this.selectionStart;
+                    var end = this.selectionEnd;
+                    var scrollTop = this.scrollTop;
+                    var search = this.value.substring(0, start);
+                    search = search.lastIndexOf('@');
+                    this.value = this.value.substring(0, search) + member + this.value.substring(end, this.value.length);
+                    this.focus();
+                    this.selectionStart = start + member.length;
+                    this.selectionEnd = start + member.length;
+                }
+            });
         }
         $(".js-comment").removeClass("current-comment-box");
         this.autoMentionSelectionStart = 0;
