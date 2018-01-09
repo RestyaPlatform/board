@@ -251,7 +251,7 @@ App.RoleSettingsView = Backbone.View.extend({
 
         board_user_role.destroy({
             success: function(model, response) {
-                self.flash('success', i18next.t('Role deleted successfully.'));
+                self.flash('success', i18next.t('This will alter existing board users role to Viewer role in all boards.'));
                 app.navigate('#/roles', {
                     trigger: true,
                     replace: true
