@@ -77,8 +77,11 @@ main {
 	border: 1px solid #d7d9db;
 }
 .board-user-img {
-	height: 18px;
-	width: 18px;
+	height: 27px;
+	width: 27px;
+}
+i.board-user-img.avatar{
+	.square(28px);
 }
 .cover-image {
 	border-radius: 3px;
@@ -2434,4 +2437,64 @@ footer, header, .dashboard-header {
 }
 .no-pad{
 	padding:0 !important;
+}
+/*on jan12*/
+header{
+	.nav-pills {
+		&.hdrpvtvws{
+			padding:4px 0 0;
+			& + div.dropdown{
+				padding:4px 0 0;
+			}
+		}
+	}
+	.nav{
+		>li{
+			a.hdrorganization{
+				padding:0 7px;
+				line-height: 29px;
+			}
+			span.orgseperator{
+				margin:0;
+				line-height: 23px;
+			}
+		}
+	}
+	.headernav_rgtusr{
+		>li{
+			>a{
+				padding:2px 7px;
+				.label{
+					font-weight: normal;
+					font-size:11px;
+				}
+			}
+		}
+		.relatedusrs{
+			padding:0 5px 0 0;
+		}
+	}
+	.navbar-right{
+		.dropdown-menu {
+			a.ddownarrows{
+				&:hover{
+					[class*="icon"]{
+						color:#000;
+					}
+				}
+			}
+		}
+	}
+}
+.header_innr_a{
+	.header-inner-alig{
+		.open > a,  .open > a:hover,  .open >{
+			background-color:none !important;
+			border-color:none !important;
+		} 
+	}
+}
+.user-prf-new{
+	display: inline-block;
+    padding: 5px 0 0 5px;
 }
