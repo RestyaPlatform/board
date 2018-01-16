@@ -38,7 +38,7 @@
 	<table class="table table-striped table-hover">
 		<tbody>
 			<%  if(!_.isEmpty(organizations_users)){
-			var organization_user_roles = ["Owner","Editor","Viewer"];
+			var organization_user_roles = organization.organization_user_roles;
 			%>
 				<% _.each(organizations_users.models, function(organizations_user){ %>
 				<tr>
@@ -92,7 +92,15 @@
 										<% if(!_.isUndefined(authuser.user)){%>
 										<li class="navbar-btn">              
 											<div class="btn-group text-left navbar-btn dropdown">
-												<button type="button" class="btn btn-default dropdown-toggle js-show-organization-member-permission-form js-change-permission-content-<%- organizations_user.attributes.id %>" data-toggle="dropdown" aria-expanded="false" data-organizations_user_id="<%- organizations_user.attributes.id %>"><%- organization_user_roles[organizations_user.attributes.organization_user_role_id - 1]	%></button>
+												<button type="button" class="btn btn-default dropdown-toggle js-show-organization-member-permission-form js-change-permission-content-<%- organizations_user.attributes.id %>" data-toggle="dropdown" aria-expanded="false" data-organizations_user_id="<%- organizations_user.attributes.id %>">
+												<% if(organizations_users.length) { %>
+												<% _.each(organization_user_roles,function(organization_user_role) {
+															if(organization_user_role.id == organizations_user.attributes.organization_user_role_id) { %>
+																<%- organization_user_role.name %>
+															<% }
+													});
+												}%>
+												</button>
 												<button type="button" class="btn btn-default dropdown-toggle js-show-organization-member-permission-form" data-toggle="dropdown" aria-expanded="false" data-organizations_user_id="<%- organizations_user.attributes.id %>">
 													<span class="caret"></span>
 													<span class="sr-only"><%- i18next.t('Toggle Dropdown') %></span>
