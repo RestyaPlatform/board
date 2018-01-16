@@ -244,21 +244,23 @@ App.RoleSettingsView = Backbone.View.extend({
         var target = $(e.currentTarget);
         var board_user_role_id = target.attr('data-board_user_role_id');
         var self = this;
+        if (window.confirm(i18next.t('This will alter existing board users role to Viewer role in all boards.'))) {
+            var board_user_role = new App.BoardUserRoles();
+            board_user_role.set('id', board_user_role_id);
+            board_user_role.url = api_url + 'board_user_roles/' + board_user_role_id + '.json';
 
-        var board_user_role = new App.BoardUserRoles();
-        board_user_role.set('id', board_user_role_id);
-        board_user_role.url = api_url + 'board_user_roles/' + board_user_role_id + '.json';
-
-        board_user_role.destroy({
-            success: function(model, response) {
-                self.flash('success', i18next.t('Role deleted successfully.'));
-                app.navigate('#/roles', {
-                    trigger: true,
-                    replace: true
-                });
-            }
-        });
-        return false;
+            board_user_role.destroy({
+                success: function(model, response) {
+                    self.flash('success', i18next.t('Role deleted successfully.'));
+                    app.navigate('#/roles', {
+                        trigger: true,
+                        replace: true
+                    });
+                }
+            });
+        } else {
+            return false;
+        }
     },
     /**
      * deleteOrganizationUserRole()
