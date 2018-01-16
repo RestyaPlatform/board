@@ -46,13 +46,21 @@ if (!empty($_POST['email']) && !empty($_POST['password'])) {
         $_POST['email']
     );
     $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
-    $_POST['password'] = crypt($_POST['password'], $log_user['password']);
-    $val_arr = array(
-        $_POST['email'],
-        $_POST['password'],
-        1
-    );
-    $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
+    if (is_plugin_enabled('r_ldap_login')) {
+        require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'LdapLogin' . DIRECTORY_SEPARATOR . 'functions.php';
+        $ldap_response = ldapUpdateUser($log_user, $_POST);
+        $ldap_error = $ldap_response['ldap_error'];
+        $user = $ldap_response['user'];
+    }
+    if (!empty($log_user) && $log_user['is_ldap'] == 0) {
+        $_POST['password'] = crypt($_POST['password'], $log_user['password']);
+        $val_arr = array(
+            $_POST['email'],
+            $_POST['password'],
+            1
+        );
+        $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
+    }
     if (!empty($user)) {
         $_SESSION["username"] = $user['username'];
         $error_msg = 0;

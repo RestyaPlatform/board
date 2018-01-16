@@ -77,7 +77,7 @@
             case "${answer}" in
                 [Yy])
                 echo "Installing ElasticSearch..."
-                sudo yum install -y java-1.7.0-openjdk
+                sudo yum install -y java-1.8.0-openjdk
                 if [ $? != 0 ]
                 then
                     echo "Java installation failed with error code 30"
