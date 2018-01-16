@@ -1,11 +1,11 @@
  <div class="container-fluid">
 	 <div class="row">
-			  <div class="navbar-left navbar-btn mob-no-mar col-sm-11 col-xs-10 nav <% if(board.attributes.organization_id == 0) { %> col-lg-6 col-md-5 <% } else { %> col-lg-5 col-md-4<% } %>">
+			  <div class="header_innr_a navbar-left navbar-btn mob-no-mar col-sm-11 col-xs-10 nav <% if(board.attributes.organization_id == 0) { %> col-lg-6 col-md-5 <% } else { %> col-lg-5 col-md-4<% } %>">
 			  <div class="clearfix row-flex">
 			  <ul class="nav nav-pills pull-left col-flex col-flex1 <% if(board.attributes.organization_id == 0) { %> hide <% } %>">
 			  <% if(board.attributes.organization_id != 0) { %>
                <li>
-				<a href="#/organization/<%= board.attributes.organization_id %>" class=" text-muted btn btn-link pull-left htruncate col-lg-10 col-sm-10 col-md-9 col-xs-9 nav" title="<%- board.attributes.organization_name %>">
+				<a href="#/organization/<%= board.attributes.organization_id %>" class="hdrorganization text-muted btn btn-link pull-left htruncate col-lg-10 col-sm-10 col-md-9 col-xs-9 nav" title="<%- board.attributes.organization_name %>">
 					<%
 						var logo_path = "img/default-organization.png"; 
 						if (!_.isUndefined(board.attributes.organization_logo_url) && board.attributes.organization_logo_url != null && board.attributes.organization_logo_url != '') {
@@ -15,7 +15,7 @@
 					<span><img src="<%= logo_path %>" height="16" width="16" alt="[Image: <%= board.attributes.organization_name%>]" title="<%= board.attributes.organization_name%>"></span> 
 					<strong><%- board.attributes.organization_name %></strong>
 				</a>
-				<span class="navbar-btn mob-no-mar pull-left icon"><span class="navbar-btn pull-left">&nbsp;/&nbsp;</span></span>
+				<span class="navbar-btn mob-no-mar pull-left icon"><span class="orgseperator navbar-btn pull-left">|</span></span>
 			   </li>
 			   <% } %>
 			</ul>
@@ -75,7 +75,7 @@
 						<span class="icon-remove cur"></span>
 					</button>
 				</div>
-			  <ul class="nav nav-pills pull-left pillsuser-list navbar-btn h4 right-mar">
+			  <ul class="nav nav-pills pull-left pillsuser-list right-mar  headernav_rgtusr">
 				  <li class="dropdown"> <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle show clearfix navbar-btn h4">
 				  <% 
 			  var i = 1;
@@ -84,13 +84,13 @@
 			  _.each(board.admin_board_users, function(admin_board_user){ 
 				if(i <= 3){
 			  %>
-            	<span class="pull-left btn-xs nav">
-					<span class="col-xs-12 btn-block navbar-btn" title="<%-admin_board_user.attributes.full_name %> (<%-admin_board_user.attributes.username %>)">
+            	<span class="pull-left btn-xs nav relatedusrs">
+					<span class="col-xs-12 btn-block" title="<%-admin_board_user.attributes.full_name %> (<%-admin_board_user.attributes.username %>)">
 						<% if(!_.isEmpty(admin_board_user.attributes.profile_picture_path)) {
 								var profile_picture_path = board.showImage('User', admin_board_user.attributes.user_id, 'small_thumb' );%>
 						<img  width="30" height="30" class="img-responsive img-rounded board-user-img" title="<%-admin_board_user.attributes.full_name %> (<%-admin_board_user.attributes.username %>)" alt="[Images: <%-admin_board_user.attributes.full_name %>]" src="<%=profile_picture_path %>">
 						<% } else {%>
-							<i class="avatar avatar-sm avatar-color-194 img-rounded"><%= (admin_board_user.attributes.initials) %></i>
+							<i class="avatar board-user-img avatar-color-194 img-rounded"><%= (admin_board_user.attributes.initials) %></i>
 						<% } %>
 						<% if(board.board_user_roles[admin_board_user.attributes.board_user_role_id - 1].id === 1){ %>
 							<span class="name-block htruncate col-xs-12 label btn-xs col-xs-push-0">
@@ -108,17 +108,17 @@
 				}
 			  %>
             	<span class="pull-left btn-xs nav <%- mobHidden %>">
-					<span class="col-xs-12 btn-block navbar-btn" title="<%-normal_board_user.attributes.full_name %> (<%-normal_board_user.attributes.username %>)">
+					<span class="col-xs-12 btn-block" title="<%-normal_board_user.attributes.full_name %> (<%-normal_board_user.attributes.username %>)">
 						<% if(!_.isEmpty(normal_board_user.attributes.profile_picture_path)) {
 								var profile_picture_path = board.showImage('User', normal_board_user.attributes.user_id, 'small_thumb' );%>
 						<img  width="30" height="30" class="img-responsive img-rounded board-user-img" title="<%-normal_board_user.attributes.full_name %> (<%-normal_board_user.attributes.username %>)" alt="[Images: <%-normal_board_user.attributes.full_name %>]" src="<%=profile_picture_path %>">
 						<% } else {%>
-							<i class="avatar avatar-sm avatar-color-194 img-rounded"><%= (normal_board_user.attributes.initials) %></i>
+							<i class="avatar avatar-color-194 img-rounded"><%= (normal_board_user.attributes.initials) %></i>
 						<% } %>
 					</span>
 				</span>
 			  <% i++; }}); }%>
-				  <span class="table-members  label small hidden-xs"> <span class="small"><span class="show text-left" title="<%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %>"><%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %></span> <span class="show text-left" title="<%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %>"><%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %></span></span> </span> </a>
+				  <span class="table-members  label small hidden-xs user-prf-new"> <span class=""><span class="show text-left" title="<%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %>"><%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %></span> <span class="show text-left" title="<%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %>"><%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %></span></span> </span> </a>
 					<ul class="list-unstyled js-visibility-chooser dropdown-menu-left dropdown-menu arrow arrow-left">
 					  <li class="text-center">
 						<strong><%- i18next.t('Members') %></strong>
@@ -161,7 +161,7 @@
 				  </li>
 				</ul>
 				<% } %>
-				<ul class="nav nav-pills pull-left">
+				<ul class="nav nav-pills pull-left hdrpvtvws">
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board", board_user_role_id: parseInt(board.board_user_role_id)})))) { %> 
 					<li>
 						<div class="btn-group navbar-btn js-visibility-list-dropdown dropdown">
