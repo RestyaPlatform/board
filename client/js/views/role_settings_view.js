@@ -258,8 +258,7 @@ App.RoleSettingsView = Backbone.View.extend({
                     });
                 }
             });
-        }
-        else {
+        } else {
             return false;
         }
     },
