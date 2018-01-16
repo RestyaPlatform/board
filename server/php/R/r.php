@@ -6041,9 +6041,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/board_user_roles/?':
         $sql = 'DELETE FROM board_user_roles WHERE id= $1';
-        array_push($pg_params, $r_resource_vars['board_user_roles']);
-        // board role set as viewer
-        $sql = 'UPDATE boards_users SET board_user_role_id = 3 WHERE board_user_role_id = $1';
+        $d_sql = 'UPDATE boards_users SET board_user_role_id = 3 WHERE board_user_role_id = $1';
         array_push($pg_params, $r_resource_vars['board_user_roles']);
         break;
 
@@ -6088,6 +6086,9 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     }
     if (!empty($sql)) {
         $result = pg_query_params($db_lnk, $sql, $pg_params);
+        if ($result && !empty($d_sql)) {
+            pg_query_params($db_lnk, $d_sql, $pg_params);
+        }
         $response['error'] = array(
             'code' => (!$result) ? 1 : 0
         );
