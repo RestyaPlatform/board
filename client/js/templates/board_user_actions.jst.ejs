@@ -18,7 +18,11 @@
 	<ul class="list-unstyled dropdown-menu dropdown-list show">
 		<% if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(user.collection.board.acl_links.where({slug: 'edit_board_user', board_user_role_id: parseInt(user.collection.board.board_user_role_id)})))) { %>
 		<li class="dropdown"> 
-			<a href="#" data-toggle="dropdown" class="dropdown-toggle js-show-dropdown"> <%- i18next.t('Change permissions') %> (<%- user.board_user_roles[parseInt(user.attributes.board_user_role_id) - 1].name %>)</a>
+			<a href="#" data-toggle="dropdown" class="dropdown-toggle js-show-dropdown"> <%- i18next.t('Change permissions') %><% _.each(user.board_user_roles, function(board_user_role){  
+								if (board_user_role.id == user.attributes.board_user_role_id) {%> 
+									(<%- board_user_role.name %>)
+								<% }
+							}); %></a>
 			<ul class="dropdown-menu dropdown-menu-right arrow arrow-right js-list-actions-response">
 				<div class="clearfix text-center col-xs-12"> <span class="col-xs-10"><strong><%- i18next.t('Change permissions') %></strong></span><a href="#" class="js-close-popup pull-right"><i class="icon-remove "></i></a> </div>
 				<div class="col-xs-12 divider"></div>
