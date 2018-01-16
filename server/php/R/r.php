@@ -6047,6 +6047,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/organization_user_roles/?':
         $sql = 'DELETE FROM organization_user_roles WHERE id= $1';
+        $d_sql = 'UPDATE organizations_users SET organization_user_role_id = 3 WHERE organization_user_role_id = $1';
         array_push($pg_params, $r_resource_vars['organization_user_roles']);
         break;
 
