@@ -2970,7 +2970,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 }
                             }
                             // Copy cards
-                            $card_fields = 'name, description, due_date, position, is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, cards_user_count, cards_subscriber_count, card_voter_count, activity_count, user_id, comment_count';
+                            $card_fields = 'name, description, due_date, position, is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, user_id';
                             if ($keepcards) {
                                 $qry_val_arr = array(
                                     $list_id
