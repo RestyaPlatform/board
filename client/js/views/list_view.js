@@ -831,12 +831,7 @@ App.ListView = Backbone.View.extend({
         }));
         this.renderCardsCollection();
         if (!_.isUndefined(authuser.user)) {
-            var edit_card;
-            edit_card = this.model.collection.board.acl_links.where({
-                slug: 'edit_card',
-                board_user_role_id: parseInt(this.model.board_user_role_id)
-            });
-            if (!_.isUndefined(authuser.user) && edit_card.length && (authuser.user.role_id == 1 || !_.isEmpty(this.model.collection.board.acl_links.where({
+            if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.collection.board.acl_links.where({
                     slug: 'move_list_cards',
                     board_user_role_id: parseInt(this.model.board_user_role_id)
                 })))) {

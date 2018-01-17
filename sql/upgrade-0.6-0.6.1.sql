@@ -1,0 +1,1 @@
+UPDATE acl_board_links SET url = '/boards/?/lists/?/cards/?' WHERE slug = 'move_list_cards';
