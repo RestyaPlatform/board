@@ -2185,17 +2185,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $conditions = array(
                 true
             );
-            $acl_links = pg_query_params($db_lnk, "SELECT * FROM acl_links where is_default = $1", $conditions);
-            while ($acl_link = pg_fetch_assoc($acl_links)) {
-                $qry_val_arr = array(
-                    $acl_link['id'],
-                    $user['role_id']
-                );
-                $acl_link_role = executeQuery('SELECT * FROM acl_links_roles WHERE acl_link_id = $1 and role_id = $2', $qry_val_arr);
-                if (empty($acl_link_role)) {
-                    pg_query_params($db_lnk, 'INSERT INTO acl_links_roles (created, modified, acl_link_id, role_id) VALUES (now(), now(), $1, $2)', $qry_val_arr);
-                }
-            }
             $role_val_arr = array(
                 $user['role_id']
             );
@@ -4802,17 +4791,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             if ($result) {
                 $row = pg_fetch_assoc($result);
                 $response['id'] = $row['id'];
-                $conditions = array(
-                    true
-                );
-                $acl_links = pg_query_params($db_lnk, "SELECT * FROM acl_links where is_default = $1", $conditions);
-                while ($acl_link = pg_fetch_assoc($acl_links)) {
-                    $qry_val_arr = array(
-                        $acl_link['id'],
-                        $row['id']
-                    );
-                    pg_query_params($db_lnk, 'INSERT INTO acl_links_roles (created, modified, acl_link_id, role_id) VALUES (now(), now(), $1, $2)', $qry_val_arr);
-                }
             }
         }
         echo json_encode($response);
