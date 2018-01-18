@@ -957,7 +957,7 @@ App.ModalCardView = Backbone.View.extend({
         self.model.activities.fetch({
             cache: false,
             success: function(model, response) {
-                self.model.set('total_activity_count', response._metadata.total_records);
+                self.model.set('activity_count', response._metadata.total_records);
                 self.renderActivitiesCollection();
             }
         });
@@ -2121,7 +2121,7 @@ App.ModalCardView = Backbone.View.extend({
                 if (this.model.attributes.comment_count > 20 || this.model.attributes.activity_count > 20) {
                     $('#js-card-activities-' + self.model.id).after('<div class="text-center"><div class="btn btn-primary js-card-activites-load-more js-remove-card-activity" title="' + i18next.t('Load More') + '" data-attr="1">' + i18next.t('Load next %s of %s', {
                         postProcess: 'sprintf',
-                        sprintf: [PAGING_COUNT, this.model.attributes.total_activity_count]
+                        sprintf: [PAGING_COUNT, this.model.attributes.activity_count]
                     }) + '</div></div>');
                 }
             }
@@ -3388,7 +3388,7 @@ App.ModalCardView = Backbone.View.extend({
             cache: false,
             success: function(model, response) {
                 if (!_.isUndefined(response.data) && !_.isEmpty(response.data) && !_.isEmpty(response._metadata)) {
-                    self.model.set('total_activity_count', response._metadata.total_records);
+                    self.model.set('activity_count', response._metadata.total_records);
                     self.renderActivitiesCollection();
                     $('.js-card-activites-load-more').attr('data-attr', parseInt(page_no) + 1);
                 } else {
