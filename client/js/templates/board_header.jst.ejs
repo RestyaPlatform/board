@@ -84,7 +84,7 @@
 			  _.each(board.admin_board_users, function(admin_board_user){ 
 				if(i <= 3){
 			  %>
-            	<span class="pull-left btn-xs nav relatedusrs">
+            	<span class="pull-left btn-xs nav">
 					<span class="col-xs-12 btn-block" title="<%-admin_board_user.attributes.full_name %> (<%-admin_board_user.attributes.username %>)">
 						<% if(!_.isEmpty(admin_board_user.attributes.profile_picture_path)) {
 								var profile_picture_path = board.showImage('User', admin_board_user.attributes.user_id, 'small_thumb' );%>
