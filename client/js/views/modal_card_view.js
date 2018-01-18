@@ -957,6 +957,7 @@ App.ModalCardView = Backbone.View.extend({
         self.model.activities.fetch({
             cache: false,
             success: function(model, response) {
+                self.model.set('activity_count', response._metadata.total_records);
                 self.renderActivitiesCollection();
             }
         });
@@ -3386,7 +3387,8 @@ App.ModalCardView = Backbone.View.extend({
         self.model.activities.fetch({
             cache: false,
             success: function(model, response) {
-                if (!_.isUndefined(response.data) && !_.isEmpty(response.data)) {
+                if (!_.isUndefined(response.data) && !_.isEmpty(response.data) && !_.isEmpty(response._metadata)) {
+                    self.model.set('activity_count', response._metadata.total_records);
                     self.renderActivitiesCollection();
                     $('.js-card-activites-load-more').attr('data-attr', parseInt(page_no) + 1);
                 } else {
