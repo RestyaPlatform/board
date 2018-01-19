@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2017 Restya
+ * @copyright  2014-2018 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -2061,4 +2061,43 @@ function board_creation($qry_val_arr = array() , $db_lnk)
 {
     $new_board = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards (created, modified, name, background_color, background_picture_url, background_pattern_url, user_id, board_visibility) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
     return $new_board;
+}
+/**
+ * Generate client id
+ *
+ * @return client_id
+ */
+function isClientIdAvailable()
+{
+    do {
+        $client_id = '';
+        for ($i = 0; $i < 16; $i++) {
+            $client_id.= mt_rand(0, 9);
+        }
+        $qry_val_arr = array(
+            $client_id
+        );
+        $oauth_client = executeQuery('SELECT * FROM oauth_clients WHERE client_id = $1', $qry_val_arr);
+    } while (!empty($oauth_client));
+    return $client_id;
+}
+/**
+ * Generate client secret
+ *
+ * @return client_secret
+ */
+function isClientSecretAvailable()
+{
+    $characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    do {
+        $client_secret = '';
+        for ($i = 0; $i < 26; $i++) {
+            $client_secret.= $characters[mt_rand(0, strlen($characters) - 1) ];
+        }
+        $qry_val_arr = array(
+            $client_secret
+        );
+        $oauth_client = executeQuery('SELECT * FROM oauth_clients WHERE client_secret = $1', $qry_val_arr);
+    } while (!empty($oauth_client));
+    return $client_secret;
 }
