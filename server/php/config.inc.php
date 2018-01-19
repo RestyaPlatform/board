@@ -12,7 +12,7 @@
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
-define('R_DEBUG', true);
+define('R_DEBUG', false);
 ini_set('display_errors', R_DEBUG);
 define('R_API_VERSION', 1);
 if (!defined('JSON_PRETTY_PRINT')) {
@@ -34,9 +34,9 @@ if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
     define('OAUTH_CLIENT_SECRET', '4g7C4l1Y2b0S6a7L8c1E7B3K0e');
 }
 define('R_DB_HOST', 'localhost');
-define('R_DB_USER', 'restya');
-define('R_DB_PASSWORD', 'hjVl2!rGd');
-define('R_DB_NAME', 'restyaboard');
+define('R_DB_USER', 'postgres');
+define('R_DB_PASSWORD', 'postgres');
+define('R_DB_NAME', 'restyaboard_latest');
 define('R_DB_PORT', 5432);
 define('CHAT_DB_HOST', 'localhost');
 define('CHAT_DB_USER', 'ejabberd');

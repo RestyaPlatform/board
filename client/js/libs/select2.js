@@ -3030,18 +3030,22 @@ the specific language governing permissions and limitations under the Apache Lic
 
             formatted=this.opts.formatSelection(data, choice.find("div"), this.opts.escapeMarkup);
             if (formatted != undefined) {
-                if ($(formatted).data('color')) {
-                    var color = $(formatted).data('color');
-                }
-                if ($(formatted).data('label')) {
-                    formatted = $(formatted).data('label');
-                }
+                var color = '';
+                if (formatted.indexOf('<span data-color=') === 0 ) {
+                    if ($(formatted).data('color')) {
+                        color = $(formatted).data('color');
+                    }
+                    if ($(formatted).data('label')) {
+                        formatted = $(formatted).data('label');
+                    }
+                }                
                 choice.find("div").replaceWith("<div>"+formatted+"</div>");
                 if (color) {
 				    choice.attr("style","background:"+color+";color:#fff;");
                 } else {
                     choice.attr("style","background:#"+this.getLabelcolor(formatted).substring(0, 6)+";color:#fff;");
                 }
+
             }
             cssClass=this.opts.formatSelectionCssClass(data, choice.find("div"));
             if (cssClass != undefined) {
