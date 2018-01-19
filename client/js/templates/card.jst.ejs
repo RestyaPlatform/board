@@ -48,10 +48,10 @@
 	<li><small title="<%- i18next.t('Description') %>"><span class="icon-align-left"></span><span></span></small></li>
 	<% } %>
 	<% if(card.attributes.checklist_item_count > 0){ %>
-		<li><small title="<%- i18next.t('%s checklist completed out of %s', { postProcess: 'sprintf', sprintf: [card.attributes.checklist_item_completed_count, card.attributes.checklist_item_count]}) %> "><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %><div class="label label-success"> <% } %><span class="icon-list-ul"></span><span><%- card.attributes.checklist_item_completed_count %>/<%- card.attributes.checklist_item_count %></span><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %></div><% } %></small></li>
+		<li <% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %>class="card-listing-truncate"<% } %> ><small title="<%- i18next.t('%s checklist completed out of %s', { postProcess: 'sprintf', sprintf: [card.attributes.checklist_item_completed_count, card.attributes.checklist_item_count]}) %> "><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %><span class="label label-success"> <% } %><span class="icon-list-ul"></span><span><%- card.attributes.checklist_item_completed_count %>/<%- card.attributes.checklist_item_count %></span><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %></small><% } %></small></li>
 	<% } %> 
 	<% if(card.attributes.due_date > 0){ %>
-		<li><small title="<%- i18next.t('Due Date') %>"><span class="icon-time"></span><span><%- card.attributes.due_date %></span></small></li>
+		<li class="card-listing-truncate"><small title="<%- i18next.t('Due Date') %>"><span class="icon-time"></span><span><%- card.attributes.due_date %></span></small></li>
 	<% } %> 
 	<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0){ %>
 	<li>
@@ -86,7 +86,7 @@
 			label = 'label-future';
 		}
 	%>
-	<li><small title=" <%- i18next.t('Due Date') %>"><span class="label <%- label %>"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
+	<li class="card-listing-truncate"><small title=" <%- i18next.t('Due Date') %>"><span class="label <%- label %>"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
 	<% } %>
 	</ul>
 	</div>
