@@ -1,9 +1,7 @@
-img/
 node_modules/
 media/
 client/img/*_thumb
 tmp/
-dustbin/
 client/css/authorize.css
 client/css/bootstrap.css
 client/js/templates/templates.js
