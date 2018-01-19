@@ -2418,15 +2418,15 @@ footer, header, .dashboard-header {
 	width:83.4%;
 }
 .txt-aligns{
-	li{
-		label{	
+	li.card-listing-truncate{
+		small span{	
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
 			display: inline-block;
-			width: 115px;
-			line-height: 14px;
-			vertical-align: top;
+			max-width: 115px;
+			line-height: 13px;
+    		vertical-align: top;
 		}
 	}
 }
@@ -2497,12 +2497,12 @@ header{
     padding: 5px 0 0 5px;
 }
 .js-custom_field-labels{
-	label{	
+	small{	
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
 			display: inline-block;
-			width: 115px;
+			max-width: 115px;
 			line-height: 14px;
 			vertical-align: top;
 		}
