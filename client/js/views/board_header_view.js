@@ -396,6 +396,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 autoUpload: true,
                 singleFileUploads: true,
                 dropZone: $('#custom-background-dropzone'),
+                pasteZone: null,
                 formData: $('form.js-cusotm-background-add').serialize(),
                 fileUploadHTML: '<input id="cusotmBackgroundUpload" type="file" name="attachment"/>',
             });

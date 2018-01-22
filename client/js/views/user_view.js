@@ -159,6 +159,7 @@ App.UserView = Backbone.View.extend({
                     uploadUrl: api_url + 'users/' + _this.model.id + '.json?token=' + api_token,
                     autoUpload: true,
                     dropZone: $('#dropzone'),
+                    pasteZone: null,
                     singleFileUploads: true,
                     formData: $('form.js-user-profile-edit').serialize(),
                     fileUploadHTML: '<input id="fileupload1" type="file" name="attachment"  >',
