@@ -203,7 +203,7 @@
 						<th class="col-xs-1 text-center">
 						<div class="dropdown navbar-right">
 							<a title="Edit Board User Role" class="dropdown-toggle" data-toggle="dropdown"><%- i18next.t(board_user_role.attributes.name) %><i class="icon-pencil"></i></a>
-							<ul class="dropdown-menu arrow arrow-right">
+							<ul class="dropdown-menu arrow arrow-right js-board-user-roleEdit-response">
 								<li> 
 									<div class="clearfix text-center col-xs-12">
 										<span class="col-xs-10"><strong><%- i18next.t("Edit Board User Role") %></strong></span><i class="icon-remove cur"></i>
@@ -227,7 +227,7 @@
 									  </div>
 										<% if(parseInt(board_user_role.attributes.id) > 3) { %>
 											<div class="form-group">
-												<a href="#" title="Delete" class="js-delete-board-user-role btn btn-primary col-xs-12" data-board_user_role_id="<%- board_user_role.attributes.id %>"><%- i18next.t('Delete') %></a>											
+												<a href="#" title="Delete" class="js-delete-board-role btn btn-default col-xs-12" data-board_user_role_id="<%- board_user_role.attributes.id %>"><%- i18next.t('Delete') %></a>											
 											</div>
 										<% } %>
 									</form>
