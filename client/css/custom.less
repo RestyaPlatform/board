@@ -468,63 +468,6 @@ input[type=checkbox] {
 .checkbox {
 	padding-left: 0;
 }
-/* search bar style */
-.search-container {
-	position: relative;
-	margin-top: -1px;
-	width: 50px;
-	float: right;
-	border-width: 2px 1px 0 0;
-	border-style: solid;
-	border-color: transparent;
-	.form-group {
-		width: 99%;
-	}
-	&.search-tab {
-		width: 310px;
-		background: #ffffff;
-	}
-	.search-box {
-		.transition(width 0.6s);
-		.size(50px,41px);
-		border-radius: 4px;
-		cursor: pointer;
-		border-color: transparent;
-		&:focus {
-			padding: 1px 65px 1px 15px;
-			border-color: #f47564;
-			cursor: text;
-			width: 300px;
-			+ label {
-				.search-icon {
-					border-radius: 0px 4px 4px 0px;
-				}
-			}
-		}
-	}
-	label {
-		position: absolute;
-		right: 0px;
-		pointer-events: none;
-		.search-icon {
-			cursor: pointer;
-			display: inline-block;
-			.size(50px,41px);
-			line-height: 41px;
-			border-radius: 4px;
-			margin: 0;
-			padding: 0;
-			font-size: 20px;
-		}
-	}
-	.search-submit {
-		position: relative;
-		left: -999em;
-	}
-}
-.search-box:not(:focus) {
-	text-indent: -999em;
-}
 .ui-autocomplete.ui-menu {
 	&.search-block {
 		background: #f3f5f7;
@@ -1508,24 +1451,6 @@ footer {
 	.navbar {
 		min-height: 32px;
 	}
-	.search-container {
-		height: 32px;
-		right: 20px;
-		label {
-			margin-bottom: 0;
-		}
-		.search-box, .search-icon {
-			height: 32px;
-			line-height: 30px;
-			width: 35px;
-			font-size: 16px;
-			//padding: 0 0 0 10px !important;
-			cursor: pointer;
-			&:focus{
-    		cursor: pointer;
-			}
-		}
-	}
 }
 footer, header, .dashboard-header {
 	.nav > li > a, .btn {
@@ -2031,18 +1956,6 @@ footer, header, .dashboard-header {
 .search-block-main {
 	position:relative;	
 }
-.search-block-main-hover {	
-	position:absolute;
-	bottom:38px;
-	overflow-x:hidden;
-	overflow-y:auto; 
-	transition: all 0.5s ease-out;
-	right: 0;
-    left: 0;
-}
-.bg-search {
-    background-color: #ffff00;
-}
 .checklist-item { 
 	height: auto !important;
 }
@@ -2495,18 +2408,4 @@ header{
 .user-prf-new{
 	display: inline-block;
     padding: 5px 0 0 5px;
-}
-.js-custom_field-labels{
-	small{	
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-			display: inline-block;
-			max-width: 115px;
-			line-height: 14px;
-			vertical-align: top;
-		}
-}
-.right-mspace5{
-	margin-right: 5px;
 }
