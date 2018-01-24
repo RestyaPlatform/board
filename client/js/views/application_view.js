@@ -25,6 +25,7 @@ App.ApplicationView = Backbone.View.extend({
     initialize: function(options) {
         $('#content').html('');
         $('#footer').removeClass('action-open');
+        $('.tooltip').remove();
         var page = this;
         page.options = options;
         page.page_view_type = options.type;
