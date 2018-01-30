@@ -89,7 +89,7 @@ CREATE VIEW cards_elasticsearch_listing AS
                            FROM (cards_custom_fields cards_custom_fields
                              LEFT JOIN custom_fields custom_fields ON ((custom_fields.id = cards_custom_fields.custom_field_id)))
                           WHERE (cards_custom_fields.card_id = cards.id)
-                          ORDER BY cards_custom_fields.id) cf) AS cards_custom_fields
+                          ORDER BY cards_custom_fields.id) cf) AS cards_custom_fields,cards.custom_fields
            FROM ((cards cards
              LEFT JOIN boards boards ON ((boards.id = cards.board_id)))
              LEFT JOIN lists lists ON ((lists.id = cards.list_id)))
