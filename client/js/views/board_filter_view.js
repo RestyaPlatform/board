@@ -60,50 +60,46 @@ App.BoardFilterView = Backbone.View.extend({
         e.preventDefault();
         var self = this;
         var el = this.$el;
+        el.find('.js-board-labels').html('');
+        el.find('.js-board-users').html('');
+        var search_value = $(e.currentTarget).val();
         var filteredLabels;
         var filteredUsers;
-        var search_value = $(e.currentTarget).val();
-        var user_name; 
-        if (!_.isEmpty(search_value)) {
-            filteredLabels = this.model.labels.filter(function(model) {
-                return ~model.get('name').toUpperCase().indexOf(search_value.toUpperCase());
-            });
-            user_name = search_value;
-            if (!_.isUndefined(user_name) && !_.isEmpty(user_name)) {
-                filteredUsers = this.model.board_users.filter(function(model) {
-                    return ~model.get('username').toUpperCase().indexOf(user_name.toUpperCase());
-                });
+        filteredLabels = this.model.labels.filter(function(label) {
+            if (label.attributes.name.toUpperCase().indexOf(search_value.toUpperCase()) != -1) {
+                return label;
             }
-        } else {
-            this.render();
-        }
+        });
+        filteredUsers = this.model.board_users.filter(function(user) {
+            if (user.attributes.username.toUpperCase().indexOf(search_value.toUpperCase()) != -1) {
+                return user;
+            }
+        });
         if (!_.isEmpty(filteredLabels) && !_.isUndefined(filteredLabels)) {
-            el.find('.js-board-labels').html('');
             var string = '';
-            var labelColor;
             var labels = Array();
             _.each(filteredLabels, function(label) {
                 if (!_.contains(labels, label.attributes.name)) {
                     labels.push(label.attributes.name);
-                    labelColor = (label.attributes.color) ? label.attributes.color : '#' + self.converter.colorCode(label.attributes.name).substring(0, 6);
-                    string += '<li class="clearfix js-toggle-label-filter cur card-label-show h5 btn-link media"><span style="background:' + labelColor + ';color:#ffffff" class="pull-left btn btn-xs"><i class="' + LABEL_ICON + ' icon-light"></i></span><div class="htruncate js-label">'+ label.attributes.name +'</div></li>'; 
+                    var labelColor = (label.attributes.color) ? label.attributes.color : '#' + self.converter.colorCode(label.attributes.name).substring(0, 6);
+                    string += '<li class="clearfix js-toggle-label-filter cur card-label-show h5 btn-link media"><span style="background:' + labelColor + ';color:#ffffff" class="pull-left btn btn-xs"><i class="' + LABEL_ICON + ' icon-light"></i></span><div class="htruncate js-label">' + label.attributes.name + '</div></li>';
                 }
             });
-            el.find('.js-board-labels').append(string);
+            self.$el.find('.js-board-labels').append(string);
         }
         if (!_.isEmpty(filteredUsers) && !_.isUndefined(filteredUsers)) {
-            el.find('.js-board-users').html('');
             var Userstring = '';
             var users = Array();
             _.each(filteredUsers, function(user) {
-                if (!_.contains(users, user.attributes.username)) {
-                    users.push(user.attributes.name);
-                    Userstring += '<li class="clearfix js-toggle-label-filter cur card-label-show h5 btn-link"><div class="navbar-btn clearfix media"><span class="pull-left"></span></div></li>'; 
+                var image_content = '<i class="avatar avatar-color-194 img-rounded" title="' + user.attributes.username + '">' + user.attributes.initials + '</i>';
+                if (!_.isEmpty(user.attributes.profile_picture_path)) {
+                    var profile_picture_path = user.showImage('User', user.attributes.user_id, 'small_thumb');
+                    image_content = '<img class="img-rounded img-responsive" src="' + profile_picture_path + '" alt="[Images: ' + user.attributes.username + ']" title="' + user.attributes.username + '" />';
                 }
+                Userstring += '<li class="clearfix js-toggle-label-filter cur card-label-show h5 btn-link"><div class="navbar-btn clearfix media"><span class="pull-left">' + image_content + '</span><span data-user = "' + user.attributes.username + '" class="pull-left navbar-btn htruncate">' + user.attributes.username + '<span class="js-user hide">user-filter-' + user.attributes.user_id + '</span></div></li>';
             });
-            el.find('.js-board-users').append(string);
+            self.$el.find('.js-board-users').append(Userstring);
         }
-
     },
     /**
      * filterBoard()
