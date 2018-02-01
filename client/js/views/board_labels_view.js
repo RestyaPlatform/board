@@ -90,7 +90,7 @@ App.BoardLabelsView = Backbone.View.extend({
         var search_value = $(e.currentTarget).val();
         var filteredLabels;
         filteredLabels = this.model.labels.filter(function(label) {
-            if(label.attributes.name.toUpperCase().indexOf(search_value.toUpperCase()) != -1) {
+            if (label.attributes.name.toUpperCase().indexOf(search_value.toUpperCase()) != -1) {
                 return label;
             }
         });
