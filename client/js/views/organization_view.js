@@ -203,6 +203,7 @@ App.OrganizationsView = Backbone.View.extend({
                 uploadUrl: api_url + 'organizations/' + _this.model.organization_id + '/upload_logo.json?token=' + api_token,
                 autoUpload: true,
                 dropZone: $('#dropzone'),
+                pasteZone: null,
                 singleFileUploads: true,
                 formData: $('form.js-user-profile-edit').serialize(),
                 fileUploadHTML: '<input id="fileupload1" type="file" name="attachment"  >',
@@ -392,7 +393,8 @@ App.OrganizationsView = Backbone.View.extend({
         var modalView = new App.ModalActivityView({
             model: user_id,
             organization_id: this.model.id,
-            type: 'org_user_listing'
+            type: 'org_user_listing',
+            is_from: 'org_user_lists'
         });
         modalView.show();
         return false;

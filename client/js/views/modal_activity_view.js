@@ -34,6 +34,7 @@ App.ModalActivityView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         this.type = options.type;
+        this.is_from = options.is_from;
         this.organization_id = options.organization_id;
         this.last_activity_id = 0;
         _(this).bindAll('show', 'teardown');
@@ -117,7 +118,8 @@ App.ModalActivityView = Backbone.View.extend({
         this.activities.each(function(activity) {
             var view = new App.ActivityView({
                 model: activity,
-                type: 'all'
+                type: 'all',
+                is_from: self.is_from
             });
             self.$el.find('#js-activities-list').append(view.render().el);
         });

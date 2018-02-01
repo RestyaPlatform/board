@@ -1,7 +1,7 @@
 <td>
     <div class="form-group text-center">
 	    <div class="checkbox">
-            <input <% if(user.attributes.role_id == 1){%>disabled<%}%> id="<%- user.attributes.id%>"  name="user_id[<%- user.attributes.id %>]" value="<%- user.attributes.id%>" class="js-checkbox-list <%if(parseInt(user.attributes.is_active) === 1){%>js-checkbox-active<%}else{%>js-checkbox-inactive<%}%><% if(!user.attributes.is_email_confirmed){ %> js-checkbox-unconfirmed<%}%>" type="checkbox">
+            <input <% if(user.attributes.role_id == 1){%>disabled<%}%> id="<%- user.attributes.id%>"  name="user_id[<%- user.attributes.id %>]" value="<%- user.attributes.id%>" class="<% if(user.attributes.role_id != 1){%> js-checkbox-list <%}%><%if(parseInt(user.attributes.is_active) === 1){%>js-checkbox-active<%}else{%>js-checkbox-inactive<%}%><% if(!user.attributes.is_email_confirmed){ %> js-checkbox-unconfirmed<%}%>" type="checkbox">
             <label class="js-update-user" data-user_id="<%- user.attributes.id %>" for="<%- user.attributes.id%>"></label>
         </div>
     </div>
@@ -104,7 +104,7 @@
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default btn-xs dropdown-toggle" type="button">
 		    <span class="caret"></span><span class="sr-only"><%- i18next.t("Toggle Dropdown") %></span>
         </button>
-		<ul class="dropdown-menu arrow arrow-right js-admin-list-user-role" role="menu">
+		<ul class="dropdown-menu arrow arrow-right js-admin-list-user-role max-wid" role="menu">
 			<% _.each(user.roles, function(role){%>
 				<li class="text-left"><a href="#" class="<% if(user.attributes.role_id == role.id){%>js-no-action<%}else{%>js-change-user-role<%}%>" data-role-id="<%- role.id %>"><%- role.name%> <% if(user.attributes.role_id == role.id){%><i class="icon-ok"></i><%}%></a></li>
 			<%})%>
@@ -130,18 +130,18 @@
 					</button>
 							<ul class="dropdown-menu arrow arrow-right" role="menu">
 										<div class="panel-body well-lg">
-											<form role="form" class = "js-admin-change-password" name="UserChangePasswordAdminForm" id="UserChangePasswordAdminForm">
+											<form role="form" class = "js-admin-change-password" name="UserChangePasswordAdminForm" id="UserChangePasswordAdminForm-<%- user.attributes.id %>">
 													<div class="form-group input password required">
-														<label class="sr-only control-label" for="inputPassword"><%- i18next.t('Enter a new Password') %></label>
-														<input type="password" class="form-control" placeholder="<%- i18next.t('Enter a new Password') %>" id="inputPassword" name="password" required title="<%- i18next.t('Enter a new Password') %>">
+														<label class="sr-only control-label" for="inputPassword-<%- user.attributes.id %>"><%- i18next.t('Enter a new Password') %></label>
+														<input type="password" class="form-control" placeholder="<%- i18next.t('Enter a new Password') %>" id="inputPassword-<%- user.attributes.id %>" name="password" required title="<%- i18next.t('Enter a new Password') %>">
 													</div>
 													<div class="form-group input cpassword required">
-														<label class="sr-only control-label" for="inputConfirmPassword"><%- i18next.t('Confirm Password') %></label>
-														<input type="password" class="form-control" placeholder="<%- i18next.t('Confirm Password') %>" id="inputConfirmPassword" name="confirm_password" required title="<%- i18next.t('Confirm Password') %>">
+														<label class="sr-only control-label" for="inputConfirmPassword-<%- user.attributes.id %>"><%- i18next.t('Confirm Password') %></label>
+														<input type="password" class="form-control" placeholder="<%- i18next.t('Confirm Password') %>" id="inputConfirmPassword-<%- user.attributes.id %>" name="confirm_password" required title="<%- i18next.t('Confirm Password') %>">
 													</div>
 													<div class="form-group">
-														<label class="sr-only control-label" for="submit2"><%- i18next.t('Change Password') %></label>
-														<input type="submit" class="btn btn-primary col-xs-12" id="submitChangePasswordAdmin" value="<%- i18next.t('Change Password') %>" >
+														<label class="sr-only control-label" for="submitChangePasswordAdmin-<%- user.attributes.id %>"><%- i18next.t('Change Password') %></label>
+														<input type="submit" class="btn btn-primary col-xs-12" id="submitChangePasswordAdmin-<%- user.attributes.id %>" value="<%- i18next.t('Change Password') %>" >
 													</div>
 											</form>
 									</div>

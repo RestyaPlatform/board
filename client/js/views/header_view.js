@@ -111,10 +111,11 @@ App.HeaderView = Backbone.View.extend({
                         l.rel = 'import';
                         l.href = html;
                         l.onload = function(e) {
-                            console.log('Loaded import: ' + e.target.href);
-                        };
-                        l.onerror = function(e) {
-                            console.log('Error loading import: ' + e.target.href);
+                            var content = e.target.import;
+                            var get_script = content.querySelectorAll("script");
+                            _.each(get_script, function(html, key) {
+                                document.body.appendChild(html.cloneNode(true));
+                            });
                         };
                         document.head.appendChild(l);
                     });

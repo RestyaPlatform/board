@@ -48,8 +48,8 @@ if (!empty($_GET['board_id']) && !empty($_GET['user_id']) && !empty($_GET['hash'
                 $event.= 'BEGIN:VEVENT' . "\r\n";
                 $uid = preg_replace('#^https?://#', '', $_server_domain_url);
                 $event.= 'UID:' . $row['id'] . "@" . $uid . "\r\n";
-                $event.= 'DTSTART;TZID=' . $timezone . ':' . date('Ymd\THis\Z', strtotime($row['due_date'])) . "\r\n";
-                $event.= 'DTEND;TZID=' . $timezone . ':' . date('Ymd\THis\Z', strtotime($row['due_date'])) . "\r\n";
+                $event.= 'DTSTART;TZID=' . $timezone . ':' . date('Ymd\THis', strtotime($row['due_date'])) . "\r\n";
+                $event.= 'DTEND;TZID=' . $timezone . ':' . date('Ymd\THis', strtotime($row['due_date'])) . "\r\n";
                 $event.= 'SUMMARY:' . $row['card_name'] . "\r\n";
                 $event.= 'URL:' . $_server_domain_url . '/#/board/' . $_GET['board_id'] . "/card/" . $row['id'] . "\r\n";
                 $event.= 'END:VEVENT' . "\r\n";

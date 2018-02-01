@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2017 Restya
+ * @copyright  2014-2018 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -590,9 +590,17 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.6; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.6.1; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
-        mail($to, $subject, $message, $headers);
+        $result = mail($to, $subject, $message, $headers);
+        if (R_DEBUG) {
+            if (!$result) {
+                $compose_string = 'F, ' . $from_email . ', ' . $to . ', ' . $subject;
+            } else {
+                $compose_string = 'S, ' . $from_email . ', ' . $to . ', ' . $subject;
+            }
+            error_log($compose_string, 3, APP_PATH . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'mail.log');
+        }
     }
 }
 /**
@@ -1306,6 +1314,20 @@ function importTrelloBoard($board = array())
                     );
                     pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                 }
+            }
+        }
+        if (!empty($cards)) {
+            foreach ($cards as $value) {
+                $conditions = array(
+                    $value
+                );
+                $activity_count = executeQuery("SELECT COUNT(id) as total_count FROM activities WHERE type = 'add_comment' AND card_id = $1", $conditions);
+                $activity_count = (!empty($activity_count)) ? $activity_count['total_count'] : 0;
+                $qry_val_arr = array(
+                    $activity_count,
+                    $value
+                );
+                pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
             }
         }
         return $new_board;
@@ -2039,4 +2061,43 @@ function board_creation($qry_val_arr = array() , $db_lnk)
 {
     $new_board = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards (created, modified, name, background_color, background_picture_url, background_pattern_url, user_id, board_visibility) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
     return $new_board;
+}
+/**
+ * Generate client id
+ *
+ * @return client_id
+ */
+function isClientIdAvailable()
+{
+    do {
+        $client_id = '';
+        for ($i = 0; $i < 16; $i++) {
+            $client_id.= mt_rand(0, 9);
+        }
+        $qry_val_arr = array(
+            $client_id
+        );
+        $oauth_client = executeQuery('SELECT * FROM oauth_clients WHERE client_id = $1', $qry_val_arr);
+    } while (!empty($oauth_client));
+    return $client_id;
+}
+/**
+ * Generate client secret
+ *
+ * @return client_secret
+ */
+function isClientSecretAvailable()
+{
+    $characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    do {
+        $client_secret = '';
+        for ($i = 0; $i < 26; $i++) {
+            $client_secret.= $characters[mt_rand(0, strlen($characters) - 1) ];
+        }
+        $qry_val_arr = array(
+            $client_secret
+        );
+        $oauth_client = executeQuery('SELECT * FROM oauth_clients WHERE client_secret = $1', $qry_val_arr);
+    } while (!empty($oauth_client));
+    return $client_secret;
 }

@@ -14,6 +14,9 @@ if (typeof App === 'undefined') {
  * @extends Backbone.View
  */
 App.FooterView = Backbone.View.extend({
+    converter: new showdown.Converter({
+        extensions: ['targetblank', 'xssfilter', 'codehighlight']
+    }),
     template: JST['templates/footer'],
     className: 'action-sheet',
     /**
@@ -133,6 +136,7 @@ App.FooterView = Backbone.View.extend({
      *
      */
     render: function() {
+        this.converter.setFlavor('github');
         var self = this;
         $.removeCookie('filter');
         this.model.is_show_enable_notification = false;
@@ -910,6 +914,7 @@ App.FooterView = Backbone.View.extend({
                                             new_checklist.set('id', parseInt(activity.attributes.checklist.id));
                                             new_checklist.set('user_id', parseInt(activity.attributes.checklist.user_id));
                                             new_checklist.set('card_id', parseInt(activity.attributes.checklist.card_id));
+                                            self.board.checklists.add(new_checklist);
                                             if (activity.attributes.checklist.checklists_items !== null) {
                                                 _.each(activity.attributes.checklist.checklists_items, function(checklists_item) {
                                                     var new_item = new App.CheckListItem();
@@ -933,7 +938,6 @@ App.FooterView = Backbone.View.extend({
                                                 card.set('checklist_item_completed_count', completed_count);
                                                 card.set('checklist_item_count', total_count);
                                             }
-                                            self.board.checklists.add(new_checklist);
                                         } else if (activity.attributes.type === 'add_card_label') {
                                             var filtered_labels = self.board.labels.where({
                                                 card_id: activity.attributes.card_id
@@ -1009,6 +1013,7 @@ App.FooterView = Backbone.View.extend({
                                                 checklist.set('user_id', parseInt(activity.attributes.checklist.user_id));
                                                 checklist.set('card_id', parseInt(activity.attributes.checklist.card_id));
                                                 checklist.set('position', parseFloat(activity.attributes.checklist.position));
+                                                card.checklists.set(activity.attributes.checklist);
                                             }
                                         } else if (activity.attributes.type === 'update_card_checklist_item' || activity.attributes.type === 'moved_card_checklist_item') {
                                             var checklist_item = self.board.checklist_items.findWhere({
@@ -1016,6 +1021,7 @@ App.FooterView = Backbone.View.extend({
                                             });
                                             if (!_.isUndefined(checklist_item)) {
                                                 checklist_item.set(activity.attributes.item);
+                                                $('#js-checklist-item-' + activity.attributes.item.id).html(self.converter.makeHtml(activity.attributes.item.name));
                                                 checklist_item.set('id', parseInt(activity.attributes.item.id));
                                                 checklist_item.set('user_id', parseInt(activity.attributes.item.user_id));
                                                 checklist_item.set('card_id', parseInt(activity.attributes.item.card_id));
@@ -1033,6 +1039,18 @@ App.FooterView = Backbone.View.extend({
                                                 card.set('checklist_item_completed_count', completed_count);
                                                 card.set('checklist_item_count', total_count);
                                             }
+                                        } else if (activity.attributes.type === 'update_card_comment') {
+                                            comment = self.board.activities.findWhere({
+                                                id: parseInt(activity.attributes.foreign_id)
+                                            });
+                                            if (!_.isUndefined(comment)) {
+                                                var comment_value = self.converter.makeHtml(activity.attributes.revisions.new_value.comment);
+                                                comment.set(activity);
+                                                comment.set('id', parseInt(activity.attributes.foreign_id));
+                                                comment.set('user_id', parseInt(activity.attributes.user_id));
+                                                comment.set('card_id', parseInt(activity.attributes.card_id));
+                                                $('.js-activity-' + activity.attributes.foreign_id).html(comment_value);
+                                            }
                                         } else if (activity.attributes.type === 'add_card_user') {
                                             var new_user = new App.CardUser();
                                             new_user.set(activity.attributes.user);
@@ -1043,11 +1061,77 @@ App.FooterView = Backbone.View.extend({
                                             card.set('users', new_user);
                                         } else if (activity.attributes.type === 'add_comment') {
                                             card.list.collection.board.activities.add(activity);
+                                            card.activities.add(activity);
                                             var current_card = card.list.collection.board.cards.get(activity.attributes.card_id);
                                             var comment_count = (!_.isUndefined(current_card)) ? (parseInt(current_card.attributes.comment_count) + 1) : 0;
                                             comment_count = isNaN(comment_count) ? 1 : comment_count;
                                             card.set('comment_count', comment_count);
                                             card.attributes.comment_count = comment_count;
+                                            if ($('#js-card-modal-' + activity.attributes.card_id).length === 1) {
+                                                if ($('#js-card-activities-' + activity.attributes.card_id).length === 1) {
+                                                    if ($('#js-list-activity-' + activity.attributes.id).length === 0) {
+                                                        var profile_picture_path;
+                                                        var comment_details;
+                                                        var profile_picture;
+                                                        var depth;
+                                                        if (!_.isEmpty(activity.attributes.profile_picture_path)) {
+                                                            profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'small_thumb');
+                                                            profile_picture = '<img src="' + profile_picture_path + '" alt="[Image: ' + activity.attributes.full_name + ']" title="' + activity.attributes.full_name + ' (' + activity.attributes.username + ')" class="img-rounded img-responsive">';
+                                                        } else {
+                                                            profile_picture = '<i class="avatar avatar-color-194 img-rounded">' + activity.attributes.initials + '</i>';
+                                                        }
+                                                        if (!_.isEmpty(activity.attributes.comment)) {
+                                                            comment_details = self.converter.makeHtml(activity.attributes.comment);
+                                                        }
+                                                        if (activity.attributes.depth !== 0) {
+                                                            depth = parseInt(activity.attributes.depth);
+                                                        } else {
+                                                            depth = '';
+                                                        }
+                                                        var comment_string = '';
+                                                        comment_string += '<li class="btn-block col-xs-12 js-activity activity-github-styles js-list-activity-' + activity.attributes.id + ' col-lg-offset-' + depth + '"><div class="media  modal-comments modal-logged-user-activities"><a title="' + activity.attributes.full_name + '(' + activity.attributes.username + ')" data-toggle="tooltip" class="js-tooltip pull-left" href="#/user/' + activity.attributes.user_id + '">';
+                                                        comment_string += '' + profile_picture + '</a>';
+                                                        comment_string += '<div class="media-body"><div class="col-xs-12 btn-block"><div class="activities-list js-activity-' + activity.attributes.id + '"><div class="panel no-mar"><div class="panel-body">' + comment_details + '</div></div>';
+                                                        setInterval(function() {
+                                                            parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.id);
+                                                        }, 10000);
+                                                        comment_string += '<small><span class="js-timeago-' + activity.attributes.id + '"></span>';
+                                                        parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.id);
+                                                        if (!_.isUndefined(authuser.user)) {
+                                                            comment_string += '<div class="js-acticity-action-' + activity.attributes.id + ' pull-left navbar-btn col-md-10 col-xs-12"><ul class="list-inline"><li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-' + activity.attributes.id + '" href="#" data-activity-id="' + activity.attributes.id + '"><i class="icon-repeat"></i>' + i18next.t('Reply') + '</a></li>';
+                                                            if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({
+                                                                    slug: "delete_comment",
+                                                                    board_user_role_id: parseInt(activity.attributes.user_role_id)
+                                                                })))) {
+                                                                comment_string += '<li class="dropdown pull-right"><a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete text-danger" data-toggle="dropdown" href="#" data-activity-id="' + activity.attributes.id + '" role="button"><i class="icon-remove"></i>' + i18next.t('Delete') + '</a>';
+                                                                comment_string += '<ul class="dropdown-menu arrow arrow-right"><li id="js-acticity-actions-response-' + activity.attributes.id + '" class="js-dropdown-popup dropdown-popup"></li></ul></li>';
+                                                            }
+                                                            if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({
+                                                                    slug: "edit_comment",
+                                                                    board_user_role_id: parseInt(activity.attributes.user_role_id)
+                                                                })))) {
+                                                                comment_string += '<li class="pull-right"><a title="Edit" class="js-show-edit-activity js-edit-activity-link-' + activity.attributes.id + '" href="#" data-activity-id="' + activity.attributes.id + '" data-activity-temp-id="' + activity.attributes.temp_id + '"><i class="icon-edit"></i>' + i18next.t('Edit') + '</a></li>';
+                                                            }
+                                                            comment_string += '</ul>';
+                                                        }
+                                                        comment_string += '</div><span class="pull-left col-xs-12 js-activity-reply-form-response-' + activity.attributes.id + '"></span></small></div></div></div></div><hr class="clearfix col-xs-12 btn-block"></hr></li>';
+
+                                                        if (activity.attributes.depth === 0) {
+                                                            $("ul#js-card-activities-" + activity.attributes.card_id).prepend(comment_string);
+                                                        } else {
+                                                            if (activity.attributes.depth == 1) {
+                                                                $(comment_string).insertAfter($('.js-list-activity-' + activity.attributes.root));
+                                                            } else {
+                                                                var path = activity.attributes.path;
+                                                                var pathSplit = path.split('.');
+                                                                --depth;
+                                                                var parentCommentId = pathSplit[depth].replace('P', '');
+                                                                $(comment_string).insertAfter($('.js-list-activity-' + parentCommentId));
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         } else if (activity.attributes.type === 'add_card_attachment') {
                                             var new_attachment = new App.CardAttachment();
                                             new_attachment.set(activity.attributes.attachment);
@@ -1104,6 +1188,9 @@ App.FooterView = Backbone.View.extend({
                                             self.board.activities.remove(self.board.activities.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
                                             }));
+                                            if ($('.js-list-activity-' + activity.attributes.foreign_id)) {
+                                                $('.js-list-activity-' + activity.attributes.foreign_id).remove();
+                                            }
                                         } else if (activity.attributes.type === 'delete_checklist') {
                                             self.board.checklists.remove(self.board.checklists.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
@@ -1392,10 +1479,6 @@ App.FooterView = Backbone.View.extend({
                     'height': notificationH - 100,
                     'overflow-y': 'scroll'
                 });
-            },
-            error: function(models, response, options) {
-                console.log(options);
-                console.log(response);
             }
         });
     },

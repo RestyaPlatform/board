@@ -13,6 +13,9 @@ body {
 	cursor: grabbing;
 	cursor: -webkit-grabbing;
 }
+.js-select-options{
+	margin-top:10px;
+}
 del, ins {
 	padding: 3px 3px;
 	font-size: 90%;
@@ -74,8 +77,9 @@ main {
 	border: 1px solid #d7d9db;
 }
 .board-user-img {
-	height: 18px;
-	width: 18px;
+	border: 1px solid #d7d9db;
+	height: 32px;
+	width: 32px;
 }
 .cover-image {
 	border-radius: 3px;
@@ -1954,6 +1958,9 @@ footer, header, .dashboard-header {
 .no-mar{
 	margin: 0px;
 }
+.no-top-mar{
+	margin-top:0 !important;
+}
 .activities-list { 
 	p {
 		margin: 0px;
@@ -2139,6 +2146,19 @@ footer, header, .dashboard-header {
     	right: 10px;
 		left: auto;
 	}
+	&.activity-mod-comments{
+		.js-new-comment{
+			.dropdown-menu {
+				right: auto;
+				left: 0;
+				max-width: 245px;
+				&:after,&:before{
+					right: auto;
+					left: 0;
+				}
+			}
+		}
+	}
 }
 .wish-list {
 	.img-thumbnail {
@@ -2257,6 +2277,10 @@ footer, header, .dashboard-header {
 .js-admin-list-user-role {
 	min-width: 100px !important;
 	max-width: 100px !important;
+	&.max-wid{
+		min-width: 107px !important;
+    	max-width: 107px !important;
+	}
 }
 .js-show-add-boards-simple {
 	height: 168px !important;
@@ -2389,4 +2413,100 @@ footer, header, .dashboard-header {
 			margin-bottom: 0;
 		}
 	}
+}
+.custom-filed-btn{
+	width:83.4%;
+}
+.txt-aligns{
+	li.card-listing-truncate{
+		small span{	
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			display: inline-block;
+			max-width: 115px;
+			line-height: 13px;
+    		vertical-align: top;
+		}
+	}
+}
+.pad-left-22{
+	padding-left: 24px;
+}
+.no-pad{
+	padding:0 !important;
+}
+/*on jan12*/
+header{
+	.nav-pills {
+		&.hdrpvtvws{
+			padding:4px 0 0;
+			& + div.dropdown{
+				padding:4px 0 0;
+			}
+		}
+	}
+	.nav{
+		>li{
+			a.hdrorganization{
+				padding:0 7px;
+				line-height: 29px;
+			}
+			span.orgseperator{
+				margin:0;
+				line-height: 23px;
+			}
+		}
+	}
+	.headernav_rgtusr{
+		>li{
+			>a{
+				padding:2px 7px;
+				.label{
+					font-weight: normal;
+					font-size:11px;
+				}
+			}
+		}
+		.relatedusrs{
+			padding:0 5px 0 0;
+		}
+	}
+	.navbar-right{
+		.dropdown-menu {
+			a.ddownarrows{
+				&:hover{
+					[class*="icon"]{
+						color:#000;
+					}
+				}
+			}
+		}
+	}
+}
+.header_innr_a{
+	.header-inner-alig{
+		.open > a,  .open > a:hover,  .open >{
+			background-color:none !important;
+			border-color:none !important;
+		} 
+	}
+}
+.user-prf-new{
+	display: inline-block;
+    padding: 5px 0 0 5px;
+}
+.js-custom_field-labels{
+	small{	
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			display: inline-block;
+			max-width: 115px;
+			line-height: 14px;
+			vertical-align: top;
+		}
+}
+.right-mspace5{
+	margin-right: 5px;
 }

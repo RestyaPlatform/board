@@ -8,6 +8,7 @@ var card_ids, card_ids_ref = '';
 var view_type, view_type_ref = '';
 var trigger_dockmodal = false;
 var viewed_board = new App.Board();
+var is_online = true;
 var is_offline_data = false;
 var set_interval_id = '';
 var isRunning = false;
@@ -35,6 +36,7 @@ var APPS = [];
 var load_count = 1;
 var from_url = '';
 var custom_fields = {};
+
 Backbone.View.prototype.flash = function(type, message, delay, position) {
     if (!delay) {
         delay = 4000;
@@ -102,13 +104,13 @@ callbackTranslator = {
             $('#progress').width('101%').delay(200).fadeOut(400, function() {
                 $(this).remove();
             });
-            var is_online = false;
             if ((($.cookie('is_offline_data') !== undefined && $.cookie('is_offline_data') !== null) && $.cookie('is_offline_data') === "true")) {
                 is_offline_data = true;
             } else {
                 is_offline_data = false;
             }
             if (hasOfflineStatusCode(model)) {
+                is_online = false;
                 $.cookie('is_offline_data', true);
                 is_offline_data = true;
                 model.is_offline = true;
@@ -528,11 +530,40 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     user_view_type: function(id, type) {
-        new App.ApplicationView({
-            model: 'user_view',
-            'id': id,
-            type: type
-        });
+        var Auth_check = JSON.parse($.cookie('auth'));
+        if ($.cookie('auth') !== null) {
+            if (Auth_check.user.id == id || Auth_check.user.role_id == '1') {
+                new App.ApplicationView({
+                    model: 'user_view',
+                    'id': id,
+                    type: type
+                });
+            } else {
+                $('.dockmodal, .dockmodal-overlay').remove();
+                var User = new App.User();
+                User.url = api_url + 'users/logout.json';
+                User.fetch({
+                    cache: false,
+                    success: function() {
+                        $.removeCookie('auth');
+                        api_token = '';
+                        authuser = new App.User();
+                        app.navigate('#/users/login', {
+                            trigger: true,
+                            replace: true
+                        });
+                        clearInterval(set_interval_id);
+                    }
+                });
+            }
+        } else {
+            $.cookie('redirect_link', window.location.hash);
+            new App.ApplicationView({
+                model: 'user_view',
+                'id': id,
+                type: type
+            });
+        }
     },
     role_settings: function() {
         new App.ApplicationView({

@@ -38,6 +38,7 @@ To upgrade, overwrite application files and apply respective DB script:
 *  v0.4.2 to v0.5 - `/sql/upgrade-0.4.2-0.5.sql`
 *  v0.5.1 to v0.5.2 - `/sql/upgrade-0.5.1-0.5.2.sql`
 *  v0.5.2 to v0.6 - `/sql/upgrade-0.5.2-0.6.sql`
+*  v0.6 to v0.6.1 - `/sql/upgrade-0.6-0.6.1.sql`
 
 ### Forum
 
@@ -110,6 +111,6 @@ Required sofware: nginx, php-fpm (with mbstring), PostgreSQL, ElasticSearch, Gru
 
 ### License
 
-Copyright (c) 2014-2017 [Restya](http://restya.com/).
+Copyright (c) 2014-2018 [Restya](http://restya.com/).
 
 Dual License ([OSL 3.0](LICENSE.txt) & [Commercial License](http://restya.com/contact))

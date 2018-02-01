@@ -208,6 +208,7 @@ App.CardView = Backbone.View.extend({
         var filter_label_arr = [],
             filter_user_arr = [],
             filter_due_arr = [];
+        var filter_mode;
         var current_param = Backbone.history.fragment.split('?');
         var current_url = current_param[0].split('/');
         var filter = 'grid';
@@ -232,6 +233,11 @@ App.CardView = Backbone.View.extend({
                 } else if (value.indexOf('due:') > -1) {
                     total_filter += 1;
                     filter_due_arr.push(value.replace('due:', ''));
+                } else if (value.indexOf('mode:') > -1) {
+                    var mode = value.replace('mode:', '');
+                    if (mode === 'and') {
+                        filter_mode = 'and';
+                    }
                 }
             });
         }
@@ -251,8 +257,24 @@ App.CardView = Backbone.View.extend({
             content += '</ul>';
             this.$el.html(content);
             $(content).find('li').each(function(key, value) {
-                if ($.inArray($(value).text(), filter_label_arr) !== -1) {
-                    filter_count += 1;
+                if (!_.isEmpty(filter_mode)) {
+                    if (filter_mode === 'and') {
+                        if ($.inArray($(value).text(), filter_label_arr) !== -1) {
+                            filter_count += 1;
+                        }
+                    }
+                } else {
+                    if (filter_label_arr.length != 1) {
+                        $(filter_label_arr).each(function(key, label) {
+                            if ($.inArray($(value).text(), filter_label_arr) !== -1) {
+                                filter_count += 1;
+                            }
+                        });
+                    } else {
+                        if ($.inArray($(value).text(), filter_label_arr) !== -1) {
+                            filter_count += 1;
+                        }
+                    }
                 }
             });
             content = '<ul class="unstyled  js-card-users hide">';
@@ -262,8 +284,24 @@ App.CardView = Backbone.View.extend({
             content += '</ul>';
             this.$el.append(content);
             $(content).find('li').each(function(key, value) {
-                if ($.inArray($(value).text(), filter_user_arr) !== -1) {
-                    filter_count += 1;
+                if (!_.isEmpty(filter_mode)) {
+                    if (filter_mode === 'and') {
+                        if ($.inArray($(value).text(), filter_user_arr) !== -1) {
+                            filter_count += 1;
+                        }
+                    }
+                } else {
+                    if (filter_user_arr.length != 1) {
+                        $(filter_user_arr).each(function(key, label) {
+                            if ($.inArray($(value).text(), filter_user_arr) !== -1) {
+                                filter_count += 1;
+                            }
+                        });
+                    } else {
+                        if ($.inArray($(value).text(), filter_user_arr) !== -1) {
+                            filter_count += 1;
+                        }
+                    }
                 }
             });
             content = '<ul class="unstyled  js-card-due hide">';
@@ -303,8 +341,24 @@ App.CardView = Backbone.View.extend({
             content += '</ul>';
             this.$el.html(content);
             $(content).find('li').each(function(key, value) {
-                if ($.inArray($(value).text(), filter_label_arr) !== -1) {
-                    filter_count += 1;
+                if (!_.isEmpty(filter_mode)) {
+                    if (filter_mode === 'and') {
+                        if ($.inArray($(value).text(), filter_label_arr) !== -1) {
+                            filter_count += 1;
+                        }
+                    }
+                } else {
+                    if (filter_label_arr.length != 1) {
+                        $(filter_label_arr).each(function(key, label) {
+                            if ($.inArray($(value).text(), filter_label_arr) !== -1) {
+                                filter_count += 1;
+                            }
+                        });
+                    } else {
+                        if ($.inArray($(value).text(), filter_label_arr) !== -1) {
+                            filter_count += 1;
+                        }
+                    }
                 }
             });
             content = '<ul class="unstyled  js-card-users hide">';
@@ -317,8 +371,24 @@ App.CardView = Backbone.View.extend({
             content += '</ul>';
             this.$el.append(content);
             $(content).find('li').each(function(key, value) {
-                if ($.inArray($(value).text(), filter_user_arr) !== -1) {
-                    filter_count += 1;
+                if (!_.isEmpty(filter_mode)) {
+                    if (filter_mode === 'and') {
+                        if ($.inArray($(value).text(), filter_user_arr) !== -1) {
+                            filter_count += 1;
+                        }
+                    }
+                } else {
+                    if (filter_user_arr.length != 1) {
+                        $(filter_user_arr).each(function(key, label) {
+                            if ($.inArray($(value).text(), filter_user_arr) !== -1) {
+                                filter_count += 1;
+                            }
+                        });
+                    } else {
+                        if ($.inArray($(value).text(), filter_user_arr) !== -1) {
+                            filter_count += 1;
+                        }
+                    }
                 }
             });
             content = '<ul class="unstyled  js-card-due hide">';

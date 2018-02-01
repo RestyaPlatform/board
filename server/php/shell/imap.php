@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2017 Restya
+ * @copyright  2014-2018 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -41,18 +41,19 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
         if (count($mail) > 1) {
             // Fetch email body
             $s = imap_fetchstructure($connection, $counter);
-            if (!$s->parts) // simple
-            $body_data = imapBodyDecode($connection, $counter, $s, 0); // pass 0 as part-number
-            else { // multipart: cycle through each part
-                foreach ($s->parts as $partno0 => $p) {
-                    $body_data[] = imapBodyDecode($connection, $counter, $p, $partno0 + 1);
+            if (!$s->parts) { // simple
+                $body = imapBodyDecode($connection, $counter, $s, 0); // pass 0 as part-number
+                
+            } else { // multipart: cycle through each part
+                foreach ($s->parts as $partno => $p) {
+                    $body_data[] = imapBodyDecode($connection, $counter, $p, $partno + 1);
                 }
-            }
-            if ($body_data) {
-                if ($body_data[0] && is_array($body_data[0])) {
-                    $body = $body_data[0][0];
-                } else {
-                    $body = $body_data[0];
+                if ($body_data) {
+                    if ($body_data[0] && is_array($body_data[0])) {
+                        $body = $body_data[0][0];
+                    } else {
+                        $body = $body_data[0];
+                    }
                 }
             }
             $board_id = $mail[1];

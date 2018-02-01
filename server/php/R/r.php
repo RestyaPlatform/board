@@ -8,7 +8,7 @@
  * @package    REST
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2017 Restya
+ * @copyright  2014-2018 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  * @todo       Fix code duplication & make it really lightweight
@@ -18,7 +18,7 @@ $r_debug = '';
 $authUser = $client = $form = array();
 $_server_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
 $_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST']; // http://localhost
-header('x-response-url:' . $_SERVER[REQUEST_URI]);
+header('x-response-url:' . $_SERVER['REQUEST_URI']);
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: *');
 require_once '../config.inc.php';
@@ -267,7 +267,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/users/?/activities':
         $condition = '';
-        if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users'] && empty($r_resource_filters['board_id'])) {
+        if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users'] && empty($r_resource_filters['organization_id']) && empty($r_resource_filters['board_id'])) {
             if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
                 $condition = (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE al.id < $1' : '';
             } else {
@@ -308,7 +308,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             while ($row = pg_fetch_assoc($org_users)) {
                 $org_ids[] = $row['organization_id'];
             }
-            if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
+            if (!empty($r_resource_filters['organization_id'])) {
+                if (!empty($r_resource_filters['last_activity_id'])) {
+                    $condition = ' AND al.id > $4';
+                }
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition;
+                array_push($pg_params, $r_resource_vars['users'], $r_resource_filters['organization_id'], '{' . $r_resource_filters['organization_id'] . '}');
+            } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
                 $i = 1;
                 $str = 'user_id = $' . $i;
                 array_push($pg_params, $r_resource_vars['users']);
@@ -323,13 +330,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ' . $str . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str;
-            } else if (!empty($r_resource_filters['organization_id'])) {
-                if (!empty($r_resource_filters['last_activity_id'])) {
-                    $condition = ' AND al.id > $4';
-                }
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition;
-                array_push($pg_params, $r_resource_vars['users'], $r_resource_filters['organization_id'], '{' . $r_resource_filters['organization_id'] . '}');
             } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] = 'all') {
                 if (!empty($r_resource_filters['last_activity_id'])) {
                     $condition = ' AND al.id > $3';
@@ -461,12 +461,26 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $obj = json_decode($row[0], true);
                     $data = $obj;
                 }
-                $s_result = pg_query_params($db_lnk, 'SELECT * FROM timezones order by utc_offset::int', array());
-                $data['timezones'] = array();
-                while ($row = pg_fetch_assoc($s_result)) {
-                    $data['timezones'][] = $row;
+                if ($data['id'] != $authUser['id'] && $authUser['role_id'] != 1) {
+                    $jsonArr = array(
+                        'id' => $data['id'],
+                        'role_id' => $data['role_id'],
+                        'username' => $data['username'],
+                        'full_name' => $data['full_name'],
+                    );
+                    echo json_encode($jsonArr);
+                } else {
+                    $s_result = pg_query_params($db_lnk, 'SELECT * FROM timezones order by utc_offset::int', array());
+                    $data['timezones'] = array();
+                    while ($row = pg_fetch_assoc($s_result)) {
+                        $data['timezones'][] = $row;
+                    }
+                    if (is_plugin_enabled('r_custom_fields')) {
+                        require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
+                        $data = customFieldAfterFetchUser($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
+                    }
+                    echo json_encode($data);
                 }
-                echo json_encode($data);
             } else {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
@@ -936,6 +950,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                             $data = $obj;
                         }
+                        if (is_plugin_enabled('r_custom_fields')) {
+                            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
+                            $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
+                            array_merge($data, $data);
+                        }
                         echo json_encode($data);
                         pg_free_result($result);
                     } else {
@@ -1160,7 +1179,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (isset($r_resource_filters['mode']) && $r_resource_filters['mode'] == '1') {
                 $order = 'ORDER BY al.id DESC';
             }
-            $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ' . $order . ' LIMIT ' . $limit . ') as d ';
+            if (isset($r_resource_filters['page'])) {
+                $offset_val = $r_resource_filters['page'] * 20;
+                $construct_offset = ' offset ' . $offset_val;
+            }
+            $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ' . $order . ' LIMIT ' . $limit . ' ' . $construct_offset . ') as d ';
             if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1' . $condition;
             }
@@ -1352,6 +1375,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             if (!empty($_metadata)) {
                 $data['_metadata'] = $_metadata;
+            }
+            if (is_plugin_enabled('r_custom_fields')) {
+                require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
+                $data = customFieldAfterFetchBoardsListsCards($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
             }
             echo json_encode($data);
         } else {
@@ -2158,17 +2185,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $conditions = array(
                 true
             );
-            $acl_links = pg_query_params($db_lnk, "SELECT * FROM acl_links where is_default = $1", $conditions);
-            while ($acl_link = pg_fetch_assoc($acl_links)) {
-                $qry_val_arr = array(
-                    $acl_link['id'],
-                    $user['role_id']
-                );
-                $acl_link_role = executeQuery('SELECT * FROM acl_links_roles WHERE acl_link_id = $1 and role_id = $2', $qry_val_arr);
-                if (empty($acl_link_role)) {
-                    pg_query_params($db_lnk, 'INSERT INTO acl_links_roles (created, modified, acl_link_id, role_id) VALUES (now(), now(), $1, $2)', $qry_val_arr);
-                }
-            }
             $role_val_arr = array(
                 $user['role_id']
             );
@@ -2286,40 +2302,44 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
         } else if ($r_post['confirm_password'] == $r_post['password']) {
             $user = executeQuery('SELECT * FROM users WHERE id = $1', $qry_val_array);
-            if ($user) {
-                $cry_old_pass = crypt($r_post['old_password'], $user['password']);
-                if ((($authUser['role_id'] == 2) && ($user['password'] == $cry_old_pass)) || ($authUser['role_id'] == 1)) {
-                    $res_val_arr = array(
-                        getCryptHash($r_post['password']) ,
-                        $r_resource_vars['users']
-                    );
-                    pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
-                    if (is_plugin_enabled('r_chat') && $jabberHost) {
-                        xmppChangePassword($r_post, $user);
-                    }
-                    $conditions = array(
-                        $authUser['username']
-                    );
-                    pg_query_params($db_lnk, 'DELETE FROM oauth_access_tokens WHERE user_id= $1', $conditions);
-                    pg_query_params($db_lnk, 'DELETE FROM oauth_refresh_tokens WHERE user_id= $1', $conditions);
-                    if ($authUser['role_id'] == 1) {
-                        $emailFindReplace = array(
-                            '##PASSWORD##' => $r_post['password']
+            if ($user['id'] != $authUser['id']) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+            } else {
+                if ($user) {
+                    $cry_old_pass = crypt($r_post['old_password'], $user['password']);
+                    if ((($authUser['role_id'] == 2) && ($user['password'] == $cry_old_pass)) || ($authUser['role_id'] == 1)) {
+                        $res_val_arr = array(
+                            getCryptHash($r_post['password']) ,
+                            $r_resource_vars['users']
                         );
-                        sendMail('changepassword', $emailFindReplace, $user['email']);
+                        pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
+                        if (is_plugin_enabled('r_chat') && $jabberHost) {
+                            xmppChangePassword($r_post, $user);
+                        }
+                        $conditions = array(
+                            $authUser['username']
+                        );
+                        pg_query_params($db_lnk, 'DELETE FROM oauth_access_tokens WHERE user_id= $1', $conditions);
+                        pg_query_params($db_lnk, 'DELETE FROM oauth_refresh_tokens WHERE user_id= $1', $conditions);
+                        if ($authUser['role_id'] == 1) {
+                            $emailFindReplace = array(
+                                '##PASSWORD##' => $r_post['password']
+                            );
+                            sendMail('changepassword', $emailFindReplace, $user['email']);
+                            $response = array(
+                                'success' => 'Password change successfully. Please login.'
+                            );
+                        }
+                    } else {
                         $response = array(
-                            'success' => 'Password change successfully. Please login.'
+                            'error' => 1
                         );
                     }
                 } else {
                     $response = array(
-                        'error' => 1
+                        'error' => 2
                     );
                 }
-            } else {
-                $response = array(
-                    'error' => 2
-                );
             }
         } else {
             $response = array(
@@ -2950,7 +2970,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 }
                             }
                             // Copy cards
-                            $card_fields = 'name, description, due_date, position, is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, cards_user_count, cards_subscriber_count, card_voter_count, activity_count, user_id, comment_count';
+                            $card_fields = 'name, description, due_date, position, is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, user_id';
                             if ($keepcards) {
                                 $qry_val_arr = array(
                                     $list_id
@@ -4707,14 +4727,27 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         break;
 
     case '/oauth/token':
-        $post_val = array(
-            'grant_type' => 'authorization_code',
-            'code' => $r_post['code'],
-            'redirect_uri' => $r_post['redirect_uri'],
-            'client_id' => OAUTH_CLIENTID,
-            'client_secret' => OAUTH_CLIENT_SECRET
-        );
+        if (!empty($_POST['code'])) {
+            $post_val = array(
+                'grant_type' => 'authorization_code',
+                'code' => $_POST['code'],
+                'redirect_uri' => $_POST['redirect_uri'],
+                'client_id' => $_POST['client_id'],
+                'client_secret' => $_POST['client_secret']
+            );
+        } else {
+            $post_val = array(
+                'grant_type' => 'authorization_code',
+                'code' => $r_post['code'],
+                'redirect_uri' => $r_post['redirect_uri'],
+                'client_id' => OAUTH_CLIENTID,
+                'client_secret' => OAUTH_CLIENT_SECRET
+            );
+        }
         $response = getToken($post_val);
+        if (!empty($_POST['code']) && !empty($response['expires'])) {
+            unset($response['expires']);
+        }
         echo json_encode($response);
         break;
 
@@ -4758,17 +4791,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             if ($result) {
                 $row = pg_fetch_assoc($result);
                 $response['id'] = $row['id'];
-                $conditions = array(
-                    true
-                );
-                $acl_links = pg_query_params($db_lnk, "SELECT * FROM acl_links where is_default = $1", $conditions);
-                while ($acl_link = pg_fetch_assoc($acl_links)) {
-                    $qry_val_arr = array(
-                        $acl_link['id'],
-                        $row['id']
-                    );
-                    pg_query_params($db_lnk, 'INSERT INTO acl_links_roles (created, modified, acl_link_id, role_id) VALUES (now(), now(), $1, $2)', $qry_val_arr);
-                }
             }
         }
         echo json_encode($response);
@@ -4811,6 +4833,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
+            '/cards_custom_fields',
             '/cards/?/cards_custom_fields'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
@@ -5288,7 +5311,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             if (empty($r_put['description'])) {
                 $comment = '##USER_NAME## removed description from ##CARD_LINK##';
             } else {
-                $comment = '##USER_NAME## updated description on ##CARD_LINK## - ##DESCRIPTION##';
+                $comment = '##USER_NAME## updated description on ##CARD_LINK##';
             }
             $activity_type = 'edit_card_desc';
         }
@@ -5996,11 +6019,13 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/board_user_roles/?':
         $sql = 'DELETE FROM board_user_roles WHERE id= $1';
+        $d_sql = 'UPDATE boards_users SET board_user_role_id = 3 WHERE board_user_role_id = $1';
         array_push($pg_params, $r_resource_vars['board_user_roles']);
         break;
 
     case '/organization_user_roles/?':
         $sql = 'DELETE FROM organization_user_roles WHERE id= $1';
+        $d_sql = 'UPDATE organizations_users SET organization_user_role_id = 3 WHERE organization_user_role_id = $1';
         array_push($pg_params, $r_resource_vars['organization_user_roles']);
         break;
 
@@ -6040,6 +6065,9 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     }
     if (!empty($sql)) {
         $result = pg_query_params($db_lnk, $sql, $pg_params);
+        if ($result && !empty($d_sql)) {
+            pg_query_params($db_lnk, $d_sql, $pg_params);
+        }
         $response['error'] = array(
             'code' => (!$result) ? 1 : 0
         );
