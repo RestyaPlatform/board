@@ -41,8 +41,9 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
         if (count($mail) > 1) {
             // Fetch email body
             $s = imap_fetchstructure($connection, $counter);
-            if (!$s->parts) {  // simple
+            if (!$s->parts) { // simple
                 $body = imapBodyDecode($connection, $counter, $s, 0); // pass 0 as part-number
+                
             } else { // multipart: cycle through each part
                 foreach ($s->parts as $partno => $p) {
                     $body_data[] = imapBodyDecode($connection, $counter, $p, $partno + 1);
