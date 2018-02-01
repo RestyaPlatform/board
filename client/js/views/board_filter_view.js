@@ -31,6 +31,13 @@ App.BoardFilterView = Backbone.View.extend({
     converter: new showdown.Converter({
         extensions: ['targetblank', 'xssfilter', 'codehighlight']
     }),
+    /** 
+     * Events
+     * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
+     */
+    events: {
+        'keyup .js-filter-cards': 'showFilteredCards'
+    },
     /**
      * render()
      * populate the html to the dom
@@ -48,6 +55,55 @@ App.BoardFilterView = Backbone.View.extend({
         this.showTooltip();
         this.filterBoard();
         return this;
+    },
+    showFilteredCards: function(e) {
+        e.preventDefault();
+        var self = this;
+        var el = this.$el;
+        var filteredLabels;
+        var filteredUsers;
+        var search_value = $(e.currentTarget).val();
+        var user_name; 
+        if (!_.isEmpty(search_value)) {
+            filteredLabels = this.model.labels.filter(function(model) {
+                return ~model.get('name').toUpperCase().indexOf(search_value.toUpperCase());
+            });
+            user_name = search_value;
+            if (!_.isUndefined(user_name) && !_.isEmpty(user_name)) {
+                filteredUsers = this.model.board_users.filter(function(model) {
+                    return ~model.get('username').toUpperCase().indexOf(user_name.toUpperCase());
+                });
+            }
+        } else {
+            this.render();
+        }
+        if (!_.isEmpty(filteredLabels) && !_.isUndefined(filteredLabels)) {
+            el.find('.js-board-labels').html('');
+            var string = '';
+            var labelColor;
+            var labels = Array();
+            _.each(filteredLabels, function(label) {
+                if (!_.contains(labels, label.attributes.name)) {
+                    labels.push(label.attributes.name);
+                    labelColor = (label.attributes.color) ? label.attributes.color : '#' + self.converter.colorCode(label.attributes.name).substring(0, 6);
+                    string += '<li class="clearfix js-toggle-label-filter cur card-label-show h5 btn-link media"><span style="background:' + labelColor + ';color:#ffffff" class="pull-left btn btn-xs"><i class="' + LABEL_ICON + ' icon-light"></i></span><div class="htruncate js-label">'+ label.attributes.name +'</div></li>'; 
+                }
+            });
+            el.find('.js-board-labels').append(string);
+        }
+        if (!_.isEmpty(filteredUsers) && !_.isUndefined(filteredUsers)) {
+            el.find('.js-board-users').html('');
+            var Userstring = '';
+            var users = Array();
+            _.each(filteredUsers, function(user) {
+                if (!_.contains(users, user.attributes.username)) {
+                    users.push(user.attributes.name);
+                    Userstring += '<li class="clearfix js-toggle-label-filter cur card-label-show h5 btn-link"><div class="navbar-btn clearfix media"><span class="pull-left"></span></div></li>'; 
+                }
+            });
+            el.find('.js-board-users').append(string);
+        }
+
     },
     /**
      * filterBoard()
