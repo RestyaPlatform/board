@@ -32,7 +32,8 @@ App.BoardLabelsView = Backbone.View.extend({
         'click .js-show-edit-card-label-form': 'showCardLabelEditForm',
         'click .js-card-label-color-pick': 'colorPicker',
         'click .js-hide-edit-card-label-form': 'hideCardLabelEditForm',
-        'click .js-show-card-label-colorpicker': 'showCardLabelColorpicker'
+        'click .js-show-card-label-colorpicker': 'showCardLabelColorpicker',
+        'keyup .js-search-board-labels': 'showFilteredLabels'
     },
     deleteLabels: function(e) {
         var label_id = $(e.currentTarget).data('id');
@@ -72,6 +73,51 @@ App.BoardLabelsView = Backbone.View.extend({
             'max-height': boardH - 50,
             'overflow-y': 'auto'
         });
+        return false;
+    },
+    /**
+     * FilterCardLabels()
+     * filter card label
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showFilteredLabels: function(e) {
+        e.preventDefault();
+        var self = this;
+        var el = this.$el;
+        var filtered_labels;
+        var search_value = $(e.currentTarget).val();
+        if (!_.isEmpty(search_value)) {
+            filtered_labels = this.model.labels.filter(function(model) {
+                return ~model.get('name').toUpperCase().indexOf(search_value.toUpperCase());
+            });
+        } else {
+            this.render();
+        }
+        if (!_.isEmpty(filtered_labels) && !_.isUndefined(filtered_labels)) {
+            el.find('.js-board-labels-container').html('');
+            var string = '';
+            var editLabel;
+            var labelColor;
+            var labels = Array();
+            if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(self.model.acl_links.where({
+                    slug: "edit_labels",
+                    board_user_role_id: parseInt(self.model.board_user_role_id)
+                })))) {
+                editLabel = 'js-show-edit-card-label-form cur';
+            }
+            _.each(filtered_labels, function(label) {
+                if (!_.contains(labels, label.attributes.name)) {
+                    labels.push(label.attributes.name);
+                    labelColor = (label.attributes.color) ? label.attributes.color : '#' + self.converter.colorCode(label.attributes.name).substring(0, 6);
+                    string += '<li class="clearfix cur card-label-show h5 btn-link media"><div data-id="' + label.attributes.label_id + '" class="' + editLabel + '"><span style="background:' + labelColor + ';color:#ffffff" class="pull-left btn btn-xs"><i class="' + LABEL_ICON + ' icon-light cur"></i></span><div class="board-labels"><div class="htruncate"> ' + label.attributes.name + '</div></div><div class="js-delete-labels-icon pull-right"><a data-id="' + label.attributes.label_id + '" class="js-delete-labels btn btn-default btn-xs pull-right" data-toggle="dropdown"><i class="icon-remove cur"></i></a></div></li>';
+                }
+            });
+            el.find('.js-board-labels-container').append(string);
+            
+        }
         return false;
     },
     /**
