@@ -365,7 +365,7 @@ App.RoleSettingsView = Backbone.View.extend({
         var target = $(e.currentTarget);
         var board_user_role_id = target.attr('data-board_user_role_id');
         var self = this;
-        
+
         var board_user_role = new App.BoardUserRoles();
         board_user_role.set('id', board_user_role_id);
         board_user_role.url = api_url + 'board_user_roles/' + board_user_role_id + '.json';
