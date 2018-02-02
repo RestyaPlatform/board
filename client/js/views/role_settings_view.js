@@ -26,6 +26,8 @@ App.RoleSettingsView = Backbone.View.extend({
         'click .js-role-name': 'roleAddForm',
         'click .js-edit': 'roleEditForm',
         'submit form#RoleAddForm': 'roleAdd',
+        'click .js-delete-users-role': 'DeleteUserRoleDropdown',
+        'click .js-back-to-users-roleEdit': 'BackToUserRoleEdit',
         'submit form#BoardUserRoleAddForm': 'boardUserRoleAdd',
         'submit form#OrganizationUserRoleAddForm': 'organizationUserRoleAdd',
         'submit form#RoleEditForm': 'roleEdit',
@@ -132,6 +134,44 @@ App.RoleSettingsView = Backbone.View.extend({
         role_setting.set(data);
         role_setting.url = api_url + 'acl_links.json';
         role_setting.save(data);
+    },
+    /**
+     * DeleteUserRoleDropdown()
+     * Delete Role Dropdown  
+     * @param e
+     * @type Object(DOM event)
+     */
+    DeleteUserRoleDropdown: function(e) {
+        var self = $(e.target);
+        var role_id = self.attr('data-role_id');
+        self.parents('.js-users-roleEdit-response').html('<li><div class="clearfix text-center col-xs-12"><a href="#" class="js-back-to-users-roleEdit pull-left btn btn-xs btn-link"><i class="icon-caret-left" data-role_id="' + role_id + '"></i></a><span class="col-xs-10 navbar-btn"><strong>' + i18next.t('Delete Role ?') + '</strong></span></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12 text-left"><span class="show">' + i18next.t('Deleting role is permanent. There is no undo.This will alter existing role to User role.') + '</span><div class="col-xs-12 btn-block navbar-btn"><a title="' + i18next.t('Delete Role') + '" class="js-delete-role" data-role_id = "' + role_id + '"><span class="btn btn-primary col-xs-12">Delete</span></a></div></li>');
+        return false;
+    },
+    /**
+     * BackToUserRoleEdit()
+     * Role Edit Form 
+     * @param e
+     * @type Object(DOM event)
+     */
+    BackToUserRoleEdit: function(e) {
+        var self = $(e.target);
+        var role_id = self.attr('data-role_id');
+        var role;
+        var delete_button = '';
+        this.roles.each(function(userRole) {
+            if (parseInt(userRole.attributes.id) == parseInt(role_id)) {
+                role = userRole;
+            }
+        });
+        if (role) {
+            self.parents('.js-users-roleEdit-response').next().remove();
+            if (parseInt(role.attributes.id) > 3) {
+                delete_button += '<div class="form-group"><a href="#" title="' + i18next.t('Delete') + '" class="js-delete-users-role btn btn-default col-xs-12" data-role_id="' + role.attributes.id + '">' + i18next.t('Delete') + '</a></div>';
+            }
+            delete_button += '</form></li>';
+            self.parents('.js-users-roleEdit-response').html('<li><div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>' + i18next.t('Edit Role') + '</strong></span><i class="icon-remove cur"></i></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12"><form id="RoleEditForm" name="RoleEditForm" class="form-horizontal col-xs-12"><input type="hidden" name="id" value="' + role.attributes.id + '"><div class="form-group required"><label class="sr-only control-label" for="inputEditName">' + i18next.t('Name') + '</label><input type="name" name="name" value="' + role.attributes.name + '" id="inputEditName" class="form-control js-role-name" placeholder="' + i18next.t('Name') + '" required></div><div class="form-group"><label class="sr-only control-label" for="submitEditRole" >' + i18next.t("Update") + '</label><input type="submit" class="btn btn-primary col-xs-12" id="submitEditRole" title="' + i18next.t('Update Role') + '" value="' + i18next.t('Update') + '"></div>' + delete_button + '');
+        }
+        return false;
     },
     roleAddForm: function(e) {
         e.preventDefault();
