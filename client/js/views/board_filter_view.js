@@ -31,6 +31,13 @@ App.BoardFilterView = Backbone.View.extend({
     converter: new showdown.Converter({
         extensions: ['targetblank', 'xssfilter', 'codehighlight']
     }),
+    /** 
+     * Events
+     * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
+     */
+    events: {
+        'keyup .js-filter-cards': 'showFilteredCards'
+    },
     /**
      * render()
      * populate the html to the dom
@@ -48,6 +55,51 @@ App.BoardFilterView = Backbone.View.extend({
         this.showTooltip();
         this.filterBoard();
         return this;
+    },
+    showFilteredCards: function(e) {
+        e.preventDefault();
+        var self = this;
+        var el = this.$el;
+        el.find('.js-board-labels').html('');
+        el.find('.js-board-users').html('');
+        var search_value = $(e.currentTarget).val();
+        var filteredLabels;
+        var filteredUsers;
+        filteredLabels = this.model.labels.filter(function(label) {
+            if (label.attributes.name.toUpperCase().indexOf(search_value.toUpperCase()) != -1) {
+                return label;
+            }
+        });
+        filteredUsers = this.model.board_users.filter(function(user) {
+            if (user.attributes.username.toUpperCase().indexOf(search_value.toUpperCase()) != -1) {
+                return user;
+            }
+        });
+        if (!_.isEmpty(filteredLabels) && !_.isUndefined(filteredLabels)) {
+            var string = '';
+            var labels = Array();
+            _.each(filteredLabels, function(label) {
+                if (!_.contains(labels, label.attributes.name)) {
+                    labels.push(label.attributes.name);
+                    var labelColor = (label.attributes.color) ? label.attributes.color : '#' + self.converter.colorCode(label.attributes.name).substring(0, 6);
+                    string += '<li class="clearfix js-toggle-label-filter cur card-label-show h5 btn-link media"><span style="background:' + labelColor + ';color:#ffffff" class="pull-left btn btn-xs"><i class="' + LABEL_ICON + ' icon-light"></i></span><div class="htruncate js-label">' + label.attributes.name + '</div></li>';
+                }
+            });
+            self.$el.find('.js-board-labels').append(string);
+        }
+        if (!_.isEmpty(filteredUsers) && !_.isUndefined(filteredUsers)) {
+            var Userstring = '';
+            var users = Array();
+            _.each(filteredUsers, function(user) {
+                var image_content = '<i class="avatar avatar-color-194 img-rounded" title="' + user.attributes.username + '">' + user.attributes.initials + '</i>';
+                if (!_.isEmpty(user.attributes.profile_picture_path)) {
+                    var profile_picture_path = user.showImage('User', user.attributes.user_id, 'small_thumb');
+                    image_content = '<img class="img-rounded img-responsive" src="' + profile_picture_path + '" alt="[Images: ' + user.attributes.username + ']" title="' + user.attributes.username + '" />';
+                }
+                Userstring += '<li class="clearfix js-toggle-label-filter cur card-label-show h5 btn-link"><div class="navbar-btn clearfix media"><span class="pull-left">' + image_content + '</span><span data-user = "' + user.attributes.username + '" class="pull-left navbar-btn htruncate">' + user.attributes.username + '<span class="js-user hide">user-filter-' + user.attributes.user_id + '</span></div></li>';
+            });
+            self.$el.find('.js-board-users').append(Userstring);
+        }
     },
     /**
      * filterBoard()
