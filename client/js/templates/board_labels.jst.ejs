@@ -7,7 +7,9 @@
 <div class="col-xs-12 divider"></div>
 <div class="col-xs-12 member-modal js-pre-scrollable vertical-scrollbar">
 	<% if (board.labels.length > 0) { %>
-	<ul class="nav nav-pills nav-stacked label-block">
+	<div class="clearfix col-xs-12">
+		<form class="form-horizontal"><div class="form-group"><input class="js-search-board-labels form-control" id="inputSearchBoardLabels" name="name"></div></form>
+	<ul class="nav nav-pills nav-stacked label-block js-board-labels-container">
 	<% 
 		var labels = Array();
 		board.labels.each(function(label) {
@@ -33,6 +35,7 @@
 		}); 
 		%>
 	</ul>
+	</div>
 	<hr>
 	<% }else{ %>
 	<span class="alert alert-info">
