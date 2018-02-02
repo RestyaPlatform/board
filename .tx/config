@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+
+[restyaboard.translationjson]
+file_filter = client/locales/<lang>/translation.json
+source_file = client/locales/en_US/translation.json
+source_lang = en
+type = KEYVALUEJSON
+
