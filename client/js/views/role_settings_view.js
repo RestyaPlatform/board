@@ -26,6 +26,8 @@ App.RoleSettingsView = Backbone.View.extend({
         'click .js-role-name': 'roleAddForm',
         'click .js-edit': 'roleEditForm',
         'submit form#RoleAddForm': 'roleAdd',
+        'click .js-delete-users-role': 'DeleteUserRoleDropdown',
+        'click .js-back-to-users-roleEdit': 'BackToUserRoleEdit',
         'submit form#BoardUserRoleAddForm': 'boardUserRoleAdd',
         'submit form#OrganizationUserRoleAddForm': 'organizationUserRoleAdd',
         'submit form#RoleEditForm': 'roleEdit',
@@ -36,6 +38,8 @@ App.RoleSettingsView = Backbone.View.extend({
         'click .js-delete-role': 'deleteRole',
         'click .js-delete-board-role': 'DeleteBoardRoleDropdown',
         'click .js-back-to-board-roleEdit': 'BackToBoardRoleEdit',
+        'click .js-delete-org-role': 'DeleteOrganizationRoleDropdown',
+        'click .js-back-to-org-roleEdit': 'BackToOrganizationRoleEdit'
     },
     /**
      * Constructor
@@ -77,6 +81,45 @@ App.RoleSettingsView = Backbone.View.extend({
         return this;
     },
     /**
+     * DeleteOrganizationRoleDropdown()
+     * Delete Organization User Role Dropdown  
+     * @param e
+     * @type Object(DOM event)
+     */
+    DeleteOrganizationRoleDropdown: function(e) {
+        e.preventDefault();
+        var self = $(e.target);
+        var user_role_id = self.attr('data-organization_user_role_id');
+        self.parents('.js-org-user-roleEdit-response').html('<li><div class="clearfix text-center col-xs-12"><a href="#" class="js-back-to-org-roleEdit pull-left btn btn-xs btn-link"><i class="icon-caret-left" data-organization_user_role_id="' + user_role_id + '"></i></a><span class="col-xs-10 navbar-btn"><strong>' + i18next.t('Delete Role ?') + '</strong></span></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12 text-left"><span class="show">' + i18next.t('Deleting an Organization user role is permanent. There is no undo.This will alter existing Organization users role to Viewer role in all organizations.') + '</span><div class="col-xs-12 btn-block navbar-btn"><a title="' + i18next.t('Delete Organization User Role') + '" class="js-delete-organization-user-role" data-organization_user_role_id = "' + user_role_id + '"><span class="btn btn-primary col-xs-12">Delete</span></a></div></li>');
+        return false;
+    },
+    /**
+     * BackToBoardRoleEdit()
+     * OrganizationUserRole Edit Form 
+     * @param e
+     * @type Object(DOM event)
+     */
+    BackToOrganizationRoleEdit: function(e) {
+        var self = $(e.target);
+        var org_role_id = self.attr('data-organization_user_role_id');
+        var org_role;
+        var delete_button = '';
+        this.organization_user_roles.each(function(org_user_role) {
+            if (parseInt(org_user_role.attributes.id) == parseInt(org_role_id)) {
+                org_role = org_user_role;
+            }
+        });
+        if (org_role) {
+            self.parents('.js-org-user-roleEdit-response').next().remove();
+            if (parseInt(org_role.attributes.id) > 3) {
+                delete_button += '<div class="form-group"><a href="#" title="' + i18next.t('Delete') + '" class="js-delete-org-role btn btn-default col-xs-12" data-organization_user_role_id="' + org_role.attributes.id + '">' + i18next.t('Delete') + '</a></div>';
+            }
+            delete_button += '</form></li>';
+            self.parents('.js-org-user-roleEdit-response').html('<li><div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>' + i18next.t('Edit Organization User Role') + '</strong></span><i class="icon-remove cur"></i></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12"><form id="OrganizationUserRoleEditForm" name="OrganizationUserRoleEditForm" class="form-horizontal col-xs-12"><input type="hidden" name="id" value="' + org_role.attributes.id + '"><div class="form-group required"><label class="sr-only control-label" for="inputEditOrganizationName">' + i18next.t('Name') + '</label><input type="name" name="name" value="' + org_role.attributes.name + '" id="inputEditOrganizationName" class="form-control js-role-name" placeholder="' + i18next.t('Name') + '" required></div><div class="form-group required"><label class="sr-only control-label" for="inputEditOrganizationDescription">' + i18next.t('Description') + '</label><textarea name="description" id="inputEditOrganizationDescription" class="form-control js-role-name" placeholder="' + i18next.t('Description') + '">' + org_role.attributes.description + '</textarea></div><div class="form-group"><label class="sr-only control-label" for="submitEditOrganizationUserRole" >' + i18next.t("Update") + '</label><input type="submit" class="btn btn-primary col-xs-12" id="submitEditOrganizationUserRole" title="' + i18next.t('Update Organization User Role') + '" value="' + i18next.t('Update') + '"></div>' + delete_button + '');
+        }
+        return false;
+    },
+    /**
      * saveRoleSettings()
      * save role alloewd acl links
      * @param e
@@ -93,6 +136,44 @@ App.RoleSettingsView = Backbone.View.extend({
         role_setting.set(data);
         role_setting.url = api_url + 'acl_links.json';
         role_setting.save(data);
+    },
+    /**
+     * DeleteUserRoleDropdown()
+     * Delete Role Dropdown  
+     * @param e
+     * @type Object(DOM event)
+     */
+    DeleteUserRoleDropdown: function(e) {
+        var self = $(e.target);
+        var role_id = self.attr('data-role_id');
+        self.parents('.js-users-roleEdit-response').html('<li><div class="clearfix text-center col-xs-12"><a href="#" class="js-back-to-users-roleEdit pull-left btn btn-xs btn-link"><i class="icon-caret-left" data-role_id="' + role_id + '"></i></a><span class="col-xs-10 navbar-btn"><strong>' + i18next.t('Delete Role ?') + '</strong></span></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12 text-left"><span class="show">' + i18next.t('Deleting role is permanent. There is no undo.This will alter existing role to User role.') + '</span><div class="col-xs-12 btn-block navbar-btn"><a title="' + i18next.t('Delete Role') + '" class="js-delete-role" data-role_id = "' + role_id + '"><span class="btn btn-primary col-xs-12">Delete</span></a></div></li>');
+        return false;
+    },
+    /**
+     * BackToUserRoleEdit()
+     * Role Edit Form 
+     * @param e
+     * @type Object(DOM event)
+     */
+    BackToUserRoleEdit: function(e) {
+        var self = $(e.target);
+        var role_id = self.attr('data-role_id');
+        var role;
+        var delete_button = '';
+        this.roles.each(function(userRole) {
+            if (parseInt(userRole.attributes.id) == parseInt(role_id)) {
+                role = userRole;
+            }
+        });
+        if (role) {
+            self.parents('.js-users-roleEdit-response').next().remove();
+            if (parseInt(role.attributes.id) > 3) {
+                delete_button += '<div class="form-group"><a href="#" title="' + i18next.t('Delete') + '" class="js-delete-users-role btn btn-default col-xs-12" data-role_id="' + role.attributes.id + '">' + i18next.t('Delete') + '</a></div>';
+            }
+            delete_button += '</form></li>';
+            self.parents('.js-users-roleEdit-response').html('<li><div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>' + i18next.t('Edit Role') + '</strong></span><i class="icon-remove cur"></i></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12"><form id="RoleEditForm" name="RoleEditForm" class="form-horizontal col-xs-12"><input type="hidden" name="id" value="' + role.attributes.id + '"><div class="form-group required"><label class="sr-only control-label" for="inputEditName">' + i18next.t('Name') + '</label><input type="name" name="name" value="' + role.attributes.name + '" id="inputEditName" class="form-control js-role-name" placeholder="' + i18next.t('Name') + '" required></div><div class="form-group"><label class="sr-only control-label" for="submitEditRole" >' + i18next.t("Update") + '</label><input type="submit" class="btn btn-primary col-xs-12" id="submitEditRole" title="' + i18next.t('Update Role') + '" value="' + i18next.t('Update') + '"></div>' + delete_button + '');
+        }
+        return false;
     },
     roleAddForm: function(e) {
         e.preventDefault();
@@ -284,11 +365,10 @@ App.RoleSettingsView = Backbone.View.extend({
         var target = $(e.currentTarget);
         var board_user_role_id = target.attr('data-board_user_role_id');
         var self = this;
-
+        
         var board_user_role = new App.BoardUserRoles();
         board_user_role.set('id', board_user_role_id);
         board_user_role.url = api_url + 'board_user_roles/' + board_user_role_id + '.json';
-
         board_user_role.destroy({
             success: function(model, response) {
                 self.flash('success', i18next.t('Role deleted successfully.'));
@@ -309,22 +389,19 @@ App.RoleSettingsView = Backbone.View.extend({
         var target = $(e.currentTarget);
         var organization_user_role_id = target.attr('data-organization_user_role_id');
         var self = this;
-        if (window.confirm(i18next.t('This will alter existing Organization users role to Viewer role in all organizations.'))) {
-            var organization_user_role = new App.OrganizationUserRoles();
-            organization_user_role.set('id', organization_user_role_id);
-            organization_user_role.url = api_url + 'organization_user_roles/' + organization_user_role_id + '.json';
-            organization_user_role.destroy({
-                success: function(model, response) {
-                    self.flash('success', i18next.t('Role deleted successfully.'));
-                    app.navigate('#/roles', {
-                        trigger: true,
-                        replace: true
-                    });
-                }
-            });
-        } else {
-            return false;
-        }
+        var organization_user_role = new App.OrganizationUserRoles();
+        organization_user_role.set('id', organization_user_role_id);
+        organization_user_role.url = api_url + 'organization_user_roles/' + organization_user_role_id + '.json';
+        organization_user_role.destroy({
+            success: function(model, response) {
+                self.flash('success', i18next.t('Role deleted successfully.'));
+                app.navigate('#/roles', {
+                    trigger: true,
+                    replace: true
+                });
+            }
+        });
+        return false;
     },
     /**
      * deleteRole()

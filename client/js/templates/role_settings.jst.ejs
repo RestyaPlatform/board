@@ -37,7 +37,7 @@
 						<div class="dropdown navbar-right"><a title="Edit Role" class="dropdown-toggle" data-toggle="dropdown">
 						<%- i18next.t(role.attributes.name) %>
 						<i class="icon-pencil"></i></a>
-			    <ul class="dropdown-menu arrow arrow-right">
+			    <ul class="dropdown-menu arrow arrow-right js-users-roleEdit-response">
 					<li> 
 						<div class="clearfix text-center col-xs-12">
 							<span class="col-xs-10"><strong><%- i18next.t("Edit Role") %></strong></span><i class="icon-remove cur"></i>
@@ -53,11 +53,11 @@
 						  </div>
 						  <div class="form-group">
 							<label class="sr-only control-label" for="submitEditRole"><%- i18next.t("Update") %></label>
-							<input type="submit" class="btn btn-primary col-xs-12" id="submitEditRole" value="<%- i18next.t('Update') %>">
+							<input type="submit" class="btn btn-primary col-xs-12" id="submitEditRole" title="<%- i18next.t('Update Role') %>" value="<%- i18next.t('Update') %>">
 						  </div>
 							<% if(parseInt(role.attributes.id) > 3) { %>
 								<div class="form-group">
-									<a href="#" title="Delete" class="js-delete-role btn btn-primary col-xs-12" data-role_id="<%- role.attributes.id %>"><%- i18next.t('Delete') %></a>											
+									<a href="#" title="Delete" class="js-delete-users-role btn btn-default col-xs-12" data-role_id="<%- role.attributes.id %>"><%- i18next.t('Delete') %></a>											
 								</div>
 							<% } %>
 						</form>
@@ -223,7 +223,7 @@
 									  </div>
 									  <div class="form-group">
 										<label class="sr-only control-label" for="submitEditBoardUserRole"><%- i18next.t("Update") %></label>
-										<input type="submit" class="btn btn-primary col-xs-12" id="submitEditBoardUserRole" value="<%- i18next.t('Update') %>">
+										<input type="submit" class="btn btn-primary col-xs-12" id="submitEditBoardUserRole" value="<%- i18next.t('Update') %>" title="<%- i18next.t('Update Board User Role') %>">
 									  </div>
 										<% if(parseInt(board_user_role.attributes.id) > 3) { %>
 											<div class="form-group">
@@ -314,7 +314,7 @@
 					<% organization_user_roles.each(function(organization_user_role) { %>
 						<th class="col-xs-1 text-center">
 							<div class="dropdown navbar-right"><a title="Edit Organization User Role" class="dropdown-toggle" data-toggle="dropdown"><%- i18next.t(organization_user_role.attributes.name) %><i class="icon-pencil"></i></a>
-							   <ul class="dropdown-menu arrow arrow-right">
+							   <ul class="dropdown-menu arrow arrow-right js-org-user-roleEdit-response">
 										<li> 
 											<div class="clearfix text-center col-xs-12">
 												<span class="col-xs-10"><strong><%- i18next.t("Edit Organization User Role") %></strong></span><i class="icon-remove cur"></i>
@@ -333,12 +333,12 @@
 												<textarea name="description" id="inputEditOrganizationDescription" class="form-control js-role-name" placeholder="<%- i18next.t('Description') %>"><%- organization_user_role.attributes.description %></textarea>
 											  </div>
 											  <div class="form-group">
-												<label class="sr-only control-label" for="submitEditOrganizationUserRole"><%- i18next.t("Update") %></label>
+												<label class="sr-only control-label" for="submitEditOrganizationUserRole" title="<%- i18next.t('Update Organization User Role') %>"><%- i18next.t("Update") %></label>
 												<input type="submit" class="btn btn-primary col-xs-12" id="submitEditOrganizationUserRole" value="<%- i18next.t('Update') %>">
 											  </div>
 												<% if(parseInt(organization_user_role.attributes.id) > 3) { %>
 													<div class="form-group">
-														<a href="#" title="Delete" class="js-delete-organization-user-role btn btn-primary col-xs-12" data-organization_user_role_id="<%- organization_user_role.attributes.id %>"><%- i18next.t('Delete') %></a>											
+														<a href="#" title="Delete" class="js-delete-org-role btn btn-default col-xs-12" data-organization_user_role_id="<%- organization_user_role.attributes.id %>"><%- i18next.t('Delete') %></a>											
 													</div>
 												<% } %>
 											</form>
