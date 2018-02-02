@@ -83,6 +83,7 @@ App.RoleSettingsView = Backbone.View.extend({
      * @type Object(DOM event)
      */
     DeleteOrganizationRoleDropdown: function(e) {
+        e.preventDefault();
         var self = $(e.target);
         var user_role_id = self.attr('data-organization_user_role_id');
         self.parents('.js-org-user-roleEdit-response').html('<li><div class="clearfix text-center col-xs-12"><a href="#" class="js-back-to-org-roleEdit pull-left btn btn-xs btn-link"><i class="icon-caret-left" data-organization_user_role_id="' + user_role_id + '"></i></a><span class="col-xs-10 navbar-btn"><strong>' + i18next.t('Delete Role ?') + '</strong></span></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12 text-left"><span class="show">' + i18next.t('Deleting an Organization user role is permanent. There is no undo.This will alter existing Organization users role to Viewer role in all organizations.') + '</span><div class="col-xs-12 btn-block navbar-btn"><a title="' + i18next.t('Delete Organization User Role') + '" class="js-delete-organization-user-role" data-organization_user_role_id = "' + user_role_id + '"><span class="btn btn-primary col-xs-12">Delete</span></a></div></li>');
