@@ -816,6 +816,27 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                     $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_user', $foreign_ids, '', $cards_user_result['id']);
                 }
             }
+            // Copy card custom fields
+            $cards_custom_fields = 'list_id, card_id, board_id, custom_field_id';
+            if (!empty($new_board_id)) {
+                $cards_custom_fields = 'board_id, list_id, card_id, custom_field_id';
+            }
+            $qry_val_arr = array(
+                $card_id
+            );
+            $cards_custom_field = pg_query_params($db_lnk, 'SELECT id, ' . $cards_custom_fields . ',value,is_active,value FROM cards_custom_fields WHERE card_id = $1 ORDER BY id', $qry_val_arr);
+            if ($cards_custom_field && pg_num_rows($cards_custom_field)) {
+                while ($cards_field = pg_fetch_object($cards_custom_field)) {
+                    if (!empty($new_board_id)) {
+                        $cards_field->board_id = $new_board_id;
+                        $cards_field->list_id = $new_list_id;
+                        $cards_field->card_id = $new_card_id;
+                    }
+                    pg_execute_insert('cards_custom_fields', $cards_field);
+                    $comment = '##USER_NAME## added card custom field(s) to this card ##CARD_LINK## ';
+                    insertActivity($authUser['id'], $comment, 'add_card_custom_field', $foreign_ids);
+                }
+            }
         }
     }
     return $response;

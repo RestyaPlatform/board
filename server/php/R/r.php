@@ -4401,6 +4401,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $is_keep_checklist = $r_post['keep_checklists'];
             unset($r_post['keep_checklists']);
         }
+        if (isset($r_post['keep_custom_fields'])) {
+            $is_keep_custom_fields = $r_post['keep_custom_fields'];
+            unset($r_post['keep_custom_fields']);
+        }
         $copied_card_id = $r_resource_vars['cards'];
         unset($r_post['copied_card_id']);
         $qry_val_arr = array(
@@ -4467,6 +4471,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $copied_card_id
                     );
                     pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, card_id, label_id, list_id, board_id) SELECT created, modified, $1, label_id, $2, $3 FROM cards_labels WHERE card_id = $4 ORDER BY id', $qry_val_arr);
+                }
+                if ($is_keep_custom_fields) {
+                    $qry_val_arr = array(
+                        $response['id'],
+                        $r_post['list_id'],
+                        $r_post['board_id'],
+                        $copied_card_id
+                    );
+                    pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value,is_active,board_id,list_id) SELECT created, modified, $1, custom_field_id,value,is_active, $2, $3 FROM cards_custom_fields WHERE card_id = $4 ORDER BY id', $qry_val_arr);
                 }
                 if ($is_keep_activity) {
                     $qry_val_arr = array(
