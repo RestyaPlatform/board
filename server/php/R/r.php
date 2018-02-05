@@ -3572,6 +3572,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                             if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                                 unlink($list[0]);
                                             }
+                                            $qry_val_arr = array(
+                                                $response['id']
+                                            );
+                                            $card_attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1', $qry_val_arr);
+                                            while ($card_attachment = pg_fetch_assoc($card_attachments)) {
+                                                $response['card_attachments'][] = $card_attachment;
+                                            }
                                         }
                                     }
                                 }
@@ -3599,6 +3606,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
                             $response_file['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response_file['card_attachments'][$i]['id']);
                             $i++;
+                            $qry_val_arr = array(
+                                $response['id']
+                            );
+                            $card_attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1', $qry_val_arr);
+                            while ($card_attachment = pg_fetch_assoc($card_attachments)) {
+                                $response['card_attachments'][] = $card_attachment;
+                            }
                         }
                     }
                     if (isset($r_post['image_link']) && !empty($r_post['image_link'])) {
@@ -3635,6 +3649,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                     $list = glob($mediadir . '.*');
                                     if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                         unlink($list[0]);
+                                    }
+                                    $qry_val_arr = array(
+                                        $response['id']
+                                    );
+                                    $card_attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1', $qry_val_arr);
+                                    while ($card_attachment = pg_fetch_assoc($card_attachments)) {
+                                        $response['card_attachments'][] = $card_attachment;
                                     }
                                 }
                             }
