@@ -235,6 +235,7 @@
     "Creates users with password \"restya\" and email as empty for each repository users from GitHub.": "Creates users with password \"restya\" and email as empty for each repository users from GitHub.",
     "Custom": "Custom",
     "Custom Field": "Custom Field",
+    "Custom Fields": "Custom Fields",
     "CustomFields": "CustomFields",
     "CustomFields is our theming partner": "CustomFields is our theming partner",
     "DB Host": "DB Host",
