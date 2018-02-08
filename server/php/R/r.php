@@ -934,8 +934,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         while ($row = pg_fetch_row($result)) {
                             $obj = json_decode($row[0], true);
                             global $_server_domain_url;
-                            $md5_hash = md5(SECURITYSALT . $r_resource_vars['boards'] . $authUser['id']);
-                            $obj['google_syn_url'] = $_server_domain_url . '/ical/' . $r_resource_vars['boards'] . '/' . $authUser['id'] . '/' . $md5_hash . '.ics';
+                            if (!empty($authUser)) {
+                                $md5_hash = md5(SECURITYSALT . $r_resource_vars['boards'] . $authUser['id']);
+                                $obj['google_syn_url'] = $_server_domain_url . '/ical/' . $r_resource_vars['boards'] . '/' . $authUser['id'] . '/' . $md5_hash . '.ics';
+                            }
                             $acl_links_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM acl_board_links_listing) as d';
                             $acl_links_result = pg_query_params($db_lnk, $acl_links_sql, array());
                             $obj['acl_links'] = array();
