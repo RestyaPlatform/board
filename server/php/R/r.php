@@ -3619,21 +3619,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     }
                     if (isset($r_post['image_link']) && !empty($r_post['image_link'])) {
                         $sql = true;
-                        $attachment_url_host = parse_url($r_post['image_link'], PHP_URL_HOST);
-                        $url_hosts = array(
-                            'docs.google.com',
-                            'www.dropbox.com',
-                            'github.com'
-                        );
-                        if (in_array($attachment_url_host, $url_hosts)) {
-                            $r_post['name'] = $r_post['link'] = $r_post['image_link'];
-                            $r_post['path'] = '';
-                        } else {
-                            $filename = curlExecute($r_post['image_link'], 'get', $mediadir, 'image');
-                            $r_post['name'] = $filename['file_name'];
-                            $r_post['link'] = $r_post['image_link'];
-                            $r_post['path'] = $save_path . '/' . $r_post['name'];
-                        }
+                        $r_post['name'] = $r_post['link'] = $r_post['image_link'];
+                        $r_post['path'] = '';
                         unset($r_post['image_link']);
                         if (!empty($sql)) {
                             $post = getbindValues($table_name, $r_post);
@@ -4026,21 +4013,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
             } else {
                 $sql = true;
-                $attachment_url_host = parse_url($r_post['image_link'], PHP_URL_HOST);
-                $url_hosts = array(
-                    'docs.google.com',
-                    'www.dropbox.com',
-                    'github.com'
-                );
-                if (in_array($attachment_url_host, $url_hosts)) {
-                    $r_post['name'] = $r_post['link'] = $r_post['image_link'];
-                    $r_post['path'] = '';
-                } else {
-                    $filename = curlExecute($r_post['image_link'], 'get', $mediadir, 'image');
-                    $r_post['name'] = $filename['file_name'];
-                    $r_post['link'] = $r_post['image_link'];
-                    $r_post['path'] = $save_path . '/' . $r_post['name'];
-                }
+                $r_post['name'] = $r_post['link'] = $r_post['image_link'];
+                $r_post['path'] = '';
                 unset($r_post['image_link']);
                 if (!empty($sql)) {
                     $post = getbindValues($table_name, $r_post);
