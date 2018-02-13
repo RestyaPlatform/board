@@ -37,6 +37,8 @@ App.UserDashboardView = Backbone.View.extend({
         this.$el.html(this.template({
             page_title: this.model,
         }));
+        /*The IntroView has been called here*/
+        var introView = new App.intro_video_view();
         this.showTooltip();
         return this;
     }
