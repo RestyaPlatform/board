@@ -94,3 +94,5 @@ CREATE VIEW cards_elasticsearch_listing AS
              LEFT JOIN boards boards ON ((boards.id = cards.board_id)))
              LEFT JOIN lists lists ON ((lists.id = cards.list_id)))
           WHERE (boards.name IS NOT NULL)) card;
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES (now(), now(), '16', '3');
