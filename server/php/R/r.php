@@ -2777,6 +2777,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $keepcards = true;
             unset($r_post['keepCards']);
         }
+        $keepusers = false;
+        if (!empty($r_post['keepUsers'])) {
+            $keepusers = true;
+            unset($r_post['keepUsers']);
+        }
         $qry_val_arr = array(
             $copied_board_id
         );
@@ -2816,66 +2821,92 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $response['uuid'] = $uuid;
                 }
                 $new_board_id = $row['id'];
-                //Copy board users
-                $boards_user_fields = 'user_id, board_user_role_id';
-                $qry_val_arr = array(
-                    $r_resource_vars['boards']
-                );
-                $boards_users = pg_query_params($db_lnk, 'SELECT id, ' . $boards_user_fields . ' FROM boards_users WHERE board_id = $1', $qry_val_arr);
-                if ($boards_users && pg_num_rows($boards_users)) {
-                    $boards_user_fields = 'created, modified, board_id, ' . $boards_user_fields;
-                    while ($boards_user = pg_fetch_object($boards_users)) {
-                        $boards_user_values = array();
-                        array_push($boards_user_values, 'now()', 'now()', $new_board_id);
-                        foreach ($boards_user as $key => $value) {
-                            if ($key != 'id') {
-                                if ($value === false) {
-                                    array_push($boards_user_values, 'false');
-                                } else if ($value === null) {
-                                    array_push($boards_user_values, null);
-                                } else {
-                                    array_push($boards_user_values, $value);
+                if($keepusers) {
+                    //Copy board users
+                    $boards_user_fields = 'user_id, board_user_role_id';
+                    $qry_val_arr = array(
+                        $r_resource_vars['boards']
+                    );
+                    $boards_users = pg_query_params($db_lnk, 'SELECT id, ' . $boards_user_fields . ' FROM boards_users WHERE board_id = $1', $qry_val_arr);
+                    if ($boards_users && pg_num_rows($boards_users)) {
+                        $boards_user_fields = 'created, modified, board_id, ' . $boards_user_fields;
+                        while ($boards_user = pg_fetch_object($boards_users)) {
+                            $boards_user_values = array();
+                            array_push($boards_user_values, 'now()', 'now()', $new_board_id);
+                            foreach ($boards_user as $key => $value) {
+                                if ($key != 'id') {
+                                    if ($value === false) {
+                                        array_push($boards_user_values, 'false');
+                                    } else if ($value === null) {
+                                        array_push($boards_user_values, null);
+                                    } else {
+                                        array_push($boards_user_values, $value);
+                                    }
                                 }
                             }
+                            $boards_user_val = '';
+                            for ($i = 1, $len = count($boards_user_values); $i <= $len; $i++) {
+                                $boards_user_val.= '$' . $i;
+                                $boards_user_val.= ($i != $len) ? ', ' : '';
+                            }
+                            pg_query_params($db_lnk, 'INSERT INTO boards_users (' . $boards_user_fields . ') VALUES (' . $boards_user_val . ')', $boards_user_values);
                         }
-                        $boards_user_val = '';
-                        for ($i = 1, $len = count($boards_user_values); $i <= $len; $i++) {
-                            $boards_user_val.= '$' . $i;
-                            $boards_user_val.= ($i != $len) ? ', ' : '';
-                        }
-                        pg_query_params($db_lnk, 'INSERT INTO boards_users (' . $boards_user_fields . ') VALUES (' . $boards_user_val . ')', $boards_user_values);
                     }
-                }
-                //Copy board subscribers
-                $boards_subscriber_fields = 'user_id, is_subscribed';
-                $qry_val_arr = array(
-                    $r_resource_vars['boards']
-                );
-                $boards_subscribers = pg_query_params($db_lnk, 'SELECT id, ' . $boards_subscriber_fields . ' FROM board_subscribers WHERE board_id = $1', $qry_val_arr);
-                if ($boards_subscribers && pg_num_rows($boards_subscribers)) {
-                    $boards_subscriber_fields = 'created, modified, board_id, ' . $boards_subscriber_fields;
-                    while ($boards_subscriber = pg_fetch_object($boards_subscribers)) {
-                        $boards_subscriber_values = array();
-                        array_push($boards_subscriber_values, 'now()', 'now()', $new_board_id);
-                        foreach ($boards_subscriber as $key => $value) {
-                            if ($key != 'id') {
-                                if ($value === false) {
-                                    array_push($boards_subscriber_values, 'false');
-                                } else if ($value === null) {
-                                    array_push($boards_subscriber_values, null);
-                                } else {
-                                    array_push($boards_subscriber_values, $value);
+                    //Copy board subscribers
+                    $boards_subscriber_fields = 'user_id, is_subscribed';
+                    $qry_val_arr = array(
+                        $r_resource_vars['boards']
+                    );
+                    $boards_subscribers = pg_query_params($db_lnk, 'SELECT id, ' . $boards_subscriber_fields . ' FROM board_subscribers WHERE board_id = $1', $qry_val_arr);
+                    if ($boards_subscribers && pg_num_rows($boards_subscribers)) {
+                        $boards_subscriber_fields = 'created, modified, board_id, ' . $boards_subscriber_fields;
+                        while ($boards_subscriber = pg_fetch_object($boards_subscribers)) {
+                            $boards_subscriber_values = array();
+                            array_push($boards_subscriber_values, 'now()', 'now()', $new_board_id);
+                            foreach ($boards_subscriber as $key => $value) {
+                                if ($key != 'id') {
+                                    if ($value === false) {
+                                        array_push($boards_subscriber_values, 'false');
+                                    } else if ($value === null) {
+                                        array_push($boards_subscriber_values, null);
+                                    } else {
+                                        array_push($boards_subscriber_values, $value);
+                                    }
                                 }
                             }
+                            $boards_subscriber_val = '';
+                            for ($i = 1, $len = count($boards_subscriber_values); $i <= $len; $i++) {
+                                $boards_subscriber_val.= '$' . $i;
+                                $boards_subscriber_val.= ($i != $len) ? ', ' : '';
+                            }
+                            pg_query_params($db_lnk, 'INSERT INTO board_subscribers (' . $boards_subscriber_fields . ') VALUES (' . $boards_subscriber_val . ')', $boards_subscriber_values);
                         }
-                        $boards_subscriber_val = '';
-                        for ($i = 1, $len = count($boards_subscriber_values); $i <= $len; $i++) {
-                            $boards_subscriber_val.= '$' . $i;
-                            $boards_subscriber_val.= ($i != $len) ? ', ' : '';
-                        }
-                        pg_query_params($db_lnk, 'INSERT INTO board_subscribers (' . $boards_subscriber_fields . ') VALUES (' . $boards_subscriber_val . ')', $boards_subscriber_values);
+                    }
+                } else {
+                    //Add into board users
+                    $qry_val_arr = array(
+                        $new_board_id,
+                        $r_post['user_id'],
+                        1
+                    );
+                    pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id, user_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
+                    
+                    //Copy board subscribers
+                    $qry_val_arr = array(
+                        $copied_board_id,
+                        $r_post['user_id']
+                    );
+                    $boards_subscriber = executeQuery('SELECT id, user_id, is_subscribed FROM board_subscribers WHERE board_id = $1 and user_id = $2', $qry_val_arr);
+                    if (!empty($boards_subscriber)) {
+                        $boards_subscriber_values = array(
+                            $new_board_id,
+                            $r_post['user_id'],
+                            $boards_subscriber['is_subscribed']
+                        );
+                        pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, board_id, user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3', $boards_subscriber_values);
                     }
                 }
+                
                 //Copy board star
                 $boards_star_fields = 'user_id, is_starred';
                 $qry_val_arr = array(
@@ -2943,34 +2974,51 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         if ($lists_result) {
                             $list_result = pg_fetch_assoc($lists_result);
                             $new_list_id = $list_result['id'];
-                            //Copy list subscribers
-                            $lists_subscriber_fields = 'user_id, is_subscribed';
-                            $qry_val_arr = array(
-                                $list_id
-                            );
-                            $lists_subscribers = pg_query_params($db_lnk, 'SELECT id, ' . $lists_subscriber_fields . ' FROM list_subscribers WHERE list_id = $1', $qry_val_arr);
-                            if ($lists_subscribers && pg_num_rows($lists_subscribers)) {
-                                $lists_subscriber_fields = 'created, modified, list_id, ' . $lists_subscriber_fields;
-                                while ($lists_subscriber = pg_fetch_object($lists_subscribers)) {
-                                    $lists_subscriber_values = array();
-                                    array_push($lists_subscriber_values, 'now()', 'now()', $new_list_id);
-                                    foreach ($lists_subscriber as $key => $value) {
-                                        if ($key != 'id') {
-                                            if ($value === false) {
-                                                array_push($lists_subscriber_values, 'false');
-                                            } else if ($value === null) {
-                                                array_push($lists_subscriber_values, null);
-                                            } else {
-                                                array_push($lists_subscriber_values, $value);
+                            if($keepusers) {
+                                //Copy list subscribers
+                                $lists_subscriber_fields = 'user_id, is_subscribed';
+                                $qry_val_arr = array(
+                                    $list_id
+                                );
+                                $lists_subscribers = pg_query_params($db_lnk, 'SELECT id, ' . $lists_subscriber_fields . ' FROM list_subscribers WHERE list_id = $1', $qry_val_arr);
+                                if ($lists_subscribers && pg_num_rows($lists_subscribers)) {
+                                    $lists_subscriber_fields = 'created, modified, list_id, ' . $lists_subscriber_fields;
+                                    while ($lists_subscriber = pg_fetch_object($lists_subscribers)) {
+                                        $lists_subscriber_values = array();
+                                        array_push($lists_subscriber_values, 'now()', 'now()', $new_list_id);
+                                        foreach ($lists_subscriber as $key => $value) {
+                                            if ($key != 'id') {
+                                                if ($value === false) {
+                                                    array_push($lists_subscriber_values, 'false');
+                                                } else if ($value === null) {
+                                                    array_push($lists_subscriber_values, null);
+                                                } else {
+                                                    array_push($lists_subscriber_values, $value);
+                                                }
                                             }
                                         }
+                                        $lists_subscriber_val = '';
+                                        for ($i = 1, $len = count($lists_subscriber_values); $i <= $len; $i++) {
+                                            $lists_subscriber_val.= '$' . $i;
+                                            $lists_subscriber_val.= ($i != $len) ? ', ' : '';
+                                        }
+                                        pg_query_params($db_lnk, 'INSERT INTO list_subscribers (' . $lists_subscriber_fields . ') VALUES (' . $lists_subscriber_val . ')', $lists_subscriber_values);
                                     }
-                                    $lists_subscriber_val = '';
-                                    for ($i = 1, $len = count($lists_subscriber_values); $i <= $len; $i++) {
-                                        $lists_subscriber_val.= '$' . $i;
-                                        $lists_subscriber_val.= ($i != $len) ? ', ' : '';
-                                    }
-                                    pg_query_params($db_lnk, 'INSERT INTO list_subscribers (' . $lists_subscriber_fields . ') VALUES (' . $lists_subscriber_val . ')', $lists_subscriber_values);
+                                }
+                            } else {
+                                //Copy list subscribers
+                                $qry_val_arr = array(
+                                    $list_id,
+                                    $r_post['user_id']
+                                );
+                                $lists_subscriber = executeQuery('SELECT id, user_id, is_subscribed FROM list_subscribers WHERE list_id = $1 and user_id =$2', $qry_val_arr);
+                                if (!empty($lists_subscriber)) {
+                                    $lists_subscriber_values = array(
+                                        $new_list_id,
+                                        $r_post['user_id'],
+                                        $lists_subscriber['is_subscribed']
+                                    );
+                                    pg_query_params($db_lnk, 'INSERT INTO list_subscribers (created, modified, list_id, user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $lists_subscriber_values);
                                 }
                             }
                             // Copy cards
@@ -3102,34 +3150,111 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                                 }
                                             }
                                         }
-                                        //Copy card voters
-                                        $card_voter_fields = 'user_id';
-                                        $qry_val_arr = array(
-                                            $card_id
-                                        );
-                                        $card_voters = pg_query_params($db_lnk, 'SELECT id, ' . $card_voter_fields . ' FROM card_voters WHERE card_id = $1', $qry_val_arr);
-                                        if ($card_voters && pg_num_rows($card_voters)) {
-                                            $card_voter_fields = 'created, modified, card_id, ' . $card_voter_fields;
-                                            while ($card_voter = pg_fetch_object($card_voters)) {
-                                                $card_voter_values = array();
-                                                array_push($card_voter_values, 'now()', 'now()', $new_card_id);
-                                                foreach ($card_voter as $key => $value) {
-                                                    if ($key != 'id') {
-                                                        if ($value === false) {
-                                                            array_push($card_voter_values, 'false');
-                                                        } else if ($value === null) {
-                                                            array_push($card_voter_values, null);
-                                                        } else {
-                                                            array_push($card_voter_values, $value);
+                                        if($keepusers) {
+                                            //Copy card voters
+                                            $card_voter_fields = 'user_id';
+                                            $qry_val_arr = array(
+                                                $card_id
+                                            );
+                                            $card_voters = pg_query_params($db_lnk, 'SELECT id, ' . $card_voter_fields . ' FROM card_voters WHERE card_id = $1', $qry_val_arr);
+                                            if ($card_voters && pg_num_rows($card_voters)) {
+                                                $card_voter_fields = 'created, modified, card_id, ' . $card_voter_fields;
+                                                while ($card_voter = pg_fetch_object($card_voters)) {
+                                                    $card_voter_values = array();
+                                                    array_push($card_voter_values, 'now()', 'now()', $new_card_id);
+                                                    foreach ($card_voter as $key => $value) {
+                                                        if ($key != 'id') {
+                                                            if ($value === false) {
+                                                                array_push($card_voter_values, 'false');
+                                                            } else if ($value === null) {
+                                                                array_push($card_voter_values, null);
+                                                            } else {
+                                                                array_push($card_voter_values, $value);
+                                                            }
                                                         }
                                                     }
+                                                    $card_voter_val = '';
+                                                    for ($i = 1, $len = count($card_voter_values); $i <= $len; $i++) {
+                                                        $card_voter_val.= '$' . $i;
+                                                        $card_voter_val.= ($i != $len) ? ', ' : '';
+                                                    }
+                                                    pg_query_params($db_lnk, 'INSERT INTO card_voters (' . $card_voter_fields . ') VALUES (' . $card_voter_val . ')', $card_voter_values);
                                                 }
-                                                $card_voter_val = '';
-                                                for ($i = 1, $len = count($card_voter_values); $i <= $len; $i++) {
-                                                    $card_voter_val.= '$' . $i;
-                                                    $card_voter_val.= ($i != $len) ? ', ' : '';
+                                            }
+                                            //Copy card subscribers
+                                            $cards_subscriber_fields = 'user_id, is_subscribed';
+                                            $qry_val_arr = array(
+                                                $card_id
+                                            );
+                                            $cards_subscribers = pg_query_params($db_lnk, 'SELECT id, ' . $cards_subscriber_fields . ' FROM card_subscribers WHERE card_id = $1', $qry_val_arr);
+                                            if ($cards_subscribers && pg_num_rows($cards_subscribers)) {
+                                                $cards_subscriber_fields = 'created, modified, card_id, ' . $cards_subscriber_fields;
+                                                while ($cards_subscriber = pg_fetch_object($cards_subscribers)) {
+                                                    $cards_subscriber_values = array();
+                                                    array_push($cards_subscriber_values, 'now()', 'now()', $new_card_id);
+                                                    foreach ($cards_subscriber as $key => $value) {
+                                                        if ($key != 'id') {
+                                                            if ($value === false) {
+                                                                array_push($cards_subscriber_values, 'false');
+                                                            } else if ($value === null) {
+                                                                array_push($cards_subscriber_values, null);
+                                                            } else {
+                                                                array_push($cards_subscriber_values, $value);
+                                                            }
+                                                        }
+                                                    }
+                                                    $cards_subscriber_val = '';
+                                                    for ($i = 1, $len = count($cards_subscriber_values); $i <= $len; $i++) {
+                                                        $cards_subscriber_val.= '$' . $i;
+                                                        $cards_subscriber_val.= ($i != $len) ? ', ' : '';
+                                                    }
+                                                    pg_query_params($db_lnk, 'INSERT INTO card_subscribers (' . $cards_subscriber_fields . ') VALUES (' . $cards_subscriber_val . ')', $cards_subscriber_values);
                                                 }
-                                                pg_query_params($db_lnk, 'INSERT INTO card_voters (' . $card_voter_fields . ') VALUES (' . $card_voter_val . ')', $card_voter_values);
+                                            }
+                                            //Copy card users
+                                            $cards_user_fields = 'user_id';
+                                            $qry_val_arr = array(
+                                                $card_id
+                                            );
+                                            $cards_users = pg_query_params($db_lnk, 'SELECT id, ' . $cards_user_fields . ' FROM cards_users WHERE card_id = $1', $qry_val_arr);
+                                            if ($cards_users && pg_num_rows($cards_users)) {
+                                                $cards_user_fields = 'created, modified, card_id, ' . $cards_user_fields;
+                                                while ($cards_user = pg_fetch_object($cards_users)) {
+                                                    $cards_user_values = array();
+                                                    array_push($cards_user_values, 'now()', 'now()', $new_card_id);
+                                                    foreach ($cards_user as $key => $value) {
+                                                        if ($key != 'id') {
+                                                            if ($value === false) {
+                                                                array_push($cards_user_values, 'false');
+                                                            } else if ($value === null) {
+                                                                array_push($cards_user_values, null);
+                                                            } else {
+                                                                array_push($cards_user_values, $value);
+                                                            }
+                                                        }
+                                                    }
+                                                    $cards_user_val = '';
+                                                    for ($i = 1, $len = count($cards_user_values); $i <= $len; $i++) {
+                                                        $cards_user_val.= '$' . $i;
+                                                        $cards_user_val.= ($i != $len) ? ', ' : '';
+                                                    }
+                                                    pg_query_params($db_lnk, 'INSERT INTO cards_users (' . $cards_user_fields . ') VALUES (' . $cards_user_val . ')', $cards_user_values);
+                                                }
+                                            }
+                                        } else {
+                                            //Copy card subscribers
+                                            $qry_val_arr = array(
+                                                $card_id,
+                                                $r_post['user_id']
+                                            );
+                                            $cards_subscriber = executeQuery('SELECT id, user_id, is_subscribed FROM card_subscribers WHERE card_id = $1 and user_id =$2', $qry_val_arr);
+                                            if (!empty($cards_subscriber)) {
+                                                $cards_subscriber_values = array(
+                                                    $new_card_id,
+                                                    $r_post['user_id'],
+                                                    $cards_subscriber['is_subscribed']
+                                                );
+                                                pg_query_params($db_lnk, 'INSERT INTO card_subscribers (created, modified, card_id, user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $cards_subscriber_values);
                                             }
                                         }
                                         //Copy card labels
@@ -3160,66 +3285,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                                     $cards_label_val.= ($i != $len) ? ', ' : '';
                                                 }
                                                 pg_query_params($db_lnk, 'INSERT INTO cards_labels (' . $cards_label_fields . ') VALUES (' . $cards_label_val . ')', $cards_label_values);
-                                            }
-                                        }
-                                        //Copy card subscribers
-                                        $cards_subscriber_fields = 'user_id, is_subscribed';
-                                        $qry_val_arr = array(
-                                            $card_id
-                                        );
-                                        $cards_subscribers = pg_query_params($db_lnk, 'SELECT id, ' . $cards_subscriber_fields . ' FROM card_subscribers WHERE card_id = $1', $qry_val_arr);
-                                        if ($cards_subscribers && pg_num_rows($cards_subscribers)) {
-                                            $cards_subscriber_fields = 'created, modified, card_id, ' . $cards_subscriber_fields;
-                                            while ($cards_subscriber = pg_fetch_object($cards_subscribers)) {
-                                                $cards_subscriber_values = array();
-                                                array_push($cards_subscriber_values, 'now()', 'now()', $new_card_id);
-                                                foreach ($cards_subscriber as $key => $value) {
-                                                    if ($key != 'id') {
-                                                        if ($value === false) {
-                                                            array_push($cards_subscriber_values, 'false');
-                                                        } else if ($value === null) {
-                                                            array_push($cards_subscriber_values, null);
-                                                        } else {
-                                                            array_push($cards_subscriber_values, $value);
-                                                        }
-                                                    }
-                                                }
-                                                $cards_subscriber_val = '';
-                                                for ($i = 1, $len = count($cards_subscriber_values); $i <= $len; $i++) {
-                                                    $cards_subscriber_val.= '$' . $i;
-                                                    $cards_subscriber_val.= ($i != $len) ? ', ' : '';
-                                                }
-                                                pg_query_params($db_lnk, 'INSERT INTO card_subscribers (' . $cards_subscriber_fields . ') VALUES (' . $cards_subscriber_val . ')', $cards_subscriber_values);
-                                            }
-                                        }
-                                        //Copy card users
-                                        $cards_user_fields = 'user_id';
-                                        $qry_val_arr = array(
-                                            $card_id
-                                        );
-                                        $cards_users = pg_query_params($db_lnk, 'SELECT id, ' . $cards_user_fields . ' FROM cards_users WHERE card_id = $1', $qry_val_arr);
-                                        if ($cards_users && pg_num_rows($cards_users)) {
-                                            $cards_user_fields = 'created, modified, card_id, ' . $cards_user_fields;
-                                            while ($cards_user = pg_fetch_object($cards_users)) {
-                                                $cards_user_values = array();
-                                                array_push($cards_user_values, 'now()', 'now()', $new_card_id);
-                                                foreach ($cards_user as $key => $value) {
-                                                    if ($key != 'id') {
-                                                        if ($value === false) {
-                                                            array_push($cards_user_values, 'false');
-                                                        } else if ($value === null) {
-                                                            array_push($cards_user_values, null);
-                                                        } else {
-                                                            array_push($cards_user_values, $value);
-                                                        }
-                                                    }
-                                                }
-                                                $cards_user_val = '';
-                                                for ($i = 1, $len = count($cards_user_values); $i <= $len; $i++) {
-                                                    $cards_user_val.= '$' . $i;
-                                                    $cards_user_val.= ($i != $len) ? ', ' : '';
-                                                }
-                                                pg_query_params($db_lnk, 'INSERT INTO cards_users (' . $cards_user_fields . ') VALUES (' . $cards_user_val . ')', $cards_user_values);
                                             }
                                         }
                                     }
