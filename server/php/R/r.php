@@ -17,7 +17,7 @@
 $r_debug = '';
 $authUser = $client = $form = array();
 $_server_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
-$_server_context = explode('/api/',$_SERVER['REQUEST_URI'],2)[0];
+$_server_context = explode('/api/', $_SERVER['REQUEST_URI'], 2) [0];
 $_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST'] . $_server_context; // http://localhost/context
 header('x-response-url:' . $_SERVER['REQUEST_URI']);
 header('Access-Control-Allow-Origin: *');
@@ -2821,7 +2821,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $response['uuid'] = $uuid;
                 }
                 $new_board_id = $row['id'];
-                if($keepusers) {
+                if ($keepusers) {
                     //Copy board users
                     $boards_user_fields = 'user_id, board_user_role_id';
                     $qry_val_arr = array(
@@ -2890,7 +2890,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         1
                     );
                     pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id, user_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
-                    
                     //Copy board subscribers
                     $qry_val_arr = array(
                         $copied_board_id,
@@ -2906,7 +2905,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, board_id, user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3', $boards_subscriber_values);
                     }
                 }
-                
                 //Copy board star
                 $boards_star_fields = 'user_id, is_starred';
                 $qry_val_arr = array(
@@ -2974,7 +2972,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         if ($lists_result) {
                             $list_result = pg_fetch_assoc($lists_result);
                             $new_list_id = $list_result['id'];
-                            if($keepusers) {
+                            if ($keepusers) {
                                 //Copy list subscribers
                                 $lists_subscriber_fields = 'user_id, is_subscribed';
                                 $qry_val_arr = array(
@@ -3150,7 +3148,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                                 }
                                             }
                                         }
-                                        if($keepusers) {
+                                        if ($keepusers) {
                                             //Copy card voters
                                             $card_voter_fields = 'user_id';
                                             $qry_val_arr = array(
