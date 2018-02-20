@@ -1149,6 +1149,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $boards_user = executeQuery('SELECT * FROM boards_users WHERE board_id = $1 AND user_id = $2', $val_array);
         if ((!empty($authUser) && $authUser['role_id'] == 1) || $board['board_visibility'] == 2 || !empty($boards_user)) {
+            $construct_offset = '';
             $condition = '';
             array_push($pg_params, $r_resource_vars['boards']);
             $i = 2;
