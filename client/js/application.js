@@ -432,6 +432,9 @@ var AppRouter = Backbone.Router.extend({
                 view.flash('success', 'Logout successfully.');
             }
         });
+        if ($('#content').hasClass('intro_video')) {
+            $('#content').removeClass('intro_video');
+        }
     },
     settings: function() {
         new App.ApplicationView({

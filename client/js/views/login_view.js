@@ -92,6 +92,7 @@ App.LoginView = Backbone.View.extend({
                         auth_response.user.is_card_checklists_notifications_enabled = response.user.is_card_checklists_notifications_enabled;
                         auth_response.user.is_card_attachments_notifications_enabled = response.user.is_card_attachments_notifications_enabled;
                         auth_response.user.is_ldap = response.user.is_ldap;
+                        auth_response.user.is_intro_video_skipped = response.user.is_intro_video_skipped;
                         $.cookie('auth', JSON.stringify(auth_response));
                         i18next.changeLanguage(response.user.language);
                         api_token = response.access_token;
