@@ -119,7 +119,30 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                             $body
                         );
                         // Insert email content as comment in respective card
-                        pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
+                        $activity_res = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
+                        $activity = pg_fetch_assoc($activity_res);
+                        if(!empty($activity)) {
+                            $id_converted = base_convert($activity['id'], 10, 36);
+                            $materialized_path = sprintf("%08s", $id_converted);
+                            $path = 'P' . $activity['id'];
+                            $depth = 0;
+                            $root = $activity['id'];
+                            $freshness_ts = $created;
+                            $qry_val_arr = array(
+                                $materialized_path,
+                                $path,
+                                $depth,
+                                $root,
+                                $freshness_ts,
+                                $activity['id']
+                            );
+                            pg_query_params($db_lnk, 'UPDATE activities SET materialized_path = $1, path = $2, depth = $3, root = $4, freshness_ts = $5 WHERE id = $6', $qry_val_arr);
+                            $qry_val_arr = array(
+                                $freshness_ts,
+                                $root
+                            );
+                            pg_query_params($db_lnk, 'UPDATE activities SET freshness_ts = $1 WHERE root = $2', $qry_val_arr);
+                        }
                     }
                     // Fetching email structure to get the attachments
                     $structure = imap_fetchstructure($connection, $header->Msgno);

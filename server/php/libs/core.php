@@ -1276,6 +1276,9 @@ function importTrelloBoard($board = array())
                 }
                 $comment = utf8_decode($comment);
                 $created = $modified = $action['date'];
+
+                
+
                 if (!empty($action['data']['list']['id'])) {
                     if (array_key_exists($action['data']['list']['id'], $lists)) {
                         $lists_key = $lists[$action['data']['list']['id']];
@@ -1299,7 +1302,7 @@ function importTrelloBoard($board = array())
                         $type,
                         $comment
                     );
-                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
                 } else if (!empty($lists_key) && empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
@@ -1310,7 +1313,7 @@ function importTrelloBoard($board = array())
                         $type,
                         $comment
                     );
-                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
                 } else if (empty($lists_key) && !empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
@@ -1321,7 +1324,7 @@ function importTrelloBoard($board = array())
                         $type,
                         $comment
                     );
-                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
                 } else if (!empty($lists_key) && !empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
@@ -1333,7 +1336,29 @@ function importTrelloBoard($board = array())
                         $type,
                         $comment
                     );
-                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                }
+                if(!empty($activity)) {
+                    $id_converted = base_convert($activity['id'], 10, 36);
+                    $materialized_path = sprintf("%08s", $id_converted);
+                    $path = 'P' . $activity['id'];
+                    $depth = 0;
+                    $root = $activity['id'];
+                    $freshness_ts = $created;
+                    $qry_val_arr = array(
+                        $materialized_path,
+                        $path,
+                        $depth,
+                        $root,
+                        $freshness_ts,
+                        $activity['id']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE activities SET materialized_path = $1, path = $2, depth = $3, root = $4, freshness_ts = $5 WHERE id = $6', $qry_val_arr);
+                    $qry_val_arr = array(
+                        $freshness_ts,
+                        $root
+                    );
+                    pg_query_params($db_lnk, 'UPDATE activities SET freshness_ts = $1 WHERE root = $2', $qry_val_arr);
                 }
             }
         }
@@ -1642,7 +1667,7 @@ function importWekanBoard($board = array())
                         $type,
                         $comment
                     );
-                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
                 } else if (!empty($lists_key) && empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
@@ -1653,7 +1678,7 @@ function importWekanBoard($board = array())
                         $type,
                         $comment
                     );
-                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
                 } else if (empty($lists_key) && !empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
@@ -1664,7 +1689,7 @@ function importWekanBoard($board = array())
                         $type,
                         $comment
                     );
-                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
                 } else if (!empty($lists_key) && !empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
@@ -1676,7 +1701,29 @@ function importWekanBoard($board = array())
                         $type,
                         $comment
                     );
-                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                }
+                if(!empty($activity)) {
+                    $id_converted = base_convert($activity['id'], 10, 36);
+                    $materialized_path = sprintf("%08s", $id_converted);
+                    $path = 'P' . $activity['id'];
+                    $depth = 0;
+                    $root = $activity['id'];
+                    $freshness_ts = $created;
+                    $qry_val_arr = array(
+                        $materialized_path,
+                        $path,
+                        $depth,
+                        $root,
+                        $freshness_ts,
+                        $activity['id']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE activities SET materialized_path = $1, path = $2, depth = $3, root = $4, freshness_ts = $5 WHERE id = $6', $qry_val_arr);
+                    $qry_val_arr = array(
+                        $freshness_ts,
+                        $root
+                    );
+                    pg_query_params($db_lnk, 'UPDATE activities SET freshness_ts = $1 WHERE root = $2', $qry_val_arr);
                 }
             }
         }
