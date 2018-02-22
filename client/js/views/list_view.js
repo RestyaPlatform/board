@@ -1624,6 +1624,14 @@ App.ListView = Backbone.View.extend({
         e.preventDefault();
         var self = this;
         var sort_by = $(e.target).data('sort-by');
+        if ($('.js-sort-by-' + self.model.attributes.id).hasClass('active')) {
+            $('.js-sort-by-' + self.model.attributes.id).removeClass('active');
+        }
+        if ($('.js-sort-by-' + self.model.attributes.id).hasClass('up-active')) {
+            $('.js-sort-by-' + self.model.attributes.id).removeClass('up-active');
+        }
+        $('.js-sort-down-' + self.model.attributes.id).remove();
+        $('.js-sort-up-' + self.model.attributes.id).remove();
         var filtered_cards = self.model.cards.filter(function(card) {
             return parseInt(card.attributes.is_archived) === 0;
         });
@@ -1636,9 +1644,13 @@ App.ListView = Backbone.View.extend({
             });
             var cards = new App.CardCollection();
             if (this.sort_by === sort_by) {
+                $(e.target).addClass('up-active');
+                $(e.target).append('<i class="icon icon-arrow-up js-sort-up-' + self.model.attributes.id + ' pull-right"></i>');
                 cards.sortDirection = 'asc';
                 this.sort_by = '-' + sort_by;
             } else {
+                $(e.target).addClass('active');
+                $(e.target).append('<i class="icon icon-arrow-down js-sort-down-' + self.model.attributes.id + ' pull-right"></i>');
                 cards.sortDirection = 'desc';
                 this.sort_by = sort_by;
             }
