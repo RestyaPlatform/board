@@ -66,7 +66,7 @@ App.ShowCopyBoardView = Backbone.View.extend({
             var self = this;
             var data = $(e.target).serializeObject();
             var keepUsers = self.$el.find('input[name="keepUsers"]:checked').length > 0;
-            if(keepUsers) {
+            if (keepUsers) {
                 data.keepUsers = "1";
             }
             data.user_id = authuser.user.id;
