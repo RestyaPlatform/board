@@ -38,7 +38,7 @@ App.ArchivedCardView = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
-        'click .js-delete-archived-card': 'deleteArchivedCard',
+        'click .js-delete-archived-card-confirm': 'deleteArchivedCardConfirm',
         'click .js-show-modal-card-view': 'showCardModal'
     },
     /**
@@ -78,14 +78,10 @@ App.ArchivedCardView = Backbone.View.extend({
      * @return false
      *
      */
-    deleteArchivedCard: function(e) {
-        e.preventDefault();
-        this.model.collection.remove([{
-            id: this.model.attributes.id
-        }]);
-        this.$el.remove();
-        this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.attributes.id + '.json';
-        this.model.destroy();
+    deleteArchivedCardConfirm: function(e) {
+        $('.js-setting-response').html(new App.ArchiveCardsDeleteConfirmView({
+            model: this.model,
+        }).el);
         return false;
     }
 });
