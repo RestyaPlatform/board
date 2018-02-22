@@ -1276,9 +1276,6 @@ function importTrelloBoard($board = array())
                 }
                 $comment = utf8_decode($comment);
                 $created = $modified = $action['date'];
-
-                
-
                 if (!empty($action['data']['list']['id'])) {
                     if (array_key_exists($action['data']['list']['id'], $lists)) {
                         $lists_key = $lists[$action['data']['list']['id']];
@@ -1338,7 +1335,7 @@ function importTrelloBoard($board = array())
                     );
                     $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                 }
-                if(!empty($activity)) {
+                if (!empty($activity)) {
                     $id_converted = base_convert($activity['id'], 10, 36);
                     $materialized_path = sprintf("%08s", $id_converted);
                     $path = 'P' . $activity['id'];
@@ -1703,7 +1700,7 @@ function importWekanBoard($board = array())
                     );
                     $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                 }
-                if(!empty($activity)) {
+                if (!empty($activity)) {
                     $id_converted = base_convert($activity['id'], 10, 36);
                     $materialized_path = sprintf("%08s", $id_converted);
                     $path = 'P' . $activity['id'];

@@ -121,7 +121,7 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                         // Insert email content as comment in respective card
                         $activity_res = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
                         $activity = pg_fetch_assoc($activity_res);
-                        if(!empty($activity)) {
+                        if (!empty($activity)) {
                             $id_converted = base_convert($activity['id'], 10, 36);
                             $materialized_path = sprintf("%08s", $id_converted);
                             $path = 'P' . $activity['id'];
