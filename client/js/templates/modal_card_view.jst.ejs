@@ -333,7 +333,7 @@
 				    </div>
 				<ul class="js-card-actions list-inline action-list navbar-btn">
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-					<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-move-card-form js-card-header-action even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><i class="icon-folder-close"></i><%- i18next.t('Move') %></a>
+					<li class="dropdown js-card-custom-app" data-card_id = "<%- card.id%>"> <a class="btn btn-default dropdown-toggle js-show-move-card-form js-card-header-action even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><i class="icon-folder-close"></i><%- i18next.t('Move') %></a>
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 						<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 						<li class="col-xs-12 divider"></li>
