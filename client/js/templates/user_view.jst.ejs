@@ -60,7 +60,7 @@
 							<div class="form-group required">
 								<label for="inputinitials" class="col-sm-4 control-label"><%- i18next.t("Initials") %></label>
 								<div class="col-sm-8">
-									<input type="text" id="inputinitials" class="form-control initialism" name="initials" value="<%- user.attributes.initials.toUpperCase() %>" maxlength="2" required>
+									<input type="text" id="inputinitials" class="form-control initialism" name="initials" value="<% if (!_.isUndefined(user.attributes.initials) && !_.isEmpty(user.attributes.initials) && user.attributes.initials !== 'null' && user.attributes.initials !== 'NULL') {%><%- user.attributes.initials.toUpperCase() %><% } %>" maxlength="2" required>
 								</div>
 							</div>
 							<div class="form-group required">
