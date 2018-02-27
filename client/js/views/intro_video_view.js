@@ -16,9 +16,6 @@ App.intro_video_view = Backbone.View.extend({
             this.render();
         }
     },
-    events: {
-        'click .js-intro-video-skip': 'skipVideo'
-    },
     template: JST['templates/intro_video'],
     /**
      * render()
@@ -34,7 +31,7 @@ App.intro_video_view = Backbone.View.extend({
                 height: 300,
                 width: 200,
                 animationSpeed: ANIMATION_SPEED,
-                title: '<div class="col-xs-12"><div class="text-center"><strong>Introduction Video</strong></div></div>',
+                title: '<div class="col-xs-12"><div class="text-center"><strong>Restyaboard Intro</strong></div></div>',
                 beforePopout: function(event) {
                     if ($(window).width() < 1400) {
                         $('.editor').resizable({
@@ -114,36 +111,29 @@ App.intro_video_view = Backbone.View.extend({
                             $('.action-close', $('.dockmodal.active')).trigger('click');
                         }
                     });
+                },
+                close: function(event, dialog) {
+                    var data = {};
+
+                    data.is_intro_video_skipped = 1;
+
+                    $('.action-close', ('.dockmodal-header')).trigger('click');
+                    var introvideo = new App.intro_view_model();
+                    introvideo.url = api_url + 'users/' + authuser.user.id + '.json';
+                    introvideo.save(data, {
+                        success: function(response) {
+                            if (!_.isEmpty(response.attributes.success)) {
+                                var Auth = JSON.parse($.cookie('auth'));
+                                Auth.user.is_intro_video_skipped = response.attributes.is_intro_video_skipped;
+                                $.cookie('auth', JSON.stringify(Auth));
+                                authuser = Auth;
+                            }
+                        }
+                    });
                 }
             });
             this.$el.html(this.template);
         }
         return this;
-    },
-    /**
-     * skipVideo()
-     * To skip the intro video for users
-     * @param NULL
-     * @return object
-     *
-     */
-    skipVideo: function(e) {
-        var data = {};
-
-        data.is_intro_video_skipped = 1;
-
-        $('.action-close', ('.dockmodal-header')).trigger('click');
-        var introvideo = new App.intro_view_model();
-        introvideo.url = api_url + 'users/' + authuser.user.id + '.json';
-        introvideo.save(data, {
-            success: function(response) {
-                if (!_.isEmpty(response.attributes.success)) {
-                    var Auth = JSON.parse($.cookie('auth'));
-                    Auth.user.is_intro_video_skipped = response.attributes.is_intro_video_skipped;
-                    $.cookie('auth', JSON.stringify(Auth));
-                    authuser = Auth;
-                }
-            }
-        });
     }
 });
