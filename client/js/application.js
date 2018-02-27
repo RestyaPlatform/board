@@ -535,7 +535,7 @@ var AppRouter = Backbone.Router.extend({
     user_view_type: function(id, type) {
         var Auth_check = JSON.parse($.cookie('auth'));
         if ($.cookie('auth') !== null) {
-            if (Auth_check.user.id == id || Auth_check.user.role_id == '1') {
+            if (Auth_check.user.id == id || Auth_check.user.role_id == '1' || type === 'cards' || type === "profile") {
                 new App.ApplicationView({
                     model: 'user_view',
                     'id': id,
