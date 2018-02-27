@@ -1642,12 +1642,12 @@ App.ListView = Backbone.View.extend({
             var cards = new App.CardCollection();
             if (this.sort_by === sort_by) {
                 $(e.target).parent().addClass('active');
-                $(e.target).html('<i class="icon icon-arrow-up js-sort-up-' + self.model.attributes.id + '" style="padding-top:3px;padding-right:3px;"></i>'  + i18next.t($(e.target).text()));
+                $(e.target).html('<i class="icon icon-arrow-up js-sort-up-' + self.model.attributes.id + '"></i>'  + i18next.t($(e.target).text()));
                 cards.sortDirection = 'asc';
                 this.sort_by = '-' + sort_by;
             } else {
                 $(e.target).parent().addClass('active');
-                $(e.target).html('<i class="icon icon-arrow-down js-sort-down-' + self.model.attributes.id + '" style="padding-top:3px;padding-right:3px;"></i>'  + i18next.t($(e.target).text()));
+                $(e.target).html('<i class="icon icon-arrow-down js-sort-down-' + self.model.attributes.id + '"></i>'  + i18next.t($(e.target).text()));
                 cards.sortDirection = 'desc';
                 this.sort_by = sort_by;
             }
