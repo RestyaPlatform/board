@@ -107,6 +107,21 @@
 			sed -i "s/rewrite ^\/ical\/.*/rewrite ^\/ical\/([0-9]*)\/([0-9]*)\/([a-z0-9]*).ics\$ \/server\/php\/ical.php?board_id=\$1\&user_id=\$2\&hash=\$3 last;/" /etc/nginx/conf.d/restyaboard.conf
 		}
 
+		upgrade-0.6.1-0.6.2()
+		{
+			set +x
+			echo "Do you want to install Restyaboard app 'Hide Card Created Date' (y/n)?"
+			read -r answer
+			set -x
+			case "${answer}" in
+				[Yy])
+				mkdir "$dir/client/apps"
+				chmod -R go+w "$dir/client/apps"
+				curl -v -L -G -o /tmp/r_hide_card_created_date-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_hide_card_created_date-v0.1.1.zip
+				unzip /tmp/r_hide_card_created_date-v0.1.1.zip -d "$dir/client/apps"
+			esac
+		}
+
 		update_version()
 		{
 			set +x
@@ -659,14 +674,19 @@
 							echo "jq installation failed with error code 53"
 						fi
 					fi
+					mkdir "$dir/client/apps"
+					chmod -R go+w "$dir/client/apps"
 					curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
 					chmod -R go+w "/tmp/apps.json"
-					for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
+					for fid in `jq -r '.[] | .id + "-v" + .version + "#" + .price' /tmp/apps.json`
 					do
-						mkdir "$dir/client/apps"
-						chmod -R go+w "$dir/client/apps"
-						curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-						unzip /tmp/$fid.zip -d "$dir/client/apps"
+						app_name=$(echo ${fid} | cut -d"#" -f1)
+    					app_price=$(echo ${fid} | cut -d"#" -f2)
+						if ([ "$app_price" = "Free" ])
+    					then
+							curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
+							unzip /tmp/$fid.zip -d "$dir/client/apps"
+						fi
 					done
 				esac
 				
@@ -1161,14 +1181,19 @@
 							return 49
 						fi
 					fi
+					mkdir "$dir/client/apps"
+					chmod -R go+w "$dir/client/apps"
 					curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
 					chmod -R go+w "/tmp/apps.json"
-					for fid in `jq -r '.[] | .id + "-v" + .version' /tmp/apps.json`
+					for fid in `jq -r '.[] | .id + "-v" + .version + "#" + .price' /tmp/apps.json`
 					do
-						mkdir "$dir/client/apps"
-						chmod -R go+w "$dir/client/apps"
-						curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-						unzip /tmp/$fid.zip -d "$dir/client/apps"
+						app_name=$(echo ${fid} | cut -d"#" -f1)
+						app_price=$(echo ${fid} | cut -d"#" -f2)
+						if ([ "$app_price" = "Free" ])
+						then
+							curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
+							unzip /tmp/$fid.zip -d "$dir/client/apps"
+						fi
 					done
 				esac
 
