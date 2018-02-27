@@ -432,7 +432,9 @@ App.CardView = Backbone.View.extend({
             })));
         }
         _(function() {
-            $('body').trigger('cardRendered', self.model.id, self.model);
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $('body').trigger('cardRendered', self.model.id, self.model);
+            }
         }).defer();
         return this;
     },
