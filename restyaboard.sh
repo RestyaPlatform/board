@@ -188,6 +188,10 @@
 				then
 					upgrade+=("upgrade-0.6-0.6.1")
 				fi
+				if [[ $version < "v0.6.2" ]];
+				then
+					upgrade+=("upgrade-0.6.1-0.6.2")
+				fi
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
 				do
