@@ -2440,7 +2440,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 unset($_POST['is_card_labels_notifications_enabled']);
                 unset($_POST['is_card_checklists_notifications_enabled']);
                 unset($_POST['is_card_attachments_notifications_enabled']);
-                $_POST['initials'] = strtoupper($_POST['initials']);
                 $comment = '##USER_NAME## updated the profile.';
                 $foreign_ids['user_id'] = $authUser['id'];
                 $table_name = 'users';
@@ -2458,7 +2457,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $sfields.= (empty($sfields)) ? $key : ", " . $key;
                     }
                 }
-                $is_send_newsletter = $_POST['is_send_newsletter'];
                 if (!empty($comment)) {
                     $qry_va_arr = array(
                         $id
@@ -2493,15 +2491,41 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $response['activity']['difference'] = $diff;
                     }
                 }
-                $qry_val_arr = array(
-                    $_POST['full_name'],
-                    $_POST['about_me'],
-                    $_POST['initials'],
-                    $is_send_newsletter,
-                    $_POST['timezone'],
-                    $r_resource_vars['users']
-                );
-                pg_query_params($db_lnk, 'UPDATE users SET full_name = $1, about_me = $2, initials = $3, is_send_newsletter = $4, timezone = $5 WHERE id = $6', $qry_val_arr);
+                if (!empty($_POST['full_name'])) {
+                    $qry_val_arr = array(
+                        $_POST['full_name'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET full_name= $1 WHERE id = $2', $qry_val_arr);
+                }
+                if (!empty($_POST['about_me'])) {
+                    $qry_val_arr = array(
+                        $_POST['about_me'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET about_me= $1 WHERE id = $2', $qry_val_arr);
+                }
+                if (!empty($_POST['initials'])) {
+                    $qry_val_arr = array(
+                        strtoupper($_POST['initials']),
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET initials= $1 WHERE id = $2', $qry_val_arr);
+                }
+                if (!empty($_POST['timezone'])) {
+                    $qry_val_arr = array(
+                        $_POST['timezone'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET timezone= $1 WHERE id = $2', $qry_val_arr);
+                }
+                if (!empty($_POST['is_send_newsletter'])) {
+                    $qry_val_arr = array(
+                        $_POST['is_send_newsletter'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET is_send_newsletter= $1 WHERE id = $2', $qry_val_arr);
+                }
                 if (!empty($_POST['email'])) {
                     $qry_val_arr = array(
                         $_POST['email'],
