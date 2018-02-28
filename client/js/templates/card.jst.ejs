@@ -13,7 +13,7 @@
   </div>
  <%  } %> 
  <div class="clearfix">
-  <% if(!_.isEmpty(card.attachments) && card.attachments.length > 0 && !_.isEmpty(card.attachments.at(0).attributes.name) && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ %>
+  <% if(!_.isEmpty(card.attachments) && card.attachments.length > 0 && !_.isEmpty(card.attachments.at(0).attributes.name) && _.isEmpty(card.attachments.at(0).attributes.link) && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ %>
 	  <div class="clearfix js-card-attachment-image navbar-btn <% if(!_.isEmpty(card.collection) && !card.list.collection.board.attributes.is_show_image_front_of_card){ %> hide <% } %>">
 		<%
 			var img_src = card.showImage('CardAttachment',  card.attachments.at(0).attributes.id, 'large_thumb' );
@@ -87,6 +87,12 @@
 		}
 	%>
 	<li class="card-listing-truncate"><small title=" <%- i18next.t('Due Date') %>"><span class="label <%- label %>"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
+	<% } %>
+	<% if(!_.isEmpty(card.attributes.created) && card.attributes.created != 'NULL'){
+		var created_date_time = card.attributes.created.split('T');
+		created_date_time = created_date_time[0].split(' ');
+	%>
+	<li class="card-listing-truncate card-created-date"><small title=" <%- i18next.t('Created Date') %>"><span class="label label-default"><%= dateFormat(created_date_time[0], 'mediumDate')  %></span></small></li>
 	<% } %>
 	</ul>
 	</div>

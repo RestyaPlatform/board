@@ -65,6 +65,10 @@ App.ShowCopyBoardView = Backbone.View.extend({
             e.preventDefault();
             var self = this;
             var data = $(e.target).serializeObject();
+            var keepUsers = self.$el.find('input[name="keepUsers"]:checked').length > 0;
+            if (keepUsers) {
+                data.keepUsers = "1";
+            }
             data.user_id = authuser.user.id;
             var board = new App.Board();
             board.url = api_url + 'boards/' + this.model.id + '/copy.json';

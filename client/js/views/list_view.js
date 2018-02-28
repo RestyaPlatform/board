@@ -1624,6 +1624,11 @@ App.ListView = Backbone.View.extend({
         e.preventDefault();
         var self = this;
         var sort_by = $(e.target).data('sort-by');
+        if ($('.js-sort-by-' + self.model.attributes.id).hasClass('active')) {
+            $('.js-sort-by-' + self.model.attributes.id).removeClass('active');
+        }
+        $('.js-sort-down-' + self.model.attributes.id).remove();
+        $('.js-sort-up-' + self.model.attributes.id).remove();
         var filtered_cards = self.model.cards.filter(function(card) {
             return parseInt(card.attributes.is_archived) === 0;
         });
@@ -1636,9 +1641,13 @@ App.ListView = Backbone.View.extend({
             });
             var cards = new App.CardCollection();
             if (this.sort_by === sort_by) {
+                $(e.target).parent().addClass('active');
+                $(e.target).html('<i class="icon icon-arrow-up js-sort-up-' + self.model.attributes.id + '"></i>' + i18next.t($(e.target).text()));
                 cards.sortDirection = 'asc';
                 this.sort_by = '-' + sort_by;
             } else {
+                $(e.target).parent().addClass('active');
+                $(e.target).html('<i class="icon icon-arrow-down js-sort-down-' + self.model.attributes.id + '"></i>' + i18next.t($(e.target).text()));
                 cards.sortDirection = 'desc';
                 this.sort_by = sort_by;
             }
@@ -1662,6 +1671,29 @@ App.ListView = Backbone.View.extend({
                             _date = date[0] + 'T' + date[1];
                         } else {
                             _date = date[0];
+                        }
+                        sort_date = new Date(_date);
+                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
+                } else if (sort_by === 'created_date') {
+                    if (item.get('created') !== null) {
+                        var created_date = item.get('created').split(' ');
+                        if (!_.isUndefined(created_date[1])) {
+                            _date = created_date[0] + 'T' + created_date[1];
+                        } else {
+                            _date = created_date[0];
+                        }
+                        sort_date = new Date(_date);
+                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
+                } else if (sort_by === 'start_date') {
+                    if (item.get('custom_fields') !== null) {
+                        var inputArr = item.get('custom_fields');
+                        var start_date_time = JSON.parse(inputArr);
+                        if (!_.isUndefined(start_date_time.start_date)) {
+                            _date = start_date_time.start_date + 'T' + start_date_time.start_time;
+                        } else {
+                            _date = start_date_time.start_date;
                         }
                         sort_date = new Date(_date);
                         return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();

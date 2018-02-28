@@ -30,16 +30,17 @@
 			<ul class="dropdown-menu dropdown-menu-left arrow arrow-left dropdown-menu-top js-sort-list-response right-mar">
 				 <li class="text-center"><strong><%- i18next.t("Sort") %></strong></li>
 				 <li class="divider"></li>
-				 <li><a title="<%- i18next.t('Votes') %>" href="#" class="js-sort-by" data-sort-by="card_voter_count"><%- i18next.t("Votes") %></a></li>
-				 <li><a title="<%- i18next.t('Attachments') %>" href="#" class="js-sort-by" data-sort-by="attachment_count"><%- i18next.t("Attachments") %></a></li>
-				 <li><a title="<%- i18next.t('Comments') %>" href="#" class="js-sort-by" data-sort-by="comment_count"><%- i18next.t("Comments") %></a>
+				 <li class="js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Votes') %>" href="#" class="js-sort-by" data-sort-by="card_voter_count"><%- i18next.t("Votes") %></a></li>
+				 <li class="js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Attachments') %>" href="#" class="js-sort-by" data-sort-by="attachment_count"><%- i18next.t("Attachments") %></a></li>
+				 <li class="js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Comments') %>" href="#" class="js-sort-by" data-sort-by="comment_count"><%- i18next.t("Comments") %></a>
 				 </li>
-				 <li><a title="<%- i18next.t('Checklist pending count') %>" href="#" class="js-sort-by" data-sort-by="checklist_item_count"><%- i18next.t("Checklist pending count") %></a>
+				 <li class="js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Checklist pending count') %>" href="#" class="js-sort-by" data-sort-by="checklist_item_count"><%- i18next.t("Checklist pending count") %></a>
 				 </li>
-				 <li><a title="<%- i18next.t('Checklist completed count') %>" href="#" class="js-sort-by" data-sort-by="checklist_item_completed_count"><%- i18next.t("Checklist completed count") %></a>
+				 <li class="js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Checklist completed count') %>" href="#" class="js-sort-by" data-sort-by="checklist_item_completed_count"><%- i18next.t("Checklist completed count") %></a>
 				 </li>
-				 <li><a title="<%- i18next.t('Due date') %>" href="#" class="js-sort-by" data-sort-by="due_date"><%- i18next.t("Due date") %></a>
+				 <li class="js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Due date') %>" href="#" class="js-sort-by" data-sort-by="due_date"><%- i18next.t("Due date") %></a>
 				 </li>
+				 <li class=" js-createdDate js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Created Date') %>" href="#" class="js-sort-by" data-sort-by="created_date"><%- i18next.t('Created Date') %></a></li>
 			 </ul>
 			</div>
 		</div>

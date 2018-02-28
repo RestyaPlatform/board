@@ -49,7 +49,7 @@ App.ActivityView = Backbone.View.extend({
     }),
     template: JST['templates/activity'],
     tagName: 'li',
-    className: 'btn-block col-xs-12 js-activity activity-github-styles',
+    className: 'js-activity activity-github-styles',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
@@ -94,9 +94,13 @@ App.ActivityView = Backbone.View.extend({
             this.$el.addClass('js-list-activity-' + this.model.attributes.id);
             if (this.model.attributes.depth !== 0) {
                 if (listing_type === '') {
+                    var column = 12 - parseInt(this.model.attributes.depth);
                     var col_offset = parseInt(this.model.attributes.depth);
+                    this.$el.addClass('col-xs-' + column);
                     this.$el.addClass('col-lg-offset-' + col_offset);
                 }
+            } else {
+                this.$el.addClass('col-xs-12');
             }
             if (!this.is_from) {
                 var filter = ($.cookie('filter') === undefined || $.cookie('filter') === 'comment') ? 1 : 0;

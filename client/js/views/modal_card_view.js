@@ -568,7 +568,8 @@ App.ModalCardView = Backbone.View.extend({
         $('.inputCardLabel', doc).select2({
             formatSelection: this.repoFormatResult,
             tags: _.uniq(self.model.list.collection.board.labels.pluck('name')),
-            tokenSeparators: [',', ' ']
+            tokenSeparators: [',', ' '],
+            dropdownParent: '.dockmodal'
         });
         var target = $(e.target);
         $('li.dropdown').removeClass('open');
