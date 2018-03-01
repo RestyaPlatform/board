@@ -1,0 +1,42 @@
+version: '2'
+services:
+  restyaboard:
+    build: .
+    ports:
+      - 1234:80
+#    volumes:
+#       - /var/opt/restya/media:/usr/share/nginx/html/media
+#       for serving directly out of develop for quick testing
+#       - client/:/usr/share/nginx/html/client
+#       - server/:/usr/share/nginx/html/server
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=restyaboard
+      - SMTP_DOMAIN=domain
+      - SMTP_USERNAME=user
+      - SMTP_PASSWORD=pass
+      - SMTP_SERVER=server
+      - SMTP_PORT=465
+      - TZ=Etc/UTC
+    depends_on:
+      - postgres
+    restart: always
+  postgres:
+    image: postgres:9.6
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=restyaboard
+    restart: always
+#  pgadmin:
+#    image: fenglc/pgadmin4
+#    ports:
+#      - 1235:5050
+#    environment:
+#      - DEFAULT_USER=admin
+#      - DEFAULT_PASSWORD=admin
