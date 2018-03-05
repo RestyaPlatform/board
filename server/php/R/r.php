@@ -1669,17 +1669,41 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
             include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
         }
-        if (!empty($data['settings'])) {
-            foreach ($data['settings'] as $key => $value) {
-                $value['name'] = $key;
+        if (!empty($data['settings_from_db'])) {
+            $fields = $data['settings_from_db'];
+            $result = pg_query_params($db_lnk, 'SELECT * FROM settings WHERE name IN (' . $fields . ') ORDER BY "order" ASC', array());
+            while ($row = pg_fetch_assoc($result)) {
+                $value = array();
+                if (strpos($row['name'], 'PASSWORD') !== false) {
+                    $value['is_encrypted'] = true;
+                }
+                $value['name'] = $row['name'];
                 $value['folder'] = $r_resource_filters['app'];
                 $value['app_name'] = $data['name'];
+                $value['is_public'] = false;
+                $value['info'] = $row['description'];
+                $value['value'] = $row['value'];
+                $value['label'] = $row['label'];
                 $replaceContent = array(
                     '##SITE_NAME##' => SITE_NAME,
                     '##SITE_URL##' => $_server_domain_url,
                 );
                 $value['settings_description'] = strtr($data['settings_description'], $replaceContent);
                 $response[] = $value;
+            }
+        } else {
+            if (!empty($data['settings'])) {
+                foreach ($data['settings'] as $key => $value) {
+                    $value['name'] = $key;
+                    $value['folder'] = $r_resource_filters['app'];
+                    $value['app_name'] = $data['name'];
+                    $replaceContent = array(
+                        '##SITE_NAME##' => SITE_NAME,
+                        '##SITE_URL##' => $_server_domain_url,
+                    );
+                    $value['settings_description'] = strtr($data['settings_description'], $replaceContent);
+                    $response[] = $value;
+                }
             }
         }
         echo json_encode($response);
@@ -2541,7 +2565,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
 
     case '/settings': //settings update
         foreach ($r_post as $key => $value) {
-            if ($key == 'IMAP_EMAIL_PASSWORD') {
+            if ($key == 'IMAP_EMAIL_PASSWORD' || strpos($key, 'PASSWORD') !== false) {
                 if (!empty($value)) {
                     $value_encode = str_rot13($value);
                     $value = base64_encode($value_encode);
@@ -4791,22 +4815,43 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $app = json_decode($content, true);
         if (isset($r_post['enable'])) {
             $app['enabled'] = $r_post['enable'];
+            $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
+            fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            fclose($fh);
         } else {
-            foreach ($r_post as $key => $val) {
-                if (!empty($app['settings'][$key]['is_encrypted'])) {
-                    if (!empty($val)) {
-                        $value_encode = str_rot13($val);
-                        $val = base64_encode($value_encode);
-                    } else {
-                        break;
+            if (!empty($app['settings_from_db'])) {
+                foreach ($r_post as $key => $val) {
+                    if (strpos($key, 'PASSWORD') !== false) {
+                        if (!empty($val)) {
+                            $value_encode = str_rot13($val);
+                            $val = base64_encode($value_encode);
+                        } else {
+                            break;
+                        }
                     }
+                    $qry_val_arr = array(
+                        $val,
+                        trim($key)
+                    );
+                    pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $qry_val_arr);
                 }
-                $app['settings'][$key]['value'] = $val;
+            } else {
+                foreach ($r_post as $key => $val) {
+                    if (!empty($app['settings'][$key]['is_encrypted'])) {
+                        if (!empty($val)) {
+                            $value_encode = str_rot13($val);
+                            $val = base64_encode($value_encode);
+                        } else {
+                            break;
+                        }
+                    }
+                    $app['settings'][$key]['value'] = $val;
+                }
+                $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
+                fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+                fclose($fh);
             }
         }
-        $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
-        fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        fclose($fh);
         $response['success'] = 'App updated successfully';
         echo json_encode($response);
         break;
