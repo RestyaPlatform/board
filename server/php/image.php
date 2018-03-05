@@ -12,15 +12,15 @@
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
-
- /**
+/**
  * Preserve image transparencies
- * 
+ *
  * @param string $fileExt    the image file extension
- * @param image  $sourceImg  the source image 
+ * @param image  $sourceImg  the source image
  * @param image  $targetImg  the target image (passed by reference)
  */
-function preserveImageTransparency($fileExt,$sourceImg,&$targetImg) {
+function preserveImageTransparency($fileExt, $sourceImg, &$targetImg)
+{
     if (strtolower($fileExt) == 'png') {
         imagealphablending($targetImg, false);
         $transcolor = imagecolorallocatealpha($targetImg, 0, 0, 0, 127);
@@ -28,8 +28,7 @@ function preserveImageTransparency($fileExt,$sourceImg,&$targetImg) {
         imagesavealpha($targetImg, true);
     } else if (strtolower($fileExt) == 'gif') {
         $transindex = imagecolortransparent($sourceImg);
-        if($transindex >= 0) 
-        {
+        if ($transindex >= 0) {
             $transcol = imagecolorsforindex($sourceImg, $transindex);
             $transindex = imagecolorallocatealpha($targetImg, $transcol['red'], $transcol['green'], $transcol['blue'], 127);
             imagefill($targetImg, 0, 0, $transindex);
@@ -37,7 +36,6 @@ function preserveImageTransparency($fileExt,$sourceImg,&$targetImg) {
         }
     }
 }
-
 require_once 'config.inc.php';
 $size = $_GET['size'];
 $model = $_GET['model'];
