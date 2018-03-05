@@ -28,6 +28,7 @@ App.BoardFilterView = Backbone.View.extend({
     },
     template: JST['templates/board_filter'],
     tagName: 'li',
+    className: 'js-open-dropdown',
     converter: new showdown.Converter({
         extensions: ['targetblank', 'xssfilter', 'codehighlight']
     }),
