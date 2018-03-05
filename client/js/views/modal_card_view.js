@@ -2860,6 +2860,8 @@ App.ModalCardView = Backbone.View.extend({
         if (q !== '') {
             var filtered_users = this.model.list.collection.board.board_users.search(q);
             var users = new App.UserCollection();
+            users.setSortField('username', 'asc');
+            users.sort();
             if (!_.isEmpty(filtered_users._wrapped)) {
                 $.unique(filtered_users._wrapped);
             }
