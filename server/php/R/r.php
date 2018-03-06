@@ -2531,7 +2531,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 if (!empty($_POST['initials'])) {
                     $qry_val_arr = array(
-                        strtoupper($_POST['initials']),
+                        strtoupper($_POST['initials']) ,
                         $r_resource_vars['users']
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET initials= $1 WHERE id = $2', $qry_val_arr);
