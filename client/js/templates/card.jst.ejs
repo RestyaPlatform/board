@@ -94,6 +94,12 @@
 	%>
 	<li class="card-listing-truncate card-created-date"><small title=" <%- i18next.t('Created Date') %>"><span class="label label-default"><%= dateFormat(created_date_time[0], 'mediumDate')  %></span></small></li>
 	<% } %>
+	<% if(!_.isEmpty(card.attributes.list_moved_date) && card.attributes.list_moved_date != 'NULL'){ 
+			var list_moved_date_date_time = card.attributes.list_moved_date.split('T');
+			list_moved_date_date_time = list_moved_date_date_time[0].split(' ');
+	%>
+		<li class="card-listing-truncate list-moved-date"><small title=" <%- i18next.t('List Moved Date') %>"><span class="label label-default"><%= dateFormat(list_moved_date_date_time[0], 'mediumDate')  %></span></small></li>
+	<% } %>
 	</ul>
 	</div>
 	<div class="clearfix pull-right">

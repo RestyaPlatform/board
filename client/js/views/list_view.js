@@ -1686,6 +1686,17 @@ App.ListView = Backbone.View.extend({
                         sort_date = new Date(_date);
                         return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
                     }
+                } else if (sort_by === 'list_moved_date') {
+                    if (item.get('list_moved_date') !== null) {
+                        var list_moved_date = item.get('list_moved_date').split(' ');
+                        if (!_.isUndefined(list_moved_date[1])) {
+                            _date = list_moved_date[0] + 'T' + list_moved_date[1];
+                        } else {
+                            _date = list_moved_date[0];
+                        }
+                        sort_date = new Date(_date);
+                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
                 } else if (sort_by === 'start_date') {
                     if (item.get('custom_fields') !== null) {
                         var inputArr = item.get('custom_fields');
