@@ -1735,8 +1735,19 @@ App.ModalCardView = Backbone.View.extend({
             }
         }
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
+        var self = this;
         this.model.save(data, {
-            patch: true
+            patch: true,
+            success: function(model, response) {
+                self.model.set('list_moved_date', response.activity.created);
+                var list_moved_date_date_time = response.activity.created.split('T');
+                list_moved_date_date_time = list_moved_date_date_time[0].split(' ');
+                if ($('#js-card-' + self.model.id).find('.list-moved-date').length === 0) {
+                    $('#js-card-' + self.model.id).find('.js-list-card-data').append('<li class="card-listing-truncate list-moved-date"><small title="' + i18next.t('List Moved Date') + '"><span class="label label-default">' + dateFormat(list_moved_date_date_time[0], 'mediumDate') + '</span></small></li>');
+                } else {
+                    $('#js-card-' + self.model.id).find('.list-moved-date').html('<small title="' + i18next.t('List Moved Date') + '"><span class="label label-default">' + dateFormat(list_moved_date_date_time[0], 'mediumDate') + '</span></small>');
+                }
+            }
         });
         if (data.list_id !== current_list_id) {
             this.model.list.collection.board.lists.get(current_list_id).cards.remove(this.model);

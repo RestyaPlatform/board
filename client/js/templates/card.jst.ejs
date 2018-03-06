@@ -24,7 +24,7 @@
   <a href="#" title="<%- card.attributes.name %>"><%- card.attributes.name %></a>
   </div>
   <div class="pull-left navbar-btn">
-  <ul class="list-unstyled list-inline text-muted boardlistblk clearfix txt-aligns">
+  <ul class="list-unstyled list-inline text-muted boardlistblk clearfix txt-aligns js-list-card-data">
   	<%
 		if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
 			var cards_subscribers = card.cards_subscribers.where({
