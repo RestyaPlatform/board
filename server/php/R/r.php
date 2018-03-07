@@ -1983,7 +1983,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 getCryptHash($password) ,
                 $user['id']
             );
-            pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $val_arr);
+            pg_query_params($db_lnk, 'UPDATE users SET password = $1 WHERE id = $2', $val_arr);
             $emailFindReplace = array(
                 '##NAME##' => $user['full_name'],
                 '##PASSWORD##' => $password,
@@ -2282,7 +2282,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     getCryptHash($r_post['password']) ,
                     $r_resource_vars['users']
                 );
-                pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
+                pg_query_params($db_lnk, 'UPDATE users SET password = $1 WHERE id = $2', $res_val_arr);
                 if (is_plugin_enabled('r_chat') && $jabberHost) {
                     xmppChangePassword($r_post, $user);
                 }
@@ -2340,7 +2340,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             getCryptHash($r_post['password']) ,
                             $r_resource_vars['users']
                         );
-                        pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
+                        pg_query_params($db_lnk, 'UPDATE users SET password = $1 WHERE id = $2', $res_val_arr);
                         if (is_plugin_enabled('r_chat') && $jabberHost) {
                             xmppChangePassword($r_post, $user);
                         }
