@@ -807,7 +807,11 @@ App.BoardHeaderView = Backbone.View.extend({
         for (var list_i = 0; list_i < list_length; list_i++) {
             var list = lists.models[list_i];
             if (_.isUndefined(list.get('is_new')) && list.get('is_archived') === 0) {
-                self.model.cards.sortByColumn('position');
+                if (sort_by !== null && sort_by !== null) {
+                    self.model.cards.sortByColumn(sort_by);
+                } else {
+                    self.model.cards.sortByColumn('position');
+                }
                 var filtered_cards = self.model.cards.where({
                     list_id: list.attributes.id,
                     is_archived: 0

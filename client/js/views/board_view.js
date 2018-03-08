@@ -634,6 +634,7 @@ App.BoardView = Backbone.View.extend({
     render: function() {
         touchPunchDelay = 100;
         var self = this;
+        sort_by = this.model.attributes.sort_by;
         $('body').addClass('modal-open');
         $('#header').html(new App.BoardHeaderView({
             model: this.model,
@@ -774,6 +775,7 @@ App.BoardView = Backbone.View.extend({
         if (_.isObject(postion)) {
             new_position += postion.get('position');
         }
+        
         self.model.lists.sortByColumn('position');
         self.model.lists.each(function(list) {
             list.board_users = self.model.board_users;

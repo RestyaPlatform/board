@@ -10,8 +10,8 @@
 <ul class="list-unstyled well-sm col-xs-12 js-board-dues">
     <li class="js-enable-covers js-AdditionalSettings-enabled <% if(!board.attributes.is_show_image_front_of_card) { %> hide <% } %>">
         <div class="cur list-group-item well-sm">
-            <%- i18next.t("Card Cover Images Enabled") %> 
-            <i class="icon-ok"></i>
+            <%- i18next.t("Card Cover Images Enabled") %>
+                <i class="icon-ok"></i>
         </div>
     </li>
     <li class="clearfix js-enable-covers js-AdditionalSettings-enable list-group-item cur <% if(board.attributes.is_show_image_front_of_card) { %> hide <% } %>">
@@ -19,8 +19,8 @@
     </li>
     <li class="js-enable-board-notification js-auto_subscribe_on_board-enabled <% if(!board.attributes.auto_subscribe_on_board) { %> hide <% } %>">
         <div class="cur list-group-item well-sm">
-            <%- i18next.t("Automatically subscribe a member when he's added to a board") %> 
-            <i class="icon-ok"></i>
+            <%- i18next.t("Automatically subscribe a member when he's added to a board") %>
+                <i class="icon-ok"></i>
         </div>
     </li>
     <li class="clearfix js-enable-board-notification js-auto_subscribe_on_board-enable list-group-item cur <% if(board.attributes.auto_subscribe_on_board) { %> hide <% } %>">
@@ -28,11 +28,35 @@
     </li>
     <li class="js-enable-card-notification js-auto_subscribe_on_card-enabled <% if(!board.attributes.auto_subscribe_on_card) { %> hide <% } %>">
         <div class="cur list-group-item well-sm">
-            <%- i18next.t("Automatically subscribe a member when he's added to a card") %> 
-            <i class="icon-ok"></i>
+            <%- i18next.t("Automatically subscribe a member when he's added to a card") %>
+                <i class="icon-ok"></i>
         </div>
     </li>
     <li class="clearfix js-enable-card-notification js-auto_subscribe_on_card-enable list-group-item cur <% if(board.attributes.auto_subscribe_on_card) { %> hide <% } %>">
         <%- i18next.t("Automatically subscribe a member when he's added to a card") %>
     </li>
 </ul>
+<div class="col-xs-12 divider"></div>
+<div class="clearfix col-xs-12">
+    <form class="normal" name="BoardSoryBy" id="BoardSoryBy">
+        <span class="col-xs-12 navbar-btn text-center">
+            <strong><%- i18next.t("Sort by") %></strong>
+        </span>
+        <div class="form-group">
+            <select class="js-select-list form-control input-sm cur js-sort-by-group" placeholder="<%- i18next.t('Sort by') %>">
+                <option <% if(board.attributes.sort_by === 'Position'){ %>selected<% } %> value="position">Position</option>
+                <option <% if(board.attributes.sort_by === 'due_date'){ %>selected<% } %> value="due_date">Due date</option>
+                <option class="js-createdDate" <% if(board.attributes.sort_by === 'created_date'){ %>selected<% } %> value="created_date">Created date</option>
+                <option class="js-listMovedDate" <% if(board.attributes.sort_by === 'list_moved_date'){ %>selected<% } %> value="list_moved_date">List moved date</option>
+                <option <% if(board.attributes.sort_by === 'card_voter_count'){ %>selected<% } %> value="card_voter_count">Votes</option>
+                <option <% if(board.attributes.sort_by === 'attachment_count'){ %>selected<% } %> value="attachment_count">Attachments</option>
+                <option <% if(board.attributes.sort_by === 'comment_count'){ %>selected<% } %> value="comment_count">Comments</option>
+                <option <% if(board.attributes.sort_by === 'checklist_item_count'){ %>selected<% } %> value="checklist_item_count">Checklist pending count</option>
+                <option <% if(board.attributes.sort_by === 'checklist_item_completed_count'){ %>selected<% } %> value="checklist_item_completed_count">Checklist completed count</option>
+            </select>
+        </div>
+        <div class="submit">
+            <input type="submit" value="Save" id="submitBoardSoryBy" class="btn btn-primary">
+        </div>
+    </form>
+</div>
