@@ -666,7 +666,7 @@ App.BoardView = Backbone.View.extend({
                 containment: 'window',
                 axis: 'x',
                 items: 'div.js-board-list',
-                placeholder: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 board-list-placeholder list ',
+                placeholder: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 board-list-placeholder board-list-height ',
                 forcePlaceholderSize: true,
                 cursor: 'grab',
                 scrollSensitivity: 100,

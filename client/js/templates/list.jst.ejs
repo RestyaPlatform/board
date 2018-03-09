@@ -1,4 +1,4 @@
-
+<div class="list">
 	<div class="list-header js-list-head <% if(!_.isUndefined(authuser.user)){%>cur-grab<%}%>">
 	  <div class="clearfix">
 		<a href="#" class="col-xs-8 <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-edit-list-form<% }else{ %> js-no-action<%}%>"><span><span class="clearfix row show">
@@ -65,4 +65,4 @@
 <div class="js-card-add-form-<%= list.attributes.id %>"></div>			
 		</div>
 	<% } %>	
-  
+  </div>
