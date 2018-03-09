@@ -37,11 +37,11 @@ App.CardCollection = Backbone.Collection.extend({
                 }
             } else if (this.sortKey === 'created_date') {
                 if (item.get('created') !== null) {
-                    var date = item.get('created').split(' ');
-                    if (!_.isUndefined(date[1])) {
-                        _date = date[0] + 'T' + date[1];
+                    var datetime = item.get('created').split(' ');
+                    if (!_.isUndefined(datetime[1])) {
+                        _date = datetime[0] + 'T' + datetime[1];
                     } else {
-                        _date = date[0];
+                        _date = datetime[0];
                     }
                     sort_date = new Date(_date);
                     return this.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
