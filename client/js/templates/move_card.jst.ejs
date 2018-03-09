@@ -3,7 +3,7 @@ var content_board = '<div class="form-group clearfix"><select name="board_id" cl
 var content_list = '<div class="form-group clearfix"><select name="list_id" class="js-change-position col-xs-12 form-control input-sm cur">';
 var content_position = '<div class="form-group clearfix"><select name="position" class="js-position col-xs-12 form-control input-sm cur">';
 if (sort_by !== null && sort_by !== null) {
-	card.list.cards.sortByColumn(sort_by);
+	card.list.cards.sortByColumn(sort_by, sort_direction);
 } else {
 	card.list.cards.sortByColumn('position');
 }

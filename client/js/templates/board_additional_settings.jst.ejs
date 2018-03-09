@@ -55,6 +55,12 @@
                 <option <% if(board.attributes.sort_by === 'checklist_item_completed_count'){ %>selected<% } %> value="checklist_item_completed_count">Checklist completed count</option>
             </select>
         </div>
+        <div class="form-group">
+            <select class="js-select-list form-control input-sm cur js-sort-direction-group" placeholder="<%- i18next.t('Sort direction') %>">
+                <option <% if(board.attributes.sort_direction === 'asc'){ %>selected<% } %> value="asc">Asc</option>
+                <option <% if(board.attributes.sort_direction === 'desc'){ %>selected<% } %> value="desc">Desc</option>
+            </select>
+        </div>
         <div class="submit">
             <input type="submit" value="Save" id="submitBoardSoryBy" class="btn btn-primary">
         </div>

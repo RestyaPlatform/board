@@ -512,7 +512,7 @@ App.ListView = Backbone.View.extend({
         }
         var board_id = parseInt(data.board_id);
         if (sort_by !== null && sort_by !== null) {
-            this.model.collection.sortByColumn(sort_by);
+            this.model.collection.sortByColumn(sort_by, sort_direction);
         } else {
             this.model.collection.sortByColumn('position');
         }
@@ -524,7 +524,7 @@ App.ListView = Backbone.View.extend({
             var i = 0;
             var current_position = 0;
             if (sort_by !== null && sort_by !== null) {
-                App.boards.get(board_id).lists.sortByColumn(sort_by);
+                App.boards.get(board_id).lists.sortByColumn(sort_by, sort_direction);
             } else {
                 App.boards.get(board_id).lists.sortByColumn('position');
             }
@@ -1054,7 +1054,7 @@ App.ListView = Backbone.View.extend({
                             $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
                         } else {
                             if (sort_by !== null && sort_by !== null) {
-                                self.model.cards.sortByColumn(sort_by);
+                                self.model.cards.sortByColumn(sort_by, sort_direction);
                             } else {
                                 self.model.cards.sortByColumn('position');
                             }
@@ -1083,7 +1083,7 @@ App.ListView = Backbone.View.extend({
             var view_card = this.$('#js-card-listing-' + this.model.id);
             view_card.html('&nbsp;');
             if (sort_by !== null && sort_by !== null) {
-                this.model.cards.sortByColumn(sort_by);
+                this.model.cards.sortByColumn(sort_by, sort_direction);
             } else {
                 this.model.cards.sortByColumn('position');
             }
@@ -1097,8 +1097,8 @@ App.ListView = Backbone.View.extend({
                     silent: true
                 });
                 if (sort_by !== null && sort_by !== null) {
-                    this.model.cards.sortByColumn(sort_by);
-                    cards.sortByColumn(sort_by);
+                    this.model.cards.sortByColumn(sort_by, sort_direction);
+                    cards.sortByColumn(sort_by, sort_direction);
                 } else {
                     this.model.cards.sortByColumn('position');
                     cards.sortByColumn('position');
@@ -1258,7 +1258,7 @@ App.ListView = Backbone.View.extend({
             var list_cards = new App.CardCollection();
             list_cards.add(cards);
             if (sort_by !== null && sort_by !== null) {
-                list_cards.sortByColumn(sort_by);
+                list_cards.sortByColumn(sort_by, sort_direction);
             } else {
                 list_cards.sortByColumn('position');
             }

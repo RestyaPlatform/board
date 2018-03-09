@@ -40,18 +40,22 @@ App.BoardAdditionalSettingsView = Backbone.View.extend({
      *
      */
     updateSortBy: function(e) {
+        e.preventDefault();
         var target = $(e.target);
         var sort_by = target.find('.js-sort-by-group').val();
+        var sort_direction = target.find('.js-sort-direction-group').val();
         var board = new App.Board();
         board.url = api_url + 'boards/' + this.model.id + '.json';
         App.boards.get(this.model.id).set('sort_by', sort_by);
+        App.boards.get(this.model.id).set('sort_direction', sort_direction);
         this.model.set('sort_by', sort_by);
+        this.model.set('sort_direction', sort_direction);
         board.save({
             sort_by: sort_by,
+            sort_direction: sort_direction,
             id: this.model.id
-        },{success: function(model, response) {
-            location.reload(true);
-        }});
+        },{success: function(model, response) {}});
+        return false;
     },
     template: JST['templates/board_additional_settings'],
     tagName: 'div',
@@ -67,7 +71,13 @@ App.BoardAdditionalSettingsView = Backbone.View.extend({
             board: this.model,
             //board_labels: this.board_labels,
         }));
+        var self = this;
         this.showTooltip();
+        _(function() {
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $('body').trigger('boardAdditionalSettingsRendered');
+            }
+        }).defer();
         return this;
     }
 });

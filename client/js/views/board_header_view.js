@@ -808,7 +808,7 @@ App.BoardHeaderView = Backbone.View.extend({
             var list = lists.models[list_i];
             if (_.isUndefined(list.get('is_new')) && list.get('is_archived') === 0) {
                 if (sort_by !== null && sort_by !== null) {
-                    self.model.cards.sortByColumn(sort_by);
+                    self.model.cards.sortByColumn(sort_by, sort_direction);
                 } else {
                     self.model.cards.sortByColumn('position');
                 }
