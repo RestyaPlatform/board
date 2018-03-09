@@ -75,7 +75,7 @@ App.CardCollection = Backbone.Collection.extend({
     },
     sortByColumn: function(colName, sortDirection) {
         this.sortKey = colName;
-        if (isDefined(sortDirection)) {
+        if (!_.isUndefined(sortDirection)) {
             this.sortDirection = sortDirection;
         }
         this.sort();
