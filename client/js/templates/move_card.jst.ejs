@@ -2,7 +2,11 @@
 var content_board = '<div class="form-group clearfix"><select name="board_id" class="js-change-list col-xs-12 form-control input-sm cur">';
 var content_list = '<div class="form-group clearfix"><select name="list_id" class="js-change-position col-xs-12 form-control input-sm cur">';
 var content_position = '<div class="form-group clearfix"><select name="position" class="js-position col-xs-12 form-control input-sm cur">';
-card.list.cards.sortByColumn('position');
+if (sort_by !== null && sort_by !== null) {
+	card.list.cards.sortByColumn(sort_by, sort_direction);
+} else {
+	card.list.cards.sortByColumn('position');
+}
 var current_position = card.list.cards.indexOf(card.list.cards.get(card.attributes.id)) + 1;
 if(current_position == 0){
 	current_position = 1;

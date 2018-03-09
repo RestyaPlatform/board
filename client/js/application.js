@@ -36,6 +36,8 @@ var APPS = [];
 var load_count = 1;
 var from_url = '';
 var custom_fields = {};
+var sort_by = '';
+var sort_direction = '';
 
 Backbone.View.prototype.flash = function(type, message, delay, position) {
     if (!delay) {
