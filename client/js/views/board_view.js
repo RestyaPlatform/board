@@ -778,7 +778,7 @@ App.BoardView = Backbone.View.extend({
         if (_.isObject(postion)) {
             new_position += postion.get('position');
         }
-        
+
         self.model.lists.sortByColumn('position');
         self.model.lists.each(function(list) {
             list.board_users = self.model.board_users;

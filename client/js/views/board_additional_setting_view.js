@@ -54,7 +54,9 @@ App.BoardAdditionalSettingsView = Backbone.View.extend({
             sort_by: sort_by,
             sort_direction: sort_direction,
             id: this.model.id
-        },{success: function(model, response) {}});
+        }, {
+            success: function(model, response) {}
+        });
         return false;
     },
     template: JST['templates/board_additional_settings'],
