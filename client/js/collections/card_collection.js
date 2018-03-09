@@ -73,9 +73,11 @@ App.CardCollection = Backbone.Collection.extend({
             }
         }
     },
-    sortByColumn: function(colName, sortDirection = 'asc') {
+    sortByColumn: function(colName, sortDirection) {
         this.sortKey = colName;
-        this.sortDirection = sortDirection;
+        if (isDefined(sortDirection)) {
+            this.sortDirection = sortDirection;
+        }
         this.sort();
     },
     search: function(letters) {
