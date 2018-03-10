@@ -4870,7 +4870,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         }
                     }
                     if (strpos($key, 'r_elasticsearch_index_name') !== false) {
-                        if(trim(strtolower($app['settings'][$key]['value'])) !== trim(strtolower($val))) {
+                        if (trim(strtolower($app['settings'][$key]['value'])) !== trim(strtolower($val))) {
                             $filename = APP_PATH . '/tmp/cache/r_elasticsearch_last_processed_activity_id.php';
                             if (file_exists($filename)) {
                                 unlink($filename);
