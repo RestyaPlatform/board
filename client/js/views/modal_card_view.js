@@ -444,6 +444,8 @@ App.ModalCardView = Backbone.View.extend({
             }
         }
         $('#js-card-modal-'+this.model.id).find('.js-load-more-block').remove();
+        var view_activity = $('#js-card-activities-' + this.model.id);
+        view_activity.html('');
         var self = this;
         self.model.activities = new App.ActivityCollection();
         self.model.activities.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/activities.json?mode='+mode;
@@ -2133,7 +2135,7 @@ App.ModalCardView = Backbone.View.extend({
             }))))) {
             var self = this;
             var view_activity = this.$('#js-card-activities-' + self.model.id);
-            view_activity.html('');
+            //view_activity.html('');
             if (!_.isEmpty(this.model.activities)) {
                 console.log(this.model.activities);
                 var i = 1;
@@ -2152,8 +2154,6 @@ App.ModalCardView = Backbone.View.extend({
                     $('#js-loader-img').addClass('hide');
                     i++;
                 });
-                  
-                var remain_activity = parseInt(this.model.attributes.activity_count) - parseInt(PAGING_COUNT);  
                 if (this.model.attributes.activity_count > 20) {
                     $('#js-card-activities-' + self.model.id).after('<div class="text-center js-load-more-block"><div class="btn btn-primary js-card-activites-load-more js-remove-card-activity" title="' + i18next.t('Load More') + '" data-attr="1" >' + i18next.t('Load next %s of %s', {
                         postProcess: 'sprintf',
@@ -3429,7 +3429,7 @@ App.ModalCardView = Backbone.View.extend({
             cache: false,
             success: function(model, response) {
                 if (!_.isUndefined(response.data) && !_.isEmpty(response.data) && !_.isEmpty(response._metadata)) {
-                    self.model.set('activity_count', response._metadata.total_records);
+                    self.model.set('activity_count', response.data.length);
                     $(target).attr('data-attr', parseInt(page_no) + 1);
                     self.renderActivitiesCollection();    
                 } else {
