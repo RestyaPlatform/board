@@ -157,8 +157,8 @@ App.ActivityView = Backbone.View.extend({
                             if (!_.isEmpty(self.model.collection)) {
                                 activity.cards.add(self.model.collection.models);
                             }
-                            if (!_.isUndefined(response.undo.update_card_comment)) {
-                                if (activity.attributes.id == response.undo.update_card_comment) {
+                            if (!_.isUndefined(response.undo.edit_comment)) {
+                                if (activity.attributes.id == response.undo.edit_comment) {
                                     activity.attributes.comment = response.undo.card.comment;
                                 }
                             }
@@ -231,8 +231,8 @@ App.ActivityView = Backbone.View.extend({
                             if (!_.isEmpty(self.model.collection)) {
                                 activity.cards.add(self.model.collection.models);
                             }
-                            if (!_.isUndefined(response.undo.update_card_comment)) {
-                                if (activity.attributes.id == response.undo.update_card_comment) {
+                            if (!_.isUndefined(response.undo.edit_comment)) {
+                                if (activity.attributes.id == response.undo.edit_comment) {
                                     activity.attributes.comment = response.undo.card.comment;
                                 }
                             }
