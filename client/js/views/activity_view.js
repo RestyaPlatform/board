@@ -102,22 +102,6 @@ App.ActivityView = Backbone.View.extend({
             } else {
                 this.$el.addClass('col-xs-12');
             }
-            if (!this.is_from) {
-                var filter = ($.cookie('filter') === undefined || $.cookie('filter') === 'comment') ? 1 : 0;
-                filter = ($.cookie('filter') !== undefined && $.cookie('filter') === 'both') ? 2 : filter;
-                if (this.flag === '2') {
-                    filter = 2;
-                }
-                if (this.model.attributes.type == 'add_comment' || this.model.attributes.type == 'edit_comment') {
-                    if (filter === 0) {
-                        this.$el.addClass('hide');
-                    }
-                } else {
-                    if (filter === 1) {
-                        this.$el.addClass('hide');
-                    }
-                }
-            }
         }
         this.showTooltip();
         return this;

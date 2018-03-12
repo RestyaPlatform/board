@@ -1165,6 +1165,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (!empty($r_resource_vars['cards'])) {
                 $condition.= ' AND al.card_id = $' . $i;
                 array_push($pg_params, $r_resource_vars['cards']);
+                $i++;
             } else if (!empty($r_resource_vars['lists'])) {
                 $condition.= ' AND al.list_id = $' . $i;
                 array_push($pg_params, $r_resource_vars['lists']);
@@ -1174,6 +1175,23 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $condition.= ' AND al.type = $' . $i;
                 array_push($pg_params, $r_resource_filters['filter']);
                 $i++;
+            }
+            if (!empty($r_resource_filters['mode']) && $r_resource_filters['mode'] != 'all') {
+                if ($r_resource_filters['mode'] == 'activity') {
+                    $condition.= ' AND (al.type != $' . $i ;
+                    array_push($pg_params, 'add_comment');
+                    $i++;
+                    $condition .= ' OR al.type != $' . $i . ')';
+                    array_push($pg_params, 'edit_comment');
+                    $i++;
+                } else if ($r_resource_filters['mode'] == 'comment') {
+                    $condition.= ' AND (al.type = $' . $i;
+                    array_push($pg_params, 'add_comment');
+                    $i++;
+                    $condition .= ' OR al.type = $' . $i . ')';
+                    array_push($pg_params, 'edit_comment');
+                    $i++;
+                }
             }
             $limit = PAGING_COUNT;
             if (!empty($r_resource_filters['limit'])) {
@@ -5514,7 +5532,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $foreign_ids['list_id'] = $r_resource_vars['lists'];
         $foreign_ids['card_id'] = $r_resource_vars['cards'];
         $comment = '##USER_NAME## updated comment to this card ##CARD_LINK##';
-        $activity_type = 'update_card_comment';
+        $activity_type = 'edit_comment';
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
         echo json_encode($response);
         break;
@@ -5623,7 +5641,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $activity_type = 'update_card_checklist';
                 $response['undo']['checklist'] = $r_put;
                 $response['undo']['checklist']['id'] = $id;
-            } else if ($activity['type'] == 'update_card_comment') {
+            } else if ($activity['type'] == 'edit_comment') {
                 $table_name = 'activities';
                 $id = $activity['foreign_id'];
                 if (!is_array($revisions['old_value'])) {
@@ -5635,8 +5653,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $foreign_ids['list_id'] = $activity['list_id'];
                 $foreign_ids['card_id'] = $activity['card_id'];
                 $comment = '##USER_NAME## undo this card ##CARD_LINK## comment';
-                $activity_type = 'update_card_comment';
-                $response['undo']['update_card_comment'] = $id;
+                $activity_type = 'edit_comment';
+                $response['undo']['edit_comment'] = $id;
                 $response['undo']['card'] = $r_put;
                 $response['undo']['card']['id'] = $activity['card_id'];
             } else if ($activity['type'] == 'delete_card_comment') {
