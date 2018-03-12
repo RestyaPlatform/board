@@ -451,3 +451,5 @@ SELECT board.id,
    FROM ((boards board
      LEFT JOIN users users ON ((users.id = board.user_id)))
      LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
+
+UPDATE "acl_links" SET "name" = 'View others activities', "url" = '' WHERE "slug" = 'view_user_activities';
