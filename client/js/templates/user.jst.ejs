@@ -71,8 +71,8 @@
 </td>
 <td class="text-center">
     <% if(user.get('last_login_date') !== null){ %>
-	<% var last_login_date = parse_date(user.get('last_login_date'), authuser); %>
-	<abbr class="" title="<%- last_login_date.datetime %>"><%- last_login_date.timeago %></abbr>
+	<% var last_login_date = parse_date(user.get('last_login_date'), authuser, 'js-timeago-user-'+user.attributes.id); %>
+	<span class="js-timeago-user-<%- user.attributes.id %>"></span>
 	<%}else{%>-<%}%>
 	
 </td>
@@ -84,8 +84,8 @@
 	<% if(!_.isEmpty(user.attributes.login_city_name)){ %> <%- user.attributes.login_city_name %><% } %>
 </td>
 <td class="text-center">
-	<% var created = parse_date(user.get('created'), authuser); %>
-    <abbr class="" title="<%- created.datetime %>"><%- created.timeago %></abbr>
+	<% var created = parse_date(user.get('created'), authuser, 'js-timeago-user2-'+user.attributes.id); %>
+	<span class="js-timeago-user2-<%- user.attributes.id %>"></span>
 </td> 
 <td class="text-center">
 	<span class="show"><%- user.attributes.registered_ip%></span> 
