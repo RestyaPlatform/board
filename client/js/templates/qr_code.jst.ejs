@@ -8,7 +8,7 @@
 				<%- i18next.t('Scan QR code in iPhone or iPad Safari. Will launch MyRestyaboards app.') %>
 			</p>
 			<div class="pull-right">
-				<a title="<%- i18next.t('QR code') %>" href="http://restya.com/board/launch_mobile_app?board=<%- window.location.protocol+'//'+window.location.hostname+port%>" target="_blank"><img width="115" height="115" src="https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=http://restya.com/board/launch_mobile_app?board=<%- window.location.protocol+'//'+window.location.hostname+port%>" title="<%- i18next.t('QR code') %>" alt="[Image: QR code]" class="img-responsive"></a>
+				<a title="<%- i18next.t('QR code') %>" href="http://restya.com/board/launch_mobile_app?board=<%- window.location.protocol+'//'+window.location.hostname+port+'?u='+authuser.user.username%>" target="_blank"><img width="115" height="115" src="https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=http://restya.com/board/launch_mobile_app?board=<%- window.location.protocol+'//'+window.location.hostname+port+'?u='+authuser.user.username%>" title="<%- i18next.t('QR code') %>" alt="[Image: QR code]" class="img-responsive"></a>
 			</div>
 			<div class="col-xs-12">
 				<%- i18next.t('MyRestyaboards - Single unified notifier app to track many Restyaboards. Available in AppStore.') %>
