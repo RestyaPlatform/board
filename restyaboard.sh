@@ -741,14 +741,11 @@
 					set -x
 					case "${answer}" in
 						[Yy])
+						echo "Note: For the latest version of PHP, we're going to download https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm."
 						echo "Installing PHP..."
-						yum install -y epel-release
-						if [ $? != 0 ]
-						then
-							echo "epel-release installation failed with error code 19"
-							return 19
-						fi
-						yum install -y php
+						rpm -Uvh "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm"
+						rpm -Uvh "https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm"
+						yum install php70w php70w-opcache
 						if [ $? != 0 ]
 						then
 							echo "php installation failed with error code 20"
@@ -758,21 +755,21 @@
 				fi
 				
 				echo "Installing PHP fpm and cli extension..."
-				yum install -y php-fpm php-devel php-cli
+				yum install -y php70w-fpm php70w-devel php70w-cli php70w-opcache
 				if [ $? != 0 ]
 				then
 					echo "php-devel installation failed with error code 21"
 					return 21
 				fi
 				service php-fpm start
-				chkconfig --levels 35 php-fpm on
+				chkconfig --levels 35 php70w-fpm on
 
 				echo "Checking PHP curl extension..."
 				php -m | grep curl
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-curl..."
-					yum install -y php-curl
+					yum install -y php70w-curl
 					if [ $? != 0 ]
 					then
 						echo "php-curl installation failed with error code 22"
@@ -785,7 +782,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-pgsql..."
-					yum install -y php-pgsql
+					yum install -y php70w-pgsql
 					if [ $? != 0 ]
 					then
 						echo "php-pgsql installation failed with error code 23"
@@ -798,7 +795,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-mbstring..."
-					yum install -y php-mbstring
+					yum install -y php70w-mbstring
 					if [ $? != 0 ]
 					then
 						echo "php-mbstring installation failed with error code 24"
@@ -811,7 +808,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-ldap..."
-					yum install -y php-ldap
+					yum install -y php70w-ldap
 					if [ $? != 0 ]
 					then
 						echo "php-ldap installation failed with error code 25"
@@ -826,7 +823,7 @@
 					echo "Installing php-imagick..."
 
 					yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
-					yum install -y php-pear
+					yum install -y php70w-pear
 					if [ $? != 0 ]
 					then
 						echo "Installing php-imagick failed with error code 26"
@@ -850,7 +847,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-imap..."
-					yum install -y php-imap
+					yum install -y php70w-imap
 					if [ $? != 0 ]
 					then
 						echo "php-imap installation failed with error code 26"
@@ -863,7 +860,7 @@
 				php -m | grep xml
 				if [ "$?" -gt 0 ]; then
 					echo "Installing xml..."
-					yum install php-xml
+					yum install php70w-xml
 					if [ $? != 0 ]
 					then
 						echo "xml installation failed with error code 57"
