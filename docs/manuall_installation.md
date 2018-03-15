@@ -1,12 +1,12 @@
+# Manual Installation
+
 ## Instructions
 
-1.  Download script from `https://github.com/RestyaPlatform/board/releases`, and choose the latest version. e.g., `https://github.com/RestyaPlatform/board/releases/download/v0.5.2/board-v0.5.2.zip`
-2.  Extract the zip into your apache server root folder. e.g., `/xxx/public_html/`
-3.  Create database using below command,  
-    `psql -U {{YOUR POSTGRES DATABASE USER}} -c "create database restyaboard;"`
-4.  Import SQL using below command,  
-    `psql -h localhost -d restyaboard -U {{YOUR POSTGRES DATABASE USER}} -W < "restyaboard_with_empty_data.sql"`
-5.  Change the database credentials in `server/php/config.inc.php`
+1.  Download script from "https://github.com/RestyaPlatform/board/releases", and choose the latest version. e.g., "https://github.com/RestyaPlatform/board/releases/download/v0.5.2/board-v0.5.2.zip"
+2.  Extract the zip into your apache server root folder. e.g., "/xxx/public_html/"
+3.  Create database using the command "psql -U {{YOUR POSTGRES DATABASE USER}} -c 'create database restyaboard'"
+4.  Import SQL using the command "psql -h localhost -d restyaboard -U {{YOUR POSTGRES DATABASE USER}} -W < 'restyaboard_with_empty_data.sql'"
+5.  Change the database credentials in "server/php/config.inc.php"
 
         define('R_DB_USER', 'restya');
         define('R_DB_PASSWORD', 'hjVl2!rGd');
