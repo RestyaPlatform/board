@@ -719,13 +719,8 @@
 					case "${answer}" in
 						[Yy])
 						echo "Installing nginx..."
-						yum install -y epel-release
-						if [ $? != 0 ]
-						then
-							echo "epel-release installation failed with error code 17"
-							return 17
-						fi
-						yum install -y zip cron nginx
+						rpm -Uvh "http://nginx.org/packages/centos/{OS_VERSION}/noarch/RPMS/nginx-release-centos-{OS_VERSION}-0.el{OS_VERSION}.ngx.noarch.rpm"
+						yum install -y zip cronie nginx
 						if [ $? != 0 ]
 						then
 							echo "cron nginx installation failed with error code 18"
