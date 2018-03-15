@@ -124,7 +124,7 @@ if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['author
 							  <label for="inputEmail" class="sr-only control-label">Email or Username</label>
 							  <input type="text" placeholder="<?php
     echo $loginPlaceholder; ?>" class="form-control authorize_ldap" id="inputEmail" name="email"  value="<?php
-    echo !empty($_POST['email']) ? $_POST['email'] : ''; ?>" title="" required/>
+    echo !empty($_POST['email']) ? $_POST['email'] : (!empty($_GET['u']) ? $_GET['u'] : ''); ?>" title="" required/>
 							</div>
 							<div class="form-group">
 							  <label for="inputPassword" class="sr-only control-label">Password</label>
