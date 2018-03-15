@@ -217,9 +217,7 @@
 					service nginx restart
 					service php7.0-fpm restart
 				else
-					ps -q 1 | grep -q -c "systemd"
-					if [ "$?" -eq 0 ];
-					then
+					if [ -f "/bin/systemctl" ]; then
 						echo "Starting services with systemd..."
 						systemctl restart nginx
 						systemctl restart php-fpm
@@ -894,13 +892,6 @@
 							else
 								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat96-9.6-3.noarch.rpm"
 							fi
-
-							yum install -y postgresql95-server postgresql95
-							if [ $? != 0 ]
-							then
-								echo "Installing PostgreSQL 32 fail with error code 27"
-								return 27
-							fi
 						fi
 						if [ $(getconf LONG_BIT) = "64" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
@@ -908,19 +899,12 @@
 							else
 								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat96-9.6-3.noarch.rpm"
 							fi
-
-							yum install -y postgresql96-server postgresql96
-							if [ $? != 0 ]
-							then
-								echo "Installing PostgreSQL 64 fail with error code 28"
-								return 28
-							fi
 						fi
 
-						yum install -y postgresql96-contrib
+						yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
 						if [ $? != 0 ]
 						then
-							echo "postgresql96-contrib installation failed with error code 29"
+							echo "postgresql96 installation failed with error code 29"
 							return 29
 						fi
 					esac
@@ -935,30 +919,18 @@
 							else
 								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat96-9.6-3.noarch.rpm"
 							fi
-
-							yum install -y postgresql96-server postgresql96
-							if [ $? != 0 ]
-							then
-								echo "Installing PostgreSQL 32 fail with error code 27"
-							fi
 						else
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
 								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora96-9.6-3.noarch.rpm"
 							else
 								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat96-9.6-3.noarch.rpm"
 							fi
-
-							yum install -y postgresql96-server postgresql96
-							if [ $? != 0 ]
-							then
-								echo "Installing PostgreSQL 64 fail with error code 28"
-							fi
 						fi
 
-						yum install -y postgresql96-contrib
+						yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
 						if [ $? != 0 ]
 						then
-							echo "postgresql96-contrib installation failed with error code 29"
+							echo "postgresql installation failed with error code 29"
 							return 29
 						fi
 					fi
@@ -966,15 +938,13 @@
 
 				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
 				PSQL_FOLDER=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}') | sed 's/\.//'
-				ps -q 1 | grep -q -c "systemd"
-				if [ "$?" -eq 0 ]; then
-					if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
-						"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
-					fi
+				if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
+					"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
+				fi
+				if [ -f "/bin/systemctl" ]; then
 					systemctl start "postgresql-${PSQL_VERSION}.service"
 					systemctl enable "postgresql-${PSQL_VERSION}.service"
 				else
-					service "postgresql-${PSQL_VERSION}" initdb
 					"/etc/init.d/postgresql-${PSQL_VERSION}" start
 					chkconfig --levels 35 "postgresql-${PSQL_VERSION}" on
 				fi
@@ -984,8 +954,7 @@
 				mv pg_hba.conf pg_hba.conf_old
 				mv pg_hba.conf.1 pg_hba.conf
 				
-				ps -q 1 | grep -q -c "systemd"
-				if [ "$?" -eq 0 ]; then
+				if [ -f "/bin/systemctl" ]; then
 					systemctl restart "postgresql-${PSQL_VERSION}.service"
 				else
 					"/etc/init.d/postgresql-${PSQL_VERSION}" restart
@@ -1193,9 +1162,7 @@
 					done
 				esac
 
-				ps -q 1 | grep -q -c "systemd"
-				if [ "$?" -eq 0 ];
-				then
+				if [ -f "/bin/systemctl" ]; then
 					echo "Starting services with systemd..."
 					systemctl start nginx
 					systemctl start php-fpm
