@@ -1,4 +1,6 @@
-Instructions
+#Desktop Notifications
+
+##Instructions
 ------------
 
 1.  Browser will ask about this notifications in every page.  
