@@ -719,7 +719,7 @@
 					case "${answer}" in
 						[Yy])
 						echo "Installing nginx..."
-						rpm -Uvh "http://nginx.org/packages/centos/{OS_VERSION}/noarch/RPMS/nginx-release-centos-{OS_VERSION}-0.el{OS_VERSION}.ngx.noarch.rpm"
+						rpm -Uvh "http://nginx.org/packages/centos/${OS_VERSION}/noarch/RPMS/nginx-release-centos-${OS_VERSION}-0.el${OS_VERSION}.ngx.noarch.rpm"
 						yum install -y zip cronie nginx
 						if [ $? != 0 ]
 						then
