@@ -960,16 +960,6 @@
 					"/etc/init.d/postgresql-${PSQL_VERSION}" restart
 				fi
 
-				if ! hash GeoIP-devel 2>&-;
-				then
-					yum install -y GeoIP-devel
-					if [ $? != 0 ]
-					then
-						echo "GeoIP-devel installation failed with error code 46"
-						return 46
-					fi
-				fi
-
 				if ! hash pecl/geoip 2>&-;
 				then
 					pecl install geoip
@@ -979,14 +969,6 @@
 						return 47
 					fi
 				fi
-				echo "extension=geoip.so" >> /etc/php.ini
-				mkdir -v /usr/share/GeoIP
-				if [ $? != 0 ]
-				then
-					echo "GeoIP folder creation failed with error code 48"
-				fi
-
-				get_geoip_data
 				
 				yum install -y git
 				git clone git://github.com/rebar/rebar.git
