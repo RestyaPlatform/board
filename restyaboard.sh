@@ -969,7 +969,7 @@
 						return 47
 					fi
 				fi
-				
+
 				yum install -y git
 				git clone git://github.com/rebar/rebar.git
 				cd rebar
@@ -1090,7 +1090,11 @@
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
 				
 				echo "Reset php-fpm (use unix socket mode)..."
-				sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf
+				if [ -f "/run/php/php7.0-fpm.sock" ]; then
+					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.0-fpm.sock/g" /etc/php-fpm.d/www.conf
+				else
+					sed -i "s/unix:\/run\/php\/php7.0-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
+				fi
 
 				set +x
 				echo "Do you want to setup SMTP configuration (y/n)?"
