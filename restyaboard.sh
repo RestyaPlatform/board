@@ -937,7 +937,7 @@
 				fi
 
 				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
-				PSQL_FOLDER=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}') | sed 's/\.//'
+				PSQL_FOLDER=$(echo ${PSQL_VERSION} | sed 's/\.//')
 				if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
 					"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
 				fi
