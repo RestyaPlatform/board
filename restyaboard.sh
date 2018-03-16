@@ -743,7 +743,7 @@
 						echo "Installing PHP..."
 						rpm -Uvh "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm"
 						rpm -Uvh "https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm"
-						yum install php70w php70w-opcache
+						yum install -y php70w php70w-opcache
 						if [ $? != 0 ]
 						then
 							echo "php installation failed with error code 20"
@@ -858,7 +858,7 @@
 				php -m | grep xml
 				if [ "$?" -gt 0 ]; then
 					echo "Installing xml..."
-					yum install php70w-xml
+					yum install -y php70w-xml
 					if [ $? != 0 ]
 					then
 						echo "xml installation failed with error code 57"
