@@ -269,8 +269,8 @@ module.exports = function(grunt) {
                 dest: 'restyaboard.zip'
             },
             docker: {
-              src: ['restyaboard.conf', 'manifest.xml', 'sql/restyaboard_with_empty_data.sql', 'api_explorer/**/*.*', 'server/php/**/*.*', 'media/**/*.*', 'client/*.*', 'client/css/authorize.css', 'client/css/default.cache.*.css', 'client/js/default.cache.*.js', 'client/js/authorize.cache.js', 'client/js/workflow_templates/*.*', 'client/font/**/*.*', 'client/img/**/*.*', 'client/locales/**/*.*'],
-              dest: 'restyaboard-docker.zip'
+                src: ['restyaboard.conf', 'manifest.xml', 'sql/restyaboard_with_empty_data.sql', 'api_explorer/**/*.*', 'server/php/**/*.*', 'media/**/*.*', 'client/*.*', 'client/css/authorize.css', 'client/css/default.cache.*.css', 'client/js/default.cache.*.js', 'client/js/authorize.cache.js', 'client/js/workflow_templates/*.*', 'client/font/**/*.*', 'client/img/**/*.*', 'client/locales/**/*.*'],
+                dest: 'restyaboard-docker.zip'
             },
             main: {
                 src: ['manifest.xml', 'api_explorer/**/*.*', 'server/php/**/*.*', 'media/**/*.*', 'client/*.*', 'client/css/authorize.css', 'client/css/default.cache.*.css', 'client/js/default.cache.*.js', 'client/js/authorize.cache.js', 'client/js/workflow_templates/*.*', 'client/font/**/*.*', 'client/img/**/*.*', 'client/locales/**/*.*', 'client/apps/**/*.*'],
@@ -371,8 +371,7 @@ module.exports = function(grunt) {
             grunt.task.run(['jshint', 'phplint', 'less', 'jst', 'concat', 'cssmin', 'uglify', 'filerev', 'usemin', 'htmlmin', 'regex-replace:deploy', 'manifest', 'lineending', 'zip:deploy']);
         } else if (env == 'docker') {
             grunt.task.run(['jshint', 'phplint', 'less', 'jst', 'concat', 'cssmin', 'uglify', 'filerev', 'usemin', 'htmlmin', 'regex-replace:deploy', 'manifest', 'lineending', 'zip:docker']);
-        }
-        else {
+        } else {
             grunt.config.set('config', grunt.file.readJSON('build/' + env + '.json'));
             grunt.task.run(['jshint', 'phplint', 'less', 'jst', 'concat', 'cssmin', 'uglify', 'filerev', 'usemin', 'htmlmin', 'regex-replace:replace', 'manifest', 'lineending', 'zip:main']);
         }
