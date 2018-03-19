@@ -792,7 +792,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($_metadata) && !empty($filter_count)) {
                     $data['filter_count'] = $filter_count;
                 }
-                if (!empty($_metadata) && !empty($board_user_roles)) {
+                if (!empty($_metadata) && !empty($board_user_roles) && OAUTH_CLIENTID != 7857596005287233) {
                     $data['board_user_roles'] = $board_user_roles;
                 }
                 if (is_plugin_enabled('r_chart')) {
