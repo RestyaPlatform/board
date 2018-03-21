@@ -26,6 +26,7 @@ require_once '../config.inc.php';
 require_once '../libs/vendors/finediff.php';
 require_once '../libs/core.php';
 require_once '../libs/vendors/OAuth2/Autoloader.php';
+require_once '../libs/ActivityHandler.php';
 $j_username = $j_password = '';
 require_once '../bootstrap.php';
 global $jabberHost, $jaxlDebug;
@@ -394,7 +395,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                         }
                     }
-                    $obj = getActivitiesObj($obj);
+                    $obj = ActivityHandler::getActivitiesObj($obj);
                     if (!empty($_metadata)) {
                         $data['data'][] = $obj;
                     } else {
@@ -619,7 +620,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $board_lists = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
-                    $obj = getActivitiesObj($obj);
+                    $obj = ActivityHandler::getActivitiesObj($obj);
                     if (!empty($_metadata)) {
                         $data['data'][] = $obj;
                     } else {
@@ -1228,7 +1229,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                                 }
                             }
                         }
-                        $obj = getActivitiesObj($obj);
+                        $obj = ActivityHandler::getActivitiesObj($obj);
                         if (!empty($_metadata)) {
                             $data['data'][] = $obj;
                         } else {
@@ -1336,7 +1337,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $board_lists = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
-                $obj = getActivitiesObj($obj);
+                $obj = ActivityHandler::getActivitiesObj($obj);
                 if (!empty($_metadata)) {
                     $data['data'][] = $obj;
                 } else {

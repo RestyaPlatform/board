@@ -384,7 +384,7 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
  *
  * @return difference
  */
-function getRevisiondifference($from_text, $to_text)
+function getRevisiondifference(string $from_text, string $to_text)
 {
     // limit input
     if (!empty($from_text)) {
@@ -1826,103 +1826,6 @@ function paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters)
     $arr['sql'] = $sql;
     $arr['_metadata'] = $_metadata;
     return $arr;
-}
-function getActivitiesObj($obj)
-{
-    global $r_debug, $db_lnk, $authUser, $_server_domain_url;
-    if (!empty($obj['revisions']) && trim($obj['revisions']) !== '') {
-        $revisions = unserialize($obj['revisions']);
-        $obj['revisions'] = $revisions;
-        $diff = array();
-        if (!empty($revisions['new_value'])) {
-            foreach ($revisions['new_value'] as $key => $value) {
-                if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $obj['type'] != 'moved_card_checklist_item' && $obj['type'] != 'add_card_desc' && $obj['type'] != 'add_card_duedate' && $obj['type'] != 'delete_card_duedate' && $obj['type'] != 'add_background' && $obj['type'] != 'change_background' && $obj['type'] != 'change_visibility') {
-                    $old_val = (isset($revisions['old_value'][$key]) && $revisions['old_value'][$key] != null && $revisions['old_value'][$key] != 'null') ? $revisions['old_value'][$key] : '';
-                    $new_val = (isset($revisions['new_value'][$key]) && $revisions['new_value'][$key] != null && $revisions['new_value'][$key] != 'null') ? $revisions['new_value'][$key] : '';
-                    $diff[] = nl2br(getRevisiondifference($old_val, $new_val));
-                }
-                if ($obj['type'] == 'add_card_desc' || $obj['type'] == 'add_card_desc' || $obj['type'] == '	edit_card_duedate' || $obj['type'] == 'add_background' || $obj['type'] == 'change_background' || $obj['type'] == 'change_visibility') {
-                    $diff[] = $revisions['new_value'][$key];
-                }
-            }
-        } else if (!empty($revisions['old_value']) && isset($obj['type']) && $obj['type'] == 'delete_card_comment') {
-            $diff[] = nl2br(getRevisiondifference($revisions['old_value'], ''));
-        }
-        if (isset($diff)) {
-            $obj['difference'] = $diff;
-        }
-    }
-    if ($obj['type'] === 'add_board_user') {
-        $obj_val_arr = array(
-            $obj['foreign_id']
-        );
-        $obj['board_user'] = executeQuery('SELECT * FROM boards_users_listing WHERE id = $1', $obj_val_arr);
-    } else if ($obj['type'] === 'add_list') {
-        $obj_val_arr = array(
-            $obj['list_id']
-        );
-        $obj['list'] = executeQuery('SELECT * FROM lists_listing WHERE id = $1', $obj_val_arr);
-    } else if ($obj['type'] === 'change_list_position') {
-        $obj_val_arr = array(
-            $obj['list_id']
-        );
-        $obj['list'] = executeQuery('SELECT position, board_id FROM lists WHERE id = $1', $obj_val_arr);
-    } else if ($obj['type'] === 'add_card') {
-        $obj_val_arr = array(
-            $obj['card_id']
-        );
-        $obj['card'] = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
-    } else if ($obj['type'] === 'copy_card') {
-        $obj_val_arr = array(
-            $obj['foreign_id']
-        );
-        $obj['card'] = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
-    } else if ($obj['type'] === 'add_card_checklist') {
-        $obj_val_arr = array(
-            $obj['foreign_id']
-        );
-        $obj['checklist'] = executeQuery('SELECT * FROM checklists_listing WHERE id = $1', $obj_val_arr);
-        $obj['checklist']['checklists_items'] = json_decode($obj['checklist']['checklists_items'], true);
-    } else if ($obj['type'] === 'add_card_label') {
-        $obj_val_arr = array(
-            $obj['card_id']
-        );
-        $s_result = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE  card_id = $1', $obj_val_arr);
-        while ($row = pg_fetch_assoc($s_result)) {
-            $obj['labels'][] = $row;
-        }
-    } else if ($obj['type'] === 'add_card_voter') {
-        $obj_val_arr = array(
-            $obj['foreign_id']
-        );
-        $obj['voter'] = executeQuery('SELECT * FROM card_voters_listing WHERE id = $1', $obj_val_arr);
-    } else if ($obj['type'] === 'add_card_user') {
-        $obj_val_arr = array(
-            $obj['foreign_id']
-        );
-        $obj['user'] = executeQuery('SELECT * FROM cards_users_listing WHERE id = $1', $obj_val_arr);
-    } else if ($obj['type'] === 'update_card_checklist') {
-        $obj_val_arr = array(
-            $obj['foreign_id']
-        );
-        $obj['checklist'] = executeQuery('SELECT * FROM checklists_listing WHERE id = $1', $obj_val_arr);
-    } else if ($obj['type'] === 'add_checklist_item' || $obj['type'] === 'update_card_checklist_item' || $obj['type'] === 'moved_card_checklist_item') {
-        $obj_val_arr = array(
-            $obj['foreign_id']
-        );
-        $obj['item'] = executeQuery('SELECT * FROM checklist_items WHERE id = $1', $obj_val_arr);
-    } else if ($obj['type'] === 'add_card_attachment') {
-        $obj_val_arr = array(
-            $obj['foreign_id']
-        );
-        $obj['attachment'] = executeQuery('SELECT * FROM card_attachments WHERE id = $1', $obj_val_arr);
-    } else if ($obj['type'] === 'change_card_position') {
-        $obj_val_arr = array(
-            $obj['card_id']
-        );
-        $obj['card'] = executeQuery('SELECT position FROM cards_listing WHERE id = $1', $obj_val_arr);
-    }
-    return $obj;
 }
 function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', $activity_type = '', $foreign_ids = '')
 {
