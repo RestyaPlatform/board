@@ -928,6 +928,64 @@ function getbindValues($table, $data)
     return $bindValues;
 }
 /**
+ * Create Trello member
+ *
+ * @param array $member member details
+ * @param array $admin_user_id admin user ids
+ * @param array $new_board newly created board details
+ *
+ * @return mixed
+ */
+function createTrelloMember($member = array(), $admin_user_id = array(), $new_board = array()) {
+    global $r_debug, $db_lnk, $authUser, $_server_domain_url;
+    $user_id = '';
+    $qry_val_arr = array(
+        utf8_decode($member['username'])
+    );
+    $userExist = executeQuery('SELECT * FROM users WHERE username = $1', $qry_val_arr);
+    if (!$userExist) {
+        $qry_val_arr = array(
+            utf8_decode($member['username']) ,
+            getCryptHash('restya') ,
+            utf8_decode($member['initials']) ,
+            utf8_decode($member['fullName'])
+        );
+        $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4) RETURNING id', $qry_val_arr));
+        $user_id = $user['id'];
+    } else {
+        $user_id = $userExist['id'];
+    }
+    $board_user_role_id = 2;
+    if (in_array($member['id'], $admin_user_id)) {
+        $board_user_role_id = 1;
+    }
+    
+    $query_val = array(
+        $user_id,
+        $new_board['id']
+    );
+    $is_board_user_exist = executeQuery('SELECT * FROM boards_users WHERE user_id = $1 and board_id = $2', $query_val);
+    if (!$is_board_user_exist) {
+        $qry_val_arr = array(
+            $user_id,
+            $new_board['id'],
+            $board_user_role_id
+        );
+        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
+    }
+    $is_board_subscribers_exist = executeQuery('SELECT * FROM board_subscribers WHERE user_id = $1 and board_id = $2', $query_val);
+    $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : 'false';
+    if ($auto_subscribe_on_board && !$is_board_subscribers_exist) {
+        $qry_val_arr = array(
+            $user_id,
+            $new_board['id'],
+            true
+        );
+        pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, user_id, board_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
+    }
+    return $user_id;
+}
+/**
  * Import Trello board
  *
  * @param array $board Boards from trello
@@ -955,7 +1013,7 @@ function importTrelloBoard($board = array())
         }
         $qry_val_arr = array(
             utf8_decode($board['name']) ,
-            $board['prefs']['backgroundColor'],
+            (!empty($board['prefs']['backgroundColor'])) ? $board['prefs']['backgroundColor'] : null,
             $background_image,
             $background_pattern,
             $user_id,
@@ -1293,6 +1351,7 @@ function importTrelloBoard($board = array())
                         $cards_key = '';
                     }
                 }
+                $users[$action['idMemberCreator']] = createTrelloMember($action['memberCreator'], $admin_user_id, $new_board);
                 if (empty($lists_key) && empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
