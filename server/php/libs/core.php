@@ -384,7 +384,7 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
  *
  * @return difference
  */
-function getRevisiondifference(string $from_text, string $to_text)
+function getRevisiondifference($from_text, $to_text)
 {
     // limit input
     if (!empty($from_text)) {
