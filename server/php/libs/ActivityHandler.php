@@ -1,5 +1,4 @@
 <?php
-
 class ActivityHandler
 {
     private static $not_acceptable_diff_keys = array(
@@ -31,7 +30,6 @@ class ActivityHandler
         'change_background',
         'change_visibility'
     );
-
     public static function getActivitiesObj($obj)
     {
         global $r_debug, $db_lnk, $authUser, $_server_domain_url;
