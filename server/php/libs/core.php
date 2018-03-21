@@ -936,7 +936,8 @@ function getbindValues($table, $data)
  *
  * @return mixed
  */
-function createTrelloMember($member = array(), $admin_user_id = array(), $new_board = array()) {
+function createTrelloMember($member = array() , $admin_user_id = array() , $new_board = array())
+{
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
     $user_id = '';
     $qry_val_arr = array(
@@ -959,7 +960,6 @@ function createTrelloMember($member = array(), $admin_user_id = array(), $new_bo
     if (in_array($member['id'], $admin_user_id)) {
         $board_user_role_id = 1;
     }
-    
     $query_val = array(
         $user_id,
         $new_board['id']
