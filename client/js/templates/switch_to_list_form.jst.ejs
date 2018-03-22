@@ -1,7 +1,16 @@
 <thead>
 	<tr>
-		<th>
-			<ul class="list-inline navbar-btn clearfix">	
+		<th><a class="js-sort-by show" title="<%- i18next.t('ID') %>" href="#" data-sort-by="id"><span class="icon-caret-down"></span><%- i18next.t("ID") %></a></th>
+		<th><a class="js-sort-by show" title="<%- i18next.t('Card Name') %>" href="#" data-sort-by="name"><span class="icon-caret-down hide"></span><%- i18next.t("Card Name") %></a></th>
+		<th><a class="js-sort-by show" title="<%- i18next.t('List Name') %>" href="#" data-sort-by="list_name"><span class="icon-caret-down hide"></span><%- i18next.t("List Name") %></a></th>
+		<th class= "js-list-start-date hide" ></th>
+		<th><a class="show" href="#" title="<%- i18next.t('End Date') %>" ><span class="icon-caret-down hide"></span><i data-sort-by="due_date" class="js-sort-by icon-calendar h3"></i></a></th>
+		<th class= "js-list-estimated-time hide" ></th>
+		<th><a class="show" href="#" title="<%- i18next.t('Votes') %>" ><span class="icon-caret-down hide"></span><i  data-sort-by="card_voter_count" class="js-sort-by icon-thumbs-up h3"></i></a></th>
+		<th><a class="show" href="#" title="<%- i18next.t('Attachments') %>" ><span class="icon-caret-down hide"></span><i data-sort-by="attachment_count" class="js-sort-by icon-paper-clip h3"></i></a></th>
+		<th><a class="show" href="#" title="<%- i18next.t('Comments') %>"><span class="icon-caret-down hide"></span><i data-sort-by="comment_count" class="js-sort-by icon-comment h3"></i></a></th>
+		<th><a class="show" href="#" title="<%- i18next.t('Checklist') %>" ><span class="icon-caret-down hide"></span><i  data-sort-by="checklist_item_completed_count" class="js-sort-by icon-ok-sign h3"></i></a></th>
+			<!--<ul class="list-inline navbar-btn clearfix">	
 				<li class="col-md-1 col-xs-2"><a class="js-sort-by show" title="<%- i18next.t('ID') %>" href="#" data-sort-by="id"><span class="icon-caret-down"></span><%- i18next.t("ID") %></a></li>
 				<li class="col-md-3 col-xs-2"><a class="js-sort-by show" title="<%- i18next.t('Card Name') %>" href="#" data-sort-by="name"><span class="icon-caret-down hide"></span><%- i18next.t("Card Name") %></a></li>
 				<li class="col-md-3 col-xs-2"><a class="js-sort-by show" title="<%- i18next.t('List Name') %>" href="#" data-sort-by="list_name"><span class="icon-caret-down hide"></span><%- i18next.t("List Name") %></a></li>
@@ -16,8 +25,8 @@
 						<li><a class="show" href="#" title="<%- i18next.t('Checklist') %>" ><span class="icon-caret-down hide"></span><i  data-sort-by="checklist_item_completed_count" class="js-sort-by icon-ok-sign h3"></i></a></li>
 					</ul>  
 				</li>
-            </ul>
-		</th>
+            </ul>-->
+		
 	<tr>
 </thead>
 <tbody class="js-card-list-view-<%- board.id%>"></tbody>

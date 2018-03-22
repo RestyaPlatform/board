@@ -841,7 +841,8 @@ App.BoardHeaderView = Backbone.View.extend({
                     });
                     var view = new App.CardView({
                         tagName: 'tr',
-                        className: 'card-list-view',
+                        className: 'card-list-view js-show-modal-card-view',
+                        id: 'js-card-' + card.attributes.id,
                         model: card,
                         template: 'list_view'
                     });
@@ -1883,7 +1884,8 @@ App.BoardHeaderView = Backbone.View.extend({
                         show_label_arr[index] = [];
                     }
                     if (filter == 'list') {
-                        show_label_arr[index].push($(this).parent().parent().find('div').attr('id'));
+                        show_label_arr[index].push($(this).parent().parent().attr('id'));
+                        /*show_label_arr[index].push($(this).parent().parent().find('div').attr('id'));*/
                     } else {
                         show_label_arr[index].push($(this).parent().parent().attr('id'));
                     }
@@ -1916,7 +1918,8 @@ App.BoardHeaderView = Backbone.View.extend({
                         show_user_arr[index] = [];
                     }
                     if (filter == 'list') {
-                        show_user_arr[index].push($(this).parent().parent().find('div').attr('id'));
+                        /*show_user_arr[index].push($(this).parent().parent().find('div').attr('id'));*/
+                        show_user_arr[index].push($(this).parent().parent().attr('id'));
                     } else {
                         show_user_arr[index].push($(this).parent().parent().attr('id'));
                     }
@@ -1949,7 +1952,8 @@ App.BoardHeaderView = Backbone.View.extend({
                         show_due_arr[index] = [];
                     }
                     if (filter == 'list') {
-                        show_due_arr[index].push($(this).parent().parent().find('div').attr('id'));
+                        /*show_due_arr[index].push($(this).parent().parent().find('div').attr('id'));*/
+                        show_due_arr[index].push($(this).parent().parent().attr('id'));
                     } else {
                         show_due_arr[index].push($(this).parent().parent().attr('id'));
                     }
@@ -1982,7 +1986,7 @@ App.BoardHeaderView = Backbone.View.extend({
         if (!_.isEmpty(filter_due_arr)) {
             arrays.push(result_due_arr);
         }
-
+        
         if (!_.isEmpty(arrays)) {
             var result = arrays.shift().filter(function(v) {
                 return arrays.every(function(a) {
