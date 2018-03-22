@@ -3899,12 +3899,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $path = $prev_message['path'] . '.P' . $response['id'];
                     $depth = $prev_message['depth'] + 1;
                     $root = $prev_message['root'];
-                    $response['activities']['depth'] = $depth;
                 } else {
                     $path = 'P' . $response['id'];
                     $depth = 0;
                     $root = $response['id'];
                 }
+                $response['activities']['depth'] = $depth;
                 $response['activities']['path'] = $path;
                 $qry_val_arr = array(
                     $materialized_path,
