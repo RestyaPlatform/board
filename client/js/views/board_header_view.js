@@ -644,6 +644,7 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     render: function() {
+        console.log('BOARD-HEADER-VIEW_RENDER');
         var self = this;
         changeTitle('Board - ' + _.escape(this.model.attributes.name));
         if (!_.isUndefined(this.authuser)) {
@@ -1800,6 +1801,7 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     toggleCardFilter: function(e) {
+        console.log('TOGGLE_CARD_FILTER');
         var target = $(e.currentTarget);
         if (target.parent().hasClass('js-filter-conjunction')) {
             if (target.attr('id') == 'js-mode-or') {
@@ -1832,6 +1834,11 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     cardFilter: function(e) {
+        console.log('CARD_FILTER');
+        this.model.cards.each(function (card) {
+                card.set({is_filtered: true});
+                card.set('is_filtered', true, {silent: true});
+        });
         this.$el.find('.js-clear-filter-btn').removeClass('hide').addClass('show');
         var filter_label_arr = [],
             filter_user_arr = [],

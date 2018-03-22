@@ -70,6 +70,9 @@ App.ListView = Backbone.View.extend({
             this.model.collection.board.cards.bind('change:is_archived', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:comment_count', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:list_id', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:is_filtered', function(e){
+                console.log('Filtered Change');
+            });
         }
         this.model.bind('remove', this.removeRender);
         if (!_.isUndefined(authuser.user)) {
@@ -136,6 +139,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     listSort: function(ev, ui) {
+        console.log('LIST_SORT');
         var target = $(ev.target);
         var previous_list_id = target.prev('.js-board-list').data('list_id');
         var next_list_id = target.next('.js-board-list').data('list_id');
@@ -291,6 +295,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     editList: function(e) {
+        console.log('EDIT LIST', this);
         var self = this;
         var list_id = self.model.id;
         var bool = $('.js-list-subscribed-' + list_id).hasClass('hide');
@@ -508,6 +513,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     moveList: function(e) {
+        console.log('MOVE_LIST');
         e.preventDefault();
         var list_id = this.model.id;
         var current_list = this.model.attributes;
@@ -738,6 +744,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     moveCards: function(e) {
+        console.log('MOVE_CARDS');
         $('li.dropdown').removeClass('open');
         var list_id = this.model.id;
         var self = this;
@@ -833,6 +840,8 @@ App.ListView = Backbone.View.extend({
      *
      */
     render: function() {
+        console.log('RENDER', this);
+        var self = this;
         this.converter.setFlavor('github');
         touchPunchDelay = 100;
         this.$el.html(this.template({
@@ -858,16 +867,20 @@ App.ListView = Backbone.View.extend({
                     scrollSensitivity: 100,
                     scrollSpeed: 50,
                     update: function(ev, ui) {
+                        console.log('RENDER-UPDATE');
                         if (this === ui.item.parent()[0]) {
                             ui.item.trigger('cardSort', ev, ui);
                         }
+                        self.renderCardNumbers();
                     },
                     start: function(ev, ui) {
+                        console.log('RENDER-START');
                         ui.helper.height(ui.item.outerHeight() + 10);
                         ui.placeholder.height(ui.item.outerHeight());
                         $('.js-show-modal-card-view ').removeClass('cur');
                     },
                     stop: function(ev, ui) {
+                        console.log('RENDER-STOP');
                         $('.js-show-modal-card-view ').addClass('cur');
                         clearInterval(App.sortable.setintervalid_horizontal);
                         clearInterval(App.sortable.setintervalid_vertical);
@@ -882,6 +895,7 @@ App.ListView = Backbone.View.extend({
                         App.sortable.previous_move_mobile = 0;
                         App.sortable.previous_move_horizontal = 0;
                         App.sortable.previous_move_vertical = 0;
+                        self.renderCardNumbers();
                     },
                     over: function(ev, ui) {
                         if ($(ui.placeholder).parents('.js-board-list-cards').attr('id') == App.sortable.previous_id) {
@@ -1160,6 +1174,15 @@ App.ListView = Backbone.View.extend({
                 });
             }
         }
+        this.renderCardNumbers();
+    },
+    renderCardNumbers: function() {
+        console.log(this.model);
+        var element = this.$el.find('#list-card-number-' + this.model.id);
+        var filteredElements = this.model.cards.filter(function(card) {
+            return card.attributes.is_archived !== 1;
+        });
+        element.text('(' + filteredElements.length + ')');
     },
     /**
      * showAddCardForm()
@@ -1170,6 +1193,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     showAddCardForm: function(e) {
+        console.log('SHOW_ADD_CARD_FORM', this);
         e.preventDefault();
         $('.js-cancel-card-add').trigger('click');
         var target = $(e.target);
@@ -1415,6 +1439,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     cardSearch: function(e) {
+        console.log('CARD_SEARCH');
         var self = this;
         var search_q = $(e.currentTarget).val();
         var filtered_cards = self.board.cards.search(search_q);
@@ -1467,6 +1492,7 @@ App.ListView = Backbone.View.extend({
      * @type string
      */
     moveChangeList: function(e) {
+        console.log('MOVE_CHANGE_LIST');
         var target = $(e.currentTarget);
         var self = this;
         var board_id = parseInt(target.val());
@@ -1541,6 +1567,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     changeList: function(e) {
+        console.log('CHANGE_LIST');
         var target = $(e.currentTarget);
         var self = this;
         var board_id = target.val();
@@ -1576,6 +1603,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     changePosition: function(e) {
+        console.log('CHANGE_POSITION');
         var target = $(e.currentTarget);
         var self = this;
         var list_id = target.val();
@@ -1667,6 +1695,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     sortBy: function(e) {
+        console.log('SORT_BY');
         e.preventDefault();
         var self = this;
         var sort_by = $(e.target).data('sort-by');

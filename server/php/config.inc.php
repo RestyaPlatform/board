@@ -36,11 +36,11 @@ if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
     define('OAUTH_CLIENTID', '7742632501382313');
     define('OAUTH_CLIENT_SECRET', '4g7C4l1Y2b0S6a7L8c1E7B3K0e');
 }
-define('R_DB_HOST', 'localhost');
-define('R_DB_USER', 'restya');
-define('R_DB_PASSWORD', 'hjVl2!rGd');
+define('R_DB_HOST', 'postgres');
+define('R_DB_USER', 'admin');
+define('R_DB_PASSWORD', 'admin');
 define('R_DB_NAME', 'restyaboard');
-define('R_DB_PORT', 5432);
+define('R_DB_PORT', '5432');
 define('CHAT_DB_HOST', 'localhost');
 define('CHAT_DB_USER', 'ejabberd');
 define('CHAT_DB_PASSWORD', 'ftfnVgYl2');

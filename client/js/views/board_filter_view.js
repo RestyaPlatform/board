@@ -58,6 +58,7 @@ App.BoardFilterView = Backbone.View.extend({
         return this;
     },
     showFilteredCards: function(e) {
+        console.log('SHOW_FILTERED_CARDS');
         e.preventDefault();
         var self = this;
         var el = this.$el;
@@ -110,6 +111,7 @@ App.BoardFilterView = Backbone.View.extend({
      *
      */
     filterBoard: function(e) {
+        console.log('FILTER_BOARD');
         var self = this;
         this.$el.find('.js-clear-filter-btn').removeClass('hide').addClass('show');
         var filter_label_arr = [],

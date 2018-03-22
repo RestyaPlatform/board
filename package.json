@@ -41,6 +41,8 @@
     "grunt-zip": "~0.16.2"
   },
   "scripts": {
+    "watch": "grunt watch",
+    "compile:jst": "grunt jst",
     "docker:prebuild": "grunt build:docker",
     "docker:build": "docker build -t restyaplatform/restyaboard .",
     "docker:fullbuild": "npm run docker:prebuild && npm run docker:build"
