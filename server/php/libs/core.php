@@ -996,7 +996,7 @@ function importTrelloBoard($board = array())
 {
     set_time_limit(1800);
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
-    $users = $lists = $cards = array();
+    $users = $lists = $cards = $cardLists = array();
     if (!empty($board)) {
         $user_id = $authUser['id'];
         $board_visibility = 0;
@@ -1147,6 +1147,7 @@ function importTrelloBoard($board = array())
                 );
                 $_card = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards (created, modified, board_id, list_id, name, description, is_archived, position, due_date, user_id) VALUES (now(), now(), $1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                 $cards[$card['id']] = $_card['id'];
+                $cardLists[$card['id']] = $lists[$card['idList']];
                 if (!empty($card['labels'])) {
                     foreach ($card['labels'] as $label) {
                         if (!empty($label['name'])) {
@@ -1347,11 +1348,14 @@ function importTrelloBoard($board = array())
                 if (!empty($action['data']['card']['id'])) {
                     if (array_key_exists($action['data']['card']['id'], $cards)) {
                         $cards_key = $cards[$action['data']['card']['id']];
+                        $lists_key = $cardLists[$action['data']['card']['id']];
                     } else {
                         $cards_key = '';
                     }
                 }
-                $users[$action['idMemberCreator']] = createTrelloMember($action['memberCreator'], $admin_user_id, $new_board);
+                if (!array_key_exists($action['idMemberCreator'], $users) || empty($users[$action['idMemberCreator']])) {
+                    $users[$action['idMemberCreator']] = createTrelloMember($action['memberCreator'], $admin_user_id, $new_board);
+                }
                 if (empty($lists_key) && empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
