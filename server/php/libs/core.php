@@ -387,11 +387,15 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
 function getRevisiondifference($from_text, $to_text)
 {
     // limit input
-    if (!empty($from_text)) {
+    if (!empty($from_text) && is_string($from_text)) {
         $from_text = substr($from_text, 0, 1024 * 100);
+    } else {
+        return false;
     }
-    if (!empty($to_text)) {
+    if (!empty($to_text) && is_string($to_text)) {
         $to_text = substr($to_text, 0, 1024 * 100);
+    } else {
+        return false;
     }
     $granularity = 2; // 0: Paragraph/lines, 1: Sentence, 2: Word, 3: Character
     $granularityStacks = array(
