@@ -217,9 +217,7 @@
 					service nginx restart
 					service php7.0-fpm restart
 				else
-					ps -q 1 | grep -q -c "systemd"
-					if [ "$?" -eq 0 ];
-					then
+					if [ -f "/bin/systemctl" ]; then
 						echo "Starting services with systemd..."
 						systemctl restart nginx
 						systemctl restart php-fpm
@@ -719,13 +717,8 @@
 					case "${answer}" in
 						[Yy])
 						echo "Installing nginx..."
-						yum install -y epel-release
-						if [ $? != 0 ]
-						then
-							echo "epel-release installation failed with error code 17"
-							return 17
-						fi
-						yum install -y zip cron nginx
+						rpm -Uvh "http://nginx.org/packages/centos/${OS_VERSION}/noarch/RPMS/nginx-release-centos-${OS_VERSION}-0.el${OS_VERSION}.ngx.noarch.rpm"
+						yum install -y zip cronie nginx
 						if [ $? != 0 ]
 						then
 							echo "cron nginx installation failed with error code 18"
@@ -746,14 +739,11 @@
 					set -x
 					case "${answer}" in
 						[Yy])
+						echo "Note: For the latest version of PHP, we're going to download https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm."
 						echo "Installing PHP..."
-						yum install -y epel-release
-						if [ $? != 0 ]
-						then
-							echo "epel-release installation failed with error code 19"
-							return 19
-						fi
-						yum install -y php
+						rpm -Uvh "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm"
+						rpm -Uvh "https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm"
+						yum install -y php70w php70w-opcache
 						if [ $? != 0 ]
 						then
 							echo "php installation failed with error code 20"
@@ -763,21 +753,21 @@
 				fi
 				
 				echo "Installing PHP fpm and cli extension..."
-				yum install -y php-fpm php-devel php-cli
+				yum install -y php70w-fpm php70w-devel php70w-cli php70w-opcache
 				if [ $? != 0 ]
 				then
 					echo "php-devel installation failed with error code 21"
 					return 21
 				fi
 				service php-fpm start
-				chkconfig --levels 35 php-fpm on
+				chkconfig --levels 35 php70w-fpm on
 
 				echo "Checking PHP curl extension..."
 				php -m | grep curl
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-curl..."
-					yum install -y php-curl
+					yum install -y php70w-curl
 					if [ $? != 0 ]
 					then
 						echo "php-curl installation failed with error code 22"
@@ -790,7 +780,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-pgsql..."
-					yum install -y php-pgsql
+					yum install -y php70w-pgsql
 					if [ $? != 0 ]
 					then
 						echo "php-pgsql installation failed with error code 23"
@@ -803,7 +793,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-mbstring..."
-					yum install -y php-mbstring
+					yum install -y php70w-mbstring
 					if [ $? != 0 ]
 					then
 						echo "php-mbstring installation failed with error code 24"
@@ -816,7 +806,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-ldap..."
-					yum install -y php-ldap
+					yum install -y php70w-ldap
 					if [ $? != 0 ]
 					then
 						echo "php-ldap installation failed with error code 25"
@@ -831,7 +821,7 @@
 					echo "Installing php-imagick..."
 
 					yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
-					yum install -y php-pear
+					yum install -y php70w-pear
 					if [ $? != 0 ]
 					then
 						echo "Installing php-imagick failed with error code 26"
@@ -855,7 +845,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-imap..."
-					yum install -y php-imap
+					yum install -y php70w-imap
 					if [ $? != 0 ]
 					then
 						echo "php-imap installation failed with error code 26"
@@ -868,7 +858,7 @@
 				php -m | grep xml
 				if [ "$?" -gt 0 ]; then
 					echo "Installing xml..."
-					yum install php-xml
+					yum install -y php70w-xml
 					if [ $? != 0 ]
 					then
 						echo "xml installation failed with error code 57"
@@ -898,37 +888,23 @@
 						echo "Installing PostgreSQL..."
 						if [ $(getconf LONG_BIT) = "32" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "http://yum.postgresql.org/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora96-9.6-3.noarch.rpm"
 							else
-								rpm -Uvh "http://yum.postgresql.org/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-centos96-9.6-3.noarch.rpm"
-							fi
-
-							yum install -y postgresql95-server postgresql95
-							if [ $? != 0 ]
-							then
-								echo "Installing PostgreSQL 32 fail with error code 27"
-								return 27
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat96-9.6-3.noarch.rpm"
 							fi
 						fi
 						if [ $(getconf LONG_BIT) = "64" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "http://yum.postgresql.org/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora96-9.6-3.noarch.rpm"
 							else
-								rpm -Uvh "http://yum.postgresql.org/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos96-9.6-3.noarch.rpm"
-							fi
-
-							yum install -y postgresql96-server postgresql96
-							if [ $? != 0 ]
-							then
-								echo "Installing PostgreSQL 64 fail with error code 28"
-								return 28
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat96-9.6-3.noarch.rpm"
 							fi
 						fi
 
-						yum install -y postgresql96-contrib
+						yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
 						if [ $? != 0 ]
 						then
-							echo "postgresql96-contrib installation failed with error code 29"
+							echo "postgresql96 installation failed with error code 29"
 							return 29
 						fi
 					esac
@@ -939,50 +915,36 @@
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
 						if [ $(getconf LONG_BIT) = "32" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "http://yum.postgresql.org/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora96-9.6-3.noarch.rpm"
 							else
-								rpm -Uvh "http://yum.postgresql.org/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-centos96-9.6-3.noarch.rpm"
-							fi
-
-							yum install -y postgresql96-server postgresql96
-							if [ $? != 0 ]
-							then
-								echo "Installing PostgreSQL 32 fail with error code 27"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat96-9.6-3.noarch.rpm"
 							fi
 						else
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "http://yum.postgresql.org/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora96-9.6-3.noarch.rpm"
 							else
-								rpm -Uvh "http://yum.postgresql.org/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-centos96-9.6-3.noarch.rpm"
-							fi
-
-							yum install -y postgresql96-server postgresql96
-							if [ $? != 0 ]
-							then
-								echo "Installing PostgreSQL 64 fail with error code 28"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat96-9.6-3.noarch.rpm"
 							fi
 						fi
 
-						yum install -y postgresql96-contrib
+						yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
 						if [ $? != 0 ]
 						then
-							echo "postgresql96-contrib installation failed with error code 29"
+							echo "postgresql installation failed with error code 29"
 							return 29
 						fi
 					fi
 				fi
 
 				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
-				PSQL_FOLDER=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}') | sed 's/\.//'
-				ps -q 1 | grep -q -c "systemd"
-				if [ "$?" -eq 0 ]; then
-					if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
-						"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
-					fi
+				PSQL_FOLDER=$(echo ${PSQL_VERSION} | sed 's/\.//')
+				if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
+					"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
+				fi
+				if [ -f "/bin/systemctl" ]; then
 					systemctl start "postgresql-${PSQL_VERSION}.service"
 					systemctl enable "postgresql-${PSQL_VERSION}.service"
 				else
-					service "postgresql-${PSQL_VERSION}" initdb
 					"/etc/init.d/postgresql-${PSQL_VERSION}" start
 					chkconfig --levels 35 "postgresql-${PSQL_VERSION}" on
 				fi
@@ -992,21 +954,10 @@
 				mv pg_hba.conf pg_hba.conf_old
 				mv pg_hba.conf.1 pg_hba.conf
 				
-				ps -q 1 | grep -q -c "systemd"
-				if [ "$?" -eq 0 ]; then
+				if [ -f "/bin/systemctl" ]; then
 					systemctl restart "postgresql-${PSQL_VERSION}.service"
 				else
 					"/etc/init.d/postgresql-${PSQL_VERSION}" restart
-				fi
-
-				if ! hash GeoIP-devel 2>&-;
-				then
-					yum install -y GeoIP-devel
-					if [ $? != 0 ]
-					then
-						echo "GeoIP-devel installation failed with error code 46"
-						return 46
-					fi
 				fi
 
 				if ! hash pecl/geoip 2>&-;
@@ -1018,15 +969,7 @@
 						return 47
 					fi
 				fi
-				echo "extension=geoip.so" >> /etc/php.ini
-				mkdir -v /usr/share/GeoIP
-				if [ $? != 0 ]
-				then
-					echo "GeoIP folder creation failed with error code 48"
-				fi
 
-				get_geoip_data
-				
 				yum install -y git
 				git clone git://github.com/rebar/rebar.git
 				cd rebar
@@ -1147,7 +1090,11 @@
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
 				
 				echo "Reset php-fpm (use unix socket mode)..."
-				sed -i "/listen = 127.0.0.1:9000/a listen = /var/run/php5-fpm.sock" /etc/php-fpm.d/www.conf
+				if [ -f "/run/php/php7.0-fpm.sock" ]; then
+					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.0-fpm.sock/g" /etc/php-fpm.d/www.conf
+				else
+					sed -i "s/unix:\/run\/php\/php7.0-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
+				fi
 
 				set +x
 				echo "Do you want to setup SMTP configuration (y/n)?"
@@ -1201,9 +1148,7 @@
 					done
 				esac
 
-				ps -q 1 | grep -q -c "systemd"
-				if [ "$?" -eq 0 ];
-				then
+				if [ -f "/bin/systemctl" ]; then
 					echo "Starting services with systemd..."
 					systemctl start nginx
 					systemctl start php-fpm

@@ -41,7 +41,13 @@ App.UserView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
-        this.type = 'profile';
+        if (!_.isEmpty(role_links.where({
+                slug: "view_user_activities"
+            }))) {
+            this.type = 'profile';
+        } else {
+            this.type = 'cards';
+        }
         this.page = options.page;
         if (!_.isUndefined(options.type)) {
             this.type = options.type;

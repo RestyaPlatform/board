@@ -26,6 +26,7 @@ require_once '../config.inc.php';
 require_once '../libs/vendors/finediff.php';
 require_once '../libs/core.php';
 require_once '../libs/vendors/OAuth2/Autoloader.php';
+require_once '../libs/ActivityHandler.php';
 $j_username = $j_password = '';
 require_once '../bootstrap.php';
 global $jabberHost, $jaxlDebug;
@@ -394,7 +395,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                         }
                     }
-                    $obj = getActivitiesObj($obj);
+                    $obj = ActivityHandler::getActivitiesObj($obj);
                     if (!empty($_metadata)) {
                         $data['data'][] = $obj;
                     } else {
@@ -619,7 +620,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $board_lists = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
-                    $obj = getActivitiesObj($obj);
+                    $obj = ActivityHandler::getActivitiesObj($obj);
                     if (!empty($_metadata)) {
                         $data['data'][] = $obj;
                     } else {
@@ -792,7 +793,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($_metadata) && !empty($filter_count)) {
                     $data['filter_count'] = $filter_count;
                 }
-                if (!empty($_metadata) && !empty($board_user_roles)) {
+                if (!empty($_metadata) && !empty($board_user_roles) && OAUTH_CLIENTID != 7857596005287233) {
                     $data['board_user_roles'] = $board_user_roles;
                 }
                 if (is_plugin_enabled('r_chart')) {
@@ -1246,7 +1247,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                                 }
                             }
                         }
-                        $obj = getActivitiesObj($obj);
+                        $obj = ActivityHandler::getActivitiesObj($obj);
                         if (!empty($_metadata)) {
                             $data['data'][] = $obj;
                         } else {
@@ -1354,7 +1355,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $board_lists = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
-                $obj = getActivitiesObj($obj);
+                $obj = ActivityHandler::getActivitiesObj($obj);
                 if (!empty($_metadata)) {
                     $data['data'][] = $obj;
                 } else {
@@ -2463,7 +2464,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $msg = 3;
                 }
             }
-            if ($no_error) {
+            if ($no_error && ($authUser['role_id'] == 1 || $authUser['id'] == $r_resource_vars['users'])) {
                 $qry_val_arr = array(
                     (isset($_POST['default_desktop_notification']) && $_POST['default_desktop_notification'] === 'Enabled') ? 'true' : 'false',
                     (isset($_POST['is_list_notifications_enabled'])) ? 'true' : 'false',
@@ -2584,17 +2585,24 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 if (!empty($_POST['username'])) {
                     $qry_val_arr = array(
+                        $r_resource_vars['users']
+                    );
+                    $user = executeQuery('SELECT username FROM users WHERE id = $1', $qry_val_arr);
+                    $qry_val_arr = array(
                         $_POST['username'],
                         $r_resource_vars['users']
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET username= $1 WHERE id = $2', $qry_val_arr);
                     $conditions = array(
                         $_POST['username'],
-                        $authUser['username']
+                        $user['username']
                     );
                     pg_query_params($db_lnk, 'UPDATE oauth_access_tokens set user_id = $1 WHERE user_id= $2', $conditions);
                     pg_query_params($db_lnk, 'UPDATE oauth_refresh_tokens set user_id = $1 WHERE user_id= $2', $conditions);
                 }
+            } else {
+                $response['error']['message'] = 'Unauthorized';
+                header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
             }
         }
         if ($no_error) {
@@ -3916,12 +3924,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $path = $prev_message['path'] . '.P' . $response['id'];
                     $depth = $prev_message['depth'] + 1;
                     $root = $prev_message['root'];
-                    $response['activities']['depth'] = $depth;
                 } else {
                     $path = 'P' . $response['id'];
                     $depth = 0;
                     $root = $response['id'];
                 }
+                $response['activities']['depth'] = $depth;
                 $response['activities']['path'] = $path;
                 $qry_val_arr = array(
                     $materialized_path,

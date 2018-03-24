@@ -169,14 +169,15 @@
 </td> 
 <td class="text-center">
     <a href="#" class="js-no-action">
-		<% var created = parse_date(board.attributes.created, authuser); %>
-		<abbr class="" title="<%- created.datetime %>"><%- created.timeago %></abbr>
+		<% var created = parse_date(board.attributes.created, authuser, 'js-timeago1-admin-board-view-'+board.attributes.id); %>
+		<span class="js-timeago1-admin-board-view-<%- board.attributes.id %>"></span>
 	</a>
+	
 </td>
 <td class="text-center">
     <a href="#" class="js-no-action">
-	<% var modified = parse_date(board.attributes.modified, authuser); %>
-	<abbr class="" title="<%-modified.datetime%>"><%- modified.timeago %></abbr>
+		<% var modified = parse_date(board.attributes.modified, authuser, 'js-timeago2-admin-board-view-'+board.attributes.id); %>
+		<span class="js-timeago2-admin-board-view-<%- board.attributes.id %>"></span>
 	</a>
 </td>
 <td class="text-center">

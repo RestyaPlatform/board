@@ -351,7 +351,7 @@ App.CardView = Backbone.View.extend({
                 this.$el.css('display', 'none');
             }
             if (!_.isUndefined(this.model.attributes.name) && this.model.attributes.name !== '') {
-                this.$el.addClass('panel js-show-modal-card-view js-board-list-card cur').removeAttr('id').attr('data-toggle', 'modal').attr('data-target', '#myModal').attr('data-card_id', this.model.id).attr('id', 'js-card-' + this.model.id).css("border-left-color", this.model.attributes.color).css("border-left-width", "8px");
+                this.$el.addClass('panel js-show-modal-card-view js-board-list-card non-select cur').removeAttr('id').attr('data-toggle', 'modal').attr('data-target', '#myModal').attr('data-card_id', this.model.id).attr('id', 'js-card-' + this.model.id).css("border-left-color", this.model.attributes.color).css("border-left-width", "8px");
             }
         } else if (self.model !== null && !_.isEmpty(self.model) && !_.isUndefined(self.model.attributes.id) && !_.isUndefined(this.model.list) && !_.isUndefined(this.model.list.collection)) {
             filter_count = 0;
