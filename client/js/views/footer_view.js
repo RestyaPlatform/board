@@ -1027,6 +1027,8 @@ App.FooterView = Backbone.View.extend({
                                                 checklist_item.set('card_id', parseInt(activity.attributes.item.card_id));
                                                 checklist_item.set('checklist_id', parseInt(activity.attributes.item.checklist_id));
                                                 checklist_item.set('position', parseFloat(activity.attributes.item.position));
+                                                var is_completed = (activity.attributes.item.is_completed === 't') ? 1 : 0;
+                                                checklist_item.set('is_completed', is_completed);
                                                 checklist_items = self.board.checklist_items.where({
                                                     card_id: parseInt(activity.attributes.card_id)
                                                 });

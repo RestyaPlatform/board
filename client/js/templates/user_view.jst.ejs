@@ -3,7 +3,9 @@
 	<div class="col-xs-12">
 		<div class="clearfix">
 			<ul class="nav nav-tabs no-bor h3">
-				<li <% if (_.isUndefined(type) || type == 'profile') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/profile"  ><%- i18next.t("Profile") %></a></li>
+				<% if((authuser.user.id === page.id || authuser.user.role_id == 1) || (!_.isEmpty(role_links.where({slug: "view_user_activities"})))){ %>
+					<li <% if (_.isUndefined(type) || type == 'profile') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/profile"  ><%- i18next.t("Profile") %></a></li>
+				<% } %>
 				<% if(!_.isEmpty(role_links.where({slug: "view_user_cards"}))){ %>
 					<li  <% if (!_.isUndefined(type) && type == 'cards') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/cards" ><%- i18next.t("Cards") %></a></li>
 				<% } %>
@@ -17,7 +19,7 @@
 		</div>
 		<div class="row">
 			<div class="tab-content">
-				<% if (!_.isEmpty(role_links.where({slug: "view_user_activities"}))) { %>
+				<% if((authuser.user.id === page.id || authuser.user.role_id == 1) || (!_.isEmpty(role_links.where({slug: "view_user_activities"})))){ %>
 					<div class="modal-body tab-pane <% if (_.isUndefined(type) || type == 'profile') { %>active<%}%>" id="profile">
 						<div id="js-user-activites"></div>
 						<span class="btn btn-primary hide" id="js-user-activites-load-more"><%- i18next.t("Load more activities") %></span>
