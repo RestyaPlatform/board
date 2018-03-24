@@ -999,7 +999,7 @@ function createTrelloMember($member = array() , $admin_user_id = array() , $new_
 function importTrelloBoard($board = array())
 {
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
-    $users = $lists = $cards = $cardLists = array();
+    $users = $lists = $cards = $cardLists = $listNames = array();
     if (!empty($board)) {
         $user_id = $authUser['id'];
         $board_visibility = 0;
@@ -1132,6 +1132,7 @@ function importTrelloBoard($board = array())
                 );
                 $_list = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO lists (created, modified, name, board_id, position, user_id, is_archived) VALUES (now(), now(), $1, $2, $3, $4, $5) RETURNING id', $qry_val_arr));
                 $lists[$list['id']] = $_list['id'];
+                $listNames[$list['id']] = $list['name'];
             }
         }
         if (!empty($board['cards'])) {
@@ -1269,13 +1270,25 @@ function importTrelloBoard($board = array())
                     $comment = $action['data']['text'];
                 } else if ($action['type'] == 'addMemberToCard' && !empty($action['member'])) {
                     $type = 'add_card_user';
-                    $comment = '##USER_NAME## added "' . utf8_decode($action['member']['fullName']) . '" as member to this card ##CARD_LINK##';
+                    $memberName = '';
+                    if (!empty($action['member'])) {
+                        $memberName = utf8_decode($action['member']['fullName']);
+                    }
+                    $comment = '##USER_NAME## added "' . $memberName . '" as member to this card ##CARD_LINK##';
                 } else if ($action['type'] == 'createCard') {
                     $type = 'add_card';
-                    $comment = '##USER_NAME## added card ##CARD_LINK## to list "' . utf8_decode($action['data']['list']['name']) . '".';
+                    $listName = '';
+                    if (!empty($listNames[$action['data']['list']['id']])) {
+                        $listName = utf8_decode($listNames[$action['data']['list']['id']]);
+                    }
+                    $comment = '##USER_NAME## added card ##CARD_LINK## to list "' . $listName . '".';
                 } else if ($action['type'] == 'createList') {
                     $type = 'add_list';
-                    $comment = '##USER_NAME## added list "' . utf8_decode($action['data']['list']['name']) . '".';
+                    $listName = '';
+                    if (!empty($listNames[$action['data']['list']['id']])) {
+                        $listName = utf8_decode($listNames[$action['data']['list']['id']]);
+                    }
+                    $comment = '##USER_NAME## added list "' . $listName . '".';
                 } else if ($action['type'] == 'createBoard') {
                     $type = 'add_board';
                     $comment = '##USER_NAME## created board';
@@ -1302,7 +1315,11 @@ function importTrelloBoard($board = array())
                         $comment = '##USER_NAME## archived ##LIST_NAME##';
                     } else if (!empty($action['data']['list']['pos'])) {
                         $type = 'change_list_position';
-                        $comment = '##USER_NAME## changed list ' . utf8_decode($action['data']['list']['name']) . ' position.';
+                        $listName = '';
+                        if (!empty($listNames[$action['data']['list']['id']])) {
+                            $listName = utf8_decode($listNames[$action['data']['list']['id']]);
+                        }
+                        $comment = '##USER_NAME## changed list ' . $listName . ' position.';
                     } else if (!empty($action['data']['list']['name'])) {
                         $type = 'edit_list';
                         $comment = '##USER_NAME## renamed this list.';
@@ -1313,7 +1330,15 @@ function importTrelloBoard($board = array())
                         $comment = '##USER_NAME## moved this card to different position.';
                     } else if (!empty($action['data']['card']['idList'])) {
                         $type = 'moved_list_card';
-                        $comment = '##USER_NAME## moved cards FROM ' . utf8_decode($action['data']['listBefore']['name']) . ' to ' . utf8_decode($action['data']['listAfter']['name']);
+                        $listBeforeName = '';
+                        if (!empty($listNames[$action['data']['listBefore']['id']])) {
+                            $listBeforeName = utf8_decode($listNames[$action['data']['listBefore']['id']]);
+                        }
+                        $listAfterName = '';
+                        if (!empty($listNames[$action['data']['listAfter']['id']])) {
+                            $listAfterName = utf8_decode($listNames[$action['data']['listAfter']['id']]);
+                        }
+                        $comment = '##USER_NAME## moved cards FROM ' . $listBeforeName . ' to ' . $listAfterName;
                     } else if (!empty($action['data']['card']['due'])) {
                         $type = 'add_card_duedate';
                         $comment = '##USER_NAME## SET due date to this card ##CARD_LINK##';
@@ -1322,7 +1347,7 @@ function importTrelloBoard($board = array())
                         $comment = '##USER_NAME## added card description in ##CARD_LINK## - ##DESCRIPTION##';
                     } else if (!empty($action['data']['card']['name'])) {
                         $type = 'edit_card';
-                        $comment = '##USER_NAME## edited ' . utf8_decode($action['data']['list']['name']) . ' card in this board.';
+                        $comment = '##USER_NAME## edited ' . utf8_decode($action['data']['card']['name']) . ' card in this board.';
                     }
                 } else if ($action['type'] == 'addChecklistToCard') {
                     $type = 'add_card_checklist';
