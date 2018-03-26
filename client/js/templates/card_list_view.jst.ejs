@@ -2,7 +2,7 @@
 <td data-title="ID">#<%- card.attributes.id %></td>
 <td data-title="Card Name"><%- card.attributes.name %></td>
 <td data-title="List Name"><%- card.list_name %></td>
-<td class="hide js-list-view-start-date-data js-list-view-start-date-<%- card.attributes.id %>" data-title="<%- i18next.t('Start Date') %>'" title="<%- i18next.t('Start Date') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
+<td class="hide js-list-view-start-date-data js-list-view-start-date-<%- card.attributes.id %>" data-title="<%- i18next.t('Start Date') %>" title="<%- i18next.t('Start Date') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
 <% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){ %>
 	<%
 		var today = new Date();

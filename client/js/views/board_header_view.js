@@ -842,7 +842,7 @@ App.BoardHeaderView = Backbone.View.extend({
                     });
                     var view = new App.CardView({
                         tagName: 'tr',
-                        className: 'card-list-view js-show-modal-card-view',
+                        className: 'card-list-view js-show-modal-card-view cur',
                         id: 'js-card-' + card.attributes.id,
                         model: card,
                         template: 'list_view'
