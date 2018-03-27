@@ -361,6 +361,7 @@
     "Enter your email and we will send new password.": "Enter your email and we will send new password.",
     "Estimated Time Custom Field": "Estimated Time Custom Field",
     "Estimated Time Tracking": "Estimated Time Tracking",
+    "Estimated time": "Estimated time",
     "Expired cards will then be automatically archived": "Expired cards will then be automatically archived",
     "Fetches your Slack channels and creates a mapping with your assigned board names, and stores them in localforage.": "Fetches your Slack channels and creates a mapping with your assigned board names, and stores them in localforage.",
     "Field added successfully.": "Field added successfully.",
