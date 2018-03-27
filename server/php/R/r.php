@@ -1179,17 +1179,17 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             if (!empty($r_resource_filters['mode']) && $r_resource_filters['mode'] != 'all') {
                 if ($r_resource_filters['mode'] == 'activity') {
-                    $condition.= ' AND (al.type != $' . $i ;
+                    $condition.= ' AND (al.type != $' . $i;
                     array_push($pg_params, 'add_comment');
                     $i++;
-                    $condition .= ' OR al.type != $' . $i . ')';
+                    $condition.= ' and al.type != $' . $i . ')';
                     array_push($pg_params, 'edit_comment');
                     $i++;
                 } else if ($r_resource_filters['mode'] == 'comment') {
                     $condition.= ' AND (al.type = $' . $i;
                     array_push($pg_params, 'add_comment');
                     $i++;
-                    $condition .= ' OR al.type = $' . $i . ')';
+                    $condition.= ' OR al.type = $' . $i . ')';
                     array_push($pg_params, 'edit_comment');
                     $i++;
                 }
