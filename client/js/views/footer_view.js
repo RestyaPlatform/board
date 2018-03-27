@@ -1041,7 +1041,7 @@ App.FooterView = Backbone.View.extend({
                                                 card.set('checklist_item_completed_count', completed_count);
                                                 card.set('checklist_item_count', total_count);
                                             }
-                                        } else if (activity.attributes.type === 'update_card_comment') {
+                                        } else if (activity.attributes.type === 'edit_comment') {
                                             comment = self.board.activities.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
                                             });
