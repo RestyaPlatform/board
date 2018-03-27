@@ -176,7 +176,7 @@
 				  <% } %>
 				  <% } %>
 				</ul>
-					<div class="list-group-item-text clearfix">
+					<div class="list-group-item-text clearfix github-markdown">
 					  <h4 class="text-muted"><%- i18next.t('Description') %> 
 					  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 						  <a href="#" class="<%if(!_.isUndefined(authuser.user)) {%>js-show-card-desc-edit-form<%}else{%>js-no-action<%}%>" title="<%- i18next.t('Edit') %>">
