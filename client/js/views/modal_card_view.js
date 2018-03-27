@@ -447,7 +447,6 @@ App.ModalCardView = Backbone.View.extend({
         $('#js-card-modal-' + this.model.id).find('.js-load-more-block').remove();
         var view_activity = $('#js-card-activities-' + this.model.id);
         view_activity.html('');
-        var self = this;
         self.model.activities = new App.ActivityCollection();
         self.model.activities.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/activities.json?mode=' + mode;
         self.model.activities.fetch({
@@ -3423,7 +3422,7 @@ App.ModalCardView = Backbone.View.extend({
         $('.js-remove-card-activity').remove();
         var self = this;
         self.model.activities = new App.ActivityCollection();
-        var filter = $.cookie('filter')
+        var filter = $.cookie('filter');
         if (filter === undefined) {
             filter = 'all';
         } else if (filter === 'comment') {
