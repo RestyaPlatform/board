@@ -101,6 +101,16 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                         $card_query = pg_query_params($db_lnk, 'INSERT INTO cards (created, modified, board_id, list_id, name, description, position, user_id) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING id', $val_arr);
                         $card = pg_fetch_assoc($card_query);
                         $card_id = $card['id'];
+                        // Inserting activities for the inserted card
+                        $val_arr = array(
+                            $card_id,
+                            $board['user_id'],
+                            $list_id,
+                            $board_id,
+                            'add_card',
+                            '##USER_NAME## added card ##CARD_LINK## to list "' . $list['name'] . '".'
+                        );
+                        $activity_res = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
                     } else {
                         // To email address is for specific card then insert the email as card comment
                         $val_arr = array(
@@ -224,6 +234,16 @@ for ($counter = 1; $counter <= $message_count; $counter++) {
                                 );
                                 // Inserting attachments for the card
                                 pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id , board_id, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
+                                // Inserting activities for the inserted attachment
+                                $val_arr = array(
+                                    $card_id,
+                                    $board['user_id'],
+                                    $list_id,
+                                    $board_id,
+                                    'add_card_attachment',
+                                    '##USER_NAME## added attachment to this card ##CARD_LINK##'
+                                );
+                                $activity_res = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
                             }
                             $i++;
                         }
