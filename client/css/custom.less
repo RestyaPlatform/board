@@ -2487,3 +2487,16 @@ header{
 	*/
 	#listview_table td:before { content: attr(data-title); }
 }
+.github-markdown {
+	> p {
+		> a {
+			color: #f47564;
+			word-wrap: break-word;
+			white-space: normal;
+			&:hover, &:focus {
+				color: #f14b34;
+				text-decoration: underline;
+			}
+			}
+		}
+}
