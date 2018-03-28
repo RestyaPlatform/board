@@ -747,6 +747,11 @@ App.BoardView = Backbone.View.extend({
         }
         self.board_view_height();
         this.showTooltip();
+        _(function() {
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $(window).trigger('resize');
+            }
+        }).defer();
         return this;
     },
     /**
