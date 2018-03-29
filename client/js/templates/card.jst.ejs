@@ -24,7 +24,7 @@
   <a href="#" title="<%- card.attributes.name %>"><%- card.attributes.name %></a>
   </div>
   <div class="pull-left navbar-btn">
-  <ul class="list-unstyled list-inline text-muted boardlistblk clearfix txt-aligns">
+  <ul class="list-unstyled list-inline text-muted boardlistblk clearfix txt-aligns js-list-card-data">
   	<%
 		if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
 			var cards_subscribers = card.cards_subscribers.where({
@@ -93,6 +93,12 @@
 		created_date_time = created_date_time[0].split(' ');
 	%>
 	<li class="card-listing-truncate card-created-date"><small title=" <%- i18next.t('Created Date') %>"><span class="label label-default"><%= dateFormat(created_date_time[0], 'mediumDate')  %></span></small></li>
+	<% } %>
+	<% if(!_.isEmpty(card.attributes.list_moved_date) && card.attributes.list_moved_date != 'NULL'){ 
+			var list_moved_date_date_time = card.attributes.list_moved_date.split('T');
+			list_moved_date_date_time = list_moved_date_date_time[0].split(' ');
+	%>
+		<li class="card-listing-truncate list-moved-date"><small title=" <%- i18next.t('List Moved Date') %>"><span class="label label-default"><%= dateFormat(list_moved_date_date_time[0], 'mediumDate')  %></span></small></li>
 	<% } %>
 	</ul>
 	</div>

@@ -17,7 +17,8 @@
 $r_debug = '';
 $authUser = $client = $form = array();
 $_server_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
-$_server_context = explode('/api/', $_SERVER['REQUEST_URI'], 2) [0];
+$request_uri_arr = explode('/api/', $_SERVER['REQUEST_URI'], 2);
+$_server_context = $request_uri_arr[0];
 $_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST'] . $_server_context; // http://localhost/context
 header('x-response-url:' . $_SERVER['REQUEST_URI']);
 header('Access-Control-Allow-Origin: *');
@@ -26,6 +27,7 @@ require_once '../config.inc.php';
 require_once '../libs/vendors/finediff.php';
 require_once '../libs/core.php';
 require_once '../libs/vendors/OAuth2/Autoloader.php';
+require_once '../libs/ActivityHandler.php';
 $j_username = $j_password = '';
 require_once '../bootstrap.php';
 global $jabberHost, $jaxlDebug;
@@ -394,7 +396,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                         }
                     }
-                    $obj = getActivitiesObj($obj);
+                    $obj = ActivityHandler::getActivitiesObj($obj);
                     if (!empty($_metadata)) {
                         $data['data'][] = $obj;
                     } else {
@@ -619,7 +621,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $board_lists = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
-                    $obj = getActivitiesObj($obj);
+                    $obj = ActivityHandler::getActivitiesObj($obj);
                     if (!empty($_metadata)) {
                         $data['data'][] = $obj;
                     } else {
@@ -792,7 +794,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($_metadata) && !empty($filter_count)) {
                     $data['filter_count'] = $filter_count;
                 }
-                if (!empty($_metadata) && !empty($board_user_roles)) {
+                if (!empty($_metadata) && !empty($board_user_roles) && OAUTH_CLIENTID != 7857596005287233) {
                     $data['board_user_roles'] = $board_user_roles;
                 }
                 if (is_plugin_enabled('r_chart')) {
@@ -1165,6 +1167,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (!empty($r_resource_vars['cards'])) {
                 $condition.= ' AND al.card_id = $' . $i;
                 array_push($pg_params, $r_resource_vars['cards']);
+                $i++;
             } else if (!empty($r_resource_vars['lists'])) {
                 $condition.= ' AND al.list_id = $' . $i;
                 array_push($pg_params, $r_resource_vars['lists']);
@@ -1174,6 +1177,23 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $condition.= ' AND al.type = $' . $i;
                 array_push($pg_params, $r_resource_filters['filter']);
                 $i++;
+            }
+            if (!empty($r_resource_filters['mode']) && $r_resource_filters['mode'] != 'all') {
+                if ($r_resource_filters['mode'] == 'activity') {
+                    $condition.= ' AND (al.type != $' . $i;
+                    array_push($pg_params, 'add_comment');
+                    $i++;
+                    $condition.= ' and al.type != $' . $i . ')';
+                    array_push($pg_params, 'edit_comment');
+                    $i++;
+                } else if ($r_resource_filters['mode'] == 'comment') {
+                    $condition.= ' AND (al.type = $' . $i;
+                    array_push($pg_params, 'add_comment');
+                    $i++;
+                    $condition.= ' OR al.type = $' . $i . ')';
+                    array_push($pg_params, 'edit_comment');
+                    $i++;
+                }
             }
             $limit = PAGING_COUNT;
             if (!empty($r_resource_filters['limit'])) {
@@ -1228,7 +1248,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                                 }
                             }
                         }
-                        $obj = getActivitiesObj($obj);
+                        $obj = ActivityHandler::getActivitiesObj($obj);
                         if (!empty($_metadata)) {
                             $data['data'][] = $obj;
                         } else {
@@ -1336,7 +1356,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $board_lists = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
-                $obj = getActivitiesObj($obj);
+                $obj = ActivityHandler::getActivitiesObj($obj);
                 if (!empty($_metadata)) {
                     $data['data'][] = $obj;
                 } else {
@@ -1669,17 +1689,41 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
             include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
         }
-        if (!empty($data['settings'])) {
-            foreach ($data['settings'] as $key => $value) {
-                $value['name'] = $key;
+        if (!empty($data['settings_from_db'])) {
+            $fields = $data['settings_from_db'];
+            $result = pg_query_params($db_lnk, 'SELECT * FROM settings WHERE name IN (' . $fields . ') ORDER BY "order" ASC', array());
+            while ($row = pg_fetch_assoc($result)) {
+                $value = array();
+                if (strpos($row['name'], 'PASSWORD') !== false) {
+                    $value['is_encrypted'] = true;
+                }
+                $value['name'] = $row['name'];
                 $value['folder'] = $r_resource_filters['app'];
                 $value['app_name'] = $data['name'];
+                $value['is_public'] = false;
+                $value['info'] = $row['description'];
+                $value['value'] = $row['value'];
+                $value['label'] = $row['label'];
                 $replaceContent = array(
                     '##SITE_NAME##' => SITE_NAME,
                     '##SITE_URL##' => $_server_domain_url,
                 );
                 $value['settings_description'] = strtr($data['settings_description'], $replaceContent);
                 $response[] = $value;
+            }
+        } else {
+            if (!empty($data['settings'])) {
+                foreach ($data['settings'] as $key => $value) {
+                    $value['name'] = $key;
+                    $value['folder'] = $r_resource_filters['app'];
+                    $value['app_name'] = $data['name'];
+                    $replaceContent = array(
+                        '##SITE_NAME##' => SITE_NAME,
+                        '##SITE_URL##' => $_server_domain_url,
+                    );
+                    $value['settings_description'] = strtr($data['settings_description'], $replaceContent);
+                    $response[] = $value;
+                }
             }
         }
         echo json_encode($response);
@@ -1959,7 +2003,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 getCryptHash($password) ,
                 $user['id']
             );
-            pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $val_arr);
+            pg_query_params($db_lnk, 'UPDATE users SET password = $1 WHERE id = $2', $val_arr);
             $emailFindReplace = array(
                 '##NAME##' => $user['full_name'],
                 '##PASSWORD##' => $password,
@@ -2258,7 +2302,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     getCryptHash($r_post['password']) ,
                     $r_resource_vars['users']
                 );
-                pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
+                pg_query_params($db_lnk, 'UPDATE users SET password = $1 WHERE id = $2', $res_val_arr);
                 if (is_plugin_enabled('r_chat') && $jabberHost) {
                     xmppChangePassword($r_post, $user);
                 }
@@ -2316,7 +2360,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             getCryptHash($r_post['password']) ,
                             $r_resource_vars['users']
                         );
-                        pg_query_params($db_lnk, 'UPDATE users SET (password) = ($1) WHERE id = $2', $res_val_arr);
+                        pg_query_params($db_lnk, 'UPDATE users SET password = $1 WHERE id = $2', $res_val_arr);
                         if (is_plugin_enabled('r_chat') && $jabberHost) {
                             xmppChangePassword($r_post, $user);
                         }
@@ -2421,7 +2465,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $msg = 3;
                 }
             }
-            if ($no_error) {
+            if ($no_error && ($authUser['role_id'] == 1 || $authUser['id'] == $r_resource_vars['users'])) {
                 $qry_val_arr = array(
                     (isset($_POST['default_desktop_notification']) && $_POST['default_desktop_notification'] === 'Enabled') ? 'true' : 'false',
                     (isset($_POST['is_list_notifications_enabled'])) ? 'true' : 'false',
@@ -2440,7 +2484,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 unset($_POST['is_card_labels_notifications_enabled']);
                 unset($_POST['is_card_checklists_notifications_enabled']);
                 unset($_POST['is_card_attachments_notifications_enabled']);
-                $_POST['initials'] = strtoupper($_POST['initials']);
                 $comment = '##USER_NAME## updated the profile.';
                 $foreign_ids['user_id'] = $authUser['id'];
                 $table_name = 'users';
@@ -2458,7 +2501,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $sfields.= (empty($sfields)) ? $key : ", " . $key;
                     }
                 }
-                $is_send_newsletter = $_POST['is_send_newsletter'];
                 if (!empty($comment)) {
                     $qry_va_arr = array(
                         $id
@@ -2493,15 +2535,41 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $response['activity']['difference'] = $diff;
                     }
                 }
-                $qry_val_arr = array(
-                    $_POST['full_name'],
-                    $_POST['about_me'],
-                    $_POST['initials'],
-                    $is_send_newsletter,
-                    $_POST['timezone'],
-                    $r_resource_vars['users']
-                );
-                pg_query_params($db_lnk, 'UPDATE users SET full_name = $1, about_me = $2, initials = $3, is_send_newsletter = $4, timezone = $5 WHERE id = $6', $qry_val_arr);
+                if (!empty($_POST['full_name'])) {
+                    $qry_val_arr = array(
+                        $_POST['full_name'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET full_name= $1 WHERE id = $2', $qry_val_arr);
+                }
+                if (!empty($_POST['about_me'])) {
+                    $qry_val_arr = array(
+                        $_POST['about_me'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET about_me= $1 WHERE id = $2', $qry_val_arr);
+                }
+                if (!empty($_POST['initials'])) {
+                    $qry_val_arr = array(
+                        strtoupper($_POST['initials']) ,
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET initials= $1 WHERE id = $2', $qry_val_arr);
+                }
+                if (!empty($_POST['timezone'])) {
+                    $qry_val_arr = array(
+                        $_POST['timezone'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET timezone= $1 WHERE id = $2', $qry_val_arr);
+                }
+                if (!empty($_POST['is_send_newsletter'])) {
+                    $qry_val_arr = array(
+                        $_POST['is_send_newsletter'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET is_send_newsletter= $1 WHERE id = $2', $qry_val_arr);
+                }
                 if (!empty($_POST['email'])) {
                     $qry_val_arr = array(
                         $_POST['email'],
@@ -2518,17 +2586,24 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 if (!empty($_POST['username'])) {
                     $qry_val_arr = array(
+                        $r_resource_vars['users']
+                    );
+                    $user = executeQuery('SELECT username FROM users WHERE id = $1', $qry_val_arr);
+                    $qry_val_arr = array(
                         $_POST['username'],
                         $r_resource_vars['users']
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET username= $1 WHERE id = $2', $qry_val_arr);
                     $conditions = array(
                         $_POST['username'],
-                        $authUser['username']
+                        $user['username']
                     );
                     pg_query_params($db_lnk, 'UPDATE oauth_access_tokens set user_id = $1 WHERE user_id= $2', $conditions);
                     pg_query_params($db_lnk, 'UPDATE oauth_refresh_tokens set user_id = $1 WHERE user_id= $2', $conditions);
                 }
+            } else {
+                $response['error']['message'] = 'Unauthorized';
+                header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
             }
         }
         if ($no_error) {
@@ -2541,7 +2616,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
 
     case '/settings': //settings update
         foreach ($r_post as $key => $value) {
-            if ($key == 'IMAP_EMAIL_PASSWORD') {
+            if ($key == 'IMAP_EMAIL_PASSWORD' || strpos($key, 'PASSWORD') !== false) {
                 if (!empty($value)) {
                     $value_encode = str_rot13($value);
                     $value = base64_encode($value_encode);
@@ -3850,12 +3925,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $path = $prev_message['path'] . '.P' . $response['id'];
                     $depth = $prev_message['depth'] + 1;
                     $root = $prev_message['root'];
-                    $response['activities']['depth'] = $depth;
                 } else {
                     $path = 'P' . $response['id'];
                     $depth = 0;
                     $root = $response['id'];
                 }
+                $response['activities']['depth'] = $depth;
                 $response['activities']['path'] = $path;
                 $qry_val_arr = array(
                     $materialized_path,
@@ -4791,22 +4866,51 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $app = json_decode($content, true);
         if (isset($r_post['enable'])) {
             $app['enabled'] = $r_post['enable'];
+            $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
+            fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            fclose($fh);
         } else {
-            foreach ($r_post as $key => $val) {
-                if (!empty($app['settings'][$key]['is_encrypted'])) {
-                    if (!empty($val)) {
-                        $value_encode = str_rot13($val);
-                        $val = base64_encode($value_encode);
-                    } else {
-                        break;
+            if (!empty($app['settings_from_db'])) {
+                foreach ($r_post as $key => $val) {
+                    if (strpos($key, 'PASSWORD') !== false) {
+                        if (!empty($val)) {
+                            $value_encode = str_rot13($val);
+                            $val = base64_encode($value_encode);
+                        } else {
+                            break;
+                        }
                     }
+                    $qry_val_arr = array(
+                        $val,
+                        trim($key)
+                    );
+                    pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $qry_val_arr);
                 }
-                $app['settings'][$key]['value'] = $val;
+            } else {
+                foreach ($r_post as $key => $val) {
+                    if (!empty($app['settings'][$key]['is_encrypted'])) {
+                        if (!empty($val)) {
+                            $value_encode = str_rot13($val);
+                            $val = base64_encode($value_encode);
+                        } else {
+                            break;
+                        }
+                    }
+                    if (strpos($key, 'r_elasticsearch_index_name') !== false) {
+                        if (trim(strtolower($app['settings'][$key]['value'])) !== trim(strtolower($val))) {
+                            $filename = APP_PATH . '/tmp/cache/r_elasticsearch_last_processed_activity_id.php';
+                            if (file_exists($filename)) {
+                                unlink($filename);
+                            }
+                        }
+                    }
+                    $app['settings'][$key]['value'] = $val;
+                }
+                $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
+                fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+                fclose($fh);
             }
         }
-        $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
-        fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        fclose($fh);
         $response['success'] = 'App updated successfully';
         echo json_encode($response);
         break;
@@ -5096,7 +5200,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             'Public'
         );
         $foreign_ids['board_id'] = $r_resource_vars['boards'];
-        if (isset($r_put['default_email_list_id']) || isset($r_put['is_default_email_position_as_bottom'])) {
+        if (isset($r_put['default_email_list_id']) || isset($r_put['sort_by']) || isset($r_put['is_default_email_position_as_bottom'])) {
             $comment = '';
         } else if (isset($r_put['board_visibility'])) {
             $comment = '##USER_NAME## changed visibility to ' . $board_visibility[$r_put['board_visibility']];
@@ -5437,7 +5541,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $foreign_ids['list_id'] = $r_resource_vars['lists'];
         $foreign_ids['card_id'] = $r_resource_vars['cards'];
         $comment = '##USER_NAME## updated comment to this card ##CARD_LINK##';
-        $activity_type = 'update_card_comment';
+        $activity_type = 'edit_comment';
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
         echo json_encode($response);
         break;
@@ -5546,7 +5650,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $activity_type = 'update_card_checklist';
                 $response['undo']['checklist'] = $r_put;
                 $response['undo']['checklist']['id'] = $id;
-            } else if ($activity['type'] == 'update_card_comment') {
+            } else if ($activity['type'] == 'edit_comment') {
                 $table_name = 'activities';
                 $id = $activity['foreign_id'];
                 if (!is_array($revisions['old_value'])) {
@@ -5558,8 +5662,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $foreign_ids['list_id'] = $activity['list_id'];
                 $foreign_ids['card_id'] = $activity['card_id'];
                 $comment = '##USER_NAME## undo this card ##CARD_LINK## comment';
-                $activity_type = 'update_card_comment';
-                $response['undo']['update_card_comment'] = $id;
+                $activity_type = 'edit_comment';
+                $response['undo']['edit_comment'] = $id;
                 $response['undo']['card'] = $r_put;
                 $response['undo']['card']['id'] = $activity['card_id'];
             } else if ($activity['type'] == 'delete_card_comment') {

@@ -47,6 +47,8 @@ App.BoardView = Backbone.View.extend({
         this.model.bind('change:name change:is_closed', this.render);
         this.model.bind('change:board_visibility', this.render);
         this.model.bind('change:background_color change:background_picture_url change:background_pattern_url', this.setBoardBackground);
+        this.model.bind('change:sort_by', this.render);
+        this.model.bind('change:sort_direction', this.render);
         this.model.bind('change:music_content', this.musical);
         this.model.labels.bind('remove', this.renderListsCollection);
         this.model.lists.bind('add', this.renderListsCollection);
@@ -634,6 +636,8 @@ App.BoardView = Backbone.View.extend({
     render: function() {
         touchPunchDelay = 100;
         var self = this;
+        sort_by = this.model.attributes.sort_by;
+        sort_direction = (this.model.attributes.sort_direction) ? this.model.attributes.sort_direction : 'asc';
         $('body').addClass('modal-open');
         $('#header').html(new App.BoardHeaderView({
             model: this.model,
@@ -743,6 +747,11 @@ App.BoardView = Backbone.View.extend({
         }
         self.board_view_height();
         this.showTooltip();
+        _(function() {
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $(window).trigger('resize');
+            }
+        }).defer();
         return this;
     },
     /**
@@ -774,6 +783,7 @@ App.BoardView = Backbone.View.extend({
         if (_.isObject(postion)) {
             new_position += postion.get('position');
         }
+
         self.model.lists.sortByColumn('position');
         self.model.lists.each(function(list) {
             list.board_users = self.model.board_users;

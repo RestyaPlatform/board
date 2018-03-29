@@ -12,6 +12,30 @@
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
+/**
+ * Preserve image transparencies
+ *
+ * @param string $fileExt    the image file extension
+ * @param image  $sourceImg  the source image
+ * @param image  $targetImg  the target image (passed by reference)
+ */
+function preserveImageTransparency($fileExt, $sourceImg, &$targetImg)
+{
+    if (strtolower($fileExt) == 'png') {
+        imagealphablending($targetImg, false);
+        $transcolor = imagecolorallocatealpha($targetImg, 0, 0, 0, 127);
+        imagefill($targetImg, 0, 0, $transcolor);
+        imagesavealpha($targetImg, true);
+    } else if (strtolower($fileExt) == 'gif') {
+        $transindex = imagecolortransparent($sourceImg);
+        if ($transindex >= 0) {
+            $transcol = imagecolorsforindex($sourceImg, $transindex);
+            $transindex = imagecolorallocatealpha($targetImg, $transcol['red'], $transcol['green'], $transcol['blue'], 127);
+            imagefill($targetImg, 0, 0, $transindex);
+            imagecolortransparent($targetImg, $transindex);
+        }
+    }
+}
 require_once 'config.inc.php';
 $size = $_GET['size'];
 $model = $_GET['model'];
@@ -123,9 +147,15 @@ if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size)) {
             }
         }
         if (function_exists('imagecreatetruecolor') && ($temp = imagecreatetruecolor($width, $height))) {
+            if (strtolower($ext) == 'png' || strtolower($ext) == 'gif') {
+                preserveImageTransparency($ext, $image, $temp);
+            }
             imagecopyresampled($temp, $image, 0, 0, $target['x'], $target['y'], $width, $height, $target['width'], $target['height']);
         } else {
             $temp = imagecreate($width, $height);
+            if (strtolower($ext) == 'png' || strtolower($ext) == 'gif') {
+                preserveImageTransparency($ext, $image, $temp);
+            }
             imagecopyresized($temp, $image, 0, 0, 0, 0, $width, $height, $currentWidth, $currentHeight);
         }
         if (strtolower($ext) == 'png') {

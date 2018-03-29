@@ -158,11 +158,16 @@ module.exports = function(grunt) {
         },
         'regex-replace': {
             deploy: {
-                src: ['client/index.html'],
+                src: ['client/index.html', 'server/php/config.inc.php'],
                 actions: [{
                     name: '',
                     search: '/restyaboard/',
                     replace: '/',
+                    flags: 'g'
+                }, {
+                    name: 'Debug mode Replace',
+                    search: '\'R_DEBUG\', true',
+                    replace: '\'R_DEBUG\', false',
                     flags: 'g'
                 }]
             },

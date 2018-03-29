@@ -41,6 +41,7 @@
 				 <li class="js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Due date') %>" href="#" class="js-sort-by" data-sort-by="due_date"><%- i18next.t("Due date") %></a>
 				 </li>
 				 <li class=" js-createdDate js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Created Date') %>" href="#" class="js-sort-by" data-sort-by="created_date"><%- i18next.t('Created Date') %></a></li>
+				 <li class=" js-listMovedDate js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('List Moved Date') %>" href="#" class="js-sort-by" data-sort-by="list_moved_date"><%- i18next.t('List Moved Date') %></a></li>
 			 </ul>
 			</div>
 		</div>
@@ -60,8 +61,8 @@
 	</div>
 	<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "add_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 		<div class="list-footer clearfix">
-			<div class="pull-left"><a href="#" title="<%- i18next.t('Add a card') %>" class="js-show-add-card-form js-bottom text-muted"><%- i18next.t("Add a card") %></a></div>
+			<div class="pull-left"><a href="#" title="<%- i18next.t('Add a card') %>" class="js-show-add-card-form js-bottom text-muted non-select"><%- i18next.t("Add a card") %></a></div>
 <div class="js-card-add-form-<%= list.attributes.id %>"></div>			
 		</div>
-	<% } %>	
+	<% } %>
   

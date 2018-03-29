@@ -511,7 +511,11 @@ App.ListView = Backbone.View.extend({
             position = $(e.target).find('#list_position').val();
         }
         var board_id = parseInt(data.board_id);
-        this.model.collection.sortByColumn('position');
+        if (sort_by !== null && sort_by !== null) {
+            this.model.collection.sortByColumn(sort_by, sort_direction);
+        } else {
+            this.model.collection.sortByColumn('position');
+        }
         if (board_id !== this.model.attributes.board_id) {
             this.model.collection.remove({
                 id: list_id
@@ -519,7 +523,11 @@ App.ListView = Backbone.View.extend({
             this.$el.remove();
             var i = 0;
             var current_position = 0;
-            App.boards.get(board_id).lists.sortByColumn('position');
+            if (sort_by !== null && sort_by !== null) {
+                App.boards.get(board_id).lists.sortByColumn(sort_by, sort_direction);
+            } else {
+                App.boards.get(board_id).lists.sortByColumn('position');
+            }
             App.boards.get(board_id).lists.each(function(list) {
                 i++;
                 if (typeof next_list_id != 'undefined') {
@@ -1045,18 +1053,25 @@ App.ListView = Backbone.View.extend({
                         if (filtered_cards.length === 1 || self.model.cards.length === 0) {
                             $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
                         } else {
-                            self.model.cards.sortByColumn('position');
+                            if (sort_by !== null && sort_by !== null) {
+                                self.model.cards.sortByColumn(sort_by, sort_direction);
+                            } else {
+                                self.model.cards.sortByColumn('position');
+                            }
                             self.model.cards.reset(filtered_cards);
                             var bool = true;
                             i = 0;
                             var cards_length = self.model.cards.length;
                             self.model.cards.each(function(card) {
                                 i++;
-                                if (card.attributes.position >= e.attributes.position && card.attributes.id !== e.attributes.id && bool) {
-                                    $('#js-card-' + card.attributes.id).before(view.render().el);
-                                    bool = false;
-                                } else if (cards_length === i) {
-                                    $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
+                                if (bool) {
+                                    if (card.attributes.position >= e.attributes.position && parseInt(card.attributes.id) !== parseInt(e.attributes.id)) {
+                                        $('#js-card-' + card.attributes.id).before(view.render().el);
+                                        bool = false;
+                                    } else if (cards_length === i) {
+                                        $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
+                                        bool = false;
+                                    }
                                 }
                             });
                         }
@@ -1070,7 +1085,11 @@ App.ListView = Backbone.View.extend({
             $('.js-show-add-card-form', $('#js-card-listing-' + this.model.id).next()).removeClass('hide');
             var view_card = this.$('#js-card-listing-' + this.model.id);
             view_card.html('&nbsp;');
-            this.model.cards.sortByColumn('position');
+            if (sort_by !== null && sort_by !== null) {
+                this.model.cards.sortByColumn(sort_by, sort_direction);
+            } else {
+                this.model.cards.sortByColumn('position');
+            }
             if (!_.isUndefined(this.model.collection)) {
                 filtered_cards = this.model.collection.board.cards.where({
                     list_id: parseInt(this.model.id)
@@ -1080,8 +1099,13 @@ App.ListView = Backbone.View.extend({
                 this.model.cards.add(cards.toJSON(), {
                     silent: true
                 });
-                this.model.cards.sortByColumn('position');
-                cards.sortByColumn('position');
+                if (sort_by !== null && sort_by !== null) {
+                    this.model.cards.sortByColumn(sort_by, sort_direction);
+                    cards.sortByColumn(sort_by, sort_direction);
+                } else {
+                    this.model.cards.sortByColumn('position');
+                    cards.sortByColumn('position');
+                }
                 cards.each(function(card) {
                     var card_id = card.id;
                     if (parseInt(card.get('is_archived')) === 0) {
@@ -1236,7 +1260,11 @@ App.ListView = Backbone.View.extend({
             });
             var list_cards = new App.CardCollection();
             list_cards.add(cards);
-            list_cards.sortByColumn('position');
+            if (sort_by !== null && sort_by !== null) {
+                list_cards.sortByColumn(sort_by, sort_direction);
+            } else {
+                list_cards.sortByColumn('position');
+            }
             if (data.position === undefined || data.position === '') {
                 data.position = list_cards.length + 1;
             }
@@ -1682,6 +1710,17 @@ App.ListView = Backbone.View.extend({
                             _date = created_date[0] + 'T' + created_date[1];
                         } else {
                             _date = created_date[0];
+                        }
+                        sort_date = new Date(_date);
+                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
+                } else if (sort_by === 'list_moved_date') {
+                    if (item.get('list_moved_date') !== null) {
+                        var list_moved_date = item.get('list_moved_date').split(' ');
+                        if (!_.isUndefined(list_moved_date[1])) {
+                            _date = list_moved_date[0] + 'T' + list_moved_date[1];
+                        } else {
+                            _date = list_moved_date[0];
                         }
                         sort_date = new Date(_date);
                         return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
