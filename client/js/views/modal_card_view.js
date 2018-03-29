@@ -3183,7 +3183,29 @@ App.ModalCardView = Backbone.View.extend({
                         i++;
                     });
                     self.model.list.collection.board.cards.add(card);
-                    self.model.list.collection.board.checklists.add(response.cards.cards_checklists);
+                    if (!_.isUndefined(response.cards.cards_checklists.length > 0) && !_.isEmpty(response.cards.cards_checklists)) {
+                        _.each(response.cards.cards_checklists, function(card_checklist) {
+                            self.model.list.collection.board.checklists.add(card_checklist);
+                            var checklist = self.model.list.collection.board.checklists.get(parseInt(card_checklist.id));
+                            var checklist_items = card_checklist.checklists_items;
+                            _.each(checklist_items, function(item) {
+                                checklist_item = new App.CheckListItem();
+                                checklist_item.set('id', parseInt(item.id));
+                                checklist_item.set('card_id', response.cards.id);
+                                checklist_item.set('user_id', parseInt(item.user_id));
+                                checklist_item.set('checklist_id', checklist.attributes.id);
+                                checklist_item.set('name', item.name);
+                                checklist_item.set('is_completed', 0);
+                                checklist_item.card = card;
+                                checklist_item.checklist = checklist;
+                                self.model.list.collection.board.checklist_items.add(checklist_item);
+                            });
+                            var itemd = self.model.list.collection.board.checklist_items.findWhere ({
+                                card_id : parseInt(response.cards.id),
+                                checklist_id : parseInt(checklist.attributes.id)
+                            });
+                        });   
+                    }
                     self.model.list.collection.board.labels.add(response.cards.cards_labels);
                 }
                 var activity = new App.Activity();
