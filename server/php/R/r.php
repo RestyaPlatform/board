@@ -17,7 +17,8 @@
 $r_debug = '';
 $authUser = $client = $form = array();
 $_server_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
-$_server_context = explode('/api/', $_SERVER['REQUEST_URI'], 2) [0];
+$request_uri_arr = explode('/api/', $_SERVER['REQUEST_URI'], 2);
+$_server_context = $request_uri_arr[0];
 $_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST'] . $_server_context; // http://localhost/context
 header('x-response-url:' . $_SERVER['REQUEST_URI']);
 header('Access-Control-Allow-Origin: *');
