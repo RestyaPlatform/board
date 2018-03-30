@@ -2103,7 +2103,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         echo json_encode($response);
         break;
-    
+
     case '/users/invite': //User invite
         $table_name = 'users';
         $val_arr = array(
@@ -2231,13 +2231,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
             }
         } else {
-            if($user['is_invite_from_board'] == 't' && $user['is_active'] == 0 && $user['is_email_confirmed'] == 0) {
+            if ($user['is_invite_from_board'] == 't' && $user['is_active'] == 0 && $user['is_email_confirmed'] == 0) {
                 $r_post['password'] = getCryptHash($r_post['password']);
                 $qry_val_arr = array(
                     'true',
                     'true',
                     $r_post['username'],
-                    getCryptHash($r_post['password']),
+                    getCryptHash($r_post['password']) ,
                     $user['id']
                 );
                 $sql = pg_query_params($db_lnk, "UPDATE users SET is_email_confirmed = $1, is_active = $2, username = $3, password = $4 WHERE id = $5", $qry_val_arr);

@@ -77,14 +77,14 @@ App.InviteUserView = Backbone.View.extend({
         var name = nameMatch ? nameMatch[1] : null;
         var nameParts = name.split(".");
         var fullname = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
-        if(nameParts.length > 1) {
-            var fullname = nameParts[0].toUpperCase()+' '+nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1);
+        if (nameParts.length > 1) {
+            var fullname = nameParts[0].toUpperCase() + ' ' + nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1);
         }
         $(target).closest('form').find('.js-invite-user-fullname').val(fullname);
         $(target).closest('form').find('.js-invite-user-info').html('');
-        $(target).closest('form').find('.js-invite-user-info').html('<strong>'+email+'</strong>? We don\'t know that person. Add a name and click "Send" and we’ll add a virtual member and send them an invite email. They\'ll automatically receive access to the board once they sign up and confirm their email address.');
+        $(target).closest('form').find('.js-invite-user-info').html('<strong>' + email + '</strong>? We don\'t know that person. Add a name and click "Send" and we’ll add a virtual member and send them an invite email. They\'ll automatically receive access to the board once they sign up and confirm their email address.');
         $(target).closest('form').find('.js-invite-user-info-block').removeClass('hide').addClass('show');
-        
+
         return false;
     },
     /**
