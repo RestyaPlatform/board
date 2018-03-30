@@ -308,6 +308,19 @@ App.ListView = Backbone.View.extend({
                             list.name = data.name;
                         }
                     });
+                    is_list_name_changed = true;
+                    var Board = new App.Board({
+                        id: self.model.attributes.board_id
+                    });
+                    Board.url = api_url + 'boards/' + self.model.attributes.board_id + '.json';
+                    Board.id = self.model.attributes.board_id
+                    Board.fetch({
+                        cache: false,
+                        abortPending: true,
+                        success: function(model, response) {
+                            App.current_board = Board;
+                        }
+                    });
                 }
             });
         }
