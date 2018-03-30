@@ -34,7 +34,6 @@ App.InviteUserView = Backbone.View.extend({
         'submit #InviteUserForm': 'inviteNewUser',
         'blur .js-invite-user-email': 'showInfo',
         'keydown .js-invite-user-email': 'clearInfo',
-        
     },
     /**
      * render()
@@ -97,6 +96,7 @@ App.InviteUserView = Backbone.View.extend({
      *
      */
     inviteNewUser: function(e) {
+        var self = this;
         if (!$.trim($('#inputUserName').val()).length) {
             $('.error-msg').remove();
             $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputUserName');
@@ -105,25 +105,21 @@ App.InviteUserView = Backbone.View.extend({
             e.preventDefault();
             var target = $(e.target);
             var data = target.serializeObject();
+            data.board_id = self.model.attributes.id;
+            data.board_name = self.model.attributes.name;
             var self = this;
             var user = new App.User();
-            user.url = api_url + 'users.json';
+            user.url = api_url + 'users/invite.json';
             user.save(data, {
                 success: function(model, response) {
                     if (response.error) {
-                        if (response.error === 1) {
-                            self.flash('danger', i18next.t('Email address already exist. Your registration process is not completed. Please, try again.'));
-                        } else if (response.error === 2) {
-                            self.flash('danger', i18next.t('Username already exists. Your registration process is not completed. Please, try again.'));
-                        }
-                        $('#inputPassword').val('');
-                    } else {
-                        self.flash('success', i18next.t('User added successfully.'));
+                        self.flash('danger', i18next.t('Email address already exist. Your invite process is not completed. Please, try again.'));
                         target[0].reset();
-                        app.navigate('#/users', {
-                            trigger: true,
-                            replace: true
-                        });
+                        target.find('.js-invite-user-info').html('');
+                        target.find('.js-invite-user-info-block').removeClass('show').addClass('hide');
+                    } else {
+                        self.flash('success', i18next.t('User invited successfully.'));
+                        target[0].reset();
                     }
                 }
             });

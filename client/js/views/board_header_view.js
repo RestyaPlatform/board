@@ -689,7 +689,6 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showInviteUserView: function(e) {
-        console.log('---------Start');
         e.preventDefault();
         var el = this.$el;
         el.find('.js-setting-response').html(new App.InviteUserView({
