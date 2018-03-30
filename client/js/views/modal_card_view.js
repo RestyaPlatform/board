@@ -3187,14 +3187,14 @@ App.ModalCardView = Backbone.View.extend({
                         _.each(response.cards.cards_checklists, function(card_checklist) {
                             self.model.list.collection.board.checklists.add(card_checklist);
                             var checklist = self.model.list.collection.board.checklists.get(parseInt(card_checklist.id));
-                            var checklist_items = card_checklist.checklists_items;
+                            var checklist_items = card_checklist.checklists_items;  
                             _.each(checklist_items, function(item) {
                                 console.log(item);
                                 checklist_item = new App.CheckListItem();
                                 checklist_item.set('id', parseInt(item.id));
                                 checklist_item.set('card_id', response.cards.id);
-                                checklist_item.set('list_id', self.model.attributes.list_id);
-                                checklist_item.set('board_id', self.model.attributes.board_id);
+                                checklist_item.set('list_id', response.cards.list_id);
+                                checklist_item.set('board_id', response.cards.board_id);
                                 checklist_item.set('user_id', parseInt(item.user_id));
                                 checklist_item.set('checklist_id', checklist.attributes.id);
                                 checklist_item.set('name', item.name);
