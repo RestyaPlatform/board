@@ -78,7 +78,7 @@ App.InviteUserView = Backbone.View.extend({
         var nameParts = name.split(".");
         var fullname = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
         if (nameParts.length > 1) {
-            var fullname = nameParts[0].toUpperCase() + ' ' + nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1);
+            fullname = nameParts[0].toUpperCase() + ' ' + nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1);
         }
         $(target).closest('form').find('.js-invite-user-fullname').val(fullname);
         $(target).closest('form').find('.js-invite-user-info').html('');
@@ -107,7 +107,6 @@ App.InviteUserView = Backbone.View.extend({
             var data = target.serializeObject();
             data.board_id = self.model.attributes.id;
             data.board_name = self.model.attributes.name;
-            var self = this;
             var user = new App.User();
             user.url = api_url + 'users/invite.json';
             user.save(data, {
