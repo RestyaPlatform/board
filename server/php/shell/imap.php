@@ -30,9 +30,9 @@ $connection = imap_open('{' . IMAP_HOST . ':' . IMAP_PORT . '/imap/' . $is_ssl .
 if (!$connection) {
     return;
 }
-$emails = imap_search($connection,'UNSEEN');
-if(!empty($emails)) {
-    foreach($emails as $key => $counter) {
+$emails = imap_search($connection, 'UNSEEN');
+if (!empty($emails)) {
+    foreach ($emails as $key => $counter) {
         $header = imap_header($connection, $counter);
         foreach ($header->to as $to) {
             $mail = explode('+', $to->mailbox);
@@ -44,6 +44,7 @@ if(!empty($emails)) {
                 $s = imap_fetchstructure($connection, $counter);
                 if (empty($s->parts)) { // simple
                     $body = imapBodyDecode($connection, $counter, $s, 0); // pass 0 as part-number
+                    
                 } else { // multipart: cycle through each part
                     foreach ($s->parts as $partno => $p) {
                         $body_data[] = imapBodyDecode($connection, $counter, $p, $partno + 1);
@@ -292,6 +293,7 @@ function imapBodyDecode($mbox, $mid, $p, $partno)
     // SUBPART RECURSION
     if (!empty($p->parts)) {
         foreach ($p->parts as $partno0 => $p2) $message[] = imapBodyDecode($mbox, $mid, $p2, $partno . '.' . ($partno0 + 1)); // 1.2, 1.2.1, etc.
+        
     }
     return $message;
 }
