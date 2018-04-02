@@ -143,3 +143,6 @@ INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
 VALUES (now(), now(), '153', '1'),
 (now(), now(), '153', '2');
+
+INSERT INTO "settings" ("id", "setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES
+(80,	3,	0,	'ALLOWED_FILE_EXTENSIONS',	'image/jpeg,image/jpg,image/gif,image/png',	NULL,	'textarea',	NULL,	'Allowed File Extensions',	11);

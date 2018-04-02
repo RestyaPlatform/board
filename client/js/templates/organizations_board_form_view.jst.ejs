@@ -11,7 +11,7 @@
 		<span class="show"><%- i18next.t('Upload json file exported from Trello.') %></span>
 	</a>
 	<form class="hide" id="js-board-import" enctype="multipart/form-data">
-		<input type="file" name="board_import" class="js-board-import-file"/>
+		<input type="file" name="board_import" accept="<%- ALLOWED_FILE_EXTENSIONS %>" class="js-board-import-file"/>
 	</form>
 </li>
 <li class="col-xs-12 navbar-btn divider js-back"></li>
@@ -23,7 +23,7 @@
 		<span class="show"><%- i18next.t('Upload json file exported from Wekan.') %></span>
 	</a>
 	<form class="hide" id="js-board-import-wekan" enctype="multipart/form-data">
-		<input type="file" name="board_import_wekan" class="js-board-import-wekan-file"/>
+		<input type="file" accept="<%- ALLOWED_FILE_EXTENSIONS %>" name="board_import_wekan" class="js-board-import-wekan-file"/>
 	</form>
 </li>
 <li class="col-xs-12 navbar-btn divider js-back"></li>
