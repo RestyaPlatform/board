@@ -137,3 +137,9 @@ INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
 VALUES (now(), now(), '152', '1'),
 (now(), now(), '152', '2');
+
+INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide") values (153, 'now()', 'now()', 'Get timezones listing', '/timezones', 'GET', 'get_timezones', '1', '0', '0', '1', '1');
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
+VALUES (now(), now(), '153', '1'),
+(now(), now(), '153', '2');

@@ -540,11 +540,20 @@ App.ApplicationView = Backbone.View.extend({
         } else {
             if (page.model == 'admin_user_add') {
                 changeTitle(i18next.t('Admin Add User'));
-                var AdminUser = new App.User();
-                this.pageView = new App.AdminUserAddView({
-                    model: AdminUser
+                var timezone = new App.User();
+                timezone.url = api_url + 'timezones.json';
+                timezone.fetch({
+                    cache: false,
+                    abortPending: true,
+                    success: function(timezone, response) {
+                        var AdminUser = new App.User();
+                        AdminUser.timezones = response;
+                        this.pageView = new App.AdminUserAddView({
+                            model: AdminUser
+                        });
+                        $('#content').html(this.pageView.el);
+                    }
                 });
-                $('#content').html(this.pageView.el);
             } else if (page.model == 'register') {
                 changeTitle(i18next.t('Register'));
                 $('.company').removeClass('hide');
