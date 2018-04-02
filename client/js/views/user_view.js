@@ -168,7 +168,7 @@ App.UserView = Backbone.View.extend({
                     pasteZone: null,
                     singleFileUploads: true,
                     formData: $('form.js-user-profile-edit').serialize(),
-                    fileUploadHTML: '<input id="fileupload1" type="file" name="attachment" accept="' + ALLOWED_FILE_EXTENSIONS + '" >',
+                    fileUploadHTML: '<input id="fileupload1" type="file" name="attachment" >',
                 });
                 uploadManager.on('fileadd', function(file) {
                     $('#dropzone-cssloader').addClass('cssloader');
@@ -439,7 +439,7 @@ App.UserView = Backbone.View.extend({
         var fileLi = $(e.target);
         $('#js-user-profile-attachment').remove();
         var form = $('#js-user-profile-edit');
-        $(form).append('<input class="hide" type="file" accept="' + ALLOWED_FILE_EXTENSIONS + '" name="attachment" id="js-user-profile-attachment">');
+        $(form).append('<input class="hide" type="file" name="attachment" id="js-user-profile-attachment">');
         $('#js-user-profile-attachment', form).trigger('click');
         return false;
     },
