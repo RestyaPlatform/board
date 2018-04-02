@@ -1,49 +1,55 @@
-<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 col-lg-offset-4 col-md-offset-4 col-sm-offset-3">
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg">
 	<div class="panel panel-default">
 		<div class="panel-heading lead">
 			<%- i18next.t("Add User") %>
 		</div>
 		<div class="panel-body well-lg">
-
-			<form class="form-horizontal clearfix pull-left js-user-profile-edit" role="form" enctype="multipart/form-data" id="js-user-profile-edit">
-				<div class="form-group">
+			<form class="form-horizontal clearfix pull-left js-user-profile-edit" name="AdminUserAddForm" role="form" enctype="multipart/form-data" id="AdminUserAddForm">
+				<div class="form-group required">
 					<label for="inputFullName" class="col-sm-4 control-label"><%- i18next.t("Full Name") %></label>
 					<div class="col-sm-8">
-						<input type="text" id="inputFullName" class="form-control" name="full_name" maxlength="50">
+						<input type="text" id="inputFullName" class="form-control" name="full_name" maxlength="50" required placeholder="<%- i18next.t('Full Name') %>">
 					</div>
 				</div>
 				<div class="form-group">
 					<label for="AboutMe" class="col-sm-4 control-label"><%- i18next.t("About Me") %></label>
 					<div class="col-sm-8">
-						<textarea class="form-control" id="AboutMe" rows="6" name="about_me"></textarea>
+						<textarea placeholder="<%- i18next.t('About Me') %>" class="form-control" id="AboutMe" rows="6" name="about_me"></textarea>
 					</div>
 				</div>
 				<div class="form-group required">
 					<label for="inputemail" class="col-sm-4 control-label"><%- i18next.t("Email") %></label>
 					<div class="col-sm-8">
-						<input type="email" id="inputemail" class="form-control" name="email" required>
+						<input type="email" placeholder="<%- i18next.t('Email') %>" id="inputemail" class="form-control" name="email" required>
 					</div>
 				</div>
 				<div class="form-group required">
 					<label for="inputusername" class="col-sm-4 control-label"><%- i18next.t("Username") %></label>
 					<div class="col-sm-8">
-						<input type="text" id="inputusername" class="form-control" name="username" pattern="^[a-zA-Z0-9]{2,15}$" title="<%- i18next.t('Username. Minimum 3 characters and Maximum 15 characters and spaces not allowed') %>">
+						<input type="text" id="inputusername" class="form-control" name="username" placeholder="<%- i18next.t('Username') %>" pattern="^[a-zA-Z0-9]{2,15}$" title="<%- i18next.t('Username. Minimum 3 characters and Maximum 15 characters and spaces not allowed') %>">
+					</div>
+				</div>
+				<div class="form-group required">
+					<label for="inputPassword" class="col-sm-4 control-label"><%- i18next.t("Password") %></label>
+					<div class="col-sm-8">
+						<input type="password" required name="password" id="inputPassword" class="form-control" placeholder="<%- i18next.t('Password') %>" pattern="[A-Za-z0-9\S]{6,50}" title="<%- i18next.t('Password. Minimum 6 characters, Maximum 256 characters and white space not allowed') %>">
 					</div>
 				</div>
 				<div class="form-group required">
 					<label for="inputinitials" class="col-sm-4 control-label"><%- i18next.t("Initials") %></label>
 					<div class="col-sm-8">
-						<input type="text" id="inputinitials" class="form-control initialism" name="initials" maxlength="2" required>
+						<input type="text" id="inputinitials" placeholder="<%- i18next.t('Initials') %>" class="form-control initialism" name="initials" maxlength="2" required>
 					</div>
 				</div>
 				<div class="form-group required">
 					<label for="inputtimezone" class="col-sm-4 control-label"><%- i18next.t("Timezone") %></label>
 					<div class="col-sm-8">
 						<%
+						console.log(timezones);
 							user_timezone = SITE_TIMEZONE;
 						%>
 						<select  id="inputtimezone" class="js-chosen-select form-control" name="timezone">
-							<% _.each(user.attributes.timezones, function(timezone) { %>
+							<% _.each(timezones, function(timezone) { %>
 									<% if(user_timezone.toString() == timezone.code.toString()) { %> 
 									<option selected value="<%- timezone.code %>"><%- timezone.name %></option>
 								<% } else { %>
@@ -51,17 +57,6 @@
 								<% } %>
 							<% }); %>
 						</select>
-					</div>
-				</div>
-				
-				<div class="form-group" id="dropzone" data-mode="1">
-					<label for="inputAttachment" class="col-sm-4 control-label sr-only"><%- i18next.t("Upload Avatar") %></label>
-					<div class="col-xs-8">
-						<a data-placement="bottom" title="Upload Avatar" data-toggle="tooltip" href="#" class="avatar-option js-use-uploaded-avatar drag-box navbar-left"> 
-								<i class="avatar avatar-color-194 avatar-md img-rounded"></i>		
-						</a>
-						<span class="clearfix navbar-btn"><span id="dropzone-cssloader" ></span></span>
-					<div class="clearfix" id="manager-area"></div>
 					</div>
 				</div>
 				<fieldset>
@@ -82,41 +77,11 @@
 				</fieldset>
 				<div class="col-xs-9 pull-right clearfix">
 					<div class="form-group">
-						<label for="submit2" class="col-sm-1 control-label sr-only"><%- i18next.t("Submit") %></label>
-						<input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary btn-lg">
+						<label for="submit2" class="col-sm-1 control-label sr-only"><%- i18next.t("Add") %></label>
+						<input type="submit" class="btn btn-primary" id="submitAddUser" value="<%- i18next.t('Add') %>">
 					</div>
 				</div>
 			</form>
-<!--
-			<form id="AdminUserAddForm" name="AdminUserAddForm" class="form-horizontal col-xs-12">
-				<div class="form-group required">
-					<label class="sr-only control-label" for="inputEmail">
-						<%- i18next.t("Email") %>
-					</label>
-					<input type="email" required name="email" id="inputEmail" class="form-control" placeholder="<%- i18next.t('Email') %>" title="<%- i18next.t('Email') %>">
-				</div>
-				<div class="form-group required">
-					<label class="sr-only control-label" for="inputUsername">
-						<%- i18next.t("Username") %>
-					</label>
-					<input type="name" name="username" id="inputUsername" class="form-control" placeholder="<%- i18next.t('Username') %>" required
-					 pattern="^[a-zA-Z0-9]{2,15}$" title="<%- i18next.t('Username. Minimum 3 characters and Maximum 15 characters and spaces not allowed') %>">
-				</div>
-				<div class="form-group required">
-					<label class="sr-only control-label" for="inputPassword">
-						<%- i18next.t("Password") %>
-					</label>
-					<input type="password" required name="password" id="inputPassword" class="form-control" placeholder="<%- i18next.t('Password') %>"
-					 pattern="[A-Za-z0-9\S]{6,50}" title="<%- i18next.t('Password. Minimum 6 characters, Maximum 256 characters and white space not allowed') %>">
-				</div>
-				<div class="form-group">
-					<label class="sr-only control-label" for="submitAddUser">
-						<%- i18next.t("Join Now") %>
-					</label>
-					<input type="submit" class="btn btn-primary col-xs-12" id="submitAddUser" value="<%- i18next.t('Add') %>">
-				</div>
-			</form>
-			-->
 		</div>
 	</div>
 </div>
