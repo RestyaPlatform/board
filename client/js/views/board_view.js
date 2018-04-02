@@ -607,7 +607,7 @@ App.BoardView = Backbone.View.extend({
                 pasteZone: null,
                 singleFileUploads: true,
                 formData: $('form.js-user-profile-edit').serialize(),
-                fileUploadHTML: '<input id="fileupload1" type="file" name="attachment" accept="'+ALLOWED_FILE_EXTENSIONS+'" >',
+                fileUploadHTML: '<input id="fileupload1" type="file" name="attachment" accept="' + ALLOWED_FILE_EXTENSIONS + '" >',
             });
             uploadManager.on('fileadd', function(file) {
                 $('#dropzone').addClass('cssloader');

@@ -399,7 +399,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 dropZone: $('#custom-background-dropzone'),
                 pasteZone: null,
                 formData: $('form.js-cusotm-background-add').serialize(),
-                fileUploadHTML: '<input id="cusotmBackgroundUpload" type="file" accept="'+ALLOWED_FILE_EXTENSIONS+'" name="attachment"/>',
+                fileUploadHTML: '<input id="cusotmBackgroundUpload" type="file" accept="' + ALLOWED_FILE_EXTENSIONS + '" name="attachment"/>',
             });
             uploadManager.on('fileadd', function(file) {
                 $('#custom-dropzone-cssloader').addClass('cssloader');
@@ -2068,7 +2068,7 @@ App.BoardHeaderView = Backbone.View.extend({
         var fileLi = $(e.target);
         $('#js-custom-background-attachment').remove();
         var form = $('#js-board-custom-background-form');
-        $(form).append('<input class="hide" type="file" accept="'+ALLOWED_FILE_EXTENSIONS+'" name="attachment" id="js-custom-background-attachment">');
+        $(form).append('<input class="hide" type="file" accept="' + ALLOWED_FILE_EXTENSIONS + '" name="attachment" id="js-custom-background-attachment">');
         $('#js-custom-background-attachment', form).trigger('click');
         return false;
     },
