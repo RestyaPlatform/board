@@ -1945,7 +1945,7 @@ App.ModalCardView = Backbone.View.extend({
         $('.js-card-attachment-form').remove();
         var form = $('<form class="js-card-attachment-form hide" enctype="multipart/form-data"></form">');
         $(form).append('<input type="hidden" name="card_id" value="' + this.model.id + '">');
-        $(form).append('<input type="file" name="attachment[]" class="js-card-attachment" multiple>');
+        $(form).append('<input type="file" accept="' + ALLOWED_FILE_EXTENSIONS + '" name="attachment[]" class="js-card-attachment" multiple>');
         $(fileLi).after($(form));
         $('.js-card-attachment', form).trigger('click');
         return false;
