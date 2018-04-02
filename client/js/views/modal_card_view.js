@@ -2634,14 +2634,14 @@ App.ModalCardView = Backbone.View.extend({
         var temp_id = $(e.target).data('activity-temp-id');
         $('.js-acticity-action-' + activity_id).addClass('hide');
         $('.js-timeago-' + activity_id).addClass('hide');
-        var activitiy = this.model.activities.get({
+        var activity = this.model.activities.get({
             id: activity_id
         });
-        activitiy.board_user_role_id = this.model.board_user_role_id;
-        activitiy.board = this.model.board;
+        activity.board_user_role_id = this.model.board_user_role_id;
+        activity.board = this.model.board;
         $('.js-list-activity-' + activity_id).addClass('edit-comment');
         $('.js-activity-' + activity_id).html(new App.EditActivityFormView({
-            model: activitiy,
+            model: activity,
             attributes: {
                 'data-activity-id': activity_id,
                 'data-activity-temp-id': temp_id
@@ -2790,7 +2790,7 @@ App.ModalCardView = Backbone.View.extend({
                 self.model.activities.unshift(activity);
                 var current_card = self.model.list.collection.board.cards.get(card_id);
                 self.model.list.collection.board.cards.get(card_id).set('comment_count', parseInt(current_card.attributes.comment_count) - 1);
-                self.model.set('comment_count', parseInt(current_card.attributes.comment_count) - 1);
+                self.model.set('comment_count', parseInt(self.model.attributes.comment_count) - 1);
                 var view_activity = $('#js-card-activities-' + self.model.id);
                 view_activity.prepend(view.render().el);
                 return false;

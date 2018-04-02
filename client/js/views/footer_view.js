@@ -1045,13 +1045,15 @@ App.FooterView = Backbone.View.extend({
                                             comment = self.board.activities.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
                                             });
+                                            card.activities.get(activity.attributes.foreign_id).set('comment',activity.attributes.revisions.new_value.comment);
                                             if (!_.isUndefined(comment)) {
                                                 var comment_value = self.converter.makeHtml(activity.attributes.revisions.new_value.comment);
                                                 comment.set(activity);
                                                 comment.set('id', parseInt(activity.attributes.foreign_id));
                                                 comment.set('user_id', parseInt(activity.attributes.user_id));
                                                 comment.set('card_id', parseInt(activity.attributes.card_id));
-                                                $('.js-activity-' + activity.attributes.foreign_id).html(comment_value);
+                                                $('.js-activity-' + activity.attributes.foreign_id).find('.github-markdown').html(comment_value);
+                                                parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.foreign_id);
                                             }
                                         } else if (activity.attributes.type === 'add_card_user') {
                                             var new_user = new App.CardUser();
@@ -1193,6 +1195,10 @@ App.FooterView = Backbone.View.extend({
                                             if ($('.js-list-activity-' + activity.attributes.foreign_id)) {
                                                 $('.js-list-activity-' + activity.attributes.foreign_id).remove();
                                             }
+                                            var comment_count = (!_.isUndefined(card)) ? (parseInt(card.attributes.comment_count) - 1) : 0; 
+                                            comment_count = isNaN(comment_count) ? 0 : comment_count;
+                                            card.set('comment_count', comment_count);
+                                            card.attributes.comment_count = comment_count;
                                         } else if (activity.attributes.type === 'delete_checklist') {
                                             self.board.checklists.remove(self.board.checklists.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
