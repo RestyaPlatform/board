@@ -299,6 +299,9 @@ App.ListView = Backbone.View.extend({
             $(e.target).addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
             $('#js-show-list-actions-' + self.model.id + ', #js-show-sort-form-' + self.model.id).removeClass('hide');
         } else {
+            if($(e.target).prev('.js-show-edit-list-form').find('.list-added-'+list_id).length > 0) {
+                $(e.target).prev('.js-show-edit-list-form').find('.list-added-'+list_id).remove();
+            }
             self.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '.json';
             self.model.save(data, {
                 patch: true,
@@ -308,7 +311,6 @@ App.ListView = Backbone.View.extend({
                             list.name = data.name;
                         }
                     });
-                    is_list_name_changed = true;
                     var Board = new App.Board({
                         id: self.model.attributes.board_id
                     });
@@ -321,6 +323,11 @@ App.ListView = Backbone.View.extend({
                             App.current_board = Board;
                         }
                     });
+                    _(function() {
+                        if($(e.target).prev('.js-show-edit-list-form').find('.list-added-'+list_id).length > 0) {
+                            $(e.target).prev('.js-show-edit-list-form').find('.list-added-'+list_id).remove();
+                        }
+                    }).defer();
                 }
             });
         }
