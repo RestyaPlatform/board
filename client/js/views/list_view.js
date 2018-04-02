@@ -1085,11 +1085,14 @@ mc.on("panleft panright panup pandown ", function(ev) {
                             var cards_length = self.model.cards.length;
                             self.model.cards.each(function(card) {
                                 i++;
-                                if (card.attributes.position >= e.attributes.position && card.attributes.id !== e.attributes.id && bool) {
-                                    $('#js-card-' + card.attributes.id).before(view.render().el);
-                                    bool = false;
-                                } else if (cards_length === i) {
-                                    $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
+                                if (bool) {
+                                    if (card.attributes.position >= e.attributes.position && parseInt(card.attributes.id) !== parseInt(e.attributes.id)) {
+                                        $('#js-card-' + card.attributes.id).before(view.render().el);
+                                        bool = false;
+                                    } else if (cards_length === i) {
+                                        $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
+                                        bool = false;
+                                    }
                                 }
                             });
                         }
