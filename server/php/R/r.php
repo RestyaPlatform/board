@@ -1484,6 +1484,20 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         break;
 
+    case '/timezones':
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM timezones order by utc_offset::int) as d ';
+        if ($result = pg_query_params($db_lnk, $sql, array())) {
+            $data = array();
+            while ($row = pg_fetch_row($result)) {
+                $obj = json_decode($row[0], true);
+                $data[] = $obj;
+            }
+            echo json_encode($data);
+        } else {
+            $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+        }
+        break;
+
     case '/boards/?/lists/?/cards/?/checklists':
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM checklist_add_listing al WHERE board_id = $1) as d ';
         array_push($pg_params, $r_resource_vars['boards']);
@@ -2032,9 +2046,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $table_name = 'users';
             $r_post['password'] = getCryptHash($r_post['password']);
             $r_post['role_id'] = 2; // user
-            $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
-            $r_post['full_name'] = email2name($r_post['email']);
             $default_email_notification = 0;
             if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
                 $default_email_notification = 1;
