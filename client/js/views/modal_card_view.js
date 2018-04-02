@@ -1128,6 +1128,17 @@ App.ModalCardView = Backbone.View.extend({
             initialState = 'minimized';
         }
         var doc = $('#js-card-modal-' + this.model.id);
+        localforage.getItem('unreaded_cards', function(err, value) {
+            if (value && $.inArray('js-card-' + self.model.attributes.id, value) != -1) {
+                var removeItem = 'js-card-' + self.model.attributes.id;
+                $('#' + removeItem).css('box-shadow', '');
+                $('#' + removeItem).css('-webkit-box-shadow', '');
+                value = jQuery.grep(value, function(value) {
+                    return value != removeItem;
+                });
+                localforage.setItem("unreaded_cards", value);
+            }
+        });
         if (doc.length === 0) {
             $('.js-hidden-blocks').append(this.$el.html(this.template({
                 card: this.model,

@@ -790,6 +790,25 @@ App.FooterView = Backbone.View.extend({
                         }
                     }
                     activities.each(function(activity) {
+                        var card_id = activity.attributes.card_id;
+                        localforage.getItem('unreaded_cards', function(err, value) {
+                            if (value) {
+                                if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id) && $.inArray('js-card-'+card_id, value) == -1) {
+                                    value.push('js-card-' + card_id);
+                                    localforage.setItem("unreaded_cards", value);
+                                }
+                            } else {
+                                var cards = [];
+                                cards.push('js-card-' + card_id);
+                                localforage.setItem("unreaded_cards", cards);
+                            }
+                            _.each(value, function(cards) {
+                                if ($('#' + cards).length > 0) {
+                                    $('#' + cards).css('box-shadow', '5px 5px 15px #ffff00');
+                                    $('#' + cards).css('-webkit-box-shadow', '5px 5px 15px #ffff00');
+                                }
+                            });
+                        });
                         activity.from_footer = true;
                         if (mode == 1 && parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id) && Notification.permission === 'granted') {
                             var icon = window.location.pathname + 'img/logo-icon.png';
