@@ -145,4 +145,4 @@ VALUES (now(), now(), '153', '1'),
 (now(), now(), '153', '2');
 
 INSERT INTO "settings" ("id", "setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES
-(80,	3,	0,	'ALLOWED_FILE_EXTENSIONS',	'image/jpeg,image/jpg,image/gif,image/png',	NULL,	'textarea',	NULL,	'Allowed File Extensions',	11);
+(80,	3,	0,	'ALLOWED_FILE_EXTENSIONS',	'',	'Enter the file extensions to restrict the upload in card modal, leave it empty to accept all files. (e.g., .png, .docx, .jpg, .pdf)',	'textarea',	NULL,	'Allowed File Extensions',	11);
