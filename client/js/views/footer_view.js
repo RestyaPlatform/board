@@ -1078,6 +1078,7 @@ App.FooterView = Backbone.View.extend({
                                                         var comment_details;
                                                         var profile_picture;
                                                         var depth;
+                                                        var column;
                                                         if (!_.isEmpty(activity.attributes.profile_picture_path)) {
                                                             profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'small_thumb');
                                                             profile_picture = '<img src="' + profile_picture_path + '" alt="[Image: ' + activity.attributes.full_name + ']" title="' + activity.attributes.full_name + ' (' + activity.attributes.username + ')" class="img-rounded img-responsive">';
@@ -1088,14 +1089,16 @@ App.FooterView = Backbone.View.extend({
                                                             comment_details = self.converter.makeHtml(activity.attributes.comment);
                                                         }
                                                         if (activity.attributes.depth !== 0) {
+                                                            column = 12 - parseInt(activity.attributes.depth);
                                                             depth = parseInt(activity.attributes.depth);
                                                         } else {
                                                             depth = '';
+                                                            column = 12;
                                                         }
                                                         var comment_string = '';
-                                                        comment_string += '<li class="btn-block col-xs-12 js-activity activity-github-styles js-list-activity-' + activity.attributes.id + ' col-lg-offset-' + depth + '"><div class="media  modal-comments modal-logged-user-activities"><a title="' + activity.attributes.full_name + '(' + activity.attributes.username + ')" data-toggle="tooltip" class="js-tooltip pull-left" href="#/user/' + activity.attributes.user_id + '">';
+                                                        comment_string += '<li class="js-activity activity-github-styles js-list-activity-' + activity.attributes.id + ' col-xs-' + column + ' col-lg-offset-' + depth + '"><div class="media  modal-comments modal-logged-user-activities"><a title="' + activity.attributes.full_name + '(' + activity.attributes.username + ')" data-toggle="tooltip" class="js-tooltip pull-left" href="#/user/' + activity.attributes.user_id + '">';
                                                         comment_string += '' + profile_picture + '</a>';
-                                                        comment_string += '<div class="media-body"><div class="col-xs-12 btn-block"><div class="activities-list js-activity-' + activity.attributes.id + '"><div class="panel no-mar"><div class="panel-body">' + comment_details + '</div></div>';
+                                                        comment_string += '<div class="media-body"><div class="col-xs-12 btn-block"><div class="activities-list js-activity-' + activity.attributes.id + '"><div class="panel no-mar"><div class="panel-body github-markdown">' + comment_details + '</div></div>';
                                                         setInterval(function() {
                                                             parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.id);
                                                         }, 10000);
