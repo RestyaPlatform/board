@@ -360,6 +360,7 @@
     "Enter a valid user account/DN to pre-bind with if your LDAP server does not allow anonymous profile searches, or requires a user with specific privileges to search.": "Enter a valid user account/DN to pre-bind with if your LDAP server does not allow anonymous profile searches, or requires a user with specific privileges to search.",
     "Enter abc music notation. May choose from": "Enter abc music notation. May choose from",
     "Enter organization name": "Enter organization name",
+    "Enter the file extensions to restrict the upload in card modal, leave it empty to accept all files. (e.g., .png, .docx, .jpg, .pdf)": "Enter the file extensions to restrict the upload in card modal, leave it empty to accept all files. (e.g., .png, .docx, .jpg, .pdf)",
     "Enter your email and we will send new password.": "Enter your email and we will send new password.",
     "Estimated Time Custom Field": "Estimated Time Custom Field",
     "Estimated Time Tracking": "Estimated Time Tracking",
