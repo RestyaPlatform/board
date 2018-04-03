@@ -308,19 +308,12 @@ App.ListView = Backbone.View.extend({
                             list.name = data.name;
                         }
                     });
-                    var Board = new App.Board({
-                        id: self.model.attributes.board_id
-                    });
-                    Board.url = api_url + 'boards/' + self.model.attributes.board_id + '.json';
-                    Board.id = self.model.attributes.board_id;
-                    Board.fetch({
-                        cache: false,
-                        abortPending: true,
-                        success: function(model, response) {
-                            App.current_board = Board;
-                            $('body').trigger('editListRendered');
+                    App.current_board.lists.forEach(function(list) {
+                        if (list.id === parseInt(list_id)) {
+                            list.name = data.name;
                         }
                     });
+                    $('body').trigger('editListRendered');
                 }
             });
         }

@@ -1187,18 +1187,7 @@ App.BoardView = Backbone.View.extend({
                     });
                     $(view.render().el).insertBefore($('#js-add-list-block'));
                 }
-                var Board = new App.Board({
-                    id: self.model.id
-                });
-                Board.url = api_url + 'boards/' + self.model.id + '.json';
-                Board.id = self.model.id;
-                Board.fetch({
-                    cache: false,
-                    abortPending: true,
-                    success: function(model, response) {
-                        App.current_board = Board;
-                    }
-                });
+                App.current_board.lists.add(list);
             }
         });
         return false;
