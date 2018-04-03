@@ -138,6 +138,7 @@ App.ApplicationView = Backbone.View.extend({
                                 SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
                                 DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                                 PAGING_COUNT = settings_response.PAGING_COUNT;
+                                ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
                                 APPS = settings_response.apps;
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
