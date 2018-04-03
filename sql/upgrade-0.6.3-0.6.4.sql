@@ -137,3 +137,12 @@ INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
 VALUES (now(), now(), '152', '1'),
 (now(), now(), '152', '2');
+
+INSERT INTO "acl_links" ("id", "created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide") values (153, 'now()', 'now()', 'Get timezones listing', '/timezones', 'GET', 'get_timezones', '1', '0', '0', '1', '1');
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id")
+VALUES (now(), now(), '153', '1'),
+(now(), now(), '153', '2');
+
+INSERT INTO "settings" ("id", "setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES
+(80,	3,	0,	'ALLOWED_FILE_EXTENSIONS',	'',	'Enter the file extensions to restrict the upload in card modal, leave it empty to accept all files. (e.g., .png, .docx, .jpg, .pdf)',	'textarea',	NULL,	'Allowed File Extensions',	11);

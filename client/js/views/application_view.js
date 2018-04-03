@@ -138,6 +138,7 @@ App.ApplicationView = Backbone.View.extend({
                                 SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
                                 DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                                 PAGING_COUNT = settings_response.PAGING_COUNT;
+                                ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
                                 APPS = settings_response.apps;
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
@@ -540,11 +541,20 @@ App.ApplicationView = Backbone.View.extend({
         } else {
             if (page.model == 'admin_user_add') {
                 changeTitle(i18next.t('Admin Add User'));
-                var AdminUser = new App.User();
-                this.pageView = new App.AdminUserAddView({
-                    model: AdminUser
+                var timezone = new App.User();
+                timezone.url = api_url + 'timezones.json';
+                timezone.fetch({
+                    cache: false,
+                    abortPending: true,
+                    success: function(timezone, response) {
+                        var AdminUser = new App.User();
+                        AdminUser.timezones = response;
+                        this.pageView = new App.AdminUserAddView({
+                            model: AdminUser
+                        });
+                        $('#content').html(this.pageView.el);
+                    }
                 });
-                $('#content').html(this.pageView.el);
             } else if (page.model == 'register') {
                 changeTitle(i18next.t('Register'));
                 $('.company').removeClass('hide');
