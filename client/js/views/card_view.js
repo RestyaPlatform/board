@@ -442,12 +442,6 @@ App.CardView = Backbone.View.extend({
             })));
         }
         _(function() {
-            localforage.getItem('unreaded_cards', function(err, value) {
-                _.each(value, function(cards) {
-                    $('#' + cards).css('box-shadow', '5px 5px 15px #ffff00');
-                    $('#' + cards).css('-webkit-box-shadow', '5px 5px 15px #ffff00');
-                });
-            });
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
                 $('body').trigger('cardRendered', self.model.id, self.model);
             }

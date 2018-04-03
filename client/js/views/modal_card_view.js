@@ -1129,13 +1129,10 @@ App.ModalCardView = Backbone.View.extend({
         }
         var doc = $('#js-card-modal-' + this.model.id);
         localforage.getItem('unreaded_cards', function(err, value) {
-            if (value && $.inArray('js-card-' + self.model.attributes.id, value) != -1) {
+            if (value && value[self.model.attributes.id]) {
                 var removeItem = 'js-card-' + self.model.attributes.id;
-                $('#' + removeItem).css('box-shadow', '');
-                $('#' + removeItem).css('-webkit-box-shadow', '');
-                value = jQuery.grep(value, function(value) {
-                    return value != removeItem;
-                });
+                $('#' + removeItem).find('.js-unread-notification').remove();
+                value.splice(self.model.attributes.id, 1);
                 localforage.setItem("unreaded_cards", value);
             }
         });

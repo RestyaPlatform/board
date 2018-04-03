@@ -793,21 +793,21 @@ App.FooterView = Backbone.View.extend({
                         var card_id = activity.attributes.card_id;
                         localforage.getItem('unreaded_cards', function(err, value) {
                             if (value) {
-                                if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id) && $.inArray('js-card-'+card_id, value) == -1) {
-                                    value.push('js-card-' + card_id);
+                                if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
+                                    if (value[card_id]) {
+                                        var count = value[card_id] + 1;
+                                        value.splice(card_id, 1);
+                                        value[card_id] = count;
+                                    } else if (card_id !== 0) {
+                                        value[card_id] = 1;
+                                    }
                                     localforage.setItem("unreaded_cards", value);
                                 }
                             } else {
                                 var cards = [];
-                                cards.push('js-card-' + card_id);
+                                cards[card_id] = 1;
                                 localforage.setItem("unreaded_cards", cards);
                             }
-                            _.each(value, function(cards) {
-                                if ($('#' + cards).length > 0) {
-                                    $('#' + cards).css('box-shadow', '5px 5px 15px #ffff00');
-                                    $('#' + cards).css('-webkit-box-shadow', '5px 5px 15px #ffff00');
-                                }
-                            });
                         });
                         activity.from_footer = true;
                         if (mode == 1 && parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id) && Notification.permission === 'granted') {
@@ -1470,6 +1470,19 @@ App.FooterView = Backbone.View.extend({
                                 $('#js-card-' + activity.attributes.card_id).animate({
                                     backgroundColor: '#FFFFFF'
                                 }, 800);
+                            });
+                        }
+                    });
+                    localforage.getItem('unreaded_cards', function(err, value) {
+                        if (value) {
+                            $.each(value, function(index, count) {
+                                if (count) {
+                                    if ($('#js-card-' + index).find('.js-unread-notification').length === 0) {
+                                        $('#js-card-' + index).find('.js-list-card-data').prepend('<li class="js-unread-notification bg-primary"><small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
+                                    } else {
+                                        $('#js-card-' + index).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
+                                    }
+                                }
                             });
                         }
                     });
