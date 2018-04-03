@@ -312,7 +312,7 @@ App.ListView = Backbone.View.extend({
                         id: self.model.attributes.board_id
                     });
                     Board.url = api_url + 'boards/' + self.model.attributes.board_id + '.json';
-                    Board.id = self.model.attributes.board_id
+                    Board.id = self.model.attributes.board_id;
                     Board.fetch({
                         cache: false,
                         abortPending: true,
