@@ -796,22 +796,23 @@ App.FooterView = Backbone.View.extend({
                                 if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
                                     if (value[card_id]) {
                                         var count = value[card_id] + 1;
-                                        console.log("Before modify");
-                                        console.log(value);
-                                        value.splice(card_id, 1);
                                         value[card_id] = count;
-                                        console.log("After modify");
-                                        console.log(value);
+                                        localforage.setItem("unreaded_cards", value);
+                                        if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
+                                            $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification bg-primary"><small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
+                                        } else {
+                                            $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
+                                        }
                                     } else if (card_id !== 0) {
-                                        console.log("New card");
                                         value[card_id] = 1;
-                                        console.log(value);
+                                        localforage.setItem("unreaded_cards", value);
+                                        $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>1</span></small>');
                                     }
-                                    localforage.setItem("unreaded_cards", value);
                                 }
                             } else {
                                 var cards = [];
                                 cards[card_id] = 1;
+                                $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>1</span></small>');
                                 localforage.setItem("unreaded_cards", cards);
                             }
                         });
@@ -1476,21 +1477,6 @@ App.FooterView = Backbone.View.extend({
                                 $('#js-card-' + activity.attributes.card_id).animate({
                                     backgroundColor: '#FFFFFF'
                                 }, 800);
-                            });
-                        }
-                    });
-                    localforage.getItem('unreaded_cards', function(err, value) {
-                        if (value) {
-                            console.log("For each");
-                            console.log(value);
-                            $.each(value, function(index, count) {
-                                if (count) {
-                                    if ($('#js-card-' + index).find('.js-unread-notification').length === 0) {
-                                        $('#js-card-' + index).find('.js-list-card-data').prepend('<li class="js-unread-notification bg-primary"><small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
-                                    } else {
-                                        $('#js-card-' + index).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
-                                    }
-                                }
                             });
                         }
                     });
