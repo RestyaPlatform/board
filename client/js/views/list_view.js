@@ -308,6 +308,12 @@ App.ListView = Backbone.View.extend({
                             list.name = data.name;
                         }
                     });
+                    App.current_board.lists.forEach(function(list) {
+                        if (list.id === parseInt(list_id)) {
+                            list.name = data.name;
+                        }
+                    });
+                    $('body').trigger('editListRendered');
                 }
             });
         }
