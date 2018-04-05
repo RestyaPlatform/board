@@ -71,8 +71,10 @@ App.ListView = Backbone.View.extend({
             this.model.collection.board.cards.bind('change:comment_count', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:list_id', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:is_filtered', function(e){
-                // console.log('Filtered Change', e.get('is_filtered'));
-            });
+                // TODO not synchronized models here?
+                console.log(e.get('is_filtered'));
+                // this.renderCardNumbers();
+            }, this);
         }
         this.model.bind('remove', this.removeRender);
         if (!_.isUndefined(authuser.user)) {
@@ -1177,10 +1179,9 @@ App.ListView = Backbone.View.extend({
         this.renderCardNumbers();
     },
     renderCardNumbers: function() {
-        console.log(this.model);
         var element = this.$el.find('#list-card-number-' + this.model.id);
         var filteredElements = this.model.cards.filter(function(card) {
-            return card.attributes.is_archived !== 1;
+            return card.get('is_archived') !== 1 && card.get('is_filtered') === false;
         });
         element.text('(' + filteredElements.length + ')');
     },
