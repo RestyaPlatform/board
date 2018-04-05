@@ -71,7 +71,7 @@ App.ListView = Backbone.View.extend({
             this.model.collection.board.cards.bind('change:comment_count', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:list_id', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:is_filtered', function(e){
-                console.log('Filtered Change');
+                // console.log('Filtered Change', e.get('is_filtered'));
             });
         }
         this.model.bind('remove', this.removeRender);
@@ -1276,6 +1276,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     addCard: function(e) {
+        console.log('ADD_CARD - START');
         if (!$.trim($('#AddCard').val()).length) {
             $('.error-msg').remove();
             $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter('#AddCard');
@@ -1409,11 +1410,18 @@ App.ListView = Backbone.View.extend({
                         global_uuid[data.uuid] = options.temp_id;
                         card.set('id', data.uuid);
                     }
-                    self.model.collection.board.cards.add(card);
+                    /*
+                    TODO Order matters -> Bad style
+                    Model updates have to be be collected in one place and not multiple. The add on the
+                    model.collection is bound by an event listener and therefore trigger and render refresh.
+                    But the model.cards not -> they are not in sync!
+                     */
                     self.model.cards.add(card);
+                    self.model.collection.board.cards.add(card);
                 }
             });
         }
+        console.log('ADD_CARD - END');
     },
     /**
      * copyFromExistingCard()
