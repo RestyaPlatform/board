@@ -1851,169 +1851,27 @@ App.BoardHeaderView = Backbone.View.extend({
         $('i.js-filter-icon').remove();
         $('.js-show-modal-card-view').show();
         var current_param = Backbone.history.fragment.split('?');
-        var current_url = current_param[0].split('/');
-        var filter = 'grid';
-        if (current_url.length === 3 && current_url[2] == 'list') {
-            filter = 'list';
-        } else if (current_url.length === 3 && current_url[2] == 'gantt') {
-            filter = 'gantt';
+
+        var dictFilter = getFiltered(current_param);
+        var arrays = dictFilter.arrays;
+        var filter = dictFilter.filter;
+        var filter_query = dictFilter.filter_query;
+
+
+        var unfilteredIds = [];
+        for (var i = 0; i < arrays.length; i++) {
+            var e = arrays[i][0];
+            unfilteredIds.push(parseInt(e.substring(8, e.length)));
         }
-        var filter_query = '';
-        $('li.selected > div.js-label', $('ul.js-board-labels')).each(function() {
-            filter_label_arr.push($(this).html());
-            filter_query += 'label:' + $(this).html() + ',';
-            if ($(this).next('i').length === 0) {
-                $(this).after('<i class="icon-ok js-filter-icon cur pull-right"></i>');
-            }
+        // arrays.each(function(e) {
+        //     unfilteredIds.push(parseInt(e.substring(7, e.length)));
+        // });
+
+        this.model.cards.each(function (card) {
+            var filter = !_.isEmpty(filter_query) && unfilteredIds.indexOf(card.get('id')) === -1;
+            card.set({is_filtered: filter});
         });
-        $('li.selected > div.media > span.navbar-btn > span.js-user', $('ul.js-board-users')).each(function() {
-            filter_user_arr.push($(this).parent().data('user'));
-            filter_query += '@' + $(this).parent().data('user') + ',';
-            if ($(this).next('i').length === 0) {
-                $(this).parent().parent().append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
-            }
-        });
-        $('li.selected > div.media > span.js-due', $('ul.js-board-dues')).each(function() {
-            filter_due_arr.push($(this).html());
-            filter_query += 'due:' + $(this).html() + ',';
-            if ($(this).next('i').length === 0) {
-                $(this).parent().parent().append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
-            }
-        });
-        $('li.selected > div.media > span.js-filter', $('ul.js-filter-conjunction')).each(function() {
-            if ($(this).html() === 'or') {
-                if ($('li#js-mode-and > i.js-filter_mode-icon').length === 1) {
-                    $('li#js-mode-and > i.js-filter_mode-icon').remove();
-                }
-                if ($('li#js-mode-or > i.js-filter_mode-icon').length === 0) {
-                    $('li#js-mode-or').append('<i class="icon-ok js-filter_mode-icon cur pull-right"></i>');
-                }
-            }
-            if ($(this).html() === 'and') {
-                filter_mode = 'and';
-                if (filter_query) {
-                    filter_query += 'mode:' + $(this).html() + ',';
-                }
-                if ($('li#js-mode-or > i.js-filter_mode-icon').length === 1) {
-                    $('li#js-mode-or > i.js-filter_mode-icon').remove();
-                }
-                if ($('li#js-mode-and > i.js-filter_mode-icon').length === 0) {
-                    $('li#js-mode-and').append('<i class="icon-ok js-filter_mode-icon cur pull-right"></i>');
-                }
-            }
-        });
-        var show_label_arr = [],
-            result_label_arr = [];
-        if (!_.isEmpty(filter_label_arr)) {
-            $('ul.js-card-labels li').filter(function(index) {
-                index = $.inArray($(this).text(), filter_label_arr);
-                if (index !== -1) {
-                    if (_.isUndefined(show_label_arr[index])) {
-                        show_label_arr[index] = [];
-                    }
-                    if (filter == 'list') {
-                        show_label_arr[index].push($(this).parent().parent().attr('id'));
-                        /*show_label_arr[index].push($(this).parent().parent().find('div').attr('id'));*/
-                    } else {
-                        show_label_arr[index].push($(this).parent().parent().attr('id'));
-                    }
-                }
-            });
-            if (filter_label_arr.length != show_label_arr.length) {
-                show_label_arr = [];
-            }
-        }
-        if (!_.isEmpty(filter_mode)) {
-            if (filter_mode === 'and') {
-                if (!_.isEmpty(show_label_arr)) {
-                    result_label_arr = show_label_arr.shift().filter(function(v) {
-                        return show_label_arr.every(function(a) {
-                            return a.indexOf(v) !== -1;
-                        });
-                    });
-                }
-            }
-        } else if (!_.isEmpty(show_label_arr)) {
-            result_label_arr = _.union.apply(_, show_label_arr);
-        }
-        var show_user_arr = [],
-            result_user_arr = [];
-        if (!_.isEmpty(filter_user_arr)) {
-            $('ul.js-card-users li').filter(function(index) {
-                index = $.inArray($(this).text(), filter_user_arr);
-                if (index !== -1) {
-                    if (_.isUndefined(show_user_arr[index])) {
-                        show_user_arr[index] = [];
-                    }
-                    if (filter == 'list') {
-                        /*show_user_arr[index].push($(this).parent().parent().find('div').attr('id'));*/
-                        show_user_arr[index].push($(this).parent().parent().attr('id'));
-                    } else {
-                        show_user_arr[index].push($(this).parent().parent().attr('id'));
-                    }
-                }
-            });
-            if (filter_user_arr.length != show_user_arr.length) {
-                show_user_arr = [];
-            }
-        }
-        if (!_.isEmpty(filter_mode)) {
-            if (filter_mode === 'and') {
-                if (!_.isEmpty(show_user_arr)) {
-                    result_user_arr = show_user_arr.shift().filter(function(v) {
-                        return show_user_arr.every(function(a) {
-                            return a.indexOf(v) !== -1;
-                        });
-                    });
-                }
-            }
-        } else if (!_.isEmpty(show_user_arr)) {
-            result_user_arr = _.union.apply(_, show_user_arr);
-        }
-        var show_due_arr = [],
-            result_due_arr = [];
-        if (!_.isEmpty(filter_due_arr)) {
-            $('ul.js-card-due li').filter(function(index) {
-                index = $.inArray($(this).text(), filter_due_arr);
-                if (index !== -1) {
-                    if (_.isUndefined(show_due_arr[index])) {
-                        show_due_arr[index] = [];
-                    }
-                    if (filter == 'list') {
-                        /*show_due_arr[index].push($(this).parent().parent().find('div').attr('id'));*/
-                        show_due_arr[index].push($(this).parent().parent().attr('id'));
-                    } else {
-                        show_due_arr[index].push($(this).parent().parent().attr('id'));
-                    }
-                }
-            });
-            if (filter_due_arr.length != show_due_arr.length) {
-                show_due_arr = [];
-            }
-        }
-        if (!_.isEmpty(show_due_arr)) {
-            var due_arr = [];
-            $.each(show_due_arr, function(index, value) {
-                if (value !== undefined) {
-                    due_arr.push(value);
-                }
-            });
-            result_due_arr = due_arr.shift().filter(function(v) {
-                return due_arr.every(function(a) {
-                    return a.indexOf(v) !== -1;
-                });
-            });
-        }
-        var arrays = [];
-        if (!_.isEmpty(filter_label_arr)) {
-            arrays.push(result_label_arr);
-        }
-        if (!_.isEmpty(filter_user_arr)) {
-            arrays.push(result_user_arr);
-        }
-        if (!_.isEmpty(filter_due_arr)) {
-            arrays.push(result_due_arr);
-        }
+
 
         if (!_.isEmpty(arrays)) {
             var result = arrays.shift().filter(function(v) {
@@ -2023,7 +1881,7 @@ App.BoardHeaderView = Backbone.View.extend({
             });
             var show_card_list = '',
                 hide_card_list = '';
-            for (i = 0; i < result.length; i++) {
+            for (var i = 0; i < result.length; i++) {
                 show_card_list += '#' + result[i] + ', ';
                 hide_card_list += ':not(#' + result[i] + ')';
             }
@@ -2033,21 +1891,18 @@ App.BoardHeaderView = Backbone.View.extend({
             } else if (!$('#js-empty-filter-cards').hasClass('hide')) {
                 $('#js-empty-filter-cards').addClass('hide');
             }
-            if (filter == 'gantt') {
+            if (filter === 'gantt') {
                 gantt_card_ids = [];
                 _.each(show_card_list.replace(/#js-card-/g, '').split(','), function(card_id) {
                     gantt_card_ids.push(parseInt(card_id));
                 });
                 this.ganttView(gantt_card_ids, true);
             } else {
-                $(show_card_list).show();
-                $('.js-show-modal-card-view' + hide_card_list).hide();
+                // $(show_card_list).show();
+                // $('.js-show-modal-card-view' + hide_card_list).hide();
             }
-        } else if (filter_label_arr.length || filter_user_arr.length || filter_due_arr.length) {
-            $('.js-show-modal-card-view').hide();
-        } else if (filter == 'gantt' && _.isEmpty(filter_label_arr) && _.isEmpty(filter_user_arr) && _.isEmpty(filter_due_arr)) {
-            gantt_card_ids = [];
-            this.ganttView(gantt_card_ids, false);
+        } else if (filter === 'gantt' && _.isEmpty(filter_label_arr) && _.isEmpty(filter_user_arr) && _.isEmpty(filter_due_arr)) {
+            this.ganttView([], false);
         }
         if (filter_query) {
             if ($('.js-clear-all').hasClass('text-muted')) {
