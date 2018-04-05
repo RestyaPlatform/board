@@ -1,7 +1,7 @@
 "use strict";
 
 // TODO simplify
-function getFiltered(current_param) {
+function filter_getFilterObject(current_param, cardModels) {
     var filter_label_arr = [],
         filter_user_arr = [],
         filter_due_arr = [];
@@ -145,42 +145,17 @@ function getFiltered(current_param) {
     var result_due_arr = [];
 
     if (!_.isEmpty(filter_due_arr)) {
-        $('ul.js-card-due li').filter(function (index) {
-            index = $.inArray($(this).text(), filter_due_arr);
-            if (index !== -1) {
-                if (_.isUndefined(show_due_arr[index])) {
-                    show_due_arr[index] = [];
-                }
-                if (filter === 'list') {
-                    /*show_due_arr[index].push($(this).parent().parent().find('div').attr('id'));*/
-                    show_due_arr[index].push($(this).parent().parent().attr('id'));
-                } else {
-                    show_due_arr[index].push($(this).parent().parent().attr('id'));
-                }
+        cardModels.each(function(card) {
+            var conditionBroke = filter_dueConditionBroke(card, filter_due_arr);
+            if (!conditionBroke) {
+                result_due_arr.push(card.get('id'));
             }
-        });
-
-        if (filter_due_arr.length !== show_due_arr.length) {
-            show_due_arr = [];
-        }
-    }
-
-    if (!_.isEmpty(show_due_arr)) {
-        var due_arr = [];
-        $.each(show_due_arr, function (index, value) {
-            if (value !== undefined) {
-                due_arr.push(value);
-            }
-        });
-        result_due_arr = due_arr.shift().filter(function (v) {
-            return due_arr.every(function (a) {
-                return a.indexOf(v) !== -1;
-            });
         });
     }
 
     var arrays = [];
 
+    // TODO what is with concatenated filtering like: overdue + admin-user?
     if (!_.isEmpty(filter_label_arr)) {
         arrays.push(result_label_arr);
     }
@@ -192,8 +167,82 @@ function getFiltered(current_param) {
     }
 
     return {
-        arrays: arrays,
+        arrays: _.filter(arrays, function (val) {
+            if (!_.isArray(val)) {
+                return false;
+            }
+            return !_.isEmpty(val[0]);
+        }),
         filter: filter,
         filter_query: filter_query
     };
+}
+
+// TODO keep track of filter mode not via classes in CSS. Use some store/state
+function filter_applySelectedClassToSidebarItems($li_item) {
+    if ($li_item.parent().hasClass('js-filter-conjunction')) {
+        if ($li_item.attr('id') === 'js-mode-or') {
+            if (!$($li_item).hasClass('selected')) {
+                $($li_item).addClass('selected');
+            }
+            var $li_and = $('li#js-mode-and');
+            if ($li_and.hasClass('selected')) {
+                $li_and.removeClass('selected');
+            }
+        }
+        if ($li_item.attr('id') === 'js-mode-and') {
+            if (!$($li_item).hasClass('selected')) {
+                $($li_item).addClass('selected');
+            }
+            var $li_or = $('li#js-mode-or');
+            if ($li_or.hasClass('selected')) {
+                $li_or.removeClass('selected');
+            }
+        }
+    } else {
+        $li_item.toggleClass('selected', !$li_item.hasClass('selected'));
+    }
+}
+
+/**
+ * Iterates the card model and checks if all due conditions are fulfilled. If one is not fulfilled -> return true
+ * @param cardModel
+ * @param dueValueArray
+ * @returns {boolean} True if any condition broke else false.
+ */
+function filter_dueConditionBroke(cardModel, dueValueArray) {
+    if (!cardModel.get("due_date")) {
+        // No due date set -> Condition broke
+        return true;
+    }
+
+    var dueMoment = moment(cardModel.get("due_date"));
+    var now = moment();
+    var dueConditionBroke = false;
+
+    for (var i = 0; i < dueValueArray.length; i++) {
+        var dueValue = dueValueArray[i];
+
+        switch(dueValue) {
+            case "overdue":
+                dueConditionBroke = !dueMoment.isBefore(now, "minutes");
+                break;
+            case "day":
+                dueConditionBroke = dueMoment.diff(now, "days") < 1;
+                break;
+            case "week":
+                dueConditionBroke = dueMoment.diff(now, "weeks") < 1;
+                break;
+            case "month":
+                dueConditionBroke = dueMoment.diff(now, "months") < 1;
+                break;
+        }
+
+        if (dueConditionBroke) {
+            // Condition broke -> Stop
+            break;
+        }
+    }
+
+    return dueConditionBroke;
 }

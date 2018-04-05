@@ -644,7 +644,6 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     render: function() {
-        console.log('BOARD-HEADER-VIEW_RENDER');
         var self = this;
         changeTitle('Board - ' + _.escape(this.model.attributes.name));
         if (!_.isUndefined(this.authuser)) {
@@ -1801,28 +1800,7 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     toggleCardFilter: function(e) {
-        console.log('TOGGLE_CARD_FILTER');
-        var target = $(e.currentTarget);
-        if (target.parent().hasClass('js-filter-conjunction')) {
-            if (target.attr('id') == 'js-mode-or') {
-                if (!$(target).hasClass('selected')) {
-                    $(target).addClass('selected');
-                }
-                if ($('li#js-mode-and').hasClass('selected')) {
-                    $('li#js-mode-and').removeClass('selected');
-                }
-            }
-            if (target.attr('id') == 'js-mode-and') {
-                if (!$(target).hasClass('selected')) {
-                    $(target).addClass('selected');
-                }
-                if ($('li#js-mode-or').hasClass('selected')) {
-                    $('li#js-mode-or').removeClass('selected');
-                }
-            }
-        } else {
-            target.toggleClass('selected', !target.hasClass('selected'));
-        }
+        filter_applySelectedClassToSidebarItems($(e.currentTarget));
         this.cardFilter();
         return false;
     },
@@ -1834,11 +1812,6 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     cardFilter: function(e) {
-        console.log('CARD_FILTER');
-        this.model.cards.each(function (card) {
-                card.set({is_filtered: true});
-                card.set('is_filtered', true, {silent: true});
-        });
         this.$el.find('.js-clear-filter-btn').removeClass('hide').addClass('show');
         var filter_label_arr = [],
             filter_user_arr = [],
@@ -1848,11 +1821,12 @@ App.BoardHeaderView = Backbone.View.extend({
             due_filter = [],
             filter_due_arr = [];
         var filter_mode;
-        $('i.js-filter-icon').remove();
-        $('.js-show-modal-card-view').show();
         var current_param = Backbone.history.fragment.split('?');
 
-        var dictFilter = getFiltered(current_param);
+        // TODO this one is bad too
+        $('i.js-filter-icon').remove();
+
+        var dictFilter = filter_getFilterObject(current_param, this.model.cards);
         var arrays = dictFilter.arrays;
         var filter = dictFilter.filter;
         var filter_query = dictFilter.filter_query;
@@ -1872,6 +1846,10 @@ App.BoardHeaderView = Backbone.View.extend({
             card.set({is_filtered: filter});
         });
 
+        if (_.isEmpty(filter_query)) {
+            // TODO why would this be needed??? This is kinda illegal restore of some "initial" state
+            $('.js-show-modal-card-view').show();
+        }
 
         if (!_.isEmpty(arrays)) {
             var result = arrays.shift().filter(function(v) {

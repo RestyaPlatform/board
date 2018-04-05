@@ -232,7 +232,6 @@ App.CardView = Backbone.View.extend({
      *
      */
     render: function(ops) {
-        console.log('CARD_VIEW_RENDER');
         this.converter.setFlavor('github');
         var content = '';
         var self = this;
@@ -314,6 +313,7 @@ App.CardView = Backbone.View.extend({
             this.$el.show();
         }
 
+        // TODO whats that for?
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
                 $('body').trigger('cardRendered', self.model.id, self.model);
@@ -473,6 +473,7 @@ App.CardView = Backbone.View.extend({
         }
     },
     /**
+     * TODO Resolve with some easier date matching see filterUtility.js
      * getDue()
      * show card due date
      * @param card_due_date
