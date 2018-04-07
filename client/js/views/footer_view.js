@@ -790,6 +790,32 @@ App.FooterView = Backbone.View.extend({
                         }
                     }
                     activities.each(function(activity) {
+                        var card_id = activity.attributes.card_id;
+                        localforage.getItem('unreaded_cards', function(err, value) {
+                            if (value) {
+                                if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
+                                    if (value[card_id]) {
+                                        var count = value[card_id] + 1;
+                                        value[card_id] = count;
+                                        localforage.setItem("unreaded_cards", value);
+                                        if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
+                                            $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification bg-primary"><small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
+                                        } else {
+                                            $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
+                                        }
+                                    } else if (card_id !== 0) {
+                                        value[card_id] = 1;
+                                        localforage.setItem("unreaded_cards", value);
+                                        $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>1</span></small>');
+                                    }
+                                }
+                            } else {
+                                var cards = [];
+                                cards[card_id] = 1;
+                                $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>1</span></small>');
+                                localforage.setItem("unreaded_cards", cards);
+                            }
+                        });
                         activity.from_footer = true;
                         if (mode == 1 && parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id) && Notification.permission === 'granted') {
                             var icon = window.location.pathname + 'img/logo-icon.png';
