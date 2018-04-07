@@ -1,0 +1,28 @@
+<div class="clearfix">
+	<div class="clearfix text-center col-xs-12">
+		<a href="#" class="js-back-to-sidebar pull-left btn btn-xs btn-link">
+			<i class="icon-caret-left"></i>
+		</a>
+		<span class="col-xs-10 navbar-btn"><strong><%- i18next.t("Invite members") %></strong></span>
+	</div>
+	<div class="col-xs-12 divider"></div>
+	<div class="col-xs-12">
+		<form class="normal" name="InviteUserForm" id="InviteUserForm" method="POST">
+			<fieldset>
+				<div class="form-group required">
+					<input type="email" autocomplete="off" id="inputUserName" name="email" placeholder="Email" class="form-control input-sm js-invite-user-email" required>
+				</div>
+				<div class="form-group text-justify js-invite-user-info-block hide">
+					<span class="small js-invite-user-info"></span>
+				</div>
+				<div class="form-group">
+					<label for="inputUserName"><%- i18next.t("Full Name") %></label>
+					<input type="text" autocomplete="off" id="inputFullName" name="full_name" placeholder="Full name" class="form-control input-sm js-invite-user-fullname" required>
+				</div>
+				<div class="submit">
+					<input type="submit" value="<%- i18next.t('Send') %>" id="submitInviteUser" class="btn btn-primary">
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>

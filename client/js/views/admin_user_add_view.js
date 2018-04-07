@@ -75,10 +75,25 @@ App.AdminUserAddView = Backbone.View.extend({
      *
      */
     render: function() {
-        this.$el.html(this.template());
+        this.$el.html(this.template({
+            timezones: this.model.timezones
+        }));
         $('.js-admin-user-menu').addClass('active');
         $('.js-admin-activity-menu, .js-admin-setting-menu, .js-admin-email-menu, .js-admin-role-menu, .js-admin-board-menu').removeClass('active');
         this.showTooltip();
+        _(function() {
+            $('#is_send_newsletter').select2({
+                formatResult: function(repo) {
+                    var split = repo.text.split(',');
+                    markup = '<div class="clearfix"><span class="show">' + split[0] + '</span><span class="show small">' + split[1] + '</span></div>';
+                    return markup;
+                },
+                formatSelection: function(repo) {
+                    var split = repo.text.split(',');
+                    return split[0];
+                },
+            }).select2('val', is_send_newsletter_val);
+        }).defer();
         return this;
     }
 });

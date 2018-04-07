@@ -17,7 +17,8 @@
 $r_debug = '';
 $authUser = $client = $form = array();
 $_server_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
-$_server_context = explode('/api/', $_SERVER['REQUEST_URI'], 2) [0];
+$request_uri_arr = explode('/api/', $_SERVER['REQUEST_URI'], 2);
+$_server_context = $request_uri_arr[0];
 $_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST'] . $_server_context; // http://localhost/context
 header('x-response-url:' . $_SERVER['REQUEST_URI']);
 header('Access-Control-Allow-Origin: *');
@@ -1483,6 +1484,20 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         break;
 
+    case '/timezones':
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM timezones order by utc_offset::int) as d ';
+        if ($result = pg_query_params($db_lnk, $sql, array())) {
+            $data = array();
+            while ($row = pg_fetch_row($result)) {
+                $obj = json_decode($row[0], true);
+                $data[] = $obj;
+            }
+            echo json_encode($data);
+        } else {
+            $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+        }
+        break;
+
     case '/boards/?/lists/?/cards/?/checklists':
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM checklist_add_listing al WHERE board_id = $1) as d ';
         array_push($pg_params, $r_resource_vars['boards']);
@@ -1614,7 +1629,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/settings':
-        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\'  OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'PAGING_COUNT\' OR name = \'DEFAULT_CARD_VIEW\'', array());
+        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\'  OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'PAGING_COUNT\' OR name = \'ALLOWED_FILE_EXTENSIONS\' OR name = \'DEFAULT_CARD_VIEW\'', array());
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
@@ -2031,9 +2046,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $table_name = 'users';
             $r_post['password'] = getCryptHash($r_post['password']);
             $r_post['role_id'] = 2; // user
-            $r_post['initials'] = strtoupper(substr($r_post['username'], 0, 1));
             $r_post['ip_id'] = saveIp();
-            $r_post['full_name'] = email2name($r_post['email']);
             $default_email_notification = 0;
             if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
                 $default_email_notification = 1;
@@ -2103,13 +2116,69 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         echo json_encode($response);
         break;
 
+    case '/users/invite': //User invite
+        $table_name = 'users';
+        $val_arr = array(
+            $r_post['email']
+        );
+        $user = executeQuery('SELECT * FROM users WHERE email = $1', $val_arr);
+        if (!$user) {
+            $sql = true;
+            $table_name = 'users';
+            $r_post['role_id'] = 2; // user
+            $r_post['initials'] = strtoupper(substr($r_post['full_name'], 0, 1));
+            $r_post['ip_id'] = saveIp();
+            $r_post['is_invite_from_board'] = true;
+            $r_post['username'] = slugify($r_post['full_name']);
+            $r_post['password'] = getCryptHash('restya');
+            $default_email_notification = 0;
+            if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
+                $default_email_notification = 1;
+            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
+                $default_email_notification = 2;
+            }
+            $r_post['is_send_newsletter'] = $default_email_notification;
+            $r_post['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
+            $r_post['is_list_notifications_enabled'] = IS_LIST_NOTIFICATIONS_ENABLED;
+            $r_post['is_card_notifications_enabled'] = IS_CARD_NOTIFICATIONS_ENABLED;
+            $r_post['is_card_members_notifications_enabled'] = IS_CARD_MEMBERS_NOTIFICATIONS_ENABLED;
+            $r_post['is_card_labels_notifications_enabled'] = IS_CARD_LABELS_NOTIFICATIONS_ENABLED;
+            $r_post['is_card_checklists_notifications_enabled'] = IS_CARD_CHECKLISTS_NOTIFICATIONS_ENABLED;
+            $r_post['is_card_attachments_notifications_enabled'] = IS_CARD_ATTACHMENTS_NOTIFICATIONS_ENABLED;
+            if (is_plugin_enabled('r_chat') && $jabberHost) {
+                xmppRegisterUser($r_post);
+            }
+            if (!empty($sql)) {
+                $post = getbindValues($table_name, $r_post);
+                $result = pg_execute_insert($table_name, $post);
+                if ($result) {
+                    $row = pg_fetch_assoc($result);
+                    $response['id'] = $row['id'];
+                    $emailFindReplace = array(
+                        '##NAME##' => $user['full_name'],
+                        '##CURRENT_USER##' => $authUser['full_name'],
+                        '##BOARD_NAME##' => $r_post['board_name'],
+                        '##BOARD_URL##' => $_server_domain_url . '/#/board/' . $r_post['board_id'],
+                        '##REGISTRATION_URL##' => $_server_domain_url . '/#/users/register'
+                    );
+                    sendMail('new_project_user_invite', $emailFindReplace, $user['email']);
+                }
+            }
+        } else {
+            $response = array(
+                'error' => 'Email address already exist'
+            );
+        }
+        echo json_encode($response);
+        break;
+
     case '/users/register': //users register
         $table_name = 'users';
         $val_arr = array(
             $r_post['username'],
             $r_post['email']
         );
-        $user = executeQuery('SELECT * FROM users WHERE (username = $1 AND username<>\'\') OR (email = $2 AND email<>\'\')', $val_arr);
+        $user = executeQuery('SELECT * FROM users_listing WHERE (username = $1 AND username<>\'\') OR (email = $2 AND email<>\'\')', $val_arr);
         if (!$user) {
             $sql = true;
             $table_name = 'users';
@@ -2174,15 +2243,33 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
             }
         } else {
-            $msg = '';
-            if ($user['email'] == $r_post['email']) {
-                $msg = 1;
-            } else if ($user['username'] == $r_post['username']) {
-                $msg = 2;
+            if ($user['is_invite_from_board'] == 't' && $user['is_active'] == 0 && $user['is_email_confirmed'] == 0) {
+                $r_post['password'] = getCryptHash($r_post['password']);
+                $qry_val_arr = array(
+                    'true',
+                    'true',
+                    $r_post['username'],
+                    getCryptHash($r_post['password']) ,
+                    $user['id']
+                );
+                $sql = pg_query_params($db_lnk, "UPDATE users SET is_email_confirmed = $1, is_active = $2, username = $3, password = $4 WHERE id = $5", $qry_val_arr);
+                $emailFindReplace = array(
+                    '##NAME##' => $user['full_name'],
+                );
+                sendMail('welcome', $emailFindReplace, $r_post['email']);
+                $response['activation'] = 1;
+                $response['id'] = $user['id'];
+            } else {
+                $msg = '';
+                if ($user['email'] == $r_post['email']) {
+                    $msg = 1;
+                } else if ($user['username'] == $r_post['username']) {
+                    $msg = 2;
+                }
+                $response = array(
+                    'error' => $msg
+                );
             }
-            $response = array(
-                'error' => $msg
-            );
         }
         echo json_encode($response);
         break;

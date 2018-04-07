@@ -86,6 +86,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-switch-list-view': 'switchListView',
         'click .js-switch-calendar-view': 'switchCalendarView',
         'click .js-show-filters': 'showFilters',
+        'click .js-invite-users': 'showInviteUserView',
         'click .js-show-labels': 'showLabels',
         'click .js-archived-items': 'showArchivedItems',
         'click .js-sync-google-dropdown': 'syncGoogleDropdown',
@@ -678,6 +679,21 @@ App.BoardHeaderView = Backbone.View.extend({
             model: this.model,
         }).el);
         return false;
+    },
+    /**
+     * showInviteUserView()
+     * show the filter list
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showInviteUserView: function(e) {
+        e.preventDefault();
+        var el = this.$el;
+        el.find('.js-setting-response').html(new App.InviteUserView({
+            model: this.model
+        }).el);
     },
     /**
      * showFilters()
