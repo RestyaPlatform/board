@@ -790,6 +790,32 @@ App.FooterView = Backbone.View.extend({
                         }
                     }
                     activities.each(function(activity) {
+                        var card_id = activity.attributes.card_id;
+                        localforage.getItem('unreaded_cards', function(err, value) {
+                            if (value) {
+                                if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
+                                    if (value[card_id]) {
+                                        var count = value[card_id] + 1;
+                                        value[card_id] = count;
+                                        localforage.setItem("unreaded_cards", value);
+                                        if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
+                                            $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification bg-primary"><small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
+                                        } else {
+                                            $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
+                                        }
+                                    } else if (card_id !== 0) {
+                                        value[card_id] = 1;
+                                        localforage.setItem("unreaded_cards", value);
+                                        $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>1</span></small>');
+                                    }
+                                }
+                            } else {
+                                var cards = [];
+                                cards[card_id] = 1;
+                                $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>1</span></small>');
+                                localforage.setItem("unreaded_cards", cards);
+                            }
+                        });
                         activity.from_footer = true;
                         if (mode == 1 && parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id) && Notification.permission === 'granted') {
                             var icon = window.location.pathname + 'img/logo-icon.png';
@@ -1027,6 +1053,8 @@ App.FooterView = Backbone.View.extend({
                                                 checklist_item.set('card_id', parseInt(activity.attributes.item.card_id));
                                                 checklist_item.set('checklist_id', parseInt(activity.attributes.item.checklist_id));
                                                 checklist_item.set('position', parseFloat(activity.attributes.item.position));
+                                                var is_completed = (activity.attributes.item.is_completed === 't') ? 1 : 0;
+                                                checklist_item.set('is_completed', is_completed);
                                                 checklist_items = self.board.checklist_items.where({
                                                     card_id: parseInt(activity.attributes.card_id)
                                                 });
@@ -1039,7 +1067,7 @@ App.FooterView = Backbone.View.extend({
                                                 card.set('checklist_item_completed_count', completed_count);
                                                 card.set('checklist_item_count', total_count);
                                             }
-                                        } else if (activity.attributes.type === 'update_card_comment') {
+                                        } else if (activity.attributes.type === 'edit_comment') {
                                             comment = self.board.activities.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
                                             });

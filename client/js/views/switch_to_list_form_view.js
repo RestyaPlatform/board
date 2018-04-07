@@ -26,8 +26,6 @@ App.SwitchToListView = Backbone.View.extend({
         this.render();
     },
     template: JST['templates/switch_to_list_form'],
-    tagName: 'table',
-    className: 'table',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)

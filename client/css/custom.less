@@ -883,7 +883,7 @@ table.acl-link-list > tbody> tr {
 			max-width: 260px;
 		}
 		.list-footer {
-			margin: 2px -3px -3px;
+			margin: 2px -7px -3px -11px;
 			padding: 7px 10px;
 		}
 		.list-header, .list-footer {
@@ -1235,9 +1235,12 @@ g path:hover {
 		float: left;
 		margin-right: 20px;
 		min-height: 240px;
+		> a {
+			height:150px;
+			line-height:138px;
+		}
 		img {
 			width: 100%;
-			height: 150px;
 		}
 	}
 }
@@ -2435,4 +2438,70 @@ header{
 }
 .nwrsboardview{
 	align-items: inherit;
+}
+.js-checklist-edit-form-textarea {
+	height: 90px !important;
+}
+.js-list-response {
+	display: none;
+}
+@media only screen and (max-width: 800px) {
+    
+    /* Force table to not be like tables anymore */
+	#listview_table table, 
+	#listview_table thead, 
+	#listview_table tbody, 
+	#listview_table th, 
+	#listview_table td, 
+	#listview_table tr { 
+		display: block; 
+	}
+	.js-list-response {
+		display: block;
+	}
+	/* Hide table headers (but not display: none;, for accessibility) */
+	#listview_table thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+ 
+	#listview_table tr { border: 1px solid #ccc; }
+ 
+	#listview_table td { 
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+		padding-left: 50%; 
+		white-space: normal;
+		text-align:left;
+	}
+ 
+	#listview_table td:before { 
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+		text-align:left;
+		font-weight: bold;
+	}
+ 
+	/*
+	Label the data
+	*/
+	#listview_table td:before { content: attr(data-title); }
+}
+.github-markdown a {
+	color: #f47564;
+	word-wrap: break-word;
+	white-space: normal;
+	&:hover, &:focus {
+		color: #f14b34;
+		text-decoration: underline;
+	}
 }

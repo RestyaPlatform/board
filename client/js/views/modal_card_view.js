@@ -137,6 +137,7 @@ App.ModalCardView = Backbone.View.extend({
         this.model.list.collection.board.checklists.bind('remove', this.renderChecklistsCollection);
         this.model.list.collection.board.checklists.bind('add', this.renderChecklistsCollection);
         this.model.list.collection.board.checklist_items.bind('add', this.renderChecklistsCollection);
+        this.model.list.collection.board.checklist_items.bind('change:is_completed', this.renderChecklistsCollection);
         this.model.list.collection.board.checklist_items.bind('remove', this.renderChecklistsCollection);
         self.authuser = authuser.user;
         this.model.card_voters.bind('add', this.refreshdock);
@@ -385,26 +386,31 @@ App.ModalCardView = Backbone.View.extend({
         var i = 0;
         var hide_class = '';
         var target = $(e.currentTarget);
+        var mode = 'all';
         $('li#no-record').remove();
         if (target.attr('id') == 'modal-activities') {
             self.$el.find('#modal-activities').toggleClass('active');
             if (self.$el.find('#modal-activities').hasClass('active')) {
                 if (self.$el.find('#modal-comments').hasClass('active')) {
-                    $.cookie('filter', 'both');
+                    mode = 'all';
+                    $.cookie('filter', 'all');
                     self.$el.find('.modal-activities').parent('li').removeClass('hide');
                     self.$el.find('.modal-comments').parent('li').removeClass('hide');
                 } else {
+                    mode = 'activity';
                     $.cookie('filter', 'activity');
                     self.$el.find('.modal-activities').parent('li').removeClass('hide');
                     self.$el.find('.modal-comments').parent('li').addClass('hide');
                 }
             } else {
                 if (self.$el.find('#modal-comments').hasClass('active')) {
+                    mode = 'comment';
                     $.cookie('filter', 'comment');
                     self.$el.find('.modal-activities').parent('li').addClass('hide');
                     self.$el.find('.modal-comments').parent('li').removeClass('hide');
                 } else {
-                    $.cookie('filter', 'both');
+                    mode = 'all';
+                    $.cookie('filter', 'all');
                     self.$el.find('.modal-activities').parent('li').removeClass('hide');
                     self.$el.find('.modal-comments').parent('li').removeClass('hide');
                 }
@@ -414,26 +420,42 @@ App.ModalCardView = Backbone.View.extend({
             self.$el.find('#modal-comments').toggleClass('active');
             if (self.$el.find('#modal-comments').hasClass('active')) {
                 if (self.$el.find('#modal-activities').hasClass('active')) {
-                    $.cookie('filter', 'both');
+                    mode = 'all';
+                    $.cookie('filter', 'all');
                     self.$el.find('.modal-comments').parent('li').removeClass('hide');
                     self.$el.find('.modal-activities').parent('li').removeClass('hide');
                 } else {
+                    mode = 'comment';
                     $.cookie('filter', 'comment');
                     self.$el.find('.modal-comments').parent('li').removeClass('hide');
                     self.$el.find('.modal-activities').parent('li').addClass('hide');
                 }
             } else {
                 if (self.$el.find('#modal-activities').hasClass('active')) {
+                    mode = 'activity';
                     $.cookie('filter', 'activity');
                     self.$el.find('.modal-comments').parent('li').addClass('hide');
                     self.$el.find('.modal-activities').parent('li').removeClass('hide');
                 } else {
-                    $.cookie('filter', 'both');
+                    mode = 'all';
+                    $.cookie('filter', 'all');
                     self.$el.find('.modal-comments').parent('li').removeClass('hide');
                     self.$el.find('.modal-activities').parent('li').removeClass('hide');
                 }
             }
         }
+        $('#js-card-modal-' + this.model.id).find('.js-load-more-block').remove();
+        var view_activity = $('#js-card-activities-' + this.model.id);
+        view_activity.html('');
+        self.model.activities = new App.ActivityCollection();
+        self.model.activities.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/activities.json?mode=' + mode;
+        self.model.activities.fetch({
+            cache: false,
+            success: function(model, response) {
+                self.model.set('activity_count', response._metadata.total_records);
+                self.renderActivitiesCollection();
+            }
+        });
         return false;
     },
     /** 
@@ -951,10 +973,11 @@ App.ModalCardView = Backbone.View.extend({
      */
     show: function() {
         $('#js-card-' + this.model.id).addClass('active');
+        $('#js-card-modal-' + this.model.id).find('.js-load-more-block').remove();
         this.render();
         var self = this;
         self.model.activities = new App.ActivityCollection();
-        self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?page=0';
+        self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?mode=comment&page=0';
         self.model.activities.fetch({
             cache: false,
             success: function(model, response) {
@@ -1105,6 +1128,14 @@ App.ModalCardView = Backbone.View.extend({
             initialState = 'minimized';
         }
         var doc = $('#js-card-modal-' + this.model.id);
+        localforage.getItem('unreaded_cards', function(err, value) {
+            if (value && value[self.model.attributes.id]) {
+                var removeItem = 'js-card-' + self.model.attributes.id;
+                $('#' + removeItem).find('.js-unread-notification').remove();
+                value.splice(self.model.attributes.id, 1);
+                localforage.setItem("unreaded_cards", value);
+            }
+        });
         if (doc.length === 0) {
             $('.js-hidden-blocks').append(this.$el.html(this.template({
                 card: this.model,
@@ -1922,7 +1953,7 @@ App.ModalCardView = Backbone.View.extend({
         $('.js-card-attachment-form').remove();
         var form = $('<form class="js-card-attachment-form hide" enctype="multipart/form-data"></form">');
         $(form).append('<input type="hidden" name="card_id" value="' + this.model.id + '">');
-        $(form).append('<input type="file" name="attachment[]" class="js-card-attachment" multiple>');
+        $(form).append('<input type="file" accept="' + ALLOWED_FILE_EXTENSIONS + '" name="attachment[]" class="js-card-attachment" multiple>');
         $(fileLi).after($(form));
         $('.js-card-attachment', form).trigger('click');
         return false;
@@ -2130,8 +2161,9 @@ App.ModalCardView = Backbone.View.extend({
                     $('#js-loader-img').addClass('hide');
                     i++;
                 });
-                if (this.model.attributes.comment_count > 20 || this.model.attributes.activity_count > 20) {
-                    $('#js-card-activities-' + self.model.id).after('<div class="text-center"><div class="btn btn-primary js-card-activites-load-more js-remove-card-activity" title="' + i18next.t('Load More') + '" data-attr="1">' + i18next.t('Load next %s of %s', {
+                var page_count = $('.js-load-more-block').length + 1;
+                if (this.model.attributes.activity_count != PAGING_COUNT && this.model.activities.length >= PAGING_COUNT) {
+                    $('#js-card-activities-' + self.model.id).after('<div class="text-center js-load-more-block"><div class="btn btn-primary js-card-activites-load-more js-remove-card-activity" title="' + i18next.t('Load More') + '" data-attr="' + page_count + '" >' + i18next.t('Load next %s of %s', {
                         postProcess: 'sprintf',
                         sprintf: [PAGING_COUNT, this.model.attributes.activity_count]
                     }) + '</div></div>');
@@ -2649,7 +2681,7 @@ App.ModalCardView = Backbone.View.extend({
             var list_id = current_card.attributes.list_id;
             var card_id = current_card.attributes.card_id;
             var data = $(e.target).serializeObject();
-            $('.js-activity-' + activity_id).html('<div class="panel no-mar"><div class="panel-body">' + this.converter.makeHtml(data.comment) + '</div></div>');
+            $('.js-activity-' + activity_id).html('<div class="panel no-mar"><div class="panel-body github-markdown">' + this.converter.makeHtml(data.comment) + '</div></div>');
             $('.js-acticity-action-' + activity_id).removeClass('hide');
             $('.js-timeago-' + activity_id).removeClass('hide');
             //Update in list table
@@ -2696,7 +2728,7 @@ App.ModalCardView = Backbone.View.extend({
             id: activity_id
         });
         parse_date(current_card.attributes.created, authuser, 'js-timeago-' + current_card.attributes.id);
-        var html_content = '<div class="panel no-mar"><div class="panel-body">' + makeLink(this.converter.makeHtml(comment), current_card.attributes.board_id) + '</div></div>';
+        var html_content = '<div class="panel no-mar"><div class="panel-body github-markdown">' + makeLink(this.converter.makeHtml(comment), current_card.attributes.board_id) + '</div></div>';
         this.$el.find('.js-hide-edit-comment-form').parents('div.js-activity-' + activity_id).html(html_content);
         $('.js-acticity-action-' + activity_id).removeClass('hide');
         $('.js-timeago-' + activity_id).removeClass('hide');
@@ -3393,20 +3425,30 @@ App.ModalCardView = Backbone.View.extend({
         return false;
     },
     cardActivityLoadMore: function(e) {
-        var page_no = $(e.target).data('attr');
+        var target = e.currentTarget;
+        var page_no = $(target).data('attr');
         $('.js-remove-card-activity').remove();
         var self = this;
         self.model.activities = new App.ActivityCollection();
-        self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?page=' + page_no;
+        var filter = $.cookie('filter');
+        if (filter === undefined) {
+            filter = 'all';
+        } else if (filter === 'comment') {
+            filter = 'comment';
+        } else if (filter === 'activity') {
+            filter = 'activity';
+        } else if (filter === 'all') {
+            filter = "all";
+        }
+        self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?mode=' + filter + '&page=' + page_no;
         self.model.activities.fetch({
             cache: false,
             success: function(model, response) {
                 if (!_.isUndefined(response.data) && !_.isEmpty(response.data) && !_.isEmpty(response._metadata)) {
                     self.model.set('activity_count', response._metadata.total_records);
                     self.renderActivitiesCollection();
-                    $('.js-card-activites-load-more').attr('data-attr', parseInt(page_no) + 1);
                 } else {
-                    $('.js-card-activites-load-more').remove();
+                    $('#js-card-modal-' + this.model.id).find('.js-load-more-block').remove();
                 }
             }
         });

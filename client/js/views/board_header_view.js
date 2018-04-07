@@ -86,6 +86,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-switch-list-view': 'switchListView',
         'click .js-switch-calendar-view': 'switchCalendarView',
         'click .js-show-filters': 'showFilters',
+        'click .js-invite-users': 'showInviteUserView',
         'click .js-show-labels': 'showLabels',
         'click .js-archived-items': 'showArchivedItems',
         'click .js-sync-google-dropdown': 'syncGoogleDropdown',
@@ -680,6 +681,21 @@ App.BoardHeaderView = Backbone.View.extend({
         return false;
     },
     /**
+     * showInviteUserView()
+     * show the filter list
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showInviteUserView: function(e) {
+        e.preventDefault();
+        var el = this.$el;
+        el.find('.js-setting-response').html(new App.InviteUserView({
+            model: this.model
+        }).el);
+    },
+    /**
      * showFilters()
      * show the filter list
      * @param e
@@ -785,7 +801,8 @@ App.BoardHeaderView = Backbone.View.extend({
         $('body').removeClass('modal-open');
         $('#boards-view').removeClass('col-xs-12');
         $('#switch-board-view').removeClass('calendar-view');
-        $('#switch-board-view').addClass('board-viewlist col-xs-12');
+        $('#switch-board-view').addClass('col-xs-12');
+        $('#switch-board-view').attr("id", "listview_table");
         $('li.js-switch-view').removeClass('active');
         $('a.js-switch-list-view').parent().addClass('active');
         $('.js-list-form').removeClass('hide');
@@ -841,7 +858,8 @@ App.BoardHeaderView = Backbone.View.extend({
                     });
                     var view = new App.CardView({
                         tagName: 'tr',
-                        className: 'card-list-view',
+                        className: 'card-list-view js-show-modal-card-view cur',
+                        id: 'js-card-' + card.attributes.id,
                         model: card,
                         template: 'list_view'
                     });
@@ -1883,7 +1901,8 @@ App.BoardHeaderView = Backbone.View.extend({
                         show_label_arr[index] = [];
                     }
                     if (filter == 'list') {
-                        show_label_arr[index].push($(this).parent().parent().find('div').attr('id'));
+                        show_label_arr[index].push($(this).parent().parent().attr('id'));
+                        /*show_label_arr[index].push($(this).parent().parent().find('div').attr('id'));*/
                     } else {
                         show_label_arr[index].push($(this).parent().parent().attr('id'));
                     }
@@ -1916,7 +1935,8 @@ App.BoardHeaderView = Backbone.View.extend({
                         show_user_arr[index] = [];
                     }
                     if (filter == 'list') {
-                        show_user_arr[index].push($(this).parent().parent().find('div').attr('id'));
+                        /*show_user_arr[index].push($(this).parent().parent().find('div').attr('id'));*/
+                        show_user_arr[index].push($(this).parent().parent().attr('id'));
                     } else {
                         show_user_arr[index].push($(this).parent().parent().attr('id'));
                     }
@@ -1949,7 +1969,8 @@ App.BoardHeaderView = Backbone.View.extend({
                         show_due_arr[index] = [];
                     }
                     if (filter == 'list') {
-                        show_due_arr[index].push($(this).parent().parent().find('div').attr('id'));
+                        /*show_due_arr[index].push($(this).parent().parent().find('div').attr('id'));*/
+                        show_due_arr[index].push($(this).parent().parent().attr('id'));
                     } else {
                         show_due_arr[index].push($(this).parent().parent().attr('id'));
                     }
@@ -1996,6 +2017,11 @@ App.BoardHeaderView = Backbone.View.extend({
                 hide_card_list += ':not(#' + result[i] + ')';
             }
             show_card_list = show_card_list.substring(0, show_card_list.lastIndexOf(', '));
+            if (!_.isUndefined(show_card_list) && _.isEmpty(show_card_list)) {
+                $('#js-empty-filter-cards').removeClass('hide');
+            } else if (!$('#js-empty-filter-cards').hasClass('hide')) {
+                $('#js-empty-filter-cards').addClass('hide');
+            }
             if (filter == 'gantt') {
                 gantt_card_ids = [];
                 _.each(show_card_list.replace(/#js-card-/g, '').split(','), function(card_id) {
@@ -2173,6 +2199,9 @@ App.BoardHeaderView = Backbone.View.extend({
             $('#js-mode-and').removeClass('selected');
         }
         $('.js-clear-all').addClass('text-muted');
+        if (!$('#js-empty-filter-cards').hasClass('hide')) {
+            $('#js-empty-filter-cards').addClass('hide');
+        }
         var current_param = Backbone.history.fragment.split('?');
         var current_url = current_param[0].split('/');
         var filter = '';

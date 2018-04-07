@@ -35,10 +35,16 @@ App.CardActionsView = Backbone.View.extend({
      *
      */
     render: function() {
+        var self = this;
         this.$el.html(this.template({
             card: this.model
         }));
         this.showTooltip();
+        _(function() {
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $('body').trigger('cardActionRendered', self.model.id, self.model);
+            }
+        }).defer();
         return this;
     }
 });
