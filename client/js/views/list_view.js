@@ -308,6 +308,12 @@ App.ListView = Backbone.View.extend({
                             list.name = data.name;
                         }
                     });
+                    App.current_board.lists.forEach(function(list) {
+                        if (list.id === parseInt(list_id)) {
+                            list.name = data.name;
+                        }
+                    });
+                    $('body').trigger('editListRendered');
                 }
             });
         }
@@ -1160,6 +1166,21 @@ mc.on("panleft panright panup pandown ", function(ev) {
                             converter: this.converter
                         });
                         view_card.append(view.render().el);
+                        _(function() {
+                            localforage.getItem('unreaded_cards', function(err, value) {
+                                if (value) {
+                                    $.each(value, function(index, count) {
+                                        if (count) {
+                                            if ($('#js-card-' + index).find('.js-unread-notification').length === 0) {
+                                                $('#js-card-' + index).find('.js-list-card-data').prepend('<li class="js-unread-notification bg-primary"><small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
+                                            } else {
+                                                $('#js-card-' + index).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }).defer();
                     }
                 });
             }
