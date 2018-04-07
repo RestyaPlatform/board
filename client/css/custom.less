@@ -1232,9 +1232,12 @@ g path:hover {
 		float: left;
 		margin-right: 20px;
 		min-height: 240px;
+		> a {
+			height:150px;
+			line-height:138px;
+		}
 		img {
 			width: 100%;
-			height: 150px;
 		}
 	}
 }
@@ -2487,16 +2490,12 @@ header{
 	*/
 	#listview_table td:before { content: attr(data-title); }
 }
-.github-markdown {
-	> p {
-		> a {
-			color: #f47564;
-			word-wrap: break-word;
-			white-space: normal;
-			&:hover, &:focus {
-				color: #f14b34;
-				text-decoration: underline;
-			}
-			}
-		}
+.github-markdown a {
+	color: #f47564;
+	word-wrap: break-word;
+	white-space: normal;
+	&:hover, &:focus {
+		color: #f14b34;
+		text-decoration: underline;
+	}
 }
