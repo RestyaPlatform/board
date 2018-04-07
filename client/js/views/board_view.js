@@ -1187,6 +1187,7 @@ App.BoardView = Backbone.View.extend({
                     });
                     $(view.render().el).insertBefore($('#js-add-list-block'));
                 }
+                App.current_board.lists.add(list);
             }
         });
         return false;

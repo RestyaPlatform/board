@@ -421,7 +421,7 @@ App.ModalCardView = Backbone.View.extend({
             if (self.$el.find('#modal-comments').hasClass('active')) {
                 if (self.$el.find('#modal-activities').hasClass('active')) {
                     mode = 'all';
-                    $.cookie('filter', 'both');
+                    $.cookie('filter', 'all');
                     self.$el.find('.modal-comments').parent('li').removeClass('hide');
                     self.$el.find('.modal-activities').parent('li').removeClass('hide');
                 } else {
