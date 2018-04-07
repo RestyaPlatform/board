@@ -1089,7 +1089,6 @@ App.FooterView = Backbone.View.extend({
                                             card.set('users', new_user);
                                         } else if (activity.attributes.type === 'add_comment') {
                                             card.list.collection.board.activities.add(activity);
-                                            card.activities.add(activity);
                                             var current_card = card.list.collection.board.cards.get(activity.attributes.card_id);
                                             var comment_count = (!_.isUndefined(current_card)) ? (parseInt(current_card.attributes.comment_count) + 1) : 0;
                                             comment_count = isNaN(comment_count) ? 1 : comment_count;
