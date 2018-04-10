@@ -874,7 +874,7 @@ App.ModalCardView = Backbone.View.extend({
                 this.$el.find('#cardDescriptionEditForm').removeClass('hide').show();
             } else {
                 $('.error-msg').remove();
-                $('.js-show-card-desc').show();
+                $('.js-show-card-desc').next().show();
                 $('#cardDescriptionEditForm').hide();
                 validation = true;
             }
