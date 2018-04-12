@@ -747,18 +747,13 @@ App.ListView = Backbone.View.extend({
         });
         this.model.cards.set(copied_cards);
         var view_card = $('#js-card-listing-' + move_list_id);
-        var i = 1;
         _.each(copied_cards, function(copied_card) {
             var options = {
-                silent: true
+                silent: false
             };
-            if (i === copied_cards.length) {
-                options.silent = false;
-            }
             self.model.collection.board.cards.get(copied_card.id).set({
                 list_id: move_list_id
             }, options);
-            i++;
         });
         var attachments = this.model.collection.board.attachments.where({
             list_id: this.model.id
