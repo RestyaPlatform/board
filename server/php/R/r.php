@@ -41,7 +41,7 @@ if (is_plugin_enabled('r_chat')) {
     $jabberHost = $chat_data['settings']['r_chat_jabber_host']['value'];
     $jaxlDebug = $chat_data['settings']['r_chat_jaxl_debug']['value'];
 }
-/** 
+/**
  * Common method to handle GET method
  *
  * @param string $r_resource_cmd     URL
@@ -2143,7 +2143,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     case '/users/login': //users login
         $table_name = 'users';
         $val_arr = array(
-            $r_post['email']
+            strtolower($r_post['email'])
         );
         $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
         if (is_plugin_enabled('r_ldap_login')) {
@@ -2155,7 +2155,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         if (!empty($log_user) && $log_user['is_ldap'] == 0) {
             $r_post['password'] = crypt($r_post['password'], $log_user['password']);
             $val_arr = array(
-                $r_post['email'],
+                strtolower($r_post['email']),
                 $r_post['password'],
                 1
             );
