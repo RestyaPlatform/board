@@ -21,7 +21,7 @@
 		<img class="img-responsive center-block" src="<%= img_src %>"/>
 	  </div>
 	<% } %> 
-  <a href="#" title="<%- card.attributes.name %>"><%- card.attributes.name %></a>
+  <a href="#/board/<%- card.attributes.board_id %>/card/<%- card.attributes.id %>" title="<%- card.attributes.name %>"><%- card.attributes.name %></a>
   </div>
   <div class="pull-left navbar-btn">
   <ul class="list-unstyled list-inline text-muted boardlistblk clearfix txt-aligns js-list-card-data">
