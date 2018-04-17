@@ -4963,7 +4963,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $value_encode = str_rot13($val);
                             $val = base64_encode($value_encode);
                         } else {
-                            break;
+                            continue;
                         }
                     }
                     $qry_val_arr = array(
