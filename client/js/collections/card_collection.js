@@ -25,7 +25,7 @@ App.CardCollection = Backbone.Collection.extend({
                 });
                 return str;
             } else if (this.sortKey === 'due_date' || this.sortKey === 'list_moved_date') {
-                if (item.get(this.sortKey) !== null) {
+                if (item.get(this.sortKey) !== null && !_.isUndefined(item.get(this.sortKey)) && !_.isEmpty(item.get(this.sortKey))) {
                     var date = item.get(this.sortKey).split(' ');
                     if (!_.isUndefined(date[1])) {
                         _date = date[0] + 'T' + date[1];
@@ -36,7 +36,7 @@ App.CardCollection = Backbone.Collection.extend({
                     return this.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
                 }
             } else if (this.sortKey === 'created_date') {
-                if (item.get('created') !== null) {
+                if (item.get('created') !== null && !_.isUndefined(item.get('created')) && !_.isEmpty(item.get('created'))) {
                     var datetime = item.get('created').split(' ');
                     if (!_.isUndefined(datetime[1])) {
                         _date = datetime[0] + 'T' + datetime[1];
@@ -47,7 +47,7 @@ App.CardCollection = Backbone.Collection.extend({
                     return this.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
                 }
             } else if (this.sortKey === 'start_date') {
-                if (item.get('custom_fields') !== null) {
+                if (item.get('custom_fields') !== null && !_.isUndefined(item.get('custom_fields')) && !_.isEmpty(item.get('custom_fields'))) {
                     var inputArr = item.get('custom_fields');
                     var start_date_time = JSON.parse(inputArr);
                     if (!_.isUndefined(start_date_time.start_date)) {
