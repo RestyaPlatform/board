@@ -874,7 +874,7 @@ App.ModalCardView = Backbone.View.extend({
                 this.$el.find('#cardDescriptionEditForm').removeClass('hide').show();
             } else {
                 $('.error-msg').remove();
-                $('.js-show-card-desc').show();
+                $('.js-show-card-desc').next().show();
                 $('#cardDescriptionEditForm').hide();
                 validation = true;
             }
@@ -1266,9 +1266,11 @@ App.ModalCardView = Backbone.View.extend({
                             current_param = current_param.replace(self.model.id + ',', '');
                         } else if (current_param.indexOf('/card/' + self.model.id) != -1) {
                             current_param = current_param.replace('/card/' + self.model.id, '');
+                            changeTitle('Board - ' + _.escape(App.current_board.attributes.name));
                         } else {
                             var board_id = window.location.hash.split("/");
                             current_param = 'board/' + board_id['2'];
+                            changeTitle('Board - ' + _.escape(App.current_board.attributes.name));
                         }
                         app.navigate('#/' + current_param, {
                             trigger: false,
