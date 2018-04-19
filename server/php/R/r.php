@@ -1187,12 +1187,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     array_push($pg_params, 'edit_comment');
                     $i++;
                 } else if ($r_resource_filters['mode'] == 'comment') {
-                    $condition.= ' AND (al.type = $' . $i;
+                    $condition.= ' AND al.type = $' . $i;
                     array_push($pg_params, 'add_comment');
                     $i++;
-                    $condition.= ' OR al.type = $' . $i . ')';
-                    array_push($pg_params, 'edit_comment');
-                    $i++;
+                    /* $condition.= ' OR al.type = $' . $i . ')';
+                        array_push($pg_params, 'edit_comment');
+                        $i++; */
                 }
             }
             $limit = PAGING_COUNT;
