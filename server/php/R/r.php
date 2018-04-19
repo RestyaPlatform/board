@@ -2580,11 +2580,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 $sfields = '';
                 foreach ($put as $key => $value) {
-                    if ($key != 'id') {
-                        $fields.= ', ' . $key;
-                    }
-                    if ($key != 'id' && $key != 'position') {
-                        $sfields.= (empty($sfields)) ? $key : ", " . $key;
+                    if ($key != 'is_send_newsletter') {
+                        if ($key != 'id') {
+                            $fields.= ', ' . $key;
+                        }
+                        if ($key != 'id' && $key != 'position') {
+                            $sfields.= (empty($sfields)) ? $key : ", " . $key;
+                        }
                     }
                 }
                 if (!empty($comment)) {
@@ -2592,8 +2594,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $id
                     );
                     $revisions['old_value'] = executeQuery('SELECT ' . $sfields . ' FROM ' . $table_name . ' WHERE id =  $1', $qry_va_arr);
-                    unset($revisions['old_value']['is_send_newsletter']);
-                    unset($_POST['is_send_newsletter']);
+                    /* unset($revisions['old_value']['is_send_newsletter']); 
+                    unset($_POST['is_send_newsletter']); */
                     $temp_revisions = array_diff($revisions['old_value'], $_POST);
                     foreach ($temp_revisions as $key => $value) {
                         $revisions['new_value'][$key] = (isset($_POST[$key])) ? $_POST[$key] : '';
@@ -2649,7 +2651,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET timezone= $1 WHERE id = $2', $qry_val_arr);
                 }
-                if (!empty($_POST['is_send_newsletter'])) {
+                if (isset($_POST['is_send_newsletter'])) {
                     $qry_val_arr = array(
                         $_POST['is_send_newsletter'],
                         $r_resource_vars['users']
