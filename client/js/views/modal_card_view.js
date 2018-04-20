@@ -2144,6 +2144,9 @@ App.ModalCardView = Backbone.View.extend({
                 board_user_role_id: parseInt(this.model.board_user_role_id)
             }))))) {
             var self = this;
+            if (_.isUndefined($.cookie('filter'))) {
+                $.cookie('filter', 'comment');
+            }
             var view_activity = this.$('#js-card-activities-' + self.model.id);
             //view_activity.html('');
             if (!_.isEmpty(this.model.activities)) {
@@ -2640,18 +2643,19 @@ App.ModalCardView = Backbone.View.extend({
      */
     showEditCommentForm: function(e) {
         e.preventDefault();
+        var self = this;
         var activity_id = $(e.target).data('activity-id');
         var temp_id = $(e.target).data('activity-temp-id');
         $('.js-acticity-action-' + activity_id).addClass('hide');
         $('.js-timeago-' + activity_id).addClass('hide');
-        var activitiy = this.model.activities.get({
-            id: activity_id
+        var activity = self.model.activities.get({
+            id: parseInt(activity_id)
         });
-        activitiy.board_user_role_id = this.model.board_user_role_id;
-        activitiy.board = this.model.board;
+        activity.board_user_role_id = self.model.board_user_role_id;
+        activity.board = self.model.board;
         $('.js-list-activity-' + activity_id).addClass('edit-comment');
         $('.js-activity-' + activity_id).html(new App.EditActivityFormView({
-            model: activitiy,
+            model: activity,
             attributes: {
                 'data-activity-id': activity_id,
                 'data-activity-temp-id': temp_id
@@ -2701,14 +2705,16 @@ App.ModalCardView = Backbone.View.extend({
                     var activity = new App.Activity();
                     activity.set(response.activity);
                     activity.board_users = self.model.board_users;
-                    var view = new App.ActivityView({
-                        model: activity,
-                        board: self.model.list.collection.board,
-                        flag: '1'
-                    });
-                    self.model.activities.unshift(activity);
-                    var view_activity = $('#js-card-activities-' + self.model.id);
-                    view_activity.prepend(view.render().el);
+                    if ($.cookie('filter') !== 'comment') {
+                        var view = new App.ActivityView({
+                            model: activity,
+                            board: self.model.list.collection.board,
+                            flag: '1'
+                        });
+                        self.model.activities.unshift(activity);
+                        var view_activity = $('#js-card-activities-' + self.model.id);
+                        view_activity.prepend(view.render().el);
+                    }
                     emojify.run();
                     self.hideReplyCommentForm();
                 }

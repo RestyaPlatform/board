@@ -121,7 +121,7 @@
 						<% } %>
 						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_comment", board_user_role_id: parseInt(activity.board_user_role_id)})))){ %>
 							<li class="pull-right">
-								<a title="Edit" class="js-show-edit-activity js-edit-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"  data-activity-temp-id="<%- activity.attributes.temp_id %>"><i class="icon-edit"></i><%- i18next.t("Edit") %></a>
+								<a title="Edit" class="js-show-edit-activity js-edit-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"  data-activity-temp-id="<%- activity.attributes.temp_id %>"><i class="icon-edit" data-activity-id="<%- activity.attributes.id %>"  data-activity-temp-id="<%- activity.attributes.temp_id %>"></i><%- i18next.t("Edit") %></a>
 							</li>
 						<% } %> 
 						</ul>

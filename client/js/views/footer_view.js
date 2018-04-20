@@ -1077,7 +1077,7 @@ App.FooterView = Backbone.View.extend({
                                                 comment.set('id', parseInt(activity.attributes.foreign_id));
                                                 comment.set('user_id', parseInt(activity.attributes.user_id));
                                                 comment.set('card_id', parseInt(activity.attributes.card_id));
-                                                $('.js-activity-' + activity.attributes.foreign_id).html(comment_value);
+                                                $('.js-activity-' + activity.attributes.foreign_id).find('.github-markdown').html(comment_value);
                                             }
                                         } else if (activity.attributes.type === 'add_card_user') {
                                             var new_user = new App.CardUser();
