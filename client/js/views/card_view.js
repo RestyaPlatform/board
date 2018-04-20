@@ -431,7 +431,8 @@ App.CardView = Backbone.View.extend({
                 }
             });
             this.$el.append(self.template({
-                card: self.model
+                card: self.model,
+                converter: this.converter
             }));
             if (filter_count < total_filter && (query_params)) {
                 this.$el.css('display', 'none');
