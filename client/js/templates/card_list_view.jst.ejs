@@ -4,7 +4,7 @@
 	<td data-title="<%- i18next.t('Labels') %>">
 	<% card.labels.each(function(label) {
 		if (!_.isUndefined(label) && label.attributes.name !== "") { %>
-		<span class="cur"><i style="color:<%- (label.attributes.color) ? label.attributes.color : '#'+converter.colorCode(''+label.attributes.name).substring(0, 6) %>;" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- label.attributes.name %>" title="<%- label.attributes.name %>" class="<%= LABEL_ICON %> cur"></i></span>
+		<span data-container="body" data-placement="bottom" title="<%- label.attributes.name %>" data-toggle="tooltip"><%- label.attributes.name %></span><br />
 			
 <%         }
 	});
@@ -16,20 +16,12 @@
 <td data-title="<%- i18next.t('List Name') %>"><%- card.list_name %></td>
 <% if(!_.isUndefined(card.users) && !_.isEmpty(card.users) && card.users.length > 0) { %>}
 <td data-title="<%- i18next.t('Members') %>" >
-		<ul class="list-unstyled list-inline text-muted clearfix">
 	<%
 		card.users.each(function(card_user) {
 			if (!_.isUndefined(card_user)) {
 	%>
-				<li class="pull-left js-tooltip navbar-btn" data-container="body" data-placement="bottom" title="<%-card_user.attributes.full_name %> (<%-card_user.attributes.username %>)" data-toggle="tooltip">
-					<% if(!_.isEmpty(card_user.attributes.profile_picture_path)) { 
-						var profile_picture_path = card.showImage('User', card_user.attributes.user_id, 'small_thumb' );
-					%>
-						<img src="<%=profile_picture_path %>" alt="[Image: <%-card_user.attributes.username %>]" title="<%-card_user.attributes.full_name %> (<%-card_user.attributes.username %>)" class="img-rounded img-responsive avatar">
-					<% } else {%>
-						<i class="avatar avatar-color-194 img-rounded"><%- card_user.attributes.initials %></i>									
-					<% } %>
-				</li>
+				<span data-container="body" data-placement="bottom" title="<%-card_user.attributes.full_name %> (<%-card_user.attributes.username %>)" data-toggle="tooltip"><%-card_user.attributes.full_name %></span><br />
+					
 	<%		
 			}
 		});
