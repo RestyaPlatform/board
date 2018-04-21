@@ -77,7 +77,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             );
             $response = executeQuery("SELECT user_id as username, expires, scope, client_id FROM oauth_refresh_tokens WHERE refresh_token = $1", $conditions);
             if ($response['client_id'] == 6664115227792148 && OAUTH_CLIENTID == 7742632501382313) {
-                $oauth_clientid = 6664115227792148;
+                $oauth_clientid = '6664115227792148';
                 $oauth_client_secret = 'hw3wpe2cfsxxygogwue47cwnf7';
             }
             $post_val = array(
