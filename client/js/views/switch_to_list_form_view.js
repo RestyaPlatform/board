@@ -25,6 +25,9 @@ App.SwitchToListView = Backbone.View.extend({
         this.sort_by = null;
         this.render();
     },
+    attributes: {
+        id: 'js-board-lists'
+    },
     template: JST['templates/switch_to_list_form'],
     /**
      * Events
