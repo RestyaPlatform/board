@@ -844,10 +844,10 @@ App.ListView = Backbone.View.extend({
                     slug: 'move_list_cards',
                     board_user_role_id: parseInt(this.model.board_user_role_id)
                 })))) {
-                $('.js-board-list-cards', this.$el).sortable({
+                $(this.$el).sortable({
                     containment: 'window',
                     items: 'div.js-board-list-card',
-                    connectWith: '.nwrsboardouter .js-board-list-cards',
+                    connectWith: '.nwrsboardouter',
                     placeholder: 'card-list-placeholder',
                     appendTo: document.body,
                     dropOnEmpty: true,
@@ -857,7 +857,7 @@ App.ListView = Backbone.View.extend({
                     scrollSensitivity: 100,
                     scrollSpeed: 50,
                     update: function(ev, ui) {
-                        if (this === ui.item.parent()[0]) {
+                        if ($(this).find('.js-board-list-cards')[0] === ui.item.parent()[0]) {
                             ui.item.trigger('cardSort', ev, ui);
                         }
                     },
@@ -883,7 +883,6 @@ App.ListView = Backbone.View.extend({
                         App.sortable.previous_move_vertical = 0;
                     },
                     over: function(ev, ui) {
-                        console.log($ui);
                         if ($(ui.placeholder).parents('.js-board-list-cards').attr('id') == App.sortable.previous_id) {
                             clearInterval(App.sortable.setintervalid_horizontal);
                         }
