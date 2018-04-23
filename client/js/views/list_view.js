@@ -20,7 +20,7 @@ if (typeof App === 'undefined') {
  */
 App.ListView = Backbone.View.extend({
     tagName: 'div',
-    className: 'nwrsboardouter',
+    className: 'nwrsboardouter js-board-list',
     converter: new showdown.Converter({
         extensions: ['targetblank', 'xssfilter', 'codehighlight']
     }),
@@ -844,10 +844,10 @@ App.ListView = Backbone.View.extend({
                     slug: 'move_list_cards',
                     board_user_role_id: parseInt(this.model.board_user_role_id)
                 })))) {
-                $(this.$el).sortable({
+                $('.js-board-list-cards',this.$el).sortable({
                     containment: 'window',
                     items: 'div.js-board-list-card',
-                    connectWith: '.nwrsboardouter',
+                    connectWith: '.js-board-list-cards',
                     placeholder: 'card-list-placeholder',
                     appendTo: document.body,
                     dropOnEmpty: true,
@@ -857,7 +857,7 @@ App.ListView = Backbone.View.extend({
                     scrollSensitivity: 100,
                     scrollSpeed: 50,
                     update: function(ev, ui) {
-                        if ($(this).find('.js-board-list-cards')[0] === ui.item.parent()[0]) {
+                        if (this === ui.item.parent()[0]) {
                             ui.item.trigger('cardSort', ev, ui);
                         }
                     },
