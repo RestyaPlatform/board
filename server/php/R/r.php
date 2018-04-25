@@ -1324,6 +1324,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/boards/?/lists/?/cards/?':
+    case '/boards/?/cards/?':
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM cards_listing cll WHERE id = $1) as d ';
         array_push($pg_params, $r_resource_vars['cards']);
         if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
@@ -1331,6 +1332,26 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 $data = $obj;
+            }
+            echo json_encode($data);
+        } else {
+            $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+        }
+        break;
+
+    case '/boards/?/labels':
+        $metadata = array();
+        array_push($pg_params, $r_resource_vars['boards']);
+        $sql = 'SELECT distinct(label_id) FROM cards_labels_listing cll WHERE board_id = $1';
+        if ($res = pg_query_params($db_lnk, $sql, $pg_params)) {
+            while ($row = pg_fetch_assoc($res)) {
+                $val_arr = array(
+                    $row['label_id']
+                );
+                $label = executeQuery('SELECT * FROM labels WHERE id = $1', $val_arr);
+                if ($label) {
+                    $data['data'][] = $label;
+                }
             }
             echo json_encode($data);
         } else {
@@ -2594,8 +2615,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $id
                     );
                     $revisions['old_value'] = executeQuery('SELECT ' . $sfields . ' FROM ' . $table_name . ' WHERE id =  $1', $qry_va_arr);
-                    /* unset($revisions['old_value']['is_send_newsletter']); 
-                    unset($_POST['is_send_newsletter']); */
+                    /* unset($revisions['old_value']['is_send_newsletter']);
+                     unset($_POST['is_send_newsletter']); */
                     $temp_revisions = array_diff($revisions['old_value'], $_POST);
                     foreach ($temp_revisions as $key => $value) {
                         $revisions['new_value'][$key] = (isset($_POST[$key])) ? $_POST[$key] : '';
