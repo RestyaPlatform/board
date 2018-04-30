@@ -33,8 +33,15 @@ App.Card = Backbone.Model.extend({
         this.cards_subscribers = new App.CardSubscriberCollection();
     },
     moveAfter: function(beforeId) {
-        var before = this.collection.get(beforeId);
-        var after = this.collection.next(before);
+        var before;
+        var after;
+        if (this.collection.list == 'undefined' || this.collection.list == undefined) {
+            before = this.collection.get(beforeId);
+            after = this.collection.next(before);
+        } else {
+            before = this.collection.list.board.cards.get(beforeId);
+            after = this.collection.list.board.cards.next(before);
+        }
         if (typeof after == 'undefined') {
             afterPosition = before.position() + 2;
         } else {
@@ -50,8 +57,15 @@ App.Card = Backbone.Model.extend({
         return this;
     },
     moveBefore: function(afterId) {
-        var after = this.collection.get(afterId);
-        var before = this.collection.previous(after);
+        var after;
+        var before;
+        if (this.collection.list == 'undefined' || this.collection.list == undefined) {
+            after = this.collection.get(afterId);
+            before = this.collection.previous(after);
+        } else {
+            after = this.collection.list.board.cards.get(afterId);
+            before = this.collection.list.board.cards.previous(after);
+        }
         if (typeof before == 'undefined') {
             beforePosition = 0.0;
         } else {
