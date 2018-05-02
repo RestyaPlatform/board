@@ -851,6 +851,7 @@ App.ListView = Backbone.View.extend({
                     placeholder: 'card-list-placeholder',
                     appendTo: document.body,
                     dropOnEmpty: true,
+                    distance: 10,
                     cursor: 'grab',
                     helper: 'clone',
                     tolerance: 'pointer',
