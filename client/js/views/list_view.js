@@ -844,32 +844,14 @@ App.ListView = Backbone.View.extend({
                     slug: 'move_list_cards',
                     board_user_role_id: parseInt(this.model.board_user_role_id)
                 })))) {
-
-
-
-var myElement = $('.js-board-list-cards', this.$el);
-console.log(myElement[0]);
-
-
-// create a simple instance
-// by default, it only adds horizontal recognizers
-var mc = new Hammer(myElement[0]);
-
-// let the pan gesture support all directions.
-// this will block the vertical scrolling on a touch-device while on the element
-mc.add( new Hammer.Pan({ direction: Hammer.DIRECTION_ALL, threshold: 200 }) );
-
-// listen to events...
-mc.on("panleft panright panup pandown ", function(ev) {
-    console.log('Here------------->1');
-    console.log(ev.type);
-    $('.js-board-list-cards', this.$el).sortable({
+                $('.js-board-list-cards', this.$el).sortable({
                     containment: 'window',
                     items: 'div.js-board-list-card',
                     connectWith: '.js-board-list-cards',
                     placeholder: 'card-list-placeholder',
                     appendTo: document.body,
                     dropOnEmpty: true,
+                    distance: 10,
                     cursor: 'grab',
                     helper: 'clone',
                     tolerance: 'pointer',
@@ -1032,8 +1014,6 @@ mc.on("panleft panright panup pandown ", function(ev) {
                         }
                     }
                 });
-});
-
             }
         }
         this.showTooltip();
