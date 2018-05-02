@@ -35,7 +35,7 @@ App.Card = Backbone.Model.extend({
     moveAfter: function(beforeId) {
         var before;
         var after;
-        if (this.collection.list == 'undefined' || this.collection.list == undefined) {
+        if (this.collection.list == 'undefined' || this.collection.list === undefined) {
             before = this.collection.get(beforeId);
             after = this.collection.next(before);
         } else {
@@ -59,7 +59,7 @@ App.Card = Backbone.Model.extend({
     moveBefore: function(afterId) {
         var after;
         var before;
-        if (this.collection.list == 'undefined' || this.collection.list == undefined) {
+        if (this.collection.list == 'undefined' || this.collection.list === undefined) {
             after = this.collection.get(afterId);
             before = this.collection.previous(after);
         } else {
