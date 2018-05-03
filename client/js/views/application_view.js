@@ -52,9 +52,13 @@ App.ApplicationView = Backbone.View.extend({
                 $.cookie('music_play', "1");
             }
         }
-        if (role_links.length === 0 && $.cookie('links') !== undefined && $.cookie('links') !== null) {
-            role_links.add(JSON.parse($.cookie('links')));
-        }
+        localforage.getItem('links', function(err, value) {
+            if (value) {
+                if (role_links.length === 0 && value !== undefined && value !== null) {
+                    role_links.add(JSON.parse(value));
+                }
+            }
+        });
         if (page.model !== 'boards_view') {
             viewed_board = new App.Board();
         }
@@ -68,7 +72,7 @@ App.ApplicationView = Backbone.View.extend({
                     success: function(model, response) {
                         api_token = response.access_token;
                         if (!_.isUndefined(response.links)) {
-                            $.cookie('links', response.links);
+                            localforage.setItem("links", response.links);
                         }
                         $.cookie('languages', response.languages);
                         localforage.setItem('apps', response.apps).then(function() {
