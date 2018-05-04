@@ -6394,6 +6394,7 @@ $scope_exception_url = array(
 $token_exception_url = array(
     '/users/logout',
     '/users/register',
-    '/oauth'
+    '/oauth',
+    '/settings'
 );
 main();
