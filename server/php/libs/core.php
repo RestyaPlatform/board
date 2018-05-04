@@ -523,10 +523,10 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
             return false;
         }
     } else {
-        if (!empty($role) && ($role === '2') && !empty($r_request_method) && ($r_request_method === 'POST') && !empty($r_resource_cmd) && ($r_resource_cmd === '/settings')) {
+        if (!empty($r_request_method) && ($r_request_method === 'POST') && !empty($r_resource_cmd) && ($r_resource_cmd === '/settings')) {
             $r_request_method = 'GET';
         }
-        if (!empty($role) && ($role === '2') && !empty($r_request_method) && ($r_request_method === 'GET') && !empty($r_resource_cmd) && ($r_resource_cmd === '/users/?/activities')) {
+        if (!empty($r_request_method) && ($r_request_method === 'GET') && !empty($r_resource_cmd) && ($r_resource_cmd === '/users/?/activities')) {
             return true;
         }
         $qry_val_arr = array(
