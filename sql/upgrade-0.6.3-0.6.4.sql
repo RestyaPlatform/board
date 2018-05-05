@@ -318,3 +318,14 @@ SELECT lists.id,
     lists.custom_fields,
     lists.color
    FROM lists lists;
+
+SELECT pg_catalog.setval('acl_board_links_seq', (SELECT MAX(id) FROM acl_board_links), true);
+
+INSERT INTO "acl_board_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_hide")
+VALUES (now(), now(), 'Archive all cards in the list', '/boards/?/lists/?/cards', 'PUT', 'archive_all_cards_in_the_list', '4', '0');
+
+SELECT pg_catalog.setval('acl_board_links_boards_user_roles_seq', (SELECT MAX(id) FROM acl_board_links_boards_user_roles), true);
+
+INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") VALUES 
+(now(), now(), (select id from acl_board_links where slug='archive_all_cards_in_the_list'), '1'),
+(now(), now(), (select id from acl_board_links where slug='archive_all_cards_in_the_list'), '2');
