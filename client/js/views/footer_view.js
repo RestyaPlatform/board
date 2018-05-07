@@ -1287,7 +1287,7 @@ App.FooterView = Backbone.View.extend({
                                     }
                                     if (!_.isUndefined(list)) {
                                         if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
-                                                list.set(activity.attributes.revisions.new_value);
+                                            list.set(activity.attributes.revisions.new_value);
                                         }
                                         if (activity.attributes.type === 'delete_list') {
                                             var removed_list_cards = self.board.cards.where({
