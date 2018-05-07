@@ -7,7 +7,13 @@
 		<i class="avatar avatar-color-194 img-rounded"><%- user.attributes.initials %></i>									
 	<% } %>
 	<% if(user.attributes.board_user_role_id === 1){ %>
-		<span class="name-block col-xs-1 label btn-xs col-xs-push-0"><%- i18next.t('Owner') %></span>
+		<% _.each(user.board_user_roles, function(board_user_role){
+			var ownerRole;  
+			if (board_user_role.id == 1) {
+				ownerRole = board_user_role.name;%> 
+			<span class="name-block col-xs-1 label btn-xs col-xs-push-0 htruncate"><%- i18next.t('%s', { postProcess: 'sprintf', sprintf: [ownerRole]}) %></span>
+			<% }
+		}); %> </span>
 	<% } %>
 </span></a>
 		<ul class="dropdown-menu dropdown-menu-left arrow arrow-left">

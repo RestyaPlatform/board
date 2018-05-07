@@ -92,9 +92,14 @@
 						<% } else {%>
 							<i class="avatar avatar-color-194 img-rounded"><%= (admin_board_user.attributes.initials) %></i>
 						<% } %>
-						<% if(board.board_user_roles[admin_board_user.attributes.board_user_role_id - 1].id === 1){ %>
-							<span class="name-block htruncate col-xs-12 label btn-xs col-xs-push-0">
-<%- i18next.t('Owner') %></span>
+						<% if(board.board_user_roles && parseInt(admin_board_user.attributes.board_user_role_id) === 1){ %>
+							<% _.each(board.board_user_roles, function(board_user_role){
+									var ownerRole;  
+									if (board_user_role.id == 1) {
+										ownerRole = board_user_role.name;%> 
+										<span class="name-block col-xs-1 label btn-xs col-xs-push-0 htruncate"><%- i18next.t('%s', { postProcess: 'sprintf', sprintf: [ownerRole]}) %></span>
+									<%}
+							});%>
 						<% } %>
 					</span>
 				</span>
@@ -117,8 +122,16 @@
 						<% } %>
 					</span>
 				</span>
-			  <% i++; }}); }%>
-				  <span class="table-members  label small hidden-xs user-prf-new"> <span class=""><span class="show text-left" title="<%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %>"><%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %></span> <span class="show text-left" title="<%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %>"><%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %></span></span> </span> </a>
+				<% i++; }}); }%>
+				<span class="table-members  label small hidden-xs user-prf-new"> <span class="">
+							<% _.each(board.board_user_roles, function(board_user_role){
+								var owner;  
+								if (board_user_role.id == 1) {
+									owner = board_user_role.name;%> 
+									<span class="show text-left" title="<%- i18next.t('%s %s', { postProcess: 'sprintf', sprintf: [owner,admin_board_users_count]}) %>"><%- i18next.t('%s %s', { postProcess: 'sprintf', sprintf: [owner,admin_board_users_count]}) %></span>
+								<% }
+							}); %> 
+					<span class="show text-left" title="<%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %>"><%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %></span></span> </span> </a>
 					<ul class="list-unstyled js-visibility-chooser dropdown-menu-left dropdown-menu arrow arrow-left">
 					  <li class="text-center">
 						<strong><%- i18next.t('Members') %></strong>
