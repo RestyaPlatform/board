@@ -1308,21 +1308,16 @@ App.FooterView = Backbone.View.extend({
                                             var cards = self.board.cards.where({
                                                 list_id: parseInt(activity.attributes.list_id)
                                             });
-                                            var j = 1;
                                             if (!_.isUndefined(cards) && cards.length > 0) {
                                                 _.each(cards, function(card) {
                                                     var options = {
-                                                        silent: true
+                                                        silent: false
                                                     };
-                                                    if (j === cards.length) {
-                                                        options.silent = false;
-                                                    }
                                                     self.board.cards.findWhere({
                                                         id: parseInt(card.attributes.id)
                                                     }).set({
                                                         list_id: parseInt(activity.attributes.foreign_id)
                                                     }, options);
-                                                    j++;
                                                 });
                                             }
                                         } else if (activity.attributes.type === 'archived_card') {
