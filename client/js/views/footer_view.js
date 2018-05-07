@@ -1286,7 +1286,7 @@ App.FooterView = Backbone.View.extend({
 
                                     }
                                     if (!_.isUndefined(list)) {
-                                        if (activity.attributes.revisions) {
+                                        if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
                                             list.set(activity.attributes.revisions.new_value);
                                         }
                                         if (activity.attributes.type === 'delete_list') {
@@ -1324,21 +1324,16 @@ App.FooterView = Backbone.View.extend({
                                             var list_cards = self.board.cards.where({
                                                 list_id: parseInt(activity.attributes.list_id)
                                             });
-                                            var l = 1;
                                             if (!_.isUndefined(list_cards) && list_cards.length > 0) {
                                                 _.each(list_cards, function(card) {
                                                     var options = {
-                                                        silent: true
+                                                        silent: false
                                                     };
-                                                    if (l === list_cards.length) {
-                                                        options.silent = false;
-                                                    }
                                                     self.board.cards.findWhere({
                                                         id: parseInt(card.attributes.id)
                                                     }).set({
                                                         is_archived: 1
                                                     }, options);
-                                                    l++;
                                                 });
                                             }
                                         }
