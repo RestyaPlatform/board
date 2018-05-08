@@ -45,6 +45,11 @@ App.AppsView = Backbone.View.extend({
                     localforage.removeItem('apps');
                     self.flash('success', i18next.t('App updated successfully'));
                     location.reload();
+                } else if (response.error.type === 'File permission') {
+                    self.flash('danger', i18next.t(' Please set permission to write in  %s', {
+                        postProcess: 'sprintf',
+                        sprintf: [response.error.content]
+                    }));
                 } else {
                     self.flash('danger', i18next.t('App not updated successfully.'));
                 }
