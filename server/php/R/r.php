@@ -4974,55 +4974,60 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $folder_name = $r_post['folder'];
         unset($r_post['folder']);
         $content = file_get_contents(APP_PATH . '/client/apps/' . $folder_name . '/app.json');
-        $app = json_decode($content, true);
-        if (isset($r_post['enable'])) {
-            $app['enabled'] = $r_post['enable'];
-            $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
-            fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-            fclose($fh);
-        } else {
-            if (!empty($app['settings_from_db'])) {
-                foreach ($r_post as $key => $val) {
-                    if (strpos($key, 'PASSWORD') !== false) {
-                        if (!empty($val)) {
-                            $value_encode = str_rot13($val);
-                            $val = base64_encode($value_encode);
-                        } else {
-                            continue;
-                        }
-                    }
-                    $qry_val_arr = array(
-                        $val,
-                        trim($key)
-                    );
-                    pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $qry_val_arr);
-                }
-            } else {
-                foreach ($r_post as $key => $val) {
-                    if (!empty($app['settings'][$key]['is_encrypted'])) {
-                        if (!empty($val)) {
-                            $value_encode = str_rot13($val);
-                            $val = base64_encode($value_encode);
-                        } else {
-                            break;
-                        }
-                    }
-                    if (strpos($key, 'r_elasticsearch_index_name') !== false) {
-                        if (trim(strtolower($app['settings'][$key]['value'])) !== trim(strtolower($val))) {
-                            $filename = APP_PATH . '/tmp/cache/r_elasticsearch_last_processed_activity_id.php';
-                            if (file_exists($filename)) {
-                                unlink($filename);
-                            }
-                        }
-                    }
-                    $app['settings'][$key]['value'] = $val;
-                }
+        if (is_writable(APP_PATH . '/client/apps/' . $folder_name . '/app.json')) {
+            $app = json_decode($content, true);
+            if (isset($r_post['enable'])) {
+                $app['enabled'] = $r_post['enable'];
                 $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
                 fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
                 fclose($fh);
+            } else {
+                if (!empty($app['settings_from_db'])) {
+                    foreach ($r_post as $key => $val) {
+                        if (strpos($key, 'PASSWORD') !== false) {
+                            if (!empty($val)) {
+                                $value_encode = str_rot13($val);
+                                $val = base64_encode($value_encode);
+                            } else {
+                                continue;
+                            }
+                        }
+                        $qry_val_arr = array(
+                            $val,
+                            trim($key)
+                        );
+                        pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $qry_val_arr);
+                    }
+                } else {
+                    foreach ($r_post as $key => $val) {
+                        if (!empty($app['settings'][$key]['is_encrypted'])) {
+                            if (!empty($val)) {
+                                $value_encode = str_rot13($val);
+                                $val = base64_encode($value_encode);
+                            } else {
+                                break;
+                            }
+                        }
+                        if (strpos($key, 'r_elasticsearch_index_name') !== false) {
+                            if (trim(strtolower($app['settings'][$key]['value'])) !== trim(strtolower($val))) {
+                                $filename = APP_PATH . '/tmp/cache/r_elasticsearch_last_processed_activity_id.php';
+                                if (file_exists($filename)) {
+                                    unlink($filename);
+                                }
+                            }
+                        }
+                        $app['settings'][$key]['value'] = $val;
+                    }
+                    $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
+                    fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+                    fclose($fh);
+                }
             }
+            $response['success'] = 'App updated successfully';
+        } else {
+            $response['error']['type'] = 'File permission';
+            $response['error']['content'] = '/client/apps/ ' . $folder_name . ' / app.json';
         }
-        $response['success'] = 'App updated successfully';
         echo json_encode($response);
         break;
 
