@@ -5026,7 +5026,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $response['success'] = 'App updated successfully';
         } else {
             $response['error']['type'] = 'File permission';
-            $response['error']['content'] = APP_PATH . '/client/apps/' . $folder_name;
+            $response['error']['content'] = '/client/apps/ ' . $folder_name . ' / app.json';
         }
         echo json_encode($response);
         break;
