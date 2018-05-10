@@ -25,6 +25,9 @@ if (!defined('JSON_UNESCAPED_UNICODE')) {
     define('JSON_UNESCAPED_UNICODE', 256);
 }
 define('APP_PATH', dirname(dirname(dirname(__FILE__))));
+define('SITE_URL_FOR_SHELL', sys_get_temp_dir() . '/restya_site_url_for_shell.php');
+define('CLIENT_INFORMATION', sys_get_temp_dir() . '/restya_client_information.php');
+
 // While changing below oAuth credentials, have to update in oauth_clients table also.
 if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
     define('OAUTH_CLIENTID', $_SERVER['PHP_AUTH_USER']);
@@ -46,8 +49,8 @@ define('CHAT_DB_PORT', '5432');
 define('SECURITYSALT', 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf');
 define('SITE_LICENSE_KEY', 'REPLACE YOUR LICENCE HERE');
 define('LICENSE_HASH', '');
-if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php') && !empty($_server_domain_url)) {
-    $fh = fopen(APP_PATH . '/tmp/cache/site_url_for_shell.php', 'a');
+if (!defined('STDIN') && !file_exists(SITE_URL_FOR_SHELL) && !empty($_server_domain_url)) {
+    $fh = fopen(SITE_URL_FOR_SHELL, 'a');
     fwrite($fh, '<?php' . "\n");
     fwrite($fh, '$_server_domain_url = \'' . $_server_domain_url . '\';');
     fclose($fh);
