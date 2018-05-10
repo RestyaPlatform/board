@@ -1953,13 +1953,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
         } else if ($action_id == 3) {
             foreach ($user_ids as $user_id) {
+                if (is_plugin_enabled('r_chat') && $jabberHost && $user_id['user_id']) {
+                    xmppDeleteUser($user_id['user_id']);
+                }
                 $conditions = array(
                     $user_id['user_id']
                 );
                 $users = pg_query_params($db_lnk, 'DELETE FROM users WHERE id= $1 RETURNING username', $conditions);
-                if (is_plugin_enabled('r_chat') && $jabberHost) {
-                    xmppDeleteUser($users);
-                }
             }
             $response = array(
                 'success' => 'Checked users are deleted successfully.'
@@ -2310,7 +2310,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         if (!empty($log_user) && $log_user['is_ldap'] == 0) {
             $r_post['password'] = crypt($r_post['password'], $log_user['password']);
             $val_arr = array(
-                strtolower($r_post['email']),
+                strtolower($r_post['email']) ,
                 $r_post['password'],
                 1
             );
