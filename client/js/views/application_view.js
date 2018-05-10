@@ -849,7 +849,7 @@ App.ApplicationView = Backbone.View.extend({
                                         App.boards.setSortField('organization_name', 'asc');
                                         App.boards.sort();
                                         var organization_boards = App.boards.filter(function(board) {
-                                            if (parseInt(board.attributes.is_closed) == 0 && parseInt(board.attributes.organization_id) !== 0) {
+                                            if (parseInt(board.attributes.is_closed) === 0 && parseInt(board.attributes.organization_id) !== 0) {
                                                 return board;
                                             }
                                         });
