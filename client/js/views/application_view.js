@@ -563,10 +563,19 @@ App.ApplicationView = Backbone.View.extend({
                 changeTitle(i18next.t('Register'));
                 $('.company').removeClass('hide');
                 var User = new App.User();
-                this.pageView = new App.RegisterView({
-                    model: User
-                });
-                $('#content').html(this.pageView.el);
+                if (!_.isEmpty(role_links.where({
+                        slug: 'users_register'
+                    }))) {
+                    this.pageView = new App.RegisterView({
+                        model: User
+                    });
+                    $('#content').html(this.pageView.el);
+                } else {
+                    app.navigate('#/users/login', {
+                        trigger: true,
+                        replace: true
+                    });
+                }
             } else if (page.model == 'login') {
                 changeTitle(i18next.t('Login'));
                 $('.company').removeClass('hide');
