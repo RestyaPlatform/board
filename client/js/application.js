@@ -96,6 +96,9 @@ hasOfflineStatusCode = function(xhr) {
     if (_.isFunction(offlineStatusCodes)) {
         offlineStatusCodes = offlineStatusCodes(xhr);
     }
+    if (xhr.statusText === 'abort') {
+        return false;
+    }
     return _.isUndefined(xhr) || xhr.status === 0 || (_ref = xhr.status, __indexOf.call(offlineStatusCodes, _ref) >= 0);
 };
 callbackTranslator = {
