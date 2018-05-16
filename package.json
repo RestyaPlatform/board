@@ -39,5 +39,10 @@
     "grunt-template-jasmine-istanbul": "0.3.1",
     "grunt-usemin": "~3.0.0",
     "grunt-zip": "~0.16.2"
+  },
+  "scripts": {
+    "docker:prebuild": "grunt build:docker",
+    "docker:build": "docker build -t restyaplatform/restyaboard .",
+    "docker:fullbuild": "npm run docker:prebuild && npm run docker:build"
   }
 }
