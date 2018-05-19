@@ -235,7 +235,7 @@
 				if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 				then
 					service nginx restart
-					service php7.0-fpm restart
+					service php7.2-fpm restart
 				else
 					if [ -f "/bin/systemctl" ]; then
 						echo "Starting services with systemd..."
@@ -326,7 +326,7 @@
 					case "${answer}" in
 						[Yy])
 						echo "Installing PHP..."
-						apt-get install -y php7.0 php7.0-common
+						apt-get install -y php7.2 php7.2-common
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -337,23 +337,23 @@
 				fi
 				
 				echo "Installing PHP fpm and cli extension..."
-				apt-get install -y php7.0-fpm php7.0-cli
+				apt-get install -y php7.2-fpm php7.2-cli
 				error_code=$?
 				if [ ${error_code} != 0 ]
 				then
-					echo "php7.0-cli installation failed with error code ${error_code} (php7.0-cli installation failed with error code 4)"
+					echo "php7.2-cli installation failed with error code ${error_code} (php7.2-cli installation failed with error code 4)"
 				fi
-				service php7.0-fpm start
+				service php7.2-fpm start
 				
 				echo "Checking PHP curl extension..."
 				php -m | grep curl
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-curl..."
-					apt-get install -y php7.0-curl
+					echo "Installing php7.2-curl..."
+					apt-get install -y php7.2-curl
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-curl installation failed with error code ${error_code} (php7.0-curl installation failed with error code 5)"
+						echo "php7.2-curl installation failed with error code ${error_code} (php7.2-curl installation failed with error code 5)"
 						return 5
 					fi
 				fi
@@ -361,13 +361,13 @@
 				echo "Checking PHP pgsql extension..."
 				php -m | grep pgsql
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-pgsql..."
+					echo "Installing php7.2-pgsql..."
 					apt-get install libpq5
-					apt-get install -y php7.0-pgsql
+					apt-get install -y php7.2-pgsql
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-pgsql installation failed with error code ${error_code} (php7.0-pgsql installation failed with error code 6)"
+						echo "php7.2-pgsql installation failed with error code ${error_code} (php7.2-pgsql installation failed with error code 6)"
 						return 6
 					fi
 				fi
@@ -375,12 +375,12 @@
 				echo "Checking PHP mbstring extension..."
 				php -m | grep mbstring
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-mbstring..."
-					apt-get install -y php7.0-mbstring
+					echo "Installing php7.2-mbstring..."
+					apt-get install -y php7.2-mbstring
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-mbstring installation failed with error code ${error_code} (php7.0-mbstring installation failed with error code 7)"
+						echo "php7.2-mbstring installation failed with error code ${error_code} (php7.2-mbstring installation failed with error code 7)"
 						return 7
 					fi
 				fi
@@ -388,12 +388,12 @@
 				echo "Checking PHP ldap extension..."
 				php -m | grep ldap
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-ldap..."
-					apt-get install -y php7.0-ldap
+					echo "Installing php7.2-ldap..."
+					apt-get install -y php7.2-ldap
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-ldap installation failed with error code ${error_code} (php7.0-ldap installation failed with error code 8)"
+						echo "php7.2-ldap installation failed with error code ${error_code} (php7.2-ldap installation failed with error code 8)"
 						return 8
 					fi
 				fi
@@ -401,7 +401,7 @@
 				echo "Checking PHP imagick extension..."
 				php -m | grep imagick
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-imagick..."
+					echo "Installing php7.2-imagick..."
 					apt-get install -y gcc
 					error_code=$?
 					if [ ${error_code} != 0 ]
@@ -416,11 +416,11 @@
 						echo "imagemagick installation failed with error code ${error_code} (imagemagick installation failed with error code 9)"
 						return 9
 					fi
-					apt-get install -y php7.0-imagick
+					apt-get install -y php7.2-imagick
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-imagick installation failed with error code ${error_code} (php7.0-imagick installation failed with error code 10)"
+						echo "php7.2-imagick installation failed with error code ${error_code} (php7.2-imagick installation failed with error code 10)"
 						return 10
 					fi
 				fi
@@ -428,12 +428,12 @@
 				echo "Checking PHP imap extension..."
 				php -m | grep imap
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-imap..."
-					apt-get install -y php7.0-imap
+					echo "Installing php7.2-imap..."
+					apt-get install -y php7.2-imap
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-imap installation failed with error code ${error_code} (php7.0-imap installation failed with error code 11)"
+						echo "php7.2-imap installation failed with error code ${error_code} (php7.2-imap installation failed with error code 11)"
 						return 11
 					fi
 				fi
@@ -442,7 +442,7 @@
 				php -m | grep xml
 				if [ "$?" -gt 0 ]; then
 					echo "Installing xml..."
-					apt-get install php7.0-xml
+					apt-get install php7.2-xml
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -453,8 +453,8 @@
 
 				echo "Setting up timezone..."
 				timezone=$(cat /etc/timezone)
-				sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.0/fpm/php.ini
-				echo "date.timezone = $timezone" >> /etc/php/7.0/fpm/php.ini
+				sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.2/fpm/php.ini
+				echo "date.timezone = $timezone" >> /etc/php/7.2/fpm/php.ini
 				
 				echo "Checking PostgreSQL..."
 				id -a postgres
@@ -520,11 +520,11 @@
 				
 				if ! hash GeoIP-devel 2>&-;
 				then
-					apt-get install -y php7.0-geoip php7.0-dev libgeoip-dev
+					apt-get install -y php7.2-geoip php7.2-dev libgeoip-dev
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-geoip php7.0-dev libgeoip-dev installation failed with error code ${error_code} (php7.0-geoip php7.0-dev libgeoip-dev installation failed with error code 50)"
+						echo "php7.2-geoip php7.2-dev libgeoip-dev installation failed with error code ${error_code} (php7.2-geoip php7.2-dev libgeoip-dev installation failed with error code 50)"
 					fi
 				fi
 
@@ -688,7 +688,7 @@
 				echo "Setting up cron for every 5 minutes to send email notification to past due..."
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
 
-				set +x
+					set +x
 				echo "Do you want to setup SMTP configuration (y/n)?"
 				read -r answer
 				set -x
@@ -707,7 +707,7 @@
 					sed -i "s/SMTP = localhost/SMTP = $smtp_server/" /etc/php.ini
 					sed -i "s/smtp_port = 25/smtp_port = $smtp_port/" /etc/php.ini
 				esac
-							
+
 				set +x
 				echo "Do you want to install Restyaboard apps (y/n)?"
 				read -r answer
@@ -734,15 +734,15 @@
     					app_price=$(echo ${fid} | cut -d"#" -f2)
 						if ([ "$app_price" = "Free" ])
     					then
-							curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-							unzip /tmp/$fid.zip -d "$dir/client/apps"
+							curl -v -L -G -o /tmp/$app_name.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$app_name.zip
+							unzip /tmp/$app_name.zip -d "$dir/client/apps"
 						fi
 					done
 				esac
 				
 				echo "Starting services..."
 				service cron restart
-				service php7.0-fpm restart
+				service php7.2-fpm restart
 				service nginx restart
 				service postfix restart
 			esac
@@ -792,7 +792,7 @@
 						echo "Installing PHP..."
 						rpm -Uvh "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm"
 						rpm -Uvh "https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm"
-						yum install -y php70w php70w-opcache
+						yum install -y php72w php72w-opcache
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -803,7 +803,7 @@
 				fi
 				
 				echo "Installing PHP fpm and cli extension..."
-				yum install -y php70w-fpm php70w-devel php70w-cli php70w-opcache
+				yum install -y php72w-fpm php72w-devel php72w-cli php72w-opcache
 				error_code=$?
 				if [ ${error_code} != 0 ]
 				then
@@ -811,14 +811,14 @@
 					return 21
 				fi
 				service php-fpm start
-				chkconfig --levels 35 php70w-fpm on
+				chkconfig --levels 35 php72w-fpm on
 
 				echo "Checking PHP curl extension..."
 				php -m | grep curl
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-curl..."
-					yum install -y php70w-curl
+					yum install -y php72w-curl
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -832,7 +832,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-pgsql..."
-					yum install -y php70w-pgsql
+					yum install -y php72w-pgsql
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -846,7 +846,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-mbstring..."
-					yum install -y php70w-mbstring
+					yum install -y php72w-mbstring
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -860,7 +860,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-ldap..."
-					yum install -y php70w-ldap
+					yum install -y php72w-ldap
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -876,7 +876,7 @@
 					echo "Installing php-imagick..."
 
 					yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
-					yum install -y php70w-pear
+					yum install -y php72w-pear
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -901,7 +901,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-imap..."
-					yum install -y php70w-imap
+					yum install -y php72w-imap
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -915,7 +915,7 @@
 				php -m | grep xml
 				if [ "$?" -gt 0 ]; then
 					echo "Installing xml..."
-					yum install -y php70w-xml
+					yum install -y php72w-xml
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -1157,10 +1157,10 @@
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
 				
 				echo "Reset php-fpm (use unix socket mode)..."
-				if [ -f "/run/php/php7.0-fpm.sock" ]; then
-					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.0-fpm.sock/g" /etc/php-fpm.d/www.conf
+				if [ -f "/run/php/php7.2-fpm.sock" ]; then
+					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.2-fpm.sock/g" /etc/php-fpm.d/www.conf
 				else
-					sed -i "s/unix:\/run\/php\/php7.0-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
+					sed -i "s/unix:\/run\/php\/php7.2-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
 				fi
 
 				set +x
@@ -1210,8 +1210,8 @@
 						app_price=$(echo ${fid} | cut -d"#" -f2)
 						if ([ "$app_price" = "Free" ])
 						then
-							curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-							unzip /tmp/$fid.zip -d "$dir/client/apps"
+							curl -v -L -G -o /tmp/$app_name.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$app_name.zip
+							unzip /tmp/$app_name.zip -d "$dir/client/apps"
 						fi
 					done
 				esac
