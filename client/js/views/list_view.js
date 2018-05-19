@@ -851,6 +851,7 @@ App.ListView = Backbone.View.extend({
                     placeholder: 'card-list-placeholder',
                     appendTo: document.body,
                     dropOnEmpty: true,
+                    distance: 10,
                     cursor: 'grab',
                     helper: 'clone',
                     tolerance: 'pointer',
@@ -1355,6 +1356,7 @@ App.ListView = Backbone.View.extend({
             card.save(data, {
                 success: function(model, response, options) {
                     card.set('created', response.activity.created);
+                    card.set('card_created_user', response.activity.full_name);
                     card.set('description', response.activity.card_description);
                     if (_.isUndefined(options.temp_id)) {
                         card.set('is_offline', false);

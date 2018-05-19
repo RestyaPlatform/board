@@ -12,7 +12,7 @@ App.CardCollection = Backbone.Collection.extend({
     sortDirection: 'asc',
     comparator: function(item) {
         if (!_.isUndefined(this.sortKey)) {
-            if (this.sortKey === 'name' || this.sortKey === 'list_name') {
+            if (this.sortKey === 'name' || this.sortKey === 'list_name' || sort_by === 'sort_group_label' || sort_by === 'sort_group_user') {
                 var str = '' + item.get(this.sortKey);
                 str = str.toLowerCase();
                 str = str.split('');

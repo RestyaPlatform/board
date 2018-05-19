@@ -107,11 +107,18 @@ App.BoardSimpleView = Backbone.View.extend({
             success: function(model, response) {
                 var templates = '';
                 var target = $(e.target);
+                var organization_id;
+                if (target.parents('.js-organization_boards')) {
+                    organization_id = target.parents('.js-organization_boards').data('organization_id');
+                }
                 var parent = target.parents('.js-show-add-boards-list-simple');
-                $('li.js-back').addClass('hide');
+                target.parents('li.js-back').addClass('hide');
                 var data = {};
                 data = workflow_template;
                 data.page_mode = 1;
+                if (organization_id) {
+                    data.organization_id = organization_id;
+                }
                 $('.js-show-boards-list-simple-response', parent).html(new App.BoardAddView({
                     model: data
                 }).el).find('#inputtemplatelist').select2({

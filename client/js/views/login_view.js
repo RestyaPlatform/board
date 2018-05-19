@@ -97,7 +97,7 @@ App.LoginView = Backbone.View.extend({
                         i18next.changeLanguage(response.user.language);
                         api_token = response.access_token;
                         var links = JSON.parse(response.links);
-                        $.cookie('links', response.links);
+                        localforage.setItem("links", response.links);
                         role_links.reset();
                         if (!_.isEmpty(links)) {
                             role_links.add(links);

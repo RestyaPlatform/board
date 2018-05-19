@@ -27,10 +27,14 @@
 			var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
 			var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
 			if(activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
-				if(!_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
-					activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.difference['0']));
-				}else{
-						activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
+				if(activity.attributes.type !== 'add_card_desc') {
+					if(!_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
+						activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.difference['0']));
+					}else{
+							activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
+					}
+				} else {
+					activity.attributes.comment = activity.attributes.comment.replace(' - ##DESCRIPTION##', "");
 				}
 				activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
 				activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
@@ -74,7 +78,7 @@
 							</div></div>
 					<% } else { %>
 						<%if(_.isUndefined(activity.from_footer)) { %>
-							<div class="panel no-mar"><div class="panel-body">
+							<div class="panel no-mar"><div class="panel-body github-markdown">
 						<% } %>
 							<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
 							<% if(activity.attributes.type == 'add_card_desc'){ %>

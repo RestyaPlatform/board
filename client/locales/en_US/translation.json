@@ -1,4 +1,5 @@
 {
+    " Please set permission to write in": " Please set permission to write in",
     " to enable desktop notifications.": " to enable desktop notifications.",
     "\"%s\" board create failed": "\"%s\" board create failed",
     "\"?\" will open the shortcuts page.": "\"?\" will open the shortcuts page.",
@@ -561,7 +562,6 @@
     "Overall Todo": "Overall Todo",
     "Overdue": "Overdue",
     "Owner": "Owner",
-    "Owner %s": "Owner %s",
     "Paging Count": "Paging Count",
     "Password": "Password",
     "Password has been changed successfully.": "Password has been changed successfully.",

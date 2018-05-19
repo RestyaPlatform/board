@@ -8,8 +8,10 @@
 		</div>
 		<div class="col-xs-12 divider"></div>
 		<li><a class="card-id js-sort-by show" title="<%- i18next.t('ID') %>" href="#" data-sort-by="id"><span class="icon-caret-down"></span><%- i18next.t("ID") %></a></li>
+		<li><a class="js-sort-by show" title="<%- i18next.t('Labels') %>" href="#" data-sort-by="sort_group_label"><span class="icon-caret-down hide"></span><%- i18next.t("Labels") %></a></li>
 		<li><a class="js-sort-by show" title="<%- i18next.t('Card Name') %>" href="#" data-sort-by="name"><span class="icon-caret-down hide"></span><%- i18next.t("Card Name") %></a></li>
 		<li><a class="js-sort-by show" title="<%- i18next.t('List Name') %>" href="#" data-sort-by="list_name"><span class="icon-caret-down hide"></span><%- i18next.t("List Name") %></a></li>
+		<li><a class="js-sort-by show" title="<%- i18next.t('Members') %>" href="javascript:void(0);" data-sort-by="sort_group_user"><span class="icon-caret-down hide"></span><%- i18next.t("Members") %></a></li>
 		<li class="js-list-start-date-data hide"><a class="js-sort-by show" title="<%- i18next.t('Start Date') %>" href="#" data-sort-by="due_date"><span class="icon-caret-down hide"></span><%- i18next.t("Start Date") %></a></li>
 		<li><a class="show js-sort-by" href="#" title="<%- i18next.t('End Date') %>" data-sort-by="due_date"><span class="icon-caret-down hide"></span><%- i18next.t("End Date") %></a></li>
 		<li class="js-list-estimated-time-data hide"><a class="show js-sort-by" href="#" title="<%- i18next.t('Estimated time') %>" data-sort-by="due_date"><span class="icon-caret-down hide"></span><%- i18next.t("Estimated time") %></a></li>
@@ -24,10 +26,10 @@
 <thead>
 	<tr>
 		<th class="card-id"><a class="js-sort-by show" title="<%- i18next.t('ID') %>" href="#" data-sort-by="id"><span class="icon-caret-down"></span><%- i18next.t("ID") %></a></th>
-		<th><a class="show" title="<%- i18next.t('Labels') %>" href="javascript:void(0);"><%- i18next.t("Labels") %></a></th>
+		<th><a class="js-sort-by show" title="<%- i18next.t('Labels') %>" href="javascript:void(0);" data-sort-by="sort_group_label"><span class="icon-caret-down hide"></span><%- i18next.t("Labels") %></a></th>
 		<th><a class="js-sort-by show" title="<%- i18next.t('Card Name') %>" href="#" data-sort-by="name"><span class="icon-caret-down hide"></span><%- i18next.t("Card Name") %></a></th>
 		<th><a class="js-sort-by show" title="<%- i18next.t('List Name') %>" href="#" data-sort-by="list_name"><span class="icon-caret-down hide"></span><%- i18next.t("List Name") %></a></th>
-		<th><a class="show" title="<%- i18next.t('Members') %>" href="javascript:void(0);"><%- i18next.t("Members") %></a></th>
+		<th><a class="js-sort-by show" title="<%- i18next.t('Members') %>" href="javascript:void(0);" data-sort-by="sort_group_user"><span class="icon-caret-down hide"></span><%- i18next.t("Members") %></a></th>
 		<th class="js-list-start-date hide field_heading"></th>
 		<th><a class="show" href="#" title="<%- i18next.t('End Date') %>" ><span class="icon-caret-down hide"></span><i data-sort-by="due_date" class="js-sort-by icon-calendar h3"></i></a></th>
 		<th class="js-list-estimated-time hide"></th>

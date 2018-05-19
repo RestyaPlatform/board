@@ -292,7 +292,7 @@ function imapBodyDecode($mbox, $mid, $p, $partno)
     }
     // SUBPART RECURSION
     if (!empty($p->parts)) {
-        foreach ($p->parts as $partno0 => $p2) $message[] = imapBodyDecode($mbox, $mid, $p2, $partno . '.' . ($partno0 + 1)); // 1.2, 1.2.1, etc.
+        foreach ($p->parts as $partno0 => $p2) $message = imapBodyDecode($mbox, $mid, $p2, $partno . '.' . ($partno0 + 1)); // 1.2, 1.2.1, etc.
         
     }
     return $message;

@@ -67,6 +67,10 @@
 		echo "Removing Restyaboard conf file"
 		rm -rf /etc/nginx/conf.d/restyaboard.conf
 
+		echo "Removing Restyaboard temporary files..."
+		rm /tmp/restya_site_url_for_shell.php
+		rm /tmp/restya_client_information.php
+
 		echo "Clearing the Restyaboard crons"
 		sed -i '/\*\/5 \* \* \* \* $dir\/server\/php\/shell\/instant_email_notification.sh > \/dev\/null 2> \/dev\/null/d' /var/spool/cron/crontabs/root
 		sed -i '/\0 \* \* \* \* $dir\/server\/php\/shell\/periodic_email_notification.sh > \/dev\/null 2> \/dev\/null/d' /var/spool/cron/crontabs/root

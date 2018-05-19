@@ -806,13 +806,17 @@ App.FooterView = Backbone.View.extend({
                                     } else if (card_id !== 0) {
                                         value[card_id] = 1;
                                         localforage.setItem("unreaded_cards", value);
-                                        $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>1</span></small>');
+                                        if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
+                                            $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification bg-primary"><small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>1</span></small></li>');
+                                        }
                                     }
                                 }
                             } else {
                                 var cards = [];
                                 cards[card_id] = 1;
-                                $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>1</span></small>');
+                                if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
+                                    $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification bg-primary"><small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>1</span></small></li>');
+                                }
                                 localforage.setItem("unreaded_cards", cards);
                             }
                         });
@@ -1282,7 +1286,7 @@ App.FooterView = Backbone.View.extend({
 
                                     }
                                     if (!_.isUndefined(list)) {
-                                        if (activity.attributes.revisions) {
+                                        if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
                                             list.set(activity.attributes.revisions.new_value);
                                         }
                                         if (activity.attributes.type === 'delete_list') {
@@ -1304,42 +1308,32 @@ App.FooterView = Backbone.View.extend({
                                             var cards = self.board.cards.where({
                                                 list_id: parseInt(activity.attributes.list_id)
                                             });
-                                            var j = 1;
                                             if (!_.isUndefined(cards) && cards.length > 0) {
                                                 _.each(cards, function(card) {
                                                     var options = {
-                                                        silent: true
+                                                        silent: false
                                                     };
-                                                    if (j === cards.length) {
-                                                        options.silent = false;
-                                                    }
                                                     self.board.cards.findWhere({
                                                         id: parseInt(card.attributes.id)
                                                     }).set({
                                                         list_id: parseInt(activity.attributes.foreign_id)
                                                     }, options);
-                                                    j++;
                                                 });
                                             }
                                         } else if (activity.attributes.type === 'archived_card') {
                                             var list_cards = self.board.cards.where({
                                                 list_id: parseInt(activity.attributes.list_id)
                                             });
-                                            var l = 1;
                                             if (!_.isUndefined(list_cards) && list_cards.length > 0) {
                                                 _.each(list_cards, function(card) {
                                                     var options = {
-                                                        silent: true
+                                                        silent: false
                                                     };
-                                                    if (l === list_cards.length) {
-                                                        options.silent = false;
-                                                    }
                                                     self.board.cards.findWhere({
                                                         id: parseInt(card.attributes.id)
                                                     }).set({
                                                         is_archived: 1
                                                     }, options);
-                                                    l++;
                                                 });
                                             }
                                         }

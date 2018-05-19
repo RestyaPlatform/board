@@ -849,6 +849,8 @@ App.BoardHeaderView = Backbone.View.extend({
                     card.labels.add(card.attributes.card_labels, {
                         silent: true
                     });
+                    card.labels.setSortField('name', 'asc');
+                    card.labels.sort();
                     card.cards.add(self.model.cards, {
                         silent: true
                     });
@@ -856,6 +858,8 @@ App.BoardHeaderView = Backbone.View.extend({
                     card.board_activities.add(self.model.activities, {
                         silent: true
                     });
+                    card.users.setSortField('username', 'asc');
+                    card.users.sort();
                     var view = new App.CardView({
                         tagName: 'tr',
                         className: 'card-list-view js-show-modal-card-view cur',
