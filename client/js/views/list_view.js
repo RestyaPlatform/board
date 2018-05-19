@@ -20,7 +20,7 @@ if (typeof App === 'undefined') {
  */
 App.ListView = Backbone.View.extend({
     tagName: 'div',
-    className: 'nwrsboardouter js-board-list',
+    className: 'board-list-outer js-board-list',
     converter: new showdown.Converter({
         extensions: ['targetblank', 'xssfilter', 'codehighlight']
     }),
