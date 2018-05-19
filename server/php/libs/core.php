@@ -978,7 +978,7 @@ function createTrelloMember($member = array() , $admin_user_id = array() , $new_
         pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
     }
     $is_board_subscribers_exist = executeQuery('SELECT * FROM board_subscribers WHERE user_id = $1 and board_id = $2', $query_val);
-    $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : 'false';
+    $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
     if ($auto_subscribe_on_board && !$is_board_subscribers_exist) {
         $qry_val_arr = array(
             $user_id,
@@ -1609,7 +1609,7 @@ function importWekanBoard($board = array())
                             $board_user_role_id
                         );
                         pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
-                        $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : 'false';
+                        $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
                         if ($auto_subscribe_on_board) {
                             $qry_val_arr = array(
                                 $users[$wekan_user_id],
@@ -1628,7 +1628,7 @@ function importWekanBoard($board = array())
             1
         );
         pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
-        $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : 'false';
+        $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
         if ($auto_subscribe_on_board) {
             $qry_val_arr = array(
                 $authUser['id'],

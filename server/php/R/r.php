@@ -2797,6 +2797,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         if (!empty($sql)) {
             $post = getbindValues($table_name, $r_post);
+            $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
+            $post['auto_subscribe_on_board'] = $auto_subscribe_on_board;
+            $auto_subscribe_on_card = (AUTO_SUBSCRIBE_ON_CARD === 'Enabled') ? 'true' : false;
+            $post['auto_subscribe_on_card'] = $auto_subscribe_on_card;
             $result = pg_execute_insert($table_name, $post);
             if ($result) {
                 $row = pg_fetch_assoc($result);
@@ -2821,7 +2825,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board', $foreign_id);
                     pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, 1)', $qry_val_arr);
-                    $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : 'false';
+                    $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
                     if ($auto_subscribe_on_board) {
                         $qry_val_arr = array(
                             $row['id'],
@@ -3563,16 +3567,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 );
                 $s_result = pg_query_params($db_lnk, 'SELECT id, name, auto_subscribe_on_board FROM boards WHERE id = $1', $qry_val_arr);
                 $previous_value = pg_fetch_assoc($s_result);
-                $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : 'false';
-                if ($auto_subscribe_on_board) {
-                    if ($previous_value['auto_subscribe_on_board'] === 't') {
-                        $qry_val_arr = array(
-                            $r_post['board_id'],
-                            $r_post['user_id'],
-                            true
-                        );
-                        pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, board_id , user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
-                    }
+                if ($previous_value['auto_subscribe_on_board'] === 't') {
+                    $qry_val_arr = array(
+                        $r_post['board_id'],
+                        $r_post['user_id'],
+                        true
+                    );
+                    pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, board_id , user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
                 }
                 $foreign_ids['board_id'] = $r_resource_vars['boards'];
                 $foreign_ids['board_id'] = $r_post['board_id'];
@@ -4570,20 +4571,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if ($result) {
                     $row = pg_fetch_assoc($result);
                     $response['id'] = $row['id'];
-                    $auto_subscribe_on_card = (AUTO_SUBSCRIBE_ON_CARD === 'Enabled') ? 'true' : 'false';
-                    if ($auto_subscribe_on_card) {
+                    $qry_val_arr = array(
+                        $r_resource_vars['cards']
+                    );
+                    $board = executeQuery('SELECT b.auto_subscribe_on_card FROM cards c left join boards b on b.id = c.board_id WHERE c.id = $1', $qry_val_arr);
+                    if (!empty($board) && ($board['auto_subscribe_on_card'] === 't')) {
                         $qry_val_arr = array(
-                            $r_resource_vars['cards']
+                            $r_post['card_id'],
+                            $r_post['user_id'],
+                            true
                         );
-                        $board = executeQuery('SELECT b.auto_subscribe_on_card FROM cards c left join boards b on b.id = c.board_id WHERE c.id = $1', $qry_val_arr);
-                        if (!empty($board) && ($board['auto_subscribe_on_card'] === 't')) {
-                            $qry_val_arr = array(
-                                $r_post['card_id'],
-                                $r_post['user_id'],
-                                true
-                            );
-                            pg_query_params($db_lnk, 'INSERT INTO card_subscribers (created, modified, card_id , user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
-                        }
+                        pg_query_params($db_lnk, 'INSERT INTO card_subscribers (created, modified, card_id , user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
                     }
                     if ($is_return_vlaue) {
                         $row = convertBooleanValues($table_name, $row);
