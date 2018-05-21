@@ -844,7 +844,7 @@ App.ListView = Backbone.View.extend({
                     slug: 'move_list_cards',
                     board_user_role_id: parseInt(this.model.board_user_role_id)
                 })))) {
-                $('.js-board-list-cards',this.$el).sortable({
+                $('.js-board-list-cards', this.$el).sortable({
                     containment: 'window',
                     items: 'div.js-board-list-card',
                     connectWith: '.js-board-list-cards',
