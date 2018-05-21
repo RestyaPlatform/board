@@ -1232,6 +1232,25 @@
 		set +x
 		curl -v -L -G -d "app=board&os=${os}&version=${version}" "http://restya.com/success_installation.php"
 		echo "Restyaboard URL : $webdir"
+		set +x
+		echo "Do you want to setup SSL connectivity for your domain (y/n)?"
+		read -r answer
+		set -x
+		case "${answer}" in
+			[Yy])
+		cd /opt/
+		wget https://github.com/certbot/certbot/archive/master.zip -O certbot-master.zip
+		unzip certbot-master.zip
+		cd /opt/certbot-master/
+		sudo -H ./certbot-auto certonly --webroot --no-bootstrap -d $webdir -w $dir
+		sed -i "s/nginx\/ssl\/restya\.com\.crt/letsencrypt\/live\/$webdir\/fullchain\.pem/g" ${DOWNLOAD_DIR}/restyaboard-ssl.conf
+		sed -i "s/nginx\/ssl\/restya\.com\.key/letsencrypt\/live\/$webdir\/privkey\.pem/g" ${DOWNLOAD_DIR}/restyaboard-ssl.conf
+		sed -i "s/restya\.com/$webdir/g" ${DOWNLOAD_DIR}/restyaboard-ssl.conf
+
+		sed -i "/client_max_body_size 300M;/r ${DOWNLOAD_DIR}/restyaboard-ssl.conf"  /etc/nginx/conf.d/restyaboard.conf
+		
+		esac
+
 		echo "Login with username admin and password restya"
 		exit 1
 	}
