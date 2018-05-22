@@ -745,6 +745,8 @@
 				service php7.2-fpm restart
 				service nginx restart
 				service postfix restart
+				apt install -y python-pip
+				pip install -y virtualenv
 			esac
 		else
 			set +x
@@ -1225,13 +1227,48 @@
 					/etc/init.d/php-fpm restart
 					/etc/init.d/nginx restart
 				fi
+				yum install -y python-pip
+				pip install -y virtualenv
 				
 				/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 			esac
 		fi
+		
+		set +x
+		echo "Do you want to setup SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance (y/n)?"
+		read -r answer
+		set -x
+		case "${answer}" in
+			[Yy])
+		cd /opt/
+		wget https://github.com/certbot/certbot/archive/master.zip -O certbot-master.zip
+		unzip certbot-master.zip
+		cd /opt/certbot-master/
+		sudo -H ./certbot-auto certonly --webroot --no-bootstrap -d $webdir -w "$dir/client"
+		sed -i "s/restya\.com/$webdir/g" ${DOWNLOAD_DIR}/restyaboard-ssl.conf
+
+		sed -i "/client_max_body_size 300M;/r ${DOWNLOAD_DIR}/restyaboard-ssl.conf"  /etc/nginx/conf.d/restyaboard.conf
+		if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+		then
+			service nginx restart
+			service php7.2-fpm restart
+		else
+			if [ -f "/bin/systemctl" ]; then
+				echo "Starting services with systemd..."
+				systemctl restart nginx
+				systemctl restart php-fpm
+			else
+				echo "Starting services..."
+				/etc/init.d/php-fpm restart
+				/etc/init.d/nginx restart
+			fi
+		fi
+		esac
+
 		set +x
 		curl -v -L -G -d "app=board&os=${os}&version=${version}" "http://restya.com/success_installation.php"
 		echo "Restyaboard URL : $webdir"
+
 		echo "Login with username admin and password restya"
 		exit 1
 	}
