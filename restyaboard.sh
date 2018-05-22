@@ -172,7 +172,7 @@
 				sed -i "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_DBPASS}');/g" "$dir/server/php/config.inc.php"
 				sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 				sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
-
+				PHP_VERSION=$(php --version | head -n 1 | cut -d " " -f 2 | grep --only-matching --perl-regexp "^\\d\.\\d+")
 				version=$(cat ${DOWNLOAD_DIR}/release)
 				declare -a upgrade;
 				if [[ $version < "v0.4" ]];
@@ -235,7 +235,7 @@
 				if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 				then
 					service nginx restart
-					service php7.2-fpm restart
+					service php${PHP_VERSION}-fpm restart
 				else
 					if [ -f "/bin/systemctl" ]; then
 						echo "Starting services with systemd..."
