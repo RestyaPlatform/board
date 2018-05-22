@@ -265,7 +265,7 @@ module.exports = function(grunt) {
         },
         zip: {
             deploy: {
-                src: ['restyaboard.sh', 'ejabberd.yml', 'manifest.xml', 'sql/restyaboard_with_empty_data.sql', 'tmp/cache/', 'api_explorer/**/*.*', 'server/php/**/*.*', 'media/**/*.*', 'client/*.*', 'client/css/authorize.css', 'client/css/default.cache.*.css', 'client/js/default.cache.*.js', 'client/js/authorize.cache.js', 'client/js/workflow_templates/*.*', 'client/font/**/*.*', 'client/img/**/*.*', 'client/locales/**/*.*'],
+                src: ['restyaboard.sh', 'ejabberd.yml', 'manifest.xml', 'restyaboard-ssl.conf', 'diagnose.php', 'sql/restyaboard_with_empty_data.sql', 'tmp/cache/', 'api_explorer/**/*.*', 'server/php/**/*.*', 'media/**/*.*', 'client/*.*', 'client/css/authorize.css', 'client/css/default.cache.*.css', 'client/js/default.cache.*.js', 'client/js/authorize.cache.js', 'client/js/workflow_templates/*.*', 'client/font/**/*.*', 'client/img/**/*.*', 'client/locales/**/*.*'],
                 dest: 'restyaboard.zip'
             },
             docker: {
