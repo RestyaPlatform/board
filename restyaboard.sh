@@ -1243,8 +1243,6 @@
 		unzip certbot-master.zip
 		cd /opt/certbot-master/
 		sudo -H ./certbot-auto certonly --webroot --no-bootstrap -d $webdir -w $dir
-		sed -i "s/nginx\/ssl\/restya\.com\.crt/letsencrypt\/live\/$webdir\/fullchain\.pem/g" ${DOWNLOAD_DIR}/restyaboard-ssl.conf
-		sed -i "s/nginx\/ssl\/restya\.com\.key/letsencrypt\/live\/$webdir\/privkey\.pem/g" ${DOWNLOAD_DIR}/restyaboard-ssl.conf
 		sed -i "s/restya\.com/$webdir/g" ${DOWNLOAD_DIR}/restyaboard-ssl.conf
 
 		sed -i "/client_max_body_size 300M;/r ${DOWNLOAD_DIR}/restyaboard-ssl.conf"  /etc/nginx/conf.d/restyaboard.conf
