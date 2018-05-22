@@ -43,13 +43,13 @@ function main()
         // /users/5/products/10 -> /users/?/products/? ...
         $r_resource_cmd = preg_replace('/\/\d+/', '/?', $_url_parts_with_ext[0]);
         header('Content-Type: application/json');
-        if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/client.php') && !empty($_server_domain_url)) {
+        if (!defined('STDIN') && !file_exists(CLIENT_INFORMATION) && !empty($_server_domain_url)) {
             doPost('http://restya.com/clients', array(
                 'app' => 'board',
-                'ver' => '0.6.3',
+                'ver' => '0.6.4',
                 'url' => $_server_domain_url
             ));
-            $fh = fopen(APP_PATH . '/tmp/cache/client.php', 'a');
+            $fh = fopen(CLIENT_INFORMATION, 'a');
             fwrite($fh, '<?php' . "\n");
             fwrite($fh, '$_server_domain_url = \'' . $_server_domain_url . '\';');
             fclose($fh);

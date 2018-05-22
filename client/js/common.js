@@ -5,6 +5,9 @@ $(window).resize(function() {
     var notificationH = windowH - footerH;
     var boardH = windowH - headerH - footerH - 14;
     $(".board-list-view").css("height", (boardH + 'px'));
+    if ($(".js-board-list") && (/Edge/.test(navigator.userAgent) || !!navigator.userAgent.match(/Trident.*rv\:11\./))) {
+        $(".js-board-list").css("height", (boardH + 'px'));
+    }
     $(".notification-list").css({
         'height': notificationH - 100,
         'overflow-y': 'scroll'

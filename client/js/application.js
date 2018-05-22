@@ -24,6 +24,7 @@ var IMAP_EMAIL = '';
 var ANIMATION_SPEED = 1;
 var DEFAULT_CARD_VIEW = '';
 var PAGING_COUNT = '';
+var ALLOWED_FILE_EXTENSIONS = '';
 var last_activity = '';
 var previous_date = '';
 var SecuritySalt = 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf';
@@ -94,6 +95,9 @@ hasOfflineStatusCode = function(xhr) {
     offlineStatusCodes = Backbone.DualStorage.offlineStatusCodes;
     if (_.isFunction(offlineStatusCodes)) {
         offlineStatusCodes = offlineStatusCodes(xhr);
+    }
+    if (xhr.statusText === 'abort') {
+        return false;
     }
     return _.isUndefined(xhr) || xhr.status === 0 || (_ref = xhr.status, __indexOf.call(offlineStatusCodes, _ref) >= 0);
 };

@@ -21,7 +21,7 @@
 		<img class="img-responsive center-block" src="<%= img_src %>"/>
 	  </div>
 	<% } %> 
-  <a href="#" title="<%- card.attributes.name %>"><%- card.attributes.name %></a>
+  <a href="#/board/<%- card.attributes.board_id %>/card/<%- card.attributes.id %>" title="<%- card.attributes.name %>"><%- card.attributes.name %></a>
   </div>
   <div class="pull-left navbar-btn">
   <ul class="list-unstyled list-inline text-muted boardlistblk clearfix txt-aligns js-list-card-data">
@@ -93,6 +93,7 @@
 		created_date_time = created_date_time[0].split(' ');
 	%>
 	<li class="card-listing-truncate card-created-date"><small title=" <%- i18next.t('Created Date') %>"><span class="label label-default"><%= dateFormat(created_date_time[0], 'mediumDate')  %></span></small></li>
+	<li class="card-listing-truncate card-created-user"><small title=" <%- i18next.t('Created User') %>"><span class="label label-default"><%= card.attributes.card_created_user %></span></small></li>
 	<% } %>
 	<% if(!_.isEmpty(card.attributes.list_moved_date) && card.attributes.list_moved_date != 'NULL'){ 
 			var list_moved_date_date_time = card.attributes.list_moved_date.split('T');

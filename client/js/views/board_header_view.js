@@ -86,6 +86,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-switch-list-view': 'switchListView',
         'click .js-switch-calendar-view': 'switchCalendarView',
         'click .js-show-filters': 'showFilters',
+        'click .js-invite-users': 'showInviteUserView',
         'click .js-show-labels': 'showLabels',
         'click .js-archived-items': 'showArchivedItems',
         'click .js-sync-google-dropdown': 'syncGoogleDropdown',
@@ -680,6 +681,21 @@ App.BoardHeaderView = Backbone.View.extend({
         return false;
     },
     /**
+     * showInviteUserView()
+     * show the filter list
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showInviteUserView: function(e) {
+        e.preventDefault();
+        var el = this.$el;
+        el.find('.js-setting-response').html(new App.InviteUserView({
+            model: this.model
+        }).el);
+    },
+    /**
      * showFilters()
      * show the filter list
      * @param e
@@ -833,6 +849,8 @@ App.BoardHeaderView = Backbone.View.extend({
                     card.labels.add(card.attributes.card_labels, {
                         silent: true
                     });
+                    card.labels.setSortField('name', 'asc');
+                    card.labels.sort();
                     card.cards.add(self.model.cards, {
                         silent: true
                     });
@@ -840,6 +858,8 @@ App.BoardHeaderView = Backbone.View.extend({
                     card.board_activities.add(self.model.activities, {
                         silent: true
                     });
+                    card.users.setSortField('username', 'asc');
+                    card.users.sort();
                     var view = new App.CardView({
                         tagName: 'tr',
                         className: 'card-list-view js-show-modal-card-view cur',

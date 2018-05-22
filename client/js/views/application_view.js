@@ -52,9 +52,13 @@ App.ApplicationView = Backbone.View.extend({
                 $.cookie('music_play', "1");
             }
         }
-        if (role_links.length === 0 && $.cookie('links') !== undefined && $.cookie('links') !== null) {
-            role_links.add(JSON.parse($.cookie('links')));
-        }
+        localforage.getItem('links', function(err, value) {
+            if (value) {
+                if (role_links.length === 0 && value !== undefined && value !== null) {
+                    role_links.add(JSON.parse(value));
+                }
+            }
+        });
         if (page.model !== 'boards_view') {
             viewed_board = new App.Board();
         }
@@ -68,7 +72,7 @@ App.ApplicationView = Backbone.View.extend({
                     success: function(model, response) {
                         api_token = response.access_token;
                         if (!_.isUndefined(response.links)) {
-                            $.cookie('links', response.links);
+                            localforage.setItem("links", response.links);
                         }
                         $.cookie('languages', response.languages);
                         localforage.setItem('apps', response.apps).then(function() {
@@ -138,6 +142,7 @@ App.ApplicationView = Backbone.View.extend({
                                 SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
                                 DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                                 PAGING_COUNT = settings_response.PAGING_COUNT;
+                                ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
                                 APPS = settings_response.apps;
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
@@ -540,19 +545,37 @@ App.ApplicationView = Backbone.View.extend({
         } else {
             if (page.model == 'admin_user_add') {
                 changeTitle(i18next.t('Admin Add User'));
-                var AdminUser = new App.User();
-                this.pageView = new App.AdminUserAddView({
-                    model: AdminUser
+                var timezone = new App.User();
+                timezone.url = api_url + 'timezones.json';
+                timezone.fetch({
+                    cache: false,
+                    abortPending: true,
+                    success: function(timezone, response) {
+                        var AdminUser = new App.User();
+                        AdminUser.timezones = response;
+                        this.pageView = new App.AdminUserAddView({
+                            model: AdminUser
+                        });
+                        $('#content').html(this.pageView.el);
+                    }
                 });
-                $('#content').html(this.pageView.el);
             } else if (page.model == 'register') {
                 changeTitle(i18next.t('Register'));
                 $('.company').removeClass('hide');
                 var User = new App.User();
-                this.pageView = new App.RegisterView({
-                    model: User
-                });
-                $('#content').html(this.pageView.el);
+                if (!_.isEmpty(role_links.where({
+                        slug: 'users_register'
+                    }))) {
+                    this.pageView = new App.RegisterView({
+                        model: User
+                    });
+                    $('#content').html(this.pageView.el);
+                } else {
+                    app.navigate('#/users/login', {
+                        trigger: true,
+                        replace: true
+                    });
+                }
             } else if (page.model == 'login') {
                 changeTitle(i18next.t('Login'));
                 $('.company').removeClass('hide');
@@ -629,26 +652,63 @@ App.ApplicationView = Backbone.View.extend({
                                             slug: 'view_stared_boards'
                                         }))) {
                                         if (!_.isEmpty(response.starred_boards)) {
+                                            var starred_board_collections = new App.BoardCollection();
                                             _.each(response.starred_boards, function(starred_board) {
-                                                var board = App.boards.findWhere({
-                                                    id: parseInt(starred_board),
-                                                    is_closed: 0
-                                                });
-                                                if (!_.isUndefined(board)) {
-                                                    board.board_subscribers.add(board.attributes.boards_subscribers);
+                                                starred_board_collections.add(App.boards.findWhere({
+                                                    id: parseInt(starred_board)
+                                                }));
+                                            });
+                                            starred_board_collections.setSortField('name', 'asc');
+                                            starred_board_collections.sort();
+                                            var starred_boards = starred_board_collections.where({
+                                                is_closed: 0,
+                                                organization_id: 0
+                                            });
+                                            if (!_.isUndefined(starred_boards)) {
+                                                _.each(starred_boards, function(starred_board) {
+                                                    starred_board.board_subscribers.add(starred_board.attributes.boards_subscribers);
                                                     filter = _.matches({
                                                         is_archived: 0
                                                     });
-                                                    filtered_lists = _.filter(board.attributes.lists, filter);
-                                                    board.lists.add(filtered_lists);
-                                                    $('.js-header-starred-boards').append(new App.BoardSimpleView({
-                                                        model: board,
-                                                        id: 'js-starred-board-' + board.attributes.id,
-                                                        className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + board.attributes.id,
+                                                    filtered_lists = _.filter(starred_board.attributes.lists, filter);
+                                                    starred_board.lists.add(filtered_lists);
+                                                    $('.js-header-starred-boards').prepend(new App.BoardSimpleView({
+                                                        model: starred_board,
+                                                        id: 'js-starred-board-' + starred_board.attributes.id,
+                                                        className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + starred_board.attributes.id,
                                                         starred_boards: response.starred_boards
                                                     }).el);
+                                                });
+                                            }
+                                            starred_board_collections.setSortField('organization_name', 'asc');
+                                            starred_board_collections.sort();
+                                            var organization_starred_boards = starred_board_collections.filter(function(board) {
+                                                if (parseInt(board.attributes.organization_id) !== 0 && parseInt(board.attributes.is_closed) === 0) {
+                                                    return board;
                                                 }
                                             });
+                                            if (!_.isEmpty(organization_starred_boards) && !_.isUndefined(organization_starred_boards)) {
+                                                _.each(organization_starred_boards, function(organization_starred_board) {
+                                                    organization_starred_board.board_subscribers.add(organization_starred_board.attributes.boards_subscribers);
+                                                    filter = _.matches({
+                                                        is_archived: 0
+                                                    });
+                                                    filtered_lists = _.filter(organization_starred_board.attributes.lists, filter);
+                                                    organization_starred_board.lists.add(filtered_lists);
+                                                    if ($('.js-organization-starred-boards-' + organization_starred_board.attributes.organization_id + '').length === 0) {
+                                                        $('.js-header-starred-boards').append('<div class="row"><div  class="col-xs-12 js-organization-starred-boards-' + organization_starred_board.attributes.organization_id + '"><div class="row"><div class="col-xs-12"><span class="pull-left h4">' + i18next.t('%s', {
+                                                            postProcess: 'sprintf',
+                                                            sprintf: [organization_starred_board.attributes.organization_name]
+                                                        }) + '</span></div></div></div></div>');
+                                                    }
+                                                    $('.js-organization-starred-boards-' + organization_starred_board.attributes.organization_id + '').append(new App.BoardSimpleView({
+                                                        model: organization_starred_board,
+                                                        id: 'js-starred-board-' + organization_starred_board.attributes.id,
+                                                        className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + organization_starred_board.attributes.id,
+                                                        starred_boards: response.starred_boards
+                                                    }).el);
+                                                });
+                                            }
                                             if ($('.js-header-starred-boards > .js-board-view').length === 0) {
                                                 $('.js-header-starred-boards').append(new App.BoardSimpleView({
                                                     model: null,
@@ -679,8 +739,11 @@ App.ApplicationView = Backbone.View.extend({
                                             slug: 'view_closed_boards'
                                         }))) {
                                         var closed_boards = App.boards.where({
-                                            is_closed: 1
+                                            is_closed: 1,
+                                            organization_id: 0
                                         });
+                                        App.boards.setSortField('name', 'asc');
+                                        App.boards.sort();
                                         if (!_.isEmpty(closed_boards)) {
                                             _.each(closed_boards, function(closed_board) {
                                                 closed_board.board_subscribers.add(closed_board.attributes.boards_subscribers);
@@ -718,13 +781,45 @@ App.ApplicationView = Backbone.View.extend({
                                                 className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12'
                                             }).el);
                                         }
-
+                                        var organization_closed_boards = App.boards.filter(function(board) {
+                                            if (parseInt(board.attributes.is_closed) == 1 && parseInt(board.attributes.organization_id) !== 0) {
+                                                return board;
+                                            }
+                                        });
+                                        App.boards.setSortField('organization_name', 'asc');
+                                        App.boards.sort();
+                                        if (!_.isEmpty(organization_closed_boards)) {
+                                            _.each(organization_closed_boards, function(closed_organization_board) {
+                                                if ($('.js-organization-' + closed_organization_board.attributes.organization_id + '').length === 0) {
+                                                    if ($('.js-organization-closed-boards-' + closed_organization_board.attributes.organization_id + '').length === 0) {
+                                                        $('.js-header-closed-boards').append('<div class="row"><div  class="col-xs-12 js-organization-closed-boards-' + closed_organization_board.attributes.organization_id + '"><div class="row"><div class="col-xs-12"><span class="pull-left h4">' + i18next.t('%s', {
+                                                            postProcess: 'sprintf',
+                                                            sprintf: [closed_organization_board.attributes.organization_name]
+                                                        }) + '</span></div></div></div></div>');
+                                                    }
+                                                }
+                                                closed_organization_board.board_subscribers.add(closed_organization_board.attributes.boards_subscribers);
+                                                filter = _.matches({
+                                                    is_archived: 0
+                                                });
+                                                filtered_lists = _.filter(closed_organization_board.attributes.lists, filter);
+                                                closed_organization_board.lists.add(filtered_lists);
+                                                $('.js-organization-closed-boards-' + closed_organization_board.attributes.organization_id + '').append(new App.BoardSimpleView({
+                                                    model: closed_organization_board,
+                                                    id: 'js-my-board-' + closed_organization_board.attributes.id,
+                                                    className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + closed_organization_board.attributes.id,
+                                                    starred_boards: response.starred_boards
+                                                }).el);
+                                            });
+                                        }
                                     }
                                 } else {
                                     board_index.append(new App.BoardsIndexView().el);
-                                    var my_boards = '';
-                                    my_boards = App.boards.where({
-                                        is_closed: 0
+                                    App.boards.setSortField('name', 'asc');
+                                    App.boards.sort();
+                                    var my_boards = App.boards.where({
+                                        is_closed: 0,
+                                        organization_id: 0
                                     });
                                     if (!_.isEmpty(role_links.where({
                                             slug: 'view_my_boards'
@@ -758,6 +853,39 @@ App.ApplicationView = Backbone.View.extend({
                                                 model: null,
                                                 id: 'js-my-board-empty',
                                                 className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12'
+                                            }).el);
+                                        }
+                                        App.boards.setSortField('organization_name', 'asc');
+                                        App.boards.sort();
+                                        var organization_boards = App.boards.filter(function(board) {
+                                            if (parseInt(board.attributes.is_closed) === 0 && parseInt(board.attributes.organization_id) !== 0) {
+                                                return board;
+                                            }
+                                        });
+                                        if (!_.isEmpty(organization_boards)) {
+                                            _.each(organization_boards, function(board) {
+                                                if ($('.js-organization-' + board.attributes.organization_id + '').length === 0) {
+                                                    $('.js-my-boards').parent().append('<div class="row"><div  class="col-xs-12 js-organization_boards js-organization-' + board.attributes.organization_id + '" data-organization_id ="' + board.attributes.organization_id + '" ><div class="row"><div class="col-xs-12"><span class="pull-left h4">' + i18next.t('%s', {
+                                                        postProcess: 'sprintf',
+                                                        sprintf: [board.attributes.organization_name]
+                                                    }) + '</span></div></div></div></div>');
+                                                }
+                                                var board_filter = _.matches({
+                                                    is_archived: 0
+                                                });
+                                                var board_filtered_lists = _.filter(board.attributes.lists, board_filter);
+                                                board.lists.add(board_filtered_lists);
+                                                $('.js-organization-' + board.attributes.organization_id + '').append(new App.BoardSimpleView({
+                                                    model: board,
+                                                    id: 'js-my-board-' + board.attributes.id,
+                                                    className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + board.attributes.id,
+                                                    starred_boards: response.starred_boards
+                                                }).el);
+                                            });
+                                            $('.js-organization_boards').append(new App.BoardSimpleView({
+                                                model: null,
+                                                id: 'js-my-board-empty',
+                                                className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad',
                                             }).el);
                                         }
                                     }

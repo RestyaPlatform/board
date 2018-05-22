@@ -607,7 +607,7 @@ App.BoardView = Backbone.View.extend({
                 pasteZone: null,
                 singleFileUploads: true,
                 formData: $('form.js-user-profile-edit').serialize(),
-                fileUploadHTML: '<input id="fileupload1" type="file" name="attachment"  >',
+                fileUploadHTML: '<input id="fileupload1" type="file" name="attachment" >',
             });
             uploadManager.on('fileadd', function(file) {
                 $('#dropzone').addClass('cssloader');
@@ -670,7 +670,7 @@ App.BoardView = Backbone.View.extend({
                 containment: 'window',
                 axis: 'x',
                 items: 'div.js-board-list',
-                placeholder: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 board-list-placeholder list ',
+                placeholder: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 board-list-placeholder board-list-height ',
                 forcePlaceholderSize: true,
                 cursor: 'grab',
                 scrollSensitivity: 100,
@@ -1187,6 +1187,7 @@ App.BoardView = Backbone.View.extend({
                     });
                     $(view.render().el).insertBefore($('#js-add-list-block'));
                 }
+                App.current_board.lists.add(list);
             }
         });
         return false;

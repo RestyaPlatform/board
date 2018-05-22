@@ -828,6 +828,9 @@ table.acl-link-list > tbody> tr {
 		display: block;
 		height: 50px;
 	}
+	.board-list-height {
+		height: 100%;
+	}
 	.list {
 		padding: 7px 10px;
 		background-color: #f3f5f7;
@@ -1232,9 +1235,12 @@ g path:hover {
 		float: left;
 		margin-right: 20px;
 		min-height: 240px;
+		> a {
+			height:150px;
+			line-height:138px;
+		}
 		img {
 			width: 100%;
-			height: 150px;
 		}
 	}
 }
@@ -2430,6 +2436,12 @@ header{
 	-moz-user-select:none;
 	user-select:none;
 }
+.board-outer {
+	align-items: inherit;
+}
+.board-list-outer {
+	height: 100%;
+}
 .js-checklist-edit-form-textarea {
 	height: 90px !important;
 }
@@ -2487,16 +2499,12 @@ header{
 	*/
 	#listview_table td:before { content: attr(data-title); }
 }
-.github-markdown {
-	> p {
-		> a {
-			color: #f47564;
-			word-wrap: break-word;
-			white-space: normal;
-			&:hover, &:focus {
-				color: #f14b34;
-				text-decoration: underline;
-			}
-			}
-		}
+.github-markdown a {
+	color: #f47564;
+	word-wrap: break-word;
+	white-space: normal;
+	&:hover, &:focus {
+		color: #f14b34;
+		text-decoration: underline;
+	}
 }

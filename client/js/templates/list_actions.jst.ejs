@@ -98,7 +98,7 @@
 <% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 	<li><a href="#" title="<%- i18next.t('Move All Cards in This List') %>" class="js-show-move-card-list-form" data-list-id="<%- list.id %>"><%- i18next.t("Move All Cards in This List") %></a></li>
 <% } %>
-<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 ||  !_.isEmpty(list.collection.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 ||  !_.isEmpty(list.collection.board.acl_links.where({slug: "archive_all_cards_in_the_list",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 	<li><a href="#" title="<%- i18next.t('Archive All Cards in this List') %>" class="js-show-confirm-archive-cards" data-list-id="<%- list.id %>"><%- i18next.t("Archive All Cards in this List") %></a></li>
 <% } %>
 <li class="divider"></li>

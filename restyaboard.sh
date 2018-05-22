@@ -110,16 +110,26 @@
 		upgrade-0.6.1-0.6.2()
 		{
 			set +x
-			echo "Do you want to install Restyaboard app 'Hide Card Created Date' (y/n)?"
+			echo "Do you want to install Restyaboard app 'Hide Card Additional Informations' (y/n)?"
 			read -r answer
 			set -x
 			case "${answer}" in
 				[Yy])
 				mkdir "$dir/client/apps"
 				chmod -R go+w "$dir/client/apps"
-				curl -v -L -G -o /tmp/r_hide_card_created_date-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_hide_card_created_date-v0.1.1.zip
-				unzip /tmp/r_hide_card_created_date-v0.1.1.zip -d "$dir/client/apps"
+				curl -v -L -G -o /tmp/r_hide_card_additional_informations-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_hide_card_additional_informations-v0.1.1.zip
+				unzip /tmp/r_hide_card_additional_informations-v0.1.1.zip -d "$dir/client/apps"
 			esac
+		}
+
+		upgrade-0.6.3-0.6.4()
+		{
+			if [ -d "$dir/client/apps/r_hide_card_created_date" ]; then
+				rm -rf $dir/client/apps/r_hide_card_created_date/
+				chmod -R go+w "$dir/client/apps"
+				curl -v -L -G -o /tmp/r_hide_card_additional_informations-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_hide_card_additional_informations-v0.1.1.zip
+				unzip /tmp/r_hide_card_additional_informations-v0.1.1.zip -d "$dir/client/apps"
+			fi
 		}
 
 		update_version()
@@ -148,9 +158,10 @@
 				
 				echo "Connecting database to run SQL changes..."
 				psql -U postgres -c "\q"
-				if [ $? != 0 ]
+				error_code=$? 
+				if [ ${error_code} != 0 ]
 				then
-					echo "PostgreSQL database connection failed with error code 32"
+					echo "PostgreSQL database connection failed with error code ${error_code} (PostgreSQL database connection failed with error code 32)"
 					return 32
 				fi
 				sleep 1
@@ -196,6 +207,10 @@
 				then
 					upgrade+=("upgrade-0.6.2-0.6.3")
 				fi
+				if [[ $version < "v0.6.4" ]];
+				then
+					upgrade+=("upgrade-0.6.3-0.6.4")
+				fi
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
 				do
@@ -208,9 +223,10 @@
 						echo "Updating SQL..."
 						psql -d ${POSTGRES_DBNAME} -f "$dir/sql/${i}.sql" -U ${POSTGRES_DBUSER}
 						/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
-						if [ $? != 0 ]
+						error_code=$?
+						if [ ${error_code} != 0 ]
 						then
-							echo "PostgreSQL updation of SQL failed with error code 33"
+							echo "PostgreSQL updation of SQL failed with error code ${error_code} (PostgreSQL updation of SQL failed with error code 33)"
 							return 33
 						fi
 					fi
@@ -219,7 +235,7 @@
 				if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 				then
 					service nginx restart
-					service php7.0-fpm restart
+					service php7.2-fpm restart
 				else
 					if [ -f "/bin/systemctl" ]; then
 						echo "Starting services with systemd..."
@@ -266,9 +282,10 @@
 			case "${answer}" in
 				[Yy])
 				apt-get install debian-keyring debian-archive-keyring
-				if [ $? != 0 ]
+				error_code=$?
+				if [ ${error_code} != 0 ]
 				then
-					echo "debian-keyring installation failed with error code 1"
+					echo "debian-keyring installation failed with error code ${error_code} (debian-keyring installation failed with error code 1)"
 				fi
 				
 				apt-get update -y
@@ -289,9 +306,10 @@
 						[Yy])
 						echo "Installing nginx..."
 						apt-get install -y cron nginx
-						if [ $? != 0 ]
+						error_code=$?
+						if [ ${error_code} != 0 ]
 						then
-							echo "nginx installation failed with error code 2"
+							echo "nginx installation failed with error code ${error_code} (nginx installation failed with error code 2)"
 							return 2
 						fi
 						service nginx start
@@ -308,31 +326,34 @@
 					case "${answer}" in
 						[Yy])
 						echo "Installing PHP..."
-						apt-get install -y php7.0 php7.0-common
-						if [ $? != 0 ]
+						apt-get install -y php7.2 php7.2-common
+						error_code=$?
+						if [ ${error_code} != 0 ]
 						then
-							echo "PHP installation failed with error code 3"
+							echo "PHP installation failed with error code ${error_code} (PHP installation failed with error code 3)"
 							return 3
 						fi
 					esac
 				fi
 				
 				echo "Installing PHP fpm and cli extension..."
-				apt-get install -y php7.0-fpm php7.0-cli
-				if [ $? != 0 ]
+				apt-get install -y php7.2-fpm php7.2-cli
+				error_code=$?
+				if [ ${error_code} != 0 ]
 				then
-					echo "php7.0-cli installation failed with error code 4"
+					echo "php7.2-cli installation failed with error code ${error_code} (php7.2-cli installation failed with error code 4)"
 				fi
-				service php7.0-fpm start
+				service php7.2-fpm start
 				
 				echo "Checking PHP curl extension..."
 				php -m | grep curl
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-curl..."
-					apt-get install -y php7.0-curl
-					if [ $? != 0 ]
+					echo "Installing php7.2-curl..."
+					apt-get install -y php7.2-curl
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-curl installation failed with error code 5"
+						echo "php7.2-curl installation failed with error code ${error_code} (php7.2-curl installation failed with error code 5)"
 						return 5
 					fi
 				fi
@@ -340,12 +361,13 @@
 				echo "Checking PHP pgsql extension..."
 				php -m | grep pgsql
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-pgsql..."
+					echo "Installing php7.2-pgsql..."
 					apt-get install libpq5
-					apt-get install -y php7.0-pgsql
-					if [ $? != 0 ]
+					apt-get install -y php7.2-pgsql
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-pgsql installation failed with error code 6"
+						echo "php7.2-pgsql installation failed with error code ${error_code} (php7.2-pgsql installation failed with error code 6)"
 						return 6
 					fi
 				fi
@@ -353,11 +375,12 @@
 				echo "Checking PHP mbstring extension..."
 				php -m | grep mbstring
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-mbstring..."
-					apt-get install -y php7.0-mbstring
-					if [ $? != 0 ]
+					echo "Installing php7.2-mbstring..."
+					apt-get install -y php7.2-mbstring
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-mbstring installation failed with error code 7"
+						echo "php7.2-mbstring installation failed with error code ${error_code} (php7.2-mbstring installation failed with error code 7)"
 						return 7
 					fi
 				fi
@@ -365,11 +388,12 @@
 				echo "Checking PHP ldap extension..."
 				php -m | grep ldap
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-ldap..."
-					apt-get install -y php7.0-ldap
-					if [ $? != 0 ]
+					echo "Installing php7.2-ldap..."
+					apt-get install -y php7.2-ldap
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-ldap installation failed with error code 8"
+						echo "php7.2-ldap installation failed with error code ${error_code} (php7.2-ldap installation failed with error code 8)"
 						return 8
 					fi
 				fi
@@ -377,23 +401,26 @@
 				echo "Checking PHP imagick extension..."
 				php -m | grep imagick
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-imagick..."
+					echo "Installing php7.2-imagick..."
 					apt-get install -y gcc
-					if [ $? != 0 ]
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "gcc installation failed with error code 9"
+						echo "gcc installation failed with error code ${error_code} (gcc installation failed with error code 9)"
 						return 9
 					fi
 					apt-get install -y imagemagick
-					if [ $? != 0 ]
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "imagemagick installation failed with error code 9"
+						echo "imagemagick installation failed with error code ${error_code} (imagemagick installation failed with error code 9)"
 						return 9
 					fi
-					apt-get install -y php7.0-imagick
-					if [ $? != 0 ]
+					apt-get install -y php7.2-imagick
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-imagick installation failed with error code 10"
+						echo "php7.2-imagick installation failed with error code ${error_code} (php7.2-imagick installation failed with error code 10)"
 						return 10
 					fi
 				fi
@@ -401,11 +428,12 @@
 				echo "Checking PHP imap extension..."
 				php -m | grep imap
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-imap..."
-					apt-get install -y php7.0-imap
-					if [ $? != 0 ]
+					echo "Installing php7.2-imap..."
+					apt-get install -y php7.2-imap
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-imap installation failed with error code 11"
+						echo "php7.2-imap installation failed with error code ${error_code} (php7.2-imap installation failed with error code 11)"
 						return 11
 					fi
 				fi
@@ -414,22 +442,24 @@
 				php -m | grep xml
 				if [ "$?" -gt 0 ]; then
 					echo "Installing xml..."
-					apt-get install php7.0-xml
-					if [ $? != 0 ]
+					apt-get install php7.2-xml
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "xml installation failed with error code 56"
+						echo "xml installation failed with error code ${error_code} (xml installation failed with error code 56)"
 						return 56
 					fi
 				fi
 
 				echo "Setting up timezone..."
 				timezone=$(cat /etc/timezone)
-				sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.0/fpm/php.ini
-				echo "date.timezone = $timezone" >> /etc/php/7.0/fpm/php.ini
+				sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.2/fpm/php.ini
+				echo "date.timezone = $timezone" >> /etc/php/7.2/fpm/php.ini
 				
 				echo "Checking PostgreSQL..."
 				id -a postgres
-				if [ $? != 0 ]; then
+				error_code=$?
+				if [ ${error_code} != 0 ]; then
 					echo "PostgreSQL not installed!"
 					set +x
 					echo "Do you want to install PostgreSQL (y/n)?"
@@ -440,17 +470,19 @@
 						echo "Installing PostgreSQL..."
 						sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 						apt-get install wget ca-certificates
-						if [ $? != 0 ]
+						error_code=$?
+						if [ ${error_code} != 0 ]
 						then
-							echo "ca-certificates installation failed with error code 12"
+							echo "ca-certificates installation failed with error code ${error_code} (ca-certificates installation failed with error code 12)"
 						fi
 						wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 						apt-key add ACCC4CF8.asc
 						apt-get update
 						apt-get install -y postgresql-9.6 --allow-unauthenticated
-						if [ $? != 0 ]
+						error_code=$?
+						if [ ${error_code} != 0 ]
 						then
-							echo "postgresql-9.6 installation failed with error code 13"
+							echo "postgresql-9.6 installation failed with error code ${error_code} (postgresql-9.6 installation failed with error code 13)"
 							return 13
 						fi
 					esac
@@ -461,18 +493,20 @@
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
 						sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 						apt-get install wget ca-certificates
-						if [ $? != 0 ]
+						error_code=$?
+						if [ ${error_code} != 0 ]
 						then
-							echo "ca-certificates installation failed with error code 12"
+							echo "ca-certificates installation failed with error code ${error_code} (ca-certificates installation failed with error code 12)"
 						fi
 						wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 						apt-key add ACCC4CF8.asc
 						apt-get update
 						apt-get upgrade
 						apt-get install -y postgresql-9.6 --allow-unauthenticated
-						if [ $? != 0 ]
+						error_code=$?
+						if [ ${error_code} != 0 ]
 						then
-							echo "postgresql-9.6 installation failed with error code 13"
+							echo "postgresql-9.6 installation failed with error code ${error_code} (postgresql-9.6 installation failed with error code 13)"
 							return 13
 						fi
 					fi
@@ -486,28 +520,31 @@
 				
 				if ! hash GeoIP-devel 2>&-;
 				then
-					apt-get install -y php7.0-geoip php7.0-dev libgeoip-dev
-					if [ $? != 0 ]
+					apt-get install -y php7.2-geoip php7.2-dev libgeoip-dev
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-geoip php7.0-dev libgeoip-dev installation failed with error code 50"
+						echo "php7.2-geoip php7.2-dev libgeoip-dev installation failed with error code ${error_code} (php7.2-geoip php7.2-dev libgeoip-dev installation failed with error code 50)"
 					fi
 				fi
 
 				if ! hash pecl/geoip 2>&-;
 				then
 					pecl install geoip
-					if [ $? != 0 ]
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "pecl geoip installation failed with error code 47"
+						echo "pecl geoip installation failed with error code ${error_code} (pecl geoip installation failed with error code 47)"
 					fi
 				fi
 
 				echo "extension=geoip.so" >> /etc/php.ini
 
 				mkdir -v /usr/share/GeoIP
-				if [ $? != 0 ]
+				error_code=$?
+				if [ ${error_code} != 0 ]
 				then
-					echo "GeoIP folder creation failed with error code 52"
+					echo "GeoIP folder creation failed with error code ${error_code} (GeoIP folder creation failed with error code 52)"
 				fi
 
 				get_geoip_data
@@ -572,9 +609,10 @@
 				echo "postfix postfix/main_mailer_type string 'Internet Site'"\
 				| debconf-set-selections &&\
 				apt-get install -y postfix
-						if [ $? != 0 ]
+					error_code=$?
+						if [ ${error_code} != 0 ]
 					then
-						echo "postfix installation failed with error code 16"
+						echo "postfix installation failed with error code ${error_code} (postfix installation failed with error code 16)"
 					fi
 				echo "Changing permission..."
 				find $dir -type d -exec chmod 755 {} \;
@@ -585,40 +623,45 @@
 				chmod -R 0755 $dir/server/php/shell/*.sh
 
 				psql -U postgres -c "\q"
-				if [ $? != 0 ]
+				error_code=$?
+				if [ ${error_code} != 0 ]
 				then
-					echo "PostgreSQL Changing the permission failed with error code 34"
+					echo "PostgreSQL Changing the permission failed with error code ${error_code} (PostgreSQL Changing the permission failed with error code 34)"
 					return 34
 				fi
 				sleep 1
 
 				echo "Creating PostgreSQL user and database..."
 				psql -U postgres -c "DROP USER IF EXISTS ${POSTGRES_DBUSER};CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
-				if [ $? != 0 ]
+				error_code=$?
+				if [ ${error_code} != 0 ]
 				then
-					echo "PostgreSQL user creation failed with error code 35 "
+					echo "PostgreSQL user creation failed with error code ${error_code} (PostgreSQL user creation failed with error code 35)"
 					return 35
 				fi
 				psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
-				if [ $? != 0 ]
+				error_code=$?
+				if [ ${error_code} != 0 ]
 				then
-					echo "PostgreSQL database creation failed with error code 36"
+					echo "PostgreSQL database creation failed with error code ${error_code} (PostgreSQL database creation failed with error code 36)"
 					return 36
 				fi
 				psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;"
-				if [ $? != 0 ]
+				error_code=$?
+				if [ ${error_code} != 0 ]
 				then
-					echo "PostgreSQL extension creation failed with error code 37"
+					echo "PostgreSQL extension creation failed with error code ${error_code} (PostgreSQL extension creation failed with error code 37)"
 					return 37
 				fi
 				psql -U postgres -c "COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';"
-				if [ "$?" = 0 ];
+				error_code=$?
+				if [ ${error_code} = 0 ];
 				then
 					echo "Importing empty SQL..."
 					psql -d ${POSTGRES_DBNAME} -f "$dir/sql/restyaboard_with_empty_data.sql" -U ${POSTGRES_DBUSER}
-					if [ $? != 0 ]
+					if [ ${error_code} != 0 ]
 					then
-						echo "PostgreSQL Empty SQL importing failed with error code 39"
+						echo "PostgreSQL Empty SQL importing failed with error code ${error_code} (PostgreSQL Empty SQL importing failed with error code 39)"
 						return 39
 					fi
 				fi
@@ -645,7 +688,7 @@
 				echo "Setting up cron for every 5 minutes to send email notification to past due..."
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
 
-				set +x
+					set +x
 				echo "Do you want to setup SMTP configuration (y/n)?"
 				read -r answer
 				set -x
@@ -664,7 +707,7 @@
 					sed -i "s/SMTP = localhost/SMTP = $smtp_server/" /etc/php.ini
 					sed -i "s/smtp_port = 25/smtp_port = $smtp_port/" /etc/php.ini
 				esac
-							
+
 				set +x
 				echo "Do you want to install Restyaboard apps (y/n)?"
 				read -r answer
@@ -675,9 +718,10 @@
 					then
 						echo "Installing jq..."
 						apt-get install -y jq
-						if [ $? != 0 ]
+						error_code=$?
+						if [ ${error_code} != 0 ]
 						then
-							echo "jq installation failed with error code 53"
+							echo "jq installation failed with error code ${error_code} (jq installation failed with error code 53)"
 						fi
 					fi
 					mkdir "$dir/client/apps"
@@ -690,17 +734,19 @@
     					app_price=$(echo ${fid} | cut -d"#" -f2)
 						if ([ "$app_price" = "Free" ])
     					then
-							curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-							unzip /tmp/$fid.zip -d "$dir/client/apps"
+							curl -v -L -G -o /tmp/$app_name.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$app_name.zip
+							unzip /tmp/$app_name.zip -d "$dir/client/apps"
 						fi
 					done
 				esac
 				
 				echo "Starting services..."
 				service cron restart
-				service php7.0-fpm restart
+				service php7.2-fpm restart
 				service nginx restart
 				service postfix restart
+				apt install -y python-pip
+				pip install -y virtualenv
 			esac
 		else
 			set +x
@@ -723,9 +769,10 @@
 						echo "Installing nginx..."
 						rpm -Uvh "http://nginx.org/packages/centos/${OS_VERSION}/noarch/RPMS/nginx-release-centos-${OS_VERSION}-0.el${OS_VERSION}.ngx.noarch.rpm"
 						yum install -y zip cronie nginx
-						if [ $? != 0 ]
+						error_code=$?
+						if [ ${error_code} != 0 ]
 						then
-							echo "cron nginx installation failed with error code 18"
+							echo "cron nginx installation failed with error code ${error_code} cron nginx installation failed with error code 18"
 							return 18
 						fi
 						service nginx start
@@ -747,34 +794,37 @@
 						echo "Installing PHP..."
 						rpm -Uvh "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm"
 						rpm -Uvh "https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm"
-						yum install -y php70w php70w-opcache
-						if [ $? != 0 ]
+						yum install -y php72w php72w-opcache
+						error_code=$?
+						if [ ${error_code} != 0 ]
 						then
-							echo "php installation failed with error code 20"
+							echo "php installation failed with error code ${error_code} (php installation failed with error code 20)"
 							return 20
 						fi
 					esac
 				fi
 				
 				echo "Installing PHP fpm and cli extension..."
-				yum install -y php70w-fpm php70w-devel php70w-cli php70w-opcache
-				if [ $? != 0 ]
+				yum install -y php72w-fpm php72w-devel php72w-cli php72w-opcache
+				error_code=$?
+				if [ ${error_code} != 0 ]
 				then
-					echo "php-devel installation failed with error code 21"
+					echo "php-devel installation failed with error code ${error_code} (php-devel installation failed with error code 21)"
 					return 21
 				fi
 				service php-fpm start
-				chkconfig --levels 35 php70w-fpm on
+				chkconfig --levels 35 php72w-fpm on
 
 				echo "Checking PHP curl extension..."
 				php -m | grep curl
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-curl..."
-					yum install -y php70w-curl
-					if [ $? != 0 ]
+					yum install -y php72w-curl
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "php-curl installation failed with error code 22"
+						echo "php-curl installation failed with error code ${error_code} (php-curl installation failed with error code 22)"
 						return 22
 					fi
 				fi
@@ -784,10 +834,11 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-pgsql..."
-					yum install -y php70w-pgsql
-					if [ $? != 0 ]
+					yum install -y php72w-pgsql
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "php-pgsql installation failed with error code 23"
+						echo "php-pgsql installation failed with error code ${error_code} (php-pgsql installation failed with error code 23)"
 						return 23
 					fi
 				fi
@@ -797,10 +848,11 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-mbstring..."
-					yum install -y php70w-mbstring
-					if [ $? != 0 ]
+					yum install -y php72w-mbstring
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "php-mbstring installation failed with error code 24"
+						echo "php-mbstring installation failed with error code ${error_code} (php-mbstring installation failed with error code 24)"
 						return 24
 					fi
 				fi
@@ -810,10 +862,11 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-ldap..."
-					yum install -y php70w-ldap
-					if [ $? != 0 ]
+					yum install -y php72w-ldap
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "php-ldap installation failed with error code 25"
+						echo "php-ldap installation failed with error code ${error_code} (php-ldap installation failed with error code 25)"
 						return 25
 					fi
 				fi
@@ -825,10 +878,11 @@
 					echo "Installing php-imagick..."
 
 					yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
-					yum install -y php70w-pear
-					if [ $? != 0 ]
+					yum install -y php72w-pear
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "Installing php-imagick failed with error code 26"
+						echo "Installing php-imagick failed with error code ${error_code} (Installing php-imagick failed with error code 26)"
 						return 26
 					fi
 
@@ -849,10 +903,11 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-imap..."
-					yum install -y php70w-imap
-					if [ $? != 0 ]
+					yum install -y php72w-imap
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "php-imap installation failed with error code 26"
+						echo "php-imap installation failed with error code ${error_code} (php-imap installation failed with error code 26)"
 						return 26
 					fi
 					
@@ -862,10 +917,11 @@
 				php -m | grep xml
 				if [ "$?" -gt 0 ]; then
 					echo "Installing xml..."
-					yum install -y php70w-xml
-					if [ $? != 0 ]
+					yum install -y php72w-xml
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "xml installation failed with error code 57"
+						echo "xml installation failed with error code ${error_code} (xml installation failed with error code 57)"
 						return 57
 					fi
 				fi
@@ -880,7 +936,8 @@
 
 				echo "Checking PostgreSQL..."
 				id -a postgres
-				if [ $? != 0 ];
+				error_code=$?
+				if [ ${error_code} != 0 ];
 				then
 					echo "PostgreSQL not installed!"
 					set +x
@@ -906,9 +963,10 @@
 						fi
 
 						yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
-						if [ $? != 0 ]
+						error_code=$?
+						if [ ${error_code} != 0 ]
 						then
-							echo "postgresql96 installation failed with error code 29"
+							echo "postgresql96 installation failed with error code ${error_code} (postgresql96 installation failed with error code 29)"
 							return 29
 						fi
 					esac
@@ -932,9 +990,10 @@
 						fi
 
 						yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
-						if [ $? != 0 ]
+						error_code=$?
+						if [ ${error_code} != 0 ]
 						then
-							echo "postgresql installation failed with error code 29"
+							echo "postgresql installation failed with error code ${error_code} (postgresql installation failed with error code 29)"
 							return 29
 						fi
 					fi
@@ -967,9 +1026,10 @@
 				if ! hash pecl/geoip 2>&-;
 				then
 					pecl install geoip
-					if [ $? != 0 ]
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "pecl geoip installation failed with error code 47"
+						echo "pecl geoip installation failed with error code ${error_code} (pecl geoip installation failed with error code 47)"
 						return 47
 					fi
 				fi
@@ -1033,30 +1093,34 @@
 				chmod -R 0755 $dir/server/php/shell/*.sh
 
 				psql -U postgres -c "\q"
-				if [ $? != 0 ]
+				error_code=$?
+				if [ ${error_code} != 0 ]
 				then
-					echo "PostgreSQL Changing the permission failed with error code 40"
+					echo "PostgreSQL Changing the permission failed with error code ${error_code} (PostgreSQL Changing the permission failed with error code 40)"
 					return 40
 				fi			
 				sleep 1
 
 				echo "Creating PostgreSQL user and database..."
 				psql -U postgres -c "DROP USER IF EXISTS ${POSTGRES_DBUSER};CREATE USER ${POSTGRES_DBUSER} WITH ENCRYPTED PASSWORD '${POSTGRES_DBPASS}'"
-				if [ $? != 0 ]
+				error_code=$?
+				if [ ${error_code} != 0 ]
 				then
-					echo "PostgreSQL user creation failed with error code 41"
+					echo "PostgreSQL user creation failed with error code ${error_code} (PostgreSQL user creation failed with error code 41)"
 					return 41
 				fi			
 				psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
-				if [ $? != 0 ]
+				error_code=$?
+				if [ ${error_code} != 0 ]
 				then
-					echo "PostgreSQL database creation failed with error code 42"
+					echo "PostgreSQL database creation failed with error code ${error_code} (PostgreSQL database creation failed with error code 42)"
 					return 42
 				fi			
 				psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;"
-				if [ $? != 0 ]
+				error_code=$?
+				if [ ${error_code} != 0 ]
 				then
-					echo "PostgreSQL extension creation failed with error code 43"
+					echo "PostgreSQL extension creation failed with error code ${error_code} (PostgreSQL extension creation failed with error code 43)"
 					return 43
 				fi			
 				psql -U postgres -c "COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';"
@@ -1064,9 +1128,10 @@
 				then
 					echo "Importing empty SQL..."
 					psql -d ${POSTGRES_DBNAME} -f "$dir/sql/restyaboard_with_empty_data.sql" -U ${POSTGRES_DBUSER}
-					if [ $? != 0 ]
+					error_code=$?
+					if [ ${error_code} != 0 ]
 					then
-						echo "PostgreSQL Empty SQL importing failed with error code 45"
+						echo "PostgreSQL Empty SQL importing failed with error code ${error_code} (PostgreSQL Empty SQL importing failed with error code 45)"
 						return 45
 					fi	
 				fi
@@ -1094,10 +1159,10 @@
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
 				
 				echo "Reset php-fpm (use unix socket mode)..."
-				if [ -f "/run/php/php7.0-fpm.sock" ]; then
-					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.0-fpm.sock/g" /etc/php-fpm.d/www.conf
+				if [ -f "/run/php/php7.2-fpm.sock" ]; then
+					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.2-fpm.sock/g" /etc/php-fpm.d/www.conf
 				else
-					sed -i "s/unix:\/run\/php\/php7.0-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
+					sed -i "s/unix:\/run\/php\/php7.2-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
 				fi
 
 				set +x
@@ -1130,9 +1195,10 @@
 					then
 						echo "Installing jq..."
 						yum install -y jq
-						if [ $? != 0 ]
+						error_code
+						if [ ${error_code} != 0 ]
 						then
-							echo "jq installation failed with error code 49"
+							echo "jq installation failed with error code ${error_code} (jq installation failed with error code 49)"
 							return 49
 						fi
 					fi
@@ -1146,8 +1212,8 @@
 						app_price=$(echo ${fid} | cut -d"#" -f2)
 						if ([ "$app_price" = "Free" ])
 						then
-							curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-							unzip /tmp/$fid.zip -d "$dir/client/apps"
+							curl -v -L -G -o /tmp/$app_name.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$app_name.zip
+							unzip /tmp/$app_name.zip -d "$dir/client/apps"
 						fi
 					done
 				esac
@@ -1161,13 +1227,48 @@
 					/etc/init.d/php-fpm restart
 					/etc/init.d/nginx restart
 				fi
+				yum install -y python-pip
+				pip install -y virtualenv
 				
 				/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 			esac
 		fi
+		
+		set +x
+		echo "Do you want to setup SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance (y/n)?"
+		read -r answer
+		set -x
+		case "${answer}" in
+			[Yy])
+		cd /opt/
+		wget https://github.com/certbot/certbot/archive/master.zip -O certbot-master.zip
+		unzip certbot-master.zip
+		cd /opt/certbot-master/
+		sudo -H ./certbot-auto certonly --webroot --no-bootstrap -d $webdir -w "$dir/client"
+		sed -i "s/restya\.com/$webdir/g" ${DOWNLOAD_DIR}/restyaboard-ssl.conf
+
+		sed -i "/client_max_body_size 300M;/r ${DOWNLOAD_DIR}/restyaboard-ssl.conf"  /etc/nginx/conf.d/restyaboard.conf
+		if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+		then
+			service nginx restart
+			service php7.2-fpm restart
+		else
+			if [ -f "/bin/systemctl" ]; then
+				echo "Starting services with systemd..."
+				systemctl restart nginx
+				systemctl restart php-fpm
+			else
+				echo "Starting services..."
+				/etc/init.d/php-fpm restart
+				/etc/init.d/nginx restart
+			fi
+		fi
+		esac
+
 		set +x
 		curl -v -L -G -d "app=board&os=${os}&version=${version}" "http://restya.com/success_installation.php"
 		echo "Restyaboard URL : $webdir"
+
 		echo "Login with username admin and password restya"
 		exit 1
 	}

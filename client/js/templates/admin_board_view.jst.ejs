@@ -84,11 +84,17 @@
 						<% if(!_.isEmpty(admin_board_user.profile_picture_path)) {
 								var profile_picture_path = board.showImage('User', admin_board_user.user_id, 'small_thumb' );%>
 						<img  width="30" height="30" class="img-responsive img-rounded avatar" title="<%-admin_board_user.full_name %> (<%-admin_board_user.username %>)" alt="[Images: <%-admin_board_user.full_name %>]" src="<%=profile_picture_path %>">
-						<% } else {%>
+						<% } else {%> 
 							<i class="avatar avatar-color-194 img-rounded"><%= (admin_board_user.initials) %></i>
 						<% } %>
-						<% if(!_.isUndefined(board.board_user_roles[admin_board_user.board_user_role_id - 1].id) && parseInt(board.board_user_roles[admin_board_user.board_user_role_id - 1].id) === 1){ %>
-							<span class="name-block col-xs-12 label btn-xs col-xs-push-0"><%- i18next.t("Owner") %></span>
+						<% if(!_.isUndefined(board.board_user_roles) && parseInt(admin_board_user.board_user_role_id) === 1){ %>
+							<% _.each(board.board_user_roles, function(board_user_role){
+								var ownerRole;  
+								if (board_user_role.id == 1) {
+									ownerRole = board_user_role.name; %> 
+									<span class="name-block col-xs-12 label btn-xs col-xs-push-0 htruncate"><%- i18next.t('%s', { postProcess: 'sprintf', sprintf: [ownerRole]}) %></span>
+								<%}
+							});%>
 						<% } %>
 					</span>
 				</span>
@@ -119,7 +125,13 @@
 			 
 			  <% if(_.isUndefined(board.normal_board_users) && _.isUndefined(board.admin_board_users)) { %>-<% } else {%> <span class="table-members label small hidden-xs"> 
 				<span class="small navbar-btn">
-					<span class="show text-left text-muted" title="<%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %> "><%- i18next.t('Owner %s', { postProcess: 'sprintf', sprintf: [admin_board_users_count]}) %></span> 
+					<% _.each(board.board_user_roles, function(board_user_role){
+						var ownerRole;  
+						if (board_user_role.id == 1) {
+							ownerRole = board_user_role.name; %> 
+					<span class="show text-left text-muted" title="<%- i18next.t('%s %s', { postProcess: 'sprintf', sprintf: [ownerRole,admin_board_users_count]}) %> "><%- i18next.t('%s %s', { postProcess: 'sprintf', sprintf: [ownerRole,admin_board_users_count]}) %></span> 
+						<%}
+					});%>
 					<span class="show navbar-btn text-left text-muted" title="<%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %> "><%- i18next.t('Member %s', { postProcess: 'sprintf', sprintf: [normal_board_users_count]}) %></span>
 					</span> 
 				</span> <% } %></a>
@@ -142,8 +154,14 @@
 										<% } else {%>
 											<i class="avatar avatar-color-194 img-rounded"><%- user.attributes.initials %></i>									
 										<% } %>
-										<% if(!_.isUndefined(board.board_user_roles[user.attributes.board_user_role_id - 1].id) && parseInt(board.board_user_roles[user.attributes.board_user_role_id - 1].id) === 1){ %>
-											<span class="name-block col-xs-1 label btn-xs col-xs-push-0"><%- i18next.t("Owner") %></span>
+										<% if(!_.isUndefined(board.board_user_roles) && parseInt(user.attributes.board_user_role_id) === 1){ %>
+											<% _.each(board.board_user_roles, function(board_user_role){
+												var ownerRole;  
+												if (board_user_role.id == 1) {
+													ownerRole = board_user_role.name; %> 
+												<span class="name-block col-xs-12 label btn-xs col-xs-push-0 htruncate"><%- i18next.t('%s', { postProcess: 'sprintf', sprintf: [ownerRole]}) %></span>
+												<%} 
+											});%>
 										<% } %>
 									</span>
 									</a>
