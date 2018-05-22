@@ -2,14 +2,13 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.12
--- Dumped by pg_dump version 9.5.12
+-- Dumped from database version 9.5.4
+-- Dumped by pg_dump version 9.5.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
@@ -28,11 +27,13 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
+SET search_path = public, pg_catalog;
+
 --
 -- Name: label_card_count_update(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.label_card_count_update() RETURNS trigger
+CREATE FUNCTION label_card_count_update() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -77,7 +78,7 @@ $$;
 -- Name: update_board_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_board_count() RETURNS trigger
+CREATE FUNCTION update_board_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -122,7 +123,7 @@ $$;
 -- Name: update_board_star_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_board_star_count() RETURNS trigger
+CREATE FUNCTION update_board_star_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -173,7 +174,7 @@ $$;
 -- Name: update_board_subscriber_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_board_subscriber_count() RETURNS trigger
+CREATE FUNCTION update_board_subscriber_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -224,7 +225,7 @@ $$;
 -- Name: update_board_user_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_board_user_count() RETURNS trigger
+CREATE FUNCTION update_board_user_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -277,7 +278,7 @@ $$;
 -- Name: update_card_activity_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_card_activity_count() RETURNS trigger
+CREATE FUNCTION update_card_activity_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -322,7 +323,7 @@ $$;
 -- Name: update_card_attachment_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_card_attachment_count() RETURNS trigger
+CREATE FUNCTION update_card_attachment_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -359,7 +360,7 @@ $$;
 -- Name: update_card_checklist_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_card_checklist_count() RETURNS trigger
+CREATE FUNCTION update_card_checklist_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -404,7 +405,7 @@ $$;
 -- Name: update_card_checklist_item_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_card_checklist_item_count() RETURNS trigger
+CREATE FUNCTION update_card_checklist_item_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -481,7 +482,7 @@ $$;
 -- Name: update_card_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_card_count() RETURNS trigger
+CREATE FUNCTION update_card_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -513,7 +514,7 @@ $$;
 -- Name: update_card_subscriber_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_card_subscriber_count() RETURNS trigger
+CREATE FUNCTION update_card_subscriber_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -564,7 +565,7 @@ $$;
 -- Name: update_card_user_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_card_user_count() RETURNS trigger
+CREATE FUNCTION update_card_user_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -609,7 +610,7 @@ $$;
 -- Name: update_card_voters_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_card_voters_count() RETURNS trigger
+CREATE FUNCTION update_card_voters_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -654,7 +655,7 @@ $$;
 -- Name: update_comment_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_comment_count() RETURNS trigger
+CREATE FUNCTION update_comment_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -691,7 +692,7 @@ $$;
 -- Name: update_list_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_list_count() RETURNS trigger
+CREATE FUNCTION update_list_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -717,7 +718,7 @@ $$;
 -- Name: update_list_subscriber_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_list_subscriber_count() RETURNS trigger
+CREATE FUNCTION update_list_subscriber_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -768,7 +769,7 @@ $$;
 -- Name: update_organization_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_organization_count() RETURNS trigger
+CREATE FUNCTION update_organization_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -805,7 +806,7 @@ $$;
 -- Name: update_organization_user_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_organization_user_count() RETURNS trigger
+CREATE FUNCTION update_organization_user_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -860,7 +861,7 @@ $$;
 -- Name: update_user_delete(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_user_delete() RETURNS trigger
+CREATE FUNCTION update_user_delete() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -899,7 +900,7 @@ $$;
 -- Name: update_users_user_login_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.update_users_user_login_count() RETURNS trigger
+CREATE FUNCTION update_users_user_login_count() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
@@ -950,7 +951,7 @@ $$;
 -- Name: acl_board_links_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.acl_board_links_seq
+CREATE SEQUENCE acl_board_links_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -966,8 +967,8 @@ SET default_with_oids = false;
 -- Name: acl_board_links; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.acl_board_links (
-    id bigint DEFAULT nextval('public.acl_board_links_seq'::regclass) NOT NULL,
+CREATE TABLE acl_board_links (
+    id bigint DEFAULT nextval('acl_board_links_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
@@ -983,7 +984,7 @@ CREATE TABLE public.acl_board_links (
 -- Name: acl_board_links_boards_user_roles_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.acl_board_links_boards_user_roles_seq
+CREATE SEQUENCE acl_board_links_boards_user_roles_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -995,8 +996,8 @@ CREATE SEQUENCE public.acl_board_links_boards_user_roles_seq
 -- Name: acl_board_links_boards_user_roles; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.acl_board_links_boards_user_roles (
-    id bigint DEFAULT nextval('public.acl_board_links_boards_user_roles_seq'::regclass) NOT NULL,
+CREATE TABLE acl_board_links_boards_user_roles (
+    id bigint DEFAULT nextval('acl_board_links_boards_user_roles_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     acl_board_link_id bigint NOT NULL,
@@ -1008,20 +1009,20 @@ CREATE TABLE public.acl_board_links_boards_user_roles (
 -- Name: acl_board_links_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.acl_board_links_listing AS
+CREATE VIEW acl_board_links_listing AS
  SELECT ablbur.board_user_role_id,
     abl.slug,
     abl.url,
     abl.method
-   FROM (public.acl_board_links_boards_user_roles ablbur
-     JOIN public.acl_board_links abl ON ((abl.id = ablbur.acl_board_link_id)));
+   FROM (acl_board_links_boards_user_roles ablbur
+     JOIN acl_board_links abl ON ((abl.id = ablbur.acl_board_link_id)));
 
 
 --
 -- Name: acl_links_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.acl_links_id_seq
+CREATE SEQUENCE acl_links_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1033,8 +1034,8 @@ CREATE SEQUENCE public.acl_links_id_seq
 -- Name: acl_links; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.acl_links (
-    id bigint DEFAULT nextval('public.acl_links_id_seq'::regclass) NOT NULL,
+CREATE TABLE acl_links (
+    id bigint DEFAULT nextval('acl_links_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
@@ -1054,7 +1055,7 @@ CREATE TABLE public.acl_links (
 -- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.acl_links_roles_roles_id_seq
+CREATE SEQUENCE acl_links_roles_roles_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1066,8 +1067,8 @@ CREATE SEQUENCE public.acl_links_roles_roles_id_seq
 -- Name: acl_links_roles; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.acl_links_roles (
-    id bigint DEFAULT nextval('public.acl_links_roles_roles_id_seq'::regclass) NOT NULL,
+CREATE TABLE acl_links_roles (
+    id bigint DEFAULT nextval('acl_links_roles_roles_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     acl_link_id bigint NOT NULL,
@@ -1079,21 +1080,21 @@ CREATE TABLE public.acl_links_roles (
 -- Name: acl_links_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.acl_links_listing AS
+CREATE VIEW acl_links_listing AS
  SELECT aclr.role_id,
     acl.slug,
     acl.url,
     acl.method,
     acl.is_default
-   FROM (public.acl_links_roles aclr
-     JOIN public.acl_links acl ON ((acl.id = aclr.acl_link_id)));
+   FROM (acl_links_roles aclr
+     JOIN acl_links acl ON ((acl.id = aclr.acl_link_id)));
 
 
 --
 -- Name: acl_organization_links_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.acl_organization_links_seq
+CREATE SEQUENCE acl_organization_links_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1105,8 +1106,8 @@ CREATE SEQUENCE public.acl_organization_links_seq
 -- Name: acl_organization_links; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.acl_organization_links (
-    id bigint DEFAULT nextval('public.acl_organization_links_seq'::regclass) NOT NULL,
+CREATE TABLE acl_organization_links (
+    id bigint DEFAULT nextval('acl_organization_links_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
@@ -1122,7 +1123,7 @@ CREATE TABLE public.acl_organization_links (
 -- Name: acl_organization_links_organizations_user_roles_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.acl_organization_links_organizations_user_roles_seq
+CREATE SEQUENCE acl_organization_links_organizations_user_roles_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1134,8 +1135,8 @@ CREATE SEQUENCE public.acl_organization_links_organizations_user_roles_seq
 -- Name: acl_organization_links_organizations_user_roles; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.acl_organization_links_organizations_user_roles (
-    id bigint DEFAULT nextval('public.acl_organization_links_organizations_user_roles_seq'::regclass) NOT NULL,
+CREATE TABLE acl_organization_links_organizations_user_roles (
+    id bigint DEFAULT nextval('acl_organization_links_organizations_user_roles_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     acl_organization_link_id bigint NOT NULL,
@@ -1147,20 +1148,20 @@ CREATE TABLE public.acl_organization_links_organizations_user_roles (
 -- Name: acl_organization_links_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.acl_organization_links_listing AS
+CREATE VIEW acl_organization_links_listing AS
  SELECT aolour.organization_user_role_id,
     aol.slug,
     aol.url,
     aol.method
-   FROM (public.acl_organization_links_organizations_user_roles aolour
-     JOIN public.acl_organization_links aol ON ((aol.id = aolour.acl_organization_link_id)));
+   FROM (acl_organization_links_organizations_user_roles aolour
+     JOIN acl_organization_links aol ON ((aol.id = aolour.acl_organization_link_id)));
 
 
 --
 -- Name: activities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.activities_id_seq
+CREATE SEQUENCE activities_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1172,8 +1173,8 @@ CREATE SEQUENCE public.activities_id_seq
 -- Name: activities; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.activities (
-    id bigint DEFAULT nextval('public.activities_id_seq'::regclass) NOT NULL,
+CREATE TABLE activities (
+    id bigint DEFAULT nextval('activities_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     board_id bigint DEFAULT 0,
@@ -1197,7 +1198,7 @@ CREATE TABLE public.activities (
 -- Name: boards_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.boards_id_seq
+CREATE SEQUENCE boards_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1209,8 +1210,8 @@ CREATE SEQUENCE public.boards_id_seq
 -- Name: boards; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.boards (
-    id bigint DEFAULT nextval('public.boards_id_seq'::regclass) NOT NULL,
+CREATE TABLE boards (
+    id bigint DEFAULT nextval('boards_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     user_id bigint NOT NULL,
@@ -1251,7 +1252,7 @@ CREATE TABLE public.boards (
 -- Name: cards_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.cards_id_seq
+CREATE SEQUENCE cards_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1263,8 +1264,8 @@ CREATE SEQUENCE public.cards_id_seq
 -- Name: cards; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.cards (
-    id bigint DEFAULT nextval('public.cards_id_seq'::regclass) NOT NULL,
+CREATE TABLE cards (
+    id bigint DEFAULT nextval('cards_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     board_id bigint NOT NULL,
@@ -1298,7 +1299,7 @@ CREATE TABLE public.cards (
 -- Name: checklist_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.checklist_items_id_seq
+CREATE SEQUENCE checklist_items_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1310,8 +1311,8 @@ CREATE SEQUENCE public.checklist_items_id_seq
 -- Name: checklist_items; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.checklist_items (
-    id bigint DEFAULT nextval('public.checklist_items_id_seq'::regclass) NOT NULL,
+CREATE TABLE checklist_items (
+    id bigint DEFAULT nextval('checklist_items_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     user_id bigint NOT NULL,
@@ -1328,7 +1329,7 @@ CREATE TABLE public.checklist_items (
 -- Name: checklists_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.checklists_id_seq
+CREATE SEQUENCE checklists_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1340,8 +1341,8 @@ CREATE SEQUENCE public.checklists_id_seq
 -- Name: checklists; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.checklists (
-    id bigint DEFAULT nextval('public.checklists_id_seq'::regclass) NOT NULL,
+CREATE TABLE checklists (
+    id bigint DEFAULT nextval('checklists_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     user_id bigint NOT NULL,
@@ -1358,7 +1359,7 @@ CREATE TABLE public.checklists (
 -- Name: labels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.labels_id_seq
+CREATE SEQUENCE labels_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1370,8 +1371,8 @@ CREATE SEQUENCE public.labels_id_seq
 -- Name: labels; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.labels (
-    id bigint DEFAULT nextval('public.labels_id_seq'::regclass) NOT NULL,
+CREATE TABLE labels (
+    id bigint DEFAULT nextval('labels_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
@@ -1385,7 +1386,7 @@ CREATE TABLE public.labels (
 -- Name: lists_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.lists_id_seq
+CREATE SEQUENCE lists_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1397,8 +1398,8 @@ CREATE SEQUENCE public.lists_id_seq
 -- Name: lists; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.lists (
-    id bigint DEFAULT nextval('public.lists_id_seq'::regclass) NOT NULL,
+CREATE TABLE lists (
+    id bigint DEFAULT nextval('lists_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     board_id bigint NOT NULL,
@@ -1419,7 +1420,7 @@ CREATE TABLE public.lists (
 -- Name: organizations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.organizations_id_seq
+CREATE SEQUENCE organizations_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1431,8 +1432,8 @@ CREATE SEQUENCE public.organizations_id_seq
 -- Name: organizations; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.organizations (
-    id bigint DEFAULT nextval('public.organizations_id_seq'::regclass) NOT NULL,
+CREATE TABLE organizations (
+    id bigint DEFAULT nextval('organizations_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     user_id bigint NOT NULL,
@@ -1451,7 +1452,7 @@ CREATE TABLE public.organizations (
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.users_id_seq
+CREATE SEQUENCE users_id_seq
     START WITH 2
     INCREMENT BY 1
     NO MINVALUE
@@ -1463,8 +1464,8 @@ CREATE SEQUENCE public.users_id_seq
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.users (
-    id bigint DEFAULT nextval('public.users_id_seq'::regclass) NOT NULL,
+CREATE TABLE users (
+    id bigint DEFAULT nextval('users_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     role_id integer DEFAULT 0 NOT NULL,
@@ -1515,6 +1516,7 @@ CREATE TABLE public.users (
     is_card_checklists_notifications_enabled boolean DEFAULT true NOT NULL,
     is_card_attachments_notifications_enabled boolean DEFAULT true NOT NULL,
     is_intro_video_skipped boolean DEFAULT false NOT NULL,
+    is_invite_from_board boolean DEFAULT false NOT NULL,
     CONSTRAINT password CHECK ((char_length((password)::text) > 0)),
     CONSTRAINT username CHECK ((char_length((username)::text) > 0))
 );
@@ -1524,7 +1526,7 @@ CREATE TABLE public.users (
 -- Name: activities_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.activities_listing AS
+CREATE VIEW activities_listing AS
  SELECT activity.id,
     to_char(activity.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     to_char(activity.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
@@ -1569,24 +1571,24 @@ CREATE VIEW public.activities_listing AS
     users.is_card_checklists_notifications_enabled,
     users.is_card_attachments_notifications_enabled,
     card.color
-   FROM ((((((((((public.activities activity
-     LEFT JOIN public.boards board ON ((board.id = activity.board_id)))
-     LEFT JOIN public.lists list ON ((list.id = activity.list_id)))
-     LEFT JOIN public.lists list1 ON ((list1.id = activity.foreign_id)))
-     LEFT JOIN public.cards card ON ((card.id = activity.card_id)))
-     LEFT JOIN public.labels la ON (((la.id = activity.foreign_id) AND ((activity.type)::text = 'add_card_label'::text))))
-     LEFT JOIN public.checklist_items checklist_item ON ((checklist_item.id = activity.foreign_id)))
-     LEFT JOIN public.checklists checklist ON ((checklist.id = checklist_item.checklist_id)))
-     LEFT JOIN public.checklists checklist1 ON ((checklist1.id = activity.foreign_id)))
-     LEFT JOIN public.users users ON ((users.id = activity.user_id)))
-     LEFT JOIN public.organizations organizations ON ((organizations.id = activity.organization_id)));
+   FROM ((((((((((activities activity
+     LEFT JOIN boards board ON ((board.id = activity.board_id)))
+     LEFT JOIN lists list ON ((list.id = activity.list_id)))
+     LEFT JOIN lists list1 ON ((list1.id = activity.foreign_id)))
+     LEFT JOIN cards card ON ((card.id = activity.card_id)))
+     LEFT JOIN labels la ON (((la.id = activity.foreign_id) AND ((activity.type)::text = 'add_card_label'::text))))
+     LEFT JOIN checklist_items checklist_item ON ((checklist_item.id = activity.foreign_id)))
+     LEFT JOIN checklists checklist ON ((checklist.id = checklist_item.checklist_id)))
+     LEFT JOIN checklists checklist1 ON ((checklist1.id = activity.foreign_id)))
+     LEFT JOIN users users ON ((users.id = activity.user_id)))
+     LEFT JOIN organizations organizations ON ((organizations.id = activity.organization_id)));
 
 
 --
 -- Name: boards_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.boards_users_id_seq
+CREATE SEQUENCE boards_users_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1598,8 +1600,8 @@ CREATE SEQUENCE public.boards_users_id_seq
 -- Name: boards_users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.boards_users (
-    id bigint DEFAULT nextval('public.boards_users_id_seq'::regclass) NOT NULL,
+CREATE TABLE boards_users (
+    id bigint DEFAULT nextval('boards_users_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     board_id bigint NOT NULL,
@@ -1612,7 +1614,7 @@ CREATE TABLE public.boards_users (
 -- Name: boards_users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.boards_users_listing AS
+CREATE VIEW boards_users_listing AS
  SELECT bu.id,
     to_char(bu.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     to_char(bu.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
@@ -1629,16 +1631,16 @@ CREATE VIEW public.boards_users_listing AS
     u.initials,
     b.default_email_list_id,
     (b.is_default_email_position_as_bottom)::integer AS is_default_email_position_as_bottom
-   FROM ((public.boards_users bu
-     JOIN public.users u ON ((u.id = bu.user_id)))
-     JOIN public.boards b ON ((b.id = bu.board_id)));
+   FROM ((boards_users bu
+     JOIN users u ON ((u.id = bu.user_id)))
+     JOIN boards b ON ((b.id = bu.board_id)));
 
 
 --
 -- Name: admin_boards_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.admin_boards_listing AS
+CREATE VIEW admin_boards_listing AS
  SELECT board.id,
     board.name,
     to_char(board.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
@@ -1681,21 +1683,21 @@ CREATE VIEW public.admin_boards_listing AS
                     boards_users.board_name,
                     boards_users.profile_picture_path,
                     boards_users.initials
-                   FROM public.boards_users_listing boards_users
+                   FROM boards_users_listing boards_users
                   WHERE (boards_users.board_id = board.id)
                   ORDER BY boards_users.id) bu) AS boards_users,
     board.default_email_list_id,
     board.is_default_email_position_as_bottom
-   FROM ((public.boards board
-     LEFT JOIN public.users users ON ((users.id = board.user_id)))
-     LEFT JOIN public.organizations organizations ON ((organizations.id = board.organization_id)));
+   FROM ((boards board
+     LEFT JOIN users users ON ((users.id = board.user_id)))
+     LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
 
 
 --
 -- Name: cities; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.cities (
+CREATE TABLE cities (
     id bigint NOT NULL,
     created timestamp without time zone,
     modified timestamp without time zone,
@@ -1712,7 +1714,7 @@ CREATE TABLE public.cities (
 -- Name: countries; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.countries (
+CREATE TABLE countries (
     id bigint NOT NULL,
     iso_alpha2 character(2) DEFAULT NULL::bpchar,
     iso_alpha3 character(3) DEFAULT NULL::bpchar,
@@ -1744,7 +1746,7 @@ CREATE TABLE public.countries (
 -- Name: ips_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.ips_id_seq
+CREATE SEQUENCE ips_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1756,8 +1758,8 @@ CREATE SEQUENCE public.ips_id_seq
 -- Name: ips; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.ips (
-    id bigint DEFAULT nextval('public.ips_id_seq'::regclass) NOT NULL,
+CREATE TABLE ips (
+    id bigint DEFAULT nextval('ips_id_seq'::regclass) NOT NULL,
     created timestamp without time zone,
     modified timestamp without time zone,
     ip character varying(255) NOT NULL,
@@ -1776,7 +1778,7 @@ CREATE TABLE public.ips (
 -- Name: login_types_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.login_types_id_seq
+CREATE SEQUENCE login_types_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1788,8 +1790,8 @@ CREATE SEQUENCE public.login_types_id_seq
 -- Name: login_types; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.login_types (
-    id bigint DEFAULT nextval('public.login_types_id_seq'::regclass) NOT NULL,
+CREATE TABLE login_types (
+    id bigint DEFAULT nextval('login_types_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL
@@ -1800,7 +1802,7 @@ CREATE TABLE public.login_types (
 -- Name: states; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.states (
+CREATE TABLE states (
     id bigint NOT NULL,
     created timestamp without time zone,
     modified timestamp without time zone,
@@ -1814,7 +1816,7 @@ CREATE TABLE public.states (
 -- Name: admin_users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.admin_users_listing AS
+CREATE VIEW admin_users_listing AS
  SELECT users.id,
     users.role_id,
     users.username,
@@ -1865,23 +1867,23 @@ CREATE VIEW public.admin_users_listing AS
     users.language,
     (users.is_ldap)::integer AS is_ldap,
     users.timezone
-   FROM (((((((((public.users users
-     LEFT JOIN public.ips i ON ((i.id = users.ip_id)))
-     LEFT JOIN public.cities rci ON ((rci.id = i.city_id)))
-     LEFT JOIN public.states rst ON ((rst.id = i.state_id)))
-     LEFT JOIN public.countries rco ON ((rco.id = i.country_id)))
-     LEFT JOIN public.ips li ON ((li.id = users.last_login_ip_id)))
-     LEFT JOIN public.cities lci ON ((lci.id = li.city_id)))
-     LEFT JOIN public.states lst ON ((lst.id = li.state_id)))
-     LEFT JOIN public.countries lco ON ((lco.id = li.country_id)))
-     LEFT JOIN public.login_types lt ON ((lt.id = users.login_type_id)));
+   FROM (((((((((users users
+     LEFT JOIN ips i ON ((i.id = users.ip_id)))
+     LEFT JOIN cities rci ON ((rci.id = i.city_id)))
+     LEFT JOIN states rst ON ((rst.id = i.state_id)))
+     LEFT JOIN countries rco ON ((rco.id = i.country_id)))
+     LEFT JOIN ips li ON ((li.id = users.last_login_ip_id)))
+     LEFT JOIN cities lci ON ((lci.id = li.city_id)))
+     LEFT JOIN states lst ON ((lst.id = li.state_id)))
+     LEFT JOIN countries lco ON ((lco.id = li.country_id)))
+     LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
 
 
 --
 -- Name: attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.attachments_id_seq
+CREATE SEQUENCE attachments_id_seq
     START WITH 2
     INCREMENT BY 1
     NO MINVALUE
@@ -1893,7 +1895,7 @@ CREATE SEQUENCE public.attachments_id_seq
 -- Name: boards_stars_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.boards_stars_id_seq
+CREATE SEQUENCE boards_stars_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1905,8 +1907,8 @@ CREATE SEQUENCE public.boards_stars_id_seq
 -- Name: board_stars; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.board_stars (
-    id bigint DEFAULT nextval('public.boards_stars_id_seq'::regclass) NOT NULL,
+CREATE TABLE board_stars (
+    id bigint DEFAULT nextval('boards_stars_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     board_id bigint NOT NULL,
@@ -1919,7 +1921,7 @@ CREATE TABLE public.board_stars (
 -- Name: boards_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.boards_subscribers_id_seq
+CREATE SEQUENCE boards_subscribers_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1931,8 +1933,8 @@ CREATE SEQUENCE public.boards_subscribers_id_seq
 -- Name: board_subscribers; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.board_subscribers (
-    id bigint DEFAULT nextval('public.boards_subscribers_id_seq'::regclass) NOT NULL,
+CREATE TABLE board_subscribers (
+    id bigint DEFAULT nextval('boards_subscribers_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     board_id bigint NOT NULL,
@@ -1945,7 +1947,7 @@ CREATE TABLE public.board_subscribers (
 -- Name: board_user_roles_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.board_user_roles_seq
+CREATE SEQUENCE board_user_roles_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1957,8 +1959,8 @@ CREATE SEQUENCE public.board_user_roles_seq
 -- Name: board_user_roles; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.board_user_roles (
-    id bigint DEFAULT nextval('public.board_user_roles_seq'::regclass) NOT NULL,
+CREATE TABLE board_user_roles (
+    id bigint DEFAULT nextval('board_user_roles_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
@@ -1970,7 +1972,7 @@ CREATE TABLE public.board_user_roles (
 -- Name: cards_labels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.cards_labels_id_seq
+CREATE SEQUENCE cards_labels_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1982,8 +1984,8 @@ CREATE SEQUENCE public.cards_labels_id_seq
 -- Name: cards_labels; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.cards_labels (
-    id bigint DEFAULT nextval('public.cards_labels_id_seq'::regclass) NOT NULL,
+CREATE TABLE cards_labels (
+    id bigint DEFAULT nextval('cards_labels_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     label_id bigint NOT NULL,
@@ -1997,7 +1999,7 @@ CREATE TABLE public.cards_labels (
 -- Name: boards_labels_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.boards_labels_listing AS
+CREATE VIEW boards_labels_listing AS
  SELECT cards_labels.id,
     to_char(cards_labels.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     to_char(cards_labels.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
@@ -2006,15 +2008,15 @@ CREATE VIEW public.boards_labels_listing AS
     cards_labels.list_id,
     cards_labels.board_id,
     labels.name
-   FROM (public.cards_labels cards_labels
-     LEFT JOIN public.labels labels ON ((labels.id = cards_labels.label_id)));
+   FROM (cards_labels cards_labels
+     LEFT JOIN labels labels ON ((labels.id = cards_labels.label_id)));
 
 
 --
 -- Name: card_attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.card_attachments_id_seq
+CREATE SEQUENCE card_attachments_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2026,8 +2028,8 @@ CREATE SEQUENCE public.card_attachments_id_seq
 -- Name: card_attachments; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.card_attachments (
-    id bigint DEFAULT nextval('public.card_attachments_id_seq'::regclass) NOT NULL,
+CREATE TABLE card_attachments (
+    id bigint DEFAULT nextval('card_attachments_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     card_id bigint,
@@ -2044,7 +2046,7 @@ CREATE TABLE public.card_attachments (
 -- Name: cards_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.cards_subscribers_id_seq
+CREATE SEQUENCE cards_subscribers_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2056,8 +2058,8 @@ CREATE SEQUENCE public.cards_subscribers_id_seq
 -- Name: card_subscribers; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.card_subscribers (
-    id bigint DEFAULT nextval('public.cards_subscribers_id_seq'::regclass) NOT NULL,
+CREATE TABLE card_subscribers (
+    id bigint DEFAULT nextval('cards_subscribers_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     card_id bigint NOT NULL,
@@ -2070,7 +2072,7 @@ CREATE TABLE public.card_subscribers (
 -- Name: card_voters_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.card_voters_id_seq
+CREATE SEQUENCE card_voters_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2082,8 +2084,8 @@ CREATE SEQUENCE public.card_voters_id_seq
 -- Name: card_voters; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.card_voters (
-    id bigint DEFAULT nextval('public.card_voters_id_seq'::regclass) NOT NULL,
+CREATE TABLE card_voters (
+    id bigint DEFAULT nextval('card_voters_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     card_id bigint NOT NULL,
@@ -2095,7 +2097,7 @@ CREATE TABLE public.card_voters (
 -- Name: card_voters_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.card_voters_listing AS
+CREATE VIEW card_voters_listing AS
  SELECT card_voters.id,
     to_char(card_voters.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     to_char(card_voters.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
@@ -2106,15 +2108,15 @@ CREATE VIEW public.card_voters_listing AS
     users.profile_picture_path,
     users.initials,
     users.full_name
-   FROM (public.card_voters card_voters
-     LEFT JOIN public.users users ON ((users.id = card_voters.user_id)));
+   FROM (card_voters card_voters
+     LEFT JOIN users users ON ((users.id = card_voters.user_id)));
 
 
 --
 -- Name: cards_labels_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.cards_labels_listing AS
+CREATE VIEW cards_labels_listing AS
  SELECT cl.id,
     to_char(cl.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     to_char(cl.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
@@ -2125,16 +2127,16 @@ CREATE VIEW public.cards_labels_listing AS
     l.name,
     cl.board_id,
     l.color
-   FROM ((public.cards_labels cl
-     LEFT JOIN public.cards c ON ((c.id = cl.card_id)))
-     LEFT JOIN public.labels l ON ((l.id = cl.label_id)));
+   FROM ((cards_labels cl
+     LEFT JOIN cards c ON ((c.id = cl.card_id)))
+     LEFT JOIN labels l ON ((l.id = cl.label_id)));
 
 
 --
 -- Name: cards_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.cards_users_id_seq
+CREATE SEQUENCE cards_users_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2146,8 +2148,8 @@ CREATE SEQUENCE public.cards_users_id_seq
 -- Name: cards_users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.cards_users (
-    id bigint DEFAULT nextval('public.cards_users_id_seq'::regclass) NOT NULL,
+CREATE TABLE cards_users (
+    id bigint DEFAULT nextval('cards_users_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     card_id bigint NOT NULL,
@@ -2159,7 +2161,7 @@ CREATE TABLE public.cards_users (
 -- Name: cards_users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.cards_users_listing AS
+CREATE VIEW cards_users_listing AS
  SELECT u.username,
     u.profile_picture_path,
     cu.id,
@@ -2170,15 +2172,15 @@ CREATE VIEW public.cards_users_listing AS
     u.initials,
     u.full_name,
     u.email
-   FROM (public.cards_users cu
-     LEFT JOIN public.users u ON ((u.id = cu.user_id)));
+   FROM (cards_users cu
+     LEFT JOIN users u ON ((u.id = cu.user_id)));
 
 
 --
 -- Name: checklists_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.checklists_listing AS
+CREATE VIEW checklists_listing AS
  SELECT checklists.id,
     to_char(checklists.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     to_char(checklists.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
@@ -2197,18 +2199,18 @@ CREATE VIEW public.checklists_listing AS
                     checklist_items.name,
                     (checklist_items.is_completed)::integer AS is_completed,
                     checklist_items."position"
-                   FROM public.checklist_items checklist_items
+                   FROM checklist_items checklist_items
                   WHERE (checklist_items.checklist_id = checklists.id)
                   ORDER BY checklist_items."position") ci) AS checklists_items,
     checklists."position"
-   FROM public.checklists checklists;
+   FROM checklists checklists;
 
 
 --
 -- Name: cards_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.cards_listing AS
+CREATE VIEW cards_listing AS
  SELECT cards.id,
     to_char(cards.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     to_char(cards.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
@@ -2244,7 +2246,7 @@ CREATE VIEW public.cards_listing AS
                     checklists_listing.checklist_item_completed_count,
                     checklists_listing."position",
                     checklists_listing.checklists_items
-                   FROM public.checklists_listing checklists_listing
+                   FROM checklists_listing checklists_listing
                   WHERE (checklists_listing.card_id = cards.id)
                   ORDER BY checklists_listing.id) cc) AS cards_checklists,
     ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
@@ -2258,7 +2260,7 @@ CREATE VIEW public.cards_listing AS
                     cards_users_listing.initials,
                     cards_users_listing.full_name,
                     cards_users_listing.email
-                   FROM public.cards_users_listing cards_users_listing
+                   FROM cards_users_listing cards_users_listing
                   WHERE (cards_users_listing.card_id = cards.id)
                   ORDER BY cards_users_listing.id) cc) AS cards_users,
     ( SELECT array_to_json(array_agg(row_to_json(cv.*))) AS array_to_json
@@ -2272,7 +2274,7 @@ CREATE VIEW public.cards_listing AS
                     card_voters_listing.profile_picture_path,
                     card_voters_listing.initials,
                     card_voters_listing.full_name
-                   FROM public.card_voters_listing card_voters_listing
+                   FROM card_voters_listing card_voters_listing
                   WHERE (card_voters_listing.card_id = cards.id)
                   ORDER BY card_voters_listing.id) cv) AS cards_voters,
     ( SELECT array_to_json(array_agg(row_to_json(cs.*))) AS array_to_json
@@ -2282,7 +2284,7 @@ CREATE VIEW public.cards_listing AS
                     cards_subscribers.card_id,
                     cards_subscribers.user_id,
                     (cards_subscribers.is_subscribed)::integer AS is_subscribed
-                   FROM public.card_subscribers cards_subscribers
+                   FROM card_subscribers cards_subscribers
                   WHERE (cards_subscribers.card_id = cards.id)
                   ORDER BY cards_subscribers.id) cs) AS cards_subscribers,
     ( SELECT array_to_json(array_agg(row_to_json(cl.*))) AS array_to_json
@@ -2292,7 +2294,7 @@ CREATE VIEW public.cards_listing AS
                     cards_labels.board_id,
                     cards_labels.name,
                     cards_labels.color
-                   FROM public.cards_labels_listing cards_labels
+                   FROM cards_labels_listing cards_labels
                   WHERE (cards_labels.card_id = cards.id)
                   ORDER BY cards_labels.name) cl) AS cards_labels,
     cards.comment_count,
@@ -2305,21 +2307,22 @@ CREATE VIEW public.cards_listing AS
     cards.is_due_date_notification_sent,
     cards.archived_date,
     to_char(( SELECT activities.created
-           FROM public.activities
+           FROM activities
           WHERE ((activities.card_id = cards.id) AND ((activities.type)::text = 'move_card'::text))
           ORDER BY activities.id DESC
-         LIMIT 1), 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS list_moved_date
-   FROM (((public.cards cards
-     LEFT JOIN public.users u ON ((u.id = cards.user_id)))
-     LEFT JOIN public.boards b ON ((b.id = cards.board_id)))
-     LEFT JOIN public.lists l ON ((l.id = cards.list_id)));
+         LIMIT 1), 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS list_moved_date,
+    u.full_name AS card_created_user
+   FROM (((cards cards
+     LEFT JOIN users u ON ((u.id = cards.user_id)))
+     LEFT JOIN boards b ON ((b.id = cards.board_id)))
+     LEFT JOIN lists l ON ((l.id = cards.list_id)));
 
 
 --
 -- Name: lists_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.lists_subscribers_id_seq
+CREATE SEQUENCE lists_subscribers_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2331,8 +2334,8 @@ CREATE SEQUENCE public.lists_subscribers_id_seq
 -- Name: list_subscribers; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.list_subscribers (
-    id bigint DEFAULT nextval('public.lists_subscribers_id_seq'::regclass) NOT NULL,
+CREATE TABLE list_subscribers (
+    id bigint DEFAULT nextval('lists_subscribers_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone,
     list_id bigint NOT NULL,
@@ -2345,7 +2348,7 @@ CREATE TABLE public.list_subscribers (
 -- Name: lists_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.lists_listing AS
+CREATE VIEW lists_listing AS
  SELECT lists.id,
     to_char(lists.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     to_char(lists.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
@@ -2391,8 +2394,9 @@ CREATE VIEW public.lists_listing AS
                     cards_listing.due_date AS notification_due_date,
                     cards_listing.is_due_date_notification_sent,
                     cards_listing.archived_date,
-                    cards_listing.list_moved_date
-                   FROM public.cards_listing cards_listing
+                    cards_listing.list_moved_date,
+                    cards_listing.card_created_user
+                   FROM cards_listing cards_listing
                   WHERE (cards_listing.list_id = lists.id)
                   ORDER BY cards_listing."position") lc) AS cards,
     ( SELECT array_to_json(array_agg(row_to_json(ls.*))) AS array_to_json
@@ -2402,19 +2406,19 @@ CREATE VIEW public.lists_listing AS
                     lists_subscribers.list_id,
                     lists_subscribers.user_id,
                     (lists_subscribers.is_subscribed)::integer AS is_subscribed
-                   FROM public.list_subscribers lists_subscribers
+                   FROM list_subscribers lists_subscribers
                   WHERE (lists_subscribers.list_id = lists.id)
                   ORDER BY lists_subscribers.id) ls) AS lists_subscribers,
     lists.custom_fields,
     lists.color
-   FROM public.lists lists;
+   FROM lists lists;
 
 
 --
 -- Name: boards_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.boards_listing AS
+CREATE VIEW boards_listing AS
  SELECT board.id,
     board.name,
     to_char(board.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
@@ -2468,8 +2472,8 @@ CREATE VIEW public.boards_listing AS
                     users_1.role_id,
                     users_1.profile_picture_path,
                     users_1.initials
-                   FROM (public.activities activities
-                     LEFT JOIN public.users users_1 ON ((users_1.id = activities.user_id)))
+                   FROM (activities activities
+                     LEFT JOIN users users_1 ON ((users_1.id = activities.user_id)))
                   WHERE (activities.board_id = board.id)
                   ORDER BY activities.freshness_ts DESC, activities.materialized_path
                  OFFSET 0
@@ -2481,7 +2485,7 @@ CREATE VIEW public.boards_listing AS
                     boards_subscribers.board_id,
                     boards_subscribers.user_id,
                     (boards_subscribers.is_subscribed)::integer AS is_subscribed
-                   FROM public.board_subscribers boards_subscribers
+                   FROM board_subscribers boards_subscribers
                   WHERE (boards_subscribers.board_id = board.id)
                   ORDER BY boards_subscribers.id) bs) AS boards_subscribers,
     ( SELECT array_to_json(array_agg(row_to_json(bs.*))) AS array_to_json
@@ -2493,7 +2497,7 @@ CREATE VIEW public.boards_listing AS
                     boards_stars.board_id,
                     boards_stars.user_id,
                     (boards_stars.is_starred)::integer AS is_starred
-                   FROM public.board_stars boards_stars
+                   FROM board_stars boards_stars
                   WHERE (boards_stars.board_id = board.id)
                   ORDER BY boards_stars.id) bs(id, created, modified, created_1, modified_1, board_id, user_id, is_starred)) AS boards_stars,
     ( SELECT array_to_json(array_agg(row_to_json(batt.*))) AS array_to_json
@@ -2507,7 +2511,7 @@ CREATE VIEW public.boards_listing AS
                     card_attachments.list_id,
                     card_attachments.board_id,
                     card_attachments.link
-                   FROM public.card_attachments card_attachments
+                   FROM card_attachments card_attachments
                   WHERE (card_attachments.board_id = board.id)
                   ORDER BY card_attachments.id DESC) batt) AS attachments,
     ( SELECT array_to_json(array_agg(row_to_json(bl.*))) AS array_to_json
@@ -2524,7 +2528,7 @@ CREATE VIEW public.boards_listing AS
                     lists_listing.lists_subscribers,
                     lists_listing.custom_fields,
                     lists_listing.color
-                   FROM public.lists_listing lists_listing
+                   FROM lists_listing lists_listing
                   WHERE (lists_listing.board_id = board.id)
                   ORDER BY lists_listing."position") bl) AS lists,
     ( SELECT array_to_json(array_agg(row_to_json(bu.*))) AS array_to_json
@@ -2542,7 +2546,7 @@ CREATE VIEW public.boards_listing AS
                     boards_users.board_name,
                     boards_users.profile_picture_path,
                     boards_users.initials
-                   FROM public.boards_users_listing boards_users
+                   FROM boards_users_listing boards_users
                   WHERE (boards_users.board_id = board.id)
                   ORDER BY boards_users.id) bu) AS boards_users,
     board.default_email_list_id,
@@ -2552,16 +2556,16 @@ CREATE VIEW public.boards_listing AS
     board.auto_subscribe_on_card,
     board.sort_by,
     board.sort_direction
-   FROM ((public.boards board
-     LEFT JOIN public.users users ON ((users.id = board.user_id)))
-     LEFT JOIN public.organizations organizations ON ((organizations.id = board.organization_id)));
+   FROM ((boards board
+     LEFT JOIN users users ON ((users.id = board.user_id)))
+     LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
 
 
 --
 -- Name: cards_elasticsearch_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.cards_elasticsearch_listing AS
+CREATE VIEW cards_elasticsearch_listing AS
  SELECT card.id,
     row_to_json(card.*) AS json
    FROM ( SELECT cards.id,
@@ -2584,40 +2588,40 @@ CREATE VIEW public.cards_elasticsearch_listing AS
             cards.color,
             ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
                    FROM ( SELECT boards_users.user_id
-                           FROM public.boards_users boards_users
+                           FROM boards_users boards_users
                           WHERE (boards_users.board_id = cards.board_id)
                           ORDER BY boards_users.id) cc) AS board_users,
             ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
                    FROM ( SELECT board_stars.user_id
-                           FROM public.board_stars board_stars
+                           FROM board_stars board_stars
                           WHERE (board_stars.board_id = cards.board_id)
                           ORDER BY board_stars.id) cc) AS board_stars,
             ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
                    FROM ( SELECT checklists.name,
                             checklist_items.name AS checklist_item_name
-                           FROM (public.checklists checklists
-                             LEFT JOIN public.checklist_items checklist_items ON ((checklist_items.checklist_id = checklists.id)))
+                           FROM (checklists checklists
+                             LEFT JOIN checklist_items checklist_items ON ((checklist_items.checklist_id = checklists.id)))
                           WHERE (checklists.card_id = cards.id)
                           ORDER BY checklists.id) cc) AS cards_checklists,
             ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
                    FROM ( SELECT cards_users_listing.username,
                             cards_users_listing.user_id
-                           FROM public.cards_users_listing cards_users_listing
+                           FROM cards_users_listing cards_users_listing
                           WHERE (cards_users_listing.card_id = cards.id)
                           ORDER BY cards_users_listing.id) cc) AS cards_users,
             ( SELECT array_to_json(array_agg(row_to_json(cl.*))) AS array_to_json
                    FROM ( SELECT cards_labels.name
-                           FROM public.cards_labels_listing cards_labels
+                           FROM cards_labels_listing cards_labels
                           WHERE (cards_labels.card_id = cards.id)
                           ORDER BY cards_labels.id) cl) AS cards_labels,
             ( SELECT array_to_json(array_agg(row_to_json(cl.*))) AS array_to_json
                    FROM ( SELECT activities.comment
-                           FROM public.activities activities
+                           FROM activities activities
                           WHERE (((activities.type)::text = 'add_comment'::text) AND (activities.card_id = cards.id))
                           ORDER BY activities.id) cl) AS activities
-           FROM ((public.cards cards
-             LEFT JOIN public.boards boards ON ((boards.id = cards.board_id)))
-             LEFT JOIN public.lists lists ON ((lists.id = cards.list_id)))
+           FROM ((cards cards
+             LEFT JOIN boards boards ON ((boards.id = cards.board_id)))
+             LEFT JOIN lists lists ON ((lists.id = cards.list_id)))
           WHERE (boards.name IS NOT NULL)) card;
 
 
@@ -2625,15 +2629,15 @@ CREATE VIEW public.cards_elasticsearch_listing AS
 -- Name: checklist_add_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.checklist_add_listing AS
+CREATE VIEW checklist_add_listing AS
  SELECT c.id,
     c.name,
     c.board_id,
     cl.checklist_item_count,
     cl.name AS checklist_name,
     cl.id AS checklist_id
-   FROM (public.cards c
-     LEFT JOIN public.checklists cl ON ((cl.card_id = c.id)))
+   FROM (cards c
+     LEFT JOIN checklists cl ON ((cl.card_id = c.id)))
   WHERE (c.checklist_item_count > 0)
   ORDER BY c.id;
 
@@ -2642,7 +2646,7 @@ CREATE VIEW public.checklist_add_listing AS
 -- Name: cities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.cities_id_seq
+CREATE SEQUENCE cities_id_seq
     START WITH 15178
     INCREMENT BY 1
     NO MINVALUE
@@ -2654,7 +2658,7 @@ CREATE SEQUENCE public.cities_id_seq
 -- Name: cities_id_seq1; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.cities_id_seq1
+CREATE SEQUENCE cities_id_seq1
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2666,14 +2670,14 @@ CREATE SEQUENCE public.cities_id_seq1
 -- Name: cities_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.cities_id_seq1 OWNED BY public.cities.id;
+ALTER SEQUENCE cities_id_seq1 OWNED BY cities.id;
 
 
 --
 -- Name: countries_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.countries_id_seq
+CREATE SEQUENCE countries_id_seq
     START WITH 262
     INCREMENT BY 1
     NO MINVALUE
@@ -2685,7 +2689,7 @@ CREATE SEQUENCE public.countries_id_seq
 -- Name: countries_id_seq1; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.countries_id_seq1
+CREATE SEQUENCE countries_id_seq1
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2697,14 +2701,14 @@ CREATE SEQUENCE public.countries_id_seq1
 -- Name: countries_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.countries_id_seq1 OWNED BY public.countries.id;
+ALTER SEQUENCE countries_id_seq1 OWNED BY countries.id;
 
 
 --
 -- Name: email_templates_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.email_templates_id_seq
+CREATE SEQUENCE email_templates_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2716,8 +2720,8 @@ CREATE SEQUENCE public.email_templates_id_seq
 -- Name: email_templates; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.email_templates (
-    id bigint DEFAULT nextval('public.email_templates_id_seq'::regclass) NOT NULL,
+CREATE TABLE email_templates (
+    id bigint DEFAULT nextval('email_templates_id_seq'::regclass) NOT NULL,
     created timestamp without time zone,
     modified timestamp without time zone,
     from_email character varying(500) DEFAULT NULL::character varying,
@@ -2735,7 +2739,7 @@ CREATE TABLE public.email_templates (
 -- Name: gadget_users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.gadget_users_listing AS
+CREATE VIEW gadget_users_listing AS
  SELECT checklists.id,
     to_char(checklists.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     to_char(checklists.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
@@ -2753,17 +2757,17 @@ CREATE VIEW public.gadget_users_listing AS
                     checklist_items.checklist_id,
                     checklist_items.name,
                     (checklist_items.is_completed)::integer AS is_completed
-                   FROM public.checklist_items checklist_items
+                   FROM checklist_items checklist_items
                   WHERE (checklist_items.checklist_id = checklists.id)
                   ORDER BY checklist_items.id) ci) AS checklist_items
-   FROM public.checklists checklists;
+   FROM checklists checklists;
 
 
 --
 -- Name: languages_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.languages_id_seq
+CREATE SEQUENCE languages_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2775,8 +2779,8 @@ CREATE SEQUENCE public.languages_id_seq
 -- Name: languages; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.languages (
-    id bigint DEFAULT nextval('public.languages_id_seq'::regclass) NOT NULL,
+CREATE TABLE languages (
+    id bigint DEFAULT nextval('languages_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     name character varying(80) NOT NULL,
@@ -2790,7 +2794,7 @@ CREATE TABLE public.languages (
 -- Name: list_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.list_subscribers_id_seq
+CREATE SEQUENCE list_subscribers_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2802,7 +2806,7 @@ CREATE SEQUENCE public.list_subscribers_id_seq
 -- Name: oauth_access_tokens; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.oauth_access_tokens (
+CREATE TABLE oauth_access_tokens (
     access_token character varying(40) NOT NULL,
     client_id character varying(80),
     user_id character varying(255),
@@ -2815,7 +2819,7 @@ CREATE TABLE public.oauth_access_tokens (
 -- Name: oauth_authorization_codes; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.oauth_authorization_codes (
+CREATE TABLE oauth_authorization_codes (
     authorization_code character varying(40) NOT NULL,
     client_id character varying(80),
     user_id character varying(255),
@@ -2829,7 +2833,7 @@ CREATE TABLE public.oauth_authorization_codes (
 -- Name: oauth_clients; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.oauth_clients (
+CREATE TABLE oauth_clients (
     client_id character varying(80) NOT NULL,
     client_secret character varying(80),
     redirect_uri character varying(2000),
@@ -2851,7 +2855,7 @@ CREATE TABLE public.oauth_clients (
 -- Name: oauth_clients_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.oauth_clients_id_seq
+CREATE SEQUENCE oauth_clients_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2863,7 +2867,7 @@ CREATE SEQUENCE public.oauth_clients_id_seq
 -- Name: oauth_clients_id_seq1; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.oauth_clients_id_seq1
+CREATE SEQUENCE oauth_clients_id_seq1
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2875,14 +2879,14 @@ CREATE SEQUENCE public.oauth_clients_id_seq1
 -- Name: oauth_clients_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.oauth_clients_id_seq1 OWNED BY public.oauth_clients.id;
+ALTER SEQUENCE oauth_clients_id_seq1 OWNED BY oauth_clients.id;
 
 
 --
 -- Name: oauth_jwt; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.oauth_jwt (
+CREATE TABLE oauth_jwt (
     client_id character varying(80) NOT NULL,
     subject character varying(80),
     public_key character varying(2000)
@@ -2893,7 +2897,7 @@ CREATE TABLE public.oauth_jwt (
 -- Name: oauth_refresh_tokens; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.oauth_refresh_tokens (
+CREATE TABLE oauth_refresh_tokens (
     refresh_token character varying(40) NOT NULL,
     client_id character varying(80),
     user_id character varying(255),
@@ -2906,7 +2910,7 @@ CREATE TABLE public.oauth_refresh_tokens (
 -- Name: oauth_scopes; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.oauth_scopes (
+CREATE TABLE oauth_scopes (
     scope text NOT NULL,
     is_default boolean
 );
@@ -2916,7 +2920,7 @@ CREATE TABLE public.oauth_scopes (
 -- Name: organization_user_roles_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.organization_user_roles_seq
+CREATE SEQUENCE organization_user_roles_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2928,8 +2932,8 @@ CREATE SEQUENCE public.organization_user_roles_seq
 -- Name: organization_user_roles; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.organization_user_roles (
-    id bigint DEFAULT nextval('public.organization_user_roles_seq'::regclass) NOT NULL,
+CREATE TABLE organization_user_roles (
+    id bigint DEFAULT nextval('organization_user_roles_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
@@ -2941,7 +2945,7 @@ CREATE TABLE public.organization_user_roles (
 -- Name: organizations_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.organizations_users_id_seq
+CREATE SEQUENCE organizations_users_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2953,8 +2957,8 @@ CREATE SEQUENCE public.organizations_users_id_seq
 -- Name: organizations_users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.organizations_users (
-    id bigint DEFAULT nextval('public.organizations_users_id_seq'::regclass) NOT NULL,
+CREATE TABLE organizations_users (
+    id bigint DEFAULT nextval('organizations_users_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     organization_id bigint NOT NULL,
@@ -2967,7 +2971,7 @@ CREATE TABLE public.organizations_users (
 -- Name: organizations_users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.organizations_users_listing AS
+CREATE VIEW organizations_users_listing AS
  SELECT organizations_users.id,
     to_char(organizations_users.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     to_char(organizations_users.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
@@ -3004,26 +3008,26 @@ CREATE VIEW public.organizations_users_listing AS
                     boards_users.user_id,
                     boards_users.board_user_role_id,
                     boards.name
-                   FROM (public.boards_users boards_users
-                     JOIN public.boards ON ((boards.id = boards_users.board_id)))
+                   FROM (boards_users boards_users
+                     JOIN boards ON ((boards.id = boards_users.board_id)))
                   WHERE ((boards_users.user_id = organizations_users.user_id) AND (boards_users.board_id IN ( SELECT boards_1.id
-                           FROM public.boards boards_1
+                           FROM boards boards_1
                           WHERE (boards_1.organization_id = organizations_users.organization_id))))
                   ORDER BY boards_users.id) o) AS boards_users,
     ( SELECT count(boards.id) AS count
-           FROM (public.boards
-             JOIN public.boards_users bu ON ((bu.board_id = boards.id)))
+           FROM (boards
+             JOIN boards_users bu ON ((bu.board_id = boards.id)))
           WHERE ((boards.organization_id = organizations_users.organization_id) AND (bu.user_id = organizations_users.user_id))) AS user_board_count
-   FROM ((public.organizations_users organizations_users
-     LEFT JOIN public.users users ON ((users.id = organizations_users.user_id)))
-     LEFT JOIN public.organizations organizations ON ((organizations.id = organizations_users.organization_id)));
+   FROM ((organizations_users organizations_users
+     LEFT JOIN users users ON ((users.id = organizations_users.user_id)))
+     LEFT JOIN organizations organizations ON ((organizations.id = organizations_users.organization_id)));
 
 
 --
 -- Name: organizations_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.organizations_listing AS
+CREATE VIEW organizations_listing AS
  SELECT organizations.id,
     to_char(organizations.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     to_char(organizations.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
@@ -3064,7 +3068,7 @@ CREATE VIEW public.organizations_listing AS
                     boards_listing.attachments,
                     boards_listing.lists,
                     boards_listing.boards_users
-                   FROM public.boards_listing boards_listing
+                   FROM boards_listing boards_listing
                   WHERE (boards_listing.organization_id = organizations.id)
                   ORDER BY boards_listing.id) b) AS boards_listing,
     ( SELECT array_to_json(array_agg(row_to_json(c.*))) AS array_to_json
@@ -3100,22 +3104,22 @@ CREATE VIEW public.organizations_listing AS
                     organizations_users_listing.profile_picture_path,
                     organizations_users_listing.boards_users,
                     organizations_users_listing.user_board_count
-                   FROM public.organizations_users_listing organizations_users_listing
+                   FROM organizations_users_listing organizations_users_listing
                   WHERE (organizations_users_listing.organization_id = organizations.id)
                   ORDER BY organizations_users_listing.id) c) AS organizations_users,
     u.username,
     u.full_name,
     u.initials,
     u.profile_picture_path
-   FROM (public.organizations organizations
-     LEFT JOIN public.users u ON ((u.id = organizations.user_id)));
+   FROM (organizations organizations
+     LEFT JOIN users u ON ((u.id = organizations.user_id)));
 
 
 --
 -- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.roles_id_seq
+CREATE SEQUENCE roles_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3127,8 +3131,8 @@ CREATE SEQUENCE public.roles_id_seq
 -- Name: roles; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.roles (
-    id bigint DEFAULT nextval('public.roles_id_seq'::regclass) NOT NULL,
+CREATE TABLE roles (
+    id bigint DEFAULT nextval('roles_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL
@@ -3139,20 +3143,20 @@ CREATE TABLE public.roles (
 -- Name: role_links_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.role_links_listing AS
+CREATE VIEW role_links_listing AS
  SELECT role.id,
     ( SELECT array_to_json(array_agg(link.*)) AS array_to_json
            FROM ( SELECT alls.slug
-                   FROM public.acl_links_listing alls
+                   FROM acl_links_listing alls
                   WHERE (alls.role_id = role.id)) link) AS links
-   FROM public.roles role;
+   FROM roles role;
 
 
 --
 -- Name: setting_categories; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.setting_categories (
+CREATE TABLE setting_categories (
     id integer NOT NULL,
     created timestamp without time zone,
     modified timestamp without time zone,
@@ -3167,7 +3171,7 @@ CREATE TABLE public.setting_categories (
 -- Name: setting_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.setting_categories_id_seq
+CREATE SEQUENCE setting_categories_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3179,14 +3183,14 @@ CREATE SEQUENCE public.setting_categories_id_seq
 -- Name: setting_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.setting_categories_id_seq OWNED BY public.setting_categories.id;
+ALTER SEQUENCE setting_categories_id_seq OWNED BY setting_categories.id;
 
 
 --
 -- Name: settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.settings_id_seq
+CREATE SEQUENCE settings_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3198,8 +3202,8 @@ CREATE SEQUENCE public.settings_id_seq
 -- Name: settings; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.settings (
-    id bigint DEFAULT nextval('public.settings_id_seq'::regclass) NOT NULL,
+CREATE TABLE settings (
+    id bigint DEFAULT nextval('settings_id_seq'::regclass) NOT NULL,
     setting_category_id bigint NOT NULL,
     setting_category_parent_id bigint DEFAULT 0,
     name character varying(255),
@@ -3216,7 +3220,7 @@ CREATE TABLE public.settings (
 -- Name: settings_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.settings_listing AS
+CREATE VIEW settings_listing AS
  SELECT setting_categories.id,
     to_char(setting_categories.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     to_char(setting_categories.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
@@ -3233,17 +3237,17 @@ CREATE VIEW public.settings_listing AS
                     settings.options,
                     settings.label,
                     settings."order"
-                   FROM public.settings settings
+                   FROM settings settings
                   WHERE (settings.setting_category_id = setting_categories.id)
                   ORDER BY settings."order") o) AS settings
-   FROM public.setting_categories setting_categories;
+   FROM setting_categories setting_categories;
 
 
 --
 -- Name: simple_board_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.simple_board_listing AS
+CREATE VIEW simple_board_listing AS
  SELECT board.id,
     board.name,
     board.user_id,
@@ -3273,13 +3277,13 @@ CREATE VIEW public.simple_board_listing AS
                     lists.lists_subscriber_count,
                     lists.color,
                     (lists.is_deleted)::integer AS is_deleted
-                   FROM public.lists lists
+                   FROM lists lists
                   WHERE (lists.board_id = board.id)
                   ORDER BY lists."position") l) AS lists,
     ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
            FROM ( SELECT cll.label_id,
                     cll.name
-                   FROM public.cards_labels_listing cll
+                   FROM cards_labels_listing cll
                   WHERE (cll.board_id = board.id)
                   ORDER BY cll.name) l) AS labels,
     ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
@@ -3287,15 +3291,15 @@ CREATE VIEW public.simple_board_listing AS
                     bs.board_id,
                     bs.user_id,
                     (bs.is_starred)::integer AS is_starred
-                   FROM public.board_stars bs
+                   FROM board_stars bs
                   WHERE (bs.board_id = board.id)
                   ORDER BY bs.id) l) AS stars,
     org.name AS organization_name,
     org.logo_url AS organization_logo_url,
     board.music_content,
     board.music_name
-   FROM (public.boards board
-     LEFT JOIN public.organizations org ON ((org.id = board.organization_id)))
+   FROM (boards board
+     LEFT JOIN organizations org ON ((org.id = board.organization_id)))
   ORDER BY board.name;
 
 
@@ -3303,7 +3307,7 @@ CREATE VIEW public.simple_board_listing AS
 -- Name: states_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.states_id_seq
+CREATE SEQUENCE states_id_seq
     START WITH 15138
     INCREMENT BY 1
     NO MINVALUE
@@ -3315,7 +3319,7 @@ CREATE SEQUENCE public.states_id_seq
 -- Name: states_id_seq1; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.states_id_seq1
+CREATE SEQUENCE states_id_seq1
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3327,14 +3331,14 @@ CREATE SEQUENCE public.states_id_seq1
 -- Name: states_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.states_id_seq1 OWNED BY public.states.id;
+ALTER SEQUENCE states_id_seq1 OWNED BY states.id;
 
 
 --
 -- Name: timezones_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.timezones_id_seq
+CREATE SEQUENCE timezones_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3346,8 +3350,8 @@ CREATE SEQUENCE public.timezones_id_seq
 -- Name: timezones; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.timezones (
-    id bigint DEFAULT nextval('public.timezones_id_seq'::regclass) NOT NULL,
+CREATE TABLE timezones (
+    id bigint DEFAULT nextval('timezones_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     country_iso2 character varying(255),
@@ -3363,7 +3367,7 @@ CREATE TABLE public.timezones (
 -- Name: user_logins; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.user_logins (
+CREATE TABLE user_logins (
     id integer NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
@@ -3377,7 +3381,7 @@ CREATE TABLE public.user_logins (
 -- Name: user_logins_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.user_logins_id_seq
+CREATE SEQUENCE user_logins_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3389,14 +3393,14 @@ CREATE SEQUENCE public.user_logins_id_seq
 -- Name: user_logins_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.user_logins_id_seq OWNED BY public.user_logins.id;
+ALTER SEQUENCE user_logins_id_seq OWNED BY user_logins.id;
 
 
 --
 -- Name: users_cards_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.users_cards_listing AS
+CREATE VIEW users_cards_listing AS
  SELECT b.name AS board_name,
     l.name AS list_name,
     c.id,
@@ -3423,17 +3427,17 @@ CREATE VIEW public.users_cards_listing AS
     (c.is_deleted)::integer AS is_deleted,
     cu.user_id,
     c.comment_count
-   FROM (((public.cards_users cu
-     JOIN public.cards c ON ((c.id = cu.card_id)))
-     JOIN public.boards b ON ((b.id = c.board_id)))
-     JOIN public.lists l ON ((l.id = c.list_id)));
+   FROM (((cards_users cu
+     JOIN cards c ON ((c.id = cu.card_id)))
+     JOIN boards b ON ((b.id = c.board_id)))
+     JOIN lists l ON ((l.id = c.list_id)));
 
 
 --
 -- Name: users_listing; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.users_listing AS
+CREATE VIEW users_listing AS
  SELECT users.id,
     users.role_id,
     users.username,
@@ -3467,7 +3471,7 @@ CREATE VIEW public.users_listing AS
                     organizations_users_listing.website_url,
                     organizations_users_listing.logo_url,
                     organizations_users_listing.organization_visibility
-                   FROM public.organizations_users_listing organizations_users_listing
+                   FROM organizations_users_listing organizations_users_listing
                   WHERE (organizations_users_listing.user_id = users.id)
                   ORDER BY organizations_users_listing.id) o) AS organizations,
     users.last_activity_id,
@@ -3476,7 +3480,7 @@ CREATE VIEW public.users_listing AS
                     boards_stars.board_id,
                     boards_stars.user_id,
                     (boards_stars.is_starred)::integer AS is_starred
-                   FROM public.board_stars boards_stars
+                   FROM board_stars boards_stars
                   WHERE (boards_stars.user_id = users.id)
                   ORDER BY boards_stars.id) o) AS boards_stars,
     ( SELECT array_to_json(array_agg(row_to_json(o.*))) AS array_to_json
@@ -3488,8 +3492,8 @@ CREATE VIEW public.users_listing AS
                     boards.background_picture_url,
                     boards.background_pattern_url,
                     boards.background_color
-                   FROM (public.boards_users boards_users
-                     JOIN public.boards ON ((boards.id = boards_users.board_id)))
+                   FROM (boards_users boards_users
+                     JOIN boards ON ((boards.id = boards_users.board_id)))
                   WHERE (boards_users.user_id = users.id)
                   ORDER BY boards_users.id) o) AS boards_users,
     users.last_login_date,
@@ -3522,24 +3526,25 @@ CREATE VIEW public.users_listing AS
     users.is_card_labels_notifications_enabled,
     users.is_card_checklists_notifications_enabled,
     users.is_card_attachments_notifications_enabled,
-    users.is_intro_video_skipped
-   FROM (((((((((public.users users
-     LEFT JOIN public.ips i ON ((i.id = users.ip_id)))
-     LEFT JOIN public.cities rci ON ((rci.id = i.city_id)))
-     LEFT JOIN public.states rst ON ((rst.id = i.state_id)))
-     LEFT JOIN public.countries rco ON ((rco.id = i.country_id)))
-     LEFT JOIN public.ips li ON ((li.id = users.last_login_ip_id)))
-     LEFT JOIN public.cities lci ON ((lci.id = li.city_id)))
-     LEFT JOIN public.states lst ON ((lst.id = li.state_id)))
-     LEFT JOIN public.countries lco ON ((lco.id = li.country_id)))
-     LEFT JOIN public.login_types lt ON ((lt.id = users.login_type_id)));
+    users.is_intro_video_skipped,
+    users.is_invite_from_board
+   FROM (((((((((users users
+     LEFT JOIN ips i ON ((i.id = users.ip_id)))
+     LEFT JOIN cities rci ON ((rci.id = i.city_id)))
+     LEFT JOIN states rst ON ((rst.id = i.state_id)))
+     LEFT JOIN countries rco ON ((rco.id = i.country_id)))
+     LEFT JOIN ips li ON ((li.id = users.last_login_ip_id)))
+     LEFT JOIN cities lci ON ((lci.id = li.city_id)))
+     LEFT JOIN states lst ON ((lst.id = li.state_id)))
+     LEFT JOIN countries lco ON ((lco.id = li.country_id)))
+     LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
 
 
 --
 -- Name: webhooks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.webhooks_id_seq
+CREATE SEQUENCE webhooks_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3551,8 +3556,8 @@ CREATE SEQUENCE public.webhooks_id_seq
 -- Name: webhooks; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.webhooks (
-    id bigint DEFAULT nextval('public.webhooks_id_seq'::regclass) NOT NULL,
+CREATE TABLE webhooks (
+    id bigint DEFAULT nextval('webhooks_id_seq'::regclass) NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
@@ -3567,49 +3572,49 @@ CREATE TABLE public.webhooks (
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.cities ALTER COLUMN id SET DEFAULT nextval('public.cities_id_seq1'::regclass);
+ALTER TABLE ONLY cities ALTER COLUMN id SET DEFAULT nextval('cities_id_seq1'::regclass);
 
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.countries ALTER COLUMN id SET DEFAULT nextval('public.countries_id_seq1'::regclass);
+ALTER TABLE ONLY countries ALTER COLUMN id SET DEFAULT nextval('countries_id_seq1'::regclass);
 
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.oauth_clients ALTER COLUMN id SET DEFAULT nextval('public.oauth_clients_id_seq1'::regclass);
+ALTER TABLE ONLY oauth_clients ALTER COLUMN id SET DEFAULT nextval('oauth_clients_id_seq1'::regclass);
 
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.setting_categories ALTER COLUMN id SET DEFAULT nextval('public.setting_categories_id_seq'::regclass);
+ALTER TABLE ONLY setting_categories ALTER COLUMN id SET DEFAULT nextval('setting_categories_id_seq'::regclass);
 
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.states ALTER COLUMN id SET DEFAULT nextval('public.states_id_seq1'::regclass);
+ALTER TABLE ONLY states ALTER COLUMN id SET DEFAULT nextval('states_id_seq1'::regclass);
 
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.user_logins ALTER COLUMN id SET DEFAULT nextval('public.user_logins_id_seq'::regclass);
+ALTER TABLE ONLY user_logins ALTER COLUMN id SET DEFAULT nextval('user_logins_id_seq'::regclass);
 
 
 --
 -- Data for Name: acl_board_links; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.acl_board_links (id, created, modified, name, url, method, slug, group_id, is_hide) FROM stdin;
+COPY acl_board_links (id, created, modified, name, url, method, slug, group_id, is_hide) FROM stdin;
 1	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add board member	/boards/?/users	POST	add_board_users	2	0
 2	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add card	/boards/?/lists/?/cards	POST	add_card	4	0
 3	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add checklist to card	/boards/?/lists/?/cards/?/checklists	POST	add_checklists	4	0
@@ -3666,6 +3671,7 @@ COPY public.acl_board_links (id, created, modified, name, url, method, slug, gro
 8	2016-02-19 16:21:04.687	2016-02-19 16:21:04.687	Archive list	/boaards/?/lists/?	PUT	archive_list	3	0
 9	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Archived card send back to board	/boards/?/lists/?/cards/?	PUT	send_back_to_archived_card	4	0
 10	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Archived list send back to board	/boards/?/lists/?	PUT	send_back_to_archived_list	2	0
+63	2018-05-16 15:36:21.164586	2018-05-16 15:36:21.164586	Archive all cards in the list	/boards/?/lists/?/cards	PUT	archive_all_cards_in_the_list	4	0
 \.
 
 
@@ -3673,7 +3679,7 @@ COPY public.acl_board_links (id, created, modified, name, url, method, slug, gro
 -- Data for Name: acl_board_links_boards_user_roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.acl_board_links_boards_user_roles (id, created, modified, acl_board_link_id, board_user_role_id) FROM stdin;
+COPY acl_board_links_boards_user_roles (id, created, modified, acl_board_link_id, board_user_role_id) FROM stdin;
 1	2016-02-22 12:43:35.008	2016-02-22 12:43:35.008	1	1
 3	2016-02-22 12:43:36.131	2016-02-22 12:43:36.131	10	1
 5	2016-02-22 12:43:37.17	2016-02-22 12:43:37.17	15	1
@@ -3789,6 +3795,8 @@ COPY public.acl_board_links_boards_user_roles (id, created, modified, acl_board_
 128	2016-02-22 12:49:49.309	2016-02-22 12:49:49.309	61	3
 129	2017-06-13 13:52:45.634449	2017-06-13 13:52:45.634449	62	1
 130	2017-06-13 13:52:45.642858	2017-06-13 13:52:45.642858	62	2
+131	2018-05-16 15:36:21.181269	2018-05-16 15:36:21.181269	63	1
+132	2018-05-16 15:36:21.181269	2018-05-16 15:36:21.181269	63	2
 \.
 
 
@@ -3796,21 +3804,21 @@ COPY public.acl_board_links_boards_user_roles (id, created, modified, acl_board_
 -- Name: acl_board_links_boards_user_roles_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_board_links_boards_user_roles_seq', 130, true);
+SELECT pg_catalog.setval('acl_board_links_boards_user_roles_seq', 132, true);
 
 
 --
 -- Name: acl_board_links_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_board_links_seq', 1, false);
+SELECT pg_catalog.setval('acl_board_links_seq', 63, true);
 
 
 --
 -- Data for Name: acl_links; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.acl_links (id, created, modified, name, url, method, slug, group_id, is_user_action, is_guest_action, is_admin_action, is_hide, is_default) FROM stdin;
+COPY acl_links (id, created, modified, name, url, method, slug, group_id, is_user_action, is_guest_action, is_admin_action, is_hide, is_default) FROM stdin;
 1	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add board	/boards	POST	add_board	2	1	0	0	0	f
 2	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add organization	/organizations	POST	add_organization	2	1	0	0	0	f
 3	2016-02-09 16:51:25.779	2016-02-09 16:51:25.779	Add webhooks	/webhooks	POST	add_webhook	2	1	0	0	0	f
@@ -3874,6 +3882,8 @@ COPY public.acl_links (id, created, modified, name, url, method, slug, group_id,
 123	2016-03-07 11:45:43.8	2016-03-07 11:45:43.8	User detail	/users/me	GET	user_detail	0	1	0	1	1	t
 27	2016-02-18 20:11:14.482	2016-02-18 20:11:14.482	View board	/boards/?	GET	view_board	2	1	0	0	0	t
 35	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View other users activities		GET	view_user_activities	2	1	0	0	0	t
+152	2018-05-16 15:36:21.072177	2018-05-16 15:36:21.072177	Users invite	/users/invite	POST	users_invite	1	0	0	1	1	f
+153	2018-05-16 15:36:21.088804	2018-05-16 15:36:21.088804	Get timezones listing	/timezones	GET	get_timezones	1	0	0	1	1	f
 \.
 
 
@@ -3881,14 +3891,14 @@ COPY public.acl_links (id, created, modified, name, url, method, slug, group_id,
 -- Name: acl_links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_links_id_seq', 139, true);
+SELECT pg_catalog.setval('acl_links_id_seq', 139, true);
 
 
 --
 -- Data for Name: acl_links_roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
+COPY acl_links_roles (id, created, modified, acl_link_id, role_id) FROM stdin;
 1	2016-02-20 19:07:50.849	2016-02-20 19:07:50.849	23	1
 2	2016-02-20 19:08:19.584	2016-02-20 19:08:19.584	24	2
 3	2016-02-20 19:08:19.584	2016-02-20 19:08:19.584	24	1
@@ -4014,6 +4024,10 @@ COPY public.acl_links_roles (id, created, modified, acl_link_id, role_id) FROM s
 1266	2017-06-13 13:52:45.862325	2017-06-13 13:52:45.862325	141	1
 1267	2017-06-13 13:52:45.862325	2017-06-13 13:52:45.862325	141	2
 1268	2018-02-28 10:32:32.431588	2018-02-28 10:32:32.431588	16	3
+1269	2018-05-16 15:36:21.08041	2018-05-16 15:36:21.08041	152	1
+1270	2018-05-16 15:36:21.08041	2018-05-16 15:36:21.08041	152	2
+1271	2018-05-16 15:36:21.097113	2018-05-16 15:36:21.097113	153	1
+1272	2018-05-16 15:36:21.097113	2018-05-16 15:36:21.097113	153	2
 \.
 
 
@@ -4021,14 +4035,14 @@ COPY public.acl_links_roles (id, created, modified, acl_link_id, role_id) FROM s
 -- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_links_roles_roles_id_seq', 1268, true);
+SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', 1272, true);
 
 
 --
 -- Data for Name: acl_organization_links; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.acl_organization_links (id, created, modified, name, url, method, slug, group_id, is_hide) FROM stdin;
+COPY acl_organization_links (id, created, modified, name, url, method, slug, group_id, is_hide) FROM stdin;
 1	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Add organization member	/organizations/?/users/?	POST	add_organization_user	5	0
 2	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Delete organization	/organizations/?	DELETE	delete_organization	5	0
 3	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Edit organization	/organizations/?	PUT	edit_organization	5	0
@@ -4044,7 +4058,7 @@ COPY public.acl_organization_links (id, created, modified, name, url, method, sl
 -- Data for Name: acl_organization_links_organizations_user_roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.acl_organization_links_organizations_user_roles (id, created, modified, acl_organization_link_id, organization_user_role_id) FROM stdin;
+COPY acl_organization_links_organizations_user_roles (id, created, modified, acl_organization_link_id, organization_user_role_id) FROM stdin;
 1	2016-02-22 12:44:27.98	2016-02-22 12:44:27.98	1	1
 2	2016-02-22 12:44:28.532	2016-02-22 12:44:28.532	2	1
 3	2016-02-22 12:44:29.562	2016-02-22 12:44:29.562	3	1
@@ -4066,21 +4080,21 @@ COPY public.acl_organization_links_organizations_user_roles (id, created, modifi
 -- Name: acl_organization_links_organizations_user_roles_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_organization_links_organizations_user_roles_seq', 14, true);
+SELECT pg_catalog.setval('acl_organization_links_organizations_user_roles_seq', 14, true);
 
 
 --
 -- Name: acl_organization_links_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_organization_links_seq', 1, false);
+SELECT pg_catalog.setval('acl_organization_links_seq', 1, false);
 
 
 --
 -- Data for Name: activities; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.activities (id, created, modified, board_id, list_id, card_id, user_id, foreign_id, type, comment, revisions, root, freshness_ts, depth, path, materialized_path, organization_id) FROM stdin;
+COPY activities (id, created, modified, board_id, list_id, card_id, user_id, foreign_id, type, comment, revisions, root, freshness_ts, depth, path, materialized_path, organization_id) FROM stdin;
 \.
 
 
@@ -4088,21 +4102,21 @@ COPY public.activities (id, created, modified, board_id, list_id, card_id, user_
 -- Name: activities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.activities_id_seq', 2, true);
+SELECT pg_catalog.setval('activities_id_seq', 2, true);
 
 
 --
 -- Name: attachments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.attachments_id_seq', 1, false);
+SELECT pg_catalog.setval('attachments_id_seq', 1, false);
 
 
 --
 -- Data for Name: board_stars; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.board_stars (id, created, modified, board_id, user_id, is_starred) FROM stdin;
+COPY board_stars (id, created, modified, board_id, user_id, is_starred) FROM stdin;
 \.
 
 
@@ -4110,7 +4124,7 @@ COPY public.board_stars (id, created, modified, board_id, user_id, is_starred) F
 -- Data for Name: board_subscribers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.board_subscribers (id, created, modified, board_id, user_id, is_subscribed) FROM stdin;
+COPY board_subscribers (id, created, modified, board_id, user_id, is_subscribed) FROM stdin;
 \.
 
 
@@ -4118,7 +4132,7 @@ COPY public.board_subscribers (id, created, modified, board_id, user_id, is_subs
 -- Data for Name: board_user_roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.board_user_roles (id, created, modified, name, description) FROM stdin;
+COPY board_user_roles (id, created, modified, name, description) FROM stdin;
 1	2016-02-22 17:39:17.68	2016-02-22 17:39:17.68	Owner	Can view and edit cards, remove members, and change settings for the board.
 2	2016-02-22 17:39:17.68	2016-02-22 17:39:17.68	Editor	Can view and edit cards, remove members, but not change settings.
 3	2016-02-22 17:39:17.68	2016-02-22 17:39:17.68	Viewer	Can view only.
@@ -4129,14 +4143,14 @@ COPY public.board_user_roles (id, created, modified, name, description) FROM std
 -- Name: board_user_roles_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.board_user_roles_seq', 4, false);
+SELECT pg_catalog.setval('board_user_roles_seq', 4, false);
 
 
 --
 -- Data for Name: boards; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.boards (id, created, modified, user_id, organization_id, name, board_visibility, background_color, background_picture_url, commenting_permissions, voting_permissions, inivitation_permissions, is_closed, is_allow_organization_members_to_join, boards_user_count, list_count, card_count, boards_subscriber_count, background_pattern_url, boards_star_count, is_show_image_front_of_card, background_picture_path, music_name, music_content, archived_list_count, archived_card_count, default_email_list_id, is_default_email_position_as_bottom, custom_fields, auto_subscribe_on_board, auto_subscribe_on_card, sort_by, sort_direction) FROM stdin;
+COPY boards (id, created, modified, user_id, organization_id, name, board_visibility, background_color, background_picture_url, commenting_permissions, voting_permissions, inivitation_permissions, is_closed, is_allow_organization_members_to_join, boards_user_count, list_count, card_count, boards_subscriber_count, background_pattern_url, boards_star_count, is_show_image_front_of_card, background_picture_path, music_name, music_content, archived_list_count, archived_card_count, default_email_list_id, is_default_email_position_as_bottom, custom_fields, auto_subscribe_on_board, auto_subscribe_on_card, sort_by, sort_direction) FROM stdin;
 \.
 
 
@@ -4144,28 +4158,28 @@ COPY public.boards (id, created, modified, user_id, organization_id, name, board
 -- Name: boards_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.boards_id_seq', 2, true);
+SELECT pg_catalog.setval('boards_id_seq', 2, true);
 
 
 --
 -- Name: boards_stars_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.boards_stars_id_seq', 1, false);
+SELECT pg_catalog.setval('boards_stars_id_seq', 1, false);
 
 
 --
 -- Name: boards_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.boards_subscribers_id_seq', 1, true);
+SELECT pg_catalog.setval('boards_subscribers_id_seq', 1, true);
 
 
 --
 -- Data for Name: boards_users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.boards_users (id, created, modified, board_id, user_id, board_user_role_id) FROM stdin;
+COPY boards_users (id, created, modified, board_id, user_id, board_user_role_id) FROM stdin;
 \.
 
 
@@ -4173,14 +4187,14 @@ COPY public.boards_users (id, created, modified, board_id, user_id, board_user_r
 -- Name: boards_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.boards_users_id_seq', 2, true);
+SELECT pg_catalog.setval('boards_users_id_seq', 2, true);
 
 
 --
 -- Data for Name: card_attachments; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.card_attachments (id, created, modified, card_id, name, path, list_id, board_id, mimetype, link) FROM stdin;
+COPY card_attachments (id, created, modified, card_id, name, path, list_id, board_id, mimetype, link) FROM stdin;
 \.
 
 
@@ -4188,14 +4202,14 @@ COPY public.card_attachments (id, created, modified, card_id, name, path, list_i
 -- Name: card_attachments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.card_attachments_id_seq', 1, true);
+SELECT pg_catalog.setval('card_attachments_id_seq', 1, true);
 
 
 --
 -- Data for Name: card_subscribers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.card_subscribers (id, created, modified, card_id, user_id, is_subscribed) FROM stdin;
+COPY card_subscribers (id, created, modified, card_id, user_id, is_subscribed) FROM stdin;
 \.
 
 
@@ -4203,7 +4217,7 @@ COPY public.card_subscribers (id, created, modified, card_id, user_id, is_subscr
 -- Data for Name: card_voters; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.card_voters (id, created, modified, card_id, user_id) FROM stdin;
+COPY card_voters (id, created, modified, card_id, user_id) FROM stdin;
 \.
 
 
@@ -4211,14 +4225,14 @@ COPY public.card_voters (id, created, modified, card_id, user_id) FROM stdin;
 -- Name: card_voters_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.card_voters_id_seq', 1, true);
+SELECT pg_catalog.setval('card_voters_id_seq', 1, true);
 
 
 --
 -- Data for Name: cards; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.cards (id, created, modified, board_id, list_id, name, description, due_date, "position", is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, cards_user_count, cards_subscriber_count, card_voter_count, activity_count, user_id, is_deleted, comment_count, custom_fields, color, is_due_date_notification_sent, archived_date) FROM stdin;
+COPY cards (id, created, modified, board_id, list_id, name, description, due_date, "position", is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, cards_user_count, cards_subscriber_count, card_voter_count, activity_count, user_id, is_deleted, comment_count, custom_fields, color, is_due_date_notification_sent, archived_date) FROM stdin;
 \.
 
 
@@ -4226,14 +4240,14 @@ COPY public.cards (id, created, modified, board_id, list_id, name, description, 
 -- Name: cards_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.cards_id_seq', 1, true);
+SELECT pg_catalog.setval('cards_id_seq', 1, true);
 
 
 --
 -- Data for Name: cards_labels; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.cards_labels (id, created, modified, label_id, card_id, list_id, board_id) FROM stdin;
+COPY cards_labels (id, created, modified, label_id, card_id, list_id, board_id) FROM stdin;
 \.
 
 
@@ -4241,21 +4255,21 @@ COPY public.cards_labels (id, created, modified, label_id, card_id, list_id, boa
 -- Name: cards_labels_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.cards_labels_id_seq', 1, true);
+SELECT pg_catalog.setval('cards_labels_id_seq', 1, true);
 
 
 --
 -- Name: cards_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.cards_subscribers_id_seq', 1, true);
+SELECT pg_catalog.setval('cards_subscribers_id_seq', 1, true);
 
 
 --
 -- Data for Name: cards_users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.cards_users (id, created, modified, card_id, user_id) FROM stdin;
+COPY cards_users (id, created, modified, card_id, user_id) FROM stdin;
 \.
 
 
@@ -4263,14 +4277,14 @@ COPY public.cards_users (id, created, modified, card_id, user_id) FROM stdin;
 -- Name: cards_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.cards_users_id_seq', 1, true);
+SELECT pg_catalog.setval('cards_users_id_seq', 1, true);
 
 
 --
 -- Data for Name: checklist_items; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.checklist_items (id, created, modified, user_id, card_id, checklist_id, name, is_completed, "position") FROM stdin;
+COPY checklist_items (id, created, modified, user_id, card_id, checklist_id, name, is_completed, "position") FROM stdin;
 \.
 
 
@@ -4278,14 +4292,14 @@ COPY public.checklist_items (id, created, modified, user_id, card_id, checklist_
 -- Name: checklist_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.checklist_items_id_seq', 1, true);
+SELECT pg_catalog.setval('checklist_items_id_seq', 1, true);
 
 
 --
 -- Data for Name: checklists; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.checklists (id, created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, "position") FROM stdin;
+COPY checklists (id, created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, "position") FROM stdin;
 \.
 
 
@@ -4293,14 +4307,14 @@ COPY public.checklists (id, created, modified, user_id, card_id, name, checklist
 -- Name: checklists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.checklists_id_seq', 1, true);
+SELECT pg_catalog.setval('checklists_id_seq', 1, true);
 
 
 --
 -- Data for Name: cities; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.cities (id, created, modified, country_id, state_id, latitude, longitude, name, is_active) FROM stdin;
+COPY cities (id, created, modified, country_id, state_id, latitude, longitude, name, is_active) FROM stdin;
 1	2015-05-21 11:45:47.245	2015-05-21 11:45:47.245	102	1	20	77	undefined	f
 \.
 
@@ -4309,21 +4323,21 @@ COPY public.cities (id, created, modified, country_id, state_id, latitude, longi
 -- Name: cities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.cities_id_seq', 15178, false);
+SELECT pg_catalog.setval('cities_id_seq', 15178, false);
 
 
 --
 -- Name: cities_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.cities_id_seq1', 1, true);
+SELECT pg_catalog.setval('cities_id_seq1', 1, true);
 
 
 --
 -- Data for Name: countries; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capital, areainsqkm, population, continent, tld, currency, currencyname, phone, postalcodeformat, postalcoderegex, languages, geonameid, neighbours, equivalentfipscode, created, iso2, iso3, modified) FROM stdin;
+COPY countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name, capital, areainsqkm, population, continent, tld, currency, currencyname, phone, postalcodeformat, postalcoderegex, languages, geonameid, neighbours, equivalentfipscode, created, iso2, iso3, modified) FROM stdin;
 1	AF	AFG	4	AF	Afghanistan	Kabul	647500	29121286	AS	.af	AFN	Afghani             	93        	                    	                    	fa-AF,ps,uz-AF,tk	1149361	TM,CN,IR,TJ,PK,UZ   	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 2	AX	ALA	248		Aland Islands	Mariehamn	0	26711	EU	.ax	EUR	Euro                	+358-18   	                    	                    	sv-AX	661882	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 4	DZ	DZA	12	AG	Algeria	Algiers	2381740	34586184	AF	.dz	DZD	Dinar               	213       	#####               	^(d{5})$            	ar-DZ	2589581	NE,EH,LY,MR,TN,MA,ML	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
@@ -4581,21 +4595,21 @@ COPY public.countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name,
 -- Name: countries_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.countries_id_seq', 262, false);
+SELECT pg_catalog.setval('countries_id_seq', 262, false);
 
 
 --
 -- Name: countries_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.countries_id_seq1', 1, false);
+SELECT pg_catalog.setval('countries_id_seq1', 1, false);
 
 
 --
 -- Data for Name: email_templates; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.email_templates (id, created, modified, from_email, reply_to_email, name, description, subject, email_text_content, email_variables, display_name) FROM stdin;
+COPY email_templates (id, created, modified, from_email, reply_to_email, name, description, subject, email_text_content, email_variables, display_name) FROM stdin;
 4	2014-05-08 12:13:50.69	2014-05-08 12:13:50.69	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	changepassword	We will send this mail to user, when admin change users password.	Restyaboard / Password changed	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">Admin reset your password for your ##SITE_NAME## account.<br>Your new password: ##PASSWORD##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=change_password_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_NAME, SITE_URL, PASSWORD	Change Password
 1	2014-05-08 12:13:37.268	2014-05-08 12:13:37.268	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	activation	We will send this mail, when user registering an account he/she will get an activation request.	Restyaboard / Account confirmation	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,\n</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">You are one step ahead. Please click the below URL to activate your account.<br>##ACTIVATION_URL##<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=activation_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME, ACTIVATION_URL	Activation
 2	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	welcome	We will send this mail, when user register in this site and get activate.	Restyaboard / Welcome	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">We wish to say a quick hello and thanks for registering at ##SITE_NAME##.<br>If you didn't create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_EMAIL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME	Welcome
@@ -4604,6 +4618,7 @@ COPY public.email_templates (id, created, modified, from_email, reply_to_email, 
 7	2016-01-10 06:15:49.891	2016-01-10 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	due_date_notification	We will send this mail, One day before when the card due date end.	##SUBJECT##	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;">\n<h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Due soon…</h2>\n<p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=due_date_notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\n</h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, SUBJECT, CONTENT	Due Date Notification
 8	2014-05-08 12:14:07.472	2014-05-08 12:14:07.472	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	ldap_welcome	We will send this mail, when admin imports from LDAP.	Restyaboard / Welcome	<html>\n<head></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">Admin imported your LDAP account in ##SITE_NAME##. You can login with your LDAP username and password in ##SITE_URL##.<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTACT_EMAIL, NAME	LDAP Welcome
 6	2015-10-09 06:15:49.891	2015-10-09 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	email_notification	We will send this mail, when user activities in this site.	Restyaboard / ##NOTIFICATION_COUNT## new notifications since ##SINCE##	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="Restyaboard"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="Restyaboard"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<div style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;margin-top:30px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Here's what you missed...</h2>\n<div style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</div>\n</div>\n</div>\n</div>\n<div style="text-align:center;margin:5px 15px;padding:10px 0px;">\n<a href="##SITE_URL##/#/user/##USER_ID##/settings">Change email preferences</a>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\n</h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTENT, NAME, NOTIFICATION_COUNT, SINCE	Email Notification
+9	2018-05-16 15:36:21.063906	2018-05-16 15:36:21.063906	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	new_project_user_invite	We will send this mail, when user invited for board.	Restyaboard / ##CURRENT_USER## invited you to join the board ##BOARD_NAME##	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%\nCREA;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2>\n<p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CURRENT_USER## invites you to join the board ##BOARD_NAME##. You can see this board ##BOARD_URL## after your registration. To register click this ##REGISTRATION_URL## <br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=new_board_user_invite_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, NAME, BOARD_NAME, CURRENT_USER, BOARD_URL	New User Invite for Board
 \.
 
 
@@ -4611,14 +4626,14 @@ COPY public.email_templates (id, created, modified, from_email, reply_to_email, 
 -- Name: email_templates_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.email_templates_id_seq', 1, true);
+SELECT pg_catalog.setval('email_templates_id_seq', 9, true);
 
 
 --
 -- Data for Name: ips; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.ips (id, created, modified, ip, host, user_agent, "order", city_id, state_id, country_id, latitude, longitude) FROM stdin;
+COPY ips (id, created, modified, ip, host, user_agent, "order", city_id, state_id, country_id, latitude, longitude) FROM stdin;
 1	2015-05-21 11:45:47.262	2015-05-21 11:45:47.262	::1	115.111.183.202	Mozilla/5.0 (Windows NT 6.3; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0	0	1	1	102	20	77
 \.
 
@@ -4627,14 +4642,14 @@ COPY public.ips (id, created, modified, ip, host, user_agent, "order", city_id, 
 -- Name: ips_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.ips_id_seq', 1, true);
+SELECT pg_catalog.setval('ips_id_seq', 1, true);
 
 
 --
 -- Data for Name: labels; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.labels (id, created, modified, name, card_count, color) FROM stdin;
+COPY labels (id, created, modified, name, card_count, color) FROM stdin;
 \.
 
 
@@ -4642,14 +4657,14 @@ COPY public.labels (id, created, modified, name, card_count, color) FROM stdin;
 -- Name: labels_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.labels_id_seq', 1, true);
+SELECT pg_catalog.setval('labels_id_seq', 1, true);
 
 
 --
 -- Data for Name: languages; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.languages (id, created, modified, name, iso2, iso3, is_active) FROM stdin;
+COPY languages (id, created, modified, name, iso2, iso3, is_active) FROM stdin;
 1	2016-03-10 16:24:44.693	2016-03-10 16:24:44.693	Acoli	ach	ach	0
 2	2016-03-10 16:24:44.72	2016-03-10 16:24:44.72	Adyghe	ady	ady	0
 3	2016-03-10 16:24:44.721	2016-03-10 16:24:44.721	Afrikaans	af	af	0
@@ -5072,14 +5087,14 @@ COPY public.languages (id, created, modified, name, iso2, iso3, is_active) FROM 
 -- Name: languages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.languages_id_seq', 1, false);
+SELECT pg_catalog.setval('languages_id_seq', 1, false);
 
 
 --
 -- Data for Name: list_subscribers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.list_subscribers (id, created, modified, list_id, user_id, is_subscribed) FROM stdin;
+COPY list_subscribers (id, created, modified, list_id, user_id, is_subscribed) FROM stdin;
 \.
 
 
@@ -5087,14 +5102,14 @@ COPY public.list_subscribers (id, created, modified, list_id, user_id, is_subscr
 -- Name: list_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.list_subscribers_id_seq', 1, false);
+SELECT pg_catalog.setval('list_subscribers_id_seq', 1, false);
 
 
 --
 -- Data for Name: lists; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.lists (id, created, modified, board_id, user_id, name, "position", is_archived, card_count, lists_subscriber_count, is_deleted, custom_fields, color) FROM stdin;
+COPY lists (id, created, modified, board_id, user_id, name, "position", is_archived, card_count, lists_subscriber_count, is_deleted, custom_fields, color) FROM stdin;
 \.
 
 
@@ -5102,21 +5117,21 @@ COPY public.lists (id, created, modified, board_id, user_id, name, "position", i
 -- Name: lists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.lists_id_seq', 196, true);
+SELECT pg_catalog.setval('lists_id_seq', 196, true);
 
 
 --
 -- Name: lists_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.lists_subscribers_id_seq', 1, true);
+SELECT pg_catalog.setval('lists_subscribers_id_seq', 1, true);
 
 
 --
 -- Data for Name: login_types; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.login_types (id, created, modified, name) FROM stdin;
+COPY login_types (id, created, modified, name) FROM stdin;
 1	2015-04-07 18:42:59.514	2015-04-07 18:42:59.514	LDAP
 2	2015-04-07 18:42:59.515	2015-04-07 18:42:59.515	Normal
 \.
@@ -5126,14 +5141,14 @@ COPY public.login_types (id, created, modified, name) FROM stdin;
 -- Name: login_types_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.login_types_id_seq', 2, true);
+SELECT pg_catalog.setval('login_types_id_seq', 2, true);
 
 
 --
 -- Data for Name: oauth_access_tokens; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.oauth_access_tokens (access_token, client_id, user_id, expires, scope) FROM stdin;
+COPY oauth_access_tokens (access_token, client_id, user_id, expires, scope) FROM stdin;
 e536ed90b96ee3e6992f116e604c0fa265e8f92e	7742632501382313	\N	2017-08-30 18:59:56	read
 \.
 
@@ -5142,7 +5157,7 @@ e536ed90b96ee3e6992f116e604c0fa265e8f92e	7742632501382313	\N	2017-08-30 18:59:56
 -- Data for Name: oauth_authorization_codes; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.oauth_authorization_codes (authorization_code, client_id, user_id, redirect_uri, expires, scope) FROM stdin;
+COPY oauth_authorization_codes (authorization_code, client_id, user_id, redirect_uri, expires, scope) FROM stdin;
 \.
 
 
@@ -5150,7 +5165,7 @@ COPY public.oauth_authorization_codes (authorization_code, client_id, user_id, r
 -- Data for Name: oauth_clients; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.oauth_clients (client_id, client_secret, redirect_uri, grant_types, scope, user_id, client_name, client_url, logo_url, tos_url, policy_url, modified, created, id) FROM stdin;
+COPY oauth_clients (client_id, client_secret, redirect_uri, grant_types, scope, user_id, client_name, client_url, logo_url, tos_url, policy_url, modified, created, id) FROM stdin;
 7742632501382313	4g7C4l1Y2b0S6a7L8c1E7B3K0e		client_credentials password refresh_token authorization_code		2	Web App	\N	\N	\N	\N	\N	\N	2
 6664115227792148	hw3wpe2cfsxxygogwue47cwnf7	\N	client_credentials refresh_token authorization_code	\N	\N	Mobile App	\N	\N	\N	\N	2016-02-22 17:39:17.208	2016-02-22 17:39:17.208	3
 7857596005287233	n0l2wlujcpkj0bd7gk8918gm6b	\N	client_credentials refresh_token authorization_code	\N	\N	Zapier	\N	\N	\N	\N	2016-02-22 17:39:17.208	2016-02-22 17:39:17.208	4
@@ -5163,21 +5178,21 @@ COPY public.oauth_clients (client_id, client_secret, redirect_uri, grant_types, 
 -- Name: oauth_clients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.oauth_clients_id_seq', 1, false);
+SELECT pg_catalog.setval('oauth_clients_id_seq', 1, false);
 
 
 --
 -- Name: oauth_clients_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.oauth_clients_id_seq1', 6, true);
+SELECT pg_catalog.setval('oauth_clients_id_seq1', 6, true);
 
 
 --
 -- Data for Name: oauth_jwt; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.oauth_jwt (client_id, subject, public_key) FROM stdin;
+COPY oauth_jwt (client_id, subject, public_key) FROM stdin;
 \.
 
 
@@ -5185,7 +5200,7 @@ COPY public.oauth_jwt (client_id, subject, public_key) FROM stdin;
 -- Data for Name: oauth_refresh_tokens; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.oauth_refresh_tokens (refresh_token, client_id, user_id, expires, scope) FROM stdin;
+COPY oauth_refresh_tokens (refresh_token, client_id, user_id, expires, scope) FROM stdin;
 8adf4daa06961f18d2afda535b2f4463193c62f5	7742632501382313	admin	2015-04-16 12:55:32	\N
 b43d289f47100a9c70ebd21f31c15db059ef82bb	7742632501382313	admin	2015-06-04 08:15:47	\N
 52831802ce6fbd12bfbe34f1def7b679a0822a18	7742632501382313	admin	2015-06-20 07:23:34	\N
@@ -5196,7 +5211,7 @@ b43d289f47100a9c70ebd21f31c15db059ef82bb	7742632501382313	admin	2015-06-04 08:15
 -- Data for Name: oauth_scopes; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.oauth_scopes (scope, is_default) FROM stdin;
+COPY oauth_scopes (scope, is_default) FROM stdin;
 read	t
 write	f
 \.
@@ -5206,7 +5221,7 @@ write	f
 -- Data for Name: organization_user_roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.organization_user_roles (id, created, modified, name, description) FROM stdin;
+COPY organization_user_roles (id, created, modified, name, description) FROM stdin;
 1	2016-02-22 17:39:17.743	2016-02-22 17:39:17.743	Owner	Can view, create and edit org boards, and change settings for the organization.
 2	2016-02-22 17:39:17.743	2016-02-22 17:39:17.743	Editor	Can view, create, and edit org boards, but not change settings.
 3	2016-02-22 17:39:17.743	2016-02-22 17:39:17.743	Viewer	Can view only.
@@ -5217,14 +5232,14 @@ COPY public.organization_user_roles (id, created, modified, name, description) F
 -- Name: organization_user_roles_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.organization_user_roles_seq', 4, false);
+SELECT pg_catalog.setval('organization_user_roles_seq', 4, false);
 
 
 --
 -- Data for Name: organizations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.organizations (id, created, modified, user_id, name, website_url, description, logo_url, organization_visibility, organizations_user_count, board_count) FROM stdin;
+COPY organizations (id, created, modified, user_id, name, website_url, description, logo_url, organization_visibility, organizations_user_count, board_count) FROM stdin;
 \.
 
 
@@ -5232,14 +5247,14 @@ COPY public.organizations (id, created, modified, user_id, name, website_url, de
 -- Name: organizations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.organizations_id_seq', 1, true);
+SELECT pg_catalog.setval('organizations_id_seq', 1, true);
 
 
 --
 -- Data for Name: organizations_users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.organizations_users (id, created, modified, organization_id, user_id, organization_user_role_id) FROM stdin;
+COPY organizations_users (id, created, modified, organization_id, user_id, organization_user_role_id) FROM stdin;
 \.
 
 
@@ -5247,14 +5262,14 @@ COPY public.organizations_users (id, created, modified, organization_id, user_id
 -- Name: organizations_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.organizations_users_id_seq', 1, true);
+SELECT pg_catalog.setval('organizations_users_id_seq', 1, true);
 
 
 --
 -- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.roles (id, created, modified, name) FROM stdin;
+COPY roles (id, created, modified, name) FROM stdin;
 1	2014-09-02 19:43:15.815	2014-09-02 19:43:15.815	Admin
 2	2014-09-02 19:43:15.815	2014-09-02 19:43:15.815	User
 3	2014-09-02 19:43:15.815	2014-09-02 19:43:15.815	Guest
@@ -5265,14 +5280,14 @@ COPY public.roles (id, created, modified, name) FROM stdin;
 -- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.roles_id_seq', 3, true);
+SELECT pg_catalog.setval('roles_id_seq', 3, true);
 
 
 --
 -- Data for Name: setting_categories; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.setting_categories (id, created, modified, parent_id, name, description, "order") FROM stdin;
+COPY setting_categories (id, created, modified, parent_id, name, description, "order") FROM stdin;
 4	2014-11-21 02:52:08.822706	2014-11-21 02:52:08.822706	2	Server Details	\N	0
 5	2014-11-21 02:52:08.822706	2014-11-21 02:52:08.822706	2	Connection Details	\N	0
 7	2015-04-25 19:58:48.845	2015-04-25 19:58:48.845	6	Dropbox	\N	0
@@ -5288,14 +5303,14 @@ COPY public.setting_categories (id, created, modified, parent_id, name, descript
 -- Name: setting_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.setting_categories_id_seq', 13, true);
+SELECT pg_catalog.setval('setting_categories_id_seq', 13, true);
 
 
 --
 -- Data for Name: settings; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.settings (id, setting_category_id, setting_category_parent_id, name, value, description, type, options, label, "order") FROM stdin;
+COPY settings (id, setting_category_id, setting_category_parent_id, name, value, description, type, options, label, "order") FROM stdin;
 11	3	0	SITE_NAME	Restyaboard	\N	text	\N	Site Name	1
 19	3	0	LABEL_ICON	icon-circle	<a href="http://fortawesome.github.io/Font-Awesome/icons/" target="_blank">Font\r\nAwesome</a> class name. Recommended: icon-circle, icon-bullhorn,\r\nicon-tag, icon-bookmark, icon-pushpin, icon-star	text	\N	Label Icon	3
 12	3	0	PAGING_COUNT	20	\N	text	\N	Paging Count	4
@@ -5323,6 +5338,7 @@ COPY public.settings (id, setting_category_id, setting_category_parent_id, name,
 69	14	0	IS_CARD_CHECKLISTS_NOTIFICATIONS_ENABLED	true		checkbox	\N	Card level notification #4 - when updating checklist	9
 70	14	0	IS_CARD_ATTACHMENTS_NOTIFICATIONS_ENABLED	true		checkbox	\N	Card level notification #5 - when updating attachment	10
 21	3	0	SITE_TIMEZONE	Europe/Andorra	\N	select	\N	Site Timezone	5
+80	3	0	ALLOWED_FILE_EXTENSIONS		Enter the file extensions to restrict the upload in card modal, leave it empty to accept all files. (e.g., .png, .docx, .jpg, .pdf)	textarea	\N	Allowed File Extensions	11
 \.
 
 
@@ -5330,14 +5346,14 @@ COPY public.settings (id, setting_category_id, setting_category_parent_id, name,
 -- Name: settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.settings_id_seq', 70, true);
+SELECT pg_catalog.setval('settings_id_seq', 70, true);
 
 
 --
 -- Data for Name: states; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.states (id, created, modified, country_id, name, is_active) FROM stdin;
+COPY states (id, created, modified, country_id, name, is_active) FROM stdin;
 1	2015-05-21 11:45:47.229	2015-05-21 11:45:47.229	102	undefined	f
 \.
 
@@ -5346,21 +5362,21 @@ COPY public.states (id, created, modified, country_id, name, is_active) FROM std
 -- Name: states_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.states_id_seq', 15138, false);
+SELECT pg_catalog.setval('states_id_seq', 15138, false);
 
 
 --
 -- Name: states_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.states_id_seq1', 1, true);
+SELECT pg_catalog.setval('states_id_seq1', 1, true);
 
 
 --
 -- Data for Name: timezones; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.timezones (id, created, modified, country_iso2, country_id, code, utc_offset, utc_dst_offset, name) FROM stdin;
+COPY timezones (id, created, modified, country_iso2, country_id, code, utc_offset, utc_dst_offset, name) FROM stdin;
 1	2017-08-22 16:34:35.976572	2017-08-22 16:34:35.976572	AD	6	Europe/Andorra	+0200	+0200	(GMT+02:00) Andorra
 2	2017-08-22 16:34:36.037768	2017-08-22 16:34:36.037768	AE	238	Asia/Dubai	+0400	+0400	(GMT+04:00) Dubai
 3	2017-08-22 16:34:36.045667	2017-08-22 16:34:36.045667	AF	1	Asia/Kabul	+0430	+0430	(GMT+04:30) Kabul
@@ -5615,14 +5631,14 @@ COPY public.timezones (id, created, modified, country_iso2, country_id, code, ut
 -- Name: timezones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.timezones_id_seq', 324, true);
+SELECT pg_catalog.setval('timezones_id_seq', 324, true);
 
 
 --
 -- Data for Name: user_logins; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.user_logins (id, created, modified, user_id, ip_id, user_agent) FROM stdin;
+COPY user_logins (id, created, modified, user_id, ip_id, user_agent) FROM stdin;
 1	2015-05-21 11:45:47.266	2015-05-21 11:45:47.266	1	1	Mozilla/5.0 (Windows NT 6.3; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0
 2	2015-06-06 10:53:34.529	2015-06-06 10:53:34.529	1	1	Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 Safari/537.36
 \.
@@ -5632,16 +5648,16 @@ COPY public.user_logins (id, created, modified, user_id, ip_id, user_agent) FROM
 -- Name: user_logins_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.user_logins_id_seq', 2, true);
+SELECT pg_catalog.setval('user_logins_id_seq', 2, true);
 
 
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count, language, timezone, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled, is_intro_video_skipped) FROM stdin;
-2	2014-07-05 11:46:40.804	2014-07-05 11:46:40.804	2	user	board+user@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	User	U	\N	\N	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	0	\N	\N	\N	\N	f	0	f	0	0	0	0	0	0	\N	Asia/Calcutta	t	t	t	t	t	t	t	f
-1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	media/User/1/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f	2	0	0	0	0	0	\N	Europe/Andorra	t	t	t	t	t	t	t	f
+COPY users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count, language, timezone, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled, is_intro_video_skipped, is_invite_from_board) FROM stdin;
+2	2014-07-05 11:46:40.804	2014-07-05 11:46:40.804	2	user	board+user@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	User	U	\N	\N	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	0	\N	\N	\N	\N	f	0	f	0	0	0	0	0	0	\N	Asia/Calcutta	t	t	t	t	t	t	t	f	f
+1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	media/User/1/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f	2	0	0	0	0	0	\N	Europe/Andorra	t	t	t	t	t	t	t	f	f
 \.
 
 
@@ -5649,14 +5665,14 @@ COPY public.users (id, created, modified, role_id, username, email, password, fu
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 2, true);
+SELECT pg_catalog.setval('users_id_seq', 2, true);
 
 
 --
 -- Data for Name: webhooks; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.webhooks (id, created, modified, name, description, url, secret, is_active) FROM stdin;
+COPY webhooks (id, created, modified, name, description, url, secret, is_active) FROM stdin;
 \.
 
 
@@ -5664,14 +5680,14 @@ COPY public.webhooks (id, created, modified, name, description, url, secret, is_
 -- Name: webhooks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.webhooks_id_seq', 1, false);
+SELECT pg_catalog.setval('webhooks_id_seq', 1, false);
 
 
 --
 -- Name: acl_board_links_boards_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.acl_board_links_boards_user_roles
+ALTER TABLE ONLY acl_board_links_boards_user_roles
     ADD CONSTRAINT acl_board_links_boards_user_roles_id PRIMARY KEY (id);
 
 
@@ -5679,7 +5695,7 @@ ALTER TABLE ONLY public.acl_board_links_boards_user_roles
 -- Name: acl_board_links_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.acl_board_links
+ALTER TABLE ONLY acl_board_links
     ADD CONSTRAINT acl_board_links_id PRIMARY KEY (id);
 
 
@@ -5687,7 +5703,7 @@ ALTER TABLE ONLY public.acl_board_links
 -- Name: acl_links_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.acl_links_roles
+ALTER TABLE ONLY acl_links_roles
     ADD CONSTRAINT acl_links_roles_id PRIMARY KEY (id);
 
 
@@ -5695,7 +5711,7 @@ ALTER TABLE ONLY public.acl_links_roles
 -- Name: acl_organization_links_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.acl_organization_links
+ALTER TABLE ONLY acl_organization_links
     ADD CONSTRAINT acl_organization_links_id PRIMARY KEY (id);
 
 
@@ -5703,7 +5719,7 @@ ALTER TABLE ONLY public.acl_organization_links
 -- Name: acl_organization_links_organizations_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.acl_organization_links_organizations_user_roles
+ALTER TABLE ONLY acl_organization_links_organizations_user_roles
     ADD CONSTRAINT acl_organization_links_organizations_user_roles_id PRIMARY KEY (id);
 
 
@@ -5711,7 +5727,7 @@ ALTER TABLE ONLY public.acl_organization_links_organizations_user_roles
 -- Name: activities_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.activities
+ALTER TABLE ONLY activities
     ADD CONSTRAINT activities_id PRIMARY KEY (id);
 
 
@@ -5719,7 +5735,7 @@ ALTER TABLE ONLY public.activities
 -- Name: board_stars_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.board_stars
+ALTER TABLE ONLY board_stars
     ADD CONSTRAINT board_stars_id PRIMARY KEY (id);
 
 
@@ -5727,7 +5743,7 @@ ALTER TABLE ONLY public.board_stars
 -- Name: board_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.board_subscribers
+ALTER TABLE ONLY board_subscribers
     ADD CONSTRAINT board_subscribers_id PRIMARY KEY (id);
 
 
@@ -5735,7 +5751,7 @@ ALTER TABLE ONLY public.board_subscribers
 -- Name: board_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.board_user_roles
+ALTER TABLE ONLY board_user_roles
     ADD CONSTRAINT board_user_roles_id PRIMARY KEY (id);
 
 
@@ -5743,7 +5759,7 @@ ALTER TABLE ONLY public.board_user_roles
 -- Name: board_users_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.boards_users
+ALTER TABLE ONLY boards_users
     ADD CONSTRAINT board_users_id PRIMARY KEY (id);
 
 
@@ -5751,7 +5767,7 @@ ALTER TABLE ONLY public.boards_users
 -- Name: boards_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.boards
+ALTER TABLE ONLY boards
     ADD CONSTRAINT boards_id PRIMARY KEY (id);
 
 
@@ -5759,7 +5775,7 @@ ALTER TABLE ONLY public.boards
 -- Name: card_attachments_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.card_attachments
+ALTER TABLE ONLY card_attachments
     ADD CONSTRAINT card_attachments_id PRIMARY KEY (id);
 
 
@@ -5767,7 +5783,7 @@ ALTER TABLE ONLY public.card_attachments
 -- Name: card_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.card_subscribers
+ALTER TABLE ONLY card_subscribers
     ADD CONSTRAINT card_subscribers_id PRIMARY KEY (id);
 
 
@@ -5775,7 +5791,7 @@ ALTER TABLE ONLY public.card_subscribers
 -- Name: card_users_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.cards_users
+ALTER TABLE ONLY cards_users
     ADD CONSTRAINT card_users_id PRIMARY KEY (id);
 
 
@@ -5783,7 +5799,7 @@ ALTER TABLE ONLY public.cards_users
 -- Name: card_voters_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.card_voters
+ALTER TABLE ONLY card_voters
     ADD CONSTRAINT card_voters_id PRIMARY KEY (id);
 
 
@@ -5791,7 +5807,7 @@ ALTER TABLE ONLY public.card_voters
 -- Name: cards_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.cards
+ALTER TABLE ONLY cards
     ADD CONSTRAINT cards_id PRIMARY KEY (id);
 
 
@@ -5799,7 +5815,7 @@ ALTER TABLE ONLY public.cards
 -- Name: cards_labels_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.cards_labels
+ALTER TABLE ONLY cards_labels
     ADD CONSTRAINT cards_labels_id PRIMARY KEY (id);
 
 
@@ -5807,7 +5823,7 @@ ALTER TABLE ONLY public.cards_labels
 -- Name: checklist_items_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.checklist_items
+ALTER TABLE ONLY checklist_items
     ADD CONSTRAINT checklist_items_id PRIMARY KEY (id);
 
 
@@ -5815,7 +5831,7 @@ ALTER TABLE ONLY public.checklist_items
 -- Name: checklists_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.checklists
+ALTER TABLE ONLY checklists
     ADD CONSTRAINT checklists_id PRIMARY KEY (id);
 
 
@@ -5823,7 +5839,7 @@ ALTER TABLE ONLY public.checklists
 -- Name: cities_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.cities
+ALTER TABLE ONLY cities
     ADD CONSTRAINT cities_pkey PRIMARY KEY (id);
 
 
@@ -5831,7 +5847,7 @@ ALTER TABLE ONLY public.cities
 -- Name: countries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.countries
+ALTER TABLE ONLY countries
     ADD CONSTRAINT countries_pkey PRIMARY KEY (id);
 
 
@@ -5839,7 +5855,7 @@ ALTER TABLE ONLY public.countries
 -- Name: email_templates_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.email_templates
+ALTER TABLE ONLY email_templates
     ADD CONSTRAINT email_templates_id PRIMARY KEY (id);
 
 
@@ -5847,7 +5863,7 @@ ALTER TABLE ONLY public.email_templates
 -- Name: ips_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.ips
+ALTER TABLE ONLY ips
     ADD CONSTRAINT ips_pkey PRIMARY KEY (id);
 
 
@@ -5855,7 +5871,7 @@ ALTER TABLE ONLY public.ips
 -- Name: labels_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.labels
+ALTER TABLE ONLY labels
     ADD CONSTRAINT labels_id PRIMARY KEY (id);
 
 
@@ -5863,7 +5879,7 @@ ALTER TABLE ONLY public.labels
 -- Name: lists_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.lists
+ALTER TABLE ONLY lists
     ADD CONSTRAINT lists_id PRIMARY KEY (id);
 
 
@@ -5871,7 +5887,7 @@ ALTER TABLE ONLY public.lists
 -- Name: lists_subscribers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.list_subscribers
+ALTER TABLE ONLY list_subscribers
     ADD CONSTRAINT lists_subscribers_pkey PRIMARY KEY (id);
 
 
@@ -5879,7 +5895,7 @@ ALTER TABLE ONLY public.list_subscribers
 -- Name: login_types_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.login_types
+ALTER TABLE ONLY login_types
     ADD CONSTRAINT login_types_id PRIMARY KEY (id);
 
 
@@ -5887,7 +5903,7 @@ ALTER TABLE ONLY public.login_types
 -- Name: oauth_access_tokens_access_token; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.oauth_access_tokens
+ALTER TABLE ONLY oauth_access_tokens
     ADD CONSTRAINT oauth_access_tokens_access_token PRIMARY KEY (access_token);
 
 
@@ -5895,7 +5911,7 @@ ALTER TABLE ONLY public.oauth_access_tokens
 -- Name: oauth_authorization_codes_authorization_code; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.oauth_authorization_codes
+ALTER TABLE ONLY oauth_authorization_codes
     ADD CONSTRAINT oauth_authorization_codes_authorization_code PRIMARY KEY (authorization_code);
 
 
@@ -5903,7 +5919,7 @@ ALTER TABLE ONLY public.oauth_authorization_codes
 -- Name: oauth_clients_client_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.oauth_clients
+ALTER TABLE ONLY oauth_clients
     ADD CONSTRAINT oauth_clients_client_id PRIMARY KEY (client_id);
 
 
@@ -5911,7 +5927,7 @@ ALTER TABLE ONLY public.oauth_clients
 -- Name: oauth_jwt_client_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.oauth_jwt
+ALTER TABLE ONLY oauth_jwt
     ADD CONSTRAINT oauth_jwt_client_id PRIMARY KEY (client_id);
 
 
@@ -5919,7 +5935,7 @@ ALTER TABLE ONLY public.oauth_jwt
 -- Name: oauth_refresh_tokens_refresh_token; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.oauth_refresh_tokens
+ALTER TABLE ONLY oauth_refresh_tokens
     ADD CONSTRAINT oauth_refresh_tokens_refresh_token PRIMARY KEY (refresh_token);
 
 
@@ -5927,7 +5943,7 @@ ALTER TABLE ONLY public.oauth_refresh_tokens
 -- Name: organization_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.organization_user_roles
+ALTER TABLE ONLY organization_user_roles
     ADD CONSTRAINT organization_user_roles_id PRIMARY KEY (id);
 
 
@@ -5935,7 +5951,7 @@ ALTER TABLE ONLY public.organization_user_roles
 -- Name: organization_users_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.organizations_users
+ALTER TABLE ONLY organizations_users
     ADD CONSTRAINT organization_users_id PRIMARY KEY (id);
 
 
@@ -5943,7 +5959,7 @@ ALTER TABLE ONLY public.organizations_users
 -- Name: organizations_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.organizations
+ALTER TABLE ONLY organizations
     ADD CONSTRAINT organizations_id PRIMARY KEY (id);
 
 
@@ -5951,7 +5967,7 @@ ALTER TABLE ONLY public.organizations
 -- Name: roles_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.roles
+ALTER TABLE ONLY roles
     ADD CONSTRAINT roles_id PRIMARY KEY (id);
 
 
@@ -5959,7 +5975,7 @@ ALTER TABLE ONLY public.roles
 -- Name: setting_categories_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.setting_categories
+ALTER TABLE ONLY setting_categories
     ADD CONSTRAINT setting_categories_id PRIMARY KEY (id);
 
 
@@ -5967,7 +5983,7 @@ ALTER TABLE ONLY public.setting_categories
 -- Name: settings_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.settings
+ALTER TABLE ONLY settings
     ADD CONSTRAINT settings_id PRIMARY KEY (id);
 
 
@@ -5975,7 +5991,7 @@ ALTER TABLE ONLY public.settings
 -- Name: states_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.states
+ALTER TABLE ONLY states
     ADD CONSTRAINT states_pkey PRIMARY KEY (id);
 
 
@@ -5983,7 +5999,7 @@ ALTER TABLE ONLY public.states
 -- Name: user_logins_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.user_logins
+ALTER TABLE ONLY user_logins
     ADD CONSTRAINT user_logins_id PRIMARY KEY (id);
 
 
@@ -5991,7 +6007,7 @@ ALTER TABLE ONLY public.user_logins
 -- Name: users_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.users
+ALTER TABLE ONLY users
     ADD CONSTRAINT users_id PRIMARY KEY (id);
 
 
@@ -5999,7 +6015,7 @@ ALTER TABLE ONLY public.users
 -- Name: webhooks_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.webhooks
+ALTER TABLE ONLY webhooks
     ADD CONSTRAINT webhooks_id PRIMARY KEY (id);
 
 
@@ -6007,791 +6023,791 @@ ALTER TABLE ONLY public.webhooks
 -- Name: acl_board_links_boards_user_roles_acl_board_link_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_board_links_boards_user_roles_acl_board_link_id ON public.acl_board_links_boards_user_roles USING btree (acl_board_link_id);
+CREATE INDEX acl_board_links_boards_user_roles_acl_board_link_id ON acl_board_links_boards_user_roles USING btree (acl_board_link_id);
 
 
 --
 -- Name: acl_board_links_boards_user_roles_board_user_role_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_board_links_boards_user_roles_board_user_role_id ON public.acl_board_links_boards_user_roles USING btree (board_user_role_id);
+CREATE INDEX acl_board_links_boards_user_roles_board_user_role_id ON acl_board_links_boards_user_roles USING btree (board_user_role_id);
 
 
 --
 -- Name: acl_board_links_group_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_board_links_group_id ON public.acl_board_links USING btree (group_id);
+CREATE INDEX acl_board_links_group_id ON acl_board_links USING btree (group_id);
 
 
 --
 -- Name: acl_board_links_slug; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_board_links_slug ON public.acl_board_links USING btree (slug);
+CREATE INDEX acl_board_links_slug ON acl_board_links USING btree (slug);
 
 
 --
 -- Name: acl_board_links_url; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_board_links_url ON public.acl_board_links USING btree (url);
+CREATE INDEX acl_board_links_url ON acl_board_links USING btree (url);
 
 
 --
 -- Name: acl_links_group_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_links_group_id ON public.acl_links USING btree (group_id);
+CREATE INDEX acl_links_group_id ON acl_links USING btree (group_id);
 
 
 --
 -- Name: acl_links_roles_acl_link_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_links_roles_acl_link_id ON public.acl_links_roles USING btree (acl_link_id);
+CREATE INDEX acl_links_roles_acl_link_id ON acl_links_roles USING btree (acl_link_id);
 
 
 --
 -- Name: acl_links_roles_role_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_links_roles_role_id ON public.acl_links_roles USING btree (role_id);
+CREATE INDEX acl_links_roles_role_id ON acl_links_roles USING btree (role_id);
 
 
 --
 -- Name: acl_links_slug; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_links_slug ON public.acl_links USING btree (slug);
+CREATE INDEX acl_links_slug ON acl_links USING btree (slug);
 
 
 --
 -- Name: acl_organization_links_group_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_organization_links_group_id ON public.acl_organization_links USING btree (group_id);
+CREATE INDEX acl_organization_links_group_id ON acl_organization_links USING btree (group_id);
 
 
 --
 -- Name: acl_organization_links_organizations_user_roles_acl_organizatio; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_organization_links_organizations_user_roles_acl_organizatio ON public.acl_organization_links_organizations_user_roles USING btree (acl_organization_link_id);
+CREATE INDEX acl_organization_links_organizations_user_roles_acl_organizatio ON acl_organization_links_organizations_user_roles USING btree (acl_organization_link_id);
 
 
 --
 -- Name: acl_organization_links_organizations_user_roles_organization_us; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_organization_links_organizations_user_roles_organization_us ON public.acl_organization_links_organizations_user_roles USING btree (organization_user_role_id);
+CREATE INDEX acl_organization_links_organizations_user_roles_organization_us ON acl_organization_links_organizations_user_roles USING btree (organization_user_role_id);
 
 
 --
 -- Name: acl_organization_links_slug; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_organization_links_slug ON public.acl_organization_links USING btree (slug);
+CREATE INDEX acl_organization_links_slug ON acl_organization_links USING btree (slug);
 
 
 --
 -- Name: acl_organization_links_url; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX acl_organization_links_url ON public.acl_organization_links USING btree (url);
+CREATE INDEX acl_organization_links_url ON acl_organization_links USING btree (url);
 
 
 --
 -- Name: activities_attachment_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX activities_attachment_id ON public.activities USING btree (foreign_id);
+CREATE INDEX activities_attachment_id ON activities USING btree (foreign_id);
 
 
 --
 -- Name: activities_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX activities_board_id ON public.activities USING btree (board_id);
+CREATE INDEX activities_board_id ON activities USING btree (board_id);
 
 
 --
 -- Name: activities_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX activities_card_id ON public.activities USING btree (card_id);
+CREATE INDEX activities_card_id ON activities USING btree (card_id);
 
 
 --
 -- Name: activities_depth; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX activities_depth ON public.activities USING btree (depth);
+CREATE INDEX activities_depth ON activities USING btree (depth);
 
 
 --
 -- Name: activities_freshness_ts; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX activities_freshness_ts ON public.activities USING btree (freshness_ts);
+CREATE INDEX activities_freshness_ts ON activities USING btree (freshness_ts);
 
 
 --
 -- Name: activities_list_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX activities_list_id ON public.activities USING btree (list_id);
+CREATE INDEX activities_list_id ON activities USING btree (list_id);
 
 
 --
 -- Name: activities_materialized_path; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX activities_materialized_path ON public.activities USING btree (materialized_path);
+CREATE INDEX activities_materialized_path ON activities USING btree (materialized_path);
 
 
 --
 -- Name: activities_path; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX activities_path ON public.activities USING btree (path);
+CREATE INDEX activities_path ON activities USING btree (path);
 
 
 --
 -- Name: activities_root; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX activities_root ON public.activities USING btree (root);
+CREATE INDEX activities_root ON activities USING btree (root);
 
 
 --
 -- Name: activities_type; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX activities_type ON public.activities USING btree (type);
+CREATE INDEX activities_type ON activities USING btree (type);
 
 
 --
 -- Name: activities_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX activities_user_id ON public.activities USING btree (user_id);
+CREATE INDEX activities_user_id ON activities USING btree (user_id);
 
 
 --
 -- Name: attachments_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX attachments_card_id ON public.card_attachments USING btree (card_id);
+CREATE INDEX attachments_card_id ON card_attachments USING btree (card_id);
 
 
 --
 -- Name: board_stars_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX board_stars_board_id ON public.board_stars USING btree (board_id);
+CREATE INDEX board_stars_board_id ON board_stars USING btree (board_id);
 
 
 --
 -- Name: board_stars_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX board_stars_user_id ON public.board_stars USING btree (user_id);
+CREATE INDEX board_stars_user_id ON board_stars USING btree (user_id);
 
 
 --
 -- Name: board_subscribers_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX board_subscribers_board_id ON public.board_subscribers USING btree (board_id);
+CREATE INDEX board_subscribers_board_id ON board_subscribers USING btree (board_id);
 
 
 --
 -- Name: board_subscribers_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX board_subscribers_user_id ON public.board_subscribers USING btree (user_id);
+CREATE INDEX board_subscribers_user_id ON board_subscribers USING btree (user_id);
 
 
 --
 -- Name: board_users_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX board_users_board_id ON public.boards_users USING btree (board_id);
+CREATE INDEX board_users_board_id ON boards_users USING btree (board_id);
 
 
 --
 -- Name: board_users_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX board_users_user_id ON public.boards_users USING btree (user_id);
+CREATE INDEX board_users_user_id ON boards_users USING btree (user_id);
 
 
 --
 -- Name: boards_organization_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX boards_organization_id ON public.boards USING btree (organization_id);
+CREATE INDEX boards_organization_id ON boards USING btree (organization_id);
 
 
 --
 -- Name: boards_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX boards_user_id ON public.boards USING btree (user_id);
+CREATE INDEX boards_user_id ON boards USING btree (user_id);
 
 
 --
 -- Name: boards_users_board_user_role_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX boards_users_board_user_role_id ON public.boards_users USING btree (board_user_role_id);
+CREATE INDEX boards_users_board_user_role_id ON boards_users USING btree (board_user_role_id);
 
 
 --
 -- Name: card_attachments_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX card_attachments_board_id ON public.card_attachments USING btree (board_id);
+CREATE INDEX card_attachments_board_id ON card_attachments USING btree (board_id);
 
 
 --
 -- Name: card_attachments_list_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX card_attachments_list_id ON public.card_attachments USING btree (list_id);
+CREATE INDEX card_attachments_list_id ON card_attachments USING btree (list_id);
 
 
 --
 -- Name: card_subscribers_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX card_subscribers_card_id ON public.card_subscribers USING btree (card_id);
+CREATE INDEX card_subscribers_card_id ON card_subscribers USING btree (card_id);
 
 
 --
 -- Name: card_subscribers_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX card_subscribers_user_id ON public.card_subscribers USING btree (user_id);
+CREATE INDEX card_subscribers_user_id ON card_subscribers USING btree (user_id);
 
 
 --
 -- Name: card_users_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX card_users_card_id ON public.cards_users USING btree (card_id);
+CREATE INDEX card_users_card_id ON cards_users USING btree (card_id);
 
 
 --
 -- Name: card_users_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX card_users_user_id ON public.cards_users USING btree (user_id);
+CREATE INDEX card_users_user_id ON cards_users USING btree (user_id);
 
 
 --
 -- Name: card_voters_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX card_voters_card_id ON public.card_voters USING btree (card_id);
+CREATE INDEX card_voters_card_id ON card_voters USING btree (card_id);
 
 
 --
 -- Name: card_voters_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX card_voters_user_id ON public.card_voters USING btree (user_id);
+CREATE INDEX card_voters_user_id ON card_voters USING btree (user_id);
 
 
 --
 -- Name: cards_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX cards_board_id ON public.cards USING btree (board_id);
+CREATE INDEX cards_board_id ON cards USING btree (board_id);
 
 
 --
 -- Name: cards_labels_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX cards_labels_board_id ON public.cards_labels USING btree (board_id);
+CREATE INDEX cards_labels_board_id ON cards_labels USING btree (board_id);
 
 
 --
 -- Name: cards_labels_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX cards_labels_card_id ON public.cards_labels USING btree (card_id);
+CREATE INDEX cards_labels_card_id ON cards_labels USING btree (card_id);
 
 
 --
 -- Name: cards_labels_label_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX cards_labels_label_id ON public.cards_labels USING btree (label_id);
+CREATE INDEX cards_labels_label_id ON cards_labels USING btree (label_id);
 
 
 --
 -- Name: cards_labels_list_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX cards_labels_list_id ON public.cards_labels USING btree (list_id);
+CREATE INDEX cards_labels_list_id ON cards_labels USING btree (list_id);
 
 
 --
 -- Name: cards_list_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX cards_list_id ON public.cards USING btree (list_id);
+CREATE INDEX cards_list_id ON cards USING btree (list_id);
 
 
 --
 -- Name: cards_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX cards_user_id ON public.cards USING btree (user_id);
+CREATE INDEX cards_user_id ON cards USING btree (user_id);
 
 
 --
 -- Name: checklist_items_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX checklist_items_card_id ON public.checklist_items USING btree (card_id);
+CREATE INDEX checklist_items_card_id ON checklist_items USING btree (card_id);
 
 
 --
 -- Name: checklist_items_checklist_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX checklist_items_checklist_id ON public.checklist_items USING btree (checklist_id);
+CREATE INDEX checklist_items_checklist_id ON checklist_items USING btree (checklist_id);
 
 
 --
 -- Name: checklist_items_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX checklist_items_user_id ON public.checklist_items USING btree (user_id);
+CREATE INDEX checklist_items_user_id ON checklist_items USING btree (user_id);
 
 
 --
 -- Name: checklists_card_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX checklists_card_id ON public.checklists USING btree (card_id);
+CREATE INDEX checklists_card_id ON checklists USING btree (card_id);
 
 
 --
 -- Name: checklists_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX checklists_user_id ON public.checklists USING btree (user_id);
+CREATE INDEX checklists_user_id ON checklists USING btree (user_id);
 
 
 --
 -- Name: email_templates_name; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX email_templates_name ON public.email_templates USING btree (name);
+CREATE INDEX email_templates_name ON email_templates USING btree (name);
 
 
 --
 -- Name: ips_city_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX ips_city_id ON public.ips USING btree (city_id);
+CREATE INDEX ips_city_id ON ips USING btree (city_id);
 
 
 --
 -- Name: ips_country_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX ips_country_id ON public.ips USING btree (country_id);
+CREATE INDEX ips_country_id ON ips USING btree (country_id);
 
 
 --
 -- Name: ips_ip; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX ips_ip ON public.ips USING btree (ip);
+CREATE INDEX ips_ip ON ips USING btree (ip);
 
 
 --
 -- Name: ips_state_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX ips_state_id ON public.ips USING btree (state_id);
+CREATE INDEX ips_state_id ON ips USING btree (state_id);
 
 
 --
 -- Name: labels_name; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX labels_name ON public.labels USING btree (name);
+CREATE INDEX labels_name ON labels USING btree (name);
 
 
 --
 -- Name: list_subscribers_list_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX list_subscribers_list_id ON public.list_subscribers USING btree (list_id);
+CREATE INDEX list_subscribers_list_id ON list_subscribers USING btree (list_id);
 
 
 --
 -- Name: list_subscribers_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX list_subscribers_user_id ON public.list_subscribers USING btree (user_id);
+CREATE INDEX list_subscribers_user_id ON list_subscribers USING btree (user_id);
 
 
 --
 -- Name: lists_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX lists_board_id ON public.lists USING btree (board_id);
+CREATE INDEX lists_board_id ON lists USING btree (board_id);
 
 
 --
 -- Name: lists_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX lists_user_id ON public.lists USING btree (user_id);
+CREATE INDEX lists_user_id ON lists USING btree (user_id);
 
 
 --
 -- Name: oauth_access_tokens_client_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX oauth_access_tokens_client_id ON public.oauth_access_tokens USING btree (client_id);
+CREATE INDEX oauth_access_tokens_client_id ON oauth_access_tokens USING btree (client_id);
 
 
 --
 -- Name: oauth_access_tokens_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX oauth_access_tokens_user_id ON public.oauth_access_tokens USING btree (user_id);
+CREATE INDEX oauth_access_tokens_user_id ON oauth_access_tokens USING btree (user_id);
 
 
 --
 -- Name: oauth_authorization_codes_client_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX oauth_authorization_codes_client_id ON public.oauth_authorization_codes USING btree (client_id);
+CREATE INDEX oauth_authorization_codes_client_id ON oauth_authorization_codes USING btree (client_id);
 
 
 --
 -- Name: oauth_authorization_codes_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX oauth_authorization_codes_user_id ON public.oauth_authorization_codes USING btree (user_id);
+CREATE INDEX oauth_authorization_codes_user_id ON oauth_authorization_codes USING btree (user_id);
 
 
 --
 -- Name: oauth_clients_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX oauth_clients_user_id ON public.oauth_clients USING btree (user_id);
+CREATE INDEX oauth_clients_user_id ON oauth_clients USING btree (user_id);
 
 
 --
 -- Name: oauth_refresh_tokens_client_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX oauth_refresh_tokens_client_id ON public.oauth_refresh_tokens USING btree (client_id);
+CREATE INDEX oauth_refresh_tokens_client_id ON oauth_refresh_tokens USING btree (client_id);
 
 
 --
 -- Name: oauth_refresh_tokens_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX oauth_refresh_tokens_user_id ON public.oauth_refresh_tokens USING btree (user_id);
+CREATE INDEX oauth_refresh_tokens_user_id ON oauth_refresh_tokens USING btree (user_id);
 
 
 --
 -- Name: organization_users_organization_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX organization_users_organization_id ON public.organizations_users USING btree (organization_id);
+CREATE INDEX organization_users_organization_id ON organizations_users USING btree (organization_id);
 
 
 --
 -- Name: organization_users_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX organization_users_user_id ON public.organizations_users USING btree (user_id);
+CREATE INDEX organization_users_user_id ON organizations_users USING btree (user_id);
 
 
 --
 -- Name: organizations_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX organizations_user_id ON public.organizations USING btree (user_id);
+CREATE INDEX organizations_user_id ON organizations USING btree (user_id);
 
 
 --
 -- Name: organizations_users_organization_user_role_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX organizations_users_organization_user_role_id ON public.organizations_users USING btree (organization_user_role_id);
+CREATE INDEX organizations_users_organization_user_role_id ON organizations_users USING btree (organization_user_role_id);
 
 
 --
 -- Name: roles_name; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX roles_name ON public.roles USING btree (name);
+CREATE INDEX roles_name ON roles USING btree (name);
 
 
 --
 -- Name: setting_categories_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX setting_categories_parent_id ON public.setting_categories USING btree (parent_id);
+CREATE INDEX setting_categories_parent_id ON setting_categories USING btree (parent_id);
 
 
 --
 -- Name: settings_setting_category_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX settings_setting_category_id ON public.settings USING btree (setting_category_id);
+CREATE INDEX settings_setting_category_id ON settings USING btree (setting_category_id);
 
 
 --
 -- Name: settings_setting_category_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX settings_setting_category_parent_id ON public.settings USING btree (setting_category_parent_id);
+CREATE INDEX settings_setting_category_parent_id ON settings USING btree (setting_category_parent_id);
 
 
 --
 -- Name: user_logins_ip_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX user_logins_ip_id ON public.user_logins USING btree (ip_id);
+CREATE INDEX user_logins_ip_id ON user_logins USING btree (ip_id);
 
 
 --
 -- Name: user_logins_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX user_logins_user_id ON public.user_logins USING btree (user_id);
+CREATE INDEX user_logins_user_id ON user_logins USING btree (user_id);
 
 
 --
 -- Name: users_email; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX users_email ON public.users USING btree (email);
+CREATE INDEX users_email ON users USING btree (email);
 
 
 --
 -- Name: users_ip_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX users_ip_id ON public.users USING btree (ip_id);
+CREATE INDEX users_ip_id ON users USING btree (ip_id);
 
 
 --
 -- Name: users_last_activity_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX users_last_activity_id ON public.users USING btree (last_activity_id);
+CREATE INDEX users_last_activity_id ON users USING btree (last_activity_id);
 
 
 --
 -- Name: users_last_email_notified_activity_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX users_last_email_notified_activity_id ON public.users USING btree (last_email_notified_activity_id);
+CREATE INDEX users_last_email_notified_activity_id ON users USING btree (last_email_notified_activity_id);
 
 
 --
 -- Name: users_last_login_ip_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX users_last_login_ip_id ON public.users USING btree (last_login_ip_id);
+CREATE INDEX users_last_login_ip_id ON users USING btree (last_login_ip_id);
 
 
 --
 -- Name: users_login_type_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX users_login_type_id ON public.users USING btree (login_type_id);
+CREATE INDEX users_login_type_id ON users USING btree (login_type_id);
 
 
 --
 -- Name: users_role_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX users_role_id ON public.users USING btree (role_id);
+CREATE INDEX users_role_id ON users USING btree (role_id);
 
 
 --
 -- Name: users_username; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX users_username ON public.users USING btree (username);
+CREATE INDEX users_username ON users USING btree (username);
 
 
 --
 -- Name: webhooks_url; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX webhooks_url ON public.webhooks USING btree (url);
+CREATE INDEX webhooks_url ON webhooks USING btree (url);
 
 
 --
 -- Name: label_card_count_update; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER label_card_count_update AFTER INSERT OR DELETE OR UPDATE ON public.cards_labels FOR EACH ROW EXECUTE PROCEDURE public.label_card_count_update();
+CREATE TRIGGER label_card_count_update AFTER INSERT OR DELETE OR UPDATE ON cards_labels FOR EACH ROW EXECUTE PROCEDURE label_card_count_update();
 
 
 --
 -- Name: update_board_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_board_count AFTER INSERT OR DELETE OR UPDATE ON public.boards FOR EACH ROW EXECUTE PROCEDURE public.update_board_count();
+CREATE TRIGGER update_board_count AFTER INSERT OR DELETE OR UPDATE ON boards FOR EACH ROW EXECUTE PROCEDURE update_board_count();
 
 
 --
 -- Name: update_board_star_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_board_star_count AFTER INSERT OR DELETE OR UPDATE ON public.board_stars FOR EACH ROW EXECUTE PROCEDURE public.update_board_star_count();
+CREATE TRIGGER update_board_star_count AFTER INSERT OR DELETE OR UPDATE ON board_stars FOR EACH ROW EXECUTE PROCEDURE update_board_star_count();
 
 
 --
 -- Name: update_board_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_board_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.board_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_board_subscriber_count();
+CREATE TRIGGER update_board_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON board_subscribers FOR EACH ROW EXECUTE PROCEDURE update_board_subscriber_count();
 
 
 --
 -- Name: update_board_user_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_board_user_count AFTER INSERT OR DELETE OR UPDATE ON public.boards_users FOR EACH ROW EXECUTE PROCEDURE public.update_board_user_count();
+CREATE TRIGGER update_board_user_count AFTER INSERT OR DELETE OR UPDATE ON boards_users FOR EACH ROW EXECUTE PROCEDURE update_board_user_count();
 
 
 --
 -- Name: update_card_attachment_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_attachment_count AFTER INSERT OR DELETE OR UPDATE ON public.card_attachments FOR EACH ROW EXECUTE PROCEDURE public.update_card_attachment_count();
+CREATE TRIGGER update_card_attachment_count AFTER INSERT OR DELETE OR UPDATE ON card_attachments FOR EACH ROW EXECUTE PROCEDURE update_card_attachment_count();
 
 
 --
 -- Name: update_card_checklist_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_checklist_count AFTER INSERT OR DELETE OR UPDATE ON public.checklists FOR EACH ROW EXECUTE PROCEDURE public.update_card_checklist_count();
+CREATE TRIGGER update_card_checklist_count AFTER INSERT OR DELETE OR UPDATE ON checklists FOR EACH ROW EXECUTE PROCEDURE update_card_checklist_count();
 
 
 --
 -- Name: update_card_checklist_item_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_checklist_item_count AFTER INSERT OR DELETE OR UPDATE ON public.checklist_items FOR EACH ROW EXECUTE PROCEDURE public.update_card_checklist_item_count();
+CREATE TRIGGER update_card_checklist_item_count AFTER INSERT OR DELETE OR UPDATE ON checklist_items FOR EACH ROW EXECUTE PROCEDURE update_card_checklist_item_count();
 
 
 --
 -- Name: update_card_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_count AFTER INSERT OR DELETE OR UPDATE ON public.cards FOR EACH ROW EXECUTE PROCEDURE public.update_card_count();
+CREATE TRIGGER update_card_count AFTER INSERT OR DELETE OR UPDATE ON cards FOR EACH ROW EXECUTE PROCEDURE update_card_count();
 
 
 --
 -- Name: update_card_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.card_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_card_subscriber_count();
+CREATE TRIGGER update_card_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON card_subscribers FOR EACH ROW EXECUTE PROCEDURE update_card_subscriber_count();
 
 
 --
 -- Name: update_card_user_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_user_count AFTER INSERT OR DELETE OR UPDATE ON public.cards_users FOR EACH ROW EXECUTE PROCEDURE public.update_card_user_count();
+CREATE TRIGGER update_card_user_count AFTER INSERT OR DELETE OR UPDATE ON cards_users FOR EACH ROW EXECUTE PROCEDURE update_card_user_count();
 
 
 --
 -- Name: update_card_voters_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_voters_count AFTER INSERT OR DELETE OR UPDATE ON public.card_voters FOR EACH ROW EXECUTE PROCEDURE public.update_card_voters_count();
+CREATE TRIGGER update_card_voters_count AFTER INSERT OR DELETE OR UPDATE ON card_voters FOR EACH ROW EXECUTE PROCEDURE update_card_voters_count();
 
 
 --
 -- Name: update_list_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_list_count AFTER INSERT OR DELETE OR UPDATE ON public.lists FOR EACH ROW EXECUTE PROCEDURE public.update_list_count();
+CREATE TRIGGER update_list_count AFTER INSERT OR DELETE OR UPDATE ON lists FOR EACH ROW EXECUTE PROCEDURE update_list_count();
 
 
 --
 -- Name: update_list_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_list_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.list_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_list_subscriber_count();
+CREATE TRIGGER update_list_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON list_subscribers FOR EACH ROW EXECUTE PROCEDURE update_list_subscriber_count();
 
 
 --
 -- Name: update_organization_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_organization_count AFTER INSERT OR DELETE OR UPDATE ON public.organizations FOR EACH ROW EXECUTE PROCEDURE public.update_organization_count();
+CREATE TRIGGER update_organization_count AFTER INSERT OR DELETE OR UPDATE ON organizations FOR EACH ROW EXECUTE PROCEDURE update_organization_count();
 
 
 --
 -- Name: update_organization_user_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_organization_user_count AFTER INSERT OR DELETE OR UPDATE ON public.organizations_users FOR EACH ROW EXECUTE PROCEDURE public.update_organization_user_count();
+CREATE TRIGGER update_organization_user_count AFTER INSERT OR DELETE OR UPDATE ON organizations_users FOR EACH ROW EXECUTE PROCEDURE update_organization_user_count();
 
 
 --
 -- Name: update_user_delete; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_user_delete AFTER DELETE ON public.users FOR EACH ROW EXECUTE PROCEDURE public.update_user_delete();
+CREATE TRIGGER update_user_delete AFTER DELETE ON users FOR EACH ROW EXECUTE PROCEDURE update_user_delete();
 
 
 --
 -- Name: update_users_user_login_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_users_user_login_count AFTER INSERT OR DELETE OR UPDATE ON public.user_logins FOR EACH ROW EXECUTE PROCEDURE public.update_users_user_login_count();
+CREATE TRIGGER update_users_user_login_count AFTER INSERT OR DELETE OR UPDATE ON user_logins FOR EACH ROW EXECUTE PROCEDURE update_users_user_login_count();
 
 
 --
 -- Name: cities_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.cities
-    ADD CONSTRAINT cities_country_id_fkey FOREIGN KEY (country_id) REFERENCES public.countries(id) ON DELETE CASCADE;
+ALTER TABLE ONLY cities
+    ADD CONSTRAINT cities_country_id_fkey FOREIGN KEY (country_id) REFERENCES countries(id) ON DELETE CASCADE;
 
 
 --
 -- Name: cities_state_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.cities
-    ADD CONSTRAINT cities_state_id_fkey FOREIGN KEY (state_id) REFERENCES public.states(id) ON DELETE CASCADE;
+ALTER TABLE ONLY cities
+    ADD CONSTRAINT cities_state_id_fkey FOREIGN KEY (state_id) REFERENCES states(id) ON DELETE CASCADE;
 
 
 --
 -- Name: states_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.states
-    ADD CONSTRAINT states_country_id_fkey FOREIGN KEY (country_id) REFERENCES public.countries(id) ON DELETE CASCADE;
+ALTER TABLE ONLY states
+    ADD CONSTRAINT states_country_id_fkey FOREIGN KEY (country_id) REFERENCES countries(id) ON DELETE CASCADE;
 
 
 --
--- Name: SCHEMA public; Type: ACL; Schema: -; Owner: -
+-- Name: public; Type: ACL; Schema: -; Owner: -
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
@@ -6801,651 +6817,651 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
--- Name: SEQUENCE acl_links_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: acl_links_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.acl_links_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.acl_links_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.acl_links_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE acl_links_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE acl_links_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE acl_links_id_seq TO postgres;
 
 
 --
--- Name: SEQUENCE acl_links_roles_roles_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: acl_links_roles_roles_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.acl_links_roles_roles_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.acl_links_roles_roles_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.acl_links_roles_roles_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE acl_links_roles_roles_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE acl_links_roles_roles_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE acl_links_roles_roles_id_seq TO postgres;
 
 
 --
--- Name: SEQUENCE activities_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: activities_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.activities_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.activities_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.activities_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE activities_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE activities_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE activities_id_seq TO postgres;
 
 
 --
--- Name: TABLE activities; Type: ACL; Schema: public; Owner: -
+-- Name: activities; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.activities FROM PUBLIC;
-REVOKE ALL ON TABLE public.activities FROM postgres;
-GRANT ALL ON TABLE public.activities TO postgres;
+REVOKE ALL ON TABLE activities FROM PUBLIC;
+REVOKE ALL ON TABLE activities FROM postgres;
+GRANT ALL ON TABLE activities TO postgres;
 
 
 --
--- Name: SEQUENCE boards_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: boards_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.boards_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.boards_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.boards_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE boards_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE boards_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE boards_id_seq TO postgres;
 
 
 --
--- Name: TABLE boards; Type: ACL; Schema: public; Owner: -
+-- Name: boards; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.boards FROM PUBLIC;
-REVOKE ALL ON TABLE public.boards FROM postgres;
-GRANT ALL ON TABLE public.boards TO postgres;
+REVOKE ALL ON TABLE boards FROM PUBLIC;
+REVOKE ALL ON TABLE boards FROM postgres;
+GRANT ALL ON TABLE boards TO postgres;
 
 
 --
--- Name: SEQUENCE cards_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: cards_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.cards_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.cards_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.cards_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE cards_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE cards_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE cards_id_seq TO postgres;
 
 
 --
--- Name: TABLE cards; Type: ACL; Schema: public; Owner: -
+-- Name: cards; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.cards FROM PUBLIC;
-REVOKE ALL ON TABLE public.cards FROM postgres;
-GRANT ALL ON TABLE public.cards TO postgres;
+REVOKE ALL ON TABLE cards FROM PUBLIC;
+REVOKE ALL ON TABLE cards FROM postgres;
+GRANT ALL ON TABLE cards TO postgres;
 
 
 --
--- Name: SEQUENCE checklist_items_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: checklist_items_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.checklist_items_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.checklist_items_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.checklist_items_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE checklist_items_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE checklist_items_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE checklist_items_id_seq TO postgres;
 
 
 --
--- Name: TABLE checklist_items; Type: ACL; Schema: public; Owner: -
+-- Name: checklist_items; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.checklist_items FROM PUBLIC;
-REVOKE ALL ON TABLE public.checklist_items FROM postgres;
-GRANT ALL ON TABLE public.checklist_items TO postgres;
+REVOKE ALL ON TABLE checklist_items FROM PUBLIC;
+REVOKE ALL ON TABLE checklist_items FROM postgres;
+GRANT ALL ON TABLE checklist_items TO postgres;
 
 
 --
--- Name: SEQUENCE checklists_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: checklists_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.checklists_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.checklists_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.checklists_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE checklists_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE checklists_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE checklists_id_seq TO postgres;
 
 
 --
--- Name: TABLE checklists; Type: ACL; Schema: public; Owner: -
+-- Name: checklists; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.checklists FROM PUBLIC;
-REVOKE ALL ON TABLE public.checklists FROM postgres;
-GRANT ALL ON TABLE public.checklists TO postgres;
+REVOKE ALL ON TABLE checklists FROM PUBLIC;
+REVOKE ALL ON TABLE checklists FROM postgres;
+GRANT ALL ON TABLE checklists TO postgres;
 
 
 --
--- Name: SEQUENCE labels_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: labels_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.labels_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.labels_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.labels_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE labels_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE labels_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE labels_id_seq TO postgres;
 
 
 --
--- Name: TABLE labels; Type: ACL; Schema: public; Owner: -
+-- Name: labels; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.labels FROM PUBLIC;
-REVOKE ALL ON TABLE public.labels FROM postgres;
-GRANT ALL ON TABLE public.labels TO postgres;
+REVOKE ALL ON TABLE labels FROM PUBLIC;
+REVOKE ALL ON TABLE labels FROM postgres;
+GRANT ALL ON TABLE labels TO postgres;
 
 
 --
--- Name: SEQUENCE lists_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: lists_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.lists_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.lists_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.lists_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE lists_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE lists_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE lists_id_seq TO postgres;
 
 
 --
--- Name: TABLE lists; Type: ACL; Schema: public; Owner: -
+-- Name: lists; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.lists FROM PUBLIC;
-REVOKE ALL ON TABLE public.lists FROM postgres;
-GRANT ALL ON TABLE public.lists TO postgres;
+REVOKE ALL ON TABLE lists FROM PUBLIC;
+REVOKE ALL ON TABLE lists FROM postgres;
+GRANT ALL ON TABLE lists TO postgres;
 
 
 --
--- Name: SEQUENCE organizations_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: organizations_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.organizations_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.organizations_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.organizations_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE organizations_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE organizations_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE organizations_id_seq TO postgres;
 
 
 --
--- Name: TABLE organizations; Type: ACL; Schema: public; Owner: -
+-- Name: organizations; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.organizations FROM PUBLIC;
-REVOKE ALL ON TABLE public.organizations FROM postgres;
-GRANT ALL ON TABLE public.organizations TO postgres;
+REVOKE ALL ON TABLE organizations FROM PUBLIC;
+REVOKE ALL ON TABLE organizations FROM postgres;
+GRANT ALL ON TABLE organizations TO postgres;
 
 
 --
--- Name: SEQUENCE users_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.users_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.users_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.users_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE users_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE users_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE users_id_seq TO postgres;
 
 
 --
--- Name: TABLE users; Type: ACL; Schema: public; Owner: -
+-- Name: users; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.users FROM PUBLIC;
-REVOKE ALL ON TABLE public.users FROM postgres;
-GRANT ALL ON TABLE public.users TO postgres;
+REVOKE ALL ON TABLE users FROM PUBLIC;
+REVOKE ALL ON TABLE users FROM postgres;
+GRANT ALL ON TABLE users TO postgres;
 
 
 --
--- Name: SEQUENCE boards_users_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: boards_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.boards_users_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.boards_users_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.boards_users_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE boards_users_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE boards_users_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE boards_users_id_seq TO postgres;
 
 
 --
--- Name: TABLE boards_users; Type: ACL; Schema: public; Owner: -
+-- Name: boards_users; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.boards_users FROM PUBLIC;
-REVOKE ALL ON TABLE public.boards_users FROM postgres;
-GRANT ALL ON TABLE public.boards_users TO postgres;
+REVOKE ALL ON TABLE boards_users FROM PUBLIC;
+REVOKE ALL ON TABLE boards_users FROM postgres;
+GRANT ALL ON TABLE boards_users TO postgres;
 
 
 --
--- Name: TABLE cities; Type: ACL; Schema: public; Owner: -
+-- Name: cities; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.cities FROM PUBLIC;
-REVOKE ALL ON TABLE public.cities FROM postgres;
-GRANT ALL ON TABLE public.cities TO postgres;
+REVOKE ALL ON TABLE cities FROM PUBLIC;
+REVOKE ALL ON TABLE cities FROM postgres;
+GRANT ALL ON TABLE cities TO postgres;
 
 
 --
--- Name: TABLE countries; Type: ACL; Schema: public; Owner: -
+-- Name: countries; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.countries FROM PUBLIC;
-REVOKE ALL ON TABLE public.countries FROM postgres;
-GRANT ALL ON TABLE public.countries TO postgres;
+REVOKE ALL ON TABLE countries FROM PUBLIC;
+REVOKE ALL ON TABLE countries FROM postgres;
+GRANT ALL ON TABLE countries TO postgres;
 
 
 --
--- Name: SEQUENCE ips_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: ips_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.ips_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.ips_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.ips_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE ips_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE ips_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE ips_id_seq TO postgres;
 
 
 --
--- Name: TABLE ips; Type: ACL; Schema: public; Owner: -
+-- Name: ips; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.ips FROM PUBLIC;
-REVOKE ALL ON TABLE public.ips FROM postgres;
-GRANT ALL ON TABLE public.ips TO postgres;
+REVOKE ALL ON TABLE ips FROM PUBLIC;
+REVOKE ALL ON TABLE ips FROM postgres;
+GRANT ALL ON TABLE ips TO postgres;
 
 
 --
--- Name: SEQUENCE login_types_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: login_types_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.login_types_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.login_types_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.login_types_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE login_types_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE login_types_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE login_types_id_seq TO postgres;
 
 
 --
--- Name: TABLE login_types; Type: ACL; Schema: public; Owner: -
+-- Name: login_types; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.login_types FROM PUBLIC;
-REVOKE ALL ON TABLE public.login_types FROM postgres;
-GRANT ALL ON TABLE public.login_types TO postgres;
+REVOKE ALL ON TABLE login_types FROM PUBLIC;
+REVOKE ALL ON TABLE login_types FROM postgres;
+GRANT ALL ON TABLE login_types TO postgres;
 
 
 --
--- Name: TABLE states; Type: ACL; Schema: public; Owner: -
+-- Name: states; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.states FROM PUBLIC;
-REVOKE ALL ON TABLE public.states FROM postgres;
-GRANT ALL ON TABLE public.states TO postgres;
+REVOKE ALL ON TABLE states FROM PUBLIC;
+REVOKE ALL ON TABLE states FROM postgres;
+GRANT ALL ON TABLE states TO postgres;
 
 
 --
--- Name: SEQUENCE attachments_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: attachments_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.attachments_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.attachments_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.attachments_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE attachments_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE attachments_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE attachments_id_seq TO postgres;
 
 
 --
--- Name: SEQUENCE boards_stars_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: boards_stars_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.boards_stars_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.boards_stars_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.boards_stars_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE boards_stars_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE boards_stars_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE boards_stars_id_seq TO postgres;
 
 
 --
--- Name: TABLE board_stars; Type: ACL; Schema: public; Owner: -
+-- Name: board_stars; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.board_stars FROM PUBLIC;
-REVOKE ALL ON TABLE public.board_stars FROM postgres;
-GRANT ALL ON TABLE public.board_stars TO postgres;
+REVOKE ALL ON TABLE board_stars FROM PUBLIC;
+REVOKE ALL ON TABLE board_stars FROM postgres;
+GRANT ALL ON TABLE board_stars TO postgres;
 
 
 --
--- Name: SEQUENCE boards_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: boards_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.boards_subscribers_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.boards_subscribers_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.boards_subscribers_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE boards_subscribers_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE boards_subscribers_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE boards_subscribers_id_seq TO postgres;
 
 
 --
--- Name: TABLE board_subscribers; Type: ACL; Schema: public; Owner: -
+-- Name: board_subscribers; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.board_subscribers FROM PUBLIC;
-REVOKE ALL ON TABLE public.board_subscribers FROM postgres;
-GRANT ALL ON TABLE public.board_subscribers TO postgres;
+REVOKE ALL ON TABLE board_subscribers FROM PUBLIC;
+REVOKE ALL ON TABLE board_subscribers FROM postgres;
+GRANT ALL ON TABLE board_subscribers TO postgres;
 
 
 --
--- Name: SEQUENCE cards_labels_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: cards_labels_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.cards_labels_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.cards_labels_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.cards_labels_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE cards_labels_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE cards_labels_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE cards_labels_id_seq TO postgres;
 
 
 --
--- Name: TABLE cards_labels; Type: ACL; Schema: public; Owner: -
+-- Name: cards_labels; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.cards_labels FROM PUBLIC;
-REVOKE ALL ON TABLE public.cards_labels FROM postgres;
-GRANT ALL ON TABLE public.cards_labels TO postgres;
+REVOKE ALL ON TABLE cards_labels FROM PUBLIC;
+REVOKE ALL ON TABLE cards_labels FROM postgres;
+GRANT ALL ON TABLE cards_labels TO postgres;
 
 
 --
--- Name: SEQUENCE card_attachments_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: card_attachments_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.card_attachments_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.card_attachments_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.card_attachments_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE card_attachments_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE card_attachments_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE card_attachments_id_seq TO postgres;
 
 
 --
--- Name: TABLE card_attachments; Type: ACL; Schema: public; Owner: -
+-- Name: card_attachments; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.card_attachments FROM PUBLIC;
-REVOKE ALL ON TABLE public.card_attachments FROM postgres;
-GRANT ALL ON TABLE public.card_attachments TO postgres;
+REVOKE ALL ON TABLE card_attachments FROM PUBLIC;
+REVOKE ALL ON TABLE card_attachments FROM postgres;
+GRANT ALL ON TABLE card_attachments TO postgres;
 
 
 --
--- Name: SEQUENCE cards_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: cards_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.cards_subscribers_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.cards_subscribers_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.cards_subscribers_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE cards_subscribers_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE cards_subscribers_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE cards_subscribers_id_seq TO postgres;
 
 
 --
--- Name: TABLE card_subscribers; Type: ACL; Schema: public; Owner: -
+-- Name: card_subscribers; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.card_subscribers FROM PUBLIC;
-REVOKE ALL ON TABLE public.card_subscribers FROM postgres;
-GRANT ALL ON TABLE public.card_subscribers TO postgres;
+REVOKE ALL ON TABLE card_subscribers FROM PUBLIC;
+REVOKE ALL ON TABLE card_subscribers FROM postgres;
+GRANT ALL ON TABLE card_subscribers TO postgres;
 
 
 --
--- Name: SEQUENCE card_voters_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: card_voters_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.card_voters_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.card_voters_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.card_voters_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE card_voters_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE card_voters_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE card_voters_id_seq TO postgres;
 
 
 --
--- Name: TABLE card_voters; Type: ACL; Schema: public; Owner: -
+-- Name: card_voters; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.card_voters FROM PUBLIC;
-REVOKE ALL ON TABLE public.card_voters FROM postgres;
-GRANT ALL ON TABLE public.card_voters TO postgres;
+REVOKE ALL ON TABLE card_voters FROM PUBLIC;
+REVOKE ALL ON TABLE card_voters FROM postgres;
+GRANT ALL ON TABLE card_voters TO postgres;
 
 
 --
--- Name: SEQUENCE cards_users_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: cards_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.cards_users_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.cards_users_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.cards_users_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE cards_users_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE cards_users_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE cards_users_id_seq TO postgres;
 
 
 --
--- Name: TABLE cards_users; Type: ACL; Schema: public; Owner: -
+-- Name: cards_users; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.cards_users FROM PUBLIC;
-REVOKE ALL ON TABLE public.cards_users FROM postgres;
-GRANT ALL ON TABLE public.cards_users TO postgres;
+REVOKE ALL ON TABLE cards_users FROM PUBLIC;
+REVOKE ALL ON TABLE cards_users FROM postgres;
+GRANT ALL ON TABLE cards_users TO postgres;
 
 
 --
--- Name: SEQUENCE lists_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: lists_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.lists_subscribers_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.lists_subscribers_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.lists_subscribers_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE lists_subscribers_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE lists_subscribers_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE lists_subscribers_id_seq TO postgres;
 
 
 --
--- Name: TABLE list_subscribers; Type: ACL; Schema: public; Owner: -
+-- Name: list_subscribers; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.list_subscribers FROM PUBLIC;
-REVOKE ALL ON TABLE public.list_subscribers FROM postgres;
-GRANT ALL ON TABLE public.list_subscribers TO postgres;
+REVOKE ALL ON TABLE list_subscribers FROM PUBLIC;
+REVOKE ALL ON TABLE list_subscribers FROM postgres;
+GRANT ALL ON TABLE list_subscribers TO postgres;
 
 
 --
--- Name: TABLE checklist_add_listing; Type: ACL; Schema: public; Owner: -
+-- Name: checklist_add_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.checklist_add_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.checklist_add_listing FROM postgres;
-GRANT ALL ON TABLE public.checklist_add_listing TO postgres;
+REVOKE ALL ON TABLE checklist_add_listing FROM PUBLIC;
+REVOKE ALL ON TABLE checklist_add_listing FROM postgres;
+GRANT ALL ON TABLE checklist_add_listing TO postgres;
 
 
 --
--- Name: SEQUENCE cities_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: cities_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.cities_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.cities_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.cities_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE cities_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE cities_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE cities_id_seq TO postgres;
 
 
 --
--- Name: SEQUENCE cities_id_seq1; Type: ACL; Schema: public; Owner: -
+-- Name: cities_id_seq1; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.cities_id_seq1 FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.cities_id_seq1 FROM postgres;
-GRANT ALL ON SEQUENCE public.cities_id_seq1 TO postgres;
+REVOKE ALL ON SEQUENCE cities_id_seq1 FROM PUBLIC;
+REVOKE ALL ON SEQUENCE cities_id_seq1 FROM postgres;
+GRANT ALL ON SEQUENCE cities_id_seq1 TO postgres;
 
 
 --
--- Name: SEQUENCE countries_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: countries_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.countries_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.countries_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.countries_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE countries_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE countries_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE countries_id_seq TO postgres;
 
 
 --
--- Name: SEQUENCE countries_id_seq1; Type: ACL; Schema: public; Owner: -
+-- Name: countries_id_seq1; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.countries_id_seq1 FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.countries_id_seq1 FROM postgres;
-GRANT ALL ON SEQUENCE public.countries_id_seq1 TO postgres;
+REVOKE ALL ON SEQUENCE countries_id_seq1 FROM PUBLIC;
+REVOKE ALL ON SEQUENCE countries_id_seq1 FROM postgres;
+GRANT ALL ON SEQUENCE countries_id_seq1 TO postgres;
 
 
 --
--- Name: SEQUENCE email_templates_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: email_templates_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.email_templates_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.email_templates_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.email_templates_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE email_templates_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE email_templates_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE email_templates_id_seq TO postgres;
 
 
 --
--- Name: TABLE email_templates; Type: ACL; Schema: public; Owner: -
+-- Name: email_templates; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.email_templates FROM PUBLIC;
-REVOKE ALL ON TABLE public.email_templates FROM postgres;
-GRANT ALL ON TABLE public.email_templates TO postgres;
+REVOKE ALL ON TABLE email_templates FROM PUBLIC;
+REVOKE ALL ON TABLE email_templates FROM postgres;
+GRANT ALL ON TABLE email_templates TO postgres;
 
 
 --
--- Name: SEQUENCE list_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: list_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.list_subscribers_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.list_subscribers_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.list_subscribers_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE list_subscribers_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE list_subscribers_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE list_subscribers_id_seq TO postgres;
 
 
 --
--- Name: TABLE oauth_access_tokens; Type: ACL; Schema: public; Owner: -
+-- Name: oauth_access_tokens; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.oauth_access_tokens FROM PUBLIC;
-REVOKE ALL ON TABLE public.oauth_access_tokens FROM postgres;
-GRANT ALL ON TABLE public.oauth_access_tokens TO postgres;
+REVOKE ALL ON TABLE oauth_access_tokens FROM PUBLIC;
+REVOKE ALL ON TABLE oauth_access_tokens FROM postgres;
+GRANT ALL ON TABLE oauth_access_tokens TO postgres;
 
 
 --
--- Name: TABLE oauth_authorization_codes; Type: ACL; Schema: public; Owner: -
+-- Name: oauth_authorization_codes; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.oauth_authorization_codes FROM PUBLIC;
-REVOKE ALL ON TABLE public.oauth_authorization_codes FROM postgres;
-GRANT ALL ON TABLE public.oauth_authorization_codes TO postgres;
+REVOKE ALL ON TABLE oauth_authorization_codes FROM PUBLIC;
+REVOKE ALL ON TABLE oauth_authorization_codes FROM postgres;
+GRANT ALL ON TABLE oauth_authorization_codes TO postgres;
 
 
 --
--- Name: TABLE oauth_clients; Type: ACL; Schema: public; Owner: -
+-- Name: oauth_clients; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.oauth_clients FROM PUBLIC;
-REVOKE ALL ON TABLE public.oauth_clients FROM postgres;
-GRANT ALL ON TABLE public.oauth_clients TO postgres;
+REVOKE ALL ON TABLE oauth_clients FROM PUBLIC;
+REVOKE ALL ON TABLE oauth_clients FROM postgres;
+GRANT ALL ON TABLE oauth_clients TO postgres;
 
 
 --
--- Name: TABLE oauth_jwt; Type: ACL; Schema: public; Owner: -
+-- Name: oauth_jwt; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.oauth_jwt FROM PUBLIC;
-REVOKE ALL ON TABLE public.oauth_jwt FROM postgres;
-GRANT ALL ON TABLE public.oauth_jwt TO postgres;
+REVOKE ALL ON TABLE oauth_jwt FROM PUBLIC;
+REVOKE ALL ON TABLE oauth_jwt FROM postgres;
+GRANT ALL ON TABLE oauth_jwt TO postgres;
 
 
 --
--- Name: TABLE oauth_refresh_tokens; Type: ACL; Schema: public; Owner: -
+-- Name: oauth_refresh_tokens; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.oauth_refresh_tokens FROM PUBLIC;
-REVOKE ALL ON TABLE public.oauth_refresh_tokens FROM postgres;
-GRANT ALL ON TABLE public.oauth_refresh_tokens TO postgres;
+REVOKE ALL ON TABLE oauth_refresh_tokens FROM PUBLIC;
+REVOKE ALL ON TABLE oauth_refresh_tokens FROM postgres;
+GRANT ALL ON TABLE oauth_refresh_tokens TO postgres;
 
 
 --
--- Name: TABLE oauth_scopes; Type: ACL; Schema: public; Owner: -
+-- Name: oauth_scopes; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.oauth_scopes FROM PUBLIC;
-REVOKE ALL ON TABLE public.oauth_scopes FROM postgres;
-GRANT ALL ON TABLE public.oauth_scopes TO postgres;
+REVOKE ALL ON TABLE oauth_scopes FROM PUBLIC;
+REVOKE ALL ON TABLE oauth_scopes FROM postgres;
+GRANT ALL ON TABLE oauth_scopes TO postgres;
 
 
 --
--- Name: SEQUENCE organizations_users_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: organizations_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.organizations_users_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.organizations_users_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.organizations_users_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE organizations_users_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE organizations_users_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE organizations_users_id_seq TO postgres;
 
 
 --
--- Name: TABLE organizations_users; Type: ACL; Schema: public; Owner: -
+-- Name: organizations_users; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.organizations_users FROM PUBLIC;
-REVOKE ALL ON TABLE public.organizations_users FROM postgres;
-GRANT ALL ON TABLE public.organizations_users TO postgres;
+REVOKE ALL ON TABLE organizations_users FROM PUBLIC;
+REVOKE ALL ON TABLE organizations_users FROM postgres;
+GRANT ALL ON TABLE organizations_users TO postgres;
 
 
 --
--- Name: SEQUENCE roles_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: roles_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.roles_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.roles_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.roles_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE roles_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE roles_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE roles_id_seq TO postgres;
 
 
 --
--- Name: TABLE roles; Type: ACL; Schema: public; Owner: -
+-- Name: roles; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.roles FROM PUBLIC;
-REVOKE ALL ON TABLE public.roles FROM postgres;
-GRANT ALL ON TABLE public.roles TO postgres;
+REVOKE ALL ON TABLE roles FROM PUBLIC;
+REVOKE ALL ON TABLE roles FROM postgres;
+GRANT ALL ON TABLE roles TO postgres;
 
 
 --
--- Name: TABLE setting_categories; Type: ACL; Schema: public; Owner: -
+-- Name: setting_categories; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.setting_categories FROM PUBLIC;
-REVOKE ALL ON TABLE public.setting_categories FROM postgres;
-GRANT ALL ON TABLE public.setting_categories TO postgres;
+REVOKE ALL ON TABLE setting_categories FROM PUBLIC;
+REVOKE ALL ON TABLE setting_categories FROM postgres;
+GRANT ALL ON TABLE setting_categories TO postgres;
 
 
 --
--- Name: SEQUENCE setting_categories_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: setting_categories_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.setting_categories_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.setting_categories_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.setting_categories_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE setting_categories_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE setting_categories_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE setting_categories_id_seq TO postgres;
 
 
 --
--- Name: SEQUENCE settings_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: settings_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.settings_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.settings_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.settings_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE settings_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE settings_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE settings_id_seq TO postgres;
 
 
 --
--- Name: TABLE settings; Type: ACL; Schema: public; Owner: -
+-- Name: settings; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.settings FROM PUBLIC;
-REVOKE ALL ON TABLE public.settings FROM postgres;
-GRANT ALL ON TABLE public.settings TO postgres;
+REVOKE ALL ON TABLE settings FROM PUBLIC;
+REVOKE ALL ON TABLE settings FROM postgres;
+GRANT ALL ON TABLE settings TO postgres;
 
 
 --
--- Name: SEQUENCE states_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: states_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.states_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.states_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.states_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE states_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE states_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE states_id_seq TO postgres;
 
 
 --
--- Name: SEQUENCE states_id_seq1; Type: ACL; Schema: public; Owner: -
+-- Name: states_id_seq1; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.states_id_seq1 FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.states_id_seq1 FROM postgres;
-GRANT ALL ON SEQUENCE public.states_id_seq1 TO postgres;
+REVOKE ALL ON SEQUENCE states_id_seq1 FROM PUBLIC;
+REVOKE ALL ON SEQUENCE states_id_seq1 FROM postgres;
+GRANT ALL ON SEQUENCE states_id_seq1 TO postgres;
 
 
 --
--- Name: TABLE user_logins; Type: ACL; Schema: public; Owner: -
+-- Name: user_logins; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.user_logins FROM PUBLIC;
-REVOKE ALL ON TABLE public.user_logins FROM postgres;
-GRANT ALL ON TABLE public.user_logins TO postgres;
+REVOKE ALL ON TABLE user_logins FROM PUBLIC;
+REVOKE ALL ON TABLE user_logins FROM postgres;
+GRANT ALL ON TABLE user_logins TO postgres;
 
 
 --
--- Name: SEQUENCE user_logins_id_seq; Type: ACL; Schema: public; Owner: -
+-- Name: user_logins_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.user_logins_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.user_logins_id_seq FROM postgres;
-GRANT ALL ON SEQUENCE public.user_logins_id_seq TO postgres;
+REVOKE ALL ON SEQUENCE user_logins_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE user_logins_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE user_logins_id_seq TO postgres;
 
 
 --
