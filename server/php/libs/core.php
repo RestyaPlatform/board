@@ -597,7 +597,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.6.3; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.6.4; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         $result = mail($to, $subject, $message, $headers);
         if (R_DEBUG) {
@@ -978,7 +978,7 @@ function createTrelloMember($member = array() , $admin_user_id = array() , $new_
         pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
     }
     $is_board_subscribers_exist = executeQuery('SELECT * FROM board_subscribers WHERE user_id = $1 and board_id = $2', $query_val);
-    $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
+    $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : 'false';
     if ($auto_subscribe_on_board && !$is_board_subscribers_exist) {
         $qry_val_arr = array(
             $user_id,
@@ -1071,48 +1071,14 @@ function importTrelloBoard($board = array())
                 );
                 $userExist = executeQuery('SELECT * FROM users WHERE username = $1', $qry_val_arr);
                 if (!$userExist) {
-                    $default_email_notification = 0;
-                    if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
-                        $default_email_notification = 1;
-                    } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
-                        $default_email_notification = 2;
-                    }
-                    $member['is_send_newsletter'] = $default_email_notification;
-                    $member['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
-                    $member['is_list_notifications_enabled'] = IS_LIST_NOTIFICATIONS_ENABLED;
-                    $member['is_card_notifications_enabled'] = IS_CARD_NOTIFICATIONS_ENABLED;
-                    $member['is_card_members_notifications_enabled'] = IS_CARD_MEMBERS_NOTIFICATIONS_ENABLED;
-                    $member['is_card_labels_notifications_enabled'] = IS_CARD_LABELS_NOTIFICATIONS_ENABLED;
-                    $member['is_card_checklists_notifications_enabled'] = IS_CARD_CHECKLISTS_NOTIFICATIONS_ENABLED;
-                    $member['is_card_attachments_notifications_enabled'] = IS_CARD_ATTACHMENTS_NOTIFICATIONS_ENABLED;
                     $qry_val_arr = array(
                         utf8_decode($member['username']) ,
                         getCryptHash('restya') ,
                         utf8_decode($member['initials']) ,
-                        utf8_decode($member['fullName']),
-                        $member['is_send_newsletter'],
-                        $member['default_desktop_notification'],
-                        $member['is_list_notifications_enabled'],
-                        $member['is_card_notifications_enabled'],
-                        $member['is_card_members_notifications_enabled'],
-                        $member['is_card_labels_notifications_enabled'],
-                        $member['is_card_checklists_notifications_enabled'],
-                        $member['is_card_attachments_notifications_enabled']
+                        utf8_decode($member['fullName'])
                     );
-                    $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
+                    $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4) RETURNING id', $qry_val_arr));
                     $users[$member['id']] = $user['id'];
-                    if ($member['avatarUrl']) {
-                        $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'User' . DIRECTORY_SEPARATOR . $user['id'];
-                        $save_path = 'media' . DIRECTORY_SEPARATOR . 'User' . DIRECTORY_SEPARATOR . $user['id'];
-                        $save_path = str_replace('\\', '/', $save_path);
-                        $filename = curlExecute($member['avatarUrl'] . '/170.png', 'get', $mediadir, 'image');
-                        $path = $save_path . DIRECTORY_SEPARATOR . $filename['file_name'];
-                        $qry_val_arr = array(
-                            $path,
-                            $user['id']
-                        );
-                        pg_query_params($db_lnk, 'UPDATE users SET profile_picture_path = $1 WHERE id = $2', $qry_val_arr);
-                    }
                 } else {
                     $users[$member['id']] = $userExist['id'];
                 }
@@ -1126,7 +1092,7 @@ function importTrelloBoard($board = array())
                     $board_user_role_id
                 );
                 pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
-                $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
+                $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : 'false';
                 if ($auto_subscribe_on_board) {
                     $qry_val_arr = array(
                         $users[$member['id']],
@@ -1143,7 +1109,7 @@ function importTrelloBoard($board = array())
             1
         );
         pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
-        $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
+        $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : 'false';
         if ($auto_subscribe_on_board) {
             $qry_val_arr = array(
                 $authUser['id'],
@@ -1609,7 +1575,7 @@ function importWekanBoard($board = array())
                             $board_user_role_id
                         );
                         pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
-                        $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
+                        $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : 'false';
                         if ($auto_subscribe_on_board) {
                             $qry_val_arr = array(
                                 $users[$wekan_user_id],
@@ -1628,7 +1594,7 @@ function importWekanBoard($board = array())
             1
         );
         pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
-        $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
+        $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : 'false';
         if ($auto_subscribe_on_board) {
             $qry_val_arr = array(
                 $authUser['id'],
