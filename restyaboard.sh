@@ -745,8 +745,8 @@
 				service php7.2-fpm restart
 				service nginx restart
 				service postfix restart
-				apt install python-pip
-				pip install virtualenv
+				apt install -y python-pip
+				pip install -y virtualenv
 			esac
 		else
 			set +x
@@ -1227,8 +1227,8 @@
 					/etc/init.d/php-fpm restart
 					/etc/init.d/nginx restart
 				fi
-				yum install python-pip
-				pip install virtualenv
+				yum install -y python-pip
+				pip install -y virtualenv
 				
 				/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 			esac
