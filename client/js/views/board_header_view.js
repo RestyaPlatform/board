@@ -1833,9 +1833,9 @@ App.BoardHeaderView = Backbone.View.extend({
 
 
         var unfilteredIds = [];
-        for (var i = 0; i < arrays.length; i++) {
-            var e = arrays[i][0];
-            unfilteredIds.push(parseInt(e.substring(8, e.length)));
+        for (var index_1 = 0; index_1 < arrays.length; index_1++) {
+            var index_1_id = arrays[index_1][0];
+            unfilteredIds.push(parseInt(index_1_id.substring(8, index_1_id.length)));
         }
         // arrays.each(function(e) {
         //     unfilteredIds.push(parseInt(e.substring(7, e.length)));

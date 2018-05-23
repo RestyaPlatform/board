@@ -71,9 +71,8 @@ App.ListView = Backbone.View.extend({
             this.model.collection.board.cards.bind('change:comment_count', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:list_id', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:is_filtered', function(e){
-                // TODO not synchronized models here?
-                console.log(e.get('is_filtered'));
-                // this.renderCardNumbers();
+                // TODO maybe it would be better to trigger rerendering of card numbers only once after filtering
+                this.renderCardNumbers();
             }, this);
         }
         this.model.bind('remove', this.removeRender);
@@ -1179,9 +1178,10 @@ App.ListView = Backbone.View.extend({
         this.renderCardNumbers();
     },
     renderCardNumbers: function() {
+        var self = this;
         var element = this.$el.find('#list-card-number-' + this.model.id);
-        var filteredElements = this.model.cards.filter(function(card) {
-            return card.get('is_archived') !== 1 && card.get('is_filtered') === false;
+        var filteredElements = this.model.collection.board.cards.filter(function(card) {
+            return card.get('is_archived') !== 1 && card.get('list_id') === parseInt(self.model.attributes.id) && card.get('is_filtered') === false;
         });
         element.text('(' + filteredElements.length + ')');
     },
