@@ -20,19 +20,30 @@ jobs:
         - npm cache verify
         - npm install
         - grunt pre-commit
-    - stage: release-dev
+    - stage: release
       script:
         - docker pull "${IMAGE_NAME}:dev"
+        - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
         - npm run docker:prebuild
-        - docker build --pull --cache-from "${IMAGE_NAME}:dev" --tag "${IMAGE_NAME}" .
-        - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-        - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:test-travis"
-        - docker push "${IMAGE_NAME}:test-travis"
-    - stage: release-tag
-      if: tag = .*
-      script:
-        - npm run docker:fullbuild
-        - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-        - docker tag $IMAGE_NAME ${IMAGE_NAME}:$TRAVIS_TAG
-        - docker push ${IMAGE_NAME}:$TRAVIS_TAG-test
+
+        # Direct push to dev
+        - if [ "$TRAVIS_BRANCH" = "dev" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
+          docker build --pull --cache-from "${IMAGE_NAME}:dev" --tag "${IMAGE_NAME}" .;
+          docker tag "$IMAGE_NAME" "${IMAGE_NAME}:latest";
+          docker push "${IMAGE_NAME}:dev";
+          exit 0;
+          fi
+        # PullRequests
+        - if [ "$TRAVIS_PULL_REQUEST" = "true" ]; then
+          exit 0;
+          fi
+        # Tags
+        - if [ -n "$TRAVIS_TAG" ]; then
+          docker build --pull --cache-from "${IMAGE_NAME}:dev" --tag "${IMAGE_NAME}" .;
+          docker tag "$IMAGE_NAME" "${IMAGE_NAME}:$TRAVIS_TAG";
+          docker push "${IMAGE_NAME}:$TRAVIS_TAG";
+          exit 0;
+          fi
+        # Else
+        - exit 0;
 
