@@ -23,7 +23,7 @@ jobs:
     - stage: release
       script:
         - docker pull "${IMAGE_NAME}:dev"
-        - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - npm run docker:prebuild
 
         # Direct push to dev
