@@ -1,5 +1,38 @@
+sudo: required
+
 language: php
-script:
-  - npm cache verify
-  - npm install
-  - grunt pre-commit
+
+services:
+  - docker
+
+env:
+  global:
+    - IMAGE_NAME=restyaplatform/restyaboard
+
+cache:
+  directories:
+    - node_modules
+
+jobs:
+  include:
+    - stage: test
+      script:
+        - npm cache verify
+        - npm install
+        - grunt pre-commit
+    - stage: release-dev
+      script:
+        - docker pull "${IMAGE_NAME}:dev"
+        - npm run docker:prebuild
+        - docker build --pull --cache-from "${IMAGE_NAME}:dev" --tag "${IMAGE_NAME}" .
+        - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+        - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:test-travis"
+        - docker push "${IMAGE_NAME}:test-travis"
+    - stage: release-tag
+      if: tag = .*
+      script:
+        - npm run docker:fullbuild
+        - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+        - docker tag $IMAGE_NAME ${IMAGE_NAME}:$TRAVIS_TAG
+        - docker push ${IMAGE_NAME}:$TRAVIS_TAG-test
+
