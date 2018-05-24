@@ -3,10 +3,11 @@ $(window).resize(function() {
     var footerH = $("footer").height();
     var windowH = $(window).height();
     var notificationH = windowH - footerH;
+    var boardH;
     if (!_.isEmpty(footerH)) {
-        var boardH = windowH - headerH - footerH - 14;
+        boardH = windowH - headerH - footerH - 14;
     } else {
-        var boardH = windowH - headerH - 50;
+        boardH = windowH - headerH - 50;
     }
     $(".board-list-view").css("height", (boardH + 'px'));
     if ($(".js-board-list") && (/Edge/.test(navigator.userAgent) || !!navigator.userAgent.match(/Trident.*rv\:11\./))) {
