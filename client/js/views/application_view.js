@@ -695,13 +695,14 @@ App.ApplicationView = Backbone.View.extend({
                                                     });
                                                     filtered_lists = _.filter(organization_starred_board.attributes.lists, filter);
                                                     organization_starred_board.lists.add(filtered_lists);
-                                                    if ($('.js-organization-starred-boards-' + organization_starred_board.attributes.organization_id + '').length === 0) {
-                                                        $('.js-header-starred-boards').append('<div class="row"><div  class="col-xs-12 js-organization-starred-boards-' + organization_starred_board.attributes.organization_id + '"><div class="row"><div class="col-xs-12"><span class="pull-left h4">' + i18next.t('%s', {
+                                                    if ($('.js-organization-starred-boards-' + organization_starred_board.attributes.organization_id).length === 0) {
+                                                        var starred_board_organization_name = filterXSS(organization_starred_board.attributes.organization_name);
+                                                        $('.js-header-starred-boards').parent().append('<div class="col-xs-12 js-organization-starred-boards-' + organization_starred_board.attributes.organization_id + '"><h4>' + i18next.t('%s', {
                                                             postProcess: 'sprintf',
-                                                            sprintf: [organization_starred_board.attributes.organization_name]
-                                                        }) + '</span></div></div></div></div>');
+                                                            sprintf: [starred_board_organization_name]
+                                                        }) + '</h4></div>');
                                                     }
-                                                    $('.js-organization-starred-boards-' + organization_starred_board.attributes.organization_id + '').append(new App.BoardSimpleView({
+                                                    $('.js-organization-starred-boards-' + organization_starred_board.attributes.organization_id).append(new App.BoardSimpleView({
                                                         model: organization_starred_board,
                                                         id: 'js-starred-board-' + organization_starred_board.attributes.id,
                                                         className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + organization_starred_board.attributes.id,
@@ -790,12 +791,13 @@ App.ApplicationView = Backbone.View.extend({
                                         App.boards.sort();
                                         if (!_.isEmpty(organization_closed_boards)) {
                                             _.each(organization_closed_boards, function(closed_organization_board) {
-                                                if ($('.js-organization-' + closed_organization_board.attributes.organization_id + '').length === 0) {
-                                                    if ($('.js-organization-closed-boards-' + closed_organization_board.attributes.organization_id + '').length === 0) {
-                                                        $('.js-header-closed-boards').append('<div class="row"><div  class="col-xs-12 js-organization-closed-boards-' + closed_organization_board.attributes.organization_id + '"><div class="row"><div class="col-xs-12"><span class="pull-left h4">' + i18next.t('%s', {
+                                                if ($('.js-organization-' + closed_organization_board.attributes.organization_id).length === 0) {
+                                                    if ($('.js-organization-closed-boards-' + closed_organization_board.attributes.organization_id).length === 0) {
+                                                        var closed_board_organization_name = filterXSS(closed_organization_board.attributes.organization_name);
+                                                        $('.js-header-closed-boards').parent().append('<div class="col-xs-12 js-organization-closed-boards-' + closed_organization_board.attributes.organization_id + '"><h4>' + i18next.t('%s', {
                                                             postProcess: 'sprintf',
-                                                            sprintf: [closed_organization_board.attributes.organization_name]
-                                                        }) + '</span></div></div></div></div>');
+                                                            sprintf: [closed_board_organization_name]
+                                                        }) + '</h4></div>');
                                                     }
                                                 }
                                                 closed_organization_board.board_subscribers.add(closed_organization_board.attributes.boards_subscribers);
@@ -804,7 +806,7 @@ App.ApplicationView = Backbone.View.extend({
                                                 });
                                                 filtered_lists = _.filter(closed_organization_board.attributes.lists, filter);
                                                 closed_organization_board.lists.add(filtered_lists);
-                                                $('.js-organization-closed-boards-' + closed_organization_board.attributes.organization_id + '').append(new App.BoardSimpleView({
+                                                $('.js-organization-closed-boards-' + closed_organization_board.attributes.organization_id).append(new App.BoardSimpleView({
                                                     model: closed_organization_board,
                                                     id: 'js-my-board-' + closed_organization_board.attributes.id,
                                                     className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + closed_organization_board.attributes.id,
@@ -864,18 +866,19 @@ App.ApplicationView = Backbone.View.extend({
                                         });
                                         if (!_.isEmpty(organization_boards)) {
                                             _.each(organization_boards, function(board) {
-                                                if ($('.js-organization-' + board.attributes.organization_id + '').length === 0) {
-                                                    $('.js-my-boards').parent().append('<div class="row"><div  class="col-xs-12 js-organization_boards js-organization-' + board.attributes.organization_id + '" data-organization_id ="' + board.attributes.organization_id + '" ><div class="row"><div class="col-xs-12"><span class="pull-left h4">' + i18next.t('%s', {
+                                                if ($('.js-organization-' + board.attributes.organization_id).length === 0) {
+                                                    var organization_name = filterXSS(board.attributes.organization_name);
+                                                    $('.js-my-boards').parent().append('<div class="col-xs-12 js-organization_boards js-organization-' + board.attributes.organization_id + '" data-organization_id ="' + board.attributes.organization_id + '" ><h4>' + i18next.t('%s', {
                                                         postProcess: 'sprintf',
-                                                        sprintf: [board.attributes.organization_name]
-                                                    }) + '</span></div></div></div></div>');
+                                                        sprintf: [organization_name]
+                                                    }) + '</h4></div>');
                                                 }
                                                 var board_filter = _.matches({
                                                     is_archived: 0
                                                 });
                                                 var board_filtered_lists = _.filter(board.attributes.lists, board_filter);
                                                 board.lists.add(board_filtered_lists);
-                                                $('.js-organization-' + board.attributes.organization_id + '').append(new App.BoardSimpleView({
+                                                $('.js-organization-' + board.attributes.organization_id).append(new App.BoardSimpleView({
                                                     model: board,
                                                     id: 'js-my-board-' + board.attributes.id,
                                                     className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + board.attributes.id,
