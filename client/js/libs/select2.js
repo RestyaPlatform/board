@@ -882,7 +882,7 @@ the specific language governing permissions and limitations under the Apache Lic
             if (element.is("option")) {
                 return {
                     id:element.prop("value"),
-                    text:element.text(),
+                    text:filterXSS(element.text()),
                     element: element.get(),
                     css: element.attr("class"),
                     disabled: element.prop("disabled"),
@@ -953,6 +953,7 @@ the specific language governing permissions and limitations under the Apache Lic
                             label.attr("role", "option");
 
                             formatted=opts.formatResult(result, label, query, self.opts.escapeMarkup);
+                            formatted = filterXSS(formatted);
                             if (formatted!==undefined) {
                                 label.html(formatted);
                                 node.append(label);
@@ -997,7 +998,7 @@ the specific language governing permissions and limitations under the Apache Lic
                     var data = { results: [], more: false },
                         term = query.term,
                         children, placeholderOption, process;
-
+                    
                     process=function(element, collection) {
                         var group;
                         if (element.is("option")) {
@@ -1574,6 +1575,7 @@ the specific language governing permissions and limitations under the Apache Lic
             this.liveRegion.text(choice.text());
 
             data = choice.data("select2-data");
+            data = filterXSS(data);
             if (data) {
                 this.opts.element.trigger({ type: "select2-highlight", val: this.id(data), choice: data });
             }
@@ -2405,7 +2407,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
         // single
         onSelect: function (data, options) {
-
+            
             if (!this.triggerSelect(data)) { return; }
 
             var old = this.opts.element.val(),
@@ -3036,7 +3038,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 if ($(formatted).data('label')) {
                     formatted = $(formatted).data('label');
                 }          
-                choice.find("div").replaceWith("<div>"+formatted+"</div>");
+                choice.find("div").replaceWith("<div>"+filterXSS(formatted)+"</div>");
                 if (color) {
 				    choice.attr("style","background:"+color+";color:#fff;");
                 } else {

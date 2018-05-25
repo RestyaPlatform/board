@@ -42,20 +42,20 @@
 				activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', (activity.attributes.card_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', (activity.attributes.board_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+(activity.attributes.full_name)+'</span>');
+				activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
 			} else {
 				if(!_.isUndefined(activity.from_footer)) {
-					var comment = '<span class="h5">' + activity.attributes.full_name + '</span> commented in card ' + cardLink;
+					var comment = '<span class="h5">' + filterXSS(activity.attributes.full_name) + '</span> commented in card ' + cardLink;
 					var matches = activity.attributes.comment.match(/@([^ ]*)/g);
 					var _username = [];
 					_.each(matches, function(match) {
 						_username.push(match.substr(1));
 					});
 					if(_.contains(_username, authuser.user.username)){
-						comment = activity.attributes.full_name + ' has mentioned you in card ' + cardLink;
+						comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
 					}
 				} 
 			}
