@@ -1089,7 +1089,7 @@ function importTrelloBoard($board = array())
                         utf8_decode($member['username']) ,
                         getCryptHash('restya') ,
                         utf8_decode($member['initials']) ,
-                        utf8_decode($member['fullName']),
+                        utf8_decode($member['fullName']) ,
                         $member['is_send_newsletter'],
                         $member['default_desktop_notification'],
                         $member['is_list_notifications_enabled'],
