@@ -132,6 +132,16 @@
 			fi
 		}
 
+		upgrade-0.6.4-0.6.5()
+		{
+			if [ -d "$dir/client/apps/r_hide_card_id" ]; then
+				rm -rf $dir/client/apps/r_hide_card_id/
+				chmod -R go+w "$dir/client/apps"
+				curl -v -L -G -o /tmp/r_hide_card_additional_informations-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_hide_card_additional_informations-v0.1.2.zip
+				unzip /tmp/r_hide_card_additional_informations-v0.1.2.zip -d "$dir/client/apps"
+			fi
+		}
+
 		update_version()
 		{
 			set +x
@@ -211,6 +221,10 @@
 				then
 					upgrade+=("upgrade-0.6.3-0.6.4")
 				fi
+				if [[ $version < "v0.6.5" ]];
+				then
+					upgrade+=("upgrade-0.6.4-0.6.5")
+				fi				
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
 				do

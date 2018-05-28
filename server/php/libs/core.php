@@ -597,7 +597,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.6.4; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.6.5; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         $result = mail($to, $subject, $message, $headers);
         if (R_DEBUG) {
@@ -1089,7 +1089,7 @@ function importTrelloBoard($board = array())
                         utf8_decode($member['username']) ,
                         getCryptHash('restya') ,
                         utf8_decode($member['initials']) ,
-                        utf8_decode($member['fullName']),
+                        utf8_decode($member['fullName']) ,
                         $member['is_send_newsletter'],
                         $member['default_desktop_notification'],
                         $member['is_list_notifications_enabled'],
