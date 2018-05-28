@@ -106,6 +106,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $folder_iso2_code = $folder[count($folder) - 2];
                 array_push($lang_iso2_codes, $folder_iso2_code);
             }
+            $languages = array();
             $qry_val_arr = array(
                 '{' . implode($lang_iso2_codes, ',') . '}'
             );
