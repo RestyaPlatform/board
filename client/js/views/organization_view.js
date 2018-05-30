@@ -191,6 +191,8 @@ App.OrganizationsView = Backbone.View.extend({
             model: this.model,
             type: self.page_view_type
         }).el);
+        this.model.boards.setSortField('name', 'asc');
+        this.model.boards.sort();
         this.$el.html(this.template({
             organization: this.model,
             type: this.type
