@@ -180,6 +180,11 @@ App.CardView = Backbone.View.extend({
                 } else {
                     $('#js-card-' + self.model.id).find('.list-moved-date').html('<small title="' + i18next.t('List Moved Date') + '"><span class="label label-default">' + dateFormat(list_moved_date_date_time[0], 'mediumDate') + '</span></small>');
                 }
+                _(function() {
+                    if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                        $('body').trigger('cardRendered', self.model.id, self.model);
+                    }
+                }).defer();
             }
         });
         var current_board = App.boards.where({
