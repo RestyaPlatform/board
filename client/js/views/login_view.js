@@ -93,6 +93,7 @@ App.LoginView = Backbone.View.extend({
                         auth_response.user.is_card_attachments_notifications_enabled = response.user.is_card_attachments_notifications_enabled;
                         auth_response.user.is_ldap = response.user.is_ldap;
                         auth_response.user.is_intro_video_skipped = response.user.is_intro_video_skipped;
+                        auth_response.user.is_google_authenticator_enabled = response.user.is_google_authenticator_enabled;
                         $.cookie('auth', JSON.stringify(auth_response));
                         i18next.changeLanguage(response.user.language);
                         api_token = response.access_token;
@@ -112,9 +113,17 @@ App.LoginView = Backbone.View.extend({
                         if (!_.isEmpty($.cookie('redirect_link'))) {
                             var redirect_link = $.cookie('redirect_link');
                             $.removeCookie('redirect_link');
-                            window.location = redirect_link;
+                            if (response.user.is_google_authenticator_enabled === 't' ) {
+                                window.location = '#/authenticate';    
+                            } else {
+                                window.location = redirect_link;
+                            }
                         } else {
-                            window.location = '#/boards';
+                            if (response.user.is_google_authenticator_enabled === 't' ) {
+                                window.location = '#/authenticate';    
+                            } else {
+                                window.location = '#/boards';   
+                            }
                         }
                     } else {
                         $('input#inputPassword', target).val('');

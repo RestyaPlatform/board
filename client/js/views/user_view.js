@@ -217,6 +217,10 @@ App.UserView = Backbone.View.extend({
         var form = $(e.target);
         var fileData = new FormData(form[0]);
         var data = $(e.target).serializeObject();
+        data.is_google_authenticator_enabled = 'false';
+        if ($("#is_google_authenticator_enabled").val() === 'Enabled') {
+            data.is_google_authenticator_enabled = 'true';
+        }
         data.default_desktop_notification = 'false';
         if ($("#default_desktop_notification").val() === 'Enabled') {
             data.default_desktop_notification = 'true';

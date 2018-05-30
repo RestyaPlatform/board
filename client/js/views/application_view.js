@@ -189,6 +189,9 @@ App.ApplicationView = Backbone.View.extend({
         if (this.model == 'login') {
             changeTitle(i18next.t('Login'));
         }
+        if (this.model == 'authenticate') {
+            changeTitle(i18next.t('Authenticate'));
+        }
         if (this.model == 'aboutus') {
             changeTitle(i18next.t('About'));
         }
@@ -582,6 +585,14 @@ App.ApplicationView = Backbone.View.extend({
                 var LoginUser = new App.User();
                 this.pageView = new App.LoginView({
                     model: LoginUser
+                });
+                $('#content').html(this.pageView.el);
+            } else if (page.model == 'authenticate') {
+                changeTitle(i18next.t('Authenticate'));
+                $('.company').removeClass('hide');
+                var User = new App.User();
+                this.pageView = new App.AuthenticateView({
+                    model: User
                 });
                 $('#content').html(this.pageView.el);
             } else if (page.model == 'forgotpassword') {
@@ -1066,18 +1077,20 @@ App.ApplicationView = Backbone.View.extend({
             authuser.board_id = 0;
         }
         if (($.cookie('auth') !== undefined && $.cookie('auth') !== null) || page.model == 'organizations_view') {
-            this.footerView = new App.FooterView({
-                model: authuser
-            }).render();
-            $('#footer').html(this.footerView.el);
-            if (!_.isUndefined(authuser.user)) {
-                var count = authuser.user.notify_count;
-                if (count > 0) {
-                    if (count >= 100) {
-                        count = '100+';
+            if (page.model !== 'authenticate') {
+                this.footerView = new App.FooterView({
+                    model: authuser
+                }).render();
+                $('#footer').html(this.footerView.el);
+                if (!_.isUndefined(authuser.user)) {
+                    var count = authuser.user.notify_count;
+                    if (count > 0) {
+                        if (count >= 100) {
+                            count = '100+';
+                        }
+                        $('.js-notification-count').removeClass('hide').html(count);
+                        favicon.badge(count);
                     }
-                    $('.js-notification-count').removeClass('hide').html(count);
-                    favicon.badge(count);
                 }
             }
         } else {

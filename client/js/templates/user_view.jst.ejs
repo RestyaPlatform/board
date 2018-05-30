@@ -106,6 +106,12 @@
 								</span>
 								</span>
 							<% } %>
+							<div class="form-group">
+								<div class="col-sm-offset-4 col-sm-8">
+									<input type="checkbox" value="<%- user.attributes.is_google_authenticator_enabled %>" name="is_google_authenticator_enabled" id="is_google_authenticator_enabled" <% if(user.attributes.is_google_authenticator_enabled === true || user.attributes.is_google_authenticator_enabled === 'true') { %> checked="checked" <% } %> >
+									<label for="is_google_authenticator_enabled"><%- i18next.t('Enable Google Authenticator') %> </label>
+								</div>
+							</div>
 							<fieldset>
 								<legend><span class="show h4"><%- i18next.t('Notifications') %></span></legend>
 								<fieldset class="col-sm-offset-1 well-sm">

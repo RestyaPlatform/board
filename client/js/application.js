@@ -304,6 +304,7 @@ var AppRouter = Backbone.Router.extend({
         'users/admin_user_add': 'admin_user_add',
         'users/register': 'register',
         'users/login': 'login',
+        'authenticate': 'authenticate',
         'users/logout': 'logout',
         'users/forgotpassword': 'forgotpassword',
         'users/activation/:id/:hash': 'user_activation',
@@ -363,6 +364,12 @@ var AppRouter = Backbone.Router.extend({
         $('.dockmodal, .dockmodal-overlay').remove();
         new App.ApplicationView({
             model: 'login'
+        });
+    },
+    authenticate: function() {
+        $('.dockmodal, .dockmodal-overlay').remove();
+        new App.ApplicationView({
+            model: 'authenticate'
         });
     },
     forgotpassword: function() {
