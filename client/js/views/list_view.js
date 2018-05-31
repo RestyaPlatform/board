@@ -191,7 +191,15 @@ App.ListView = Backbone.View.extend({
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + list_id + '.json';
         self.model.save(data, {
             patch: true,
-            success: function(model, response) {}
+            success: function(model, response) {
+                var current_board = App.boards.findWhere({
+                    id: parseInt(self.model.attributes.board_id)
+                });
+                var current_list = current_board.lists.findWhere({
+                    id: parseInt(list_id)
+                });
+                current_list.set('color', color_label);
+            }
         });
         return false;
     },
@@ -217,7 +225,15 @@ App.ListView = Backbone.View.extend({
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + list_id + '.json';
         self.model.save(data, {
             patch: true,
-            success: function(model, response) {}
+            success: function(model, response) {
+                var current_board = App.boards.findWhere({
+                    id: parseInt(self.model.attributes.board_id)
+                });
+                var current_list = current_board.lists.findWhere({
+                    id: parseInt(list_id)
+                });
+                current_list.set('color', color_label);
+            }
         });
         return false;
     },
