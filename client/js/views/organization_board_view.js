@@ -67,7 +67,7 @@ App.OrganizationBoardView = Backbone.View.extend({
                     var _data = {};
                     _data.title = list.name;
                     _data.value = list.card_count;
-                    if (!_.isEmpty(list.color) && !_.isUndefined(list.color) && list.color !== null && list.color !== 'null') {
+                    if (!_.isEmpty(list.color) && !_.isUndefined(list.color) && list.color !== null && list.color !== 'null' && list.color !== 'NULL') {
                         _data.color = list.color;
                     } else {
                         _data.color = color_codes[i];
