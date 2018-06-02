@@ -86,7 +86,20 @@
 									<td colspan="5" class="text-primary"><h3><%- group %></h3></td>
 								</tr>
 							<% } %>
-							<tr>
+							<% if (group_id === 2) {
+									if(apps !== ""){ 
+										_.each(apps, function(key,value) { 
+											if(_.isUndefined(acl_link.attributes.visibility) || acl_link.attributes.visibility !== 'show') {
+												acl_link.attributes.visibility = 'hide';
+											}
+											if (key.id === acl_link.attributes.slug) {
+												acl_link.attributes.visibility = 'show';
+											}
+										});
+									}
+								} %>
+							 
+							<tr <% if (group_id === 2 && acl_link.attributes.visibility === 'hide') { %>class="<%= acl_link.attributes.visibility %>"<% } %>>
 								<td class="col-xs-1"><div class="invisible"></div></td>
 								<td><%- acl_link.attributes.name %></td>
 								<%

@@ -29,6 +29,8 @@ App.FooterView = Backbone.View.extend({
         'click .js-show-board-add-form': 'showBoardAddForm',
         'click .js-show-organizations-add-form': 'showOrganizationsAddForm',
         'click .js-show-qr-code': 'showQrCode',
+        'click .js-appModal-close': 'appModalClose',
+        'click .js-appModal-open': 'appModalOpen',
         'click .js-show-boards-list': 'showBoardsList',
         'click .js-collapse-myboards': 'collapseMyBoards',
         'click .js-collapse-closedboards': 'collapseClosedBoards',
@@ -172,6 +174,9 @@ App.FooterView = Backbone.View.extend({
                 _.each(get_names, function(data) {
                     _.each(getss, function(datas) {
                         if (data === datas.name) {
+                            if (!_.isEmpty(datas.large_description) && !_.isUndefined(datas.large_description)) {
+                                datas.large_description = datas.large_description.join('\n');
+                            }
                             getting_new_array.push(datas);
                         }
                     });
@@ -182,7 +187,8 @@ App.FooterView = Backbone.View.extend({
                 board_id: self.board_id,
                 board: self.board,
                 languages: ($.cookie('languages')) ? $.cookie('languages').split(',') : null,
-                apps: getting_new_array
+                apps: getting_new_array,
+                converter: self.converter,
             }));
         });
 
@@ -315,6 +321,37 @@ App.FooterView = Backbone.View.extend({
         var qr_code = new App.QrCodeView({
             model: qr_code,
         });
+        return false;
+    },
+    /**
+     * appModalOpen()
+     * trigger the app function while modal popup for the apps opens
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    appModalOpen: function(e) {
+        e.preventDefault();
+        var self = this;
+        _(function() {
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $('body').trigger('appPopupAction', e);
+            }
+        }).defer();
+        return this;
+    },
+    /**
+     * appModalClose()
+     * close the modal popup for the apps
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    appModalClose: function(e) {
+        e.preventDefault();
+        $(e.target).parents('.modal').modal('hide');
         return false;
     },
     /**
