@@ -1306,7 +1306,7 @@ function importTrelloBoard($board = array())
                     $type = 'add_card_user';
                     $memberName = '';
                     if (!empty($action['member'])) {
-                        $memberName = utf8_decode($action['member']['fullName']);
+                        $memberName = $action['member']['fullName'];
                     }
                     $comment = '##USER_NAME## added "' . $memberName . '" as member to this card ##CARD_LINK##';
                 } else if ($action['type'] == 'createCard') {
