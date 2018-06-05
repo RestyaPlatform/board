@@ -236,7 +236,6 @@
 					then
 						echo "Updating SQL..."
 						psql -d ${POSTGRES_DBNAME} -f "$dir/sql/${i}.sql" -U ${POSTGRES_DBUSER}
-						/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -245,6 +244,7 @@
 						fi
 					fi
 				done
+				/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 
 				if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 				then
@@ -1244,9 +1244,9 @@
 				yum install -y python-pip
 				pip install -y virtualenv
 				
-				/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 			esac
 		fi
+		/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 		
 		set +x
 		echo "Do you want to setup SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance (y/n)?"
