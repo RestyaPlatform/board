@@ -304,7 +304,7 @@
 				
 				apt-get update -y
 				apt-get upgrade -y
-				apt-get install python-software-properties -y
+				apt-get install python-software-properties software-properties-common -y
 				add-apt-repository ppa:ondrej/php
 				apt-get update -y
 				apt-get install libjpeg8 -y --allow-unauthenticated
