@@ -1,8 +1,8 @@
-# Custom Field plugin installation instructions
+# Custom Field Plugin Installation
 
-## Instructions for custom field plugin configuration
+## Custom Field Plugin Installation
 
-[![How to configure custom field plugin](http://img.youtube.com/vi/Vuctbli0wZQ/0.jpg)](http://www.youtube.com/watch?v=Vuctbli0wZQ)
+[![How to configure custom field plugin](custom_field_installation.png)](http://www.youtube.com/watch?v=xCf4Thk3AmA)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., "/usr/share/nginx/html/restyaboard/"

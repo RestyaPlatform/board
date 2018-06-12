@@ -1,6 +1,8 @@
-# Board Template
+# Workflow Template
 
-##Instructions for creating board template
+## Workflow Template
+
+[![How to configure Board Template](board_template.png)](https://www.youtube.com/watch?v=_Y8r7auwzOY)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Create board template JSON file manually, you can refer the below example.  

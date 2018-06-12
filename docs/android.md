@@ -1,6 +1,6 @@
 # Optimization for Android mobile
 
-## Optimized for Android mobile
+## Optimization for Android mobile
 
 #### Restyaboard provide the ability to save a site bookmark to a device's home screen. When a site is launched this way.
 
