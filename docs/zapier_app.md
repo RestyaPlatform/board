@@ -2,7 +2,7 @@
 
 ## Instructions for zapier plugin configuration
 
-[![How to configure zapier plugin](zapier_installation.png)](https://youtu.be/sMHzwfnlN6g)
+[![How to configure zapier plugin](http://img.youtube.com/vi/xwar7M1-S_c/0.jpg)](https://youtu.be/xwar7M1-S_c)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., "/usr/share/nginx/html/restyaboard/"

@@ -1,4 +1,4 @@
-# GitHub Markdown Help
+# Markdown Help
 
 ##GitHub Markdown Help
 

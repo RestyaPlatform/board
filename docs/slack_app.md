@@ -2,7 +2,7 @@
 
 ## Instructions for slack plugin configuration
 
-[![How to configure slack plugin](slack_installation.png)](https://youtu.be/hXrxCIsvacU)
+[![How to configure slack plugin](http://img.youtube.com/vi/oWlpc3X9TwQ/0.jpg)](https://youtu.be/oWlpc3X9TwQ)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., "/usr/share/nginx/html/restyaboard/"

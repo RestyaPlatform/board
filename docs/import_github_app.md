@@ -1,8 +1,8 @@
-# Import from GitHub Plugin Installation
+# Import from GitHub plugin installation instructions
 
-## Import from GitHub Plugin Installation
+## Instructions for import from github plugin configuration
 
-[![How to configure Import from GitHub plugin](import_github_installation.png)](http://www.youtube.com/watch?v=OUfBFJqUY7w)
+[![How to configure Import from GitHub plugin](http://img.youtube.com/vi/62J4B6ghdOg/0.jpg)](http://www.youtube.com/watch?v=62J4B6ghdOg)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., "/usr/share/nginx/html/restyaboard/"

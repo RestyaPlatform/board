@@ -1,8 +1,8 @@
-# Theming/CSSilize Plugin Installation
+# Theming/CSSilize plugin installation instructions
 
-## Theming/CSSilize Plugin Installation
+## Instructions for theming/cssilize plugin configuration
 
-[![How to configure theming/cssilize plugin](cssilize_installation.png)](http://www.youtube.com/watch?v=0Xdn52DoNHs)
+[![How to configure theming/cssilize plugin](http://img.youtube.com/vi/DEH4ZsNnP1c/0.jpg)](http://www.youtube.com/watch?v=DEH4ZsNnP1c)
 
 1.  Download the plugin from "https://github.com/RestyaPlatform/board-apps/releases", and choose the latest version and copy the link address "https://github.com/RestyaPlatform/board-apps/releases/download/v2/r_cssilize-v0.1.2.zip"
 2.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"

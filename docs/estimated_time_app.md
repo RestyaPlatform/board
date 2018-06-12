@@ -1,8 +1,8 @@
-# Estimated Time Tracking Plugin Installation
+# Estimated Time Tracking plugin installation instructions
 
-## Estimated Time Tracking Plugin Installation
+## Instructions for estimated time tracking plugin configuration
 
-[![How to configure Estimated Time Tracking plugin](/img/estimated_time.png)](https://www.youtube.com/watch?v=uVYVskj3BJM)
+[![How to configure Estimated Time Tracking plugin](http://img.youtube.com/vi/I8c462pUsGM/0.jpg)](http://www.youtube.com/watch?v=I8c462pUsGM)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., "/usr/share/nginx/html/restyaboard/"

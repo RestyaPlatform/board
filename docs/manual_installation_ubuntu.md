@@ -1,8 +1,8 @@
-# Installation in Ubuntu using shell script
+# Manual Installation in ubuntu
 
-## Installation in Ubuntu using shell script
+## Instructions for manual installation in ubuntu
 
-[![How to install Restyaboard on ubuntu](ubuntu_installation.png)](http://www.youtube.com/watch?v=lSPgr5zXXuY)
+[![How to install Restyaboard on ubuntu](http://img.youtube.com/vi/5LbFg_1I2BE/0.jpg)](http://www.youtube.com/watch?v=5LbFg_1I2BE)
 
 1.  Install script will automatically install required software, you can get the raw code from "https://raw.githubusercontent.com/RestyaPlatform/board/master/restyaboard.sh" and save it as a shell script file. eg.,"restyaboard.sh"
 2.  You may use wget for downloading install script: "wget https://github.com/RestyaPlatform/board/raw/master/restyaboard.sh --no-check-certificate"

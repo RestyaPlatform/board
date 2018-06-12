@@ -1,8 +1,8 @@
-# SEO Checklist Plugin Installation
+# SEO Checklist plugin installation instructions
 
-## SEO Checklist Plugin Installation
+## Instructions for seo checklist plugin configuration
 
-[![How to configure SEO Checklist plugin](seo_checklist_installation.png)](http://www.youtube.com/watch?v=HBD6fgikH0A)
+[![How to configure SEO Checklist plugin](http://img.youtube.com/vi/NPCamRrdBoc/0.jpg)](http://www.youtube.com/watch?v=NPCamRrdBoc)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., "/usr/share/nginx/html/restyaboard/"

@@ -1,8 +1,6 @@
 #Elasticsearch Help
 
-## Elasticsearch Help
-
-[![Elasticsearch Help](elasticsearch_help.png)](http://www.youtube.com/watch?v=Kkx9-_FIOi0)
+## Search Help
 
 **board:name**
 

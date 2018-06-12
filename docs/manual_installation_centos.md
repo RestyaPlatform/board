@@ -1,8 +1,8 @@
-# Installation in CentOS using shell script
+# Manual Installation in CentOs
 
-## Installation in CentOS using shell script
+## Instructions for manual installation in CentOs
 
-[![How to install Restyaboard on CentOs](centos_installation.png)](https://youtu.be/hcnIHZnS1o8)
+[![How to install Restyaboard on CentOs](http://img.youtube.com/vi/EamGEdTH9Ss/0.jpg)](https://youtu.be/EamGEdTH9Ss)
 
 1.  Install script will automatically install required software, you can get the raw code from "https://raw.githubusercontent.com/RestyaPlatform/board/master/restyaboard.sh" and save it as a shell script file. eg.,"restyaboard.sh"
 2.  You may use wget for downloading install script: "wget https://github.com/RestyaPlatform/board/raw/master/restyaboard.sh --no-check-certificate"

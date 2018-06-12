@@ -1,8 +1,8 @@
-# Gantt View Plugin Installation
+# Gantt View plugin installation instructions
 
-## Gantt View Plugin Installation
+## Instructions for gantt view plugin configuration
 
-[![How to configure gantt view plugin](gantt_view_installation.png)](http://www.youtube.com/watch?v=4UYtTWpGhj8)
+[![How to configure gantt view plugin](http://img.youtube.com/vi/zUMUjB8KgUI/0.jpg)](http://www.youtube.com/watch?v=zUMUjB8KgUI)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., "/usr/share/nginx/html/restyaboard/"

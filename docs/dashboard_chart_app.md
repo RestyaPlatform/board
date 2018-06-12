@@ -2,7 +2,7 @@
 
 ## Instructions for dashboard charts plugin configuration
 
-[![How to configure dashboard charts plugin](dashboard_charts_installation.png)](http://www.youtube.com/watch?v=FSrQWPgiKkM)
+[![How to configure dashboard charts plugin](http://img.youtube.com/vi/DNRzwV1wVT4/0.jpg)](http://www.youtube.com/watch?v=DNRzwV1wVT4)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., "/usr/share/nginx/html/restyaboard/"
