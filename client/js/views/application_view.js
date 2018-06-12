@@ -519,6 +519,8 @@ App.ApplicationView = Backbone.View.extend({
                     slug: 'view_board'
                 }))) {
                 page.board_view();
+            } else {
+                page.board_view();
             }
         } else if (page.model == 'organizations_view') {
             changeTitle(i18next.t('Organization'));
