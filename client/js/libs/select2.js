@@ -953,7 +953,7 @@ the specific language governing permissions and limitations under the Apache Lic
                             label.attr("role", "option");
 
                             formatted=opts.formatResult(result, label, query, self.opts.escapeMarkup);
-                            formatted = filterXSS(formatted);
+                            formatted = formatted;
                             if (formatted!==undefined) {
                                 label.html(formatted);
                                 node.append(label);
