@@ -1,6 +1,6 @@
 #Desktop Notifications
 
-##Desktop Notification
+##Desktop Notifications
 
 
 Browser will ask about this notifications in every page.
