@@ -15,6 +15,7 @@
 		</thead>
 		<tbody class="js-card-list-view-11">
 	<% _.each(card_user, function(user_card) { %>
+		<% if(parseInt(user_card.attributes.is_archived) === 0) { %>
 			<tr>
 			<td>
 				<div class="panel cur" id="js-card-1449">
@@ -59,7 +60,8 @@
 					</div>
 				</div>
 			</td>
-		</tr>
+		    </tr>
+		<% } %>
 	<% }); %>
 	 </tbody>
 	</table>
