@@ -1850,6 +1850,8 @@ App.BoardHeaderView = Backbone.View.extend({
             filter = 'list';
         } else if (current_url.length === 3 && current_url[2] == 'gantt') {
             filter = 'gantt';
+        } else if (current_url.length === 3 && current_url[1] == 'board') {
+            current_param[0] = current_url[1] + '/' + current_url[2];
         }
         var filter_query = '';
         $('li.selected > div.js-label', $('ul.js-board-labels')).each(function() {
