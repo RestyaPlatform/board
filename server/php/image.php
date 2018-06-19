@@ -92,6 +92,11 @@ if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size)) {
         if (!$is_aspect) {
             $new_image->cropThumbnailImage($width, $height);
         } else {
+            if (($currentHeight / $height) > ($currentWidth / $width)) {
+                $width = ceil(($currentWidth / $currentHeight) * $height);
+            } else {
+                $height = ceil($width / ($currentWidth / $currentHeight));
+            }
             $new_image->scaleImage($width, $height, false);
         }
         $new_image->writeImage($writeTo);
