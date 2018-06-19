@@ -515,11 +515,7 @@ App.ApplicationView = Backbone.View.extend({
             if (!$('body').hasClass('board-view')) {
                 $('body').css('background', 'transparent');
             }
-            if (!_.isEmpty(role_links.where({
-                    slug: 'view_board'
-                }))) {
-                page.board_view();
-            }
+            page.board_view();
         } else if (page.model == 'organizations_view') {
             changeTitle(i18next.t('Organization'));
             page.organization_view();

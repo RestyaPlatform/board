@@ -236,7 +236,6 @@
 					then
 						echo "Updating SQL..."
 						psql -d ${POSTGRES_DBNAME} -f "$dir/sql/${i}.sql" -U ${POSTGRES_DBUSER}
-						/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -245,6 +244,7 @@
 						fi
 					fi
 				done
+				/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 
 				if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 				then
@@ -278,7 +278,7 @@
 			fi
 		else
 			set +x
-			echo "Is Restyaboard already installed y/n?"
+			echo "Is Restyaboard already installed and configured/working y/n?"
 			read -r answer
 			set -x
 			case "${answer}" in
@@ -304,7 +304,7 @@
 				
 				apt-get update -y
 				apt-get upgrade -y
-				apt-get install python-software-properties -y
+				apt-get install python-software-properties software-properties-common -y
 				add-apt-repository ppa:ondrej/php
 				apt-get update -y
 				apt-get install libjpeg8 -y --allow-unauthenticated
@@ -340,7 +340,7 @@
 					case "${answer}" in
 						[Yy])
 						echo "Installing PHP..."
-						apt-get install -y php7.2 php7.2-common
+						apt-get install -y php7.2 php7.2-common --allow-unauthenticated
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -351,7 +351,7 @@
 				fi
 				
 				echo "Installing PHP fpm and cli extension..."
-				apt-get install -y php7.2-fpm php7.2-cli
+				apt-get install -y php7.2-fpm php7.2-cli --allow-unauthenticated
 				error_code=$?
 				if [ ${error_code} != 0 ]
 				then
@@ -363,7 +363,7 @@
 				php -m | grep curl
 				if [ "$?" -gt 0 ]; then
 					echo "Installing php7.2-curl..."
-					apt-get install -y php7.2-curl
+					apt-get install -y php7.2-curl --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -377,7 +377,7 @@
 				if [ "$?" -gt 0 ]; then
 					echo "Installing php7.2-pgsql..."
 					apt-get install libpq5
-					apt-get install -y php7.2-pgsql
+					apt-get install -y php7.2-pgsql --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -390,7 +390,7 @@
 				php -m | grep mbstring
 				if [ "$?" -gt 0 ]; then
 					echo "Installing php7.2-mbstring..."
-					apt-get install -y php7.2-mbstring
+					apt-get install -y php7.2-mbstring --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -403,7 +403,7 @@
 				php -m | grep ldap
 				if [ "$?" -gt 0 ]; then
 					echo "Installing php7.2-ldap..."
-					apt-get install -y php7.2-ldap
+					apt-get install -y php7.2-ldap --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -430,7 +430,7 @@
 						echo "imagemagick installation failed with error code ${error_code} (imagemagick installation failed with error code 9)"
 						return 9
 					fi
-					apt-get install -y php7.2-imagick
+					apt-get install -y php7.2-imagick --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -443,7 +443,7 @@
 				php -m | grep imap
 				if [ "$?" -gt 0 ]; then
 					echo "Installing php7.2-imap..."
-					apt-get install -y php7.2-imap
+					apt-get install -y php7.2-imap --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -456,7 +456,7 @@
 				php -m | grep xml
 				if [ "$?" -gt 0 ]; then
 					echo "Installing xml..."
-					apt-get install php7.2-xml
+					apt-get install php7.2-xml --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -701,26 +701,6 @@
 				
 				echo "Setting up cron for every 5 minutes to send email notification to past due..."
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-
-					set +x
-				echo "Do you want to setup SMTP configuration (y/n)?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					echo "Enter SMTP server address (e.g., smtp.gmail.com)"
-					read -r smtp_server
-					echo "Enter SMTP port"
-					read -r smtp_port
-					echo "Enter SMTP username"
-					read -r smtp_username
-					echo "Enter SMTP password"
-					read -r smtp_password
-					sed -i "1021 i auth_username = $smtp_username" /etc/php.ini
-					sed -i "1022 i auth_password = $smtp_password" /etc/php.ini
-					sed -i "s/SMTP = localhost/SMTP = $smtp_server/" /etc/php.ini
-					sed -i "s/smtp_port = 25/smtp_port = $smtp_port/" /etc/php.ini
-				esac
 
 				set +x
 				echo "Do you want to install Restyaboard apps (y/n)?"
@@ -1180,26 +1160,6 @@
 				fi
 
 				set +x
-				echo "Do you want to setup SMTP configuration (y/n)?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					echo "Enter SMTP server address (e.g., smtp.gmail.com)"
-					read -r smtp_server
-					echo "Enter SMTP port"
-					read -r smtp_port
-					echo "Enter SMTP username"
-					read -r smtp_username
-					echo "Enter SMTP password"
-					read -r smtp_password
-					sed -i "1021 i auth_username = $smtp_username" /etc/php.ini
-					sed -i "1022 i auth_password = $smtp_password" /etc/php.ini
-					sed -i "s/SMTP = localhost/SMTP = $smtp_server/" /etc/php.ini
-					sed -i "s/smtp_port = 25/smtp_port = $smtp_port/" /etc/php.ini
-				esac
-
-				set +x
 				echo "Do you want to install Restyaboard apps (y/n)?"
 				read -r answer
 				set -x
@@ -1244,9 +1204,9 @@
 				yum install -y python-pip
 				pip install -y virtualenv
 				
-				/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 			esac
 		fi
+		/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 		
 		set +x
 		echo "Do you want to setup SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance (y/n)?"
