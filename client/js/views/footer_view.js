@@ -335,6 +335,9 @@ App.FooterView = Backbone.View.extend({
         e.preventDefault();
         var self = this;
         _(function() {
+            if ($('.js-appModalContent').find('.modal-backdrop').length === 0) {
+                $('.modal-backdrop').appendTo('.js-appModalContent');
+            }
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
                 $('body').trigger('appPopupAction', e);
             }
