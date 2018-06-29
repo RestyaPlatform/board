@@ -740,7 +740,7 @@
 				service nginx restart
 				service postfix restart
 				apt install -y python-pip
-				pip install -y virtualenv
+				pip install virtualenv
 			esac
 		else
 			set +x
@@ -1202,7 +1202,7 @@
 					/etc/init.d/nginx restart
 				fi
 				yum install -y python-pip
-				pip install -y virtualenv
+				pip install virtualenv
 				
 			esac
 		fi
