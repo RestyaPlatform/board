@@ -85,6 +85,14 @@ Backbone.View.prototype.downloadLink = function(model, id) {
     var download_link = window.location.pathname + 'download/' + id + '/' + hash;
     return download_link;
 };
+Backbone.View.prototype.documentLink = function(model, data) {
+    var document_link = window.location.pathname + 'img/original/Card/' + data.card_id + '/' + data.name;
+    return document_link;
+};
+Backbone.View.prototype.videoLink = function(model, data) {
+    var video_link = window.location.pathname + 'img/original/Card/' + data.card_id + '/' + data.name;
+    return video_link;
+};
 hasOfflineStatusCode = function(xhr) {
     var offlineStatusCodes, _ref, __indexOf = [].indexOf || function(item) {
         for (var i = 0, l = this.length; i < l; i++) {

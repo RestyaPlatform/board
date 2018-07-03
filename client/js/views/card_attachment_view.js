@@ -23,6 +23,8 @@ App.CardAttachmentView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
             this.model.downloadLink = this.downloadLink;
+            this.model.documentLink = this.documentLink;
+            this.model.videoLink = this.videoLink;
         }
     },
     tagName: 'li',

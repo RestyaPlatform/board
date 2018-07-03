@@ -2,9 +2,12 @@
 	<% if(_.isEmpty(attachment.attributes.link) && !_.isEmpty(attachment.attributes.name)){ 
 		if(attachment.attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ 
 			var picture_path = attachment.showImage('CardAttachment', attachment.attributes.id, 'original' );
+			var picture_thumb = attachment.showImage('CardAttachment', attachment.attributes.id, 'large_thumb' );
 		%>
-		<a data-fancybox="images" data-caption="Caption #<%= attachment.attributes.name %>" href="<%= picture_path %>" class="pull-left navbar-btn img-thumbnail thumb-img js-attachment-<%- id %>"></a>
-			<img class="img-responsive" src="<%= picture_path %>">
+		<a data-fancybox="images" data-caption="Caption #<%= attachment.attributes.name %>" href="<%= picture_path %>" class="pull-left navbar-btn img-thumbnail thumb-img js-attachment-<%- id %>">
+			<img src="<%= picture_thumb %>">
+		</a>
+			
 		<% } else if(attachment.attributes.name.toLowerCase().match(/\.(pdf|doc|docx|txt|ppt)$/)){ 
 			var document_path = attachment.documentLink('Card', attachment.attributes);
 			var extension = attachment.attributes.name.split('.');
