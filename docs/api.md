@@ -15,7 +15,7 @@
 
 * You can also refer the video below:
 
-[![How to work with api-explorer](http://img.youtube.com/vi/xKh2gRJWmfE/0.jpg)](http://www.youtube.com/watch?v=xKh2gRJWmfE)
+[![How to work with api-explorer](api_explorer.png)](http://www.youtube.com/watch?v=xKh2gRJWmfE)
 
 ## To generate guest access token
 
