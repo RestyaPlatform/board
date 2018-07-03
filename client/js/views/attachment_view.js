@@ -19,6 +19,9 @@ App.AttachmentView = Backbone.View.extend({
     className: 'clearfix col-md-4 col-sm-6 col-xs-12 navbar-btn',
     initialize: function(options) {
         this.board = options.board;
+        if (options.id) {
+            this.id = options.id;
+        }
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
             this.model.downloadLink = this.downloadLink;
@@ -42,6 +45,7 @@ App.AttachmentView = Backbone.View.extend({
      */
     render: function() {
         this.$el.html(this.template({
+            id: this.id,
             attachment: this.model,
             board: this.board
         }));
