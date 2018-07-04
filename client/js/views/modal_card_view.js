@@ -2119,13 +2119,24 @@ App.ModalCardView = Backbone.View.extend({
         var view_attachment = this.$('#js-card-attachments-list');
         view_attachment.html('');
         this.model.attachments.each(function(attachment) {
+            attachment.card_attachments = self.model.attachments;
             var view = new App.CardAttachmentView({
+                card_id: self.model.attributes.id,
                 model: attachment,
                 board: self.model.list.collection.board
             });
             view_attachment.append(view.render().el);
             emojify.run();
         });
+        _(function() {
+            $(".js-card-attachment-" + self.model.attributes.id).fancybox({
+                'transitionIn': 'elastic',
+                'transitionOut': 'elastic',
+                'speedIn': 600,
+                'speedOut': 200,
+                'overlayShow': false
+            });
+        }).defer();
     },
     /**
      * renderLabelsCollection()

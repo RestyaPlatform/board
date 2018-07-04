@@ -784,6 +784,7 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showListModal: function(e) {
+        $(e.target).parents('.js-setting-response').parent().removeClass('open');
         var modalView = new App.ModalBoardView({
             model: this.model
         });
