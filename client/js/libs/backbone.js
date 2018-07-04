@@ -1358,12 +1358,19 @@
     atRoot: function() {
       return this.location.pathname.replace(/[^\/]$/, '$&/') === this.root;
     },
+    
+    // Unicode characters in `location.pathname` are percent encoded so they're
+    // decoded for comparison. `%25` should not be decoded since it may be part
+    // of an encoded parameter.
+    decodeFragment: function(fragment) {
+      return decodeURI(fragment.replace(/%25/g, '%2525'));
+    },
 
     // Gets the true hash value. Cannot use location.hash directly due to bug
     // in Firefox where location.hash will always be decoded.
     getHash: function(window) {
       var match = (window || this).location.href.match(/#(.*)$/);
-      return match ? match[1] : '';
+      return match ? this.decodeFragment(match[1]) : ''; 
     },
 
     // Get the cross-browser normalized URL fragment, either from the URL,

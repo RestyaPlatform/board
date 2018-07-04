@@ -1,6 +1,6 @@
 # Manual Installation in windows using xmpp
 
-## Instructions for manual installation in windows using xmpp
+## Manual Installation in windows using xmpp
 
 1.  Download script from "https://github.com/RestyaPlatform/board/releases", and choose the latest version. e.g., "https://github.com/RestyaPlatform/board/releases/download/v0.6.2/board-v0.6.2.zip"
 2.  Extract the zip into your apache server root folder. e.g., "/www/html/"

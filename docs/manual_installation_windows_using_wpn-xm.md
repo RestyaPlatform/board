@@ -1,6 +1,6 @@
 # Manual installation in windows using wpn-xm
 
-## Instructions for manual installation in windows using wpn-xm
+## Manual installation in windows using wpn-xm
 
 
 **Please find the steps that I have followed in Windows XP:**

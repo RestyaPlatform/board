@@ -85,6 +85,14 @@ Backbone.View.prototype.downloadLink = function(model, id) {
     var download_link = window.location.pathname + 'download/' + id + '/' + hash;
     return download_link;
 };
+Backbone.View.prototype.documentLink = function(model, data) {
+    var document_link = window.location.pathname + 'img/original/Card/' + data.card_id + '/' + data.name;
+    return document_link;
+};
+Backbone.View.prototype.videoLink = function(model, data) {
+    var video_link = window.location.pathname + 'img/original/Card/' + data.card_id + '/' + data.name;
+    return video_link;
+};
 hasOfflineStatusCode = function(xhr) {
     var offlineStatusCodes, _ref, __indexOf = [].indexOf || function(item) {
         for (var i = 0, l = this.length; i < l; i++) {
@@ -254,9 +262,13 @@ var RealXHRSend = XMLHttpRequest.prototype.send;
 var requestCallbacks = [];
 var responseCallbacks = [];
 
-function fireCallbacks(callbacks, xhr) {
+function fireCallbacksbeforeRequest(callbacks, xhr, arg) {
     for (var i = 0; i < callbacks.length; i++) {
-        callbacks[i](xhr);
+        if (arg && arg[0]) {
+            callbacks[i](xhr, arg);
+        } else {
+            callbacks[i](xhr);
+        }
     }
 }
 
@@ -270,7 +282,7 @@ function addResponseCallback(callback) {
 
 function fireResponseCallbacksIfCompleted(xhr) {
     if (xhr.readyState === 4) {
-        fireCallbacks(responseCallbacks, xhr);
+        fireCallbacksbeforeRequest(responseCallbacks, xhr);
     }
 }
 
@@ -285,7 +297,7 @@ function proxifyOnReadyStateChange(xhr) {
 }
 XMLHttpRequest.prototype.send = function() {
     // Fire request callbacks before sending the request
-    fireCallbacks(requestCallbacks, this);
+    fireCallbacksbeforeRequest(requestCallbacks, this, arguments);
     // Wire response callbacks
     if (this.addEventListener) {
         var self = this;

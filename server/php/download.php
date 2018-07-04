@@ -29,8 +29,7 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                 $result = pg_query_params($db_lnk, 'SELECT * FROM boards WHERE id = $1', $val_array);
                 $board = pg_fetch_assoc($result);
                 if (!empty($board) && $board['board_visibility'] === '2') {
-                    $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $attachment['card_id'];
-                    $file = $mediadir . DIRECTORY_SEPARATOR . $attachment['name'];
+                    $file = APP_PATH . DIRECTORY_SEPARATOR . $attachment['path'];
                     if (file_exists($file)) {
                         $basename = basename($file);
                         $add_slash = addcslashes($basename, '"\\');
@@ -84,8 +83,7 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                             $result = pg_query_params($db_lnk, 'SELECT bu.id FROM boards_users bu left join users u on u.id = bu.user_id WHERE bu.board_id = $1 and u.username = $2', $val_array);
                             $board_user = pg_fetch_assoc($result);
                             if (!empty($board_user) || ($auth['user']['role_id'] == 1)) {
-                                $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $attachment['card_id'];
-                                $file = $mediadir . DIRECTORY_SEPARATOR . $attachment['name'];
+                                $file = APP_PATH . DIRECTORY_SEPARATOR . $attachment['path'];
                                 if (file_exists($file)) {
                                     $basename = basename($file);
                                     $add_slash = addcslashes($basename, '"\\');
