@@ -1,5 +1,5 @@
 <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 col-lg-offset-4 col-md-offset-4 col-sm-offset-3">
-	<div class="panel panel-default">
+	<!-- <div class="panel panel-default">
 		 <div class="panel-heading lead">
 			<%- i18next.t('Scan QR Code') %>
 		 </div>
@@ -8,11 +8,15 @@
                 <a title="QR code" href="http://restya.com/board/launch_mobile_app?board=http://restyaboard.localhost?u=admin" target="_blank"><img width="115" height="115" src="https://chart.googleapis.com/chart?cht=qr&amp;chs=120x120&amp;chl=http://restya.com/board/launch_mobile_app?board=http://restyaboard.localhost?u=admin" title="QR code" alt="[Image: QR code]" class="img-responsive"></a>
             </div>
 		 </div>
-    </div>
+    </div> -->
+    <div class="well-sm"></div>
+    <div class="well-sm"></div>
+    <div class="well-sm"></div>
+    <h2 class="text-center">Enter two-step verification code</h2>
     <form class="clearfix" role="form" name="UserAuthenticateForm" id="UserAuthenticateForm">
         <div class="form-group">
             <label for="inputCodeNumber" class="sr-only control-label"><%- i18next.t('Code') %></label>
-            <input type="number" placeholder="<%- i18next.t('Enter Your Code') %>" class="form-control change-ldap" id="inputCodeNumber" name="codeNumber"  title="" autofocus required/>
+            <input type="text" placeholder="<%- i18next.t('Enter Your Code') %>" class="form-control change-ldap" id="inputCodeNumber" name="codeNumber"  title="" autofocus required/>
         </div>
         <div class="form-group">
             <label for="submit2" class="sr-only control-label"><%- i18next.t('Authenticate') %></label>

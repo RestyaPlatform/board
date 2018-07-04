@@ -28,7 +28,8 @@ App.UserView = Backbone.View.extend({
         'click .js-remove-image': 'removeImage',
         'click .js-use-uploaded-avatar': 'computerOpenUserProfile',
         'change #js-user-profile-attachment': 'addUserProfile',
-        'click .js-enable-user-desktop-notification': 'enabledesktopNotification'
+        'click .js-enable-user-desktop-notification': 'enabledesktopNotification',
+        'click .js-disable-google-authentiaction' : 'disableAuthentication'
 
     },
     /**
@@ -76,6 +77,31 @@ App.UserView = Backbone.View.extend({
             if (permission === 'granted') {
                 var notification = new Notification('Desktop notification enabled.');
                 location.reload();
+            }
+        });
+    },
+    /**
+     * disableAuthentication()
+     * disable user authentication 
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    disableAuthentication: function(e) {
+        e.preventDefault();
+        var self = this;
+        var data = {};
+        data.is_google_authenticator_enabled = 0;
+        var user = new App.User();
+        user.url = api_url + 'users/' + self.model.id + '.json'
+        user.save(data, {
+            success: function(response) {
+                if (!_.isEmpty(response.attributes.success)) {
+                    var Auth = JSON.parse($.cookie('auth'));
+                    Auth.user.is_google_authenticator_enabled = response.attributes.is_google_authenticator_enabled;
+                    $.cookie('auth', JSON.stringify(Auth));
+                    authuser = Auth;
+                }
             }
         });
     },
@@ -265,6 +291,7 @@ App.UserView = Backbone.View.extend({
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
                     var Auth = JSON.parse($.cookie('auth'));
+                    Auth.user.is_google_authenticator_enabled = response.activity.is_google_authenticator_enabled;
                     Auth.user.default_desktop_notification = response.activity.default_desktop_notification;
                     Auth.user.is_list_notifications_enabled = response.activity.is_list_notifications_enabled;
                     Auth.user.is_card_notifications_enabled = response.activity.is_card_notifications_enabled;
