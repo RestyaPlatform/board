@@ -262,7 +262,7 @@ var RealXHRSend = XMLHttpRequest.prototype.send;
 var requestCallbacks = [];
 var responseCallbacks = [];
 
-function fireCallbacksbeforeRequest (callbacks, xhr, arg) {
+function fireCallbacksbeforeRequest(callbacks, xhr, arg) {
     for (var i = 0; i < callbacks.length; i++) {
         if (arg && arg[0]) {
             callbacks[i](xhr, arg);
@@ -297,7 +297,7 @@ function proxifyOnReadyStateChange(xhr) {
 }
 XMLHttpRequest.prototype.send = function() {
     // Fire request callbacks before sending the request
-    fireCallbacksbeforeRequest(requestCallbacks, this,arguments);
+    fireCallbacksbeforeRequest(requestCallbacks, this, arguments);
     // Wire response callbacks
     if (this.addEventListener) {
         var self = this;
