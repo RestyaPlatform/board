@@ -61,7 +61,7 @@ App.AuthenticateView = Backbone.View.extend({
             var user = new App.User();
             user.url = api_url + 'users/' + authuser.user.id + '.json';
             user.set('id', parseInt(authuser.user.id));
-            user.save(data,{
+            user.save(data, {
                 success: function(model, response) {
                     if (response.error && response.code === 'verification_code') {
                         self.flash('danger', i18next.t("Entered verification code is wrong. Please try again."));
@@ -152,7 +152,7 @@ App.AuthenticateView = Backbone.View.extend({
                         if (is_offline_data) {
                             self.flash('danger', i18next.t('Sorry, login failed. Internet connection not available.'));
                         } else {
-                           if(response.code === 'verification_code') {
+                            if (response.code === 'verification_code') {
                                 self.flash('danger', i18next.t("Entered verification code is wrong. Please try again."));
                             } else {
                                 self.flash('danger', i18next.t('Sorry, login failed. Either your username or password or verification code are incorrect or admin deactivated your account.'));
@@ -173,7 +173,7 @@ App.AuthenticateView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             user: this.model,
-            templateName: this.templateName 
+            templateName: this.templateName
         }));
         this.showTooltip();
         return this;

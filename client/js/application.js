@@ -383,7 +383,7 @@ var AppRouter = Backbone.Router.extend({
         $('.dockmodal, .dockmodal-overlay').remove();
         new App.ApplicationView({
             model: 'user_verification',
-            'id':id
+            'id': id
         });
     },
     forgotpassword: function() {

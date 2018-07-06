@@ -80,7 +80,7 @@ App.LoginView = Backbone.View.extend({
                         $('input#inputPassword', target).val('');
                         self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
                     } else {
-                        if (response && !_.isUndefined(response.user.is_two_factor_authentication_enabled) ) {
+                        if (response && !_.isUndefined(response.user.is_two_factor_authentication_enabled)) {
                             authuser = response;
                             if (!_.isUndefined(response.access_token)) {
                                 var auth_response = {};
@@ -131,9 +131,9 @@ App.LoginView = Backbone.View.extend({
                                     $.removeCookie('redirect_link');
                                     window.location = redirect_link;
                                 } else {
-                                    window.location = '#/boards';   
+                                    window.location = '#/boards';
                                 }
-                            } 
+                            }
                         } else {
                             $('input#inputPassword', target).val('');
                             self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));

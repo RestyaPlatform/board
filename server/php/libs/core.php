@@ -530,7 +530,7 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
             return true;
         }
         if (!empty($r_request_method) && ($r_request_method === 'PUT') && !empty($r_resource_cmd) && $r_resource_cmd === '/users/?' && !empty($post_data['last_activity_id'])) {
-            return true;        
+            return true;
         }
         $qry_val_arr = array(
             $role,
@@ -970,7 +970,7 @@ function createTrelloMember($member = array() , $admin_user_id = array() , $new_
             utf8_decode($member['username']) ,
             getCryptHash('restya') ,
             utf8_decode($member['initials']) ,
-            utf8_decode($member['fullName']),
+            utf8_decode($member['fullName']) ,
             $member['is_send_newsletter'],
             $member['default_desktop_notification'],
             $member['is_list_notifications_enabled'],
@@ -1627,7 +1627,7 @@ function importWekanBoard($board = array())
                         utf8_decode($member['username']) ,
                         getCryptHash('restya') ,
                         utf8_decode($username['0']) ,
-                        utf8_decode($member['username']),
+                        utf8_decode($member['username']) ,
                         $member['is_send_newsletter'],
                         $member['default_desktop_notification'],
                         $member['is_list_notifications_enabled'],

@@ -2340,7 +2340,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $s_result = pg_query_params($db_lnk, 'SELECT two_factor_authentication_hash FROM users WHERE id = $1', $qry_val_arr);
                     $row = pg_fetch_assoc($s_result);
                     $ga = new PHPGangsta_GoogleAuthenticator();
-                    $r_post['verification_code'] = (string) $r_post['verification_code'];
+                    $r_post['verification_code'] = (string)$r_post['verification_code'];
                     $checkResult = $ga->verifyCode($row['two_factor_authentication_hash'], $r_post['verification_code'], 2);
                     if ($checkResult) {
                         $is_provide_access_token = true;
@@ -5308,7 +5308,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $s_result = pg_query_params($db_lnk, 'SELECT two_factor_authentication_hash FROM users WHERE id = $1', $qry_val_arr);
             $row = pg_fetch_assoc($s_result);
             $ga = new PHPGangsta_GoogleAuthenticator();
-            $r_put['verification_code'] = (string) $r_put['verification_code'];
+            $r_put['verification_code'] = (string)$r_put['verification_code'];
             $checkResult = $ga->verifyCode($row['two_factor_authentication_hash'], $r_put['verification_code'], 2);
             if ($checkResult) {
                 $r_put['is_two_factor_authentication_enabled'] = true;

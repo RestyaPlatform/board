@@ -30,7 +30,7 @@ App.UserView = Backbone.View.extend({
         'change #js-user-profile-attachment': 'addUserProfile',
         'click .js-enable-user-desktop-notification': 'enabledesktopNotification',
         'click .js-enable-twoFactor-authentication': 'enableAuthentication',
-        'click .js-disable-twoFactor-authentication' : 'disableAuthentication'
+        'click .js-disable-twoFactor-authentication': 'disableAuthentication'
 
     },
     /**
