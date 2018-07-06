@@ -25,6 +25,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: *');
 require_once '../config.inc.php';
 require_once '../libs/vendors/finediff.php';
+require_once '../libs/vendors/GoogleAuthenticator.php';
 require_once '../libs/core.php';
 require_once '../libs/vendors/OAuth2/Autoloader.php';
 require_once '../libs/ActivityHandler.php';
@@ -463,6 +464,18 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
+                    if (IS_TWO_FACTOR_AUTHENTICATION_ENABLED) {
+                        $ga = new PHPGangsta_GoogleAuthenticator();
+                        if (empty($obj['two_factor_authentication_hash'])) {
+                            $obj['two_factor_authentication_hash'] = $ga->createSecret();
+                            $data = array(
+                                $obj['two_factor_authentication_hash'],
+                                $obj['id']
+                            );
+                            pg_query_params($db_lnk, 'UPDATE users SET two_factor_authentication_hash = $1 WHERE id = $2', $data);
+                        }
+                        $obj['qr_code_url'] = $ga->getQRCodeGoogleUrl($obj['full_name'] . ' (' . $obj['email'] . ')', $obj['two_factor_authentication_hash']);
+                    }
                     $data = $obj;
                 }
                 if ($data['id'] != $authUser['id'] && $authUser['role_id'] != 1) {
@@ -1651,7 +1664,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/settings':
-        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\'  OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'PAGING_COUNT\' OR name = \'ALLOWED_FILE_EXTENSIONS\' OR name = \'DEFAULT_CARD_VIEW\'', array());
+        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\'  OR name = \'DEFAULT_LANGUAGE\' OR name = \'IS_TWO_FACTOR_AUTHENTICATION_ENABLED\' OR name = \'IMAP_EMAIL\' OR name = \'PAGING_COUNT\' OR name = \'ALLOWED_FILE_EXTENSIONS\' OR name = \'DEFAULT_CARD_VIEW\'', array());
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
@@ -2318,59 +2331,89 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
         }
         if (!empty($user)) {
-            if (is_plugin_enabled('r_ldap_login')) {
-                $login_type_id = 1;
-            } else {
-                $login_type_id = 2;
-            }
-            $last_login_ip_id = saveIp();
-            $val_arr = array(
-                $login_type_id,
-                $last_login_ip_id,
-                $user['id']
-            );
-            pg_query_params($db_lnk, 'UPDATE users SET last_login_date = now(), login_type_id = $1, last_login_ip_id = $2 WHERE id = $3', $val_arr);
-            unset($user['password']);
-            $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-            $val_arr = array(
-                $user['id'],
-                $last_login_ip_id,
-                $user_agent
-            );
-            pg_query_params($db_lnk, 'INSERT INTO user_logins (created, modified, user_id, ip_id, user_agent) VALUES (now(), now(), $1, $2, $3)', $val_arr);
-            $conditions = array(
-                true
-            );
-            $role_val_arr = array(
-                $user['role_id']
-            );
-            $role_links = executeQuery('SELECT links FROM role_links_listing WHERE id = $1', $role_val_arr);
-            $post_val = array(
-                'grant_type' => 'password',
-                'username' => $user['username'],
-                'password' => $r_post['password'],
-                'client_id' => OAUTH_CLIENTID,
-                'client_secret' => OAUTH_CLIENT_SECRET,
-                'scope' => 'read write'
-            );
-            $response = getToken($post_val);
-            $response = array_merge($role_links, $response);
-            $board_ids = array();
-            if (!empty($user['boards_users'])) {
-                $boards_users = json_decode($user['boards_users'], true);
-                foreach ($boards_users as $boards_user) {
-                    $board_ids[] = $boards_user['board_id'];
+            if (!IS_TWO_FACTOR_AUTHENTICATION_ENABLED || $user['is_two_factor_authentication_enabled'] == 'f' || ($user['is_two_factor_authentication_enabled'] == 't' && !empty($r_post['verification_code']))) {
+                $is_provide_access_token = false;
+                if (!empty($r_post['verification_code'])) {
+                    $qry_val_arr = array(
+                        $user['id']
+                    );
+                    $s_result = pg_query_params($db_lnk, 'SELECT two_factor_authentication_hash FROM users WHERE id = $1', $qry_val_arr);
+                    $row = pg_fetch_assoc($s_result);
+                    $ga = new PHPGangsta_GoogleAuthenticator();
+                    $r_post['verification_code'] = (string)$r_post['verification_code'];
+                    $checkResult = $ga->verifyCode($row['two_factor_authentication_hash'], $r_post['verification_code'], 2);
+                    if ($checkResult) {
+                        $is_provide_access_token = true;
+                    }
+                } else {
+                    $is_provide_access_token = true;
                 }
+                if ($is_provide_access_token) {
+                    if (is_plugin_enabled('r_ldap_login')) {
+                        $login_type_id = 1;
+                    } else {
+                        $login_type_id = 2;
+                    }
+                    $last_login_ip_id = saveIp();
+                    $val_arr = array(
+                        $login_type_id,
+                        $last_login_ip_id,
+                        $user['id']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET last_login_date = now(), login_type_id = $1, last_login_ip_id = $2 WHERE id = $3', $val_arr);
+                    unset($user['password']);
+                    $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+                    $val_arr = array(
+                        $user['id'],
+                        $last_login_ip_id,
+                        $user_agent
+                    );
+                    pg_query_params($db_lnk, 'INSERT INTO user_logins (created, modified, user_id, ip_id, user_agent) VALUES (now(), now(), $1, $2, $3)', $val_arr);
+                    $conditions = array(
+                        true
+                    );
+                    $role_val_arr = array(
+                        $user['role_id']
+                    );
+                    $role_links = executeQuery('SELECT links FROM role_links_listing WHERE id = $1', $role_val_arr);
+                    $post_val = array(
+                        'grant_type' => 'password',
+                        'username' => $user['username'],
+                        'password' => $r_post['password'],
+                        'client_id' => OAUTH_CLIENTID,
+                        'client_secret' => OAUTH_CLIENT_SECRET,
+                        'scope' => 'read write'
+                    );
+                    $response = getToken($post_val);
+                    $response = array_merge($role_links, $response);
+                    $board_ids = array();
+                    if (!empty($user['boards_users'])) {
+                        $boards_users = json_decode($user['boards_users'], true);
+                        foreach ($boards_users as $boards_user) {
+                            $board_ids[] = $boards_user['board_id'];
+                        }
+                    }
+                    $notify_val_arr = array(
+                        $user['last_activity_id'],
+                        '{' . implode(',', $board_ids) . '}'
+                    );
+                    $notify_count = executeQuery('SELECT max(id) AS last_activity_id, count(a.*) AS notify_count FROM activities a  WHERE a.id > $1 AND board_id = ANY ($2) ', $notify_val_arr);
+                    $notify_count['last_activity_id'] = (!empty($notify_count['last_activity_id'])) ? $notify_count['last_activity_id'] : $user['last_activity_id'];
+                    $user = array_merge($user, $notify_count);
+                    $response['user'] = $user;
+                    $response['user']['organizations'] = json_decode($user['organizations'], true);
+                } else {
+                    $response = array(
+                        'code' => 'verification_code',
+                        'error' => 'Entered verification code is wrong. Please try again.'
+                    );
+                }
+            } else {
+                $response = array(
+                    'code' => 'enter_verification_code',
+                    'success' => 'User authenticated successfully'
+                );
             }
-            $notify_val_arr = array(
-                $user['last_activity_id'],
-                '{' . implode(',', $board_ids) . '}'
-            );
-            $notify_count = executeQuery('SELECT max(id) AS last_activity_id, count(a.*) AS notify_count FROM activities a  WHERE a.id > $1 AND board_id = ANY ($2) ', $notify_val_arr);
-            $notify_count['last_activity_id'] = (!empty($notify_count['last_activity_id'])) ? $notify_count['last_activity_id'] : $user['last_activity_id'];
-            $user = array_merge($user, $notify_count);
-            $response['user'] = $user;
-            $response['user']['organizations'] = json_decode($user['organizations'], true);
         } else {
             if (!empty($ldap_error)) {
                 $response = array(
@@ -5227,6 +5270,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $id = $r_resource_vars['users'];
         $comment = '##USER_NAME## updated the profile.';
         $activity_type = 'update_profile';
+        $response = array();
+        if (!empty($r_put['is_two_factor_authentication_enabled'])) {
+            unset($r_put['is_two_factor_authentication_enabled']);
+        }
         if (isset($r_put['profile_picture_path'])) {
             $comment = '##USER_NAME## deleted the profile image';
             $activity_type = 'delete_profile_attachment';
@@ -5254,12 +5301,31 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         } else if (isset($r_put['last_activity_id']) || isset($r_put['language'])) {
             $comment = '';
             $response['success'] = 'Language changed successfully.';
+        } else if (isset($r_put['verification_code'])) {
+            $qry_val_arr = array(
+                $r_resource_vars['users']
+            );
+            $s_result = pg_query_params($db_lnk, 'SELECT two_factor_authentication_hash FROM users WHERE id = $1', $qry_val_arr);
+            $row = pg_fetch_assoc($s_result);
+            $ga = new PHPGangsta_GoogleAuthenticator();
+            $r_put['verification_code'] = (string)$r_put['verification_code'];
+            $checkResult = $ga->verifyCode($row['two_factor_authentication_hash'], $r_put['verification_code'], 2);
+            if ($checkResult) {
+                $r_put['is_two_factor_authentication_enabled'] = true;
+            } else {
+                $response = array(
+                    'code' => 'verification_code',
+                    'error' => 'Entered verification code is wrong. Please try again.'
+                );
+            }
         }
         if (isset($r_put['password'])) {
             unset($r_put['password']);
         }
         $foreign_ids['user_id'] = $authUser['id'];
-        $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
+        if (empty($response['error'])) {
+            $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
+        }
         echo json_encode($response);
         break;
 

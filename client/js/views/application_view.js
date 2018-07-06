@@ -88,6 +88,7 @@ App.ApplicationView = Backbone.View.extend({
                                     DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                                     LABEL_ICON = settings_response.LABEL_ICON;
                                     SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
+                                    IS_TWO_FACTOR_AUTHENTICATION_ENABLED = settings_response.IS_TWO_FACTOR_AUTHENTICATION_ENABLED;
                                     DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                                     PAGING_COUNT = settings_response.PAGING_COUNT;
                                     APPS = settings_response.apps;
@@ -140,6 +141,7 @@ App.ApplicationView = Backbone.View.extend({
                                 DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                                 LABEL_ICON = settings_response.LABEL_ICON;
                                 SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
+                                IS_TWO_FACTOR_AUTHENTICATION_ENABLED = settings_response.IS_TWO_FACTOR_AUTHENTICATION_ENABLED;
                                 DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                                 PAGING_COUNT = settings_response.PAGING_COUNT;
                                 ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
@@ -188,6 +190,9 @@ App.ApplicationView = Backbone.View.extend({
     set_page_title: function() {
         if (this.model == 'login') {
             changeTitle(i18next.t('Login'));
+        }
+        if (this.model == 'user_verification') {
+            changeTitle(i18next.t('Two-step Verification'));
         }
         if (this.model == 'aboutus') {
             changeTitle(i18next.t('About'));
@@ -580,6 +585,22 @@ App.ApplicationView = Backbone.View.extend({
                     model: LoginUser
                 });
                 $('#content').html(this.pageView.el);
+            } else if (page.model == 'user_verification') {
+                changeTitle(i18next.t('Two-step Verification'));
+                $('.company').removeClass('hide');
+                var user_verification = new App.User();
+                user_verification.url = api_url + 'users/' + page.id + '.json';
+                user_verification.fetch({
+                    cache: false,
+                    abortPending: true,
+                    success: function(user_verification, response) {
+                        this.pageView = new App.AuthenticateView({
+                            model: user_verification,
+                            templateName: 'two-step-verification'
+                        });
+                        $('#content').html(this.pageView.el);
+                    }
+                });
             } else if (page.model == 'forgotpassword') {
                 changeTitle(i18next.t('Forgot your password'));
                 $('.company').removeClass('hide');
