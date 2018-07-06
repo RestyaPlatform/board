@@ -347,6 +347,7 @@ var AppRouter = Backbone.Router.extend({
         'apps': 'apps',
         'apps/:name': 'app_settings',
         'apps/:name/manage': 'app_settings_manage',
+        'apps/:name/:page': 'app_page',
         'settings': 'settings',
         'settings/:id': 'settings_type',
         'email_templates': 'email_templates',
@@ -646,6 +647,13 @@ var AppRouter = Backbone.Router.extend({
         new App.ApplicationView({
             model: 'app_settings_manage',
             name: name
+        });
+    },
+    app_page: function(name, page) {
+        new App.ApplicationView({
+            model: 'app_page',
+            name: name,
+            page: page
         });
     },
     organizations_index: function() {
