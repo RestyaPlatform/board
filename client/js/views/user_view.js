@@ -121,9 +121,10 @@ App.UserView = Backbone.View.extend({
                     Auth.user.is_two_factor_authentication_enabled = false;
                     $.cookie('auth', JSON.stringify(Auth));
                     authuser = Auth;
-                    var target = $(e.target).parent();
-                    $(target).find('.js-disable-twoFactor-authentication').remove();
-                    $(target).append('<a href ="javascript:void(0);" class="js-enable-twoFactor-authentication text-primary" title="' + i18next.t('Enable two-step verification') + '">'+  i18next.t('Enable two-step verification') +'</a>');
+                    app.navigate('#/user/' + self.model.id + '/settings', {
+                        trigger: true,
+                        trigger_function: true
+                    });
                 }
             }
         });
