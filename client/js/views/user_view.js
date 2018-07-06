@@ -29,7 +29,8 @@ App.UserView = Backbone.View.extend({
         'click .js-use-uploaded-avatar': 'computerOpenUserProfile',
         'change #js-user-profile-attachment': 'addUserProfile',
         'click .js-enable-user-desktop-notification': 'enabledesktopNotification',
-        'click .js-disable-google-authentiaction' : 'disableAuthentication'
+        'click .js-enable-twoFactor-authentication': 'enableAuthentication',
+        'click .js-disable-twoFactor-authentication' : 'disableAuthentication'
 
     },
     /**
@@ -81,6 +82,24 @@ App.UserView = Backbone.View.extend({
         });
     },
     /**
+     * enableAuthentication()
+     * enable user authentication 
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    enableAuthentication: function(e) {
+        var authenticate_view = new App.AuthenticateView({
+            model: this.model,
+            templateName: 'two-step-verification'
+        });
+        $('#content').html(authenticate_view.render().el);
+        app.navigate('#/user/' + this.model.id + '/two-step-verification', {
+            trigger: false,
+            trigger_function: false,
+        });
+    },
+    /**
      * disableAuthentication()
      * disable user authentication 
      * @param e
@@ -91,16 +110,20 @@ App.UserView = Backbone.View.extend({
         e.preventDefault();
         var self = this;
         var data = {};
-        data.is_google_authenticator_enabled = 0;
+        data.is_two_factor_authentication_enabled = false;
         var user = new App.User();
-        user.url = api_url + 'users/' + self.model.id + '.json'
+        user.url = api_url + 'users/' + authuser.user.id + '.json';
+        user.set('id', parseInt(authuser.user.id));
         user.save(data, {
             success: function(response) {
-                if (!_.isEmpty(response.attributes.success)) {
+                if (response) {
                     var Auth = JSON.parse($.cookie('auth'));
-                    Auth.user.is_google_authenticator_enabled = response.attributes.is_google_authenticator_enabled;
+                    Auth.user.is_two_factor_authentication_enabled = false;
                     $.cookie('auth', JSON.stringify(Auth));
                     authuser = Auth;
+                    var target = $(e.target).parent();
+                    $(target).find('.js-disable-twoFactor-authentication').remove();
+                    $(target).append('<a href ="javascript:void(0);" class="js-enable-twoFactor-authentication text-primary" title="' + i18next.t('Enable two-step verification') + '">'+  i18next.t('Enable two-step verification') +'</a>');
                 }
             }
         });
@@ -243,10 +266,6 @@ App.UserView = Backbone.View.extend({
         var form = $(e.target);
         var fileData = new FormData(form[0]);
         var data = $(e.target).serializeObject();
-        data.is_google_authenticator_enabled = 'false';
-        if ($("#is_google_authenticator_enabled").val() === 'Enabled') {
-            data.is_google_authenticator_enabled = 'true';
-        }
         data.default_desktop_notification = 'false';
         if ($("#default_desktop_notification").val() === 'Enabled') {
             data.default_desktop_notification = 'true';

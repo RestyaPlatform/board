@@ -4,11 +4,13 @@ INSERT INTO "setting_categories" ("created", "modified", "parent_id", "name", "d
 UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'Board'),"order"='1' WHERE name = 'LABEL_ICON';
 UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'Board'),"order"='2' WHERE name = 'DEFAULT_CARD_VIEW';
 UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'Board'),"order"='3' WHERE name = 'ALLOWED_FILE_EXTENSIONS';
-UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'User'),"order"='1' WHERE name = 'SITE_TIMEZONE';
-UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'User'),"order"='2' WHERE name = 'DEFAULT_LANGUAGE';
-INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") VALUES ((select id from setting_categories where name = 'User'), '0', 'AUTHENTICATION_FOR_ALL_USERS', 'Enabled', '', 'select', 'Enabled,Disabled', 'Enable Google Authenticator', '3');
+UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'User'),"order"='2' WHERE name = 'SITE_TIMEZONE';
+UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'User'),"order"='3' WHERE name = 'DEFAULT_LANGUAGE';
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
+VALUES ((select id from setting_categories where name = 'User'), NULL, 'IS_TWO_FACTOR_AUTHENTICATION_ENABLED', 'true', 'Is Two Way Factor Authentication is Enabled', 'checkbox', NULL, 'Is Two Way Factor Authentication is Enabled', '1');
 
-ALTER TABLE "users" ADD "is_google_authenticator_enabled" boolean NOT NULL DEFAULT 'true';
+ ALTER TABLE "users" ADD "is_two_factor_authentication_enabled" boolean NOT NULL DEFAULT 'false';
+ALTER TABLE "users" ADD "two_factor_authentication_hash" character varying(16) NULL;
 
 CREATE OR REPLACE VIEW users_listing AS
 SELECT users.id,
@@ -101,7 +103,7 @@ SELECT users.id,
     users.is_card_attachments_notifications_enabled,
     users.is_intro_video_skipped,
     users.is_invite_from_board,
-    users.is_google_authenticator_enabled
+    users.is_two_factor_authentication_enabled
    FROM (((((((((users users
      LEFT JOIN ips i ON ((i.id = users.ip_id)))
      LEFT JOIN cities rci ON ((rci.id = i.city_id)))

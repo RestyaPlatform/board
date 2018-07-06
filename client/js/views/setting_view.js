@@ -64,6 +64,12 @@ App.SettingView = Backbone.View.extend({
                 data.IS_CARD_ATTACHMENTS_NOTIFICATIONS_ENABLED = 'true';
             }
         }
+        if ($(e.target).find('#input_setting_category_id').val() === '17') {
+            data.IS_TWO_FACTOR_AUTHENTICATION_ENABLED = 'false';
+            if (!_.isUndefined($("input[name='IS_TWO_FACTOR_AUTHENTICATION_ENABLED']:checked").val())) {
+                data.IS_TWO_FACTOR_AUTHENTICATION_ENABLED = 'true';
+            }
+        }
         var self = this;
         var settingModel = new App.SettingCategory();
         settingModel.url = api_url + 'settings.json';

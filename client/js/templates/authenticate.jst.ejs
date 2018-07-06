@@ -1,26 +1,47 @@
-<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 col-lg-offset-4 col-md-offset-4 col-sm-offset-3">
-	<!-- <div class="panel panel-default">
-		 <div class="panel-heading lead">
-			<%- i18next.t('Scan QR Code') %>
-		 </div>
+<% if (templateName === 'two-step-verification') {  %>
+<div class="col-lg-6 col-md-6 col-sm-8 col-xs-12 col-lg-offset-3 col-md-offset-3 col-sm-offset-2">
+    <h2 class="text-center"><%- i18next.t('Scan the QR code below into your authenticator app and then enter the verification code')%></h2>
+	<div class="panel panel-default">
 		 <div class="panel-body well-lg">
-            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 col-lg-offset-4 col-md-offset-4 col-sm-offset-3">
-                <a title="QR code" href="http://restya.com/board/launch_mobile_app?board=http://restyaboard.localhost?u=admin" target="_blank"><img width="115" height="115" src="https://chart.googleapis.com/chart?cht=qr&amp;chs=120x120&amp;chl=http://restya.com/board/launch_mobile_app?board=http://restyaboard.localhost?u=admin" title="QR code" alt="[Image: QR code]" class="img-responsive"></a>
+            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 col-lg-offset-4 col-md-offset-4 col-sm-offset-2">
+                <a title="QR code" href="javascript:void(0);" target="_blank"><img src="<%- user.attributes.qr_code_url %>"></a>
+            </div>
+            <div class="col-xs-12">
+                <h2 class="text-center"><%- i18next.t("Can't scan QR codes") %>?</h2>       
+                <h2 class="text-center"><%- i18next.t('You can manually enter this text code into your app') %></h2>
+                <h4 class="text-center"><%- user.attributes.two_factor_authentication_hash %></h4>
             </div>
 		 </div>
-    </div> -->
-    <div class="well-sm"></div>
-    <div class="well-sm"></div>
-    <div class="well-sm"></div>
-    <h2 class="text-center">Enter two-step verification code</h2>
+    </div>
+    <h2 class="text-center"><%- i18next.t('Two-step Verification Code') %></h2>
     <form class="clearfix" role="form" name="UserAuthenticateForm" id="UserAuthenticateForm">
         <div class="form-group">
             <label for="inputCodeNumber" class="sr-only control-label"><%- i18next.t('Code') %></label>
-            <input type="text" placeholder="<%- i18next.t('Enter Your Code') %>" class="form-control change-ldap" id="inputCodeNumber" name="codeNumber"  title="" autofocus required/>
+            <input type="text" placeholder="<%- i18next.t('Enter Your Code') %>" class="form-control change-ldap" id="inputCodeNumber" name="verification_code"  title="" autofocus required/>
         </div>
         <div class="form-group">
-            <label for="submit2" class="sr-only control-label"><%- i18next.t('Authenticate') %></label>
-            <input type="submit" class="btn btn-primary col-xs-12" value="<%- i18next.t('Authenticate') %>" id="submitLogin" />
+            <label for="submit2" class="sr-only control-label"><%- i18next.t('Verify') %></label>
+            <input type="submit" class="btn btn-primary col-xs-12" value="<%- i18next.t('Verify') %>" id="submitLogin" />
         </div>
     </form>
 </div>
+<% } else if (templateName === 'user_login') { %>
+    <div class="well-sm"></div>
+    <div class="well-sm"></div>
+    <div class="well-sm"></div>
+    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 col-lg-offset-4 col-md-offset-4 col-sm-offset-3">
+        <h2 class="text-center"><%- i18next.t('Enter two-step verification code') %></h2>
+        <form class="clearfix" role="form" name="UserVerificationForm" id="UserVerificationForm">
+            <input type="hidden" value="<%- user.email %>" name="email">
+            <input type="hidden" value="<%- user.password %>" name="password">
+            <div class="form-group">
+                <label for="CodeNumber" class="sr-only control-label"><%- i18next.t('Code') %></label>
+                <input type="text" placeholder="<%- i18next.t('6 digit code or backup code') %>" class="form-control" id="CodeNumber" name="verification_code"  title="<%- i18next.t('Enter verification code') %>" autofocus required/>
+            </div>
+            <div class="form-group">
+                <label for="verifyCode" class="sr-only control-label"><%- i18next.t('Sign in') %></label>
+                <input type="submit" class="btn btn-primary col-xs-12" value="<%- i18next.t('Sign in') %>" id="verifyCode" />
+            </div>
+        </form>
+    </div>
+<% } %>

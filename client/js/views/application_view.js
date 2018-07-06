@@ -88,6 +88,7 @@ App.ApplicationView = Backbone.View.extend({
                                     DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                                     LABEL_ICON = settings_response.LABEL_ICON;
                                     SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
+                                    IS_TWO_FACTOR_AUTHENTICATION_ENABLED = settings_response.IS_TWO_FACTOR_AUTHENTICATION_ENABLED;
                                     DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                                     PAGING_COUNT = settings_response.PAGING_COUNT;
                                     APPS = settings_response.apps;
@@ -140,6 +141,7 @@ App.ApplicationView = Backbone.View.extend({
                                 DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                                 LABEL_ICON = settings_response.LABEL_ICON;
                                 SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
+                                IS_TWO_FACTOR_AUTHENTICATION_ENABLED = settings_response.IS_TWO_FACTOR_AUTHENTICATION_ENABLED;
                                 DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                                 PAGING_COUNT = settings_response.PAGING_COUNT;
                                 ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
@@ -189,8 +191,8 @@ App.ApplicationView = Backbone.View.extend({
         if (this.model == 'login') {
             changeTitle(i18next.t('Login'));
         }
-        if (this.model == 'authenticate') {
-            changeTitle(i18next.t('Authenticate'));
+        if (this.model == 'user_verification') {
+            changeTitle(i18next.t('Two-step Verification'));
         }
         if (this.model == 'aboutus') {
             changeTitle(i18next.t('About'));
@@ -583,14 +585,22 @@ App.ApplicationView = Backbone.View.extend({
                     model: LoginUser
                 });
                 $('#content').html(this.pageView.el);
-            } else if (page.model == 'authenticate') {
-                changeTitle(i18next.t('Authenticate'));
+            } else if (page.model == 'user_verification') {
+                changeTitle(i18next.t('Two-step Verification'));
                 $('.company').removeClass('hide');
-                var User = new App.User();
-                this.pageView = new App.AuthenticateView({
-                    model: User
+                var user_verification = new App.User();
+                user_verification.url = api_url + 'users/' + page.id + '.json';
+                user_verification.fetch({
+                    cache: false,
+                    abortPending: true,
+                    success: function(user_verification, response) {
+                        this.pageView = new App.AuthenticateView({
+                            model: user_verification,
+                            templateName: 'two-step-verification'
+                        });
+                        $('#content').html(this.pageView.el);
+                    }
                 });
-                $('#content').html(this.pageView.el);
             } else if (page.model == 'forgotpassword') {
                 changeTitle(i18next.t('Forgot your password'));
                 $('.company').removeClass('hide');
@@ -1073,20 +1083,18 @@ App.ApplicationView = Backbone.View.extend({
             authuser.board_id = 0;
         }
         if (($.cookie('auth') !== undefined && $.cookie('auth') !== null) || page.model == 'organizations_view') {
-            if (page.model !== 'authenticate') {
-                this.footerView = new App.FooterView({
-                    model: authuser
-                }).render();
-                $('#footer').html(this.footerView.el);
-                if (!_.isUndefined(authuser.user)) {
-                    var count = authuser.user.notify_count;
-                    if (count > 0) {
-                        if (count >= 100) {
-                            count = '100+';
-                        }
-                        $('.js-notification-count').removeClass('hide').html(count);
-                        favicon.badge(count);
+            this.footerView = new App.FooterView({
+                model: authuser
+            }).render();
+            $('#footer').html(this.footerView.el);
+            if (!_.isUndefined(authuser.user)) {
+                var count = authuser.user.notify_count;
+                if (count > 0) {
+                    if (count >= 100) {
+                        count = '100+';
                     }
+                    $('.js-notification-count').removeClass('hide').html(count);
+                    favicon.badge(count);
                 }
             }
         } else {

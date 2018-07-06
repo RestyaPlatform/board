@@ -19,6 +19,7 @@ var FLICKR_API_KEY = '';
 var LABEL_ICON = '';
 var SITE_TIMEZONE = '';
 var LDAP_LOGIN_ENABLED = '';
+var IS_TWO_FACTOR_AUTHENTICATION_ENABLED;
 var DEFAULT_LANGUAGE = '';
 var IMAP_EMAIL = '';
 var ANIMATION_SPEED = 1;
@@ -316,7 +317,6 @@ var AppRouter = Backbone.Router.extend({
         'users/admin_user_add': 'admin_user_add',
         'users/register': 'register',
         'users/login': 'login',
-        'authenticate': 'authenticate',
         'users/logout': 'logout',
         'users/forgotpassword': 'forgotpassword',
         'users/activation/:id/:hash': 'user_activation',
@@ -324,6 +324,7 @@ var AppRouter = Backbone.Router.extend({
         'users': 'users_index',
         'boards/list': 'admin_boards_index',
         'user/:id': 'user_view',
+        'user/:id/two-step-verification': 'user_verification',
         'user/:id/:type': 'user_view_type',
         'boards': 'boards_index',
         'boards/starred': 'starred_boards_index',
@@ -378,10 +379,11 @@ var AppRouter = Backbone.Router.extend({
             model: 'login'
         });
     },
-    authenticate: function() {
+    user_verification: function(id) {
         $('.dockmodal, .dockmodal-overlay').remove();
         new App.ApplicationView({
-            model: 'authenticate'
+            model: 'user_verification',
+            'id':id
         });
     },
     forgotpassword: function() {
