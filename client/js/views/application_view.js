@@ -1058,12 +1058,31 @@ App.ApplicationView = Backbone.View.extend({
             } else if (page.model == 'app_settings_manage') {
                 changeTitle(i18next.t('App Settings Manage'));
                 $('#js-navbar-default').remove();
-                if (page.options.name === 'r_custom_fields') {
+                if (!_.isEmpty(authuser.user) && authuser.user.role_id == 1 && !_.isEmpty(page.options.name)) {
                     _(function() {
-                        $('#content').html(new App.admin_custom_fields_view().el);
+                        $('#content').html(new App['admin_' + page.options.name + '_view']().el);
                     }).defer();
+                } else {
+                    app.navigate('#/boards', {
+                        trigger: true,
+                        replace: true
+                    });
                 }
-            } else if (page.model == 'email_template_type') {
+            } else if (page.model == 'app_page') {
+                changeTitle(i18next.t('App Page'));
+                $('#js-navbar-default').remove();
+                if (!_.isEmpty(authuser.user) && authuser.user) {
+                    var app_page = page.options.name + '_' + page.options.page;
+                    _(function() {
+                        $('#content').html(new App[app_page]().el);
+                    }).defer();
+                } else {
+                    app.navigate('#/boards', {
+                        trigger: true,
+                        replace: true
+                    });
+                }
+             } else if (page.model == 'email_template_type') {
                 changeTitle(i18next.t('Email Templates'));
                 $('#js-navbar-default').remove();
                 $('#content').html(new App.EmailTemplateView({
