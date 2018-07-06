@@ -1082,7 +1082,7 @@ App.ApplicationView = Backbone.View.extend({
                         replace: true
                     });
                 }
-             } else if (page.model == 'email_template_type') {
+            } else if (page.model == 'email_template_type') {
                 changeTitle(i18next.t('Email Templates'));
                 $('#js-navbar-default').remove();
                 $('#content').html(new App.EmailTemplateView({
