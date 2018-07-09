@@ -17,7 +17,7 @@ if (_.isEmpty(role_links.where({
   <li class="footer-logo active"> 
   	<a href="#" title="<%- SITE_NAME %>" class="js-start js-footer-board-link"><img src="img/logo-icon.png" alt="[Images: <%- SITE_NAME %>]" title="<%- SITE_NAME %>"  data-container="body" id="js-footer-brand-img" /></a>
 	<!-- Todo: quick fix. load image before offline. call after when goes offline
-	<img src="img/logo-icon-offline.png" alt="[Images: <%- SITE_NAME %>]" style="display:none;" />--->
+	<img src="img/logo-icon-offline.png" alt="[Images: <%- SITE_NAME %>]" style="display:none;" /> -->
   </li>
   <% if(!_.isUndefined(authuser.user)){%>
 	<li class="hidden-xs music-btn pa"> 
@@ -124,7 +124,7 @@ if (_.isEmpty(role_links.where({
 	  <a title="<%- i18next.t('Apps') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-apps-list"><span><%- i18next.t("Apps") %> </span><span><i class="icon-collapse"></i></span> </a>
 	  <ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12 pre-scrollable vertical-scrollbar">
 			<% _.each(apps, function(key,value) { %>
-				<li id="<%- value %>" class="org-btn"><a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- key.id %>_modal" class="highlight-icon clearfix"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- i18next.t(key.name) %></span></a></li>
+				<li id="<%- value %>" class="org-btn"><a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- key.id %>_modal" class="highlight-icon clearfix js-appModal-open"><span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span><span class="details btn-block navbar-btn"><%- i18next.t(key.name) %></span></a></li>
 			<% }); %>
 			<li class="divider js-apps-list-container-search"></li>
 			<li class="dropdown clearfix">
@@ -135,6 +135,41 @@ if (_.isEmpty(role_links.where({
   <% } %>
   <% } %>
 </ul>
+<div class="js-appModalContent">
+<% _.each(apps, function(key,value) { %>
+<div class="modal fade" id="<%- key.id %>_modal" tabindex="-1" role="dialog" aria-labelledby="<%- key.name %>ModalLabel" aria-hidden="false">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" id="js-appModal-close">×</span><span class="sr-only">Close</span></button>
+				<div class="media list-group-item-heading">
+					<div class="pull-left">
+						<img class="img-circle" width="36" height="36" src="<%- key.icon %>" />
+					</div>
+					<div class="media-body">
+						<h4 class="modal-title" id="exampleModalLabel"><%- key.name %></h4>
+						<div>
+							<span class="text-muted">v<%- key.version %></span> By 
+							<a target="_blank" href="<%- key.author_url %>?utm_source=restyaboard&utm_medium=apppopup" title="author"><%- key.author %></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-body import-block">
+				<% if (!_.isEmpty(key.large_description) && !_.isUndefined(key.large_description)) { %>
+					<%= converter.makeHtml(key.large_description) %>
+				<% } else { %>
+					<span><%- key.description %></span>
+				<% } %>
+			</div>
+			<div class="modal-footer">
+				<a href="javascript:void(0);" title="<%- i18next.t('Close') %>" class="btn btn-primary js-appModal-close"><%- i18next.t("Close") %></a>
+			</div>
+		</div>
+	</div>
+</div>
+<% }); %>
+</div>
 <div class="navbar-right clearfix">
 	<ul class="nav nav-pills navbar-right">
 	<% if(!_.isUndefined(authuser.user)){%>

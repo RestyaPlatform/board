@@ -529,6 +529,9 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
         if (!empty($r_request_method) && ($r_request_method === 'GET') && !empty($r_resource_cmd) && ($r_resource_cmd === '/users/?/activities')) {
             return true;
         }
+        if (!empty($r_request_method) && ($r_request_method === 'PUT') && !empty($r_resource_cmd) && $r_resource_cmd === '/users/?' && !empty($post_data['last_activity_id'])) {
+            return true;
+        }
         $qry_val_arr = array(
             $role,
             $r_request_method,
@@ -949,13 +952,35 @@ function createTrelloMember($member = array() , $admin_user_id = array() , $new_
     );
     $userExist = executeQuery('SELECT * FROM users WHERE username = $1', $qry_val_arr);
     if (!$userExist) {
+        $default_email_notification = 0;
+        if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
+            $default_email_notification = 1;
+        } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
+            $default_email_notification = 2;
+        }
+        $member['is_send_newsletter'] = $default_email_notification;
+        $member['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
+        $member['is_list_notifications_enabled'] = IS_LIST_NOTIFICATIONS_ENABLED;
+        $member['is_card_notifications_enabled'] = IS_CARD_NOTIFICATIONS_ENABLED;
+        $member['is_card_members_notifications_enabled'] = IS_CARD_MEMBERS_NOTIFICATIONS_ENABLED;
+        $member['is_card_labels_notifications_enabled'] = IS_CARD_LABELS_NOTIFICATIONS_ENABLED;
+        $member['is_card_checklists_notifications_enabled'] = IS_CARD_CHECKLISTS_NOTIFICATIONS_ENABLED;
+        $member['is_card_attachments_notifications_enabled'] = IS_CARD_ATTACHMENTS_NOTIFICATIONS_ENABLED;
         $qry_val_arr = array(
             utf8_decode($member['username']) ,
             getCryptHash('restya') ,
             utf8_decode($member['initials']) ,
-            utf8_decode($member['fullName'])
+            utf8_decode($member['fullName']) ,
+            $member['is_send_newsletter'],
+            $member['default_desktop_notification'],
+            $member['is_list_notifications_enabled'],
+            $member['is_card_notifications_enabled'],
+            $member['is_card_members_notifications_enabled'],
+            $member['is_card_labels_notifications_enabled'],
+            $member['is_card_checklists_notifications_enabled'],
+            $member['is_card_attachments_notifications_enabled']
         );
-        $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4) RETURNING id', $qry_val_arr));
+        $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
         $user_id = $user['id'];
     } else {
         $user_id = $userExist['id'];
@@ -1306,7 +1331,7 @@ function importTrelloBoard($board = array())
                     $type = 'add_card_user';
                     $memberName = '';
                     if (!empty($action['member'])) {
-                        $memberName = utf8_decode($action['member']['fullName']);
+                        $memberName = $action['member']['fullName'];
                     }
                     $comment = '##USER_NAME## added "' . $memberName . '" as member to this card ##CARD_LINK##';
                 } else if ($action['type'] == 'createCard') {
@@ -1576,21 +1601,43 @@ function importWekanBoard($board = array())
             }
         }
         if (!empty($board['users'])) {
-            foreach ($board['users'] as $user) {
-                $wekan_user_id = $user['_id'];
+            foreach ($board['users'] as $member) {
+                $wekan_user_id = $member['_id'];
                 $qry_val_arr = array(
-                    utf8_decode($user['username'])
+                    utf8_decode($member['username'])
                 );
-                $username = $user['username'];
+                $username = $member['username'];
                 $userExist = executeQuery('SELECT * FROM users WHERE username = $1', $qry_val_arr);
                 if (!$userExist) {
+                    $default_email_notification = 0;
+                    if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
+                        $default_email_notification = 1;
+                    } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
+                        $default_email_notification = 2;
+                    }
+                    $member['is_send_newsletter'] = $default_email_notification;
+                    $member['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
+                    $member['is_list_notifications_enabled'] = IS_LIST_NOTIFICATIONS_ENABLED;
+                    $member['is_card_notifications_enabled'] = IS_CARD_NOTIFICATIONS_ENABLED;
+                    $member['is_card_members_notifications_enabled'] = IS_CARD_MEMBERS_NOTIFICATIONS_ENABLED;
+                    $member['is_card_labels_notifications_enabled'] = IS_CARD_LABELS_NOTIFICATIONS_ENABLED;
+                    $member['is_card_checklists_notifications_enabled'] = IS_CARD_CHECKLISTS_NOTIFICATIONS_ENABLED;
+                    $member['is_card_attachments_notifications_enabled'] = IS_CARD_ATTACHMENTS_NOTIFICATIONS_ENABLED;
                     $qry_val_arr = array(
-                        utf8_decode($user['username']) ,
+                        utf8_decode($member['username']) ,
                         getCryptHash('restya') ,
                         utf8_decode($username['0']) ,
-                        utf8_decode($user['username'])
+                        utf8_decode($member['username']) ,
+                        $member['is_send_newsletter'],
+                        $member['default_desktop_notification'],
+                        $member['is_list_notifications_enabled'],
+                        $member['is_card_notifications_enabled'],
+                        $member['is_card_members_notifications_enabled'],
+                        $member['is_card_labels_notifications_enabled'],
+                        $member['is_card_checklists_notifications_enabled'],
+                        $member['is_card_attachments_notifications_enabled']
                     );
-                    $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4) RETURNING id', $qry_val_arr));
+                    $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
                     $users[$wekan_user_id] = $user['id'];
                     $user_data[$wekan_user_id] = $username;
                 } else {

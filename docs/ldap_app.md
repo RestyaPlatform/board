@@ -1,8 +1,8 @@
-# LDAP plugin installation instructions
+# LDAP Plugin Installation
 
-## Instructions for ldap plugin configuration
+## LDAP Plugin Installation
 
-[![How to configure ldap plugin](http://img.youtube.com/vi/hUDezmbD59k/0.jpg)](http://www.youtube.com/watch?v=hUDezmbD59k)
+[![How to configure ldap plugin](ldap_installation.png)](http://www.youtube.com/watch?v=g5SzFy4n4u4)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., "/usr/share/nginx/html/restyaboard/"

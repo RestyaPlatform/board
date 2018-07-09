@@ -1,8 +1,8 @@
-# Card Template plugin installation instructions
+# Card Template Plugin Installation
 
-## Instructions for card template plugin configuration
+## Card Template Plugin Installation
 
-[![How to configure card template plugin](http://img.youtube.com/vi/Hu9hNv9wFyQ/0.jpg)](http://www.youtube.com/watch?v=Hu9hNv9wFyQ)
+[![How to configure card template plugin](card_template.png)](http://www.youtube.com/watch?v=Hu9hNv9wFyQ)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., "/usr/share/nginx/html/restyaboard/"

@@ -44,7 +44,7 @@ App.CardView = Backbone.View.extend({
         }
         if (!_.isEmpty(this.model)) {
             this.model.bind('change:id change:name change:description change:board_id  change:cards_checklists  change:cards_labels  change:comment_count  change:color change:cards_subscribers  change:is_archived  change:due_date change:list_id  change:title change:is_offline change:checklist_item_count change:checklist_item_completed_count', this.render);
-            this.model.bind('change:list_id', this.renderListChange);
+            this.model.bind('change:list_id change:position', this.renderListChange);
             if (this.model.has('list')) {
                 this.list = this.model.get('list');
                 this.model.unset('list');
@@ -180,6 +180,11 @@ App.CardView = Backbone.View.extend({
                 } else {
                     $('#js-card-' + self.model.id).find('.list-moved-date').html('<small title="' + i18next.t('List Moved Date') + '"><span class="label label-default">' + dateFormat(list_moved_date_date_time[0], 'mediumDate') + '</span></small>');
                 }
+                _(function() {
+                    if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                        $('body').trigger('cardRendered', self.model.id, self.model);
+                    }
+                }).defer();
             }
         });
         var current_board = App.boards.where({

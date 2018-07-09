@@ -1,8 +1,8 @@
-# Website QA Checklist plugin installation instructions
+# Website QA Checklist Plugin Installation
 
-## Instructions for website qa checklist plugin configuration
+## Website QA Checklist Plugin Installation
 
-[![How to configure Website QA Checklist plugin](http://img.youtube.com/vi/g-ScZJOrqQs/0.jpg)](http://www.youtube.com/watch?v=g-ScZJOrqQs)
+[![How to configure Website QA Checklist plugin](website_qa_checklist_installation.png)](http://www.youtube.com/watch?v=1c46b8BjEpc)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., "/usr/share/nginx/html/restyaboard/"

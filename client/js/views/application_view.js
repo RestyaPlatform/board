@@ -88,6 +88,7 @@ App.ApplicationView = Backbone.View.extend({
                                     DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                                     LABEL_ICON = settings_response.LABEL_ICON;
                                     SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
+                                    IS_TWO_FACTOR_AUTHENTICATION_ENABLED = settings_response.IS_TWO_FACTOR_AUTHENTICATION_ENABLED;
                                     DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                                     PAGING_COUNT = settings_response.PAGING_COUNT;
                                     APPS = settings_response.apps;
@@ -140,6 +141,7 @@ App.ApplicationView = Backbone.View.extend({
                                 DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                                 LABEL_ICON = settings_response.LABEL_ICON;
                                 SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
+                                IS_TWO_FACTOR_AUTHENTICATION_ENABLED = settings_response.IS_TWO_FACTOR_AUTHENTICATION_ENABLED;
                                 DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
                                 PAGING_COUNT = settings_response.PAGING_COUNT;
                                 ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
@@ -188,6 +190,9 @@ App.ApplicationView = Backbone.View.extend({
     set_page_title: function() {
         if (this.model == 'login') {
             changeTitle(i18next.t('Login'));
+        }
+        if (this.model == 'user_verification') {
+            changeTitle(i18next.t('Two-step Verification'));
         }
         if (this.model == 'aboutus') {
             changeTitle(i18next.t('About'));
@@ -515,11 +520,7 @@ App.ApplicationView = Backbone.View.extend({
             if (!$('body').hasClass('board-view')) {
                 $('body').css('background', 'transparent');
             }
-            if (!_.isEmpty(role_links.where({
-                    slug: 'view_board'
-                }))) {
-                page.board_view();
-            }
+            page.board_view();
         } else if (page.model == 'organizations_view') {
             changeTitle(i18next.t('Organization'));
             page.organization_view();
@@ -584,6 +585,22 @@ App.ApplicationView = Backbone.View.extend({
                     model: LoginUser
                 });
                 $('#content').html(this.pageView.el);
+            } else if (page.model == 'user_verification') {
+                changeTitle(i18next.t('Two-step Verification'));
+                $('.company').removeClass('hide');
+                var user_verification = new App.User();
+                user_verification.url = api_url + 'users/' + page.id + '.json';
+                user_verification.fetch({
+                    cache: false,
+                    abortPending: true,
+                    success: function(user_verification, response) {
+                        this.pageView = new App.AuthenticateView({
+                            model: user_verification,
+                            templateName: 'two-step-verification'
+                        });
+                        $('#content').html(this.pageView.el);
+                    }
+                });
             } else if (page.model == 'forgotpassword') {
                 changeTitle(i18next.t('Forgot your password'));
                 $('.company').removeClass('hide');
@@ -697,10 +714,10 @@ App.ApplicationView = Backbone.View.extend({
                                                     organization_starred_board.lists.add(filtered_lists);
                                                     if ($('.js-organization-starred-boards-' + organization_starred_board.attributes.organization_id).length === 0) {
                                                         var starred_board_organization_name = filterXSS(organization_starred_board.attributes.organization_name);
-                                                        $('.js-header-starred-boards').parent().append('<div class="col-xs-12 js-organization-starred-boards-' + organization_starred_board.attributes.organization_id + '"><h4>' + i18next.t('%s', {
+                                                        $('.js-header-starred-boards').parent().append('<div class="col-xs-12 js-organization-starred-boards-' + organization_starred_board.attributes.organization_id + '"><h4><a href="#/organization/' + organization_starred_board.attributes.organization_id + '" class="cur">' + i18next.t('%s', {
                                                             postProcess: 'sprintf',
                                                             sprintf: [starred_board_organization_name]
-                                                        }) + '</h4></div>');
+                                                        }) + '</a></h4></div>');
                                                     }
                                                     $('.js-organization-starred-boards-' + organization_starred_board.attributes.organization_id).append(new App.BoardSimpleView({
                                                         model: organization_starred_board,
@@ -794,10 +811,10 @@ App.ApplicationView = Backbone.View.extend({
                                                 if ($('.js-organization-' + closed_organization_board.attributes.organization_id).length === 0) {
                                                     if ($('.js-organization-closed-boards-' + closed_organization_board.attributes.organization_id).length === 0) {
                                                         var closed_board_organization_name = filterXSS(closed_organization_board.attributes.organization_name);
-                                                        $('.js-header-closed-boards').parent().append('<div class="col-xs-12 js-organization-closed-boards-' + closed_organization_board.attributes.organization_id + '"><h4>' + i18next.t('%s', {
+                                                        $('.js-header-closed-boards').parent().append('<div class="col-xs-12 js-organization-closed-boards-' + closed_organization_board.attributes.organization_id + '"><h4><a href="#/organization/' + closed_organization_board.attributes.organization_id + '" class="cur">' + i18next.t('%s', {
                                                             postProcess: 'sprintf',
                                                             sprintf: [closed_board_organization_name]
-                                                        }) + '</h4></div>');
+                                                        }) + '</a></h4></div>');
                                                     }
                                                 }
                                                 closed_organization_board.board_subscribers.add(closed_organization_board.attributes.boards_subscribers);
@@ -868,10 +885,10 @@ App.ApplicationView = Backbone.View.extend({
                                             _.each(organization_boards, function(board) {
                                                 if ($('.js-organization-' + board.attributes.organization_id).length === 0) {
                                                     var organization_name = filterXSS(board.attributes.organization_name);
-                                                    $('.js-my-boards').parent().append('<div class="col-xs-12 js-organization_boards js-organization-' + board.attributes.organization_id + '" data-organization_id ="' + board.attributes.organization_id + '" ><h4>' + i18next.t('%s', {
+                                                    $('.js-my-boards').parent().append('<div class="col-xs-12 js-organization_boards js-organization-' + board.attributes.organization_id + '" data-organization_id ="' + board.attributes.organization_id + '" ><h4><a href="#/organization/' + board.attributes.organization_id + '" class="cur">' + i18next.t('%s', {
                                                         postProcess: 'sprintf',
                                                         sprintf: [organization_name]
-                                                    }) + '</h4></div>');
+                                                    }) + '</a></h4></div>');
                                                 }
                                                 var board_filter = _.matches({
                                                     is_archived: 0
@@ -1041,10 +1058,29 @@ App.ApplicationView = Backbone.View.extend({
             } else if (page.model == 'app_settings_manage') {
                 changeTitle(i18next.t('App Settings Manage'));
                 $('#js-navbar-default').remove();
-                if (page.options.name === 'r_custom_fields') {
+                if (!_.isEmpty(authuser.user) && authuser.user.role_id == 1 && !_.isEmpty(page.options.name)) {
                     _(function() {
-                        $('#content').html(new App.admin_custom_fields_view().el);
+                        $('#content').html(new App['admin_' + page.options.name + '_view']().el);
                     }).defer();
+                } else {
+                    app.navigate('#/boards', {
+                        trigger: true,
+                        replace: true
+                    });
+                }
+            } else if (page.model == 'app_page') {
+                changeTitle(i18next.t('App Page'));
+                $('#js-navbar-default').remove();
+                if (!_.isEmpty(authuser.user) && authuser.user) {
+                    var app_page = page.options.name + '_' + page.options.page;
+                    _(function() {
+                        $('#content').html(new App[app_page]().el);
+                    }).defer();
+                } else {
+                    app.navigate('#/boards', {
+                        trigger: true,
+                        replace: true
+                    });
                 }
             } else if (page.model == 'email_template_type') {
                 changeTitle(i18next.t('Email Templates'));
