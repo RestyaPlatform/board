@@ -3182,7 +3182,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     // Copy lists
                     while ($list = pg_fetch_object($lists)) {
                         $list_id = $list->id;
-                        $list_fields = 'created, modified, board_id, user_id';
+                        $list_fields = 'created, modified, board_id, user_id, color';
                         $list_values = array();
                         array_push($list_values, 'now()', 'now()', $new_board_id, $authUser['id']);
                         foreach ($list as $key => $value) {
@@ -3252,7 +3252,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 }
                             }
                             // Copy cards
-                            $card_fields = 'name, description, due_date, position, is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, user_id';
+                            $card_fields = 'name, description, due_date, position, is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, user_id, color';
                             if ($keepcards) {
                                 $qry_val_arr = array(
                                     $list_id
