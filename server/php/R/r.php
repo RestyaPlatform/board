@@ -2166,7 +2166,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['is_invite_from_board'] = true;
             $r_post['username'] = slugify($r_post['full_name']);
             $r_post['password'] = getCryptHash('restya');
-            $default_email_notification = 0;
+            $default_email_notification = 0;            
             if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
                 $default_email_notification = 1;
             } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
@@ -2190,13 +2190,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $row = pg_fetch_assoc($result);
                     $response['id'] = $row['id'];
                     $emailFindReplace = array(
-                        '##NAME##' => $user['full_name'],
+                        '##NAME##' => $r_post['full_name'],
                         '##CURRENT_USER##' => $authUser['full_name'],
                         '##BOARD_NAME##' => $r_post['board_name'],
                         '##BOARD_URL##' => $_server_domain_url . '/#/board/' . $r_post['board_id'],
                         '##REGISTRATION_URL##' => $_server_domain_url . '/#/users/register'
                     );
-                    sendMail('new_project_user_invite', $emailFindReplace, $user['email']);
+                    sendMail('new_project_user_invite', $emailFindReplace, $r_post['email']);
                 }
             }
         } else {
