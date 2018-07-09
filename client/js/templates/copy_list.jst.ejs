@@ -9,6 +9,7 @@
 			<input maxlength="255" id="inputListName" type="text" name="name" autocomplete="off" placeHolder="<%- i18next.t('Add a list') %>" class="form-control input-sm" value="<%- list.attributes.name %>" required title="<%- i18next.t('Add a list') %>"/>
 			<input type="hidden" value="<%- list.id %>" name="clone_list_id"/>
 			<input type="hidden" value="<%- list.attributes.position %>" name="position"/>
+			<input type="hidden" value="<%- list.attributes.color %>" name="color"/>
 		</div>
 		<div class="submit">
 			<input type="submit" id="submitListAdd" class="btn  btn-primary" value="<%- i18next.t('Create List') %>"/>
