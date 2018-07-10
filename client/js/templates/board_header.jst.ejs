@@ -235,7 +235,11 @@
 							<li class="js-sync-google-dropdown inner-dropdown js-invite-users"><a data-toggle="dropdown" href="#" class="js-invite-users"><span class="icon-sm icon-user icon-type"></span> <%- i18next.t('Invite') %>
 							</a></li>
 							<li class="js-list-form"><a class="nav-list-item js-show-filters" href="#"><span class="icon-sm icon-filter icon-type"></span> <%- i18next.t('Filter Cards') %></a></li>
-							<li><a class="nav-list-item js-show-labels" href="#"><span class="icon-sm  icon-tag icon-type"></span> <%- i18next.t('Labels') %></a></li>
+							<% if(!_.isUndefined(authuser.user)) {%>
+								<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "delete_labels",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>
+								<li><a class="nav-list-item js-show-labels" href="#"><span class="icon-sm  icon-tag icon-type"></span> <%- i18next.t('Labels') %></a></li>
+								<% } %>
+							<% } %>
 							<% if(!_.isUndefined(authuser.user)) {%>
 								<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "view_archived_lists",board_user_role_id: parseInt(board.board_user_role_id)})) || !_.isEmpty(board.acl_links.where({slug: "view_archived_cards",board_user_role_id: parseInt(board.board_user_role_id)})))) { %>
 								<li><a class="nav-list-item js-archived-items" href="#"><span class="icon-sm icon-archive icon-type"></span> <%- i18next.t('Archived Items') %></a></li>

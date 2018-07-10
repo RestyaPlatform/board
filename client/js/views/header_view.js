@@ -100,6 +100,9 @@ App.HeaderView = Backbone.View.extend({
                     _.each(app, function(css, key) {
                         l = document.createElement('link');
                         l.rel = 'stylesheet';
+                        if (css.indexOf('r_kanban_printer') > -1) {
+                            l.title = 'r_kanban_printer';
+                        }
                         l.type = 'text/css';
                         l.href = css;
                         document.head.appendChild(l);

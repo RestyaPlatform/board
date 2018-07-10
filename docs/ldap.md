@@ -2,6 +2,8 @@
 
 ## Server Details
 
+[![How to configure ldap plugin](ldap_plugin_configuration.png)](https://www.youtube.com/watch?v=xoTIkII8vtc)
+
 **Server**
 
 * The DNS name or IP address of the server (e.g., dc.domain.local)

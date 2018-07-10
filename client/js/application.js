@@ -19,6 +19,7 @@ var FLICKR_API_KEY = '';
 var LABEL_ICON = '';
 var SITE_TIMEZONE = '';
 var LDAP_LOGIN_ENABLED = '';
+var IS_TWO_FACTOR_AUTHENTICATION_ENABLED;
 var DEFAULT_LANGUAGE = '';
 var IMAP_EMAIL = '';
 var ANIMATION_SPEED = 1;
@@ -84,6 +85,14 @@ Backbone.View.prototype.downloadLink = function(model, id) {
     var hash = calcMD5(SecuritySalt + model + id);
     var download_link = window.location.pathname + 'download/' + id + '/' + hash;
     return download_link;
+};
+Backbone.View.prototype.documentLink = function(model, data) {
+    var document_link = window.location.pathname + 'img/original/Card/' + data.card_id + '/' + data.name;
+    return document_link;
+};
+Backbone.View.prototype.videoLink = function(model, data) {
+    var video_link = window.location.pathname + 'img/original/Card/' + data.card_id + '/' + data.name;
+    return video_link;
 };
 hasOfflineStatusCode = function(xhr) {
     var offlineStatusCodes, _ref, __indexOf = [].indexOf || function(item) {
@@ -254,9 +263,13 @@ var RealXHRSend = XMLHttpRequest.prototype.send;
 var requestCallbacks = [];
 var responseCallbacks = [];
 
-function fireCallbacks(callbacks, xhr) {
+function fireCallbacksbeforeRequest(callbacks, xhr, arg) {
     for (var i = 0; i < callbacks.length; i++) {
-        callbacks[i](xhr);
+        if (arg && arg[0]) {
+            callbacks[i](xhr, arg);
+        } else {
+            callbacks[i](xhr);
+        }
     }
 }
 
@@ -270,7 +283,7 @@ function addResponseCallback(callback) {
 
 function fireResponseCallbacksIfCompleted(xhr) {
     if (xhr.readyState === 4) {
-        fireCallbacks(responseCallbacks, xhr);
+        fireCallbacksbeforeRequest(responseCallbacks, xhr);
     }
 }
 
@@ -285,7 +298,7 @@ function proxifyOnReadyStateChange(xhr) {
 }
 XMLHttpRequest.prototype.send = function() {
     // Fire request callbacks before sending the request
-    fireCallbacks(requestCallbacks, this);
+    fireCallbacksbeforeRequest(requestCallbacks, this, arguments);
     // Wire response callbacks
     if (this.addEventListener) {
         var self = this;
@@ -311,6 +324,7 @@ var AppRouter = Backbone.Router.extend({
         'users': 'users_index',
         'boards/list': 'admin_boards_index',
         'user/:id': 'user_view',
+        'user/:id/two-step-verification': 'user_verification',
         'user/:id/:type': 'user_view_type',
         'boards': 'boards_index',
         'boards/starred': 'starred_boards_index',
@@ -333,6 +347,7 @@ var AppRouter = Backbone.Router.extend({
         'apps': 'apps',
         'apps/:name': 'app_settings',
         'apps/:name/manage': 'app_settings_manage',
+        'apps/:name/:page': 'app_page',
         'settings': 'settings',
         'settings/:id': 'settings_type',
         'email_templates': 'email_templates',
@@ -363,6 +378,13 @@ var AppRouter = Backbone.Router.extend({
         $('.dockmodal, .dockmodal-overlay').remove();
         new App.ApplicationView({
             model: 'login'
+        });
+    },
+    user_verification: function(id) {
+        $('.dockmodal, .dockmodal-overlay').remove();
+        new App.ApplicationView({
+            model: 'user_verification',
+            'id': id
         });
     },
     forgotpassword: function() {
@@ -625,6 +647,13 @@ var AppRouter = Backbone.Router.extend({
         new App.ApplicationView({
             model: 'app_settings_manage',
             name: name
+        });
+    },
+    app_page: function(name, page) {
+        new App.ApplicationView({
+            model: 'app_page',
+            name: name,
+            page: page
         });
     },
     organizations_index: function() {
