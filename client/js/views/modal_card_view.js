@@ -2143,6 +2143,15 @@ App.ModalCardView = Backbone.View.extend({
      * display labels in card
      */
     renderLabelsCollection: function() {
+        var is_edit_labels;
+        if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
+                slug: "delete_labels",
+                board_user_role_id: parseInt(this.model.list.board_user_role_id)
+            })))) {
+            is_edit_labels = true;
+        } else {
+            is_edit_labels = false;
+        }
         var view_label = this.$el.find('.js-card-labels-list');
         // view_label.html('');
         var self = this;
@@ -2158,6 +2167,16 @@ App.ModalCardView = Backbone.View.extend({
                 view_label.prepend(view.render().el);
             }
         });
+        _(function() {
+            if (!is_edit_labels) {
+                if ($('.js-card-dock-modal-' + self.model.id).find('.js-card-labels-list').find('.js-show-card-label-form-response').length > 0) {
+                    $('.js-card-dock-modal-' + self.model.id).find('.js-card-labels-list').find('.js-show-card-label-form-response').removeClass('js-show-card-label-form-response');
+                }
+                if ($('.js-card-dock-modal-' + self.model.id).find('.js-card-labels-list').find('.js-label-dropdown').length > 0) {
+                    $('.js-card-dock-modal-' + self.model.id).find('.js-card-labels-list').find('.js-label-dropdown').removeClass(' dropdown');
+                }
+            }
+        }).defer();
     },
     /**
      * renderActivitiesCollection()
