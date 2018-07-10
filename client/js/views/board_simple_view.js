@@ -238,8 +238,7 @@ App.BoardSimpleView = Backbone.View.extend({
      *
      */
     closePopup: function(e) {
-        var el = this.$el;
-        var target = el.find(e.target);
+        var target = $(e.currentTarget);
         target.parents('.js-show-add-boards-list-simple').find('.js-show-add-boards-simple').removeClass('hide');
         target.parents('.js-show-add-boards-list-simple').find('.js-show-boards-list-simple-response').html('');
         return false;
