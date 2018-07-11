@@ -16,8 +16,8 @@ session_start();
 require_once 'config.inc.php';
 require_once 'libs/core.php';
 require_once 'libs/vendors/OAuth2/Autoloader.php';
-if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
-    include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
+if (file_exists(SITE_URL_FOR_SHELL)) {
+    include_once SITE_URL_FOR_SHELL;
 }
 OAuth2\Autoloader::register();
 $oauth_config = array(

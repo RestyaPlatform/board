@@ -1735,8 +1735,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/apps/settings':
         $content = file_get_contents(APP_PATH . '/client/apps/' . $r_resource_filters['app'] . '/app.json');
         $data = json_decode($content, true);
-        if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
-            include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
+        if (file_exists(SITE_URL_FOR_SHELL)) {
+            include_once SITE_URL_FOR_SHELL;
         }
         if (!empty($data['settings_from_db'])) {
             $fields = $data['settings_from_db'];
