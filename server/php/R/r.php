@@ -3848,6 +3848,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                     if (!file_exists($mediadir)) {
                                         mkdir($mediadir, 0777, true);
                                     }
+                                    if (file_exists($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
+                                        $file_arr = pathinfo($file['name'][$i]);
+                                        $file['name'][$i] = $file_arr['basename'] . '-' . mt_rand(0, 999) . '.' . $file_arr['extension'];
+                                    }
                                     if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
                                         $r_post[$i]['path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'][$i];
                                         $r_post[$i]['name'] = $file['name'][$i];
@@ -4223,6 +4227,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 mkdir($mediadir, 0777, true);
             }
             $file = $_FILES['attachment'];
+            if (file_exists($mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
+                $file_arr = pathinfo($file['name']);
+                $file['name'] = $file_arr['basename'] . '-' . mt_rand(0, 999) . '.' . $file_arr['extension'];
+            }
             if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
                 $r_post['path'] = $save_path . '/' . $file['name'];
                 $r_post['name'] = $file['name'];
@@ -4257,6 +4265,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if ($file['name'][$i] != 'undefined') {
                     if (!file_exists($mediadir)) {
                         mkdir($mediadir, 0777, true);
+                    }
+                    if (file_exists($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
+                        $file_arr = pathinfo($file['name'][$i]);
+                        $file['name'][$i] = $file_arr['basename'] . '-' . mt_rand(0, 999) . '.' . $file_arr['extension'];
                     }
                     if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
                         $r_post[$i]['path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'][$i];
