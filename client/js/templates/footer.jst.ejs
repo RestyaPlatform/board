@@ -208,6 +208,8 @@ if (_.isEmpty(role_links.where({
 				<li><a title="<%- i18next.t('Profile') %>" href="#/user/<%-model.user.id%>"><%- i18next.t("Profile") %></a></li>
 			<% } %>
 			<li><a title="<%- i18next.t('About Restyaboard') %>" href="#/about"><%- i18next.t("About Restyaboard") %></a></li>
+			<% var site_url = window.location.origin; %>
+			<li><a title="<%- i18next.t('Donate Restyaboard') %>" target="_blank" href="http://restya.com/donate/?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=footer"><%- i18next.t('Donate Restyaboard') %></a></li>
 			<li class="dropdown-submenu dropdown language-dropdown">
 				<a href="#" data-toggle="dropdown" class="dropdown-toggle js-open-popover" title="<%- i18next.t('Change Language') %>"><span><i class="icon-caret-left"></i></span><%- i18next.t('Change Language') %></a>
 				<ul class="dropdown-menu text-left js-change-language-form-response pre-scrollable vertical-scrollbar">
