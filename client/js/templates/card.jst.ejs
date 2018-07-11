@@ -64,7 +64,7 @@
 	</li>
 	<% } %>  
 	<% if(!_.isUndefined(card.id) && (_.isUndefined(card.attributes.is_offline) || card.attributes.is_offline == false)){ %>
-	<li class="pull-right card-id"><strong>#<%- card.id %></strong></li>
+	<li class="pull-right card-id" style="display: none;"><strong>#<%- card.id %></strong></li>
 	<%}%>
 	<li id="js-card-customfields-list-<%- card.attributes.id %>"></li>
 	<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){
@@ -92,14 +92,14 @@
 		var created_date_time = card.attributes.created.split('T');
 		created_date_time = created_date_time[0].split(' ');
 	%>
-	<li class="card-listing-truncate card-created-date"><small title=" <%- i18next.t('Created Date') %>"><span class="label label-default"><%= dateFormat(created_date_time[0], 'mediumDate')  %></span></small></li>
-	<li class="card-listing-truncate card-created-user"><small title=" <%- i18next.t('Created User') %>"><span class="label label-default"><%= card.attributes.card_created_user %></span></small></li>
+	<li class="card-listing-truncate card-created-date" style="display: none;"><small title=" <%- i18next.t('Created Date') %>"><span class="label label-default"><%= dateFormat(created_date_time[0], 'mediumDate')  %></span></small></li>
+	<li class="card-listing-truncate card-created-user" style="display: none;"><small title=" <%- i18next.t('Created User') %>"><span class="label label-default"><%= card.attributes.card_created_user %></span></small></li>
 	<% } %>
 	<% if(!_.isEmpty(card.attributes.list_moved_date) && card.attributes.list_moved_date != 'NULL'){ 
 			var list_moved_date_date_time = card.attributes.list_moved_date.split('T');
 			list_moved_date_date_time = list_moved_date_date_time[0].split(' ');
 	%>
-		<li class="card-listing-truncate list-moved-date"><small title=" <%- i18next.t('List Moved Date') %>"><span class="label label-default"><%= dateFormat(list_moved_date_date_time[0], 'mediumDate')  %></span></small></li>
+		<li class="card-listing-truncate list-moved-date" style="display: none;"><small title=" <%- i18next.t('List Moved Date') %>"><span class="label label-default"><%= dateFormat(list_moved_date_date_time[0], 'mediumDate')  %></span></small></li>
 	<% } %>
 	</ul>
 	</div>
