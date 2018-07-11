@@ -18,8 +18,8 @@ require_once $app_path . '/libs/vendors/finediff.php';
 require_once $app_path . '/libs/core.php';
 date_default_timezone_set('GMT');
 global $_server_domain_url;
-if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
-    include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
+if (file_exists(SITE_URL_FOR_SHELL)) {
+    include_once SITE_URL_FOR_SHELL;
 }
 if ($db_lnk) {
     $qry_val_arr = array(

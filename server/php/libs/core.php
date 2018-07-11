@@ -575,8 +575,8 @@ function executeQuery($qry, $arr = array())
 function sendMail($template, $replace_content, $to, $reply_to_mail = '')
 {
     global $r_debug, $db_lnk, $_server_domain_url;
-    if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
-        include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
+    if (file_exists(SITE_URL_FOR_SHELL)) {
+        include_once SITE_URL_FOR_SHELL;
     }
     $default_content = array(
         '##SITE_NAME##' => SITE_NAME,
@@ -1934,8 +1934,8 @@ function email2name($email)
 function findAndReplaceVariables($activity)
 {
     global $_server_domain_url;
-    if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
-        include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
+    if (file_exists(SITE_URL_FOR_SHELL)) {
+        include_once SITE_URL_FOR_SHELL;
     }
     $data = array(
         '##ORGANIZATION_LINK##' => $activity['organization_name'],
