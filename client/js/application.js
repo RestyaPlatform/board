@@ -266,7 +266,7 @@ var responseCallbacks = [];
 function fireRequestCallbacks(callbacks, xhr, arg) {
     for (var i = 0; i < callbacks.length; i++) {
         if (!_.isUndefined(arg) && !_.isUndefined(arg[0]) && arg[0] && !(arg[0] instanceof FormData)) {
-            callbacks[i](xhr,arg);
+            callbacks[i](xhr, arg);
         } else {
             callbacks[i](xhr);
         }
