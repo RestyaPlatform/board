@@ -263,13 +263,19 @@ var RealXHRSend = XMLHttpRequest.prototype.send;
 var requestCallbacks = [];
 var responseCallbacks = [];
 
-function fireCallbacksbeforeRequest(callbacks, xhr, arg) {
+function fireRequestCallbacks(callbacks, xhr, arg) {
     for (var i = 0; i < callbacks.length; i++) {
-        if (arg && arg[0]) {
-            callbacks[i](xhr, arg);
+        if (!_.isUndefined(arg) && !_.isUndefined(arg[0]) && arg[0] && !(arg[0] instanceof FormData)) {
+            callbacks[i](xhr,arg);
         } else {
             callbacks[i](xhr);
         }
+    }
+}
+
+function fireResponseCallbacks(callbacks, xhr) {
+    for (var i = 0; i < callbacks.length; i++) {
+        callbacks[i](xhr);
     }
 }
 
@@ -283,7 +289,7 @@ function addResponseCallback(callback) {
 
 function fireResponseCallbacksIfCompleted(xhr) {
     if (xhr.readyState === 4) {
-        fireCallbacksbeforeRequest(responseCallbacks, xhr);
+        fireResponseCallbacks(responseCallbacks, xhr);
     }
 }
 
@@ -298,7 +304,7 @@ function proxifyOnReadyStateChange(xhr) {
 }
 XMLHttpRequest.prototype.send = function() {
     // Fire request callbacks before sending the request
-    fireCallbacksbeforeRequest(requestCallbacks, this, arguments);
+    fireRequestCallbacks(requestCallbacks, this, arguments);
     // Wire response callbacks
     if (this.addEventListener) {
         var self = this;
