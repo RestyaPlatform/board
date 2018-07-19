@@ -248,7 +248,6 @@ App.OrganizationsView = Backbone.View.extend({
                     }
                 }
             });
-            uploadManager.renderTo($('#manager-area'));
         }).defer();
         this.showTooltip();
         return this;
