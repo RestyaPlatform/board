@@ -295,16 +295,19 @@
 			set -x
 			case "${answer}" in
 				[Yy])
-				apt-get install debian-keyring debian-archive-keyring
-				error_code=$?
-				if [ ${error_code} != 0 ]
+				if ([ "$OS_REQUIREMENT" = "Debian" ])
 				then
-					echo "debian-keyring installation failed with error code ${error_code} (debian-keyring installation failed with error code 1)"
+					sed -i -e 's/deb cdrom/#deb cdrom/g' /etc/apt/sources.list
+					sh -c 'echo "deb http://ftp.de.debian.org/debian jessie main" > /etc/apt/sources.list.d/debjessie.list'
+					apt install apt-transport-https lsb-release ca-certificates -y
+					wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+					echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
 				fi
-				
+				apt-get install debian-keyring debian-archive-keyring -y
 				apt-get update -y
 				apt-get upgrade -y
-				apt-get install python-software-properties software-properties-common -y
+				apt-get install python-software-properties -y
+				apt-get install software-properties-common -y
 				add-apt-repository ppa:ondrej/php
 				apt-get update -y
 				apt-get install libjpeg8 -y --allow-unauthenticated
