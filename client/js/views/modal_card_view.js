@@ -1353,7 +1353,7 @@ App.ModalCardView = Backbone.View.extend({
                     i++;
                 });
             });
-            $('body').trigger('cardRendered', self.model.id, self.model);
+            $('body').trigger('modalCardRendered', self.model.id, self.model);
         }).defer();
         if (!_.isUndefined(authuser.user)) {
             $('#js-card-checklists', this.$el).sortable({
