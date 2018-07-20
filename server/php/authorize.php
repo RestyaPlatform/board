@@ -167,7 +167,7 @@ if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['author
 					</form>
 				  </div>
 				  <hr>
-				  <p><?php echo sprintf(__l('You are logged in as %s The app will be able to use your account %s until you disable it.'), '<strong>' . $user['full_name'] . ' (' . $user['username'] . ')</strong>','<strong>') ?></strong></p>
+				  <p><?php echo sprintf(__l('You are logged in as %s The app will be able to use your account until you disable it.'), '<strong>' . $user['full_name'] . ' (' . $user['username'] . ')</strong>') ?></p>
 				  <hr>
 				  <div class="clearfix"> <strong><?php echo __l('The app will be able to') ?>:</strong>
 					<ul>

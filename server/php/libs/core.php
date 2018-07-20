@@ -1406,7 +1406,7 @@ function importTrelloBoard($board = array())
                         $comment = __l('##USER_NAME## added card description in ##CARD_LINK## - ##DESCRIPTION##');
                     } else if (!empty($action['data']['card']['name'])) {
                         $type = 'edit_card';
-                        $comment = sprintf(__l('##USER_NAME## edited %s card in tthis board.'), utf8_decode($action['data']['card']['name']));
+                        $comment = sprintf(__l('##USER_NAME## edited %s card in this board.'), utf8_decode($action['data']['card']['name']));
                     }
                 } else if ($action['type'] == 'addChecklistToCard') {
                     $type = 'add_card_checklist';
