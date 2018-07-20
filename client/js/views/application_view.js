@@ -346,7 +346,7 @@ App.ApplicationView = Backbone.View.extend({
                             $('.js-switch-calendar-view').trigger('click');
                             view_type = null;
                         } else if (view_type === 'gantt') {
-                            $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">'+ i18next.t('Loading ....') +'</h4></div></div></div>');
+                            $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">' + i18next.t('Loading ....') + '</h4></div></div></div>');
                             $('.js-switch-timeline-view').trigger('click');
                             view_type = null;
                         } else if (view_type === 'attachments') {
@@ -402,7 +402,7 @@ App.ApplicationView = Backbone.View.extend({
                 $('.js-switch-calendar-view').trigger('click');
                 view_type = null;
             } else if (view_type === 'gantt') {
-                $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">'+ i18next.t('Loading ....') +'</h4></div></div></div>');
+                $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">' + i18next.t('Loading ....') + '</h4></div></div></div>');
                 $('.js-switch-timeline-view').trigger('click');
                 view_type = null;
             } else if (view_type === 'attachments') {

@@ -503,7 +503,7 @@ var AppRouter = Backbone.Router.extend({
             model: 'boards_view',
             'id': id
         });
-    }, 
+    },
     card_view: function(id, card_id) {
         history.pushState(null, document.title, window.location.href);
         card_ids = card_id;
