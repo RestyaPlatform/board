@@ -36,6 +36,7 @@ var last_user_activity_id = 0,
 var xhrPool = [];
 var APPS = [];
 var load_count = 1;
+var load_gantt = 1;
 var from_url = '';
 var custom_fields = {};
 var sort_by = '';

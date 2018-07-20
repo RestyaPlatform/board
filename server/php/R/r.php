@@ -974,6 +974,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
                             array_merge($data, $data);
                         }
+                        if (is_plugin_enabled('r_gantt_view')) {
+                            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Gantt' . DIRECTORY_SEPARATOR . 'functions.php';
+                            $data = cardDependencyAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
+                            array_merge($data, $data);
+                        }
                         echo json_encode($data);
                         pg_free_result($result);
                     } else {
@@ -2166,7 +2171,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['is_invite_from_board'] = true;
             $r_post['username'] = slugify($r_post['full_name']);
             $r_post['password'] = getCryptHash('restya');
-            $default_email_notification = 0;            
+            $default_email_notification = 0;
             if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
                 $default_email_notification = 1;
             } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
@@ -4849,6 +4854,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $response);
                     $response = $data;
                 }
+                if (is_plugin_enabled('r_gantt')) {
+                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Gantt' . DIRECTORY_SEPARATOR . 'functions.php';
+                    $data = cardDependencyAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $response);
+                    $response = $data;
+                }
             }
         }
         echo json_encode($response);
@@ -5194,6 +5204,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             '/custom_fields',
             '/cards_custom_fields',
             '/cards/?/cards_custom_fields'
+        );
+        $plugin_url['Gantt'] = array(
+            '/card_dependencies'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -6415,6 +6428,9 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     default:
         $plugin_url['CustomFields'] = array(
             '/custom_fields/?'
+        );
+        $plugin_url['Gantt'] = array(
+            '/card_dependencies/?'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
