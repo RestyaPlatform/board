@@ -137,7 +137,7 @@ if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['author
 							<?php
     if (!empty($error_msg) && $error_msg != 1) {
 ?>
-								<div><script>flashMesssage('danger', 'Sorry, login failed. Either your username or password are incorrect.');</script></div>
+								<div><script>flashMesssage('danger', __l('Sorry, login failed. Either your username or password are incorrect.'));</script></div>
 							<?php
     } ?>
 						</form>
