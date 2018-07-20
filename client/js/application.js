@@ -36,6 +36,7 @@ var last_user_activity_id = 0,
 var xhrPool = [];
 var APPS = [];
 var load_count = 1;
+var load_gantt = 1;
 var from_url = '';
 var custom_fields = {};
 var sort_by = '';
@@ -502,7 +503,7 @@ var AppRouter = Backbone.Router.extend({
             model: 'boards_view',
             'id': id
         });
-    },
+    }, 
     card_view: function(id, card_id) {
         history.pushState(null, document.title, window.location.href);
         card_ids = card_id;

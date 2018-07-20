@@ -345,6 +345,10 @@ App.ApplicationView = Backbone.View.extend({
                         } else if (view_type === 'calendar') {
                             $('.js-switch-calendar-view').trigger('click');
                             view_type = null;
+                        } else if (view_type === 'gantt') {
+                            $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">'+ i18next.t('Loading ....') +'</h4></div></div></div>');
+                            $('.js-switch-timeline-view').trigger('click');
+                            view_type = null;
                         } else if (view_type === 'attachments') {
                             $('.js-show-board-modal').trigger('click');
                             view_type = null;
@@ -372,7 +376,7 @@ App.ApplicationView = Backbone.View.extend({
                         }
                         var current_param = Backbone.history.fragment;
                         var current_param_split = current_param.split('/');
-                        if (current_param.indexOf('list') === -1 && current_param.indexOf('calendar') === -1) {
+                        if (current_param.indexOf('list') === -1 && current_param.indexOf('calendar') === -1 && current_param.indexOf('gantt') === -1) {
                             $('a.js-switch-grid-view').parent().addClass('active');
                         }
                     }
@@ -396,6 +400,10 @@ App.ApplicationView = Backbone.View.extend({
                 view_type = null;
             } else if (view_type === 'calendar') {
                 $('.js-switch-calendar-view').trigger('click');
+                view_type = null;
+            } else if (view_type === 'gantt') {
+                $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">'+ i18next.t('Loading ....') +'</h4></div></div></div>');
+                $('.js-switch-timeline-view').trigger('click');
                 view_type = null;
             } else if (view_type === 'attachments') {
                 $('.js-show-board-modal').trigger('click');
