@@ -272,9 +272,11 @@
 									<% if(setting.name == 'TODO' || setting.name == 'DOING' || setting.name == 'DONE') { %> 
 									</div>
 									<% } %>
-								  <% } else { %>
+								  <% } else if (setting.name === 'R_LDAP_LOGIN_BIND_PASSWORD'){ %>
+									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control"/>
+									<% } else {%>
 									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" value="<%- setting.value %>" />
-								  <% } %>
+									<% } %>
 									<div><span class="help-block"><%= i18next.t(setting.description) %></span></div>
 								  </div>
 								</div>
