@@ -1155,6 +1155,7 @@ App.ModalCardView = Backbone.View.extend({
                 postProcess: 'sprintf',
                 sprintf: [_.escape(this.model.attributes.name), _.escape(this.model.list.attributes.name), subscribed]
             });
+            var is_modalCard_close = false;
             var class_name = '';
             if (parseInt(this.model.attributes.is_archived) === 1) {
                 class_name = ' label label-warning';
@@ -1259,30 +1260,45 @@ App.ModalCardView = Backbone.View.extend({
                     });
                     self.$el.find('.js-modal-settings').removeClass('hide');
                 },
-                close: function(event, dialog) {
-                    $('#js-card-' + self.model.id).removeClass('active');
-                    var current_param = Backbone.history.fragment;
-                    if (current_param.indexOf('board/') != -1) {
-                        card_ids_ref = _.without(card_ids_ref, self.model.id);
-                        if (current_param.indexOf(',' + self.model.id) != -1) {
-                            current_param = current_param.replace(',' + self.model.id, '');
-                        } else if (current_param.indexOf(self.model.id + ',') != -1) {
-                            current_param = current_param.replace(self.model.id + ',', '');
-                        } else if (current_param.indexOf('/card/' + self.model.id) != -1) {
-                            current_param = current_param.replace('/card/' + self.model.id, '');
-                            changeTitle('Board - ' + _.escape(App.current_board.attributes.name));
+                beforeClose: function(event, dialog) {
+                    var comment = $('#js-card-modal-' + self.model.id).find('#inputAddComment').val();
+                    var description = $('#js-card-modal-' + self.model.id).find('#inputCarddescriptions').val();
+                    if (!_.isEmpty(comment) || !_.isEmpty(description)) {
+                        if (window.confirm(i18next.t('You have unsaved changes on this card. Do you want to close this card and discard your changes or stay on this card?'))) {
+                            is_modalCard_close = true;
                         } else {
-                            var board_id = window.location.hash.split("/");
-                            current_param = 'board/' + board_id['2'];
-                            changeTitle('Board - ' + _.escape(App.current_board.attributes.name));
+                            return false;
                         }
-                        app.navigate('#/' + current_param, {
-                            trigger: false,
-                            trigger_function: false,
-                        });
-                        event.remove();
+                    } else {
+                        is_modalCard_close = true;
                     }
-                    self.model.unbind('change:list_id');
+                },
+                close: function(event, dialog) {
+                    if (is_modalCard_close) {
+                        $('#js-card-' + self.model.id).removeClass('active');
+                        var current_param = Backbone.history.fragment;
+                        if (current_param.indexOf('board/') != -1) {
+                            card_ids_ref = _.without(card_ids_ref, self.model.id);
+                            if (current_param.indexOf(',' + self.model.id) != -1) {
+                                current_param = current_param.replace(',' + self.model.id, '');
+                            } else if (current_param.indexOf(self.model.id + ',') != -1) {
+                                current_param = current_param.replace(self.model.id + ',', '');
+                            } else if (current_param.indexOf('/card/' + self.model.id) != -1) {
+                                current_param = current_param.replace('/card/' + self.model.id, '');
+                                changeTitle('Board - ' + _.escape(App.current_board.attributes.name));
+                            } else {
+                                var board_id = window.location.hash.split("/");
+                                current_param = 'board/' + board_id['2'];
+                                changeTitle('Board - ' + _.escape(App.current_board.attributes.name));
+                            }
+                            app.navigate('#/' + current_param, {
+                                trigger: false,
+                                trigger_function: false,
+                            });
+                            event.remove();
+                        }
+                        self.model.unbind('change:list_id');
+                    }
                 }
             });
         } else {
