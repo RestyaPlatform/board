@@ -215,7 +215,7 @@
 
 				<div id="js-card-checklists"></div>
 				<% if(!_.isEmpty(card.attachments)){ %>
-				<div class="list-group-item-heading clearfix">
+				<div class="list-group-item-heading clearfix js-modalCard-attachments-<%- card.id %>">
 				  <h3 class="pull-left"> <span class="pull-left"><i class="icon-paper-clip lead"></i></span><%- i18next.t('Attachment') %></h3>
 				</div>
 				<div class="list-group-item-text clearfix">

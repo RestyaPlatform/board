@@ -54,7 +54,7 @@
 		<li class="card-listing-truncate"><small title="<%- i18next.t('Due Date') %>"><span class="icon-time"></span><span><%- card.attributes.due_date %></span></small></li>
 	<% } %> 
 	<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0){ %>
-	<li>
+	<li class="js-card-attachment-<%- card.id %>">
 		<small title="<%- i18next.t('{{count}} Attachment', {count: card.attachments.length}) %> ">
 			<span class="icon-paper-clip"></span>
 			<span>
