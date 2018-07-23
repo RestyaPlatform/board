@@ -557,6 +557,7 @@ App.CardView = Backbone.View.extend({
      *
      */
     showCardModal: function(e) {
+        e.preventDefault();
         $('ul.dropdown-menu').parent().removeClass('open');
         if (this.model === null || _.isEmpty(this.model)) {
             return false;
