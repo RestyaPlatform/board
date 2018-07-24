@@ -4,20 +4,20 @@
 			var picture_path = attachment.showImage('CardAttachment', attachment.attributes.id, 'original' );
 			var picture_thumb = attachment.showImage('CardAttachment', attachment.attributes.id, 'large_thumb' );
 		%>
-		<a data-fancybox="images" data-caption="Caption #<%= attachment.attributes.name %>" href="<%= picture_path %>" class="pull-left navbar-btn img-thumbnail thumb-img js-attachment-<%- id %>">
+		<a data-fancybox="images" data-caption="<%= attachment.attributes.name %>" href="<%= picture_path %>" class="pull-left navbar-btn img-thumbnail thumb-img js-attachment-<%- id %>">
 			<img src="<%= picture_thumb %>">
 		</a>
 			
-		<% } else if(attachment.attributes.name.toLowerCase().match(/\.(pdf|doc|docx|txt|ppt)$/)){ 
+		<% } else if(attachment.attributes.name.toLowerCase().match(/\.(pdf|doc|docx|txt|ppt)$/)){
 			var document_path = attachment.documentLink('Card', attachment.attributes);
 			var extension = attachment.attributes.name.split('.');
 		%>
-			<a data-fancybox="images" data-caption="Caption #<%= attachment.attributes.name %>" href="<%= document_path %>" class="pull-left navbar-btn img-thumbnail thumb-img"><p class="thumb-img"><%- extension[extension.length - 1].toUpperCase() %></p>
+			<a data-fancybox="images" data-caption="<%= attachment.attributes.name %>" href="<%= document_path %>" class="pull-left navbar-btn img-thumbnail thumb-img"><p class="thumb-img"><%- extension[extension.length - 1].toUpperCase() %></p>
 		<% } else if(attachment.attributes.name.toLowerCase().match(/\.(mp4|webm|mkv|avi|mp3)$/)){ 
 		var video_path = attachment.videoLink('Card', attachment.attributes);
 		var extension = attachment.attributes.name.split('.');
 		%>
-			<a data-fancybox="images" data-caption="Caption #<%= attachment.attributes.name %>" href="<%= video_path %>" class="pull-left navbar-btn img-thumbnail thumb-img"><p class="thumb-img"><%- extension[extension.length - 1].toUpperCase() %></p>
+			<a data-fancybox="images" data-caption="<%= attachment.attributes.name %>" href="<%= video_path %>" class="pull-left navbar-btn img-thumbnail thumb-img"><p class="thumb-img"><%- extension[extension.length - 1].toUpperCase() %></p>
 		<% } %>
 		</a>
 	<% } else if(!_.isEmpty(attachment.attributes.link)){ %>
