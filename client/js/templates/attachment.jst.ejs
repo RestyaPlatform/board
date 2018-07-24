@@ -12,14 +12,13 @@
 			var document_path = attachment.documentLink('Card', attachment.attributes);
 			var extension = attachment.attributes.name.split('.');
 		%>
-			<a data-fancybox="images" data-caption="<%= attachment.attributes.name %>" href="<%= document_path %>" class="pull-left navbar-btn img-thumbnail thumb-img"><p class="thumb-img"><%- extension[extension.length - 1].toUpperCase() %></p>
+			<a data-fancybox="images" data-caption="<%= attachment.attributes.name %>" href="<%= document_path %>" class="pull-left navbar-btn img-thumbnail thumb-img"><p class="thumb-img"><%- extension[extension.length - 1].toUpperCase() %></p></a>
 		<% } else if(attachment.attributes.name.toLowerCase().match(/\.(mp4|webm|mkv|avi|mp3)$/)){ 
 		var video_path = attachment.videoLink('Card', attachment.attributes);
 		var extension = attachment.attributes.name.split('.');
 		%>
-			<a data-fancybox="images" data-caption="<%= attachment.attributes.name %>" href="<%= video_path %>" class="pull-left navbar-btn img-thumbnail thumb-img"><p class="thumb-img"><%- extension[extension.length - 1].toUpperCase() %></p>
+			<a data-fancybox="images" data-caption="<%= attachment.attributes.name %>" href="<%= video_path %>" class="pull-left navbar-btn img-thumbnail thumb-img"><p class="thumb-img"><%- extension[extension.length - 1].toUpperCase() %></p></a>
 		<% } %>
-		</a>
 	<% } else if(!_.isEmpty(attachment.attributes.link)){ %>
 	<%   
 		if (navigator.userAgent.toLowerCase().indexOf('uiwebview') > -1) {
