@@ -1246,6 +1246,8 @@ App.FooterView = Backbone.View.extend({
                                                     k++;
                                                 });
                                             }
+                                        } else if (activity.attributes.type === 'change_card_position') {
+                                            card.set('position', activity.attributes.card_position);
                                         } else if (activity.attributes.type === 'delete_card_attachment') {
                                             self.board.attachments.remove(self.board.attachments.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
