@@ -40,8 +40,6 @@ require_once 'config.inc.php';
 $size = $_GET['size'];
 $model = $_GET['model'];
 $filename = $_GET['filename'];
-$val = $thumbsizes[$model][$size];
-list($width, $height) = explode('x', $val);
 list($id, $hash, $ext) = explode('.', $filename);
 if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size)) {
     $condition = array(
@@ -76,6 +74,8 @@ if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size)) {
     $filename = $id . '.' . $hash . '.' . $ext;
     $writeTo = $mediadir . $filename;
     if ($size != 'original') {
+        $val = $thumbsizes[$model][$size];
+        list($width, $height) = explode('x', $val);
         if (!$width || !$height) {
             header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
             exit;
