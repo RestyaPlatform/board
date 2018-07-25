@@ -114,3 +114,33 @@ SELECT users.id,
      LEFT JOIN states lst ON ((lst.id = li.state_id)))
      LEFT JOIN countries lco ON ((lco.id = li.country_id)))
      LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
+
+CREATE VIEW created_cards_listing AS
+SELECT b.name AS board_name,
+    l.name AS list_name,
+    c.id,
+    to_char(c.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(c.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    c.board_id,
+    c.list_id,
+    c.name,
+    c.description,
+    c.due_date,
+    c."position",
+    (c.is_archived)::integer AS is_archived,
+    c.attachment_count,
+    c.checklist_count,
+    c.checklist_item_count,
+    c.checklist_item_completed_count,
+    c.label_count,
+    c.cards_user_count,
+    c.cards_subscriber_count,
+    c.card_voter_count,
+    c.activity_count,
+    c.user_id AS created_user_id,
+    c.color AS card_color,
+    (c.is_deleted)::integer AS is_deleted,
+    c.comment_count
+   FROM cards c
+     JOIN boards b ON b.id = c.board_id
+     JOIN lists l ON l.id = c.list_id;
