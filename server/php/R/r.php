@@ -547,7 +547,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $i++;
             array_push($pg_params, '{' . implode(',', $logged_user_board_ids) . '}');
         }
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_cards_listing ucl WHERE ' . $str . ' user_id = $' . $i . ' ORDER BY board_id ASC) as d';
+        if (empty($r_resource_filters['type'])) {
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_cards_listing ucl WHERE ' . $str . ' user_id = $' . $i . ' ORDER BY board_name ASC) as d';
+        } else {
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM created_cards_listing ucl WHERE ' . $str . ' created_user_id = $' . $i . ' ORDER BY board_name ASC) as d';
+        }
         array_push($pg_params, $r_resource_vars['users']);
         if (!empty($sql)) {
             if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
