@@ -134,7 +134,25 @@ App.CardView = Backbone.View.extend({
         'click .js-position': 'changeCardPosition',
         'click .js-add-card-member': 'addCardMember',
         'click .js-remove-card-member': 'removeCardMember',
+        'click .js-download-attachments': 'downloadAttachments',
         'cardSort': 'cardSort'
+    },
+    /**
+     * downloadAttachments()
+     * download Atttachments
+     * @param e
+     * @type Object(DOM event)
+     * @param data
+     * @type Object
+     *
+     */
+    downloadAttachments: function(e) {
+        var self = this;
+        e.preventDefault();
+        var hash = calcMD5(SecuritySalt + 'download' + self.model.attributes.board_id + self.model.id);
+        var link = window.location.protocol + '//' + window.location.host + '/download/' + self.model.attributes.board_id + '/' + self.model.id + '/' + hash;
+        window.open(link);
+        return false;
     },
     /**
      * cardSort()
