@@ -94,13 +94,6 @@ Backbone.View.prototype.documentLink = function(model, data) {
     var document_link = window.location.pathname + 'img/original/CardAttachment/' + data.id + '.' + hash + '.' + ext;
     return document_link;
 };
-Backbone.View.prototype.videoLink = function(model, data) {
-    var extension = data.name.split('.');
-    var ext = extension[extension.length - 1];
-    var hash = calcMD5(SecuritySalt + 'CardAttachment' + data.id + ext + 'original');
-    var video_link = window.location.pathname + 'img/original/CardAttachment/' + data.id + '.' + hash + '.' + ext;
-    return video_link;
-};
 hasOfflineStatusCode = function(xhr) {
     var offlineStatusCodes, _ref, __indexOf = [].indexOf || function(item) {
         for (var i = 0, l = this.length; i < l; i++) {
