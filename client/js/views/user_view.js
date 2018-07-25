@@ -418,7 +418,6 @@ App.UserView = Backbone.View.extend({
                     card_users = self.model.cards.groupBy(function(model) {
                         return [model.get('board_name')];
                     });
-                    console.log(self.model.cards);
                     if (!_.isEmpty(card_users)) {
                         _.map(card_users, function(card_user, key) {
                             self.$('#created-cards').append(new App.UserCardsView({
