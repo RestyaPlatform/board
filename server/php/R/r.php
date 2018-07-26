@@ -1875,6 +1875,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $plugin_url['Chart'] = array(
             '/boards'
         );
+        $plugin_url['BoardRole'] = array(
+            '/board_roles'
+        );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
             '/custom_fields/?',
@@ -5200,6 +5203,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     default:
         $plugin_url['LdapLogin'] = array(
             '/users/import'
+        );
+        $plugin_url['BoardRole'] = array(
+            '/board_roles'
         );
         $plugin_url['CardTemplate'] = array(
             '/boards/?/cards/?/card_template'
