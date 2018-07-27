@@ -12,116 +12,73 @@
 		echo "This script must be run as root"
 		exit 1
 	fi
+	
 	set -x
 	whoami
 	echo $(cat /etc/issue)
 	OS_REQUIREMENT=$(lsb_release -i -s)
 	OS_VERSION=$(lsb_release -rs | cut -f1 -d.)
+
+	EJABBERD_DBHOST=localhost
+	EJABBERD_DBNAME=ejabberd
+	EJABBERD_DBUSER=ejabb
+	EJABBERD_DBPASS=ftfnVgYl2
+	EJABBERD_DBPORT=5432
+
+	set +x
+	echo "Enter your document root (where your Restyaboard path already installed. e.g., /usr/share/nginx/html/restyaboard):"
+	read -r dir
+	while [[ -z "$dir" ]]
+	do
+		read -r -p "Enter your document root (where your Restyaboard path already installed. e.g., /usr/share/nginx/html/restyaboard):" dir
+	done
+
+	set +x
+	echo "To configure ejabberd, enter your restyaboard domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
+	read -r webdir
+	while [[ -z "$webdir" ]]
+	do
+		read -r -p "To configure ejabberd, enter your restyaboard domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+	done
+
 	if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 	then
-		set +x
-		echo "Enter your document root (where your Restyaboard path already installed. e.g., /usr/share/nginx/html/restyaboard):"
-		read -r dir
-		while [[ -z "$dir" ]]
-		do
-			read -r -p "Enter your document root (where your Restyaboard path already installed. e.g., /usr/share/nginx/html/restyaboard):" dir
-		done
-
-        EJABBERD_DBHOST=localhost
-        EJABBERD_DBNAME=ejabberd
-        EJABBERD_DBUSER=ejabb
-        EJABBERD_DBPASS=ftfnVgYl2
-		EJABBERD_DBPORT=5432
-		echo "Changing ejabberd database name, user and password..."
-		sed -i "s/^.*'CHAT_DB_NAME'.*$/define('CHAT_DB_NAME', '${EJABBERD_DBNAME}');/g" "$dir/server/php/config.inc.php"
-		sed -i "s/^.*'CHAT_DB_USER'.*$/define('CHAT_DB_USER', '${EJABBERD_DBUSER}');/g" "$dir/server/php/config.inc.php"
-		sed -i "s/^.*'CHAT_DB_PASSWORD'.*$/define('CHAT_DB_PASSWORD', '${EJABBERD_DBPASS}');/g" "$dir/server/php/config.inc.php"
-		sed -i "s/^.*'CHAT_DB_HOST'.*$/define('CHAT_DB_HOST', '${EJABBERD_DBHOST}');/g" "$dir/server/php/config.inc.php"
-		sed -i "s/^.*'CHAT_DB_PORT'.*$/define('CHAT_DB_PORT', '${EJABBERD_DBPORT}');/g" "$dir/server/php/config.inc.php"
-
-		cd /opt
-			wget http://liquidtelecom.dl.sourceforge.net/project/expat/expat/2.1.1/expat-2.1.1.tar.bz2
-			tar -jvxf expat-2.1.1.tar.bz2
-			cd expat-2.1.1/
-			./configure
-			make
-			make install
-
-        cd /opt
-			wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
-			tar -zvxf ejabberd-15.07.tgz
-			cd ejabberd-15.07
-			apt install automake libc6-dev gcc libssl-dev erlang
-			./autogen.sh
-			./configure --enable-pgsql
-			make
-			make install
-
-        cd /etc/ejabberd
-			echo "Creating ejabberd user and database..."
-			psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
-
-			cd /etc/ejabberd
-			psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
-
-			psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
-			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
-			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-			sed -i 's/odbc_username: "postgres"/odbc_username: "'${EJABBERD_DBUSER}'"/g' /etc/ejabberd/ejabberd.yml
-			sed -i 's/odbc_password: ""/odbc_password: "'${EJABBERD_DBPASS}'"/g' /etc/ejabberd/ejabberd.yml
-
-			echo "Setting up cron for chat server..."
-			echo "*/5 * * * * $dir/server/php/plugins/Chat/shell/chat_activities.sh" >> /var/spool/cron/crontabs/root
-			echo "0 * * * * $dir/server/php/plugins/Chat/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/crontabs/root
-			
-			ejabberdctl start
-			sleep 15
-			ejabberdctl change_password admin localhost restya
-			ejabberdctl stop
-			sleep 15
-			ejabberdctl start
-        echo "Installation successfully completed"
-    else
-		set +x
-		echo "Enter your document root (where your Restyaboard path already installed. e.g., /usr/share/nginx/html/restyaboard):"
-		read -r dir
-		while [[ -z "$dir" ]]
-		do
-			read -r -p "Enter your document root (where your Restyaboard path already installed. e.g., /usr/share/nginx/html/restyaboard):" dir
-		done
-
-        wget https://www.process-one.net/downloads/ejabberd/15.07/ejabberd-15.07.tgz
-
-        yum install -y libyaml*
-			tar -zvxf ejabberd-15.07.tgz
-			cd ejabberd-15.07
-			./autogen.sh
-			./configure --enable-pgsql
-			make
-			make install
-
-        echo "Creating ejabberd user and database..."
-			psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
-
-			cd /etc/ejabberd
-			psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
-			
-			psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
-			mv $dir/ejabberd.yml /etc/ejabberd/ejabberd.yml
-			chmod -R go+w "/etc/ejabberd/ejabberd.yml"
-			sed -i 's/ejabberd15/'${EJABBERD_DBNAME}'/g' /etc/ejabberd/ejabberd.yml
-
-			echo "Setting up cron for chat server..."
-			echo "*/5 * * * * $dir/server/php/plugins/Chat/shell/chat_activities.sh" >> /var/spool/cron/root
-			echo "0 * * * * $dir/server/php/plugins/Chat/shell/periodic_chat_email_notification.sh" >> /var/spool/cron/root
-
-			ejabberdctl start
-			sleep 15
-			ejabberdctl change_password admin localhost restya
-			ejabberdctl stop
-			sleep 15
-			ejabberdctl start
-
-        echo "Installation successfully completed"
+		apt install -y libz-dev
+		CRON_DIR=/var/spool/cron/crontabs/root
+	else
+		CRON_DIR=/var/spool/cron/root
 	fi
+
+	cd /opt
+	wget -O ejab.tgz https://www.process-one.net/downloads/downloads-action.php?file=/ejabberd/18.04/ejabberd-18.04.tgz
+	tar -xvzf ejab.tgz
+	cd ejabberd-18.04/
+	./configure --enable-pgsql
+	make
+	make install
+
+	echo "Creating ejabberd user and database..."
+	psql -U postgres -c "CREATE USER ${EJABBERD_DBUSER} WITH ENCRYPTED PASSWORD '${EJABBERD_DBPASS}'"
+	psql -U postgres -c "CREATE DATABASE ${EJABBERD_DBNAME}"
+	psql -d ${EJABBERD_DBNAME} -f "/opt/ejabberd-15.07/sql/pg.sql" -U postgres
+
+	mv $dir/ejabberd.yml /usr/local/etc/ejabberd/ejabberd.yml
+	chmod -R go+w "/usr/local/etc/ejabberd/ejabberd.yml"
+	sed -i "s/restya.com/$webdir/g" /usr/local/etc/ejabberd/ejabberd.yml
+	sed -i 's/sql_database: "ejabberd"/sql_database: "'${EJABBERD_DBNAME}'"/g' /usr/local/etc/ejabberd/ejabberd.yml
+	sed -i 's/sql_username: "postgres"/sql_username: "'${EJABBERD_DBUSER}'"/g' /usr/local/etc/ejabberd/ejabberd.yml
+	sed -i 's/sql_password: ""/sql_password: "'${EJABBERD_DBPASS}'"/g' /usr/local/etc/ejabberd/ejabberd.yml
+
+	ejabberdctl start
+	sleep 15
+	ejabberdctl register admin localhost restya
+	ejabberdctl stop
+	sleep 15
+	ejabberdctl start
+
+	echo "Setting up cron for chat server..."
+	echo "*/5 * * * * $dir/server/php/plugins/Chat/shell/chat_activities.sh" >> CRON_DIR
+	echo "0 * * * * $dir/server/php/plugins/Chat/shell/periodic_chat_email_notification.sh" >> CRON_DIR
+
+	echo "Installation successfully completed"	
 }
