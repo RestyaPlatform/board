@@ -1091,6 +1091,7 @@ App.ModalCardView = Backbone.View.extend({
                         i++;
                     });
                 });
+                $('body').trigger('modalCardRendered', self.model.id, self.model);
             }).defer();
             this.$el.find('#inputAddComment').val(comment).focus();
             this.$el.find('#inputCarddescriptions').val(description).focus();
