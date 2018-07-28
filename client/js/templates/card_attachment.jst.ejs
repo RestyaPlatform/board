@@ -10,7 +10,7 @@
 		var document_path = attachment.documentLink('Card', attachment.attributes);
 		var extension = attachment.attributes.name.split('.');
 	%>
-		<a data-fancybox="images" data-caption="<%= attachment.attributes.name %>" href="<%= document_path %>" class="pull-left navbar-btn img-thumbnail"><p class="thumb-img"><%- extension[extension.length - 1].toUpperCase() %></p></a>
+		<a data-fancybox="images" data-caption="<%= attachment.attributes.name %>" href="<%= document_path %>" class="pull-left navbar-btn img-thumbnail js-card-attachment-<%- card_id %>"><p class="thumb-img"><%- extension[extension.length - 1].toUpperCase() %></p></a>
 	<% } %>
 <% } else if(!_.isEmpty(attachment.attributes.link)){ %>
 	<%   
