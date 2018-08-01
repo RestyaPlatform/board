@@ -1288,33 +1288,6 @@ function importTrelloBoard($board = array())
                         pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards_users (created, modified, card_id, user_id) VALUES (now(), now(), $1, $2) RETURNING id', $qry_val_arr));
                     }
                 }
-                if (!empty($card['checklists'])) {
-                    $checklists = array();
-                    foreach ($card['checklists'] as $checklist) {
-                        $qry_val_arr = array(
-                            utf8_decode($checklist['name']) ,
-                            $checklist['pos'],
-                            $cards[$checklist['idCard']],
-                            $user_id
-                        );
-                        $_checklist = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO checklists (created, modified, name, position, card_id, user_id) VALUES (now(), now(), $1, $2, $3, $4) RETURNING id', $qry_val_arr));
-                        $checklists[$checklist['id']] = $_checklist['id'];
-                        if (!empty($checklist['checkItems'])) {
-                            foreach ($checklist['checkItems'] as $checkItem) {
-                                $is_completed = ($checkItem['state'] == 'complete') ? 'true' : 'false';
-                                $qry_val_arr = array(
-                                    utf8_decode($checkItem['name']) ,
-                                    $checkItem['pos'],
-                                    $cards[$checklist['idCard']],
-                                    $_checklist['id'],
-                                    $is_completed,
-                                    $user_id
-                                );
-                                pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO checklist_items (created, modified, name, position, card_id, checklist_id, is_completed, user_id) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
-                            }
-                        }
-                    }
-                }
             }
         }
         if (!empty($board['checklists'])) {
