@@ -4861,7 +4861,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $response);
                     $response = $data;
                 }
-                if (is_plugin_enabled('r_gantt')) {
+                if (is_plugin_enabled('r_gantt_view')) {
                     require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Gantt' . DIRECTORY_SEPARATOR . 'functions.php';
                     $data = cardDependencyAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $response);
                     $response = $data;
@@ -5670,6 +5670,11 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             } else {
                 $comment = '##USER_NAME## set due date - ' . $r_put['due_date'] . ' to this card ##CARD_LINK##';
                 $activity_type = 'add_card_duedate';
+            }
+            if (is_plugin_enabled('r_gantt_view')) {
+                require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Gantt' . DIRECTORY_SEPARATOR . 'functions.php';
+                $data = updateDependencyCards($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put, $previous_value);
+                $response = $data;
             }
         } else if (isset($r_put['due_date'])) {
             $comment = 'Due date - ' . $previous_value['due_date'] . ' was removed to this card ##CARD_LINK##';
