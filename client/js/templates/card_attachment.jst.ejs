@@ -6,6 +6,11 @@
 	<a data-fancybox="images" data-caption="<%= attachment.attributes.name %>" href="<%= picture_path %>" class="pull-left navbar-btn img-thumbnail js-card-attachment-<%- card_id %>">
 		<img src="<%= picture_thumb %>">
 	</a>
+	<% } else if (attachment.attributes.name.toLowerCase().match(/\.(pdf)$/) && !_.isUndefined(attachment.attributes.doc_image_path) && !_.isEmpty(attachment.attributes.doc_image_path) && attachment.attributes.doc_image_path !== null) { 
+		var document_path = attachment.documentLink('Card', attachment.attributes); %>
+		<a data-fancybox="images" data-caption="<%= attachment.attributes.name %>" href="<%= document_path %>" class="pull-left navbar-btn img-thumbnail js-card-attachment-<%- card_id %>">
+			<img src="<%= attachment.attributes.doc_image_path %>">
+		</a>
 	<% } else {
 		var document_path = attachment.documentLink('Card', attachment.attributes);
 		var extension = attachment.attributes.name.split('.');
