@@ -3613,6 +3613,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $result = pg_execute_insert($table_name, $post);
             if ($result) {
                 $row = pg_fetch_assoc($result);
+                if (is_plugin_enabled('r_board_roles')) {
+                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'BoardRole' . DIRECTORY_SEPARATOR . 'functions.php';
+                    $board_user_role_id = boardRoleAfterInsertBoardUser($r_post);
+                }
                 $response['id'] = $row['id'];
                 if ($is_return_vlaue) {
                     $row = convertBooleanValues($table_name, $row);
