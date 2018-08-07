@@ -3616,6 +3616,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (is_plugin_enabled('r_board_roles')) {
                     require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'BoardRole' . DIRECTORY_SEPARATOR . 'functions.php';
                     $board_user_role_id = boardRoleAfterInsertBoardUser($r_post);
+                    if (!empty($board_user_role_id)) {
+                        $response['board_user_role_id'] = $board_user_role_id;
+                    }
                 }
                 $response['id'] = $row['id'];
                 if ($is_return_vlaue) {
@@ -3646,7 +3649,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         '##NAME##' => $user['full_name'],
                         '##CURRENT_USER##' => $authUser['full_name'],
                         '##BOARD_NAME##' => $previous_value['name'],
-                        '##BOARD_URL##' => $_server_domain_url . '/#/board/' . $r_post['board_id'],
+                        '##BOARD_URL##' => $_server_domain_url . '/#/board/' . $r_post['board_id']
                     );
                     sendMail('newprojectuser', $emailFindReplace, $user['email']);
                 }
