@@ -3616,6 +3616,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (is_plugin_enabled('r_board_roles')) {
                     require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'BoardRole' . DIRECTORY_SEPARATOR . 'functions.php';
                     $board_user_role_id = boardRoleAfterInsertBoardUser($r_post);
+                    if (!empty($board_user_role_id)) {
+                        $response['board_user_role_id'] = $board_user_role_id;
+                    }
                 }
                 $response['id'] = $row['id'];
                 if ($is_return_vlaue) {
@@ -3635,26 +3638,26 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, board_id , user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
                 }
-                $foreign_ids['board_id'] = $r_resource_vars['boards'];
-                $foreign_ids['board_id'] = $r_post['board_id'];
-                $qry_val_arr = array(
-                    $r_post['user_id']
-                );
-                $user = executeQuery('SELECT * FROM users WHERE id = $1', $qry_val_arr);
-                if ($user) {
-                    $emailFindReplace = array(
+                /*$foreign_ids['board_id'] = $r_resource_vars['boards'];
+                        $foreign_ids['board_id'] = $r_post['board_id'];
+                        $qry_val_arr = array(
+                        $r_post['user_id']
+                        );
+                        $user = executeQuery('SELECT * FROM users WHERE id = $1', $qry_val_arr);
+                        if ($user) {
+                        $emailFindReplace = array(
                         '##NAME##' => $user['full_name'],
                         '##CURRENT_USER##' => $authUser['full_name'],
                         '##BOARD_NAME##' => $previous_value['name'],
                         '##BOARD_URL##' => $_server_domain_url . '/#/board/' . $r_post['board_id'],
-                    );
-                    sendMail('newprojectuser', $emailFindReplace, $user['email']);
-                }
-                $comment = '##USER_NAME## added member to board';
-                $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board_user', $foreign_ids, '', $response['id']);
-                if (is_plugin_enabled('r_chat') && $jabberHost) {
-                    xmppGrantMember($r_post, $previous_value);
-                }
+                        );
+                        sendMail('newprojectuser', $emailFindReplace, $user['email']);
+                        }
+                        $comment = '##USER_NAME## added member to board';
+                        $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board_user', $foreign_ids, '', $response['id']);
+                        if (is_plugin_enabled('r_chat') && $jabberHost) {
+                        xmppGrantMember($r_post, $previous_value);
+                        }*/
             }
         }
         echo json_encode($response);
