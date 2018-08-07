@@ -3638,7 +3638,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, board_id , user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
                 }
-                /*$foreign_ids['board_id'] = $r_resource_vars['boards'];
+                $foreign_ids['board_id'] = $r_resource_vars['boards'];
                         $foreign_ids['board_id'] = $r_post['board_id'];
                         $qry_val_arr = array(
                         $r_post['user_id']
@@ -3657,7 +3657,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board_user', $foreign_ids, '', $response['id']);
                         if (is_plugin_enabled('r_chat') && $jabberHost) {
                         xmppGrantMember($r_post, $previous_value);
-                        }*/
+                        }
             }
         }
         echo json_encode($response);
