@@ -3656,7 +3656,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $comment = '##USER_NAME## added member to board';
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board_user', $foreign_ids, '', $response['id']);
                 if (is_plugin_enabled('r_chat') && $jabberHost) {
-                xmppGrantMember($r_post, $previous_value);
+                    xmppGrantMember($r_post, $previous_value);
                 }
             }
         }
