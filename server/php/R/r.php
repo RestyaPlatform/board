@@ -3645,13 +3645,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 );
                 $user = executeQuery('SELECT * FROM users WHERE id = $1', $qry_val_arr);
                 if ($user) {
-                $emailFindReplace = array(
-                    '##NAME##' => $user['full_name'],
-                    '##CURRENT_USER##' => $authUser['full_name'],
-                    '##BOARD_NAME##' => $previous_value['name'],
-                    '##BOARD_URL##' => $_server_domain_url . '/#/board/' . $r_post['board_id']
-                );
-                sendMail('newprojectuser', $emailFindReplace, $user['email']);
+                    $emailFindReplace = array(
+                        '##NAME##' => $user['full_name'],
+                        '##CURRENT_USER##' => $authUser['full_name'],
+                        '##BOARD_NAME##' => $previous_value['name'],
+                        '##BOARD_URL##' => $_server_domain_url . '/#/board/' . $r_post['board_id']
+                    );
+                    sendMail('newprojectuser', $emailFindReplace, $user['email']);
                 }
                 $comment = '##USER_NAME## added member to board';
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board_user', $foreign_ids, '', $response['id']);
