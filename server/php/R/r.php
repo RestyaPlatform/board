@@ -5741,7 +5741,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
             if (is_plugin_enabled('r_gantt_view')) {
                 require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Gantt' . DIRECTORY_SEPARATOR . 'functions.php';
-                $data = updateDependencyCards($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put, $previous_value);
+                $r_put['id'] = $r_resource_vars['cards'];
+                $data = updateDependencyCards($r_put, $previous_value);
                 $response = $data;
             }
         } else if (isset($r_put['due_date'])) {
