@@ -913,6 +913,9 @@ App.ModalCardView = Backbone.View.extend({
                         self.model.cards.add(self.model);
                     }
                     if (!_.isEmpty(data.due_date)) {
+                        if (!_.isEmpty(response.child_cards) && !_.isUndefined(response.child_cards)) {
+                            $('main').trigger('dueDateRendered', response.child_cards);
+                        }
                         self.model.list.collection.board.lists.each(function(list) {
                             var cards = list.get('cards') || [];
                             if (!_.isEmpty(cards)) {
