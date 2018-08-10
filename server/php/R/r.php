@@ -5742,8 +5742,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             if (is_plugin_enabled('r_gantt_view')) {
                 require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Gantt' . DIRECTORY_SEPARATOR . 'functions.php';
                 $r_put['id'] = $r_resource_vars['cards'];
-                $data = updateDependencyCards($r_put);
-                $response = $data;
+                $childCardResponse = updateDependencyCards($r_put, array());
             }
         } else if (isset($r_put['due_date'])) {
             $comment = 'Due date - ' . $previous_value['due_date'] . ' was removed to this card ##CARD_LINK##';
@@ -5821,6 +5820,9 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         }
         unset($r_put['start']);
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
+        if (!empty($childCardResponse)) {
+            $response['child_cards'] = $childCardResponse;
+        }
         echo json_encode($response);
         break;
 
