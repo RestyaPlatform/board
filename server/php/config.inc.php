@@ -52,7 +52,9 @@ if (!defined('STDIN') && !file_exists(SITE_URL_FOR_SHELL) && !empty($_server_dom
 $db_lnk = pg_connect('host=' . R_DB_HOST . ' port=' . R_DB_PORT . ' dbname=' . R_DB_NAME . ' user=' . R_DB_USER . ' password=' . R_DB_PASSWORD . ' options=--client_encoding=UTF8') or die('Database could not connect');
 $settings = pg_query_params($db_lnk, 'SELECT name, value FROM settings', array());
 while ($setting = pg_fetch_assoc($settings)) {
-    define($setting['name'], $setting['value']);
+    if (!defined($setting['name'])) {
+        define($setting['name'], $setting['value']);
+    }
 }
 date_default_timezone_set(SITE_TIMEZONE);
 $thumbsizes = array(
