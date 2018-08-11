@@ -350,7 +350,9 @@ App.ApplicationView = Backbone.View.extend({
                             view_type = null;
                         } else if (view_type === 'gantt') {
                             $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">' + i18next.t('Loading ....') + '</h4></div></div></div>');
-                            $('.js-switch-timeline-view').trigger('click');
+                            _(function() {
+                                $('.js-switch-timeline-view').trigger('click');
+                            }).defer();
                             view_type = null;
                         } else if (view_type === 'attachments') {
                             $('.js-show-board-modal').trigger('click');
@@ -406,7 +408,9 @@ App.ApplicationView = Backbone.View.extend({
                 view_type = null;
             } else if (view_type === 'gantt') {
                 $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">' + i18next.t('Loading ....') + '</h4></div></div></div>');
-                $('.js-switch-timeline-view').trigger('click');
+                _(function() {
+                    $('.js-switch-timeline-view').trigger('click');
+                }).defer();
                 view_type = null;
             } else if (view_type === 'attachments') {
                 $('.js-show-board-modal').trigger('click');
