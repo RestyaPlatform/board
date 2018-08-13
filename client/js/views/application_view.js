@@ -292,6 +292,7 @@ App.ApplicationView = Backbone.View.extend({
                 success: function(model, response) {
                     if (!_.isUndefined(response.error)) {
                         $.cookie('redirect_link', window.location.hash);
+                        changeTitle('Board not found');
                         $('#content').html(new App.Board404View({
                             model: authuser
                         }).el);
@@ -389,6 +390,7 @@ App.ApplicationView = Backbone.View.extend({
                 },
                 error: function(model, response) {
                     $.cookie('redirect_link', window.location.hash);
+                    changeTitle('Board not found');
                     $('#content').html(new App.Board404View({
                         model: authuser
                     }).el);
@@ -437,11 +439,16 @@ App.ApplicationView = Backbone.View.extend({
             cache: false,
             abortPending: true,
             success: function(model, response) {
-                if (!_.isUndefined(response.error) && response.error.message == 'Unauthorized') {
-                    app.navigate('#/users/login', {
-                        trigger: true,
-                        replace: true
+                if (!_.isUndefined(response.error) && response.error.message === 'Unauthorized') {
+                    $.cookie('redirect_link', window.location.hash);
+                    changeTitle('Organization not found');
+                    $('#content').html(new App.Organization404View({
+                        model: authuser
+                    }).el);
+                    this.headerView = new App.HeaderView({
+                        model: authuser
                     });
+                    $('#header').html(this.headerView.el);
                 } else {
                     Organization.boards.add(Organization.attributes.boards_listing);
                     Organization.organization_user_roles = response.organization_user_roles;
