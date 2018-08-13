@@ -463,6 +463,7 @@ var AppRouter = Backbone.Router.extend({
                 $.removeCookie('chat_initialize');
                 localforage.removeItem('r_zapier_access_token');
                 localforage.removeItem('board_filter');
+                localforage.removeItem('unreaded_cards');
                 api_token = '';
                 authuser = new App.User();
                 app.navigate('#/users/login', {
