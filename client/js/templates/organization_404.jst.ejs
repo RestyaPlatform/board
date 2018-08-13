@@ -1,0 +1,6 @@
+<div class="well-lg navbar-btn">&nbsp;</div>
+<div class="board-close-view">
+  <strong><%- i18next.t("Organization not found") %></strong>
+  <div class="well-sm"><%- i18next.t("This organization may be private.") %> <% if(!_.isEmpty(role_links.where({slug: "users_login"})) && _.isUndefined(authuser.user)){ %><%= i18next.t("You may be able to view it by %s", {postProcess: 'sprintf', sprintf: ['<a href="#/users/login" class="text-primary" title="'+ i18next.t('Login') +'">'+ i18next.t('logging in.') +'</a>']}) %> <% } %>
+  </div>
+  </div>

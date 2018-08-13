@@ -202,6 +202,17 @@ callbackTranslator = {
                         model: authuser
                     }).el);
                     return;
+                } else if (!_.isUndefined(current_url) && current_url['1'] == 'organization') {
+                    $.cookie('redirect_link', window.location.hash);
+                    changeTitle('Organization not found');
+                    this.headerView = new App.HeaderView({
+                        model: authuser
+                    });
+                    $('#header').html(this.headerView.el);
+                    $('#content').html(new App.Organization404View({
+                        model: authuser
+                    }).el);
+                    return;
                 }
             } else {
                 return callback.call(null, model, resp, options);
