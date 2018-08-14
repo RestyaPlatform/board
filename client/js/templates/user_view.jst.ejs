@@ -30,19 +30,19 @@
 						<div class="col-xs-12">
 							<div class="clearfix">
 								<ul class="nav nav-tabs no-bor h3">
-									<li class="js-userCreated-cards-tab <% if (!_.isUndefined(type) && type == 'cards') { %>active<%}%>">
-										<a href="#/user/<%-user.attributes.id%>/cards" class="js-userCreated-cards"><%- i18next.t('Created cards') %></a>
-									</li>
-									<li class="js-membered-cards-tab">
+									<li class="js-membered-cards-tab <% if (!_.isUndefined(type) && type == 'cards') { %>active<%}%>">
 										<a href="javascript:void(0);" class="js-membered-cards"><%- i18next.t('Assigned cards') %></a>
+									</li>
+									<li class="js-userCreated-cards-tab">
+										<a href="#/user/<%-user.attributes.id%>/cards" class="js-userCreated-cards"><%- i18next.t('Created cards') %></a>
 									</li>
 								</ul>
 							</div>
 							<div class="row">
 								<div class="tab-content">
-									<div class="modal-body tab-pane js-userCreated-cards-tabContent <% if (_.isUndefined(type) || type == 'cards') { %>active<%}%>" id="created-cards">
+										<div class="modal-body tab-pane js-membered-cards-tabContent <% if (_.isUndefined(type) || type == 'cards') { %>active<%}%>" id="cards"></div>
+									<div class="modal-body tab-pane js-userCreated-cards-tabContent" id="created-cards">
 									</div>
-									<div class="modal-body tab-pane js-membered-cards-tabContent" id="cards"></div>
 								</div>
 							</div>
 						</div>
