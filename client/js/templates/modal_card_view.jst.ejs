@@ -175,7 +175,6 @@
 				  </li>
 				  <% } %>
 					<% } %>
-					<li class="js-card_dependency-listing-<%- card.attributes.id %>"></li>
 				</ul>
 					<div class="list-group-item-text clearfix github-markdown">
 					  <h4 class="text-muted"><%- i18next.t('Description') %> 
@@ -212,7 +211,8 @@
 					  </form>
 					  <% }%>
 					</div>
-
+				<div class="list-group-item-text clearfix js-card_dependency-listing-<%- card.attributes.id %>">
+				</div>
 				<div id="js-card-checklists"></div>
 				<% if(!_.isEmpty(card.attachments)){ %>
 				<div class="list-group-item-heading clearfix js-modalCard-attachments-<%- card.id %>">
