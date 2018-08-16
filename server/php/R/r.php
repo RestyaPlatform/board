@@ -548,11 +548,15 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             array_push($pg_params, '{' . implode(',', $logged_user_board_ids) . '}');
         }
         if (empty($r_resource_filters['type'])) {
-            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_cards_listing ucl WHERE ' . $str . ' user_id = $' . $i . ' ORDER BY board_name ASC) as d';
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_cards_listing ucl WHERE ' . $str . ' user_id = ANY ( $' . $i . ' ) ORDER BY board_name ASC) as d';
         } else {
-            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM created_cards_listing ucl WHERE ' . $str . ' created_user_id = $' . $i . ' ORDER BY board_name ASC) as d';
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM created_cards_listing ucl WHERE ' . $str . ' created_user_id = ANY ( $' . $i . ' ) ORDER BY board_name ASC) as d';
         }
-        array_push($pg_params, $r_resource_vars['users']);
+        if (!empty($r_resource_filters['user_ids'])) {
+            array_push($pg_params, '{' . $r_resource_vars['users'] . ',' . $r_resource_filters['user_ids'] . '}');
+        } else {
+            array_push($pg_params, '{' . $r_resource_vars['users'] . '}');
+        }
         if (!empty($sql)) {
             if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
                 $data = array();
@@ -1871,6 +1875,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $plugin_url['Chat'] = array(
             '/xmpp_login',
             '/boards/?/chat_history'
+        );
+        $plugin_url['Report'] = array(
+            '/boards/?/reports'
         );
         $plugin_url['Chart'] = array(
             '/boards'
@@ -5763,16 +5770,19 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
         }
         if (is_plugin_enabled('r_estimated_time')) {
-            if (isset($present_custom_fields['hour']) && $present_custom_fields['hour'] != 'NULL') {
-                if (isset($previous_custom_fields['hour']) && ($previous_custom_fields['hour'] != 'null' && $previous_custom_fields['hour'] != '')) {
-                    $comment = '##USER_NAME## updated estimated time - ' . $present_custom_fields['hour'] . ':' . $present_custom_fields['min'] . ' to this card ##CARD_LINK##';
+            if ((isset($present_custom_fields['hour']) && $present_custom_fields['hour'] != 'NULL') || (isset($present_custom_fields['min']) && $present_custom_fields['min'] != 'NULL')) {
+                if (isset($present_custom_fields['hour']) && ($present_custom_fields['hour'] != 'null' && $present_custom_fields['hour'] != '') && isset($present_custom_fields['min']) && ($present_custom_fields['min'] != 'null' && $present_custom_fields['min'] != '')) {
+                    $comment = '##USER_NAME## updated estimated time ' . $present_custom_fields['hour'] . ' hour(s) ' . $present_custom_fields['min'] . ' min(s) to this card ##CARD_LINK##';
                     $activity_type = 'edit_card_estimatedtime';
-                } else {
-                    $comment = '##USER_NAME## set estimated time - ' . $present_custom_fields['hour'] . ':' . $present_custom_fields['min'] . ' to this card ##CARD_LINK##';
+                } else if (isset($present_custom_fields['hour']) && ($present_custom_fields['hour'] != 'null' && $present_custom_fields['hour'] != '')) {
+                    $comment = '##USER_NAME## set estimated time ' . $present_custom_fields['hour'] . ' hour(s) to this card ##CARD_LINK##';
+                    $activity_type = 'add_card_estimatedtime';
+                } else if (isset($present_custom_fields['min']) && ($present_custom_fields['min'] != 'null' && $present_custom_fields['min'] != '')) {
+                    $comment = '##USER_NAME## set estimated time ' . $present_custom_fields['min'] . ' min(s) to this card ##CARD_LINK##';
                     $activity_type = 'add_card_estimatedtime';
                 }
-            } else if (isset($present_custom_fields['hour'])) {
-                $comment = 'Estimated time - ' . $previous_custom_fields['hour'] . ':' . $previous_custom_fields['min'] . ' was removed to this card ##CARD_LINK##';
+            } else if (isset($present_custom_fields['hour']) && isset($present_custom_fields['min'])) {
+                $comment = '##USER_NAME## removed estimated time to this card ##CARD_LINK##';
                 $activity_type = 'delete_card_estimatedtime';
             }
         }
