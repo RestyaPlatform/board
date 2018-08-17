@@ -25,8 +25,8 @@
 		OS_VERSION=$(lsb_release -rs | cut -f1 -d.)
 		if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 		then
-			apt-get update
-			apt-get install -y curl unzip
+			apt update
+			apt install -y curl unzip
 		else
 			yum install -y curl unzip
 		fi
@@ -303,14 +303,21 @@
 					wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 					echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
 				fi
-				apt-get install debian-keyring debian-archive-keyring -y
-				apt-get update -y
-				apt-get upgrade -y
-				apt-get install python-software-properties -y
-				apt-get install software-properties-common -y
-				add-apt-repository ppa:ondrej/php
-				apt-get update -y
-				apt-get install libjpeg8 -y --allow-unauthenticated
+				apt install debian-keyring debian-archive-keyring -y
+				apt update -y
+				apt upgrade -y
+				apt install python-software-properties -y
+				apt install software-properties-common -y
+				set +x
+				echo "To install latest version of PHP, script will add 'ppa:ondrej/php' repository in sources.list.d directory. Do you want to continue (y/n)?"
+				read -r answer
+				set -x
+				case "${answer}" in
+					[Yy])
+					add-apt-repository ppa:ondrej/php
+				esac
+				apt update -y
+				apt install libjpeg8 -y --allow-unauthenticated
 				
 				echo "Checking nginx..."
 				if ! which nginx > /dev/null 2>&1; then
@@ -322,7 +329,7 @@
 					case "${answer}" in
 						[Yy])
 						echo "Installing nginx..."
-						apt-get install -y cron nginx
+						apt install -y cron nginx
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -343,7 +350,7 @@
 					case "${answer}" in
 						[Yy])
 						echo "Installing PHP..."
-						apt-get install -y php7.2 php7.2-common --allow-unauthenticated
+						apt install -y php7.2 php7.2-common --allow-unauthenticated
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -354,7 +361,7 @@
 				fi
 				
 				echo "Installing PHP fpm and cli extension..."
-				apt-get install -y php7.2-fpm php7.2-cli --allow-unauthenticated
+				apt install -y php7.2-fpm php7.2-cli --allow-unauthenticated
 				error_code=$?
 				if [ ${error_code} != 0 ]
 				then
@@ -366,7 +373,7 @@
 				php -m | grep curl
 				if [ "$?" -gt 0 ]; then
 					echo "Installing php7.2-curl..."
-					apt-get install -y php7.2-curl --allow-unauthenticated
+					apt install -y php7.2-curl --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -379,8 +386,8 @@
 				php -m | grep pgsql
 				if [ "$?" -gt 0 ]; then
 					echo "Installing php7.2-pgsql..."
-					apt-get install libpq5
-					apt-get install -y php7.2-pgsql --allow-unauthenticated
+					apt install libpq5
+					apt install -y php7.2-pgsql --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -393,7 +400,7 @@
 				php -m | grep mbstring
 				if [ "$?" -gt 0 ]; then
 					echo "Installing php7.2-mbstring..."
-					apt-get install -y php7.2-mbstring --allow-unauthenticated
+					apt install -y php7.2-mbstring --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -406,7 +413,7 @@
 				php -m | grep ldap
 				if [ "$?" -gt 0 ]; then
 					echo "Installing php7.2-ldap..."
-					apt-get install -y php7.2-ldap --allow-unauthenticated
+					apt install -y php7.2-ldap --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -419,21 +426,21 @@
 				php -m | grep imagick
 				if [ "$?" -gt 0 ]; then
 					echo "Installing php7.2-imagick..."
-					apt-get install -y gcc
+					apt install -y gcc
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
 						echo "gcc installation failed with error code ${error_code} (gcc installation failed with error code 9)"
 						return 9
 					fi
-					apt-get install -y imagemagick
+					apt install -y imagemagick
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
 						echo "imagemagick installation failed with error code ${error_code} (imagemagick installation failed with error code 9)"
 						return 9
 					fi
-					apt-get install -y php7.2-imagick --allow-unauthenticated
+					apt install -y php7.2-imagick --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -446,7 +453,7 @@
 				php -m | grep imap
 				if [ "$?" -gt 0 ]; then
 					echo "Installing php7.2-imap..."
-					apt-get install -y php7.2-imap --allow-unauthenticated
+					apt install -y php7.2-imap --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -459,7 +466,7 @@
 				php -m | grep xml
 				if [ "$?" -gt 0 ]; then
 					echo "Installing xml..."
-					apt-get install php7.2-xml --allow-unauthenticated
+					apt install php7.2-xml --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -486,7 +493,7 @@
 						[Yy])
 						echo "Installing PostgreSQL..."
 						sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-						apt-get install wget ca-certificates
+						apt install wget ca-certificates
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -494,8 +501,8 @@
 						fi
 						wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 						apt-key add ACCC4CF8.asc
-						apt-get update
-						apt-get install -y postgresql-9.6 --allow-unauthenticated
+						apt update
+						apt install -y postgresql-9.6 --allow-unauthenticated
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -509,7 +516,7 @@
 						set +x
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
 						sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-						apt-get install wget ca-certificates
+						apt install wget ca-certificates
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -517,9 +524,9 @@
 						fi
 						wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 						apt-key add ACCC4CF8.asc
-						apt-get update
-						apt-get upgrade
-						apt-get install -y postgresql-9.6 --allow-unauthenticated
+						apt update
+						apt upgrade
+						apt install -y postgresql-9.6 --allow-unauthenticated
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -537,7 +544,7 @@
 				
 				if ! hash GeoIP-devel 2>&-;
 				then
-					apt-get install -y php7.2-geoip php7.2-dev libgeoip-dev
+					apt install -y php7.2-geoip php7.2-dev libgeoip-dev
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -567,7 +574,7 @@
 				get_geoip_data
 				
 				echo "Downloading Restyaboard script..."
-				apt-get install -y curl
+				apt install -y curl
 				mkdir ${DOWNLOAD_DIR}
 				curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
 				unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
@@ -607,7 +614,7 @@
 				| debconf-set-selections &&\
 				echo "postfix postfix/main_mailer_type string 'Internet Site'"\
 				| debconf-set-selections &&\
-				apt-get install -y postfix
+				apt install -y postfix
 					error_code=$?
 						if [ ${error_code} != 0 ]
 					then
@@ -696,7 +703,7 @@
 					if ! hash jq 2>&-;
 					then
 						echo "Installing jq..."
-						apt-get install -y jq
+						apt install -y jq
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
