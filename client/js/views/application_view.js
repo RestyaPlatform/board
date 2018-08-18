@@ -355,6 +355,9 @@ App.ApplicationView = Backbone.View.extend({
                                 $('.js-switch-timeline-view').trigger('click');
                             }).defer();
                             view_type = null;
+                        } else if (view_type === 'report') {
+                            $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">' + i18next.t('Loading ....') + '</h4></div></div></div>');
+                            view_type = null;
                         } else if (view_type === 'attachments') {
                             $('.js-show-board-modal').trigger('click');
                             view_type = null;
@@ -382,7 +385,7 @@ App.ApplicationView = Backbone.View.extend({
                         }
                         var current_param = Backbone.history.fragment;
                         var current_param_split = current_param.split('/');
-                        if (current_param.indexOf('list') === -1 && current_param.indexOf('calendar') === -1 && current_param.indexOf('gantt') === -1) {
+                        if (current_param.indexOf('list') === -1 && current_param.indexOf('calendar') === -1 && current_param.indexOf('gantt') === -1 && current_param.indexOf('report') === -1) {
                             $('a.js-switch-grid-view').parent().addClass('active');
                         }
                     }
@@ -413,6 +416,9 @@ App.ApplicationView = Backbone.View.extend({
                 _(function() {
                     $('.js-switch-timeline-view').trigger('click');
                 }).defer();
+                view_type = null;
+            } else if (view_type === 'report') {
+                $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">' + i18next.t('Loading ....') + '</h4></div></div></div>');
                 view_type = null;
             } else if (view_type === 'attachments') {
                 $('.js-show-board-modal').trigger('click');
@@ -1095,9 +1101,11 @@ App.ApplicationView = Backbone.View.extend({
                 $('#js-navbar-default').remove();
                 if (!_.isEmpty(authuser.user) && authuser.user) {
                     var app_page = page.options.name + '_' + page.options.page;
-                    _(function() {
-                        $('#content').html(new App[app_page]().el);
-                    }).defer();
+                    if (!_.isUndefined(App.app_page)) {
+                        _(function() {
+                            $('#content').html(new App[app_page]().el);
+                        }).defer();
+                    }
                 } else {
                     app.navigate('#/boards', {
                         trigger: true,
