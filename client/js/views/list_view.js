@@ -863,7 +863,7 @@ App.ListView = Backbone.View.extend({
                 $('.js-board-list-cards', this.$el).sortable({
                     containment: 'window',
                     items: 'div.js-board-list-card',
-                    connectWith: '.js-board-list-cards',
+                    connectWith: '.js-board-list-cards:not(.js-wip-limit-reached)',
                     placeholder: 'card-list-placeholder',
                     appendTo: document.body,
                     dropOnEmpty: true,

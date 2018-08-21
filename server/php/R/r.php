@@ -1687,12 +1687,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $content = file_get_contents($file);
                 $data = json_decode($content, true);
                 if ($data['enabled'] === true) {
+                    $response['apps']['enabled_apps'][] = $data['id'];
                     $folder = explode('/', $file);
-                    if ($data['enabled'] === true) {
-                        foreach ($data as $key => $value) {
-                            if ($key != 'settings') {
-                                $response['apps_data'][$folder[count($folder) - 2]][$key] = $value;
-                            }
+                    foreach ($data as $key => $value) {
+                        if ($key != 'settings') {
+                            $response['apps_data'][$folder[count($folder) - 2]][$key] = $value;
                         }
                     }
                     if (!empty($data['settings'])) {
@@ -5600,8 +5599,11 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
         } else if (isset($r_put['custom_fields'])) {
             $custom_fields = json_decode($r_put['custom_fields'], true);
-            if (is_plugin_enabled('r_auto_archive_expired_cards')) {
+            if (is_plugin_enabled('r_auto_archive_expired_cards') && !empty($custom_fields['auto_archive_days'])) {
                 $comment = '##USER_NAME## set Auto archive days to ##LIST_NAME## for ' . $custom_fields['auto_archive_days'];
+            }
+            if (is_plugin_enabled('r_wip_limit') && !empty($custom_fields['wip_limit'])) {
+                $comment = '##USER_NAME## set Work In Progress cards Limit to ##LIST_NAME## as ' . $custom_fields['wip_limit'];
             }
         } else if (isset($r_put['color'])) {
             if (empty($previous_value['color']) && isset($r_put['color'])) {
