@@ -215,34 +215,41 @@ App.CardView = Backbone.View.extend({
         var current_list = current_board.lists.findWhere({
             id: parseInt(list_id)
         });
-        var prev_list_card_count = parseInt(self.model.list.collection.board.lists.get(previous_list_id).get('card_count'));
-        var current_list_card_count = parseInt(self.model.list.collection.board.lists.get(list_id).get('card_count'));
+        if (parseInt(list_id) !== parseInt(previous_list_id)) {
+            var prev_list_card_count = parseInt(self.model.list.collection.board.lists.get(previous_list_id).get('card_count'));
+            var current_list_card_count = parseInt(self.model.list.collection.board.lists.get(list_id).get('card_count'));
 
-        self.model.list.collection.board.lists.get(previous_list_id).cards.remove(self.model);
-        self.model.list.collection.board.lists.get(previous_list_id).set('card_count', prev_list_card_count - 1);
-        prev_list.set('card_count', prev_list_card_count - 1);
+            self.model.list.collection.board.lists.get(previous_list_id).cards.remove(self.model);
+            self.model.list.collection.board.lists.get(previous_list_id).set('card_count', prev_list_card_count - 1);
+            prev_list.set('card_count', prev_list_card_count - 1);
 
-        self.model.list.collection.board.lists.get(list_id).cards.add(self.model);
-        self.model.list.collection.board.lists.get(list_id).set('card_count', current_list_card_count + 1);
-        current_list.set('card_count', current_list_card_count + 1);
+            self.model.list.collection.board.lists.get(list_id).cards.add(self.model);
+            self.model.list.collection.board.lists.get(list_id).set('card_count', current_list_card_count + 1);
+            current_list.set('card_count', current_list_card_count + 1);
 
+            _(function() {
+                if ((current_list !== null && !_.isUndefined(current_list) && !_.isEmpty(current_list)) && (prev_list !== null && !_.isUndefined(prev_list) && !_.isEmpty(prev_list))) {
+                    $('body').trigger('cardSortRendered', [prev_list, current_list]);
+                }
+            }).defer();
 
-        var attachments = self.model.list.collection.board.attachments.where({
-            card_id: self.model.attributes.id
-        });
-        var j = 1;
-        _.each(attachments, function(attachment) {
-            var options = {
-                silent: true
-            };
-            if (j === attachments.length) {
-                options.silent = false;
-            }
-            self.model.list.collection.board.attachments.get(attachment.id).set({
-                list_id: list_id
-            }, options);
-            j++;
-        });
+            var attachments = self.model.list.collection.board.attachments.where({
+                card_id: self.model.attributes.id
+            });
+            var j = 1;
+            _.each(attachments, function(attachment) {
+                var options = {
+                    silent: true
+                };
+                if (j === attachments.length) {
+                    options.silent = false;
+                }
+                self.model.list.collection.board.attachments.get(attachment.id).set({
+                    list_id: list_id
+                }, options);
+                j++;
+            });
+        }
     },
     /**
      * render()
