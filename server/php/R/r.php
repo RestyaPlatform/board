@@ -492,10 +492,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     while ($row = pg_fetch_assoc($s_result)) {
                         $data['timezones'][] = $row;
                     }
-                    if (is_plugin_enabled('r_custom_fields')) {
-                        require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
-                        $data = customFieldAfterFetchUser($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
-                    }
                     echo json_encode($data);
                 }
             } else {
@@ -3152,7 +3148,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $r_post['user_id'],
                             $boards_subscriber['is_subscribed']
                         );
-                        pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, board_id, user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3', $boards_subscriber_values);
+                        pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, board_id, user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $boards_subscriber_values);
                     }
                 }
                 //Copy board star
@@ -3189,18 +3185,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $qry_val_arr = array(
                         $r_resource_vars['boards']
                     );
-                    $lists = pg_query_params($db_lnk, 'SELECT id, name, position, is_archived, card_count, lists_subscriber_count FROM lists WHERE board_id = $1', $qry_val_arr);
+                    $lists = pg_query_params($db_lnk, 'SELECT id, name, position, is_archived, card_count, lists_subscriber_count, color FROM lists WHERE board_id = $1', $qry_val_arr);
                 } else {
                     $qry_val_arr = array(
                         $r_resource_vars['boards']
                     );
-                    $lists = pg_query_params($db_lnk, 'SELECT id, name, position, is_archived, lists_subscriber_count FROM lists WHERE board_id = $1', $qry_val_arr);
+                    $lists = pg_query_params($db_lnk, 'SELECT id, name, position, is_archived, lists_subscriber_count, color FROM lists WHERE board_id = $1', $qry_val_arr);
                 }
                 if ($lists) {
                     // Copy lists
                     while ($list = pg_fetch_object($lists)) {
                         $list_id = $list->id;
-                        $list_fields = 'created, modified, board_id, user_id, color';
+                        $list_fields = 'created, modified, board_id, user_id';
                         $list_values = array();
                         array_push($list_values, 'now()', 'now()', $new_board_id, $authUser['id']);
                         foreach ($list as $key => $value) {
@@ -3395,6 +3391,37 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                                             pg_query_params($db_lnk, 'INSERT INTO checklist_items (' . $checklist_item_fields . ') VALUES (' . $checklist_item_val . ')', $checklist_item_values);
                                                         }
                                                     }
+                                                }
+                                            }
+                                        }
+                                        if (is_plugin_enabled('r_custom_fields')) {
+                                            $condition = array(
+                                                $card_id
+                                            );
+                                            $card_custom_fields = pg_query_params($db_lnk, 'SELECT custom_field_id, value, is_active  FROM cards_custom_fields WHERE card_id = $1', $condition);
+                                            if ($card_custom_fields && pg_num_rows($card_custom_fields)) {
+                                                $card_custom_field_values = 'created, modified, card_id, card_id, custom_field_id, value,is_active,board_id,list_id';
+                                                while ($card_custom_field = pg_fetch_object($card_custom_fields)) {
+                                                    $card_custom_field_values = array();
+                                                    array_push($card_custom_field_values, 'now()', 'now()', $new_card_id);
+                                                    foreach ($card_custom_field as $key => $value) {
+                                                        if ($key != 'id') {
+                                                            if ($value === false) {
+                                                                array_push($card_custom_field_values, 'false');
+                                                            } else if ($value === null) {
+                                                                array_push($card_custom_field_values, null);
+                                                            } else {
+                                                                array_push($card_custom_field_values, $value);
+                                                            }
+                                                        }
+                                                    }
+                                                    array_push($card_custom_field_values, $new_board_id, $new_list_id);
+                                                    $card_custom_field_val = '';
+                                                    for ($i = 1, $len = count($card_custom_field_values); $i <= $len; $i++) {
+                                                        $card_custom_field_val.= '$' . $i;
+                                                        $card_custom_field_val.= ($i != $len) ? ', ' : '';
+                                                    }
+                                                    pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value, is_active, board_id, list_id) VALUES (' . $card_custom_field_val . ')', $card_custom_field_values);
                                                 }
                                             }
                                         }
