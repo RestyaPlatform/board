@@ -84,7 +84,11 @@ App.FooterView = Backbone.View.extend({
         'click .js-show-board-import-form': 'showBoardImportForm',
         'change .js-board-import-file': 'importBoard',
         'click .js-show-board-import-wekan-form': 'showBoardImportWekanForm',
+        'click .js-show-board-import-kantree-form': 'showBoardImportKantreeForm',
+        'click .js-show-board-import-taiga-form': 'showBoardImportTaigaForm',
         'change .js-board-import-wekan-file': 'importWekanBoard',
+        'change .js-board-import-kantree-file': 'importKantreeBoard',
+        'change .js-board-import-taiga-file': 'importTaigaBoard',
         'click .js-closed-boards': 'renderClosedBoards',
         'click .js-starred-boards': 'renderStarredBoards',
         'click .js-my-boards-listing': 'renderMyBoards',
@@ -1793,6 +1797,32 @@ App.FooterView = Backbone.View.extend({
         return false;
     },
     /**
+     * showBoardImportKantreeForm()
+     * show Board Import Form
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    showBoardImportKantreeForm: function(e) {
+        e.preventDefault();
+        var form = $('#js-board-import-kantree');
+        $('.js-board-import-kantree-file', form).trigger('click');
+        return false;
+    },
+    /**
+     * showBoardImportTaigaForm()
+     * show Board Import Form
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    showBoardImportTaigaForm: function(e) {
+        e.preventDefault();
+        var form = $('#js-board-import-taiga');
+        $('.js-board-import-taiga-file', form).trigger('click');
+        return false;
+    },
+    /**
      * importWekanBoard()
      * import Board
      * @param e
@@ -1818,6 +1848,93 @@ App.FooterView = Backbone.View.extend({
             },
             success: function(model, response) {
                 $('#js-board-import-loader', '.js-show-board-import-wekan-form').addClass('hide');
+                if (!_.isUndefined(response.id)) {
+                    app.navigate('#/board/' + response.id, {
+                        trigger: true,
+                        replace: true
+                    });
+                    self.flash('info', i18next.t('Board is been currently imported. Based on the size of file, it may take few seconds to minutes. Please refresh or check after some time..'), 1800000);
+                } else {
+                    if (response.error) {
+                        self.flash('danger', i18next.t(response.error));
+                    } else {
+                        self.flash('danger', i18next.t('Unable to import. please try again.'));
+                    }
+
+                }
+            }
+        });
+    },
+    /**
+     * importKantreeBoard()
+     * import Board
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    importKantreeBoard: function(e) {
+        e.preventDefault();
+        $('#js-board-import-loader').removeClass('hide');
+        var self = this;
+        var form = $('form#js-board-import-kantree');
+        var fileData = new FormData(form[0]);
+        var board = new App.Board();
+        board.url = api_url + 'boards.json';
+        board.save(fileData, {
+            type: 'POST',
+            data: fileData,
+            processData: false,
+            cache: false,
+            contentType: false,
+            error: function(e, s) {
+                $('#js-board-import-loader', '.js-show-board-import-kantree-form').parent('.js-show-board-import-kantree-form').addClass('hide');
+            },
+            success: function(model, response) {
+                $('#js-board-import-loader', '.js-show-board-import-kantree-form').addClass('hide');
+                if (!_.isUndefined(response.id)) {
+                    app.navigate('#/board/' + response.id, {
+                        trigger: true,
+                        replace: true
+                    });
+                    self.flash('info', i18next.t('Board is been currently imported. Based on the size of file, it may take few seconds to minutes. Please refresh or check after some time..'), 1800000);
+                } else {
+                    if (response.error) {
+                        self.flash('danger', i18next.t(response.error));
+                    } else {
+                        self.flash('danger', i18next.t('Unable to import. please try again.'));
+                    }
+
+                }
+            }
+        });
+    },
+    /**
+     * importTaigaBoard()
+     * import Board
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    importTaigaBoard: function(e) {
+        console.log("1 <<<<<<<");
+        e.preventDefault();
+        $('#js-board-import-loader').removeClass('hide');
+        var self = this;
+        var form = $('form#js-board-import-taiga');
+        var fileData = new FormData(form[0]);
+        var board = new App.Board();
+        board.url = api_url + 'boards.json';
+        board.save(fileData, {
+            type: 'POST',
+            data: fileData,
+            processData: false,
+            cache: false,
+            contentType: false,
+            error: function(e, s) {
+                $('#js-board-import-loader', '.js-show-board-import-taiga-form').parent('.js-show-board-import-taiga-form').addClass('hide');
+            },
+            success: function(model, response) {
+                $('#js-board-import-loader', '.js-show-board-import-taiga-form').addClass('hide');
                 if (!_.isUndefined(response.id)) {
                     app.navigate('#/board/' + response.id, {
                         trigger: true,
