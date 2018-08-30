@@ -1390,7 +1390,7 @@ App.ListView = Backbone.View.extend({
                     }
                     var list = App.boards.get(card.attributes.board_id).lists.get(card.attributes.list_id);
                     if (!_.isUndefined(list)) {
-                        list.set('card_count', list.attributes.card_count + 1);
+                        list.set('card_count', parseInt(list.attributes.card_count) + 1);
                     }
 
                     if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
@@ -1401,8 +1401,14 @@ App.ListView = Backbone.View.extend({
                         global_uuid[data.uuid] = options.temp_id;
                         card.set('id', data.uuid);
                     }
+                    self.model.set('card_count', parseInt(self.model.attributes.card_count) + 1);
                     self.model.collection.board.cards.add(card);
                     self.model.cards.add(card);
+                    _(function() {
+                        if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                            $('body').trigger('cardAddRendered', [self.model.id, self.model]);
+                        }
+                    }).defer();
                 }
             });
         }

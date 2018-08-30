@@ -3106,7 +3106,18 @@ App.ModalCardView = Backbone.View.extend({
                     content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' ' + i18next.t('(current)') + '</option>';
                     is_first_list = true;
                 } else {
-                    content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+                    var wip_enabled = false;
+                    if ($.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                        wip_enabled = true;
+                    }
+                    if (wip_enabled && !_.isUndefined(list.attributes.custom_fields) && list.attributes.custom_fields) {
+                        var wip_limit_count = JSON.parse(list.attributes.custom_fields);
+                        if (parseInt(wip_limit_count.wip_limit) !== parseInt(list.attributes.card_count)) {
+                            content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+                        }
+                    } else {
+                        content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+                    }
                 }
                 if (is_first_list) {
                     is_first_list = false;
