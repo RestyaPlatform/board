@@ -59,6 +59,7 @@ App.BoardSimpleView = Backbone.View.extend({
      *
      */
     render: function() {
+        var self = this;
         this.$el.html(this.template({
             board: this.model,
             message: this.message,
@@ -88,9 +89,8 @@ App.BoardSimpleView = Backbone.View.extend({
                     }
                 }
             });
-            var _this = this;
             _(function() {
-                _this.$el.find('.js-chart').html('').drawDoughnutChart(data);
+                self.$el.find('.js-chart-' + self.model.id).html('').drawDoughnutChart(data);
             }).defer();
         }
         this.showTooltip();
