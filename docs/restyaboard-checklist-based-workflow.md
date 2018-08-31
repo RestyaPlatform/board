@@ -4,6 +4,8 @@
 
 [![Instructions for using Restyaboard in checklist Based Workflow](checklist-based- workflow.png)](https://www.youtube.com/watch?v=DfAUjxz8elQ)
 
+Please click the image for watching `Restyaboard in Checklist Based Workflow`
+
 1.  Mostly all projects have some tasks and we are going to show how to use Restyaboard in "Checklist Based Workflow" for managing your taks.
 2.  Add the tasks. 
 3.  You can add the Checklists with list of sub works for the tasks which have to be queued or pipelined.
