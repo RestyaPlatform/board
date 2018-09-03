@@ -4362,11 +4362,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     if (!file_exists($mediadir)) {
                         mkdir($mediadir, 0777, true);
                     }
-                    $file_arr = pathinfo($file['name'][$i]);
                     $cur_os = strtolower(PHP_OS);
                     if (substr($cur_os, 0, 3) === 'win') {
                         $file['name'][$i] = urlencode($file['name'][$i]);
                     }
+                    $file_arr = pathinfo($file['name'][$i]);
                     $filename_without_ext = $file_arr['filename'];
                     if (file_exists($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
                         $filename_without_ext = $file_arr['filename'] . '-' . mt_rand(0, 999);
