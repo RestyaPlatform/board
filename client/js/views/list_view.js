@@ -348,12 +348,18 @@ App.ListView = Backbone.View.extend({
      *
      */
     showListActions: function(e) {
+        var self = this;
         $('.js-list-actions-response').remove();
         $(e.currentTarget).after(new App.ListActionsView({
             model: this.model,
             subscribers: this.model.lists_subscribers,
             authuser: this.authuser
         }).el);
+        _(function() {
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $('body').trigger('listActionRendered', [self.model.id, self.model]);
+            }
+        }).defer();
     },
     /**
      * backToListActions()
@@ -830,6 +836,11 @@ App.ListView = Backbone.View.extend({
                 silent: true
             });
         });
+        var list = App.boards.get(this.model.attributes.board_id).lists.get(this.model.id);
+        if (!_.isUndefined(list)) {
+            list.set('card_count', 0);
+        }
+        this.model.set('card_count', 0);
         this.renderCardsCollection();
         var card = new App.Card();
         card.set('id', list_id);
@@ -839,6 +850,11 @@ App.ListView = Backbone.View.extend({
         }, {
             patch: true
         });
+        _(function() {
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $('body').trigger('cardAddRendered', [self.model.id, self.model]);
+            }
+        }).defer();
         return false;
     },
     /**
