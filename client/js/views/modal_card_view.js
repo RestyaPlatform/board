@@ -1824,7 +1824,7 @@ App.ModalCardView = Backbone.View.extend({
             var current_list = this.board.lists.findWhere({
                 id: current_list_id
             });
-            current_list.set('card_count',prev_list_card_count - 1);
+            current_list.set('card_count', prev_list_card_count - 1);
             var change_list_card_count = parseInt(this.boards.get(data.board_id).lists.get(data.list_id).get('card_count'));
             this.boards.get(data.board_id).lists.get(data.list_id).set('card_count', change_list_card_count + 1);
             change_list = this.board.lists.findWhere({
