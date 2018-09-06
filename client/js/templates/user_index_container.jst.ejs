@@ -4,9 +4,13 @@
 	<ul class="nav nav-pills text-center thumbnail js-filter-list">
 		<li><a class="js-filter cur" data-filter="active" title="<%- i18next.t('Active') %>"><span class="show"><strong><%- filter_count.active %></strong></span><%- i18next.t('Active') %></a></li>
     <li><a class="js-filter cur" data-filter="inactive" title="<%- i18next.t('Inactive') %>"><span class="show"><strong><%- filter_count.inactive %></strong></span><%- i18next.t('Inactive') %></a></li>
-    <% if ($.inArray('r_ldap_login',APPS.enabled_apps) !== -1) { %>
+    <% if (!_.isUndefined(APPS) && APPS !== null ) {
+        if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+          if ($.inArray('r_ldap_login',APPS.enabled_apps) !== -1) { %>
       <li><a class="js-filter cur ldap_login_check" data-filter="ldap" title="<%- i18next.t('LDAP') %>"><span class="show"><strong><%- filter_count.ldap %></strong></span><%- i18next.t('LDAP') %></a></li>
-		<% } %>
+           <% }
+        }
+    } %>
 		<% if(!_.isEmpty(roles)){ 
 			_.each(roles, function(role) {
 		%>

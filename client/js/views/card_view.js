@@ -229,7 +229,13 @@ App.CardView = Backbone.View.extend({
 
             _(function() {
                 if ((current_list !== null && !_.isUndefined(current_list) && !_.isEmpty(current_list)) && (prev_list !== null && !_.isUndefined(prev_list) && !_.isEmpty(prev_list))) {
-                    $('body').trigger('cardSortRendered', [prev_list, current_list]);
+                    if (!_.isUndefined(APPS) && APPS !== null) {
+                        if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                            if ($.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                                $('body').trigger('cardSortRendered', [prev_list, current_list]);
+                            }
+                        }
+                    }
                 }
             }).defer();
 

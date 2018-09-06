@@ -1088,7 +1088,9 @@ App.ApplicationView = Backbone.View.extend({
                 $('#js-navbar-default').remove();
                 if (!_.isEmpty(authuser.user) && authuser.user.role_id == 1 && !_.isEmpty(page.options.name)) {
                     _(function() {
-                        $('#content').html(new App['admin_' + page.options.name + '_view']().el);
+                        if (!_.isUndefined(App['admin_' + page.options.name + '_view'])) {
+                            $('#content').html(new App['admin_' + page.options.name + '_view']().el);
+                        }
                     }).defer();
                 } else {
                     app.navigate('#/boards', {
