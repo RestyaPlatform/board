@@ -1,10 +1,21 @@
 <% 
 	var list_li = '';
+	var wip_enabled = false;
+	if ($.inArray('r_wip_limit',APPS.enabled_apps) !== -1) {
+		wip_enabled = true;
+	}
 	_.each(filtered_lists, function(filtered_list) {
 		 if (filtered_list.id == list.attributes.id) {
 			 list_li += '<li class="disabled navbar-btn"><a href="#" class="js-no-action text-muted">' + _.escape(filtered_list.attributes.name) + ' '+i18next.t('(current)')+'</a></li>';
 		 } else {
-			 list_li += '<li class="navbar-btn"><a href="#" class="js-move-cards js-close-popup" data-move-list-id="' + filtered_list.id + '">' + _.escape(filtered_list.attributes.name) + '</a></li>';
+			if (wip_enabled &&  !_.isUndefined(filtered_list.attributes.custom_fields) && filtered_list.attributes.custom_fields) {
+				var wip_limit_count = JSON.parse(filtered_list.attributes.custom_fields);
+				if ((parseInt(wip_limit_count.wip_limit) !== parseInt(filtered_list.attributes.card_count))) {
+					 list_li += '<li class="navbar-btn"><a href="#" class="js-move-cards js-close-popup" data-move-list-id="' + filtered_list.id + '">' + _.escape(filtered_list.attributes.name) + '</a></li>';
+				}
+			} else {
+				list_li += '<li class="navbar-btn"><a href="#" class="js-move-cards js-close-popup" data-move-list-id="' + filtered_list.id + '">' + _.escape(filtered_list.attributes.name) + '</a></li>';
+			}
 		 }
 	 });
 %>

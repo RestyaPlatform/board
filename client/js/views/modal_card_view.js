@@ -1824,13 +1824,18 @@ App.ModalCardView = Backbone.View.extend({
             var current_list = this.board.lists.findWhere({
                 id: current_list_id
             });
-            current_list.attributes.card_count = prev_list_card_count - 1;
+            current_list.set('card_count', prev_list_card_count - 1);
             var change_list_card_count = parseInt(this.boards.get(data.board_id).lists.get(data.list_id).get('card_count'));
             this.boards.get(data.board_id).lists.get(data.list_id).set('card_count', change_list_card_count + 1);
             change_list = this.board.lists.findWhere({
                 id: data.list_id
             });
-            change_list.attributes.card_count = change_list_card_count + 1;
+            change_list.set('card_count', change_list_card_count + 1);
+            _(function() {
+                if ((current_list !== null && !_.isUndefined(current_list) && !_.isEmpty(current_list)) && (change_list !== null && !_.isUndefined(change_list) && !_.isEmpty(change_list))) {
+                    $('body').trigger('cardSortRendered', [current_list, change_list]);
+                }
+            }).defer();
         }
         return false;
 
@@ -1881,6 +1886,15 @@ App.ModalCardView = Backbone.View.extend({
                     list.set('card_count', list.attributes.card_count - 1, {
                         silent: true
                     });
+                }
+                var currentBoardList = App.current_board.lists.get(self.model.attributes.list_id);
+                if (!_.isUndefined(currentBoardList)) {
+                    currentBoardList.set('card_count', currentBoardList.attributes.card_count - 1, {
+                        silent: true
+                    });
+                }
+                if (list !== null && !_.isUndefined(list) && !_.isEmpty(list)) {
+                    $('body').trigger('cardAddRendered', [list.id, list]);
                 }
                 var view = new App.ActivityView({
                     model: activity,
@@ -1938,6 +1952,21 @@ App.ModalCardView = Backbone.View.extend({
                     silent: true
                 });
                 activity.board_users = self.model.board_users;
+                var list = App.boards.get(self.model.attributes.board_id).lists.get(self.model.attributes.list_id);
+                if (!_.isUndefined(list)) {
+                    list.set('card_count', list.attributes.card_count + 1, {
+                        silent: true
+                    });
+                }
+                var currentBoardList = App.current_board.lists.get(self.model.attributes.list_id);
+                if (!_.isUndefined(currentBoardList)) {
+                    currentBoardList.set('card_count', currentBoardList.attributes.card_count + 1, {
+                        silent: true
+                    });
+                }
+                if (list !== null && !_.isUndefined(list) && !_.isEmpty(list)) {
+                    $('body').trigger('cardAddRendered', [list.id, list]);
+                }
                 var view = new App.ActivityView({
                     model: activity,
                     board: self.model.list.collection.board,
@@ -3106,7 +3135,18 @@ App.ModalCardView = Backbone.View.extend({
                     content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' ' + i18next.t('(current)') + '</option>';
                     is_first_list = true;
                 } else {
-                    content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+                    var wip_enabled = false;
+                    if ($.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                        wip_enabled = true;
+                    }
+                    if (wip_enabled && !_.isUndefined(list.attributes.custom_fields) && list.attributes.custom_fields) {
+                        var wip_limit_count = JSON.parse(list.attributes.custom_fields);
+                        if (parseInt(wip_limit_count.wip_limit) !== parseInt(list.attributes.card_count)) {
+                            content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+                        }
+                    } else {
+                        content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+                    }
                 }
                 if (is_first_list) {
                     is_first_list = false;
