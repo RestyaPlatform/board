@@ -11,6 +11,14 @@ var current_position = card.list.cards.indexOf(card.list.cards.get(card.attribut
 if(current_position == 0){
 	current_position = 1;
 }
+var wip_enabled = false;
+if (!_.isUndefined(APPS) && APPS !== null ) {
+	if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+		if ($.inArray('r_wip_limit',APPS.enabled_apps) !== -1) {
+			wip_enabled = true;
+		}
+	}
+}
 boards.each(function(board) {
 	if (card.attributes.board_id == board.id) {
 		content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) +  ' '+i18next.t('(current)')+'</option>';
@@ -19,10 +27,6 @@ boards.each(function(board) {
 			is_archived: 0,
 			board_id: card.attributes.board_id
 		});
-		var wip_enabled = false;
-		if ($.inArray('r_wip_limit',APPS.enabled_apps) !== -1) {
-			wip_enabled = true;
-		}
 		_.each(filtered_lists, function(list) {
 			
 			if (card.attributes.list_id == list.id) {

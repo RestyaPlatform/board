@@ -1,8 +1,12 @@
 <% 
 	var list_li = '';
 	var wip_enabled = false;
-	if ($.inArray('r_wip_limit',APPS.enabled_apps) !== -1) {
-		wip_enabled = true;
+	if (!_.isUndefined(APPS) && APPS !== null ) {
+		if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+			if ($.inArray('r_wip_limit',APPS.enabled_apps) !== -1) {
+				wip_enabled = true;
+			}
+		}
 	}
 	_.each(filtered_lists, function(filtered_list) {
 		 if (filtered_list.id == list.attributes.id) {
