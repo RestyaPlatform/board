@@ -1865,7 +1865,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $plugin_url['CardTemplate'] = array(
             '/boards/?/card_template',
-            '/card_templates/?'
+            '/card_templates/?',
+            '/boards/?/card_templates/?'
         );
         $plugin_url['Chat'] = array(
             '/xmpp_login',
@@ -5321,7 +5322,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             '/board_roles'
         );
         $plugin_url['CardTemplate'] = array(
-            '/boards/?/cards/?/card_template'
+            '/boards/?/cards/?/card_template',
+            '/boards/?/card_templates/?'
         );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
