@@ -2907,8 +2907,8 @@ App.ModalCardView = Backbone.View.extend({
                 });
                 self.model.activities.unshift(activity);
                 var current_card = self.model.list.collection.board.cards.get(card_id);
-                self.model.list.collection.board.cards.get(card_id).set('comment_count', parseInt(current_card.attributes.comment_count) - 1);
-                self.model.set('comment_count', parseInt(current_card.attributes.comment_count) - 1);
+                self.model.list.collection.board.cards.get(card_id).set('comment_count', parseInt(response.activity.comment_count));
+                self.model.set('comment_count', parseInt(response.activity.comment_count));
                 if ($.cookie('filter') !== 'comment') {
                     var view_activity = $('#js-card-activities-' + self.model.id);
                     view_activity.prepend(view.render().el);

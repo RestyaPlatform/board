@@ -6440,6 +6440,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $r_resource_vars['cards']
         );
         pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
+        $response['activity']['comment_count'] = $activity_count;
         $response['error'] = array(
             'code' => (!$result) ? 1 : 0
         );
