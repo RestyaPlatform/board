@@ -27,7 +27,29 @@
         </div>
       </li>
     </ul>
-  </div>
+	</div>
+	<% if (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "delete_board",board_user_role_id: parseInt(board.board_user_role_id)}))) { %>
+		<h4 class="text-center"><%- i18next.t('or') %></h4>
+		<div class="dropdown well-sm text-center"><a data-toggle="dropdown" class="dropdown-toggle btn btn-primary" href="#"><%- i18next.t("Click here to Delete Board") %></a>
+			<ul class="dropdown-menu">
+				<li class="js-visibility-popup js-dropdown-popup dropdown-popup">
+					<div class="clearfix text-center col-xs-12">
+						<span class="col-xs-10"><strong><%- i18next.t("Delete Board") %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i></a>
+					</div>
+					<div class="col-xs-12 divider"></div>
+					<div class="col-xs-12  text-left">
+						<form class="normal" name="BoardDeleteForm" id="BoardDeleteForm">
+							<input id="inputBoardClose" name="is_delete" type="hidden" value="true">
+							<div class="h6 btn-block"><%- i18next.t('Are you sure you want to do this action') %>?</div>
+							<div class="submit">
+								<input type="submit" value="<%- i18next.t('Delete') %>" id="submitBoardDelete" class="btn btn-primary btn-sm">
+							</div>
+						</form>
+					</div>
+				</li>
+			</ul>
+		</div>
+	<% } %>
   <% } %>
   </div>
   <% } else {%>
