@@ -773,6 +773,19 @@ App.ListView = Backbone.View.extend({
         var copied_cards = this.model.collection.board.cards.where({
             list_id: list_id
         });
+        var cards_count = this.model.attributes.card_count ? this.model.attributes.card_count : 0;
+
+        if (!_.isUndefined(APPS) && APPS !== null) {
+            if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                if ($.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                    if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                        $('body').trigger('listmoveActionRendered', [self.model.id, move_list_id, cards_count]);
+                    }
+                }
+            }
+        }
+
+
         this.model.cards.set(copied_cards);
         var view_card = $('#js-card-listing-' + move_list_id);
         _.each(copied_cards, function(copied_card) {
@@ -804,7 +817,18 @@ App.ListView = Backbone.View.extend({
         this.model.save({
             list_id: move_list_id
         }, {
-            patch: true
+            patch: true,
+            success: function(model, response) {
+                self.model.cards.remove(copied_cards, {
+                    silent: true
+                });
+                self.model.collection.board.cards.remove(copied_cards, {
+                    silent: true
+                });
+                self.model.collection.board.lists.get(list_id).set('cards_count', 0);
+                App.boards.get(self.model.attributes.board_id).lists.get(list_id).set('cards_count', 0);
+                self.board.lists.get(list_id).set('cards_count', 0);
+            }
         });
         return false;
     },
