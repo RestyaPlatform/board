@@ -1884,6 +1884,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
             '/custom_fields/?',
+            '/boards/?/custom_fields',
+            '/boards/?/custom_fields/?',
+            '/boards/?/cards_custom_fields',
             '/cards/?/cards_custom_fields',
             '/cards/?/cards_custom_fields/?'
         );
@@ -5322,8 +5325,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
-            '/cards_custom_fields',
-            '/cards/?/cards_custom_fields'
+            '/boards/?/custom_fields',
+            '/boards/?/cards_custom_fields'
         );
         $plugin_url['Gantt'] = array(
             '/card_dependencies'
@@ -6160,7 +6163,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
 
     default:
         $plugin_url['CustomFields'] = array(
-            '/custom_fields/?'
+            '/custom_fields/?',
+            '/boards/?/custom_fields/?'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -6571,7 +6575,8 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     default:
         $plugin_url['CustomFields'] = array(
-            '/custom_fields/?'
+            '/custom_fields/?',
+            '/boards/?/custom_fields/?'
         );
         $plugin_url['Gantt'] = array(
             '/card_dependencies/?'
