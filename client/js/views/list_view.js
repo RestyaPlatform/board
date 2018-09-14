@@ -356,15 +356,9 @@ App.ListView = Backbone.View.extend({
             authuser: this.authuser
         }).el);
         _(function() {
-            if (!_.isUndefined(APPS) && APPS !== null) {
-                if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-                    if ($.inArray('r_auto_archive_expired_cards', APPS.enabled_apps) !== -1 || $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
-                        if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
-                            $('body').trigger('listActionRendered', [self.model.id, self.model]);
-                        }
-                    }
-                }
-            }
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $('body').trigger('listActionRendered', [self.model.id, self.model]);
+            }       
         }).defer();
     },
     /**
