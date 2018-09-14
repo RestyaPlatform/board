@@ -1884,6 +1884,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
             '/custom_fields/?',
+            '/boards/?/custom_fields',
+            '/boards/?/custom_fields/?',
+            '/boards/?/cards_custom_fields',
             '/cards/?/cards_custom_fields',
             '/cards/?/cards_custom_fields/?'
         );
@@ -2041,13 +2044,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $xmpp = xmppObj();
             }
             foreach ($board_ids as $board_id) {
+                if (is_plugin_enabled('r_chat') && $jabberHost) {
+                    xmppDestroyRoom($board_id['board_id'], $xmpp);
+                }
                 $conditions = array(
                     $board_id['board_id']
                 );
                 $boards = pg_query_params($db_lnk, 'DELETE FROM boards WHERE id= $1', $conditions);
-                if (is_plugin_enabled('r_chat') && $jabberHost && $boards) {
-                    xmppDestroyRoom($boards, $xmpp);
-                }
             }
             $response = array(
                 'success' => 'Checked boards are deleted successfully.'
@@ -5367,8 +5370,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
-            '/cards_custom_fields',
-            '/cards/?/cards_custom_fields'
+            '/boards/?/custom_fields',
+            '/boards/?/cards_custom_fields'
         );
         $plugin_url['Gantt'] = array(
             '/card_dependencies'
@@ -6205,7 +6208,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
 
     default:
         $plugin_url['CustomFields'] = array(
-            '/custom_fields/?'
+            '/custom_fields/?',
+            '/boards/?/custom_fields/?'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -6333,6 +6337,15 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         if (is_plugin_enabled('r_chat') && $jabberHost) {
             xmppRevokeMember($previous_value);
         }
+        break;
+
+    case '/boards/?': // delete boards
+        if (is_plugin_enabled('r_chat') && $jabberHost) {
+            $xmpp = xmppObj();
+            xmppDestroyRoom($r_resource_vars['boards'], $xmpp);
+        }
+        $sql = 'DELETE FROM boards WHERE id = $1';
+        array_push($pg_params, $r_resource_vars['boards']);
         break;
 
     case '/boards/?/lists/?': // delete lists
@@ -6607,7 +6620,8 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     default:
         $plugin_url['CustomFields'] = array(
-            '/custom_fields/?'
+            '/custom_fields/?',
+            '/boards/?/custom_fields/?'
         );
         $plugin_url['Gantt'] = array(
             '/card_dependencies/?'
