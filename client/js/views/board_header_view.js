@@ -275,7 +275,7 @@ App.BoardHeaderView = Backbone.View.extend({
         }).el);
         return false;
     },
-    
+
     showBoardActions: function(e) {
         var self = this;
         _(function() {

@@ -358,7 +358,7 @@ App.ListView = Backbone.View.extend({
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
                 $('body').trigger('listActionRendered', [self.model.id, self.model]);
-            }       
+            }
         }).defer();
     },
     /**
@@ -1420,6 +1420,9 @@ App.ListView = Backbone.View.extend({
                     card.set('created', response.activity.created);
                     card.set('card_created_user', response.activity.full_name);
                     card.set('description', response.activity.card_description);
+                    if (!_.isUndefined(response.cards_custom_fields) && !_.isEmpty(response.cards_custom_fields)) {
+                        card.set('cards_custom_fields', response.cards_custom_fields);
+                    }
                     if (_.isUndefined(options.temp_id)) {
                         card.set('is_offline', false);
                     }
@@ -1433,6 +1436,10 @@ App.ListView = Backbone.View.extend({
                             silent: true
                         });
                         card.labels.add(response.cards_labels);
+                    }
+                    if (!_.isUndefined(response.cards_checklists) && response.cards_checklists.length > 0) {
+                        card.set('cards_checklists', response.cards_checklists);
+                        card.checklists.add(response.cards_checklists);
                     }
                     var list = App.boards.get(card.attributes.board_id).lists.get(card.attributes.list_id);
                     if (!_.isUndefined(list)) {

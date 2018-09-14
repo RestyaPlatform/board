@@ -4066,10 +4066,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ##LABEL_NAME##';
                     insertActivity($authUser['id'], $comment, 'add_card_label', $foreign_ids, null, $r_post['label_id']);
                 }
-                if (!empty($r_post['cards_checklists'])) {
-                    /*$qry_val_arr = array(
+                if (!empty($r_post['cards_checklists_card_id'])) {
+                    $qry_val_arr = array(
                         $response['id'],
-                        $copied_card_id
+                        $r_post['cards_checklists_card_id']
                     );
                     pg_query_params($db_lnk, 'INSERT INTO checklists (created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, position) SELECT created, modified, user_id, $1, name, checklist_item_count, checklist_item_completed_count, position FROM checklists WHERE card_id = $2 ORDER BY id', $qry_val_arr);
                     $qry_val_arr = array(
@@ -4077,7 +4077,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     $checklists = pg_query_params($db_lnk, 'SELECT id FROM checklists WHERE card_id = $1 order by id', $qry_val_arr);
                     $qry_val_arr = array(
-                        $copied_card_id
+                        $r_post['cards_checklists_card_id']
                     );
                     $prev_checklists = pg_query_params($db_lnk, 'SELECT id FROM checklists WHERE card_id = $1 order by id', $qry_val_arr);
                     $prev_checklist_ids = array();
@@ -4093,16 +4093,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         );
                         pg_query_params($db_lnk, 'INSERT INTO checklist_items (created, modified, user_id, card_id, name, checklist_id, is_completed, position) SELECT created, modified, user_id, $1, name , $2, is_completed, position FROM checklist_items WHERE checklist_id = $3 ORDER BY id', $qry_val_arr);
                         $i++;
-                    }*/
+                    }
                 }
-                if (!empty($r_post['cards_custom_fields']) && is_plugin_enabled('r_custom_fields')) {
-                    /*$qry_val_arr = array(
+                if (!empty($r_post['cards_custom_fields_card_id']) && is_plugin_enabled('r_custom_fields')) {
+                    $qry_val_arr = array(
                         $response['id'],
                         $r_post['list_id'],
                         $r_post['board_id'],
-                        $copied_card_id
+                        $r_post['cards_custom_fields_card_id']
                     );
-                    pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value,is_active,board_id,list_id) SELECT created, modified, $1, custom_field_id,value,is_active, $2, $3 FROM cards_custom_fields WHERE card_id = $4 ORDER BY id', $qry_val_arr);*/
+                    pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value, is_active, board_id, list_id) SELECT created, modified, $1, custom_field_id, value, is_active, $2, $3 FROM cards_custom_fields WHERE card_id = $4 ORDER BY id', $qry_val_arr);
                 }
                 $qry_val_arr = array(
                     $response['id']
@@ -4124,6 +4124,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $cards_checklists = pg_query_params($db_lnk, 'SELECT * FROM checklists_listing WHERE card_id = $1', $qry_val_arr);
                 while ($cards_checklist = pg_fetch_assoc($cards_checklists)) {
                     $response['cards_checklists'][] = $cards_checklist;
+                }
+                if (!empty($r_post['cards_custom_fields_card_id']) && is_plugin_enabled('r_custom_fields')) {
+                    $qry_val_arr = array(
+                        $response['id']
+                    );
+                    $cards_custom_fields = pg_query_params($db_lnk, 'SELECT ccf.*, cf.label, cf.color, cf.type FROM cards_custom_fields as ccf LEFT JOIN custom_fields as cf ON cf.id = ccf.custom_field_id WHERE ccf.card_id = $1', $qry_val_arr);
+                    while ($cards_custom_field = pg_fetch_assoc($cards_custom_fields)) {
+                        if (!empty($cards_custom_field['value'])) {
+                            $response['cards_custom_fields'][] = $cards_custom_field;
+                        }
+                    }
                 }
             }
         }
@@ -6622,6 +6633,9 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $plugin_url['CustomFields'] = array(
             '/custom_fields/?',
             '/boards/?/custom_fields/?'
+        );
+        $plugin_url['CardTemplate'] = array(
+            '/boards/?/card_templates/?'
         );
         $plugin_url['Gantt'] = array(
             '/card_dependencies/?'
