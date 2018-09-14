@@ -230,7 +230,7 @@
 				  <li class="js-switch-view gantt_view_labels"><a href="#" class=" navbar-btn h4 js-switch-calendar-view text-muted list-group-item-text" title="<%- i18next.t('Calendar') %>" data-placement="bottom" data-toggle="tooltip"><i class="icon-calendar"></i></a></li>
 				</ul>
 				<div class="pull-right dropdown"> 
-				  <a data-toggle="dropdown" class="navbar-btn icon h4 btn btn-primary dropdown-toggle js-back-setting-response col-sm-offset-1 show" type="button"><i class="icon-cog h3 cur"></i></a>
+				  <a data-toggle="dropdown" class="navbar-btn icon h4 btn btn-primary dropdown-toggle js-back-setting-response col-sm-offset-1 show js-show-board-actions" type="button"><i class="icon-cog h3 cur"></i></a>
 				  <ul class="dropdown-menu arrow arrow-right col-xs-12 js-setting-response">
 							<li class="js-sync-google-dropdown inner-dropdown js-invite-users"><a data-toggle="dropdown" href="#" class="js-invite-users"><span class="icon-sm icon-user icon-type"></span> <%- i18next.t('Invite') %>
 							</a></li>
@@ -283,7 +283,7 @@
 									preview = '<span style="background-color:' + background_color + '" class=" background-box show well-lg"></span>'; 
 								 }
 							%>
-							<li><a href="#" class="nav-list-item nav-list-sub-item js-change-background"> <%- i18next.t('Change Background') %></a></li>
+							<li class="js-background-change"><a href="#" class="nav-list-item nav-list-sub-item js-change-background"> <%- i18next.t('Change Background') %></a></li>
 							<% if(!_.isEmpty(IMAP_EMAIL)){ %>
 							<li><a href="#" class="nav-list-item nav-list-sub-item js-email-to-board-settings"> <%- i18next.t('Email to board settings') %></a></li>
 							<% } %>
