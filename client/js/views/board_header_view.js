@@ -81,6 +81,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-add-board-member-dropdown': 'addBoardMemberDropdown',
         'click .js-close-popover-board-member-dropdown': 'closeBoardMemberDropdown',
         'click .js-show-subscribe-form': 'showSubscribeForm',
+        'click .js-show-board-actions': 'showBoardActions',
         'click .js-show-unsubscribe-form': 'showUnsubscribeForm',
         'click .js-switch-grid-view': 'switchGridView',
         'click .js-switch-list-view': 'switchListView',
@@ -274,6 +275,16 @@ App.BoardHeaderView = Backbone.View.extend({
         }).el);
         return false;
     },
+
+    showBoardActions: function(e) {
+        var self = this;
+        _(function() {
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $('body').trigger('boardActionRendered', [self.model.id, self.model]);
+            }
+        }).defer();
+    },
+
     showUnsubscribeForm: function(e) {
         $('.js-setting-response').html(new App.UnsubscribeBoardConfirmView({
             model: this.model,
@@ -1115,6 +1126,12 @@ App.BoardHeaderView = Backbone.View.extend({
         el.find('.js-back-setting-response').after(new App.BoardSidebarView({
             model: this.model,
         }).el);
+        var self = this;
+        _(function() {
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $('body').trigger('boardActionRendered', [self.model.id, self.model]);
+            }
+        }).defer();
         this.renderBoardUsers();
         this.clearAll();
         return false;
