@@ -1119,7 +1119,6 @@ App.ModalCardView = Backbone.View.extend({
     render: function() {
         this.converter.setFlavor('github');
         var self = this;
-        $.removeCookie('filter');
         var subscribed = '';
         if (!_.isUndefined(authuser.user)) {
             var cards_subscribers = this.model.cards_subscribers.where({
