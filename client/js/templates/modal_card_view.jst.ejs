@@ -132,7 +132,9 @@
 				  <% } %>
 					<li class="after-start-date-<%- card.id %>">
 					</li>
-					<li id="js-custom-fields-listing-<%- card.attributes.id %>"></li>
+					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "get_custom_fields",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
+						<li id="js-custom-fields-listing-<%- card.attributes.id %>"></li>
+					<% } %>
 				  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 				  <% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL') { %>
 				  <li class="">
@@ -323,7 +325,9 @@
 						  </ul>
 						</li>
 					<% } %>
+					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "get_custom_fields",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 					<li id="js-custom-fields-edi-listing-<%- card.id%>"></li>
+					<% } %> 
 					</ul>
 				</div>
 				<% } %>

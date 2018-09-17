@@ -290,3 +290,13 @@ SELECT board.id,
    FROM ((boards board
      LEFT JOIN users users ON ((users.id = board.user_id)))
      LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
+
+SELECT pg_catalog.setval('acl_board_links_seq', (SELECT MAX(id) FROM acl_board_links), true);
+
+INSERT INTO "acl_board_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_hide")
+VALUES (now(), now(), 'Delete board', '/boards/?', 'DELETE', 'delete_board', '2', '0');
+
+SELECT pg_catalog.setval('acl_board_links_boards_user_roles_seq', (SELECT MAX(id) FROM acl_board_links_boards_user_roles), true);
+
+INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id")
+VALUES (now(), now(), (select id from acl_board_links where slug='delete_board'), '1');

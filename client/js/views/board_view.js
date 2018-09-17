@@ -214,6 +214,7 @@ App.BoardView = Backbone.View.extend({
         'click .js-star-board': 'starredBoard',
         'click .js-close-board': 'closeBoard',
         'submit #BoardReopenForm': 'reopenBoard',
+        'submit #BoardDeleteForm': 'deleteBoard',
         'click .js-change-visibility': 'showAllVisibility',
         'click .js-select': 'copyBoardVisibility',
         'click .js-hide-sidebar': 'hideSidebar',
@@ -469,6 +470,26 @@ App.BoardView = Backbone.View.extend({
         }, {
             patch: true,
             success: function(model, response) {}
+        });
+        return false;
+    },
+    /**
+     * deleteBoard()
+     * delete the board
+     * @return false
+     *
+     */
+    deleteBoard: function(e) {
+        var data = $(e.target).serializeObject();
+        this.model.url = api_url + 'boards/' + this.model.id + '.json';
+        App.boards.remove(self.model);
+        this.model.destroy({
+            success: function(model, response) {
+                app.navigate('#/boards', {
+                    trigger: false,
+                    replace: false
+                });
+            }
         });
         return false;
     },
