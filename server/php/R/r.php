@@ -4129,7 +4129,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $qry_val_arr = array(
                         $response['id']
                     );
-                    $cards_custom_fields = pg_query_params($db_lnk, 'SELECT ccf.*, cf.label, cf.color, cf.type FROM cards_custom_fields as ccf LEFT JOIN custom_fields as cf ON cf.id = ccf.custom_field_id WHERE ccf.card_id = $1', $qry_val_arr);
+                    $cards_custom_fields = pg_query_params($db_lnk, 'SELECT ccf.*, cf.label, cf.color, cf.type, cf.visibility FROM cards_custom_fields as ccf LEFT JOIN custom_fields as cf ON cf.id = ccf.custom_field_id WHERE ccf.card_id = $1', $qry_val_arr);
                     while ($cards_custom_field = pg_fetch_assoc($cards_custom_fields)) {
                         if (!empty($cards_custom_field['value'])) {
                             $response['cards_custom_fields'][] = $cards_custom_field;
