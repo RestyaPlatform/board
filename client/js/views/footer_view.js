@@ -832,32 +832,30 @@ App.FooterView = Backbone.View.extend({
                     activities.each(function(activity) {
                         var card_id = activity.attributes.card_id;
                         localforage.getItem('unreaded_cards', function(err, value) {
-                            if (value) {
-                                if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
+                            if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
+                                var count;
+                                if (value) {
                                     if (value[card_id]) {
-                                        var count = value[card_id] + 1;
+                                        count = value[card_id] + 1;
                                         value[card_id] = count;
                                         localforage.setItem("unreaded_cards", value);
-                                        if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
-                                            $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification bg-primary"><small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
-                                        } else {
-                                            $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
-                                        }
                                     } else if (card_id !== 0) {
                                         value[card_id] = 1;
+                                        count = 1;
                                         localforage.setItem("unreaded_cards", value);
-                                        if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
-                                            $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification bg-primary"><small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>1</span></small></li>');
-                                        }
                                     }
+                                } else {
+                                    var cards = [];
+                                    cards[card_id] = 1;
+                                    count = 1;
+                                    localforage.setItem("unreaded_cards", cards);
                                 }
-                            } else {
-                                var cards = [];
-                                cards[card_id] = 1;
                                 if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
-                                    $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification bg-primary"><small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>1</span></small></li>');
+                                    $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification bg-primary"><small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
+                                } else {
+                                    $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
                                 }
-                                localforage.setItem("unreaded_cards", cards);
+
                             }
                         });
                         activity.from_footer = true;
@@ -1221,13 +1219,15 @@ App.FooterView = Backbone.View.extend({
                                             });
                                             if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(parseInt(activity.attributes.board_id)))) {
                                                 var updated_card_list_cards = self.board.cards.where({
-                                                    list_id: parseInt(activity.attributes.foreign_id)
+                                                    list_id: parseInt(activity.attributes.list_id)
                                                 });
-                                                App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.foreign_id)).set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
+                                                card.list.collection.board.lists.get(parseInt(activity.attributes.list_id)).cards.remove(card);
+                                                App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.list_id)).set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
                                             }
                                             card_new_list.set('card_count', card_new_list.attributes.card_count + 1);
                                             card.list = card_new_list;
                                             card.set('list_id', parseInt(activity.attributes.foreign_id));
+                                            card.list.collection.board.lists.get(activity.attributes.foreign_id).cards.add(card);
                                             var cards_attachments = self.board.attachments.where({
                                                 card_id: parseInt(activity.attributes.card_id)
                                             });
@@ -1248,6 +1248,8 @@ App.FooterView = Backbone.View.extend({
                                                     k++;
                                                 });
                                             }
+                                        } else if (activity.attributes.type === 'change_card_position') {
+                                            card.set('position', activity.attributes.card_position);
                                         } else if (activity.attributes.type === 'delete_card_attachment') {
                                             self.board.attachments.remove(self.board.attachments.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)

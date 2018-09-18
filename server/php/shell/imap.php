@@ -109,7 +109,7 @@ if (!empty($emails)) {
                                 $list_id,
                                 $board_id,
                                 'add_card',
-                                '##USER_NAME## added card ##CARD_LINK## to list ##LIST_NAME##.'
+                                __l('##USER_NAME## added card ##CARD_LINK## to list ##LIST_NAME##.')
                             );
                             $activity_res = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
                         } else {
@@ -242,7 +242,7 @@ if (!empty($emails)) {
                                         $list_id,
                                         $board_id,
                                         'add_card_attachment',
-                                        '##USER_NAME## added attachment to this card ##CARD_LINK##'
+                                        __l('##USER_NAME## added attachment to this card ##CARD_LINK##')
                                     );
                                     $activity_res = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
                                 }

@@ -26,6 +26,7 @@ var ANIMATION_SPEED = 1;
 var DEFAULT_CARD_VIEW = '';
 var PAGING_COUNT = '';
 var ALLOWED_FILE_EXTENSIONS = '';
+var R_LDAP_LOGIN_HANDLE = '';
 var last_activity = '';
 var previous_date = '';
 var SecuritySalt = 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf';
@@ -36,6 +37,7 @@ var last_user_activity_id = 0,
 var xhrPool = [];
 var APPS = [];
 var load_count = 1;
+var load_gantt = 1;
 var from_url = '';
 var custom_fields = {};
 var sort_by = '';
@@ -87,12 +89,11 @@ Backbone.View.prototype.downloadLink = function(model, id) {
     return download_link;
 };
 Backbone.View.prototype.documentLink = function(model, data) {
-    var document_link = window.location.pathname + 'img/original/Card/' + data.card_id + '/' + data.name;
+    var extension = data.name.split('.');
+    var ext = extension[extension.length - 1];
+    var hash = calcMD5(SecuritySalt + 'CardAttachment' + data.id + ext + 'original');
+    var document_link = window.location.pathname + 'img/original/CardAttachment/' + data.id + '.' + hash + '.' + ext;
     return document_link;
-};
-Backbone.View.prototype.videoLink = function(model, data) {
-    var video_link = window.location.pathname + 'img/original/Card/' + data.card_id + '/' + data.name;
-    return video_link;
 };
 hasOfflineStatusCode = function(xhr) {
     var offlineStatusCodes, _ref, __indexOf = [].indexOf || function(item) {
@@ -198,6 +199,17 @@ callbackTranslator = {
                     });
                     $('#header').html(this.headerView.el);
                     $('#content').html(new App.Board404View({
+                        model: authuser
+                    }).el);
+                    return;
+                } else if (!_.isUndefined(current_url) && current_url['1'] == 'organization') {
+                    $.cookie('redirect_link', window.location.hash);
+                    changeTitle('Organization not found');
+                    this.headerView = new App.HeaderView({
+                        model: authuser
+                    });
+                    $('#header').html(this.headerView.el);
+                    $('#content').html(new App.Organization404View({
                         model: authuser
                     }).el);
                     return;
@@ -451,6 +463,7 @@ var AppRouter = Backbone.Router.extend({
                 $.removeCookie('chat_initialize');
                 localforage.removeItem('r_zapier_access_token');
                 localforage.removeItem('board_filter');
+                localforage.removeItem('unreaded_cards');
                 api_token = '';
                 authuser = new App.User();
                 app.navigate('#/users/login', {

@@ -66,6 +66,7 @@
 	<td data-title="End Date"> - </td>
 	<% } %>
 	<td class="hide js-list-view-estimated-time-data js-list-view-estimated-time-<%- card.attributes.id %>" title="<%- i18next.t('Estimated time') %>" data-title="<%- i18next.t('Estimated time') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
+	<td class="hide js-list-view-spent-time-data js-list-view-spent-time-<%- card.attributes.id %>" title="<%- i18next.t('Spent time') %>" data-title="<%- i18next.t('Spent time') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
 	<% 
 	if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
 	var cards_subscribers = card.cards_subscribers.where({ is_subscribed: 1, user_id: parseInt(authuser.user.id) }); 

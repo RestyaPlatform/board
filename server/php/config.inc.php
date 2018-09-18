@@ -41,14 +41,8 @@ define('R_DB_USER', 'restya');
 define('R_DB_PASSWORD', 'hjVl2!rGd');
 define('R_DB_NAME', 'restyaboard');
 define('R_DB_PORT', 5432);
-define('CHAT_DB_HOST', 'localhost');
-define('CHAT_DB_USER', 'ejabberd');
-define('CHAT_DB_PASSWORD', 'ftfnVgYl2');
-define('CHAT_DB_NAME', 'ejabb');
-define('CHAT_DB_PORT', '5432');
 define('SECURITYSALT', 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf');
 define('SITE_LICENSE_KEY', 'REPLACE YOUR LICENCE HERE');
-define('LICENSE_HASH', '');
 if (!defined('STDIN') && !file_exists(SITE_URL_FOR_SHELL) && !empty($_server_domain_url)) {
     $fh = fopen(SITE_URL_FOR_SHELL, 'a');
     fwrite($fh, '<?php' . "\n");
@@ -58,7 +52,9 @@ if (!defined('STDIN') && !file_exists(SITE_URL_FOR_SHELL) && !empty($_server_dom
 $db_lnk = pg_connect('host=' . R_DB_HOST . ' port=' . R_DB_PORT . ' dbname=' . R_DB_NAME . ' user=' . R_DB_USER . ' password=' . R_DB_PASSWORD . ' options=--client_encoding=UTF8') or die('Database could not connect');
 $settings = pg_query_params($db_lnk, 'SELECT name, value FROM settings', array());
 while ($setting = pg_fetch_assoc($settings)) {
-    define($setting['name'], $setting['value']);
+    if (!defined($setting['name'])) {
+        define($setting['name'], $setting['value']);
+    }
 }
 date_default_timezone_set(SITE_TIMEZONE);
 $thumbsizes = array(
