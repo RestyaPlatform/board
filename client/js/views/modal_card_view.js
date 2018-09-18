@@ -113,7 +113,8 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-remove-card-color': 'removeCardColor',
         'click .js-show-comment': 'showComment',
         'click .js-preview-comment': 'previewComment',
-        'click .js-card-activites-load-more': 'cardActivityLoadMore'
+        'click .js-card-activites-load-more': 'cardActivityLoadMore',
+        'mouseenter .js-close-drag': 'CloseDragDrop'
     },
     /**
      * Constructor
@@ -994,6 +995,14 @@ App.ModalCardView = Backbone.View.extend({
         });
     },
     /**
+     * CloseDragDrop()
+     * close drag and drop attachment view
+     */
+    CloseDragDrop: function() {
+        $('#js-card-modal-' + this.model.id).removeClass('drophover');
+        $('#js-card-modal-' + this.model.id).find('#js-close-drag').addClass('hide');
+    },
+    /**
      * refreshdock()
      * update dock modal view
      */
@@ -1053,6 +1062,7 @@ App.ModalCardView = Backbone.View.extend({
                 });
                 uploadManager.on('fileuploaddragover', function(e) {
                     $('#js-card-modal-' + self.model.id).addClass('drophover');
+                    $('#js-card-modal-' + self.model.id).find('#js-close-drag').removeClass('hide');
                 });
                 var dragging = 0;
                 $('#dropzone' + self.model.id).on('dragenter', function(e) {
@@ -1062,11 +1072,13 @@ App.ModalCardView = Backbone.View.extend({
                 $('#dropzone' + self.model.id).on('dragleave', function(e) {
                     dragging--;
                     if (dragging === 0) {
+                        $('#js-card-modal-' + self.model.id).find('#js-close-drag').addClass('hide');
                         $('#js-card-modal-' + self.model.id).removeClass('drophover');
                     }
                 });
                 uploadManager.on('fileuploaddrop', function(e) {
                     dragging--;
+                    $('#js-card-modal-' + self.model.id).find('#js-close-drag').addClass('hide');
                     $('#js-card-modal-' + self.model.id).removeClass('drophover');
                 });
                 uploadManager.on('filedone', function(file, data) {
@@ -1336,6 +1348,7 @@ App.ModalCardView = Backbone.View.extend({
             });
             uploadManager.on('fileuploaddragover', function(e) {
                 $('#js-card-modal-' + self.model.id).addClass('drophover');
+                $('#js-card-modal-' + self.model.id).find('#js-close-drag').removeClass('hide');
             });
             var dragging = 0;
             $('#dropzone' + self.model.id).on('dragenter', function(e) {
@@ -1344,11 +1357,13 @@ App.ModalCardView = Backbone.View.extend({
             $('#dropzone' + self.model.id).on('dragleave', function(e) {
                 dragging--;
                 if (dragging === 0) {
+                    $('#js-card-modal-' + self.model.id).find('#js-close-drag').addClass('hide');
                     $('#js-card-modal-' + self.model.id).removeClass('drophover');
                 }
             });
             uploadManager.on('fileuploaddrop', function(e) {
                 dragging--;
+                $('#js-card-modal-' + self.model.id).find('#js-close-drag').addClass('hide');
                 $('#js-card-modal-' + self.model.id).removeClass('drophover');
             });
             uploadManager.on('filedone', function(file, data) {
