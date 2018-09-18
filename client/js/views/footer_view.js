@@ -1579,7 +1579,9 @@ App.FooterView = Backbone.View.extend({
                             board: self.board,
                             flag: '2'
                         });
-                        $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
+                        if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
+                            $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
+                        }
                         if ($('.js-list-activity-' + activity.id, view_activity).length === 0) {
                             view_activity.append(view.render().el);
                         }
