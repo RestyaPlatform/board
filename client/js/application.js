@@ -461,6 +461,7 @@ var AppRouter = Backbone.Router.extend({
                 delete(App.boards);
                 custom_fields = {};
                 $.removeCookie('chat_initialize');
+                $.removeCookie('filter');
                 localforage.removeItem('r_zapier_access_token');
                 localforage.removeItem('board_filter');
                 localforage.removeItem('unreaded_cards');
