@@ -5385,7 +5385,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             '/boards/?/cards_custom_fields'
         );
         $plugin_url['Gantt'] = array(
-            '/card_dependencies'
+            '/boards/?/card_dependencies'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -6638,7 +6638,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/boards/?/card_templates/?'
         );
         $plugin_url['Gantt'] = array(
-            '/card_dependencies/?'
+            '/boards/?/card_dependencies/?'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
