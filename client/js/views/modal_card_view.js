@@ -1558,6 +1558,7 @@ App.ModalCardView = Backbone.View.extend({
             if (!$(e.currentTarget).hasClass('js-delete-card-vote')) {
                 $(e.currentTarget).addClass('js-delete-card-vote');
             }
+            $('.js-delete-card-vote', e.target).trigger('click');
         }
         return false;
     },
