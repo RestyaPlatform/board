@@ -140,7 +140,6 @@ App.FooterView = Backbone.View.extend({
     render: function() {
         this.converter.setFlavor('github');
         var self = this;
-        $.removeCookie('filter');
         this.model.is_show_enable_notification = false;
         var current_param = Backbone.history.fragment;
         var current_param_split = current_param.split('/');
