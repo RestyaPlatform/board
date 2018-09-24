@@ -1565,6 +1565,7 @@ App.ModalCardView = Backbone.View.extend({
             if (!$(e.currentTarget).hasClass('js-delete-card-vote')) {
                 $(e.currentTarget).addClass('js-delete-card-vote');
             }
+            $('.js-delete-card-vote', e.target).trigger('click');
         }
         return false;
     },
@@ -2550,7 +2551,7 @@ App.ModalCardView = Backbone.View.extend({
             content_img = '<img src="' + profile_picture_path + '" alt="' + user_name + '" title="' + full_name + ' (' + user_name + ')" class="img-rounded img-responsive avatar">';
         }
         var view_user = $('#js-card-users-list-' + self.model.id).prepend('<li class="js-added-card-user-' + user_id + '">' + content_img + '</li>');
-        $('.js-member-dropdown').removeClass('open');
+        $('#js-card-user-add-container .js-member-dropdown').removeClass('open');
         var card_user = new App.CardUser();
         card_user.set('uuid', uuid);
         card_user.set('is_offline', true);
@@ -3604,18 +3605,26 @@ App.ModalCardView = Backbone.View.extend({
     },
     keyboardShowAddMemberForm: function(e) {
         $('.js-show-add-member-form', e.target).trigger('click');
+        $('#js-card-user-add-container .js-member-dropdown').addClass('open');
         return false;
     },
     keyboardShowCardLabelForm: function(e) {
-        $('.js-show-card-label-form', e.target).trigger('click');
+        $('.js-show-card-label-form').trigger('click');
+        _(function() {
+            $('#js-label-add-container .js-label-dropdown').addClass('open');
+        }).defer();
         return false;
     },
     keyboardAddCardMember: function(e) {
-        $('.dropdown-menu-left .js-organization-member-search-response', e.target).find("a").each(function(index, value) {
-            if ($(value).data('user-id') == authuser.user.id) {
-                $(this).trigger('click');
-            }
-        });
+        $('.js-show-add-member-form', e.target).trigger('click');
+        _(function() {
+            $('.dropdown-menu-left .js-organization-member-search-response', e.target).find('a').each(function(index, value) {
+                if ($(value).data('user-id') == authuser.user.id) {
+                    $(this).trigger('click');
+                    $('#js-card-user-add-container .js-member-dropdown').removeClass('open');
+                }
+            });
+        }).defer();
         return false;
     },
     cardActivityLoadMore: function(e) {
