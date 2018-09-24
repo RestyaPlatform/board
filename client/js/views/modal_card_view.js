@@ -828,11 +828,6 @@ App.ModalCardView = Backbone.View.extend({
             $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputCardName');
             return false;
         }
-        if (edit_mode === 2 && $.trim(data.description) === '') {
-            $('.error-msg-name').remove();
-            $('<div class="error-msg-name text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputCarddescriptions');
-            return false;
-        }
         if (!_.isUndefined(data.due_date) || !_.isUndefined(data.due_time)) {
             data = {
                 to_date: data.due_date,
@@ -853,7 +848,7 @@ App.ModalCardView = Backbone.View.extend({
         if (!_.isUndefined(data.name)) {
             target.prev('h4').html(_.escape(data.name)).removeClass('hide');
         }
-        if (!_.isUndefined(data.description)) {
+        if (!_.isUndefined(data.description) && !_.isEmpty(data.description)) {
             if (!$.trim($('#inputCarddescriptions').val()).length) {
                 $('.error-msg').remove();
                 $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter('#inputCarddescriptions');
