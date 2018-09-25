@@ -1052,24 +1052,34 @@ App.FooterView = Backbone.View.extend({
                                             card.set('cards_users', activity.attributes.user);
                                         } else if (activity.attributes.type === 'add_checklist_item') {
                                             var new_item = new App.CheckListItem();
-                                            new_item.set(activity.attributes.item);
+                                            new_item.set(activity.attributes.item, {
+                                                silent: true
+                                            });
                                             new_item.set('id', parseInt(activity.attributes.item.id));
                                             new_item.set('user_id', parseInt(activity.attributes.item.user_id));
                                             new_item.set('card_id', parseInt(activity.attributes.item.card_id));
                                             new_item.set('checklist_id', parseInt(activity.attributes.item.checklist_id));
                                             new_item.set('position', parseFloat(activity.attributes.item.position));
-                                            self.board.checklist_items.add(new_item);
+                                            self.board.checklist_items.add(new_item, {
+                                                silent: true
+                                            });
                                             var added_checklist_items = self.board.checklist_items.where({
                                                 card_id: parseInt(activity.attributes.card_id)
                                             });
                                             items = new App.CheckListItemCollection();
-                                            items.add(added_checklist_items);
+                                            items.add(added_checklist_items, {
+                                                silent: true
+                                            });
                                             var added_completed_count = items.filter(function(checklist_item) {
                                                 return parseInt(checklist_item.get('is_completed')) === 1;
                                             }).length;
                                             var added_total_count = items.models.length;
-                                            card.set('checklist_item_completed_count', added_completed_count);
-                                            card.set('checklist_item_count', added_total_count);
+                                            card.set('checklist_item_completed_count', added_completed_count, {
+                                                silent: true
+                                            });
+                                            card.set('checklist_item_count', added_total_count, {
+                                                silent: true
+                                            });
                                         } else if (activity.attributes.type === 'update_card_checklist') {
                                             checklist = self.board.checklists.findWhere({
                                                 id: parseInt(activity.attributes.checklist.id)
@@ -1087,7 +1097,10 @@ App.FooterView = Backbone.View.extend({
                                                 id: parseInt(activity.attributes.item.id)
                                             });
                                             if (!_.isUndefined(checklist_item)) {
-                                                checklist_item.set(activity.attributes.item);
+                                                var options = {
+                                                    silent: true
+                                                };
+                                                checklist_item.set(activity.attributes.item, options);
                                                 $('#js-checklist-item-' + activity.attributes.item.id).html(self.converter.makeHtml(activity.attributes.item.name));
                                                 checklist_item.set('id', parseInt(activity.attributes.item.id));
                                                 checklist_item.set('user_id', parseInt(activity.attributes.item.user_id));
@@ -1095,12 +1108,12 @@ App.FooterView = Backbone.View.extend({
                                                 checklist_item.set('checklist_id', parseInt(activity.attributes.item.checklist_id));
                                                 checklist_item.set('position', parseFloat(activity.attributes.item.position));
                                                 var is_completed = (activity.attributes.item.is_completed === 't') ? 1 : 0;
-                                                checklist_item.set('is_completed', is_completed);
+                                                checklist_item.set('is_completed', is_completed, options);
                                                 checklist_items = self.board.checklist_items.where({
                                                     card_id: parseInt(activity.attributes.card_id)
                                                 });
                                                 items = new App.CheckListItemCollection();
-                                                items.add(checklist_items);
+                                                items.add(checklist_items, options);
                                                 completed_count = items.filter(function(checklist_item) {
                                                     return ((parseInt(checklist_item.get('is_completed')) === 1) || ((checklist_item.get('is_completed')) === 't'));
                                                 }).length;
