@@ -1116,8 +1116,8 @@ App.ModalCardView = Backbone.View.extend({
             this.model.activities.fetch({
                 cache: false,
                 success: function(model, response) {
-                    this.model.set('activity_count', response._metadata.total_records);
-                    this.renderActivitiesCollection();
+                    self.model.set('activity_count', response._metadata.total_records);
+                    self.renderActivitiesCollection();
                 }
             });
             this.renderChecklistsCollection();
@@ -1655,7 +1655,7 @@ App.ModalCardView = Backbone.View.extend({
             is_subscribed: 1
         }, {
             success: function(model, response, options) {
-                if (_.isUndefined(options.temp_id)) {
+                if (_.isUndefined(options.temp_id) && !_.isEmpty(self.model.cards_subscribers) && !_.isUndefined(self.model.cards_subscribers) && self.model.cards_subscribers.length > 0) {
                     self.model.cards_subscribers.findWhere({
                         user_id: parseInt(authuser.user.id),
                         card_id: card_id
