@@ -56,7 +56,7 @@ To give you some idea about of our plans:
 
 #### Under release
 
-* Notifier iOS App (Non-open source; free with IAP)
+* Export CSV, WIP Limit and some small apps
 
 
 #### Next
