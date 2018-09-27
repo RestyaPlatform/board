@@ -6702,6 +6702,7 @@ $scope_exception_url = array(
 $token_exception_url = array(
     '/users/logout',
     '/oauth',
+    '/oauth/token',
     '/settings'
 );
 main();
