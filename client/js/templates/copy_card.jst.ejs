@@ -11,17 +11,16 @@
 					</div>
 				</div>
 		   <% }
-		   var comment = card.list.collection.board.activities.where({card_id: card.attributes.id, type: "add_comment"});
-			if (comment.length > 0) { %>
-			   <div class="form-group">
-				   <div class="checkbox">
-					    <input id="Activities" class="hide" type="checkbox" name="keep_activities" value="1" checked="checked">
-						<label for="Activities">
-							<%- i18next.t('Comments') %> (<%- comment.length %>)
-						</label>
-					</div>
-				</div>
-		   <%  }
+		   if (parseInt(card.attributes.comment_count) > 0) { %>
+			<div class="form-group">
+				<div class="checkbox">
+					 <input id="Activities" class="hide" type="checkbox" name="keep_activities" value="1" checked="checked">
+					 <label for="Activities">
+						 <%- i18next.t('Comments') %> (<%- card.attributes.comment_count %>)
+					 </label>
+				 </div>
+			 </div>
+		<%  }
 			if (card.labels.length > 0) { %>
 			   <div class="form-group">
 				   <div class="checkbox">
@@ -52,14 +51,20 @@
 					</div>
 				</div>
 		   <% } %>
-		   		<div class="form-group">
-					<div class="checkbox">
-						<input id="custom_fields" class="hide" type="checkbox" name="keep_custom_fields" value="1" checked="checked">
-						<label for="custom_fields">
-							<%- i18next.t('Custom Fields') %> 
-						</label>
+		   <% if (!_.isUndefined(APPS) && APPS !== null) {
+			if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+				if ($.inArray('r_custom_fields', APPS.enabled_apps) !== -1) { %>
+					<div class="form-group">
+						<div class="checkbox">
+							<input id="custom_fields" class="hide" type="checkbox" name="keep_custom_fields" value="1" checked="checked">
+							<label for="custom_fields">
+								<%- i18next.t('Custom Fields') %> 
+							</label>
+						</div>
 					</div>
-				</div>
+				<% }
+			}
+		} %>
 		</div>
 <%	}  %>
 		<h4> <%- i18next.t('Copy to...') %></h4>
@@ -75,8 +80,12 @@
 			is_archived: 0
 		});
 		var wip_enabled = false;
-		if ($.inArray('r_wip_limit',APPS.enabled_apps) !== -1) {
-			wip_enabled = true;
+		if (!_.isUndefined(APPS) && APPS !== null ) {
+			if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+				if ($.inArray('r_wip_limit',APPS.enabled_apps) !== -1) {
+					wip_enabled = true;
+				}
+			}
 		}
 		_.each(filtered_lists, function(list) {
 			if (card.attributes.list_id == list.id) {

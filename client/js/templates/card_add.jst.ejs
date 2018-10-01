@@ -4,11 +4,20 @@
 	<input type="hidden" name="list_id" class="js-card-add-list" value="<%- model.attributes.list_id %>">
 	<input type="hidden" name="user_ids" class="js-card-user-ids" value="">
 	<input type="hidden" name="card_labels" class="js-card-add-labels" value="">
+	<input type="hidden" name="cards_custom_fields_card_id" class="js-custom_field-card-id" value="">
+	<input type="hidden" name="cards_checklists_card_id" class="js-checklist-card-id" value="">
+	
 	<input type="hidden" name="position" class="js-card-add-position" value="">
 	<div class="form-group">
 		<textarea placeholder=" <%- i18next.t('Add a card') %>" rows="3" id="AddCard" class="form-control" name="name" required><%- name %></textarea> 
 	</div>
 	<div class="row js-users-list">
+		<ul class="list-unstyled list-inline text-muted clearfix"></ul>
+	</div>
+	<div class="row js-checklist-list">
+		<ul class="list-unstyled list-inline text-muted clearfix"></ul>
+	</div>
+	<div class="row js-custom_fields-list">
 		<ul class="list-unstyled list-inline text-muted clearfix"></ul>
 	</div>
 	<div class="row">     

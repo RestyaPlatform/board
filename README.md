@@ -44,6 +44,17 @@ To upgrade, overwrite application files and apply respective DB script:
 *  v0.6.2 to v0.6.3 - [`/sql/upgrade-0.6.2-0.6.3.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.2-0.6.3.sql)
 *  v0.6.3 to v0.6.4 - [`/sql/upgrade-0.6.3-0.6.4.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.3-0.6.4.sql)
 
+### Configuring Restyaboard
+
+* Login using username `admin`, password `restya`
+* If installed via Amazon AMI, then login using the username `admin` and the `instance_id` of the instance as the password
+* Visit admin panel at `/#/settings/6`
+* Update Dropbox App Key by visiting [https://www.dropbox.com/developers/apps/](https://www.dropbox.com/developers/apps/)
+* Update Flickr API Key by visiting [https://www.flickr.com/services/apps/](https://www.flickr.com/services/apps/)
+* Visit `/#/settings/3` for configuring site name, email and server timezone.
+* Change admin email and password
+* To add/reply cards via email, visit `/#/settings/10` to configure IMAP settings
+
 ### Forum
 
 * [Restya Google Group](https://groups.google.com/d/forum/restya)
@@ -56,8 +67,14 @@ To give you some idea about of our plans:
 
 #### Under release
 
-* Notifier iOS App (Non-open source; free with IAP)
-
+* Export CSV app
+* WIP limit app
+* Enhancing Custom fields, LDAP, Gantt app
+* Download all attachments in a card app
+* iCal feed for user app
+* Board reports app
+* Board member roles app
+* GitHub issues & enhancements etc.,
 
 #### Next
 

@@ -81,6 +81,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-add-board-member-dropdown': 'addBoardMemberDropdown',
         'click .js-close-popover-board-member-dropdown': 'closeBoardMemberDropdown',
         'click .js-show-subscribe-form': 'showSubscribeForm',
+        'click .js-show-board-actions': 'showBoardActions',
         'click .js-show-unsubscribe-form': 'showUnsubscribeForm',
         'click .js-switch-grid-view': 'switchGridView',
         'click .js-switch-list-view': 'switchListView',
@@ -274,6 +275,16 @@ App.BoardHeaderView = Backbone.View.extend({
         }).el);
         return false;
     },
+
+    showBoardActions: function(e) {
+        var self = this;
+        _(function() {
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $('body').trigger('boardActionRendered', [self.model.id, self.model]);
+            }
+        }).defer();
+    },
+
     showUnsubscribeForm: function(e) {
         $('.js-setting-response').html(new App.UnsubscribeBoardConfirmView({
             model: this.model,
@@ -1115,6 +1126,12 @@ App.BoardHeaderView = Backbone.View.extend({
         el.find('.js-back-setting-response').after(new App.BoardSidebarView({
             model: this.model,
         }).el);
+        var self = this;
+        _(function() {
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $('body').trigger('boardActionRendered', [self.model.id, self.model]);
+            }
+        }).defer();
         this.renderBoardUsers();
         this.clearAll();
         return false;
@@ -1459,6 +1476,21 @@ App.BoardHeaderView = Backbone.View.extend({
             id: parseInt(card_id)
         });
         this.model.cards.get(find_card.id).set('is_archived', 0);
+        var list = App.boards.get(find_card.attributes.board_id).lists.get(find_card.attributes.list_id);
+        if (!_.isUndefined(list)) {
+            list.set('card_count', list.attributes.card_count + 1, {
+                silent: true
+            });
+        }
+        var currentBoardList = App.current_board.lists.get(find_card.attributes.list_id);
+        if (!_.isUndefined(currentBoardList)) {
+            currentBoardList.set('card_count', currentBoardList.attributes.card_count + 1, {
+                silent: true
+            });
+        }
+        if (list !== null && !_.isUndefined(list) && !_.isEmpty(list)) {
+            $('body').trigger('cardAddRendered', [list.id, list]);
+        }
         $(e.currentTarget).parents('li').remove();
         var card = new App.Card();
         card.set('id', card_id);

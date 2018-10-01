@@ -25,8 +25,8 @@ if (!defined('JSON_UNESCAPED_UNICODE')) {
     define('JSON_UNESCAPED_UNICODE', 256);
 }
 define('APP_PATH', dirname(dirname(dirname(__FILE__))));
-define('SITE_URL_FOR_SHELL', sys_get_temp_dir() . '/restya_site_url_for_shell.php');
-define('CLIENT_INFORMATION', sys_get_temp_dir() . '/restya_client_information.php');
+define('SITE_URL_FOR_SHELL', APP_PATH . '/tmp/cache/site_url_for_shell.php');
+define('CLIENT_INFORMATION', APP_PATH . '/tmp/cache/client_information.php');
 
 // While changing below oAuth credentials, have to update in oauth_clients table also.
 if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {

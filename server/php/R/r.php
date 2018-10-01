@@ -1865,7 +1865,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $plugin_url['CardTemplate'] = array(
             '/boards/?/card_template',
-            '/card_templates/?'
+            '/card_templates/?',
+            '/boards/?/card_templates/?'
         );
         $plugin_url['Chat'] = array(
             '/xmpp_login',
@@ -1883,6 +1884,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
             '/custom_fields/?',
+            '/boards/?/custom_fields',
+            '/boards/?/custom_fields/?',
+            '/boards/?/cards_custom_fields',
             '/cards/?/cards_custom_fields',
             '/cards/?/cards_custom_fields/?'
         );
@@ -2040,13 +2044,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $xmpp = xmppObj();
             }
             foreach ($board_ids as $board_id) {
+                if (is_plugin_enabled('r_chat') && $jabberHost) {
+                    xmppDestroyRoom($board_id['board_id'], $xmpp);
+                }
                 $conditions = array(
                     $board_id['board_id']
                 );
                 $boards = pg_query_params($db_lnk, 'DELETE FROM boards WHERE id= $1', $conditions);
-                if (is_plugin_enabled('r_chat') && $jabberHost && $boards) {
-                    xmppDestroyRoom($boards, $xmpp);
-                }
             }
             $response = array(
                 'success' => 'Checked boards are deleted successfully.'
@@ -3803,11 +3807,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'UPDATE boards SET default_email_list_id = $2 WHERE id = $1', $qry_val_arr);
                 }
-                if (is_plugin_enabled('r_custom_fields')) {
-                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
-                    $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $response);
-                    $response = $data;
-                }
             }
         }
         echo json_encode($response);
@@ -3899,6 +3898,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 if ($file['name'][$i] != 'undefined') {
                                     if (!file_exists($mediadir)) {
                                         mkdir($mediadir, 0777, true);
+                                    }
+                                    $cur_os = strtolower(PHP_OS);
+                                    if (substr($cur_os, 0, 3) === 'win') {
+                                        $file['name'][$i] = urlencode($file['name'][$i]);
                                     }
                                     $file_arr = pathinfo($file['name'][$i]);
                                     $filename_without_ext = $file_arr['filename'];
@@ -4063,6 +4066,44 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ##LABEL_NAME##';
                     insertActivity($authUser['id'], $comment, 'add_card_label', $foreign_ids, null, $r_post['label_id']);
                 }
+                if (!empty($r_post['cards_checklists_card_id'])) {
+                    $qry_val_arr = array(
+                        $response['id'],
+                        $r_post['cards_checklists_card_id']
+                    );
+                    pg_query_params($db_lnk, 'INSERT INTO checklists (created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, position) SELECT created, modified, user_id, $1, name, checklist_item_count, checklist_item_completed_count, position FROM checklists WHERE card_id = $2 ORDER BY id', $qry_val_arr);
+                    $qry_val_arr = array(
+                        $response['id']
+                    );
+                    $checklists = pg_query_params($db_lnk, 'SELECT id FROM checklists WHERE card_id = $1 order by id', $qry_val_arr);
+                    $qry_val_arr = array(
+                        $r_post['cards_checklists_card_id']
+                    );
+                    $prev_checklists = pg_query_params($db_lnk, 'SELECT id FROM checklists WHERE card_id = $1 order by id', $qry_val_arr);
+                    $prev_checklist_ids = array();
+                    while ($prev_checklist_id = pg_fetch_assoc($prev_checklists)) {
+                        $prev_checklist_ids[] = $prev_checklist_id['id'];
+                    }
+                    $i = 0;
+                    while ($checklist_id = pg_fetch_assoc($checklists)) {
+                        $qry_val_arr = array(
+                            $response['id'],
+                            $checklist_id['id'],
+                            $prev_checklist_ids[$i]
+                        );
+                        pg_query_params($db_lnk, 'INSERT INTO checklist_items (created, modified, user_id, card_id, name, checklist_id, is_completed, position) SELECT created, modified, user_id, $1, name , $2, is_completed, position FROM checklist_items WHERE checklist_id = $3 ORDER BY id', $qry_val_arr);
+                        $i++;
+                    }
+                }
+                if (!empty($r_post['cards_custom_fields_card_id']) && is_plugin_enabled('r_custom_fields')) {
+                    $qry_val_arr = array(
+                        $response['id'],
+                        $r_post['list_id'],
+                        $r_post['board_id'],
+                        $r_post['cards_custom_fields_card_id']
+                    );
+                    pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value, is_active, board_id, list_id) SELECT created, modified, $1, custom_field_id, value, is_active, $2, $3 FROM cards_custom_fields WHERE card_id = $4 ORDER BY id', $qry_val_arr);
+                }
                 $qry_val_arr = array(
                     $response['id']
                 );
@@ -4076,6 +4117,24 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $cards_labels = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE card_id = $1', $qry_val_arr);
                 while ($cards_label = pg_fetch_assoc($cards_labels)) {
                     $response['cards_labels'][] = $cards_label;
+                }
+                $qry_val_arr = array(
+                    $response['id']
+                );
+                $cards_checklists = pg_query_params($db_lnk, 'SELECT * FROM checklists_listing WHERE card_id = $1', $qry_val_arr);
+                while ($cards_checklist = pg_fetch_assoc($cards_checklists)) {
+                    $response['cards_checklists'][] = $cards_checklist;
+                }
+                if (!empty($r_post['cards_custom_fields_card_id']) && is_plugin_enabled('r_custom_fields')) {
+                    $qry_val_arr = array(
+                        $response['id']
+                    );
+                    $cards_custom_fields = pg_query_params($db_lnk, 'SELECT ccf.*, cf.label, cf.color, cf.type, cf.visibility FROM cards_custom_fields as ccf LEFT JOIN custom_fields as cf ON cf.id = ccf.custom_field_id WHERE ccf.card_id = $1', $qry_val_arr);
+                    while ($cards_custom_field = pg_fetch_assoc($cards_custom_fields)) {
+                        if (!empty($cards_custom_field['value'])) {
+                            $response['cards_custom_fields'][] = $cards_custom_field;
+                        }
+                    }
                 }
             }
         }
@@ -4290,6 +4349,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 mkdir($mediadir, 0777, true);
             }
             $file = $_FILES['attachment'];
+            $cur_os = strtolower(PHP_OS);
+            if (substr($cur_os, 0, 3) === 'win') {
+                $file['name'] = urlencode($file['name']);
+            }
             $file_arr = pathinfo($file['name']);
             $filename_without_ext = $file_arr['filename'];
             if (file_exists($mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
@@ -4353,6 +4416,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if ($file['name'][$i] != 'undefined') {
                     if (!file_exists($mediadir)) {
                         mkdir($mediadir, 0777, true);
+                    }
+                    $cur_os = strtolower(PHP_OS);
+                    if (substr($cur_os, 0, 3) === 'win') {
+                        $file['name'][$i] = urlencode($file['name'][$i]);
                     }
                     $file_arr = pathinfo($file['name'][$i]);
                     $filename_without_ext = $file_arr['filename'];
@@ -5309,15 +5376,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             '/board_roles'
         );
         $plugin_url['CardTemplate'] = array(
-            '/boards/?/cards/?/card_template'
+            '/boards/?/cards/?/card_template',
+            '/boards/?/card_templates/?'
         );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
-            '/cards_custom_fields',
-            '/cards/?/cards_custom_fields'
+            '/boards/?/custom_fields',
+            '/boards/?/cards_custom_fields'
         );
         $plugin_url['Gantt'] = array(
-            '/card_dependencies'
+            '/boards/?/card_dependencies'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -6151,7 +6219,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
 
     default:
         $plugin_url['CustomFields'] = array(
-            '/custom_fields/?'
+            '/custom_fields/?',
+            '/boards/?/custom_fields/?'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -6279,6 +6348,15 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         if (is_plugin_enabled('r_chat') && $jabberHost) {
             xmppRevokeMember($previous_value);
         }
+        break;
+
+    case '/boards/?': // delete boards
+        if (is_plugin_enabled('r_chat') && $jabberHost) {
+            $xmpp = xmppObj();
+            xmppDestroyRoom($r_resource_vars['boards'], $xmpp);
+        }
+        $sql = 'DELETE FROM boards WHERE id = $1';
+        array_push($pg_params, $r_resource_vars['boards']);
         break;
 
     case '/boards/?/lists/?': // delete lists
@@ -6426,6 +6504,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $r_resource_vars['cards']
         );
         pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
+        $response['activity']['comment_count'] = $activity_count;
         $response['error'] = array(
             'code' => (!$result) ? 1 : 0
         );
@@ -6552,10 +6631,14 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     default:
         $plugin_url['CustomFields'] = array(
-            '/custom_fields/?'
+            '/custom_fields/?',
+            '/boards/?/custom_fields/?'
+        );
+        $plugin_url['CardTemplate'] = array(
+            '/boards/?/card_templates/?'
         );
         $plugin_url['Gantt'] = array(
-            '/card_dependencies/?'
+            '/boards/?/card_dependencies/?'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -6619,6 +6702,7 @@ $scope_exception_url = array(
 $token_exception_url = array(
     '/users/logout',
     '/oauth',
+    '/oauth/token',
     '/settings'
 );
 main();
