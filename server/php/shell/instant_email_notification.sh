@@ -18,6 +18,6 @@ php ${path}/instant_email_notification.php
 ##########################################################################################################
 	rmdir "$lockdir"
  else
-     echo >&2 "cannot acquire lock, giving up on $lockdir"
+     echo >&2 "cannot acquire lock, giving up on $lockdir" | mail -s "From cron (instant_email_notification.sh)" board+cron@restya.com
      exit 0
  fi
