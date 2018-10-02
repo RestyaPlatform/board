@@ -5967,6 +5967,84 @@
                 }
             }
         },
+        "/v1/user_logins.json": {
+            "get": {
+                "tags": [
+                    "user_logins"
+                ],
+                "summary": "List User Logins",
+                "description": "User Logins details",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "user_id": {
+                                    "type": "integer"
+                                },
+                                "ip_id": {
+                                    "type": "integer"
+                                },
+                                "user_agent": {
+                                    "type": "string"
+                                },
+                                "username": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                },
+                                "role_id": {
+                                    "type": "string"
+                                },
+                                "profile_picture_path": {
+                                    "type": "string"
+                                },
+                                "initials": {
+                                    "type": "string"
+                                },
+                                "full_name": {
+                                    "type": "string"
+                                },
+                                "is_login_failed": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Page not found"
+                    },
+                    "405": {
+                        "description": "Validation exception"
+                    }
+                }
+            }
+        },
         "/v1/activities.json": {
             "get": {
                 "tags": [
