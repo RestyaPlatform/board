@@ -163,6 +163,9 @@ if (_.isEmpty(role_links.where({
 				<% } %>
 			</div>
 			<div class="modal-footer">
+				<% if (!_.isUndefined(key.sponsor) && !_.isEmpty(key.sponsor)) { %>
+					<p class="pull-left"><strong><%- i18next.t('Sponsor') %></strong>: <%- key.sponsor %></p>
+				<% } %>
 				<a href="javascript:void(0);" title="<%- i18next.t('Close') %>" class="btn btn-primary js-appModal-close"><%- i18next.t("Close") %></a>
 			</div>
 		</div>
