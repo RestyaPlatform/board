@@ -322,7 +322,8 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
         'user_id',
         'comment',
         'type',
-        'revisions'
+        'revisions',
+        'token'
     );
     $values = array(
         'now()',
@@ -330,7 +331,8 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
         $user_id,
         $comment,
         $type,
-        $revision
+        $revision,
+        $_GET['token']
     );
     if ($foreign_id !== null) {
         array_push($fields, 'foreign_id');
