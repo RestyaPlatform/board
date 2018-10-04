@@ -258,6 +258,49 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         break;
 
+    case '/user_logins':
+        $response['users'] = array();
+        $order_by = 'id';
+        $direction = 'desc';
+        $filter_condition = '';
+        $_metadata = array();
+        if (!empty($r_resource_filters['sort'])) {
+            $order_by = $r_resource_filters['sort'];
+            $direction = $r_resource_filters['direction'];
+        } else if (!empty($r_resource_filters['search'])) {
+            $filter_condition = "WHERE LOWER(full_name) LIKE '%" . strtolower($r_resource_filters['search']) . "%' OR LOWER(email) LIKE '%" . strtolower($r_resource_filters['search']) . "%' ";
+        }
+        $c_sql = 'SELECT COUNT(*) FROM user_logins_listing ul ';
+        if (!empty($r_resource_filters['search'])) {
+            $c_sql = 'SELECT COUNT(*) FROM user_logins_listing ul ' . $filter_condition;
+        }
+        if (!empty($c_sql)) {
+            $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
+            $_metadata = $paging_data['_metadata'];
+        }
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM user_logins_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ' limit ' . $_metadata['limit'] . ' offset ' . $_metadata['offset'] . ') as d ';
+        
+        
+        if (!empty($sql)) {
+            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                $data = array();
+                $board_lists = array();
+                while ($row = pg_fetch_row($result)) {
+                    $obj = json_decode($row[0], true);
+                    $data['data'][] = $obj;
+                }                
+                if (!empty($_metadata)) {
+                    $data['_metadata'] = $_metadata;
+                }
+                echo json_encode($data);
+            } else {
+                $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+            }
+        } else {
+            echo json_encode($response);
+        }
+        break;
+        
     case '/users/logout':
         $response['user'] = array();
         if (!empty($_GET['token'])) {
@@ -2433,6 +2476,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 );
             }
         } else {
+            if (!empty($log_user)) {
+               $last_login_ip_id = saveIp();
+               $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+               $val_arr = array(
+                    $log_user['id'],
+                    $last_login_ip_id,
+                    $user_agent,
+                    't'
+                );
+                pg_query_params($db_lnk, 'INSERT INTO user_logins (created, modified, user_id, ip_id, user_agent, is_login_failed) VALUES (now(), now(), $1, $2, $3, $4)', $val_arr);
+            }
             if (!empty($ldap_error)) {
                 $response = array(
                     'code' => 'LDAP',
@@ -2837,6 +2891,42 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 if (!empty($imported_board)) {
                     $board = importWekanBoard($imported_board);
+                    $response['id'] = $board['id'];
+                } else {
+                    $response['error'] = 'Invalid file format. Upload json file';
+                }
+            } else {
+                $response['error'] = 'Unable to import. please try again.';
+            }
+        } elseif (!empty($_FILES['board_import_kantree'])) {
+            if ($_FILES['board_import_kantree']['error'] == 0) {
+                $get_files = file_get_contents($_FILES['board_import_kantree']['tmp_name']);
+                $utf8_encoded_content = utf8_encode($get_files);
+                if (version_compare(phpversion() , '5.4.0', '<')) {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512);
+                } else {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512, JSON_UNESCAPED_UNICODE);
+                }
+                if (!empty($imported_board)) {
+                    $board = importKantreeBoard($imported_board);
+                    $response['id'] = $board['id'];
+                } else {
+                    $response['error'] = 'Invalid file format. Upload json file';
+                }
+            } else {
+                $response['error'] = 'Unable to import. please try again.';
+            }
+        } elseif (!empty($_FILES['board_import_taiga'])) {
+            if ($_FILES['board_import_taiga']['error'] == 0) {
+                $get_files = file_get_contents($_FILES['board_import_taiga']['tmp_name']);
+                $utf8_encoded_content = utf8_encode($get_files);
+                if (version_compare(phpversion() , '5.4.0', '<')) {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512);
+                } else {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512, JSON_UNESCAPED_UNICODE);
+                }
+                if (!empty($imported_board)) {
+                    $board = importTaigaBoard($imported_board);
                     $response['id'] = $board['id'];
                 } else {
                     $response['error'] = 'Invalid file format. Upload json file';

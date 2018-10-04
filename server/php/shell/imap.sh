@@ -18,6 +18,6 @@ php ${path}/imap.php
 ##########################################################################################################
 	rmdir "$lockdir"
  else
-     echo >&2 "cannot acquire lock, giving up on $lockdir"
+     echo >&2 "cannot acquire lock, giving up on $lockdir" | mail -s "From cron (imap.sh)" board+cron@restya.com
      exit 0
  fi

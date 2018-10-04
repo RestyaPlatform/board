@@ -300,3 +300,26 @@ SELECT pg_catalog.setval('acl_board_links_boards_user_roles_seq', (SELECT MAX(id
 
 INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id")
 VALUES (now(), now(), (select id from acl_board_links where slug='delete_board'), '1');
+
+ALTER TABLE "user_logins"
+ADD "is_login_failed" boolean NOT NULL DEFAULT 'false';
+COMMENT ON TABLE "user_logins" IS '';
+
+CREATE OR REPLACE VIEW "user_logins_listing" AS
+ SELECT user_logins.id,
+    to_char(user_logins.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(user_logins.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    user_logins.user_agent,
+    user_logins.is_login_failed,
+    user_logins.user_id,
+    user_logins.ip_id,
+    users.username,
+    users.email,
+    users.role_id,
+    users.profile_picture_path,
+    users.initials,
+    users.full_name,
+    ips.ip AS login_ip
+   FROM ((user_logins
+     LEFT JOIN users ON ((users.id = user_logins.user_id)))
+     LEFT JOIN ips ON ((ips.id = user_logins.ip_id)));
