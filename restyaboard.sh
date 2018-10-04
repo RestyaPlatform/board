@@ -547,7 +547,7 @@
 						fi
 					fi
 				fi
-				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}') | head -1 | sed -En 's/([0-9]{1,}\.[0-9]{1,}).*/\1/p'
+				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}' | head -1)
 				if [[ ${PSQL_VERSION} == "" ]]; then
 					PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
 				fi
