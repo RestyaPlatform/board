@@ -1,7 +1,7 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
 <% var unread = ""; %>
 <% if(!_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %>
-	 <%if(parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)){%> 
+	 <%if(activity.attributes.token !== authuser.access_token){%> 
 	 <% var unread = "js-unread-activity"; %> 
 	 <span class="label label-primary col-xs-12 sr-only">&nbsp;</span>   
 	<%}%>    

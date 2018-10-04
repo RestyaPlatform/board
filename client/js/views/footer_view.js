@@ -792,7 +792,7 @@ App.FooterView = Backbone.View.extend({
                     $('#js-notification-load-more').removeClass('hide');
                     var count = 0;
                     activities.each(function(activity) {
-                        if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
+                        if (activity.attributes.token !== authuser.access_token) {
                             count += 1;
                         }
                     });
@@ -835,7 +835,9 @@ App.FooterView = Backbone.View.extend({
                     activities.each(function(activity) {
                         var card_id = activity.attributes.card_id;
                         localforage.getItem('unreaded_cards', function(err, value) {
-                            if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
+
+                            /* if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) { */
+                            if (activity.attributes.token !== authuser.access_token) {
                                 var count;
                                 if (value) {
                                     if (value[card_id]) {
@@ -862,7 +864,7 @@ App.FooterView = Backbone.View.extend({
                             }
                         });
                         activity.from_footer = true;
-                        if (mode == 1 && parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id) && Notification.permission === 'granted') {
+                        if (mode == 1 && activity.attributes.token !== authuser.access_token && Notification.permission === 'granted') {
                             var icon = window.location.pathname + 'img/logo-icon.png';
                             if (activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
                                 var cardLink = activity.attributes.card_name;
@@ -942,7 +944,7 @@ App.FooterView = Backbone.View.extend({
                             }
                         }
                         if (bool) {
-                            if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
+                            if (activity.attributes.token !== authuser.access_token) {
                                 // Update board view code starting
                                 if (!_.isUndefined(activity.attributes.card_id) && activity.attributes.card_id !== 0 && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update Card
                                     var card = self.board.cards.findWhere({
@@ -1527,7 +1529,7 @@ App.FooterView = Backbone.View.extend({
                                 }
                             }
                         }
-                        if (parseInt(activity.attributes.card_id) !== 0 && parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
+                        if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token) {
                             $('#js-card-' + activity.attributes.card_id).parent().addClass('animation');
                             $('#js-card-' + activity.attributes.card_id).addClass('tada-animation');
                             $('#js-card-' + activity.attributes.card_id).stop().animate({
@@ -1605,7 +1607,7 @@ App.FooterView = Backbone.View.extend({
                             board: self.board,
                             flag: '2'
                         });
-                        if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) {
+                        if (activity.attributes.token !== authuser.access_token) {
                             $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
                         }
                         if ($('.js-list-activity-' + activity.id, view_activity).length === 0) {
@@ -1940,7 +1942,6 @@ App.FooterView = Backbone.View.extend({
      *
      */
     importTaigaBoard: function(e) {
-        console.log("1 <<<<<<<");
         e.preventDefault();
         $('#js-board-import-loader').removeClass('hide');
         var self = this;
