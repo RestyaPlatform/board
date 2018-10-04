@@ -984,7 +984,7 @@
 						fi
 					esac
 				else 
-					PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}') | head -1 | sed -En 's/([0-9]{1,}\.[0-9]{1,}).*/\1/p'
+					PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
 					if [[ $PSQL_VERSION < 9.3 ]]; then
 						set +x
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
@@ -1012,7 +1012,7 @@
 					fi
 				fi
 
-				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}') | head -1 | sed -En 's/([0-9]{1,}\.[0-9]{1,}).*/\1/p'
+				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
 				PSQL_FOLDER=$(echo ${PSQL_VERSION} | sed 's/\.//')
 				if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
 					"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
