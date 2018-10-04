@@ -336,6 +336,15 @@
 							echo "nginx installation failed with error code ${error_code} (nginx installation failed with error code 2)"
 							return 2
 						fi
+						if [ -f "/etc/nginx/conf.d/default.conf" ]; then
+							rm -rf /etc/nginx/conf.d/default.conf
+						fi
+						if [ -f "/etc/nginx/sites-available/default.conf" ]; then
+							rm -rf /etc/nginx/sites-available/default.conf
+						fi
+						if [ -f "/etc/nginx/sites-enabled/default.conf" ]; then
+							rm -rf /etc/nginx/sites-enabled/default.conf
+						fi
 						service nginx start
 					esac
 				fi
@@ -502,16 +511,19 @@
 						wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 						apt-key add ACCC4CF8.asc
 						apt update
-						apt install -y postgresql-9.6 --allow-unauthenticated
+						apt install -y postgresql --allow-unauthenticated
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
-							echo "postgresql-9.6 installation failed with error code ${error_code} (postgresql-9.6 installation failed with error code 13)"
+							echo "postgresql installation failed with error code ${error_code} (postgresql installation failed with error code 13)"
 							return 13
 						fi
 					esac
 				else
-					PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+					PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}') | head -1 | sed -En 's/([0-9]{1,}\.[0-9]{1,}).*/\1/p'
+					if [[ ${PSQL_VERSION} == "" ]]; then
+						PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+					fi
 					if [[ $PSQL_VERSION < 9.3 ]]; then
 						set +x
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
@@ -526,16 +538,22 @@
 						apt-key add ACCC4CF8.asc
 						apt update
 						apt upgrade
-						apt install -y postgresql-9.6 --allow-unauthenticated
+						apt install -y postgresql --allow-unauthenticated
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
-							echo "postgresql-9.6 installation failed with error code ${error_code} (postgresql-9.6 installation failed with error code 13)"
+							echo "postgresql installation failed with error code ${error_code} (postgresql installation failed with error code 13)"
 							return 13
 						fi
 					fi
 				fi
-				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}') | head -1 | sed -En 's/([0-9]{1,}\.[0-9]{1,}).*/\1/p'
+				if [[ ${PSQL_VERSION} == "" ]]; then
+					PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+				fi
+				if [[ ${PSQL_VERSION} =~ ^10\.[0-9]{1,}$ ]]; then
+					PSQL_VERSION=10
+				fi
 				sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf > /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf.1
 				cd /etc/postgresql/${PSQL_VERSION}/main || exit
 				mv pg_hba.conf pg_hba.conf_old
@@ -615,11 +633,11 @@
 				echo "postfix postfix/main_mailer_type string 'Internet Site'"\
 				| debconf-set-selections &&\
 				apt install -y postfix
-					error_code=$?
-						if [ ${error_code} != 0 ]
-					then
-						echo "postfix installation failed with error code ${error_code} (postfix installation failed with error code 16)"
-					fi
+				error_code=$?
+				if [ ${error_code} != 0 ]
+				then
+					echo "postfix installation failed with error code ${error_code} (postfix installation failed with error code 16)"
+				fi
 				echo "Changing permission..."
 				find $dir -type d -exec chmod 755 {} \;
 				find $dir -type f -exec chmod 644 {} \;
@@ -761,6 +779,15 @@
 							echo "cron nginx installation failed with error code ${error_code} cron nginx installation failed with error code 18"
 							return 18
 						fi
+						if [ -f "/etc/nginx/conf.d/default.conf" ]; then
+							rm -rf /etc/nginx/conf.d/default.conf
+						fi
+						if [ -f "/etc/nginx/sites-available/default.conf" ]; then
+							rm -rf /etc/nginx/sites-available/default.conf
+						fi
+						if [ -f "/etc/nginx/sites-enabled/default.conf" ]; then
+							rm -rf /etc/nginx/sites-enabled/default.conf
+						fi
 						service nginx start
 						chkconfig --levels 35 nginx on
 					esac
@@ -799,7 +826,7 @@
 					return 21
 				fi
 				service php-fpm start
-				chkconfig --levels 35 php72w-fpm on
+				chkconfig --levels 35 php-fpm on
 
 				echo "Checking PHP curl extension..."
 				php -m | grep curl
