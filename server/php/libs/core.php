@@ -1690,7 +1690,7 @@ function importKantreeBoard($jsonArr = array())
                         $new_board['id'],
                         $lists[$card['idList']],
                         utf8_decode($card['title']) ,
-                        $desc ,
+                        $desc,
                         $is_closed,
                         $i,
                         $date,
@@ -1749,7 +1749,7 @@ function importKantreeBoard($jsonArr = array())
                         }
                     }
                 }
-            } 
+            }
             if (!empty($board['actions'])) {
                 $type = $comment = '';
                 $board['actions'] = array_msort($board['actions'], array(
@@ -1770,7 +1770,7 @@ function importKantreeBoard($jsonArr = array())
                             $type = 'add_card';
                             //$list_id = $board['actions'][$i + 1]['target']['id'];
                             //$listName = (!empty($listNames[$list_id])) ? $listNames[$list_id] : '';
-                           // $lists_key = $lists[$list_id];
+                            // $lists_key = $lists[$list_id];
                             $lists_key = $cardLists[$action['object']['id']];
                             $cards_key = $cards[$action['object']['id']];
                             $comment = sprintf(__l('##USER_NAME## added card ##CARD_LINK## to list %s. ') , $listName);
@@ -1910,7 +1910,7 @@ function importTaigaBoard($board = array())
     $users = $userNames = $lists = $listNames = $cards = $cardLists = $labels = array();
     $board['timeline'] = array_msort($board['timeline'], array(
         'created' => SORT_ASC
-    )); 
+    ));
     if (!empty($board)) {
         $user_id = $authUser['id'];
         $qry_val_arr = array(
@@ -1979,7 +1979,7 @@ function importTaigaBoard($board = array())
                     'email' => $membership['email'],
                     'fullName' => email2name($membership['email']) ,
                     'initials' => strtoupper(substr($membership['email'], 0, 1))
-                ); 
+                );
                 $users = importMember($member, $new_board);
                 //$userNames[$membership['id']] = $member['fullName'];
                 $userNames[$membership['email']] = $users[$membership['email']];
@@ -2004,9 +2004,9 @@ function importTaigaBoard($board = array())
         if (!empty($board['user_stories'])) {
             $i = 0;
             foreach ($board['user_stories'] as $card) {
-                $i+= 1; 
+                $i+= 1;
                 $is_closed = !empty($card['is_closed']) ? 'true' : 'false';
-                $date = (!empty($card['due'])) ? $card['due_date'] : null;                
+                $date = (!empty($card['due'])) ? $card['due_date'] : null;
                 $qry_val_arr = array(
                     $new_board['id'],
                     $lists[$card['status']],
@@ -2039,7 +2039,7 @@ function importTaigaBoard($board = array())
                         $path = $save_path . DIRECTORY_SEPARATOR . $attachment['name'];
                         $fh = fopen($path, 'w');
                         fwrite($fh, $attachment['attached_file']['data']);
-                        fclose($fh);                        
+                        fclose($fh);
                         $qry_val_arr = array(
                             $new_board['id'],
                             $lists[$card['status']],
@@ -2052,7 +2052,7 @@ function importTaigaBoard($board = array())
                     }
                 }
                 if (!empty($card['assigned_users'])) {
-                    foreach ($card['assigned_users'] as $cardMember) {                      
+                    foreach ($card['assigned_users'] as $cardMember) {
                         $qry_val_arr = array(
                             $_card['id'],
                             $userNames[$cardMember]
@@ -2066,44 +2066,43 @@ function importTaigaBoard($board = array())
             $type = $comment = '';
             $board['timeline'] = array_msort($board['timeline'], array(
                 'created' => SORT_ASC
-            )); 
+            ));
             foreach ($board['timeline'] as $action) {
                 $lists_key = $cards_key = NULL;
                 $type = '';
-                if ($action['event_type'] == 'userstories.userstory.change') {  
+                if ($action['event_type'] == 'userstories.userstory.change') {
                     $lists_key = $cardLists[$action['data']['userstory']['ref']];
-                    $cards_key = $cards[$action['data']['userstory']['ref']];         
-                    if (isset($action['data']['values_diff']['attachments']) && !empty($action['data']['values_diff']['attachments'])) {                        
+                    $cards_key = $cards[$action['data']['userstory']['ref']];
+                    if (isset($action['data']['values_diff']['attachments']) && !empty($action['data']['values_diff']['attachments'])) {
                         if ($action['data']['values_diff']['attachments']['deleted']) {
                             $type = 'delete_card_attachment';
                             $comment = __l('##USER_NAME## deleted attachment from card ##CARD_LINK##');
                         } elseif ($action['data']['values_diff']['attachments']['new']) {
                             $type = 'add_card_attachment';
                             $comment = __l('##USER_NAME## added attachment to this card ##CARD_LINK##');
-                        } 
+                        }
                     } elseif (isset($action['data']['values_diff']['assigned_users']) && !empty($action['data']['values_diff']['assigned_users'])) {
-                      if ($action['data']['values_diff']['assigned_users'][0]) {
+                        if ($action['data']['values_diff']['assigned_users'][0]) {
                             $type = 'delete_card_users';
                             $comment = __l('##USER_NAME## deleted member from card ##CARD_LINK##');
                         } else {
                             $type = 'add_card_user';
                             $comment = sprintf(__l('##USER_NAME## added %s as member to this card ##CARD_LINK##') , $action['data']['values_diff']['assigned_users'][1]);
                         }
-                    } elseif (isset($action['data']['values_diff']['tags']) && !empty($action['data']['values_diff']['tags'])) {                       
+                    } elseif (isset($action['data']['values_diff']['tags']) && !empty($action['data']['values_diff']['tags'])) {
                         if ($action['data']['values_diff']['tags'][0][0]) {
                             $type = 'add_card_label';
-                            $comment = sprintf(__l('##USER_NAME## added label to this card ##CARD_LINK## - %s'), $action['data']['values_diff']['tags'][0][0]);
+                            $comment = sprintf(__l('##USER_NAME## added label to this card ##CARD_LINK## - %s') , $action['data']['values_diff']['tags'][0][0]);
                         } else {
                             $type = 'delete_card_label';
                             $comment = sprintf(__l('##USER_NAME## removed label in this card ##CARD_LINK## - %s') , $action['data']['values_diff']['tags'][1][0]);
                         }
-                    } elseif (isset($action['data']['values_diff']['description_diff']) && !empty($action['data']['values_diff']['description_diff'])) {                        
+                    } elseif (isset($action['data']['values_diff']['description_diff']) && !empty($action['data']['values_diff']['description_diff'])) {
                         $type = 'edit_card_desc';
                         $comment = __l('##USER_NAME## updated card description in ##CARD_LINK##');
                     } elseif (isset($action['data']['values_diff']['subject']) && !empty($action['data']['values_diff']['subject'])) {
                         $type = 'edit_card';
                         $comment = sprintf(__l('##USER_NAME## edited %s card in this board.') , utf8_decode($action['data']['values_diff']['subject'][1]));
-
                     } elseif (isset($action['data']['values_diff']['status']) && !empty($action['data']['values_diff']['status'])) {
                         $type = 'add_list';
                         $comment = sprintf(__l('##USER_NAME## added list %s') , $action['data']['values_diff']['status'][1]);
@@ -2114,7 +2113,7 @@ function importTaigaBoard($board = array())
                         } else {
                             $type = 'add_card_duedate';
                             $comment = __l('##USER_NAME## SET due date to this card ##CARD_LINK##');
-                        }                        
+                        }
                     }
                 }
                 if (!empty($type)) {

@@ -279,8 +279,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $_metadata = $paging_data['_metadata'];
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM user_logins_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ' limit ' . $_metadata['limit'] . ' offset ' . $_metadata['offset'] . ') as d ';
-        
-        
         if (!empty($sql)) {
             if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
                 $data = array();
@@ -288,7 +286,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
                     $data['data'][] = $obj;
-                }                
+                }
                 if (!empty($_metadata)) {
                     $data['_metadata'] = $_metadata;
                 }
@@ -300,7 +298,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             echo json_encode($response);
         }
         break;
-        
+
     case '/users/logout':
         $response['user'] = array();
         if (!empty($_GET['token'])) {
@@ -2477,9 +2475,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             }
         } else {
             if (!empty($log_user)) {
-               $last_login_ip_id = saveIp();
-               $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-               $val_arr = array(
+                $last_login_ip_id = saveIp();
+                $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+                $val_arr = array(
                     $log_user['id'],
                     $last_login_ip_id,
                     $user_agent,

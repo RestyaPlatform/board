@@ -1,0 +1,40 @@
+<div class="well-sm"></div>
+<section>
+  <div class="well-sm"></div>
+  <form role="form" class="col-xs-12">
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered table-hover list-group-item-text">
+        <thead>
+          <tr class="active">
+            <th rowspan="2" class="col-xs-2 text-center">
+              <%- i18next.t("User") %>
+            </th>
+            <th rowspan="2" class="text-center">
+              <span class="js-sort cur" data-field="organization_name" data-direction="desc" title="Organization">
+                <span class="icon-caret-down hide"></span>
+                <%- i18next.t("User Agent") %>
+              </span>
+            </th>
+            <th rowspan="2" class="text-center">
+              <span class="js-sort cur" data-field="created" data-direction="desc" title="<%- i18next.t('Created') %>">
+                <span class="icon-caret-down hide"></span>
+                <%- i18next.t("Created") %>
+              </span>
+            </th>
+            <th rowspan="2" class="text-center th-width-sm">
+              <%- i18next.t("Login IP") %>
+            </th>
+            <th rowspan="2" class="text-center th-width-sm">
+              <%- i18next.t("Login Status") %>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="js-userlogin-list">
+        </tbody>
+      </table>
+    </div>
+  </form>
+  <div class="clearfix navbar-btn col-xs-12">
+    <div class="pull-right pagination pagination-right pagination-boxes list-group-item-heading"></div>
+  </div>
+</section>

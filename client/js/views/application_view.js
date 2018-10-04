@@ -8,7 +8,7 @@ if (typeof App === 'undefined') {
     App = {};
 }
 var loginExceptionUrl = ['register', 'login', 'forgotpassword', 'user_activation', 'aboutus'];
-var adminUrl = ['roles', 'activities', 'users', 'boards/list', 'oauth_clients', 'apps', 'settings', 'email_templates'];
+var adminUrl = ['roles', 'activities', 'users', 'boards/list', 'oauth_clients', 'apps', 'settings', 'email_templates', 'users_logins'];
 /**
  * Application View
  * @class ApplicationView
@@ -238,6 +238,9 @@ App.ApplicationView = Backbone.View.extend({
         }
         if (this.model == 'users_index') {
             changeTitle(i18next.t('Users'));
+        }
+        if (this.model == 'user_logins_index') {
+            changeTitle(i18next.t('User Logins'));
         }
         if (this.model == 'admin_boards_index') {
             changeTitle(i18next.t('Boards'));
@@ -946,6 +949,9 @@ App.ApplicationView = Backbone.View.extend({
             } else if (page.model == 'users_index') {
                 changeTitle(i18next.t('Users'));
                 new App.AdminUserIndexView();
+            } else if (page.model == 'user_logins_index') {
+                changeTitle(i18next.t('Users Logins'));
+                new App.AdminUserLoginView();
             } else if (page.model == 'admin_boards_index') {
                 changeTitle(i18next.t('Boards'));
                 new App.AdminBoardsListView();
