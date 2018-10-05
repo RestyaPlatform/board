@@ -4384,7 +4384,89 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             echo json_encode($response);
         }
         break;
-
+        
+    case '/boards/?/lists/?/cards/?/multiple-attachments':
+        $is_return_vlaue = true;
+        $table_name = 'card_attachments';
+        $r_post['card_id'] = $r_resource_vars['cards'];
+        $r_post['list_id'] = $r_resource_vars['lists'];
+        $r_post['board_id'] = $r_resource_vars['boards'];
+        $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_resource_vars['cards'];
+        $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_resource_vars['cards'];
+        $save_path = str_replace('\\', '/', $save_path);
+        if (!empty($_FILES['attachments']) && $_FILES['attachment']['error'] == 0) {           
+            $file = $_FILES['attachments'];               
+            $file_count = $_POST['total_attachment'];
+            for ($i = 0; $i < $file_count; $i++) { 
+                if ($file['name'][$i] != 'undefined') {
+                    if (!file_exists($mediadir)) {
+                        mkdir($mediadir, 0777, true);
+                    }
+                    $cur_os = strtolower(PHP_OS);
+                    if (substr($cur_os, 0, 3) === 'win') {
+                        $file['name'][$i] = urlencode($file['name'][$i]);
+                    }
+                    $file_arr = pathinfo($file['name'][$i]);
+                    $filename_without_ext = $file_arr['filename'];
+                    if (file_exists($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
+                        $filename_without_ext = $file_arr['filename'] . '-' . mt_rand(0, 999);
+                        $file['name'][$i] = $filename_without_ext . '.' . $file_arr['extension'];
+                    }
+                    if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
+                        $r_post[$i]['path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'][$i];
+                        $r_post[$i]['name'] = $file['name'][$i];
+                        $r_post[$i]['mimetype'] = $file['type'][$i];
+                        $qry_val_arr = array(
+                            $r_post['card_id'],
+                            $r_post[$i]['name'],
+                            $r_post[$i]['path'],
+                            $r_post['list_id'],
+                            $r_post['board_id'],
+                            $r_post[$i]['mimetype']
+                        );
+                        $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING *', $qry_val_arr);
+                        $cardAttachment = $response['card_attachments'][$i] = pg_fetch_assoc($s_result);
+                        if (class_exists('imagick') && in_array($file_arr['extension'], array(
+                            'pdf'
+                        ))) {
+                            $im = new Imagick($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
+                            $im->setImageColorspace(255); // prevent image colors from inverting
+                            $im->setimageformat('png');
+                            $im->thumbnailimage(200, 150); // width and height
+                            $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
+                            $target_dir = APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR . 'CardAttachment';
+                            $target = $target_dir . DIRECTORY_SEPARATOR . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                            if (!file_exists($target_dir)) {
+                                mkdir($target_dir, 0777, true);
+                            }
+                            $im->writeimage($target);
+                            $im->clear();
+                            $im->destroy();
+                            $response['card_attachments'][$i]['doc_image_path'] = DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR . 'CardAttachment' . DIRECTORY_SEPARATOR . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                            $qry_val_arr = array(
+                                $response['card_attachments'][$i]['doc_image_path'],
+                                $cardAttachment['id']
+                            );
+                            pg_query_params($db_lnk, 'UPDATE card_attachments SET doc_image_path = $1 WHERE id = $2', $qry_val_arr);
+                        }
+                        $foreign_ids['board_id'] = $r_resource_vars['boards'];
+                        $foreign_ids['list_id'] = $r_resource_vars['lists'];
+                        $foreign_ids['card_id'] = $r_resource_vars['cards'];
+                        $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
+                        $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['card_attachments'][$i]['id']);
+                        foreach ($thumbsizes['CardAttachment'] as $key => $value) {
+                            $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
+                            $list = glob($imgdir . '.*');
+                            if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
+                                unlink($list[0]);
+                            }
+                        }
+                    }
+                }
+            }
+        } 
+        echo json_encode($response);
+        break;
     case '/boards/?/lists/?/cards/?/card_voters':
         $table_name = 'card_voters';
         $r_post['card_id'] = $r_resource_vars['cards'];
