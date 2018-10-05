@@ -11428,6 +11428,72 @@
                 }
             }
         },
+         "/v1/custom_fields/update_position.json": {
+            "put": {
+                "tags": [
+                    "custom_fields"
+                ],
+                "summary": "Update custom field position",
+                "description": "Update custom field position",
+                "produces": [
+                    "application/xml",
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "The transaltion JSON you want to post",
+                        "required": true,
+                        "schema": {
+                             "properties": {
+                                "custom_field": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                            "properties": {
+                                                "custom_field_id": {
+                                                   "type": "integer",
+                                                   "format": "int64"
+                                                },
+                                                "position": {
+                                                   "type": "integer",
+                                                   "format": "int64"
+                                                }
+                                            }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
         "/v1/roles.json": {
             "post": {
                 "tags": [

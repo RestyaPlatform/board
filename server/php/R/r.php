@@ -6392,7 +6392,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
     default:
         $plugin_url['CustomFields'] = array(
             '/custom_fields/?',
-            '/boards/?/custom_fields/?'
+            '/boards/?/custom_fields/?',
+            '/custom_fields/update_position'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
