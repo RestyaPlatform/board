@@ -50,7 +50,7 @@ if ($db_lnk) {
                 }
             }
         }
-        $mail_content = '';
+        $mail_content = $mentioned_mail_content = '';
         $activities_result = '';
         $notification_count = 0;
         $reply_to_mail = '';
@@ -75,16 +75,24 @@ if ($db_lnk) {
                     $activity_id[] = $activity['id'];
                     $i++;
                 }
+                $is_mention_activity = 0;
                 if ($activity['type'] == 'add_comment' || $activity['type'] == 'edit_comment') {
                     preg_match_all('/@([^ ]*)/', $activity['comment'], $matches);
                     if (in_array($user['username'], $matches[1])) {
-                        $activity['comment'] = __l('##USER_NAME## has mentioned you in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
+                        $mentioned_activity = $activity;
+                        $is_mention_activity = 1;  
+                        $mentioned_activity['comment'] = __l('##USER_NAME## has mentioned you in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
+                        $activity['comment'] = '';
                     } else {
                         $activity['comment'] = __l('##USER_NAME## commented to the card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
                     }
                     $br = '<div style="line-height:20px;">&nbsp;</div>';
                 } else {
-                    $activity['comment'].= __l(' on ##BOARD_NAME##');
+                    if ($is_mention_activity) {
+                        $mentioned_activity['comment'].= __l(' on ##BOARD_NAME##');                    
+                    } else {
+                        $activity['comment'].= __l(' on ##BOARD_NAME##');
+                    }
                     $br = '<div style="line-height:40px;">&nbsp;</div>';
                 }
                 if (!empty($activity['card_id']) && IMAP_EMAIL) {
@@ -135,15 +143,28 @@ if ($db_lnk) {
                             '<ins style="padding: 0px 3px;font-size: 90%;line-height: 1;text-align: center;white-space: nowrap;vertical-align: baseline;background: #d1e1ad;color: #405a04;text-decoration: none;margin-right: 3px;"'
                         );
                         $difference = str_replace($search, $replace, $activity['difference'][0]);
-                        $activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        if ($is_mention_activity) {
+                            $mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        } else {
+                            $activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        }                        
                     }
                 }
-                $comment = findAndReplaceVariables($activity);
-                $mail_content.= '<div>' . "\n";
-                $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
-                $mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
-                $mail_content.= '</div>' . "\n";
-                $mail_content.= $br . "\n";
+                if ($is_mention_activity) {
+                    $comment = findAndReplaceVariables($mentioned_activity);
+                    $mentioned_mail_content.= '<div>' . "\n";
+                    $mentioned_mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
+                    $mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
+                    $mentioned_mail_content.= '</div>' . "\n";
+                    $mentioned_mail_content.= $br . "\n";
+                } else {
+                    $comment = findAndReplaceVariables($activity);
+                    $mail_content.= '<div>' . "\n";
+                    $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
+                    $mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
+                    $mail_content.= '</div>' . "\n";
+                    $mail_content.= $br . "\n";
+                }
                 $notification_count++;
             }
         }
@@ -168,16 +189,24 @@ if ($db_lnk) {
                     $activity_id[] = $activity['id'];
                     $i++;
                 }
+                $is_mention_activity = 0;
                 if ($activity['type'] == 'add_comment' || $activity['type'] == 'edit_comment') {
                     preg_match_all('/@([^ ]*)/', $activity['comment'], $matches);
                     if (in_array($user['username'], $matches[1])) {
-                        $activity['comment'] = __l('##USER_NAME## has mentioned you in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
+                        $mentioned_activity = $activity;
+                        $is_mention_activity = 1;
+                        $mentioned_activity['comment'] = __l('##USER_NAME## has mentioned you in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
+                        $activity['comment'] = '';
                     } else {
                         $activity['comment'] = __l('##USER_NAME## commented to the card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
                     }
                     $br = '<div style="line-height:20px;">&nbsp;</div>';
                 } else {
-                    $activity['comment'].= __l(' on ##BOARD_NAME##');
+                    if ($is_mention_activity) {
+                        $mentioned_activity['comment'].= __l(' on ##BOARD_NAME##');
+                    } else {
+                        $activity['comment'].= __l(' on ##BOARD_NAME##');
+                    }                    
                     $br = '<div style="line-height:40px;">&nbsp;</div>';
                 }
                 if (!empty($activity['card_id']) && IMAP_EMAIL) {
@@ -228,15 +257,28 @@ if ($db_lnk) {
                             '<ins style="padding: 0px 3px;font-size: 90%;line-height: 1;text-align: center;white-space: nowrap;vertical-align: baseline;background: #d1e1ad;color: #405a04;text-decoration: none;margin-right: 3px;"'
                         );
                         $difference = str_replace($search, $replace, $activity['difference'][0]);
-                        $activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        if ($is_mention_activity) {
+                            $mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        } else {
+                            $activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        }
                     }
                 }
-                $comment = findAndReplaceVariables($activity);
-                $mail_content.= '<div>' . "\n";
-                $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
-                $mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
-                $mail_content.= '</div>' . "\n";
-                $mail_content.= $br . "\n";
+                if ($is_mention_activity) {
+                    $comment = findAndReplaceVariables($mentioned_activity);
+                    $mentioned_mail_content.= '<div>' . "\n";
+                    $mentioned_mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
+                    $mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
+                    $mentioned_mail_content.= '</div>' . "\n";
+                    $mentioned_mail_content.= $br . "\n";
+                } else {
+                    $comment = findAndReplaceVariables($activity);
+                    $mail_content.= '<div>' . "\n";
+                    $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
+                    $mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
+                    $mail_content.= '</div>' . "\n";
+                    $mail_content.= $br . "\n";
+                }
                 $notification_count++;
             }
         }
@@ -261,16 +303,24 @@ if ($db_lnk) {
                     $activity_id[] = $activity['id'];
                     $i++;
                 }
+                $is_mention_activity = 0;
                 if ($activity['type'] == 'add_comment' || $activity['type'] == 'edit_comment') {
                     preg_match_all('/@([^ ]*)/', $activity['comment'], $matches);
                     if (in_array($user['username'], $matches[1])) {
-                        $activity['comment'] = __l('##USER_NAME## has mentioned you in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
+                        $mentioned_activity = $activity;
+                        $is_mention_activity = 1;
+                        $mentioned_activity['comment'] = __l('##USER_NAME## has mentioned you in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
+                        $activity['comment'] = '';
                     } else {
                         $activity['comment'] = __l('##USER_NAME## commented to the card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
                     }
                     $br = '<div style="line-height:20px;">&nbsp;</div>';
                 } else {
-                    $activity['comment'].= __l(' on ##BOARD_NAME##');
+                    if ($is_mention_activity) {
+                        $mentioned_activity['comment'].= __l(' on ##BOARD_NAME##');
+                    } else {
+                        $activity['comment'].= __l(' on ##BOARD_NAME##');
+                    }                    
                     $br = '<div style="line-height:40px;">&nbsp;</div>';
                 }
                 if (!empty($activity['card_id']) && IMAP_EMAIL) {
@@ -321,19 +371,32 @@ if ($db_lnk) {
                             '<ins style="padding: 0px 3px;font-size: 90%;line-height: 1;text-align: center;white-space: nowrap;vertical-align: baseline;background: #d1e1ad;color: #405a04;text-decoration: none;margin-right: 3px;"'
                         );
                         $difference = str_replace($search, $replace, $activity['difference'][0]);
-                        $activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        if ($is_mention_activity) {
+                            $mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        } else {
+                            $activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        }                            
                     }
                 }
-                $comment = findAndReplaceVariables($activity);
-                $mail_content.= '<div>' . "\n";
-                $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
-                $mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
-                $mail_content.= '</div>' . "\n";
-                $mail_content.= $br . "\n";
+                if ($is_mention_activity) {
+                    $comment = findAndReplaceVariables($mentioned_activity);
+                    $mentioned_mail_content.= '<div>' . "\n";
+                    $mentioned_mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
+                    $mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
+                    $mentioned_mail_content.= '</div>' . "\n";
+                    $mentioned_mail_content.= $br . "\n";
+                } else {
+                    $comment = findAndReplaceVariables($activity);
+                    $mail_content.= '<div>' . "\n";
+                    $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
+                    $mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
+                    $mail_content.= '</div>' . "\n";
+                    $mail_content.= $br . "\n";
+                }
                 $notification_count++;
             }
         }
-        if (!empty($mail_content)) {
+        if (!empty($mail_content) || !empty($mentioned_mail_content)) {
             $timezone = SITE_TIMEZONE;
             if (!empty($user['timezone'])) {
                 $timezone = trim($user['timezone']);
@@ -348,8 +411,17 @@ if ($db_lnk) {
                 max($activity_id) ,
                 $user['id']
             );
+            $main_content = '';
+            if ($mentioned_mail_content) {
+                $main_content = '<h2 style="font-size:16px;font-family:Arial,Helvetica,sans-serif;margin:7px 0px 0px 43px;padding:35px 0px 0px 0px">Mentioned to you</h2><br>';
+                $main_content .= $mentioned_mail_content; 
+            }
+            if ($mail_content) {
+                $main_content .= '<h2 style="font-size:16px;font-family:Arial,Helvetica,sans-serif;margin:7px 0px 0px 43px;padding:35px 0px 0px 0px">Activities</h2><br>';          
+            }               
+            $main_content .= $mail_content; 
             pg_query_params($db_lnk, 'UPDATE users SET last_email_notified_activity_id = $1 WHERE id = $2', $qry_arr);
-            $emailFindReplace['##CONTENT##'] = $mail_content;
+            $emailFindReplace['##CONTENT##'] = $main_content;
             $emailFindReplace['##NAME##'] = $user['full_name'];
             $emailFindReplace['##NOTIFICATION_COUNT##'] = $notification_count;
             $emailFindReplace['##SINCE##'] = strftime("%I:%M %p ( %B %e, %Y)");
