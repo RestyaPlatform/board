@@ -1,16 +1,38 @@
 SELECT pg_catalog.setval('setting_categories_id_seq', (SELECT MAX(id) FROM setting_categories), true);
+
+DELETE FROM "setting_categories" WHERE "name" = 'Board';
 INSERT INTO "setting_categories" ("created", "modified", "parent_id", "name", "description", "order") VALUES (now(), now(), NULL, 'Board', NULL, '6');
+
+DELETE FROM "setting_categories" WHERE "name" = 'User';
 INSERT INTO "setting_categories" ("created", "modified", "parent_id", "name", "description", "order") VALUES (now(), now(), NULL, 'User', NULL, '7');
+
 UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'Board'),"order"='1' WHERE name = 'LABEL_ICON';
 UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'Board'),"order"='2' WHERE name = 'DEFAULT_CARD_VIEW';
 UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'Board'),"order"='3' WHERE name = 'ALLOWED_FILE_EXTENSIONS';
+
 UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'User'),"order"='2' WHERE name = 'SITE_TIMEZONE';
 UPDATE "settings" SET "setting_category_id" = (select id from setting_categories where name = 'User'),"order"='3' WHERE name = 'DEFAULT_LANGUAGE';
+
+DELETE FROM "settings" WHERE "name" = 'IS_TWO_FACTOR_AUTHENTICATION_ENABLED';
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
 VALUES ((select id from setting_categories where name = 'User'), NULL, 'IS_TWO_FACTOR_AUTHENTICATION_ENABLED', 'true', 'Is Two Way Factor Authentication is Enabled', 'checkbox', NULL, 'Is Two Way Factor Authentication is Enabled', '1');
 
- ALTER TABLE "users" ADD "is_two_factor_authentication_enabled" boolean NOT NULL DEFAULT 'false';
-ALTER TABLE "users" ADD "two_factor_authentication_hash" character varying(16) NULL;
+DO $$ 
+   BEGIN
+
+        BEGIN
+            ALTER TABLE "users" ADD COLUMN "is_two_factor_authentication_enabled" boolean NOT NULL DEFAULT 'false';
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column is_two_factor_authentication_enabled already exists in users';
+        END;  
+
+        BEGIN
+            ALTER TABLE "users" ADD COLUMN "two_factor_authentication_hash" character varying(16) NULL;
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column two_factor_authentication_hash already exists in users';
+        END;
+  END;
+$$;
 
 CREATE OR REPLACE VIEW users_listing AS
 SELECT users.id,
@@ -115,7 +137,7 @@ SELECT users.id,
      LEFT JOIN countries lco ON ((lco.id = li.country_id)))
      LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
 
-CREATE VIEW created_cards_listing AS
+CREATE OR REPLACE VIEW created_cards_listing AS
 SELECT b.name AS board_name,
     l.name AS list_name,
     c.id,
@@ -145,8 +167,16 @@ SELECT b.name AS board_name,
      JOIN boards b ON b.id = c.board_id
      JOIN lists l ON l.id = c.list_id;
 
-  ALTER TABLE "card_attachments"
-ADD "doc_image_path" character varying(255) NULL;
+DO $$ 
+   BEGIN
+
+        BEGIN
+            ALTER TABLE "card_attachments" ADD "doc_image_path" character varying(255) NULL;
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column is_two_fdoc_image_pathactor_authentication_enabled already exists in card_attachments';
+        END; 
+  END;
+$$;
 
 CREATE OR REPLACE VIEW "boards_listing" AS
 SELECT board.id,
@@ -293,6 +323,8 @@ SELECT board.id,
 
 SELECT pg_catalog.setval('acl_board_links_seq', (SELECT MAX(id) FROM acl_board_links), true);
 
+DELETE FROM "acl_board_links" WHERE "method" = 'DELETE' AND "url" = '/boards/?';
+
 INSERT INTO "acl_board_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_hide")
 VALUES (now(), now(), 'Delete board', '/boards/?', 'DELETE', 'delete_board', '2', '0');
 
@@ -301,9 +333,17 @@ SELECT pg_catalog.setval('acl_board_links_boards_user_roles_seq', (SELECT MAX(id
 INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id")
 VALUES (now(), now(), (select id from acl_board_links where slug='delete_board'), '1');
 
-ALTER TABLE "user_logins"
-ADD "is_login_failed" boolean NOT NULL DEFAULT 'false';
-COMMENT ON TABLE "user_logins" IS '';
+DO $$ 
+   BEGIN
+
+        BEGIN
+            ALTER TABLE "user_logins" ADD "is_login_failed" boolean NOT NULL DEFAULT 'false';
+            COMMENT ON TABLE "user_logins" IS '';
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column is_login_failed already exists in user_logins';
+        END; 
+  END;
+$$;
 
 CREATE OR REPLACE VIEW "user_logins_listing" AS
  SELECT user_logins.id,
@@ -324,9 +364,17 @@ CREATE OR REPLACE VIEW "user_logins_listing" AS
      LEFT JOIN users ON ((users.id = user_logins.user_id)))
      LEFT JOIN ips ON ((ips.id = user_logins.ip_id)));
 
-ALTER TABLE "activities"
-ADD "token" character varying(255) NULL;
-COMMENT ON TABLE "activities" IS '';
+DO $$ 
+   BEGIN
+
+        BEGIN
+            ALTER TABLE "activities" ADD "token" character varying(255) NULL; 
+            COMMENT ON TABLE "activities" IS '';
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column token already exists in activities';
+        END; 
+  END;
+$$;
 
 CREATE OR REPLACE VIEW "activities_listing" AS
  SELECT activity.id,
@@ -385,3 +433,17 @@ CREATE OR REPLACE VIEW "activities_listing" AS
      LEFT JOIN checklists checklist1 ON ((checklist1.id = activity.foreign_id)))
      LEFT JOIN users users ON ((users.id = activity.user_id)))
      LEFT JOIN organizations organizations ON ((organizations.id = activity.organization_id)));
+
+DO $$ 
+   BEGIN
+
+        BEGIN
+            ALTER TABLE "boards"
+            ADD "support_list_id" bigint NULL,
+            ADD "support_custom_fields" text NULL;
+            COMMENT ON TABLE "boards" IS '';
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column support_list_id, support_custom_fields already exists in boards';
+        END; 
+  END;
+$$;   
