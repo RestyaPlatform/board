@@ -4384,7 +4384,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             echo json_encode($response);
         }
         break;
-        
+
     case '/boards/?/lists/?/cards/?/multiple-attachments':
         $is_return_vlaue = true;
         $table_name = 'card_attachments';
@@ -4394,10 +4394,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_resource_vars['cards'];
         $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_resource_vars['cards'];
         $save_path = str_replace('\\', '/', $save_path);
-        if (!empty($_FILES['attachments']) && $_FILES['attachment']['error'] == 0) {           
-            $file = $_FILES['attachments'];               
+        if (!empty($_FILES['attachments']) && $_FILES['attachment']['error'] == 0) {
+            $file = $_FILES['attachments'];
             $file_count = $_POST['total_attachment'];
-            for ($i = 0; $i < $file_count; $i++) { 
+            for ($i = 0; $i < $file_count; $i++) {
                 if ($file['name'][$i] != 'undefined') {
                     if (!file_exists($mediadir)) {
                         mkdir($mediadir, 0777, true);
@@ -4464,9 +4464,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     }
                 }
             }
-        } 
+        }
         echo json_encode($response);
         break;
+
     case '/boards/?/lists/?/cards/?/card_voters':
         $table_name = 'card_voters';
         $r_post['card_id'] = $r_resource_vars['cards'];

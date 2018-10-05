@@ -447,3 +447,31 @@ DO $$
         END; 
   END;
 $$;   
+
+UPDATE "settings" SET
+"id" = '18',
+"setting_category_id" = '6',
+"setting_category_parent_id" = '0',
+"name" = 'DROPBOX_APPKEY',
+"value" = '',
+"description" = 'Get the Dropbox App Key by visiting <a href="https://www.dropbox.com/developers/apps/" target="_blank">https://www.dropbox.com/developers/apps/</a>',
+"type" = 'text',
+"options" = NULL,
+"label" = 'Dropbox App Key',
+"order" = '1'
+WHERE "id" = '18';
+
+
+
+UPDATE "settings" SET
+"id" = '20',
+"setting_category_id" = '6',
+"setting_category_parent_id" = '0',
+"name" = 'FLICKR_API_KEY',
+"value" = '',
+"description" = 'Get the Flickr API Key  by visiting <a href="https://www.flickr.com/services/apps/" target="_blank">https://www.flickr.com/services/apps/</a>',
+"type" = 'text',
+"options" = NULL,
+"label" = 'Flickr API Key',
+"order" = '2'
+WHERE "id" = '20';
