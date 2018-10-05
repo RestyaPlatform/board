@@ -148,6 +148,7 @@ App.ModalCardView = Backbone.View.extend({
         this.board = self.model.list.collection.board;
         _(this).bindAll('show');
         this.boards = App.boards;
+        this.DROPBOX_APPKEY = DROPBOX_APPKEY;
     },
     /**
      * showComment()
@@ -1023,7 +1024,8 @@ App.ModalCardView = Backbone.View.extend({
                 card: this.model,
                 checklist_lists: this.checklist_list,
                 converter: this.converter,
-                list: this.model.list
+                list: this.model.list,
+                DROPBOX_APPKEY: this.DROPBOX_APPKEY
             })).dockmodal('refreshLayout');
             self.$el.find('.js-modal-settings').removeClass('hide');
             _(function() {
@@ -1163,7 +1165,8 @@ App.ModalCardView = Backbone.View.extend({
                 card: this.model,
                 checklist_lists: this.checklist_list,
                 converter: this.converter,
-                list: this.model.list
+                list: this.model.list,
+                DROPBOX_APPKEY: this.DROPBOX_APPKEY
             })).attr('id', 'js-card-modal-' + this.model.id));
             this.renderAttachmentsCollection();
             this.renderLabelsCollection();
