@@ -313,14 +313,41 @@ App.UserView = Backbone.View.extend({
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
                     var Auth = JSON.parse($.cookie('auth'));
-                    Auth.user.is_google_authenticator_enabled = response.activity.is_google_authenticator_enabled;
-                    Auth.user.default_desktop_notification = response.activity.default_desktop_notification;
-                    Auth.user.is_list_notifications_enabled = response.activity.is_list_notifications_enabled;
-                    Auth.user.is_card_notifications_enabled = response.activity.is_card_notifications_enabled;
-                    Auth.user.is_card_members_notifications_enabled = response.activity.is_card_members_notifications_enabled;
-                    Auth.user.is_card_labels_notifications_enabled = response.activity.is_card_labels_notifications_enabled;
-                    Auth.user.is_card_checklists_notifications_enabled = response.activity.is_card_checklists_notifications_enabled;
-                    Auth.user.is_card_attachments_notifications_enabled = response.activity.is_card_attachments_notifications_enabled;
+                    if (!_.isUndefined(response.activity.default_desktop_notification) && !_.isEmpty(response.activity.default_desktop_notification)) {
+                        Auth.user.default_desktop_notification = response.activity.default_desktop_notification;
+                    } else {
+                        Auth.user.default_desktop_notification = data.default_desktop_notification;
+                    }
+                    if (!_.isUndefined(response.activity.is_list_notifications_enabled) && !_.isEmpty(response.activity.is_list_notifications_enabled)) {
+                        Auth.user.is_list_notifications_enabled = response.activity.is_list_notifications_enabled;
+                    } else {
+                        Auth.user.is_list_notifications_enabled = data.is_list_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_notifications_enabled) && !_.isEmpty(response.activity.is_card_notifications_enabled)) {
+                        Auth.user.is_card_notifications_enabled = response.activity.is_card_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_notifications_enabled = data.is_card_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_members_notifications_enabled) && !_.isEmpty(response.activity.is_card_members_notifications_enabled)) {
+                        Auth.user.is_card_members_notifications_enabled = response.activity.is_card_members_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_members_notifications_enabled = data.is_card_members_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_labels_notifications_enabled) && !_.isEmpty(response.activity.is_card_labels_notifications_enabled)) {
+                        Auth.user.is_card_labels_notifications_enabled = response.activity.is_card_labels_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_labels_notifications_enabled = data.is_card_labels_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_checklists_notifications_enabled) && !_.isEmpty(response.activity.is_card_checklists_notifications_enabled)) {
+                        Auth.user.is_card_checklists_notifications_enabled = response.activity.is_card_checklists_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_checklists_notifications_enabled = data.is_card_checklists_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_attachments_notifications_enabled) && !_.isEmpty(response.activity.is_card_attachments_notifications_enabled)) {
+                        Auth.user.is_card_attachments_notifications_enabled = response.activity.is_card_attachments_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_attachments_notifications_enabled = data.is_card_attachments_notifications_enabled;
+                    }
                     $.cookie('auth', JSON.stringify(Auth));
                     authuser = Auth;
                     if (!_.isUndefined(response.activity.username) && response.activity.username !== null) {
