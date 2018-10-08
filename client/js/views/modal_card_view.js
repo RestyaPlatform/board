@@ -3140,7 +3140,10 @@ App.ModalCardView = Backbone.View.extend({
      * @type string
      */
     changeList: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         var target = $(e.currentTarget);
+        target.blur();
         var self = this;
         var board_id = parseInt(target.val());
         var content_list = '';
