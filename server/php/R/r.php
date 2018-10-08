@@ -5756,6 +5756,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             'Organization',
             'Public'
         );
+        $comment = '';
         $foreign_ids['board_id'] = $r_resource_vars['boards'];
         if (isset($r_put['default_email_list_id']) || isset($r_put['sort_by']) || isset($r_put['is_default_email_position_as_bottom'])) {
             $comment = '';
