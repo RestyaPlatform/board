@@ -598,47 +598,6 @@ App.ModalCardView = Backbone.View.extend({
         return label.id;
     },
     /**
-     * editCardDueDateForm()
-     * update card due date
-     * @param e
-     * @type Object(DOM event)
-     */
-    editCardDueDateForm: function(e) {
-        var self = this;
-        var target = $(e.target);
-        $('.js-edit-card-due-date-form-response').html('').html(new App.CardDuedateFromView({
-            model: this.model
-        }).el);
-        target.parent('li').find('.js-card-duedate-edit-' + self.model.id).datetimepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            todayBtn: true,
-            pickerPosition: 'top-right',
-            todayHighlight: 1,
-            startView: 2,
-            minView: 2,
-            bootcssVer: 2,
-            pickTime: false
-        }).on('changeDate', function(ev) {
-            $(this).datetimepicker('hide');
-            $(this).blur();
-        });
-        target.parent('li').find('.js-card-duetime-edit-' + self.model.id).datetimepicker({
-            format: 'hh:ii',
-            autoclose: true,
-            showMeridian: false,
-            pickerPosition: 'top-right',
-            startView: 1,
-            maxView: 1,
-            pickDate: false,
-            use24hours: true,
-            timepicker: 1,
-        }).on('changeDate', function(ev) {
-            $(this).datetimepicker('hide');
-            $(this).blur();
-        });
-    },
-    /**
      * showCardDueDateForm()
      * display card due date form
      * @param e
@@ -647,37 +606,6 @@ App.ModalCardView = Backbone.View.extend({
     showCardDueDateForm: function(e) {
         var self = this;
         var target = $(e.target);
-        $('.js-show-card-due-date-form-response').html('').html(new App.CardDuedateFromView({
-            model: this.model
-        }).el);
-        target.parent('li').find('.js-card-duedate-edit-' + self.model.id).datetimepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            todayBtn: true,
-            pickerPosition: 'top-right',
-            todayHighlight: 1,
-            startView: 2,
-            minView: 2,
-            bootcssVer: 2,
-            pickTime: false
-        }).on('changeDate', function(ev) {
-            $(this).datetimepicker('hide');
-            $(this).blur();
-        });
-        target.parent('li').find('.js-card-duetime-edit-' + self.model.id).datetimepicker({
-            format: 'hh:ii',
-            autoclose: true,
-            showMeridian: false,
-            pickerPosition: 'top-right',
-            startView: 1,
-            maxView: 1,
-            pickDate: false,
-            use24hours: true,
-            timepicker: 1,
-        }).on('changeDate', function(ev) {
-            $(this).datetimepicker('hide');
-            $(this).blur();
-        });
         $('li.dropdown').removeClass('open');
         target.parents('li.dropdown').addClass('open');
         return false;
@@ -1123,7 +1051,34 @@ App.ModalCardView = Backbone.View.extend({
                 }
             });
             this.renderChecklistsCollection();
-
+            $('.js-card-duedate-edit-' + self.model.id).datetimepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayBtn: true,
+                pickerPosition: 'top-right',
+                todayHighlight: 1,
+                startView: 2,
+                minView: 2,
+                bootcssVer: 2,
+                pickTime: false
+            }).on('changeDate', function(ev) {
+                $(this).datetimepicker('hide');
+                $(this).blur();
+            });
+            $('.js-card-duetime-edit-' + self.model.id).datetimepicker({
+                format: 'hh:ii',
+                autoclose: true,
+                showMeridian: false,
+                pickerPosition: 'top-right',
+                startView: 1,
+                maxView: 1,
+                pickDate: false,
+                use24hours: true,
+                timepicker: 1,
+            }).on('changeDate', function(ev) {
+                $(this).datetimepicker('hide');
+                $(this).blur();
+            });
         }
     },
     /** 
@@ -1326,6 +1281,34 @@ App.ModalCardView = Backbone.View.extend({
                         self.model.unbind('change:list_id');
                     }
                 }
+            });
+            $('.js-card-duedate-edit-' + self.model.id).datetimepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayBtn: true,
+                pickerPosition: 'top-right',
+                todayHighlight: 1,
+                startView: 2,
+                minView: 2,
+                bootcssVer: 2,
+                pickTime: false
+            }).on('changeDate', function(ev) {
+                $(this).datetimepicker('hide');
+                $(this).blur();
+            });
+            $('.js-card-duetime-edit-' + self.model.id).datetimepicker({
+                format: 'hh:ii',
+                autoclose: true,
+                showMeridian: false,
+                pickerPosition: 'top-right',
+                startView: 1,
+                maxView: 1,
+                pickDate: false,
+                use24hours: true,
+                timepicker: 1,
+            }).on('changeDate', function(ev) {
+                $(this).datetimepicker('hide');
+                $(this).blur();
             });
         } else {
             doc.dockmodal('restore');
