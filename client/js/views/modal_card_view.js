@@ -3140,7 +3140,10 @@ App.ModalCardView = Backbone.View.extend({
      * @type string
      */
     changeList: function(e) {
+        e.preventDefault();
+        e.stopPropagation();  
         var target = $(e.currentTarget);
+        target.blur();    
         var self = this;
         var board_id = parseInt(target.val());
         var content_list = '';
@@ -3164,7 +3167,7 @@ App.ModalCardView = Backbone.View.extend({
                     if ($.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
                         wip_enabled = true;
                     }
-                }
+                }           
             }
             _.each(board_lists, function(list) {
                 if (self.model.attributes.list_id == list.attributes.id) {
