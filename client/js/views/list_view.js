@@ -1330,6 +1330,8 @@ App.ListView = Backbone.View.extend({
             $(e.target).find('.js-card-label').val('');
             $(e.target).find('.js-card-add-position').val('');
             $(e.target).find('.js-users-list').find('ul').empty();
+            $(e.target).find('.js-checklist-list').find('ul').empty();
+            $(e.target).find('.js-custom_fields-list').find('ul').empty();
             $(e.target).parents('.js-show-modal-card-view').find('.js-lables-list').empty();
             data.uuid = new Date().getTime();
             data.list_id = parseInt(data.list_id);
