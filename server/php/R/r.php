@@ -1922,6 +1922,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $plugin_url['BoardRole'] = array(
             '/board_roles'
         );
+        $plugin_url['Broadcast'] = array(
+            '/broadcasts',
+            '/broadcasts/?',
+            '/me/broadcasts'            
+        );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
             '/custom_fields/?',
@@ -5547,6 +5552,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $plugin_url['BoardRole'] = array(
             '/board_roles'
         );
+        $plugin_url['Broadcast'] = array(
+            '/broadcasts',
+            '/broadcasts/?'
+        );
         $plugin_url['CardTemplate'] = array(
             '/boards/?/cards/?/card_template',
             '/boards/?/card_templates/?'
@@ -6396,6 +6405,9 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             '/boards/?/custom_fields/?',
             '/custom_fields/update_position'
         );
+        $plugin_url['Broadcast'] = array(
+            '/broadcasts/?'
+        );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
                 $pluginToBePassed = $plugin_key;
@@ -6813,6 +6825,9 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $plugin_url['Gantt'] = array(
             '/boards/?/card_dependencies/?'
+        );
+        $plugin_url['Broadcast'] = array(
+            '/broadcasts/?'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
