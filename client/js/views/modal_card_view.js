@@ -659,6 +659,7 @@ App.ModalCardView = Backbone.View.extend({
      * @return false
      */
     showMemberSearch: function(e) {
+        var target = $(e.target);
         var open = false;
         if (e.key == "Shift") {
             this.prevKey = e.key;
@@ -673,11 +674,19 @@ App.ModalCardView = Backbone.View.extend({
         var keyCode = e.which || e.keyCode;
         if (e.key == '@' || open) {
             this.autoMentionSelectionStart = e.target.selectionStart;
-            $('.js-show-members').parents('.dropdown:first').addClass('open');
+            if ($(target).parents('#AddActivityForm').length > 0) {
+                $(target).parents('#AddActivityForm').find('.js-show-members').parents('.dropdown:first').addClass('open');
+            } else {
+                $(target).parents('.comment-block').find('.js-show-members').parents('.dropdown:first').addClass('open');
+            }
         } else if (this.autoMentionSelectionStart) {
             if (keyCode == 32) {
                 this.autoMentionSelectionStart = 0;
-                $('.js-show-members').parents('.dropdown:first').removeClass('open');
+                if ($(target).parents('#AddActivityForm').length > 0) {
+                    $(target).parents('#AddActivityForm').find('.js-show-members').parents('.dropdown:first').removeClass('open');
+                } else {
+                    $(target).parents('.comment-block').find('.js-show-members').parents('.dropdown:first').removeClass('open');
+                }
             } else {
                 var regex = /\s/gi,
                     result, indice;
@@ -697,7 +706,11 @@ App.ModalCardView = Backbone.View.extend({
         }
         if (this.deletedKey === '@' || q === '' || e.key == 'Space') {
             this.autoMentionSelectionStart = 0;
-            $('.js-show-members').parents('.dropdown:first').removeClass('open');
+            if ($(target).parents('#AddActivityForm').length > 0) {
+                $(target).parents('#AddActivityForm').find('.js-show-members').parents('.dropdown:first').removeClass('open');
+            } else {
+                $(target).parents('.comment-block').find('.js-show-members').parents('.dropdown:first').removeClass('open');
+            }
         }
         return false;
     },
