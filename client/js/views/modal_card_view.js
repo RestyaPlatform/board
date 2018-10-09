@@ -363,9 +363,9 @@ App.ModalCardView = Backbone.View.extend({
         e.preventDefault();
         var target = $(e.currentTarget);
         if ($(target).parents('.js-add-comment').length > 0) {
-            $(target).parents('.js-add-comment').find('.js-comment').val($(target).parents('.js-add-comment').find('.js-comment').val() + ':' + target.text() + ': ')
+            $(target).parents('.js-add-comment').find('.js-comment').val($(target).parents('.js-add-comment').find('.js-comment').val() + ':' + target.text() + ': ');
         } else {
-            $(target).parents('.js-edit-comment').find('.js-comment').val($(target).parents('.js-edit-comment').find('.js-comment').val() + ':' + target.text() + ': ')
+            $(target).parents('.js-edit-comment').find('.js-comment').val($(target).parents('.js-edit-comment').find('.js-comment').val() + ':' + target.text() + ': ');
         }
     },
     /**
@@ -3131,7 +3131,7 @@ App.ModalCardView = Backbone.View.extend({
         var card_id = target.data('card-id');
         var card_name = target.data('card-name');
         var board_id = target.data('board-id');
-        if ($(target).parents('.comment-block').length > 0 ) {
+        if ($(target).parents('.comment-block').length > 0) {
             $(target).parents('.comment-block').find('.js-comment').val($(target).parents('.comment-block').find('.js-comment').val() + '#' + card_id + ' ');
         } else {
             $(target).parents('#AddActivityForm').find('.js-comment').val($(target).parents('#AddActivityForm').find('.js-comment').val() + '#' + card_id + ' ');
