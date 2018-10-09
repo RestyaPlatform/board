@@ -43,7 +43,6 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-preview-description': 'previewCardDesc',
         'click .js-cancel-card-description-edit': 'cancelCardDescEditForm',
         'click .js-show-card-due-date-form': 'showCardDueDateForm',
-        'click .js-edit-card-due-date-form': 'editCardDueDateForm',
         'submit form.js-card-label-add-form': 'addCardLabel',
         'click .js-show-card-label-form': 'showCardLabelForm',
         'click .js-add-card-vote': 'addCardVote',
