@@ -1935,7 +1935,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $plugin_url['Broadcast'] = array(
             '/broadcasts',
             '/broadcasts/?',
-            '/me/broadcasts'            
+            '/me/broadcasts'
         );
         $plugin_url['Group'] = array(
             '/groups',

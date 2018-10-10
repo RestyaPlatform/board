@@ -43,7 +43,6 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-preview-description': 'previewCardDesc',
         'click .js-cancel-card-description-edit': 'cancelCardDescEditForm',
         'click .js-show-card-due-date-form': 'showCardDueDateForm',
-        'click .js-edit-card-due-date-form': 'editCardDueDateForm',
         'submit form.js-card-label-add-form': 'addCardLabel',
         'click .js-show-card-label-form': 'showCardLabelForm',
         'click .js-add-card-vote': 'addCardVote',
@@ -363,7 +362,11 @@ App.ModalCardView = Backbone.View.extend({
     addEmoji: function(e) {
         e.preventDefault();
         var target = $(e.currentTarget);
-        this.$el.find('.js-comment').val(this.$el.find('.js-comment').val() + ':' + target.text() + ': ');
+        if ($(target).parents('.js-add-comment').length > 0) {
+            $(target).parents('.js-add-comment').find('.js-comment').val($(target).parents('.js-add-comment').find('.js-comment').val() + ':' + target.text() + ': ');
+        } else {
+            $(target).parents('.js-edit-comment').find('.js-comment').val($(target).parents('.js-edit-comment').find('.js-comment').val() + ':' + target.text() + ': ');
+        }
     },
     /**
      * addChecklistItemEmoji()
@@ -598,47 +601,6 @@ App.ModalCardView = Backbone.View.extend({
         return label.id;
     },
     /**
-     * editCardDueDateForm()
-     * update card due date
-     * @param e
-     * @type Object(DOM event)
-     */
-    editCardDueDateForm: function(e) {
-        var self = this;
-        var target = $(e.target);
-        $('.js-edit-card-due-date-form-response').html('').html(new App.CardDuedateFromView({
-            model: this.model
-        }).el);
-        target.parent('li').find('.js-card-duedate-edit-' + self.model.id).datetimepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            todayBtn: true,
-            pickerPosition: 'top-right',
-            todayHighlight: 1,
-            startView: 2,
-            minView: 2,
-            bootcssVer: 2,
-            pickTime: false
-        }).on('changeDate', function(ev) {
-            $(this).datetimepicker('hide');
-            $(this).blur();
-        });
-        target.parent('li').find('.js-card-duetime-edit-' + self.model.id).datetimepicker({
-            format: 'hh:ii',
-            autoclose: true,
-            showMeridian: false,
-            pickerPosition: 'top-right',
-            startView: 1,
-            maxView: 1,
-            pickDate: false,
-            use24hours: true,
-            timepicker: 1,
-        }).on('changeDate', function(ev) {
-            $(this).datetimepicker('hide');
-            $(this).blur();
-        });
-    },
-    /**
      * showCardDueDateForm()
      * display card due date form
      * @param e
@@ -647,37 +609,6 @@ App.ModalCardView = Backbone.View.extend({
     showCardDueDateForm: function(e) {
         var self = this;
         var target = $(e.target);
-        $('.js-show-card-due-date-form-response').html('').html(new App.CardDuedateFromView({
-            model: this.model
-        }).el);
-        target.parent('li').find('.js-card-duedate-edit-' + self.model.id).datetimepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            todayBtn: true,
-            pickerPosition: 'top-right',
-            todayHighlight: 1,
-            startView: 2,
-            minView: 2,
-            bootcssVer: 2,
-            pickTime: false
-        }).on('changeDate', function(ev) {
-            $(this).datetimepicker('hide');
-            $(this).blur();
-        });
-        target.parent('li').find('.js-card-duetime-edit-' + self.model.id).datetimepicker({
-            format: 'hh:ii',
-            autoclose: true,
-            showMeridian: false,
-            pickerPosition: 'top-right',
-            startView: 1,
-            maxView: 1,
-            pickDate: false,
-            use24hours: true,
-            timepicker: 1,
-        }).on('changeDate', function(ev) {
-            $(this).datetimepicker('hide');
-            $(this).blur();
-        });
         $('li.dropdown').removeClass('open');
         target.parents('li.dropdown').addClass('open');
         return false;
@@ -728,6 +659,7 @@ App.ModalCardView = Backbone.View.extend({
      * @return false
      */
     showMemberSearch: function(e) {
+        var target = $(e.target);
         var open = false;
         if (e.key == "Shift") {
             this.prevKey = e.key;
@@ -742,11 +674,19 @@ App.ModalCardView = Backbone.View.extend({
         var keyCode = e.which || e.keyCode;
         if (e.key == '@' || open) {
             this.autoMentionSelectionStart = e.target.selectionStart;
-            $('.js-show-members').parents('.dropdown:first').addClass('open');
+            if ($(target).parents('#AddActivityForm').length > 0) {
+                $(target).parents('#AddActivityForm').find('.js-show-members').parents('.dropdown:first').addClass('open');
+            } else {
+                $(target).parents('.comment-block').find('.js-show-members').parents('.dropdown:first').addClass('open');
+            }
         } else if (this.autoMentionSelectionStart) {
             if (keyCode == 32) {
                 this.autoMentionSelectionStart = 0;
-                $('.js-show-members').parents('.dropdown:first').removeClass('open');
+                if ($(target).parents('#AddActivityForm').length > 0) {
+                    $(target).parents('#AddActivityForm').find('.js-show-members').parents('.dropdown:first').removeClass('open');
+                } else {
+                    $(target).parents('.comment-block').find('.js-show-members').parents('.dropdown:first').removeClass('open');
+                }
             } else {
                 var regex = /\s/gi,
                     result, indice;
@@ -766,7 +706,11 @@ App.ModalCardView = Backbone.View.extend({
         }
         if (this.deletedKey === '@' || q === '' || e.key == 'Space') {
             this.autoMentionSelectionStart = 0;
-            $('.js-show-members').parents('.dropdown:first').removeClass('open');
+            if ($(target).parents('#AddActivityForm').length > 0) {
+                $(target).parents('#AddActivityForm').find('.js-show-members').parents('.dropdown:first').removeClass('open');
+            } else {
+                $(target).parents('.comment-block').find('.js-show-members').parents('.dropdown:first').removeClass('open');
+            }
         }
         return false;
     },
@@ -1123,7 +1067,34 @@ App.ModalCardView = Backbone.View.extend({
                 }
             });
             this.renderChecklistsCollection();
-
+            $('.js-card-duedate-edit-' + self.model.id).datetimepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayBtn: true,
+                pickerPosition: 'top-right',
+                todayHighlight: 1,
+                startView: 2,
+                minView: 2,
+                bootcssVer: 2,
+                pickTime: false
+            }).on('changeDate', function(ev) {
+                $(this).datetimepicker('hide');
+                $(this).blur();
+            });
+            $('.js-card-duetime-edit-' + self.model.id).datetimepicker({
+                format: 'hh:ii',
+                autoclose: true,
+                showMeridian: false,
+                pickerPosition: 'top-right',
+                startView: 1,
+                maxView: 1,
+                pickDate: false,
+                use24hours: true,
+                timepicker: 1,
+            }).on('changeDate', function(ev) {
+                $(this).datetimepicker('hide');
+                $(this).blur();
+            });
         }
     },
     /** 
@@ -1326,6 +1297,34 @@ App.ModalCardView = Backbone.View.extend({
                         self.model.unbind('change:list_id');
                     }
                 }
+            });
+            $('.js-card-duedate-edit-' + self.model.id).datetimepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayBtn: true,
+                pickerPosition: 'top-right',
+                todayHighlight: 1,
+                startView: 2,
+                minView: 2,
+                bootcssVer: 2,
+                pickTime: false
+            }).on('changeDate', function(ev) {
+                $(this).datetimepicker('hide');
+                $(this).blur();
+            });
+            $('.js-card-duetime-edit-' + self.model.id).datetimepicker({
+                format: 'hh:ii',
+                autoclose: true,
+                showMeridian: false,
+                pickerPosition: 'top-right',
+                startView: 1,
+                maxView: 1,
+                pickDate: false,
+                use24hours: true,
+                timepicker: 1,
+            }).on('changeDate', function(ev) {
+                $(this).datetimepicker('hide');
+                $(this).blur();
             });
         } else {
             doc.dockmodal('restore');
@@ -3094,9 +3093,10 @@ App.ModalCardView = Backbone.View.extend({
      * @param string
      * @type string
      */
-    showSearchCards: function() {
+    showSearchCards: function(e) {
+        var target = $(e.target);
         var self = this;
-        var q = this.$el.find('.js-search-card').val();
+        var q = $(target).val();
         var cards = new App.CardCollection();
         cards.url = api_url + 'boards/' + this.model.attributes.board_id + '/cards/search.json';
         cards.fetch({
@@ -3131,7 +3131,11 @@ App.ModalCardView = Backbone.View.extend({
         var card_id = target.data('card-id');
         var card_name = target.data('card-name');
         var board_id = target.data('board-id');
-        this.$el.find('.js-comment').val(this.$el.find('.js-comment').val() + '#' + card_id + ' ');
+        if ($(target).parents('.comment-block').length > 0) {
+            $(target).parents('.comment-block').find('.js-comment').val($(target).parents('.comment-block').find('.js-comment').val() + '#' + card_id + ' ');
+        } else {
+            $(target).parents('#AddActivityForm').find('.js-comment').val($(target).parents('#AddActivityForm').find('.js-comment').val() + '#' + card_id + ' ');
+        }
     },
     /**
      * changeList()
@@ -3400,7 +3404,8 @@ App.ModalCardView = Backbone.View.extend({
      */
     showSearchMembers: function(e) {
         var self = this;
-        var q = $(e.target).val();
+        var target = $(e.target);
+        var q = $(target).val();
         if (q !== '') {
             var filtered_users = this.model.list.collection.board.board_users.search(q);
             var users = new App.UserCollection();
@@ -3408,25 +3413,25 @@ App.ModalCardView = Backbone.View.extend({
                 $.unique(filtered_users._wrapped);
             }
             users.add(filtered_users._wrapped);
-            this.$el.find('.js-comment-member-search-response').nextAll().remove();
+            $(target).parents('.js-comment-member-search-response').nextAll().remove();
             if (!_.isEmpty(users.models)) {
                 _.each(users.models, function(user) {
                     $(new App.ActivityUserAddSearchResultView({
                         model: user
-                    }).el).insertAfter(self.$el.find('.js-comment-member-search-response'));
+                    }).el).insertAfter($(target).parents('.js-comment-member-search-response'));
                 });
                 if (users.models.length === 0) {
                     $(new App.ActivityUserAddSearchResultView({
                         model: null
-                    }).el).insertAfter(self.$el.find('.js-comment-member-search-response'));
+                    }).el).insertAfter($(target).parents('.js-comment-member-search-response'));
                 }
             } else {
                 $(new App.ActivityUserAddSearchResultView({
                     model: null
-                }).el).insertAfter(self.$el.find('.js-comment-member-search-response'));
+                }).el).insertAfter($(target).parents('.js-comment-member-search-response'));
             }
         } else {
-            this.$el.find('.js-comment-member-search-response').nextAll().remove();
+            $(target).parents('.js-comment-member-search-response').nextAll().remove();
             this.renderActivityBoardUsers();
         }
     },
