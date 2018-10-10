@@ -164,13 +164,55 @@
 					%>
 					  <li class="dropdown"> <a class="btn btn-default dropdown-toggle <% if(!_.isUndefined(authuser.user)){ %>js-edit-card-due-date-form<%}else{%>js-no-action <%}%>" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><%= dateFormat(date_time[0], 'mediumDate')  %><%- ' at '+ hours_mins %></a>
 					  <% if(!_.isUndefined(authuser.user)){ %>
-						<ul class="dropdown-menu arrow col-xs-12 panel-body">
-						  <li>
-							<h4 class="text-center"><%- i18next.t('Due Date') %><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></h4>
+						<ul class="dropdown-menu arrow col-xs-12">
+						  <li class="col-xs-12 text-center">
+									<div>
+										<span class="col-xs-10"><strong><%- i18next.t('Due Date') %></strong></span>
+										<a class="js-close-popover pull-right" href="#"><i class="icon-remove">&nbsp;</i></a>
+									</div>
 						  </li>
-						  <li class="divider"></li>
-						  <li class="js-edit-card-due-date-form-response">
-							<form class="form-horizontal clearfix js-card-edit-form" name="cardDueDateEditForm" id="cardDueDateEditForm">
+						  <li class="divider col-xs-12"></li>
+						  <li class="js-edit-card-due-date-form-response col-xs-12">
+							<% 
+								var currentdate = new Date();
+								var date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10 ) ? '0'+ (currentdate.getMonth() + 1 ) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10)? '0' + currentdate.getDate() : currentdate.getDate());
+								var time = currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
+								if (!_.isEmpty(card.attributes.due_date) && card.attributes.due_date !== 'NULL' && card.attributes.due_date !== 'null') {
+									var date_time = card.attributes.due_date.replace('T',' ');
+									date_time = date_time.split(' ');
+									date = date_time[0];
+									time = date_time[1];
+									time = time.split(':');
+									time = time[0]+':'+time[1];
+								}
+							%>
+							<form id="cardDueDateEditForm1" class="form-horizontal clearfix js-card-edit-form">
+									<div class="form-group">
+										<div class="col-xs-6">
+											<label><%- i18next.t('Date') %>
+											</label>
+											<input type="text" class="form-control input-sm js-card-duedate-edit-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" value="<%= date %>" required>
+										</div>
+										<div class="col-xs-6">
+											<label><%- i18next.t('Time') %>
+											</label>
+											<input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm" value="<%= time %>" required>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-xs-6">
+											<label for="save" class="sr-only"><%- i18next.t('Save') %>
+											</label>
+											<input type="submit" value="<%- i18next.t('Save') %>" id="save" class="btn btn-primary" id="submitCardDueDateEditForm">
+										</div>
+										<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL') { %>
+										<div class="col-xs-6">
+											<label for="remove" class="sr-only"><%- i18next.t('Remove') %>
+											</label>
+											<input type="reset" value="<%- i18next.t('Remove') %>" class="btn btn-default js-remove-due-date">
+										</div>
+										<% } %>
+									</div>
 							</form>
 						  </li>
 						</ul>
@@ -317,7 +359,49 @@
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 						<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Due Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 						<li class="col-xs-12 divider"></li>
-						<li class="js-show-card-due-date-form-response col-xs-12"> </li>
+						<li class="js-show-card-due-date-form-response col-xs-12">
+								<% 
+								var currentdate = new Date();
+								var date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10 ) ? '0'+ (currentdate.getMonth() + 1 ) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10)? '0' + currentdate.getDate() : currentdate.getDate());
+								var time = currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
+								if (!_.isEmpty(card.attributes.due_date) && card.attributes.due_date !== 'NULL' && card.attributes.due_date !== 'null') {
+									var date_time = card.attributes.due_date.replace('T',' ');
+									date_time = date_time.split(' ');
+									date = date_time[0];
+									time = date_time[1];
+									time = time.split(':');
+									time = time[0]+':'+time[1];
+								}
+								%>
+								<form id="cardDueDateEditForm2" class="form-horizontal clearfix js-card-edit-form">
+										<div class="form-group">
+											<div class="col-xs-6">
+												<label><%- i18next.t('Date') %>
+												</label>
+												<input type="text" class="form-control input-sm js-card-duedate-edit-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" value="<%= date %>" required>
+											</div>
+											<div class="col-xs-6">
+												<label><%- i18next.t('Time') %>
+												</label>
+												<input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm" value="<%= time %>" required>
+											</div>
+										</div>
+										<div class="form-group">
+											<div class="col-xs-6">
+												<label for="save" class="sr-only"><%- i18next.t('Save') %>
+												</label>
+												<input type="submit" value="<%- i18next.t('Save') %>" id="save" class="btn btn-primary" id="submitCardDueDateEditForm">
+											</div>
+											<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL') { %>
+											<div class="col-xs-6">
+												<label for="remove" class="sr-only"><%- i18next.t('Remove') %>
+												</label>
+												<input type="reset" value="<%- i18next.t('Remove') %>" class="btn btn-default js-remove-due-date">
+											</div>
+											<% } %>
+										</div>
+								</form>
+						</li>
 					  </ul>
 					</li>
 					<% } %>
@@ -633,7 +717,49 @@
 		  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 			<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Due Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 			<li class="col-xs-12 divider"></li>
-			<li class="js-show-card-due-date-form-response col-xs-12"> </li>
+			<% 
+			var currentdate = new Date();
+			var date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10 ) ? '0'+ (currentdate.getMonth() + 1 ) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10)? '0' + currentdate.getDate() : currentdate.getDate());
+			var time = currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
+			if (!_.isEmpty(card.attributes.due_date) && card.attributes.due_date !== 'NULL' && card.attributes.due_date !== 'null') {
+				var date_time = card.attributes.due_date.replace('T',' ');
+				date_time = date_time.split(' ');
+				date = date_time[0];
+				time = date_time[1];
+				time = time.split(':');
+				time = time[0]+':'+time[1];
+			}
+			%>
+			<li class="js-show-card-due-date-form-response col-xs-12">
+					<form id="cardDueDateEditForm3" class="form-horizontal clearfix js-card-edit-form">
+							<div class="form-group">
+								<div class="col-xs-6">
+									<label><%- i18next.t('Date') %>
+									</label>
+									<input type="text" class="form-control input-sm js-card-duedate-edit-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" value="<%= date %>" required>
+								</div>
+								<div class="col-xs-6">
+									<label><%- i18next.t('Time') %>
+									</label>
+									<input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm" value="<%= time %>" required>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-xs-6">
+									<label for="save" class="sr-only"><%- i18next.t('Save') %>
+									</label>
+									<input type="submit" value="<%- i18next.t('Save') %>" id="save" class="btn btn-primary" id="submitCardDueDateEditForm">
+								</div>
+								<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL') { %>
+								<div class="col-xs-6">
+									<label for="remove" class="sr-only"><%- i18next.t('Remove') %>
+									</label>
+									<input type="reset" value="<%- i18next.t('Remove') %>" class="btn btn-default js-remove-due-date">
+								</div>
+								<% } %>
+							</div>
+					</form>
+			</li>
 		  </ul>
 		</li>
 		<% } %>
