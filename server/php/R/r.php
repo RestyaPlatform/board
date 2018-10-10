@@ -5593,7 +5593,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
 
     default:
         $plugin_url['LdapLogin'] = array(
-            '/users/import'
+            '/users/import',
+            '/users/test-connection'
         );
         $plugin_url['BoardRole'] = array(
             '/board_roles'
@@ -6910,7 +6911,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $passed_values['enabledPlugins'] = $enabledPlugins;
             }
             $plugin_return = call_user_func($plugin_key . '_r_delete', $passed_values);
-            echo json_encode($plugin_return);
+            echo json_encode($plugin_return); exit;
             break;
         }
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
