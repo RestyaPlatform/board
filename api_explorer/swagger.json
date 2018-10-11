@@ -16455,13 +16455,13 @@
                 }
             }
         },
-        "/v1/wiki.json": {
+        "/v1/pages.json": {
             "get": {
                 "tags": [
-                    "wiki"
+                    "pages"
                 ],
-                "summary": "Add a new wiki to the card",
-                "description": "Created wiki",
+                "summary": "Add a new pages",
+                "description": "Created pages",
                 "produces": [
                     "application/json"
                 ],
@@ -16513,10 +16513,10 @@
             },
             "post": {
                 "tags": [
-                    "wiki"
+                    "pages"
                 ],
-                "summary": "Add a new wiki to the card",
-                "description": "Created wiki",
+                "summary": "Add a new pages",
+                "description": "Created pages",
                 "produces": [
                     "application/json"
                 ],
@@ -16589,12 +16589,12 @@
                 }
             }
         },
-        "/v1/wiki/{wikiId}.json": {            
+        "/v1/pages/{pagesId}.json": {            
             "get": {
                 "tags": [
-                    "wiki"
+                    "pages"
                 ],
-                "summary": "Put wiki",
+                "summary": "Put pages",
                 "description": "",
                 "produces": [
                     "application/json"
@@ -16611,7 +16611,7 @@
                         }
                     },
                     {
-                        "name": "wikiId",
+                        "name": "pagesId",
                         "in": "path",
                         "description": "ID of card that needs to be fetched",
                         "required": true,
@@ -16655,9 +16655,9 @@
             },
             "put": {
                 "tags": [
-                    "wiki"
+                    "pages"
                 ],
-                "summary": "Put wiki",
+                "summary": "Put pages",
                 "description": "",
                 "produces": [
                     "application/json"
@@ -16674,9 +16674,9 @@
                         }
                     },
                     {
-                        "name": "wikiId",
+                        "name": "pagesId",
                         "in": "path",
-                        "description": "ID of wiki that needs to be fetched",
+                        "description": "ID of pages that needs to be fetched",
                         "required": true,
                         "type": "integer",
                         "format": "int64"
@@ -16737,9 +16737,9 @@
             },
             "delete": {
                 "tags": [
-                    "wiki"
+                    "pages"
                 ],
-                "summary": "delete wiki",
+                "summary": "delete pages",
                 "description": "",
                 "produces": [
                     "application/json"
@@ -16756,9 +16756,9 @@
                         }
                     },
                     {
-                        "name": "wikiId",
+                        "name": "pagesId",
                         "in": "path",
-                        "description": "ID of wiki that needs to be fetched",
+                        "description": "ID of pages that needs to be fetched",
                         "required": true,
                         "type": "integer",
                         "format": "int64"
@@ -16788,6 +16788,356 @@
                                     "type": "string"
                                 },
                                 "description": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "/v1/contacts.json": {
+            "get": {
+                "tags": [
+                    "contacts"
+                ],
+                "summary": "Add a new contacts",
+                "description": "Created contacts",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "user_id": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "contacts"
+                ],
+                "summary": "Add a new contacts",
+                "description": "Created contacts",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Created comment object",
+                        "required": true,
+                        "schema": {
+                            "properties": { 
+                                "name": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                },
+                                "contact_custom_field": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                            "properties": {
+                                                "custom_field_id": {
+                                                   "type": "integer",
+                                                   "format": "int64"
+                                                },
+                                                "value": {
+                                                   "type": "string"
+                                                }
+                                            }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "user_id": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "/v1/contacts/{contactsId}.json": {            
+            "get": {
+                "tags": [
+                    "contacts"
+                ],
+                "summary": "Put contacts",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "contactsId",
+                        "in": "path",
+                        "description": "ID of card that needs to be fetched",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "user_id": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "contacts"
+                ],
+                "summary": "Put contacts",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "contactsId",
+                        "in": "path",
+                        "description": "ID of contacts that needs to be fetched",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Created comment object",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                },
+                                "contact_custom_field": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                            "properties": {
+                                                "custom_field_id": {
+                                                   "type": "integer",
+                                                   "format": "int64"
+                                                },
+                                                "value": {
+                                                   "type": "string"
+                                                }
+                                            }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "user_id": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "contacts"
+                ],
+                "summary": "delete contacts",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "contactsId",
+                        "in": "path",
+                        "description": "ID of contacts that needs to be fetched",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "user_id": {
+                                    "type": "string"
+                                },
+                                "email": {
                                     "type": "string"
                                 }
                             }

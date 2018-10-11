@@ -1946,8 +1946,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/card_diagrams/?'        
         );
         $plugin_url['Wiki'] = array(
-            '/wiki',
-            '/wiki/?'        
+            '/pages',
+            '/pages/?'        
+        );
+        $plugin_url['Contact'] = array(
+            '/contacts',
+            '/contacts/?'        
         );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
@@ -5619,7 +5623,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             '/card_diagrams'        
         );
         $plugin_url['Wiki'] = array(
-            '/wiki'       
+            '/pages'       
+        );
+        $plugin_url['Contact'] = array(
+            '/contacts'        
         );
         $plugin_url['CardTemplate'] = array(
             '/boards/?/cards/?/card_template',
@@ -6480,7 +6487,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             '/card_diagrams/?'        
         );
         $plugin_url['Wiki'] = array(
-            '/wiki/?'        
+            '/pages/?'        
+        );
+        $plugin_url['Contact'] = array(
+            '/contacts/?'        
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -6911,7 +6921,10 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/card_diagrams/?'        
         );
         $plugin_url['Wiki'] = array(
-            '/wiki/?'        
+            '/pages/?'        
+        );
+        $plugin_url['Contact'] = array(
+            '/contacts/?'        
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
