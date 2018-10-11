@@ -1945,6 +1945,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/card_diagrams',
             '/card_diagrams/?'        
         );
+        $plugin_url['Wiki'] = array(
+            '/wiki',
+            '/wiki/?'        
+        );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
             '/custom_fields/?',
@@ -5614,6 +5618,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $plugin_url['DrawIO'] = array(
             '/card_diagrams'        
         );
+        $plugin_url['Wiki'] = array(
+            '/wiki'       
+        );
         $plugin_url['CardTemplate'] = array(
             '/boards/?/cards/?/card_template',
             '/boards/?/card_templates/?'
@@ -6472,6 +6479,9 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $plugin_url['DrawIO'] = array(
             '/card_diagrams/?'        
         );
+        $plugin_url['Wiki'] = array(
+            '/wiki/?'        
+        );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
                 $pluginToBePassed = $plugin_key;
@@ -6899,6 +6909,9 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $plugin_url['DrawIO'] = array(
             '/card_diagrams/?'        
+        );
+        $plugin_url['Wiki'] = array(
+            '/wiki/?'        
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
