@@ -16037,6 +16037,423 @@
                     }
                 }
             }
+        },
+        "/v1/card_diagrams.json": {
+            "get": {
+                "tags": [
+                    "card_diagrams"
+                ],
+                "summary": "Add a new card_diagrams to the card",
+                "description": "Created card_diagrams",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "user_id": {
+                                    "type": "string"
+                                },
+                                "board_id": {
+                                    "type": "string"
+                                },
+                                "list_id": {
+                                    "type": "string"
+                                },
+                                "card_id": {
+                                    "type": "string"
+                                },
+                                "parent_id": {
+                                    "type": "string"
+                                },
+                                "path": {
+                                    "type": "string"
+                                },
+                                "version": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "card_diagrams"
+                ],
+                "summary": "Add a new card_diagrams to the card",
+                "description": "Created card_diagrams",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Created comment object",
+                        "required": true,
+                        "schema": {
+                            "properties": {                               
+                                "name": {
+                                    "type": "string"
+                                },
+                                "user_id": {
+                                    "type": "string"
+                                },
+                                "board_id": {
+                                    "type": "string"
+                                },
+                                "list_id": {
+                                    "type": "string"
+                                },
+                                "card_id": {
+                                    "type": "string"
+                                },
+                                "parent_id": {
+                                    "type": "string"
+                                },
+                                "path": {
+                                    "type": "string"
+                                },
+                                "version": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "attachment",
+                        "in": "formData",
+                        "description": "Upload File.",
+                        "required": false,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "user_id": {
+                                    "type": "string"
+                                },
+                                "board_id": {
+                                    "type": "string"
+                                },
+                                "list_id": {
+                                    "type": "string"
+                                },
+                                "card_id": {
+                                    "type": "string"
+                                },
+                                "parent_id": {
+                                    "type": "string"
+                                },
+                                "path": {
+                                    "type": "string"
+                                },
+                                "version": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "/v1/card_diagrams/{cardDiagramId}.json": {            
+            "get": {
+                "tags": [
+                    "card_diagrams"
+                ],
+                "summary": "Put card_diagrams",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cardDiagramId",
+                        "in": "path",
+                        "description": "ID of card that needs to be fetched",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "user_id": {
+                                    "type": "string"
+                                },
+                                "board_id": {
+                                    "type": "string"
+                                },
+                                "list_id": {
+                                    "type": "string"
+                                },
+                                "card_id": {
+                                    "type": "string"
+                                },
+                                "parent_id": {
+                                    "type": "string"
+                                },
+                                "path": {
+                                    "type": "string"
+                                },
+                                "version": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "card_diagrams"
+                ],
+                "summary": "Put card_diagrams",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cardDiagramId",
+                        "in": "path",
+                        "description": "ID of card_diagrams that needs to be fetched",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Created comment object",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "user_id": {
+                                    "type": "string"
+                                },
+                                "board_id": {
+                                    "type": "string"
+                                },
+                                "list_id": {
+                                    "type": "string"
+                                },
+                                "card_id": {
+                                    "type": "string"
+                                },
+                                "parent_id": {
+                                    "type": "string"
+                                },
+                                "path": {
+                                    "type": "string"
+                                },
+                                "version": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "card_diagrams"
+                ],
+                "summary": "delete card_diagrams",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cardDiagramId",
+                        "in": "path",
+                        "description": "ID of card that needs to be fetched",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "user_id": {
+                                    "type": "string"
+                                },
+                                "board_id": {
+                                    "type": "string"
+                                },
+                                "list_id": {
+                                    "type": "string"
+                                },
+                                "card_id": {
+                                    "type": "string"
+                                },
+                                "parent_id": {
+                                    "type": "string"
+                                },
+                                "path": {
+                                    "type": "string"
+                                },
+                                "version": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
         }
     }
 }
