@@ -1949,7 +1949,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/pages',
             '/pages/?'        
         );
-        $plugin_url['Contact'] = array(
+        $plugin_url['CRM'] = array(
             '/contacts',
             '/contacts/?'        
         );
@@ -5625,7 +5625,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $plugin_url['Wiki'] = array(
             '/pages'       
         );
-        $plugin_url['Contact'] = array(
+        $plugin_url['CRM'] = array(
             '/contacts'        
         );
         $plugin_url['CardTemplate'] = array(
@@ -6489,7 +6489,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $plugin_url['Wiki'] = array(
             '/pages/?'        
         );
-        $plugin_url['Contact'] = array(
+        $plugin_url['CRM'] = array(
             '/contacts/?'        
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
@@ -6923,7 +6923,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $plugin_url['Wiki'] = array(
             '/pages/?'        
         );
-        $plugin_url['Contact'] = array(
+        $plugin_url['CRM'] = array(
             '/contacts/?'        
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
