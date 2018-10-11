@@ -8,7 +8,7 @@ if (typeof App === 'undefined') {
     App = {};
 }
 var loginExceptionUrl = ['register', 'login', 'forgotpassword', 'user_activation', 'aboutus'];
-var adminUrl = ['roles', 'activities', 'users', 'boards/list', 'oauth_clients', 'apps', 'settings', 'email_templates', 'users_logins'];
+var adminUrl = ['roles', 'activities', 'users', 'boards/list', 'oauth_clients', 'apps', 'user_logins', 'settings', 'email_templates', 'users_logins'];
 /**
  * Application View
  * @class ApplicationView
