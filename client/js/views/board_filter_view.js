@@ -132,9 +132,9 @@ App.BoardFilterView = Backbone.View.extend({
             $.each(query_params, function(index, value) {
                 if (value.indexOf('label:') > -1) {
                     filter_label_arr.push(value.replace('label:', ''));
-                }else if (value.indexOf('color:') > -1) {
+                } else if (value.indexOf('color:') > -1) {
                     filter_color_arr.push(value.replace('color:', ''));
-                }  else if (value.indexOf('@') > -1) {
+                } else if (value.indexOf('@') > -1) {
                     filter_user_arr.push(value.replace('@', ''));
                 } else if (value.indexOf('due:') > -1) {
                     filter_due_arr.push(value.replace('due:', ''));
