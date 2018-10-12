@@ -325,6 +325,11 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
         'revisions',
         'token'
     );
+    if (!empty($_GET['token'])) {
+        $token = $_GET['token'];
+    } else {
+        $token = '';
+    }
     $values = array(
         'now()',
         'now()',
@@ -332,7 +337,7 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
         $comment,
         $type,
         $revision,
-        $_GET['token']
+        $token
     );
     if ($foreign_id !== null) {
         array_push($fields, 'foreign_id');

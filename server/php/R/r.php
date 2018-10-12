@@ -5918,6 +5918,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $s_result = pg_query_params($db_lnk, $s_sql, $qry_val_arr);
             $previous_value = pg_fetch_assoc($s_result);
         }
+        $comment = '';
         $foreign_ids['board_id'] = $r_resource_vars['boards'];
         $foreign_ids['list_id'] = $r_resource_vars['lists'];
         if (isset($r_put['board_id']) && !empty($r_put['board_id'])) {
