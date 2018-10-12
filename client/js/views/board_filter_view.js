@@ -113,6 +113,7 @@ App.BoardFilterView = Backbone.View.extend({
         var self = this;
         this.$el.find('.js-clear-filter-btn').removeClass('hide').addClass('show');
         var filter_label_arr = [],
+            filter_color_arr = [],
             filter_user_arr = [],
             filter_due_arr = [];
         var filter_mode;
@@ -131,6 +132,8 @@ App.BoardFilterView = Backbone.View.extend({
             $.each(query_params, function(index, value) {
                 if (value.indexOf('label:') > -1) {
                     filter_label_arr.push(value.replace('label:', ''));
+                } else if (value.indexOf('color:') > -1) {
+                    filter_color_arr.push(value.replace('color:', ''));
                 } else if (value.indexOf('@') > -1) {
                     filter_user_arr.push(value.replace('@', ''));
                 } else if (value.indexOf('due:') > -1) {
@@ -148,6 +151,16 @@ App.BoardFilterView = Backbone.View.extend({
                     self.$el.find('.js-board-labels > li').each(function(index) {
                         if (($(this).find('.js-label').text() === filter_label_arr[i]) && ($(this).find('.js-label').next('i').length === 0)) {
                             $(this).append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
+                            $(this).addClass('selected');
+                        }
+                    });
+                }
+            }
+            if (!_.isEmpty(filter_color_arr)) {
+                for (i = 0; i < filter_color_arr.length; i++) {
+                    self.$el.find('.js-board-colors > li').each(function(index) {
+                        if (($(this).data('color') === filter_color_arr[i]) && ($(this).next('i').length === 0)) {
+                            $(this).prepend('<i class="icon-ok js-filter-icon cur pull-right card-color"></i>');
                             $(this).addClass('selected');
                         }
                     });

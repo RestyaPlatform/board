@@ -104,6 +104,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-close-board': 'closeBoard',
         'click .js-toggle-label-filter': 'toggleCardFilter',
         'click .js-toggle-member-filter': 'toggleCardFilter',
+        'click .js-toggle-color-filter': 'toggleCardFilter',
         'click .js-clear-filter-btn': 'clearAll',
         'click .js-due-filter': 'toggleCardFilter',
         'click .js-filter-mode': 'toggleCardFilter',
@@ -1868,6 +1869,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.$el.find('.js-clear-filter-btn').removeClass('hide').addClass('show');
         var filter_label_arr = [],
             filter_user_arr = [],
+            filter_color_arr = [],
             filter_data = [],
             label_filter = [],
             user_filter = [],
@@ -1899,6 +1901,13 @@ App.BoardHeaderView = Backbone.View.extend({
             filter_query += '@' + $(this).parent().data('user') + ',';
             if ($(this).next('i').length === 0) {
                 $(this).parent().parent().append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
+            }
+        });
+        $('li.selected', $('ul.js-board-colors')).each(function() {
+            filter_color_arr.push($(this).data('color'));
+            filter_query += 'color:' + $(this).data('color') + ',';
+            if ($(this).next('i').length === 0) {
+                $(this).prepend('<i class="icon-ok js-filter-icon cur pull-right card-color"></i>');
             }
         });
         $('li.selected > div.media > span.js-due', $('ul.js-board-dues')).each(function() {
@@ -1963,6 +1972,36 @@ App.BoardHeaderView = Backbone.View.extend({
             }
         } else if (!_.isEmpty(show_label_arr)) {
             result_label_arr = _.union.apply(_, show_label_arr);
+        }
+        var show_color_arr = [],
+            result_color_arr = [];
+        if (!_.isEmpty(filter_color_arr)) {
+            $('ul.js-card-colors li').filter(function(index) {
+                index = $.inArray($(this).text(), filter_color_arr);
+                if (index !== -1) {
+                    if (_.isUndefined(show_color_arr[index])) {
+                        show_color_arr[index] = [];
+                    }
+                    if (filter == 'list') {
+                        show_color_arr[index].push($(this).parent().parent().attr('id'));
+                    } else {
+                        show_color_arr[index].push($(this).parent().parent().attr('id'));
+                    }
+                }
+            });
+        }
+        if (!_.isEmpty(filter_mode)) {
+            if (filter_mode === 'and') {
+                if (!_.isEmpty(show_color_arr)) {
+                    result_color_arr = show_color_arr.shift().filter(function(v) {
+                        return show_color_arr.every(function(a) {
+                            return a.indexOf(v) !== -1;
+                        });
+                    });
+                }
+            }
+        } else if (!_.isEmpty(show_color_arr)) {
+            result_color_arr = _.union.apply(_, show_color_arr);
         }
         var show_user_arr = [],
             result_user_arr = [];
@@ -2042,7 +2081,9 @@ App.BoardHeaderView = Backbone.View.extend({
         if (!_.isEmpty(filter_due_arr)) {
             arrays.push(result_due_arr);
         }
-
+        if (!_.isEmpty(filter_color_arr)) {
+            arrays.push(result_color_arr);
+        }
         if (!_.isEmpty(arrays)) {
             var result = arrays.shift().filter(function(v) {
                 return arrays.every(function(a) {
@@ -2071,9 +2112,9 @@ App.BoardHeaderView = Backbone.View.extend({
                 $(show_card_list).show();
                 $('.js-show-modal-card-view' + hide_card_list).hide();
             }
-        } else if (filter_label_arr.length || filter_user_arr.length || filter_due_arr.length) {
+        } else if (filter_label_arr.length || filter_user_arr.length || filter_due_arr.length || filter_color_arr.length) {
             $('.js-show-modal-card-view').hide();
-        } else if (filter == 'gantt' && _.isEmpty(filter_label_arr) && _.isEmpty(filter_user_arr) && _.isEmpty(filter_due_arr)) {
+        } else if (filter == 'gantt' && _.isEmpty(filter_label_arr) && _.isEmpty(filter_user_arr) && _.isEmpty(filter_due_arr) && _.isEmpty(filter_color_arr)) {
             gantt_card_ids = [];
             this.ganttView(gantt_card_ids, false);
         }

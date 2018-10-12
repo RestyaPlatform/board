@@ -273,6 +273,7 @@ App.CardView = Backbone.View.extend({
         var total_filter = 0;
         var filter_label_arr = [],
             filter_user_arr = [],
+            filter_color_arr = [],
             filter_due_arr = [];
         var filter_mode;
         var current_param = Backbone.history.fragment.split('?');
@@ -293,6 +294,9 @@ App.CardView = Backbone.View.extend({
                 if (value.indexOf('label:') > -1) {
                     total_filter += 1;
                     filter_label_arr.push(value.replace('label:', ''));
+                } else if (value.indexOf('color:') > -1) {
+                    total_filter += 1;
+                    filter_color_arr.push(value.replace('color:', ''));
                 } else if (value.indexOf('@') > -1) {
                     total_filter += 1;
                     filter_user_arr.push(value.replace('@', ''));
@@ -343,6 +347,35 @@ App.CardView = Backbone.View.extend({
                     }
                 }
             });
+            content = '<ul class="unstyled  js-card-colors hide">';
+            if (this.model.attributes.color !== null && this.model.attributes.color !== undefined) {
+                var card_color = this.model.attributes.color.replace('#', '');
+                content += '<li>' + card_color + '</li>';
+            }
+            content += '</ul>';
+            this.$el.append(content);
+            $(content).find('li').each(function(key, value) {
+                if (!_.isEmpty(filter_mode)) {
+                    if (filter_mode === 'and') {
+                        if ($.inArray($(value).text(), filter_color_arr) !== -1) {
+                            filter_count += 1;
+                        }
+                    }
+                } else {
+                    if (filter_color_arr.length != 1) {
+                        $(filter_color_arr).each(function(key, label) {
+                            if ($.inArray($(value).text(), filter_color_arr) !== -1) {
+                                filter_count += 1;
+                            }
+                        });
+                    } else {
+                        if ($.inArray($(value).text(), filter_color_arr) !== -1) {
+                            filter_count += 1;
+                        }
+                    }
+                }
+            });
+
             content = '<ul class="unstyled  js-card-users hide">';
             this.model.users.each(function(user) {
                 content += '<li>' + user.get('username') + '</li>';
