@@ -475,3 +475,19 @@ UPDATE "settings" SET
 "label" = 'Flickr API Key',
 "order" = '2'
 WHERE "id" = '20';
+
+DO $$ 
+   BEGIN
+
+        BEGIN
+            ALTER TABLE "webhooks"
+            ADD "board_id" bigint NULL,
+            ADD "type" character varying(255) NOT NULL DEFAULT 'Default',
+            ADD "custom_fields" text NOT NULL DEFAULT '';
+            COMMENT ON COLUMN "webhooks"."type" IS 'Mattermost, Default';
+            COMMENT ON TABLE "webhooks" IS '';
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'board_id,type,custom_fields already exists in webhooks';
+        END; 
+  END;
+$$;   
