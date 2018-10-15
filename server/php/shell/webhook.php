@@ -30,8 +30,7 @@ if ($db_lnk) {
         $activities = pg_query_params($db_lnk, "SELECT * FROM activities_listing WHERE id > $1 AND card_id != $2 AND card_id IS NOT NULL ORDER BY id ASC", $qry_val_arr);
         $count = pg_num_rows($activities);
         if ($count) {
-            while ($activity = pg_fetch_assoc($activities)) {
-                //$activity_json = json_encode($activity);                
+            while ($activity = pg_fetch_assoc($activities)) {                             
                 $qry_val_arr = array(
                     true
                 );
@@ -42,9 +41,10 @@ if ($db_lnk) {
                     $mh = curl_multi_init();
                     $status = 1;
                     while ($row = pg_fetch_assoc($result)) {
-                        if (is_plugin_enabled('r_mattermost') && $row['type'] == 'Mattermost') {
-                             require_once $app_path . '/plugins/Mattermost/functions.php';
-                             $activity_json = checkMatterMostcontent($row, $activity, $_server_domain_url);
+                        if ($row['type'] != 'Default') {
+                            require_once $app_path . '/plugins/' . $row['type'] . '/functions.php';
+                            $function_name = 'postIn'.$row['type'];
+                            $activity_json = $function_name($row, $activity, $_server_domain_url);
                         } else {
                              $activity_json = json_encode($activity);
                         }                        
