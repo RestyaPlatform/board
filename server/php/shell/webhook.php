@@ -15,6 +15,7 @@
 $app_path = dirname(dirname(__FILE__));
 require_once $app_path . '/config.inc.php';
 require_once $app_path . '/libs/core.php';
+global $_server_domain_url;
 if ($db_lnk) {
     $qry_val_arr = array(
         'webhooks.last_processed_activity_id'
@@ -41,19 +42,15 @@ if ($db_lnk) {
                     $mh = curl_multi_init();
                     $status = 1;
                     while ($row = pg_fetch_assoc($result)) {
-                        if (is_plugin_enabled('r_matter_most') && $row['type'] == 'Mattermost' && $row['board_id'] != $activity['board_id']) {
-                             $status = 0;
-                             continue;
-                        }
-                        if (is_plugin_enabled('r_matter_most') && $row['type'] == 'Mattermost') {
-                            $activity_json = array();                           
-                            $activity_json['channel'] = $row['custom_fields'];
-                            $activity_json['username'] = isset($activity['username']) ? $activity['username']: '';
-                            $activity_json['text'] = $activity['comment'];
-                            $activity_json['icon_url'] = '';
-                            $activity_json = json_encode($activity_json);
+                        if (is_plugin_enabled('r_mattermost') && $row['type'] == 'Mattermost') {
+                             require_once $app_path . '/plugins/Mattermost/functions.php';
+                             $activity_json = checkMatterMostcontent($row, $activity, $_server_domain_url);
                         } else {
-                            $activity_json = json_encode($activity);
+                             $activity_json = json_encode($activity);
+                        }                        
+                        if (empty($activity_json)) {
+                            $status = 0;
+                            continue;
                         }
                         $ch = 'ch' . $i;
                         $$ch = curl_init();
