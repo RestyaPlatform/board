@@ -128,6 +128,7 @@
             fi
             echo "Installation successfully completed"
         fi
+        exit 1
     }
     main
     echo "If you're finding it difficult to install Restyaboard ElasticSearch Plugin from your end, we do also offer free installation support that you may consider by contact us at info@restya.com"
