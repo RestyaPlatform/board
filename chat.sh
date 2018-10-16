@@ -111,8 +111,8 @@
 		echo "0 * * * * $dir/server/php/plugins/Chat/shell/periodic_chat_email_notification.sh" >> CRON_DIR
 
 		echo "Installation successfully completed"	
+		exit 1
 	}
-	main
     echo "If you're finding it difficult to install Restyaboard Chat Plugin from your end, we do also offer free installation support that you may consider by contact us at info@restya.com"
 	exit 1
 } 2>&1 | tee -a chat.log
