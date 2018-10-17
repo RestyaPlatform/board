@@ -2619,7 +2619,7 @@ function convertBooleanValues($table, $row)
     }
     return $row;
 }
-function paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters)
+function paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters, $limit = PAGING_COUNT)
 {
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
     $c_result = pg_query_params($db_lnk, $c_sql, $pg_params);
@@ -2628,6 +2628,8 @@ function paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters)
     $page_count = PAGING_COUNT;
     if (!empty($limit) && $limit == 'all') {
         $page_count = $c_data->count;
+    } elseif (!empty($limit)) {
+        $page_count = $limit;
     }
     $start = ($page - 1) * $page_count;
     $total_page = !empty($page_count) ? ceil($c_data->count / $page_count) : 0;
