@@ -241,13 +241,15 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     if (is_plugin_enabled('r_groups')) {
                         $group_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM groups_users Where user_id = $1 ORDER BY id DESC) as d ';
                         $obj['groups'] = null;
-                        if ($group_result = pg_query_params($db_lnk, $group_sql, array($obj['id']))) {
+                        if ($group_result = pg_query_params($db_lnk, $group_sql, array(
+                            $obj['id']
+                        ))) {
                             while ($group = pg_fetch_row($group_result)) {
                                 $group = json_decode($group[0], true);
                                 $obj['groups'][] = $group;
                             }
-                        }      
-                    }             
+                        }
+                    }
                     $data['data'][] = $obj;
                 }
                 if (!empty($_metadata) && !empty($filter_count)) {
@@ -1939,19 +1941,19 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $plugin_url['Group'] = array(
             '/groups',
-            '/groups/?'        
+            '/groups/?'
         );
         $plugin_url['DrawIO'] = array(
             '/card_diagrams',
-            '/card_diagrams/?'        
+            '/card_diagrams/?'
         );
         $plugin_url['Wiki'] = array(
             '/pages',
-            '/pages/?'        
+            '/pages/?'
         );
         $plugin_url['CRM'] = array(
             '/contacts',
-            '/contacts/?'        
+            '/contacts/?'
         );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
@@ -3004,13 +3006,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     $groups_users = pg_query_params($db_lnk, 'SELECT user_id FROM groups_users WHERE group_id = $1 AND user_id != $2', $condition);
                     while ($groups_user = pg_fetch_assoc($groups_users)) {
-                    if (!empty($groups_user)) {
-                        $qry_val_arr = array(
-                            $response['id'],
-                            $groups_user['user_id']                            
-                        );
-                        pg_query_params($db_lnk, "INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, '1')", $qry_val_arr);
-                    }
+                        if (!empty($groups_user)) {
+                            $qry_val_arr = array(
+                                $response['id'],
+                                $groups_user['user_id']
+                            );
+                            pg_query_params($db_lnk, "INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, '1')", $qry_val_arr);
+                        }
                     }
                 }
                 if (!$is_import_board) {
@@ -5337,13 +5339,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     $groups_users = pg_query_params($db_lnk, 'SELECT user_id FROM groups_users WHERE group_id = $1 AND user_id != $2', $condition);
                     while ($groups_user = pg_fetch_assoc($groups_users)) {
-                    if (!empty($groups_user)) {
-                        $qry_val_arr = array(
-                            $row['id'],
-                            $groups_user['user_id']                            
-                        );
-                        pg_query_params($db_lnk, "INSERT INTO organizations_users (created, modified, organization_id , user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, '1')", $qry_val_arr);
-                    }
+                        if (!empty($groups_user)) {
+                            $qry_val_arr = array(
+                                $row['id'],
+                                $groups_user['user_id']
+                            );
+                            pg_query_params($db_lnk, "INSERT INTO organizations_users (created, modified, organization_id , user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, '1')", $qry_val_arr);
+                        }
                     }
                 }
             }
@@ -5620,13 +5622,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             '/groups_users'
         );
         $plugin_url['DrawIO'] = array(
-            '/card_diagrams'        
+            '/card_diagrams'
         );
         $plugin_url['Wiki'] = array(
-            '/pages'       
+            '/pages'
         );
         $plugin_url['CRM'] = array(
-            '/contacts'        
+            '/contacts'
         );
         $plugin_url['CardTemplate'] = array(
             '/boards/?/cards/?/card_template',
@@ -6485,13 +6487,13 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             '/groups/?'
         );
         $plugin_url['DrawIO'] = array(
-            '/card_diagrams/?'        
+            '/card_diagrams/?'
         );
         $plugin_url['Wiki'] = array(
-            '/pages/?'        
+            '/pages/?'
         );
         $plugin_url['CRM'] = array(
-            '/contacts/?'        
+            '/contacts/?'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -6919,13 +6921,13 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/groups/?/users/?'
         );
         $plugin_url['DrawIO'] = array(
-            '/card_diagrams/?'        
+            '/card_diagrams/?'
         );
         $plugin_url['Wiki'] = array(
-            '/pages/?'        
+            '/pages/?'
         );
         $plugin_url['CRM'] = array(
-            '/contacts/?'        
+            '/contacts/?'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -6951,7 +6953,8 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $passed_values['enabledPlugins'] = $enabledPlugins;
             }
             $plugin_return = call_user_func($plugin_key . '_r_delete', $passed_values);
-            echo json_encode($plugin_return); exit;
+            echo json_encode($plugin_return);
+            exit;
             break;
         }
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);

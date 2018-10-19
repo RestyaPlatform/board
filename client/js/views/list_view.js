@@ -1235,6 +1235,7 @@ App.ListView = Backbone.View.extend({
         e.preventDefault();
         $('.js-cancel-card-add').trigger('click');
         var target = $(e.target);
+        var self = this;
         var el = this.$el;
         var view_card = this.$('.js-card-add-form-' + this.model.id);
         el.find('.js-show-add-card-form').addClass('hide');
@@ -1258,6 +1259,11 @@ App.ListView = Backbone.View.extend({
             view_card.prepend(view.renderAdd().el).find('textarea').focus();
         }
         $('#js-card-listing-' + this.model.id).scrollTop($('#js-card-listing-' + this.model.id)[0].scrollHeight);
+        _(function() {
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $('body').trigger('addCardRendered', self.model.id, self.model);
+            }
+        }).defer();
         return false;
     },
     /**
