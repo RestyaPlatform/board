@@ -14,6 +14,8 @@
  */
 $app_path = dirname(dirname(__FILE__));
 require_once $app_path . '/config.inc.php';
+require_once $app_path . '/libs/core.php';
+global $_server_domain_url;
 if ($db_lnk) {
     $qry_val_arr = array(
         'webhooks.last_processed_activity_id'
@@ -29,7 +31,6 @@ if ($db_lnk) {
         $count = pg_num_rows($activities);
         if ($count) {
             while ($activity = pg_fetch_assoc($activities)) {
-                $activity_json = json_encode($activity);
                 $qry_val_arr = array(
                     true
                 );
@@ -38,7 +39,19 @@ if ($db_lnk) {
                 if ($count) {
                     $i = 1;
                     $mh = curl_multi_init();
+                    $status = 1;
                     while ($row = pg_fetch_assoc($result)) {
+                        if ($row['type'] != 'Default') {
+                            require_once $app_path . '/plugins/' . $row['type'] . '/functions.php';
+                            $function_name = 'postIn' . $row['type'];
+                            $activity_json = $function_name($row, $activity, $_server_domain_url);
+                        } else {
+                            $activity_json = json_encode($activity);
+                        }
+                        if (empty($activity_json)) {
+                            $status = 0;
+                            continue;
+                        }
                         $ch = 'ch' . $i;
                         $$ch = curl_init();
                         curl_setopt($$ch, CURLOPT_URL, $row['url']);
@@ -52,18 +65,20 @@ if ($db_lnk) {
                         curl_multi_add_handle($mh, $$ch);
                         $i++;
                     }
-                    do {
-                        $mrc = curl_multi_exec($mh, $active);
-                    } while ($mrc == CURLM_CALL_MULTI_PERFORM);
-                    do {
-                        curl_multi_exec($mh, $running);
-                        curl_multi_select($mh);
-                    } while ($running > 0);
-                    $j = 1;
-                    $ch = 'ch' . $j;
-                    while ($row = pg_fetch_assoc($result)) {
-                        curl_multi_remove_handle($mh, $$ch);
-                        $j++;
+                    if ($status) {
+                        do {
+                            $mrc = curl_multi_exec($mh, $active);
+                        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+                        do {
+                            curl_multi_exec($mh, $running);
+                            curl_multi_select($mh);
+                        } while ($running > 0);
+                        $j = 1;
+                        $ch = 'ch' . $j;
+                        while ($row = pg_fetch_assoc($result)) {
+                            curl_multi_remove_handle($mh, $$ch);
+                            $j++;
+                        }
                     }
                     $last_processed_activity_id = $activity['id'];
                     $qry_val_arr = array(

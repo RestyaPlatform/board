@@ -21,14 +21,14 @@
 		<ul class="list-unstyled list-inline text-muted clearfix"></ul>
 	</div>
 	<div class="row">     
-		<div class="pull-left">
+		<div class="pull-left js-list-<%- model.attributes.list_id %>-addCardForm">
 			<input type="submit" value="<%- i18next.t('Add') %>" class="btn btn-primary js-cardAddForm-btn">
 		</div>
 		<ul class="list-unstyled pull-right">
 			<li class="pull-left">
 				<a title="<%- i18next.t('Cancel') %>" href="#" class="btn btn-link js-cancel-card-add"><i class="icon-remove text-muted"></i></a>
 			</li>
-			<li class="pull-right dropdown inner-dropdown">
+			<li class="pull-right js-addcard-settings-response dropdown inner-dropdown">
 				<a title="<%- i18next.t('Options') %>" data-toggle="dropdown" class="btn btn-link btn-block dropdown-toggle js-show-card-action-list" href="#"><i class="icon-cog text-muted"></i></a>
 			</li>
 		</ul>
