@@ -33,6 +33,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         this.sortField = options.sortField;
         this.filter_count = options.filter_count;
         this.roles = options.roles;
+        this.overall_groups = [];
         this.sortDirection = options.sortDirection;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
@@ -50,13 +51,33 @@ App.UserIndexContainerView = Backbone.View.extend({
      *
      */
     render: function() {
+        var self = this;
         this.$el.html(this.template({
             filter_count: this.filter_count,
             roles: this.roles
         }));
+        if (!_.isUndefined(APPS) && APPS !== null) {
+            if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                if ($.inArray('r_groups', APPS.enabled_apps) !== -1) {
+                    $.ajax({
+                        url: api_url + 'groups.json?limit=10000&token=' + this.getToken(),
+                        cache: false,
+                        type: 'GET',
+                        success: function(response) {
+                            self.overall_groups = [];
+                            if (response.data) {
+                                self.overall_groups = response.data;
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
         if (!_.isUndefined(this.sortField)) {
             this.renderUserCollection();
         }
+
         this.showTooltip();
         return this;
     },
@@ -74,6 +95,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         this.model.sort();
         this.model.each(function(user) {
             user.roles = self.roles;
+            user.overall_groups = self.overall_groups;
             view.append(new App.UserIndex({
                 model: user
             }).el);
@@ -105,6 +127,7 @@ App.UserIndexContainerView = Backbone.View.extend({
                 if (users.length !== 0) {
                     users.each(function(user) {
                         user.roles = response.roles;
+                        user.overall_groups = _this.overall_groups;
                         $('.js-user-list').append(new App.UserIndex({
                             model: user
                         }).el);
@@ -138,6 +161,7 @@ App.UserIndexContainerView = Backbone.View.extend({
      */
     userSearch: function(e) {
         var _this = this;
+        console.log(this);
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.searchField = $('#user_search').val();
         var users = new App.UserCollection();
@@ -153,6 +177,7 @@ App.UserIndexContainerView = Backbone.View.extend({
                 if (users.length !== 0) {
                     users.each(function(user) {
                         user.roles = response.roles;
+                        user.overall_groups = _this.overall_groups;
                         $('.js-user-list').append(new App.UserIndex({
                             model: user
                         }).el);
@@ -184,7 +209,9 @@ App.UserIndexContainerView = Backbone.View.extend({
      *
      */
     sortUser: function(e) {
+
         var _this = this;
+        console.log(this);
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.sortField = (!_.isUndefined(e)) ? $(e.currentTarget).data('field') : _this.sortField;
         _this.sortDirection = (!_.isUndefined(e)) ? $(e.currentTarget).data('direction') : _this.sortDirection;
@@ -319,6 +346,16 @@ App.UserIndexContainerView = Backbone.View.extend({
                 $("#js-more-action").val('0');
                 return false;
             }
+        }
+    },
+
+    getToken: function() {
+        if ($.cookie('auth') !== undefined) {
+            var Auth = JSON.parse($.cookie('auth'));
+            api_token = Auth.access_token;
+            return api_token;
+        } else {
+            return false;
         }
     }
 });
