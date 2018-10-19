@@ -1372,6 +1372,7 @@ App.ListView = Backbone.View.extend({
                 silent: true
             });
             card.board_users = self.model.board_users;
+            card.board = self.model.board; 
             card.list = self.model;
             var view = new App.CardView({
                 tagName: 'div',
