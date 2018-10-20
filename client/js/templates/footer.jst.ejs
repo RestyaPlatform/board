@@ -178,7 +178,7 @@ if (_.isEmpty(role_links.where({
 									<% } %>
 									<% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user) && (!_.isEmpty(role_links.where({slug: "get_wiki"})))){ %>
 										<li class="hidden-xs org-btn">
-											<a title="<%- i18next.t('Wiki') %>" href="#/apps/r_wiki/view_wiki" class="btn btn-default js-view-wiki-menu">
+											<a title="<%- i18next.t('Wiki') %>" href="javascript:void(0);" class="btn btn-default js-view-wiki-menu">
 												<span>
 													<%- i18next.t("Wiki") %>
 												</span>
