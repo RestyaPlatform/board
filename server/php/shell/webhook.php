@@ -30,7 +30,7 @@ if ($db_lnk) {
         $activities = pg_query_params($db_lnk, "SELECT * FROM activities_listing WHERE id > $1 AND card_id != $2 AND card_id IS NOT NULL ORDER BY id ASC", $qry_val_arr);
         $count = pg_num_rows($activities);
         if ($count) {
-            while ($activity = pg_fetch_assoc($activities)) {                             
+            while ($activity = pg_fetch_assoc($activities)) {
                 $qry_val_arr = array(
                     true
                 );
@@ -43,11 +43,11 @@ if ($db_lnk) {
                     while ($row = pg_fetch_assoc($result)) {
                         if ($row['type'] != 'Default') {
                             require_once $app_path . '/plugins/' . $row['type'] . '/functions.php';
-                            $function_name = 'postIn'.$row['type'];
+                            $function_name = 'postIn' . $row['type'];
                             $activity_json = $function_name($row, $activity, $_server_domain_url);
                         } else {
-                             $activity_json = json_encode($activity);
-                        }                        
+                            $activity_json = json_encode($activity);
+                        }
                         if (empty($activity_json)) {
                             $status = 0;
                             continue;
