@@ -113,7 +113,7 @@
               <% if (!_.isUndefined(APPS) && APPS !== null ) {
                 if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
                 if ($.inArray('r_groups',APPS.enabled_apps) !== -1) { %>
-              <th rowspan="2" class="text-center">
+              <th rowspan="2" class="text-center" title="<%- i18next.t('Group Count') %>">
                 <%- i18next.t("Group Count") %>
               </th>
               <% }

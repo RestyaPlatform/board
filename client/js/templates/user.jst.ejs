@@ -136,12 +136,14 @@
 			<%}%>
 		</a>
 		<!-- js-admin-list-user-role -->
-		<ul class="dropdown-menu arrow arrow-right max-wid" role="menu">
-			<%_.each(user.overall_groups, function(group, group_key){%>
-			<li class="text-left"><a href="#" data-group_id="<%- group.id %>" data-user_id="<%-user.id%>" data-group_index="<%-group_key%>"
-				 class="js-group-member">
-					<%- group.name%>
-					<% var Exists = false, group_user_index; 
+		<% if (!_.isEmpty(user.overall_groups) ||  user.overall_groups.length > 0 ) { %>
+			<ul class="dropdown-menu arrow arrow-right max-wid" role="menu">
+					<% _.each(user.overall_groups, function(group, group_key){ %>
+						<li class="text-left">
+							<a href="#" data-group_id="<%- group.id %>" data-user_id="<%- user.id %>" data-group_index="<%- group_key %>"
+						class="js-group-member" title="<%- group.name %>">
+							<%- group.name %>
+							<% var Exists = false, group_user_index; 
 								_.each(group.groups_users, function(group_user, group_user_key){
 										if(group_user.user_id == user.id){
 											Exists = true;
@@ -150,11 +152,18 @@
 										}
 								});
 								%>
-					<% if(Exists === true){%><i class="icon-ok" data-group_user="<%-Exists%>"></i>
-					<%}%>
-				</a></li>
-			<%})%>
-		</ul>
+							<% if(Exists === true){ %>
+								<i class="icon-ok" data-group_user="<%-Exists%>"></i>
+							<% } %>
+							</a>
+						</li>
+					<% }); %>
+				</ul>
+			<% } else { %>
+				<div class="dropdown-menu arrow arrow-right max-wid" role="menu">
+					<strong class="alert-info"><%- i18next.t('No Groups available') %></strong>
+				</ul>
+			<% } %>
 	</div>
 </td>
 <% }
