@@ -139,10 +139,11 @@
 		<% if (!_.isEmpty(user.overall_groups) ||  user.overall_groups.length > 0 ) { %>
 			<ul class="dropdown-menu arrow arrow-right max-wid" role="menu">
 					<% _.each(user.overall_groups, function(group, group_key){ %>
-						<li class="text-left">
+						<li class="text-left js-group-member" data-group_id="<%- group.id %>" data-user_id="<%- user.id %>" data-group_index="<%- group_key %>"
+							>
 							<a href="#" data-group_id="<%- group.id %>" data-user_id="<%- user.id %>" data-group_index="<%- group_key %>"
 						class="js-group-member" title="<%- group.name %>">
-							<span class="htruncate-l3"><%- group.name %></span>
+							<span><%- group.name %></span>
 							<% var Exists = false, group_user_index; 
 								_.each(group.groups_users, function(group_user, group_user_key){
 										if(group_user.user_id == user.id){
@@ -153,7 +154,7 @@
 								});
 								%>
 							<% if(Exists === true){ %>
-								<i class="icon-ok" data-group_user="<%-Exists%>"></i>
+								<i class="icon-ok js-group-member-check" data-group_user="<%-Exists%>"></i>
 							<% } %>
 							</a>
 						</li>

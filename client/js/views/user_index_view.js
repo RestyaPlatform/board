@@ -85,11 +85,11 @@ App.UserIndex = Backbone.View.extend({
     AddremoveGroupuser: function(e) {
         e.preventDefault();
         var self = this;
-        var target = $(e.target);
-        var user_id = $(e.target).data('user_id');
-        var group_id = $(e.target).data('group_id');
-        var group_index = $(e.target).data('group_index');
-        var already_exists = $(e.target).children().data('group_user');
+        var target = $(e.currentTarget);
+        var user_id = $(target).data('user_id');
+        var group_id = $(target).data('group_id');
+        var group_index = $(target).data('group_index');
+        var already_exists = $(target).find('.js-group-member-check').data('group_user');
         var temp_group_count = $('.js-group-memeber-count-' + user_id).text();
         var group_user_index;
         if (already_exists) {
