@@ -31,7 +31,8 @@ App.UserIndex = Backbone.View.extend({
         'click .js-remove-user': 'removeUser',
         'click .js-all-user-activities': 'showUserActivities',
         'submit .js-admin-change-password': 'changePassword',
-        'click .js-user-view': 'gotoUserView'
+        'click .js-user-view': 'gotoUserView',
+        'click .js-group-member': 'AddremoveGroupuser'
     },
     /**
      * Constructor
@@ -80,6 +81,71 @@ App.UserIndex = Backbone.View.extend({
             trigger: true,
             replace: true
         });
+    },
+    AddremoveGroupuser: function(e) {
+        e.preventDefault();
+        var self = this;
+        var target = $(e.target);
+        var user_id = $(e.target).data('user_id');
+        var group_id = $(e.target).data('group_id');
+        var group_index = $(e.target).data('group_index');
+        var already_exists = $(e.target).children().data('group_user');
+        var temp_group_count = $('.js-group-memeber-count-' + user_id).text();
+        var group_user_index;
+        if (already_exists) {
+            $.ajax({
+                url: api_url + '/v1/groups/' + group_id + '/users/' + user_id + '.json?token=' + this.getToken(),
+                type: 'DELETE',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function(response) {
+                    if (!_.isEmpty(self.model.overall_groups[group_index].groups_users) && !_.isUndefined(self.model.overall_groups[group_index].groups_users)) {
+                        _.each(self.model.overall_groups[group_index].groups_users, function(group_user, group_user_key) {
+                            if (group_user.user_id === user_id) {
+                                group_user_index = group_user_key;
+                            }
+                        });
+                        self.model.overall_groups[group_index].groups_users.splice(group_user_index, 1);
+                    }
+                    temp_group_count = parseInt(temp_group_count) - 1;
+                    self.flash('success', i18next.t('User removed from the group successfully.'));
+                    self.render();
+                    _(function() {
+                        $(target).parents('.js-Group-content-dropdown').addClass('open');
+                    }).defer();
+                    $('.js-group-memeber-count-' + user_id).text(temp_group_count);
+                }
+            });
+        } else {
+            var post_data = {
+                'group_id': group_id,
+                'user_id': user_id,
+            };
+            $.ajax({
+                url: api_url + 'groups_users.json?token=' + this.getToken(),
+                type: 'POST',
+                data: JSON.stringify(post_data),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function(response) {
+                    if (!_.isUndefined(self.model.overall_groups) && !_.isUndefined(self.model.overall_groups[group_index].groups_users) && !_.isEmpty(self.model.overall_groups[group_index].groups_users)) {
+                        self.model.overall_groups[group_index].groups_users.push({
+                            'user_id': user_id
+                        });
+                    } else {
+                        self.model.overall_groups[group_index].groups_users = [];
+                        self.model.overall_groups[group_index].groups_users.push({
+                            'user_id': user_id
+                        });
+                    }
+                    temp_group_count = parseInt(temp_group_count) + 1;
+                    self.flash('success', i18next.t('User added to group successfully.'));
+                    self.render();
+                    $('.js-group-memeber-count-' + user_id).text(temp_group_count);
+                }
+            });
+            return false;
+        }
     },
     /**
      * deleteUser()
@@ -228,5 +294,14 @@ App.UserIndex = Backbone.View.extend({
         });
         modalView.show();
         return false;
+    },
+    getToken: function() {
+        if ($.cookie('auth') !== undefined) {
+            var Auth = JSON.parse($.cookie('auth'));
+            api_token = Auth.access_token;
+            return api_token;
+        } else {
+            return false;
+        }
     }
 });
