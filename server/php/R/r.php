@@ -1890,7 +1890,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/webhooks':
         $response['webhooks'] = array();
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM webhooks w ORDER BY id ASC) as d ';
+        $filter_condition = '';
+        if (!empty($r_resource_filters['board_id'])) {
+            $board_id = $r_resource_filters['board_id'];
+            $filter_condition = "WHERE board_id = $board_id";
+        } 
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM webhooks w  '.$filter_condition.' ORDER BY id ASC) as d ';
         $c_sql = 'SELECT COUNT(*) FROM webhooks w';
         if (!empty($c_sql)) {
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
