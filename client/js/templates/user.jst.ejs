@@ -142,7 +142,7 @@
 						<li class="text-left">
 							<a href="#" data-group_id="<%- group.id %>" data-user_id="<%- user.id %>" data-group_index="<%- group_key %>"
 						class="js-group-member" title="<%- group.name %>">
-							<%- group.name %>
+							<span class="htruncate-l3"><%- group.name %></span>
 							<% var Exists = false, group_user_index; 
 								_.each(group.groups_users, function(group_user, group_user_key){
 										if(group_user.user_id == user.id){
