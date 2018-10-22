@@ -2860,12 +2860,11 @@ App.ModalCardView = Backbone.View.extend({
      */
     hideEditCommentForm: function() {
         var activity_id = this.$el.find('.js-hide-edit-comment-form').data('activity-id');
-        var comment = this.$el.find('.js-hide-edit-comment-form').closest('form').find('.js-inputComment').val();
         var current_card = this.model.activities.get({
             id: activity_id
         });
         parse_date(current_card.attributes.created, authuser, 'js-timeago-' + current_card.attributes.id);
-        var html_content = '<div class="panel no-mar"><div class="panel-body github-markdown">' + makeLink(this.converter.makeHtml(comment), current_card.attributes.board_id) + '</div></div>';
+        var html_content = '<div class="panel no-mar"><div class="panel-body github-markdown">' + makeLink(this.converter.makeHtml(current_card.attributes.comment), current_card.attributes.board_id) + '</div></div>';
         this.$el.find('.js-hide-edit-comment-form').parents('div.js-activity-' + activity_id).html(html_content);
         $('.js-acticity-action-' + activity_id).removeClass('hide');
         $('.js-timeago-' + activity_id).removeClass('hide');
