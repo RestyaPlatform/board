@@ -136,7 +136,7 @@
 			<%}%>
 		</a>
 		<!-- js-admin-list-user-role -->
-		<% if (!_.isEmpty(user.overall_groups) ||  user.overall_groups.length > 0 ) { %>
+		<% if (!_.isEmpty(user.overall_groups) && !_.isUndefined(user.overall_groups)) { %>
 			<ul class="dropdown-menu arrow arrow-right max-wid" role="menu">
 					<% _.each(user.overall_groups, function(group, group_key){ %>
 						<li class="text-left">

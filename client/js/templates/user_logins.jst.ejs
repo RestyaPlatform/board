@@ -5,9 +5,9 @@
 				<div class="clearfix"> 
 					<a  title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)" class="small-user pull-left show" href="#/user/<%- user.attributes.id%>">
 						<% if(!_.isEmpty(user.attributes.profile_picture_path)){ 
-							var profile_picture_path = user.showImage('User', user.attributes.id, 'small_thumb' );
+							var profile_picture_path = user.showImage('User', user.attributes.user_id, 'small_thumb' );
 						%>
-							<img class="avatar-sm" src="<%- profile_picture_path%>" alt="[Images: <%- user.attributes.username%>]" title="<%- user.attributes.full_name %> (<%- user.attributes.username%>)" />
+							<img class="avatar-sm" src="<%- profile_picture_path %>" alt="[Images: <%- user.attributes.username%>]" title="<%- user.attributes.full_name %> (<%- user.attributes.username%>)" />
 							<% }else{ %>
 									<i class="avatar avatar-color-194 img-rounded avatar-sm" title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)"><%- user.attributes.initials%></i>
 							<%  } %> 
