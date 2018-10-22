@@ -2107,7 +2107,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 _.each(show_card_list.replace(/#js-card-/g, '').split(','), function(card_id) {
                     gantt_card_ids.push(parseInt(card_id));
                 });
-                this.ganttView(gantt_card_ids, true);
+                /* this.ganttView(gantt_card_ids, true); */
             } else {
                 $(show_card_list).show();
                 $('.js-show-modal-card-view' + hide_card_list).hide();
@@ -2116,7 +2116,7 @@ App.BoardHeaderView = Backbone.View.extend({
             $('.js-show-modal-card-view').hide();
         } else if (filter == 'gantt' && _.isEmpty(filter_label_arr) && _.isEmpty(filter_user_arr) && _.isEmpty(filter_due_arr) && _.isEmpty(filter_color_arr)) {
             gantt_card_ids = [];
-            this.ganttView(gantt_card_ids, false);
+            /* this.ganttView(gantt_card_ids, false); */
         }
         if (filter_query) {
             if ($('.js-clear-all').hasClass('text-muted')) {
