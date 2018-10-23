@@ -1894,8 +1894,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         if (!empty($r_resource_filters['board_id'])) {
             $board_id = $r_resource_filters['board_id'];
             $filter_condition = "WHERE board_id = $board_id";
-        } 
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM webhooks w  '.$filter_condition.' ORDER BY id ASC) as d ';
+        }
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM webhooks w  ' . $filter_condition . ' ORDER BY id ASC) as d ';
         $c_sql = 'SELECT COUNT(*) FROM webhooks w';
         if (!empty($c_sql)) {
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
@@ -3016,7 +3016,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $response['id'],
                                 $groups_user['user_id']
                             );
-                            pg_query_params($db_lnk, "INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, '1')", $qry_val_arr);
+                            pg_query_params($db_lnk, "INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, '2')", $qry_val_arr);
                         }
                     }
                 }
@@ -5349,7 +5349,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $row['id'],
                                 $groups_user['user_id']
                             );
-                            pg_query_params($db_lnk, "INSERT INTO organizations_users (created, modified, organization_id , user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, '1')", $qry_val_arr);
+                            pg_query_params($db_lnk, "INSERT INTO organizations_users (created, modified, organization_id , user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, '2')", $qry_val_arr);
                         }
                     }
                 }
