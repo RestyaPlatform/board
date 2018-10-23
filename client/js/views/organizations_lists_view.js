@@ -61,9 +61,16 @@ App.OrganizationsListsView = Backbone.View.extend({
             this.model.setSortField(this.sortField, this.sortDirection);
             this.model.sort();
             this.model.each(function(organization) {
-                view.append(new App.OrganizationsListView({
-                    model: organization
-                }).el);
+                organization.organizations_users.add(organization.attributes.organizations_users);
+                var organization_user;
+                organization_user = organization.organizations_users.findWhere({
+                    user_id: parseInt(authuser.user.id)
+                });
+                if (parseInt(authuser.user.role_id) === 1 || (!_.isUndefined(organization_user) && !_.isEmpty(organization_user))) {
+                    view.append(new App.OrganizationsListView({
+                        model: organization
+                    }).el);
+                }
             });
         } else {
             view.html(new App.OrganizationsListView({
