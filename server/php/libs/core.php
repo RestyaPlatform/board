@@ -431,7 +431,7 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
     $role = 3; // Guest role id
     if (is_plugin_enabled('r_support_app')) {
         require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'SupportApp' . DIRECTORY_SEPARATOR . 'functions.php';
-        if (checkSupportAppEnabled($r_resource_vars)) {
+        if (checkSupportAppEnabled($r_resource_vars, $r_request_method, $r_resource_cmd)) {
             return true;
         }
     }
@@ -505,8 +505,8 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
             $role,
             $r_request_method,
             $r_resource_cmd
-        );
-        $board_allowed_link = executeQuery('SELECT * FROM acl_board_links_listing WHERE board_user_role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);
+        ); 
+        $board_allowed_link = executeQuery('SELECT * FROM acl_board_links_listing WHERE board_user_role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);        
         if (empty($board_allowed_link)) {
             return false;
         }
@@ -530,6 +530,25 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
             return false;
         }
     } else {
+        if (!empty($r_resource_vars['boards']) && (in_array($r_resource_cmd, $board_exception_arr)) && $r_request_method === 'DELETE') {
+            $qry_val_arr = array(
+                $r_resource_vars['boards'],
+                $authUser['id']
+            );
+            $board_user_role_id = executeQuery('SELECT board_user_role_id FROM boards_users WHERE board_id = $1 AND user_id = $2', $qry_val_arr);
+            $role = $board_user_role_id['board_user_role_id'];
+            $qry_val_arr = array(
+                $role,
+                $r_request_method,
+                $r_resource_cmd
+            );
+            $board_allowed_link = executeQuery('SELECT * FROM acl_board_links_listing WHERE board_user_role_id = $1 AND method = $2 AND url = $3', $qry_val_arr);           
+            if (!empty($board_allowed_link)) {
+                return true;
+            } else {
+                 return false;
+            }
+        }
         if (!empty($r_request_method) && ($r_request_method === 'POST') && !empty($r_resource_cmd) && ($r_resource_cmd === '/settings')) {
             $r_request_method = 'GET';
         }
