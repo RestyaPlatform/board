@@ -334,11 +334,18 @@ App.OrganizationsView = Backbone.View.extend({
                             is_starred: 1
                         });
                     }
-                    view = new App.OrganizationBoardView({
-                        model: board,
-                        stared: stared
+                    var board_user;
+                    board_user = self.model.board_users.findWhere({
+                        user_id: parseInt(authuser.user.id),
+                        board_id: parseInt(board.attributes.id)
                     });
-                    view_board.append(view.el);
+                    if (parseInt(authuser.user.role_id) === 1 || (!_.isUndefined(board_user) && !_.isEmpty(board_user))) {
+                        view = new App.OrganizationBoardView({
+                            model: board,
+                            stared: stared
+                        });
+                        view_board.append(view.el);
+                    }
                 }
             });
             view = new App.OrganizationBoardView({
