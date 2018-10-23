@@ -261,6 +261,9 @@
 				<div class="list-group-item-text clearfix js-card_dependency-listing-<%- card.attributes.id %>">
 				</div>
 				<div id="js-card-checklists"></div>
+					<div class="list-group-item-text clearfix js-card-drawio-section">
+						<ul class="list-unstyled clearfix attachment-list" id="js-card-drawio-list"></ul>
+					</div>
 				<% if(!_.isEmpty(card.attachments)){ %>
 				<div class="list-group-item-heading clearfix js-modalCard-attachments-<%- card.id %>">
 				  <h3 class="pull-left"> <span class="pull-left"><i class="icon-paper-clip lead"></i></span><%- i18next.t('Attachment') %></h3>
