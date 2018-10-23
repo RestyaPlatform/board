@@ -514,3 +514,15 @@ DO $$
         END; 
   END;
 $$;   
+
+DO $$ 
+   BEGIN
+        BEGIN
+            ALTER TABLE "webhooks"
+            ADD "activities_enabled" text NOT NULL DEFAULT '';
+            COMMENT ON TABLE "webhooks" IS '';
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'activities_enabled already exists in webhooks';
+        END; 
+  END;
+$$; 
