@@ -37,7 +37,7 @@ App.AdminUserIndexView = Backbone.View.extend({
             if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
                 if ($.inArray('r_groups', APPS.enabled_apps) !== -1) {
                     $.ajax({
-                        url: api_url + 'groups.json?limit=10000&token=' + this.getToken(),
+                        url: api_url + 'groups.json?limit=10000&token=' + this.getToken() + '&sort=name&direction=asc',
                         cache: false,
                         type: 'GET',
                         success: function(response) {
