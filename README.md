@@ -4,7 +4,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/RestyaPlatform/board/badge.svg)](https://snyk.io/test/github/RestyaPlatform/board)
 
 ### What is Restyaboard?
-Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [Restya platform](http://restya.com/) with dual License ([OSL 3.0](LICENSE.txt) & [Commercial License](http://restya.com/contact)).
+Trello like kanban board. Tasks, to-dos, chat, etc., [Restyaboard](http://restya.com/board/) is based on [Restya platform](http://restya.com/) with dual License ([OSL 3.0](LICENSE.txt) & [Commercial License](http://restya.com/contact)).
 
 Whether you’re creating a personal todo list, planning your holidays with some friends, or working in a team on your next revolutionary concept, Restyaboard is an simple and effective tool to keep your tasks organized. The boards of restyaboard will give you a visual overview of the current state of your projects, and make you productive by allowing you to focus on the few items that matter the most.
 
