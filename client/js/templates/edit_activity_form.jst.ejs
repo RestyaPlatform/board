@@ -15,7 +15,7 @@
 <div class="row">
 	<div class="col-sm-7">
 		<div class="js-new-comment clearfix btn-block navbar-btn no-mar">
-<div class="radio pull-right btn-block no-mar">
+<span class="radio pull-right btn-block no-mar">
 	<ul class="list-unstyled clearfix emoji-list no-top-mar">
 		<li class="pull-left radio-inline">
 			<div class="clearfix dropdown js-show-emoji-list-response"> <a class="js-show-emoji-list show dropdown-toggle btn-link btn-xs btn-block" role="button" data-toggle="dropdown" title="<%- i18next.t('Add Emoji') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Add Emoji') %></span> </a>
@@ -40,6 +40,7 @@
 			  </div>
 			</li>
 		<% } %>
+		<li class="pull-left radio radio-inline js-modal-card-wiki-edit" data-activity-id="<%- activity.attributes.id%>"></li>
 		<li class="dropdown pull-left radio-inline radio">
 		  <div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block js-show-members" role="button" data-toggle="dropdown" title="<%- i18next.t('Mention a member') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Mention a member') %></span> </a>
 			<ul class="dropdown-menu arrow col-xs-3">

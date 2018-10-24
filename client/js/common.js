@@ -141,6 +141,14 @@ function checkKeycode(keycode, c) {
 
 function makeLink(text, board_id) {
     text = text.replace(/#(\d+)/g, '<a class="js-open-card-view" data-card_id="$1" href="#/board/' + board_id + '/card/$1">#$1</a>');
+    if (!_.isUndefined(APPS) && APPS !== null) {
+        if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+            if ($.inArray('r_wiki', APPS.enabled_apps) !== -1) {
+                text = text.replace(/%(\d+)/g, '<a class="js-open-wiki-view" target="_blank" data-card_id="$1" href="#/apps/r_wiki/pages?id=$1">%$1</a>');
+            }
+        }
+    }
+
     text = text.replace(/(?!\b)(@\w+\b)/g, '<span class="atMention">$1</span>');
     return text;
 }
