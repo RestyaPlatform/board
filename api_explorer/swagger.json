@@ -17148,6 +17148,380 @@
                     }
                 }
             }
+        },
+        "/v1/salesforce.json": {
+            "get": {
+                "tags": [
+                    "salesforce"
+                ],
+                "summary": "Add a new salesforce",
+                "description": "Created salesforce",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "board_id": {
+                                    "type": "string"
+                                },
+                                "list_id": {
+                                    "type": "string"
+                                },
+                                "card_id": {
+                                    "type": "string"
+                                },
+                                "foreign_id": {
+                                    "type": "string"
+                                },
+                                "class": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "salesforce"
+                ],
+                "summary": "Add a new salesforce",
+                "description": "Created salesforce",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Created comment object",
+                        "required": true,
+                        "schema": {
+                            "properties": { 
+                                "board_id": {
+                                    "type": "integer"
+                                },
+                                "list_id": {
+                                    "type": "integer"
+                                },
+                                "email": {
+                                    "type": "integer"
+                                },
+                                "card_id": {
+                                    "type": "integer"
+                                },
+                                "foreign_id": {
+                                    "type": "integer"
+                                },
+                                "class": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "board_id": {
+                                    "type": "string"
+                                },
+                                "list_id": {
+                                    "type": "string"
+                                },
+                                "card_id": {
+                                    "type": "string"
+                                },
+                                "foreign_id": {
+                                    "type": "string"
+                                },
+                                "class": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "/v1/salesforce/{salesforceId}.json": {            
+            "get": {
+                "tags": [
+                    "salesforce"
+                ],
+                "summary": "Put salesforce",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "salesforceId",
+                        "in": "path",
+                        "description": "ID of card that needs to be fetched",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                               "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "board_id": {
+                                    "type": "string"
+                                },
+                                "list_id": {
+                                    "type": "string"
+                                },
+                                "card_id": {
+                                    "type": "string"
+                                },
+                                "foreign_id": {
+                                    "type": "string"
+                                },
+                                "class": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "salesforce"
+                ],
+                "summary": "Put salesforce",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "salesforceId",
+                        "in": "path",
+                        "description": "ID of salesforce that needs to be fetched",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Created comment object",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "board_id": {
+                                    "type": "integer"
+                                },
+                                "list_id": {
+                                    "type": "integer"
+                                },
+                                "email": {
+                                    "type": "integer"
+                                },
+                                "card_id": {
+                                    "type": "integer"
+                                },
+                                "foreign_id": {
+                                    "type": "integer"
+                                },
+                                "class": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "board_id": {
+                                    "type": "string"
+                                },
+                                "list_id": {
+                                    "type": "string"
+                                },
+                                "card_id": {
+                                    "type": "string"
+                                },
+                                "foreign_id": {
+                                    "type": "string"
+                                },
+                                "class": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "salesforce"
+                ],
+                "summary": "delete salesforce",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "salesforceId",
+                        "in": "path",
+                        "description": "ID of salesforce that needs to be fetched",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "created": {
+                                    "type": "string"
+                                },
+                                "modified": {
+                                    "type": "string"
+                                },
+                                "board_id": {
+                                    "type": "string"
+                                },
+                                "list_id": {
+                                    "type": "string"
+                                },
+                                "card_id": {
+                                    "type": "string"
+                                },
+                                "foreign_id": {
+                                    "type": "string"
+                                },
+                                "class": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
         }
     }
 }
