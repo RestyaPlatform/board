@@ -1960,6 +1960,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/contacts',
             '/contacts/?'
         );
+        $plugin_url['Salesforce'] = array(
+            '/salesforce',
+            '/salesforce/?',
+            '/salesforce/search',
+            '/salesforce/proxy'
+        );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
             '/custom_fields/?',
@@ -5635,6 +5641,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $plugin_url['CRM'] = array(
             '/contacts'
         );
+        $plugin_url['Salesforce'] = array(
+            '/salesforce'
+        );
         $plugin_url['CardTemplate'] = array(
             '/boards/?/cards/?/card_template',
             '/boards/?/card_templates/?'
@@ -6500,6 +6509,9 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $plugin_url['CRM'] = array(
             '/contacts/?'
         );
+        $plugin_url['Salesforce'] = array(
+            '/salesforce/?'
+        );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
                 $pluginToBePassed = $plugin_key;
@@ -6933,6 +6945,9 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $plugin_url['CRM'] = array(
             '/contacts/?'
+        );
+        $plugin_url['Salesforce'] = array(
+            '/salesforce/?'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
