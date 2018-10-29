@@ -224,7 +224,11 @@
 				if [[ $version < "v0.6.5" ]];
 				then
 					upgrade+=("upgrade-0.6.4-0.6.5")
-				fi				
+				fi	
+				if [[ $version < "v0.6.6" ]];
+				then
+					upgrade+=("upgrade-0.6.5-0.6.6")
+				fi			
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
 				do
