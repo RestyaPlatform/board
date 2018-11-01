@@ -9,7 +9,7 @@ require_once 'libs' . DIRECTORY_SEPARATOR . 'core.php';
 require_once 'libs' . DIRECTORY_SEPARATOR . 'vendors' . DIRECTORY_SEPARATOR . 'OAuth2' . DIRECTORY_SEPARATOR . 'Autoloader.php';
 function main()
 {
-    global $r_debug, $authUser, $token, $localAccessIps, $db_lnk, $token_exception_url, $exception_url, $scope_exception_url, $post_exception_url, $put_exception_url, $exception_before_token, $exception_url, $admin_access_url, $put_admin_access_url, $_server_domain_url;
+    global $r_debug, $authUser, $token, $localAccessIps, $db_lnk, $token_exception_url, $exception_url, $scope_exception_url, $post_exception_url, $put_exception_url, $exception_before_token, $exception_url, $admin_access_url, $put_admin_access_url, $_server_domain_url, $locales;
     if (PHP_SAPI == 'cli') { // if command line mode...
         if ($_SERVER['argc'] < 2) {
             echo 'Usage: php ' . __FILE__ . ' <relative url>' . "\n";
@@ -46,7 +46,7 @@ function main()
         if (!defined('STDIN') && !file_exists(CLIENT_INFORMATION) && !empty($_server_domain_url)) {
             doPost('http://restya.com/clients', array(
                 'app' => 'board',
-                'ver' => '0.6.5',
+                'ver' => '0.6.6',
                 'url' => $_server_domain_url
             ));
             $fh = fopen(CLIENT_INFORMATION, 'a');
@@ -54,6 +54,7 @@ function main()
             fwrite($fh, '$_server_domain_url = \'' . $_server_domain_url . '\';');
             fclose($fh);
         }
+        $current_locale = DEFAULT_LANGUAGE;
         if ($r_resource_cmd != '/users/login') {
             if (!empty($_GET['token'])) {
                 $conditions = array(
@@ -85,7 +86,14 @@ function main()
                     $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $qry_val_arr);
                 }
                 $authUser = array_merge($role_links, $user);
+                if (!empty($user['language'])) {
+                    $current_locale = $user['language'];
+                }
             }
+        }
+        if (!empty($current_locale) && file_exists(APP_PATH . 'client' . DIRECTORY_SEPARATOR . 'locales' . DIRECTORY_SEPARATOR . $current_locale . DIRECTORY_SEPARATOR . 'translation.json')) {
+            $locale = file_get_contents(APP_PATH . 'client' . DIRECTORY_SEPARATOR . 'locales' . DIRECTORY_SEPARATOR . $current_locale . DIRECTORY_SEPARATOR . 'translation.json');
+            $locales = json_decode($locale, true);
         }
         $r_resource_vars = array();
         if (preg_match_all('/([^\/]+)\/(\d+)/', $_url_parts_with_ext[0], $matches)) {

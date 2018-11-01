@@ -16,8 +16,8 @@ session_start();
 require_once 'config.inc.php';
 require_once 'libs/core.php';
 require_once 'libs/vendors/OAuth2/Autoloader.php';
-if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
-    include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
+if (file_exists(SITE_URL_FOR_SHELL)) {
+    include_once SITE_URL_FOR_SHELL;
 }
 OAuth2\Autoloader::register();
 $oauth_config = array(
@@ -121,13 +121,15 @@ if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['author
 					<div class="panel-body well-lg">
 						<form class="form-horizontal clearfix col-xs-12" method="post" role="form" name="UserLoginForm" id="UserLoginForm">
 							<div class="form-group">
-							  <label for="inputEmail" class="sr-only control-label">Email or Username</label>
+							  <label for="inputEmail" class="sr-only control-label"><?php
+    echo __l('Email or Username') ?></label>
 							  <input type="text" placeholder="<?php
     echo $loginPlaceholder; ?>" class="form-control authorize_ldap" id="inputEmail" name="email"  value="<?php
     echo !empty($_POST['email']) ? $_POST['email'] : (!empty($_GET['u']) ? $_GET['u'] : ''); ?>" title="" required/>
 							</div>
 							<div class="form-group">
-							  <label for="inputPassword" class="sr-only control-label">Password</label>
+							  <label for="inputPassword" class="sr-only control-label"><?php
+    echo __l('Password') ?></label>
 							  <input type="password" placeholder="Password" class="form-control" id="inputPassword" name="password" title="Password" required/>
 							</div>
 							<div class="form-group">
@@ -137,7 +139,8 @@ if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['author
 							<?php
     if (!empty($error_msg) && $error_msg != 1) {
 ?>
-								<div><script>flashMesssage('danger', 'Sorry, login failed. Either your username or password are incorrect.');</script></div>
+								<div><script>flashMesssage('danger', <?php
+        echo __l('Sorry, login failed. Either your username or password are incorrect.') ?>);</script></div>
 							<?php
     } ?>
 						</form>
@@ -158,8 +161,8 @@ if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['author
         echo $_server_domain_url . '/img/logo.png'; ?>"></a></div>
 				<div class="well">
 				  <div class="text-center">
-					<div class="h2 list-group-item-heading"> Let <strong><?php
-        echo $oauth_client['client_name']; ?> application </strong> use your account?</div>
+					<div class="h2 list-group-item-heading"> <?php
+        echo sprintf(__l('Let %s use your account?') , '<strong>' . $oauth_client['client_name'] . ' application</strong> '); ?></div>
 					<form method="post">
 					<ul class="list-inline h2">
 					  <li><input type="submit" value="Allow" name="authorized" class="btn btn-primary btn-lg" title="Allow" /></li>
@@ -168,20 +171,26 @@ if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['author
 					</form>
 				  </div>
 				  <hr>
-				  <p>You are logged in as <strong><?php
-        echo $user['full_name'] . ' (' . $user['username'] . ')'; ?></strong> The app will be able to use your account <strong> until you disable it.</strong></p>
+				  <p><?php
+        echo sprintf(__l('You are logged in as %s The app will be able to use your account until you disable it.') , '<strong>' . $user['full_name'] . ' (' . $user['username'] . ')</strong>') ?></p>
 				  <hr>
-				  <div class="clearfix"> <strong>The app will be able to:</strong>
+				  <div class="clearfix"> <strong><?php
+        echo __l('The app will be able to') ?>:</strong>
 					<ul>
-					  <li> Read all of your boards and organizations </li>
-					  <li>Create and update cards, lists and boards </li>
-					  <li>Make comments for you </li>
-					  <li>Read your email address </li>
+					  <li><?php
+        echo __l(' Read all of your boards and organizations') ?></li>
+					  <li><?php
+        echo __l('Create and update cards, lists and boards ') ?></li>
+					  <li><?php
+        echo __l('Make comments for you ') ?></li>
+					  <li><?php
+        echo __l('Read your email address') ?></li>
 					</ul>
-					<strong>It won't be able to:</strong>
+					<strong><?php
+        echo __l("It won't be able to") ?>:</strong>
 					<ul>
-					  <li>See your <?php
-        echo SITE_NAME; ?> password </li>
+					  <li><?php
+        echo sprintf(__l('See your %s password') , SITE_NAME) ?></li>
 					</ul>
 				  </div>
 				</div>

@@ -59,6 +59,7 @@ App.BoardSimpleView = Backbone.View.extend({
      *
      */
     render: function() {
+        var self = this;
         this.$el.html(this.template({
             board: this.model,
             message: this.message,
@@ -88,9 +89,8 @@ App.BoardSimpleView = Backbone.View.extend({
                     }
                 }
             });
-            var _this = this;
             _(function() {
-                _this.$el.find('.js-chart').html('').drawDoughnutChart(data);
+                self.$el.find('.js-chart-' + self.model.id).html('').drawDoughnutChart(data);
             }).defer();
         }
         this.showTooltip();
@@ -122,6 +122,7 @@ App.BoardSimpleView = Backbone.View.extend({
                 data.page_mode = 1;
                 if (organization_id) {
                     data.organization_id = organization_id;
+                    data.page_mode = 2;
                 }
                 $('.js-show-boards-list-simple-response', parent).html(new App.BoardAddView({
                     model: data
@@ -238,8 +239,7 @@ App.BoardSimpleView = Backbone.View.extend({
      *
      */
     closePopup: function(e) {
-        var el = this.$el;
-        var target = el.find(e.target);
+        var target = $(e.currentTarget);
         target.parents('.js-show-add-boards-list-simple').find('.js-show-add-boards-simple').removeClass('hide');
         target.parents('.js-show-add-boards-list-simple').find('.js-show-boards-list-simple-response').html('');
         return false;

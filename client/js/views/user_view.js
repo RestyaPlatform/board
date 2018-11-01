@@ -24,6 +24,8 @@ App.UserView = Backbone.View.extend({
     events: {
         'submit form.js-user-profile-edit': 'userProfileEdit',
         'click .js-user-cards': 'userCards',
+        'click .js-membered-cards': 'userCards',
+        'click .js-userCreated-cards': 'userCreatedCards',
         'click #js-user-activites-load-more': 'loadActivities',
         'click .js-remove-image': 'removeImage',
         'click .js-use-uploaded-avatar': 'computerOpenUserProfile',
@@ -311,14 +313,41 @@ App.UserView = Backbone.View.extend({
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
                     var Auth = JSON.parse($.cookie('auth'));
-                    Auth.user.is_google_authenticator_enabled = response.activity.is_google_authenticator_enabled;
-                    Auth.user.default_desktop_notification = response.activity.default_desktop_notification;
-                    Auth.user.is_list_notifications_enabled = response.activity.is_list_notifications_enabled;
-                    Auth.user.is_card_notifications_enabled = response.activity.is_card_notifications_enabled;
-                    Auth.user.is_card_members_notifications_enabled = response.activity.is_card_members_notifications_enabled;
-                    Auth.user.is_card_labels_notifications_enabled = response.activity.is_card_labels_notifications_enabled;
-                    Auth.user.is_card_checklists_notifications_enabled = response.activity.is_card_checklists_notifications_enabled;
-                    Auth.user.is_card_attachments_notifications_enabled = response.activity.is_card_attachments_notifications_enabled;
+                    if (!_.isUndefined(response.activity.default_desktop_notification) && !_.isEmpty(response.activity.default_desktop_notification)) {
+                        Auth.user.default_desktop_notification = response.activity.default_desktop_notification;
+                    } else {
+                        Auth.user.default_desktop_notification = data.default_desktop_notification;
+                    }
+                    if (!_.isUndefined(response.activity.is_list_notifications_enabled) && !_.isEmpty(response.activity.is_list_notifications_enabled)) {
+                        Auth.user.is_list_notifications_enabled = response.activity.is_list_notifications_enabled;
+                    } else {
+                        Auth.user.is_list_notifications_enabled = data.is_list_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_notifications_enabled) && !_.isEmpty(response.activity.is_card_notifications_enabled)) {
+                        Auth.user.is_card_notifications_enabled = response.activity.is_card_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_notifications_enabled = data.is_card_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_members_notifications_enabled) && !_.isEmpty(response.activity.is_card_members_notifications_enabled)) {
+                        Auth.user.is_card_members_notifications_enabled = response.activity.is_card_members_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_members_notifications_enabled = data.is_card_members_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_labels_notifications_enabled) && !_.isEmpty(response.activity.is_card_labels_notifications_enabled)) {
+                        Auth.user.is_card_labels_notifications_enabled = response.activity.is_card_labels_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_labels_notifications_enabled = data.is_card_labels_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_checklists_notifications_enabled) && !_.isEmpty(response.activity.is_card_checklists_notifications_enabled)) {
+                        Auth.user.is_card_checklists_notifications_enabled = response.activity.is_card_checklists_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_checklists_notifications_enabled = data.is_card_checklists_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_attachments_notifications_enabled) && !_.isEmpty(response.activity.is_card_attachments_notifications_enabled)) {
+                        Auth.user.is_card_attachments_notifications_enabled = response.activity.is_card_attachments_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_attachments_notifications_enabled = data.is_card_attachments_notifications_enabled;
+                    }
                     $.cookie('auth', JSON.stringify(Auth));
                     authuser = Auth;
                     if (!_.isUndefined(response.activity.username) && response.activity.username !== null) {
@@ -393,24 +422,76 @@ App.UserView = Backbone.View.extend({
      */
     userCards: function() {
         var self = this;
+        if (self.$('.js-membered-cards-tab').hasClass('active')) {
+            self.$('.js-userCreated-cards-tab').removeClass('active');
+            self.$('.js-membered-cards-tabContent').addClass('active');
+            self.$('.js-userCreated-cards-tabContent').removeClass('active');
+        }
+        if (self.$('.js-userCreated-cards-tab').hasClass('active')) {
+            self.$('.js-membered-cards-tab').addClass('active');
+            self.$('.js-membered-cards-tabContent').addClass('active');
+            self.$('.js-userCreated-cards-tab').removeClass('active');
+            self.$('.js-userCreated-cards-tabContent').removeClass('active');
+        }
         self.model.cards.url = api_url + 'users/' + self.model.id + '/cards.json?';
         self.model.cards.fetch({
             cache: false,
             success: function(card, response) {
                 self.$('#cards').html('');
+                self.$('#created-cards').html('');
+                if (response.length === 0) {
+                    self.$('#cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
+                        postProcess: 'sprintf',
+                        sprintf: [i18next.t('cards')]
+                    }) + '</span>');
+                } else {
+                    var card_users = new App.CardUserCollection();
+                    card_users = self.model.cards.groupBy(function(model) {
+                        return [model.get('board_name')];
+                    });
+                    if (!_.isEmpty(card_users)) {
+                        _.map(card_users, function(card_user, key) {
+                            self.$('#cards').append(new App.UserCardsView({
+                                key: key,
+                                model: card_user
+                            }).el);
+                        });
+                    } else {
+                        self.$('#cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
+                            postProcess: 'sprintf',
+                            sprintf: [i18next.t('cards')]
+                        }) + '</span>');
+                    }
+                }
+                $('#tab-loaded-content').load();
+            }
+        });
+    },
+    userCreatedCards: function() {
+        var self = this;
+        self.$('.js-userCreated-cards-tab').addClass('active');
+        self.$('.js-membered-cards-tab').removeClass('active');
+        self.model.cards.url = api_url + 'users/' + self.model.id + '/cards.json?type=created';
+        self.model.cards.fetch({
+            cache: false,
+            success: function(card, response) {
+                self.$('#cards').html('');
+                self.$('#created-cards').html('');
+                self.$('.js-userCreated-cards-tabContent').addClass('active');
+                self.$('.js-membered-cards-tabContent').removeClass('active');
                 var card_users = new App.CardUserCollection();
                 card_users = self.model.cards.groupBy(function(model) {
                     return [model.get('board_name')];
                 });
                 if (!_.isEmpty(card_users)) {
                     _.map(card_users, function(card_user, key) {
-                        self.$('#cards').append(new App.UserCardsView({
+                        self.$('#created-cards').append(new App.UserCardsView({
                             key: key,
                             model: card_user
                         }).el);
                     });
                 } else {
-                    self.$('#cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
+                    self.$('#created-cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
                         postProcess: 'sprintf',
                         sprintf: [i18next.t('cards')]
                     }) + '</span>');

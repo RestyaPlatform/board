@@ -3509,8 +3509,8 @@ $.widget("ui.sortable", $.ui.mouse, {
       var item = this.items[i];
 
       //We ignore calculating positions of all connected containers when we're not over them
-      if(item.instance != this.currentContainer && this.currentContainer && item.item[0] != this.currentItem[0])
-        continue;
+      /*if(item.instance != this.currentContainer && this.currentContainer && item.item[0] != this.currentItem[0])
+        continue;*/
 
       var t = this.options.toleranceElement ? $(this.options.toleranceElement, item.item) : item.item;
 

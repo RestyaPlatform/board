@@ -1,0 +1,47 @@
+<td>
+	<div class="user-table-width">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="clearfix"> 
+					<a  title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)" class="small-user pull-left show" href="#/user/<%- user.attributes.id%>">
+						<% if(!_.isEmpty(user.attributes.profile_picture_path)){ 
+							var profile_picture_path = user.showImage('User', user.attributes.user_id, 'small_thumb' );
+						%>
+							<img class="avatar-sm" src="<%- profile_picture_path %>" alt="[Images: <%- user.attributes.username%>]" title="<%- user.attributes.full_name %> (<%- user.attributes.username%>)" />
+							<% }else{ %>
+									<i class="avatar avatar-color-194 img-rounded avatar-sm" title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)"><%- user.attributes.initials%></i>
+							<%  } %> 
+					</a>
+				<a class="col-xs-10 htruncate left-mar-sm js-board-name-truncate js-user-view" data-user_id="<%- user.attributes.id%>" href="#/user/<%- user.attributes.id%>"><%- user.attributes.full_name%></a>
+						
+				</div>
+				<div class="clearfix navbar-btn">
+					<span class="col-xs-12 htruncate nav"><%- user.attributes.email%></span>
+				</div>
+			</div>
+		</div>
+		</div>
+</td>
+<td class="text-center">
+	<div class="btn-group text-left navbar-btn dropdown">
+		<%- user.attributes.user_agent %>
+	</div>
+</td>
+<td class="text-center">
+	<% var created = parse_date(user.get('created'), authuser, 'js-timeago-user2-'+user.attributes.id); %>
+		<span class="js-timeago-user2-<%- user.attributes.id %>"></span>
+</td>
+<td class="text-center">
+	<span class="show">
+		<%- user.attributes.login_ip%>
+	</span>
+</td>
+<td class="text-center">
+
+	<% if(!user.attributes.is_login_failed){ %>
+		<span class="label label-success"><%- i18next.t('Success') %></span>
+	<% } %> 
+<% if(user.attributes.is_login_failed){ %>
+		<span class="label label-danger"><%- i18next.t('Failure') %></span>
+	<% } %>
+</td>

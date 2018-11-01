@@ -1,3 +1,6 @@
+<a href="#" title="Delete" class="pull-right btn btn-default btn-xs dropdown-toggle hide" id="js-close-drag" data-toggle="dropdown">
+	<i class="icon-remove cur"></i>
+</a>
 <section class="row js-card-dock-modal-<%- card.attributes.id %> js-card-container" id="dropzone<%- card.attributes.id %>" data-mode="1" data-board_id = "<%- card.attributes.board_id %>" data-list_id = "<%- card.attributes.list_id %>">
   <div class="pull-right js-attachment-loader"></div>
   <div class="clearfix col-xs-12 printable">
@@ -88,7 +91,7 @@
 					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Labels') %></h4>
 					<ul class="list-inline clearfix js-card-labels-list">
 					<% if(!_.isUndefined(authuser.user)){ %>
-					  <li>
+					  <li id="js-label-add-container">
 						<div class="dropdown js-label-dropdown no-print">
 						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_labels",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 							<a class="dropdown-toggle js-show-card-label-form btn btn-default" role="button" data-toggle="dropdown" title="<%- i18next.t('Add new Labels') %>" href="#"> <i class="icon-plus"></i></a><% } %>
@@ -132,7 +135,9 @@
 				  <% } %>
 					<li class="after-start-date-<%- card.id %>">
 					</li>
-					<li id="js-custom-fields-listing-<%- card.attributes.id %>"></li>
+					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "get_custom_fields",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
+						<li id="js-custom-fields-listing-<%- card.attributes.id %>"></li>
+					<% } %>
 				  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 				  <% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL') { %>
 				  <li class="">
@@ -159,13 +164,55 @@
 					%>
 					  <li class="dropdown"> <a class="btn btn-default dropdown-toggle <% if(!_.isUndefined(authuser.user)){ %>js-edit-card-due-date-form<%}else{%>js-no-action <%}%>" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><%= dateFormat(date_time[0], 'mediumDate')  %><%- ' at '+ hours_mins %></a>
 					  <% if(!_.isUndefined(authuser.user)){ %>
-						<ul class="dropdown-menu arrow col-xs-12 panel-body">
-						  <li>
-							<h4 class="text-center"><%- i18next.t('Due Date') %><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></h4>
+						<ul class="dropdown-menu arrow col-xs-12">
+						  <li class="col-xs-12 text-center">
+									<div>
+										<span class="col-xs-10"><strong><%- i18next.t('Due Date') %></strong></span>
+										<a class="js-close-popover pull-right" href="#"><i class="icon-remove">&nbsp;</i></a>
+									</div>
 						  </li>
-						  <li class="divider"></li>
-						  <li class="js-edit-card-due-date-form-response">
-							<form class="form-horizontal clearfix js-card-edit-form" name="cardDueDateEditForm" id="cardDueDateEditForm">
+						  <li class="divider col-xs-12"></li>
+						  <li class="js-edit-card-due-date-form-response col-xs-12">
+							<% 
+								var currentdate = new Date();
+								var date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10 ) ? '0'+ (currentdate.getMonth() + 1 ) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10)? '0' + currentdate.getDate() : currentdate.getDate());
+								var time = currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
+								if (!_.isEmpty(card.attributes.due_date) && card.attributes.due_date !== 'NULL' && card.attributes.due_date !== 'null') {
+									var date_time = card.attributes.due_date.replace('T',' ');
+									date_time = date_time.split(' ');
+									date = date_time[0];
+									time = date_time[1];
+									time = time.split(':');
+									time = time[0]+':'+time[1];
+								}
+							%>
+							<form id="cardDueDateEditForm1" class="form-horizontal clearfix js-card-edit-form">
+									<div class="form-group">
+										<div class="col-xs-6">
+											<label><%- i18next.t('Date') %>
+											</label>
+											<input type="text" class="form-control input-sm js-card-duedate-edit-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" value="<%= date %>" required>
+										</div>
+										<div class="col-xs-6">
+											<label><%- i18next.t('Time') %>
+											</label>
+											<input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm" value="<%= time %>" required>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-xs-6">
+											<label for="save" class="sr-only"><%- i18next.t('Save') %>
+											</label>
+											<input type="submit" value="<%- i18next.t('Save') %>" id="save" class="btn btn-primary" id="submitCardDueDateEditForm">
+										</div>
+										<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL') { %>
+										<div class="col-xs-6">
+											<label for="remove" class="sr-only"><%- i18next.t('Remove') %>
+											</label>
+											<input type="reset" value="<%- i18next.t('Remove') %>" class="btn btn-default js-remove-due-date">
+										</div>
+										<% } %>
+									</div>
 							</form>
 						  </li>
 						</ul>
@@ -174,7 +221,7 @@
 					</ul>
 				  </li>
 				  <% } %>
-				  <% } %>
+					<% } %>
 				</ul>
 					<div class="list-group-item-text clearfix github-markdown">
 					  <h4 class="text-muted"><%- i18next.t('Description') %> 
@@ -199,7 +246,7 @@
 						</ul>
 						<div class="well-sm"></div>
 						<div class="form-group required">
-						  <textarea rows="4" data-edit_mode='2' id="inputCarddescriptions" name="description" class="form-control js-card-input" required><%- card.attributes.description %></textarea>
+						  <textarea rows="4" data-edit_mode='2' id="inputCarddescriptions" name="description" class="form-control js-card-input"><%- card.attributes.description %></textarea>
 							<div class="panel js-card-desc-edit-panel hide no-mar">
 								<div class="panel-body js-card-desc-edit-preview github-markdown"></div>
 							</div>
@@ -211,10 +258,16 @@
 					  </form>
 					  <% }%>
 					</div>
-
+				<div class="list-group-item-text clearfix js-card_dependency-listing-<%- card.attributes.id %>">
+				</div>
+				<div class="list-group-item-text clearfix js-salesforce-listing-<%- card.attributes.id %>">
+				</div>
 				<div id="js-card-checklists"></div>
+					<div class="list-group-item-text clearfix js-card-drawio-section">
+						<ul class="list-unstyled clearfix attachment-list" id="js-card-drawio-list"></ul>
+					</div>
 				<% if(!_.isEmpty(card.attachments)){ %>
-				<div class="list-group-item-heading clearfix">
+				<div class="list-group-item-heading clearfix js-modalCard-attachments-<%- card.id %>">
 				  <h3 class="pull-left"> <span class="pull-left"><i class="icon-paper-clip lead"></i></span><%- i18next.t('Attachment') %></h3>
 				</div>
 				<div class="list-group-item-text clearfix">
@@ -228,7 +281,9 @@
 						<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Attach From...') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 						<li class="col-xs-12 divider"></li>
 						<li class="col-xs-12"><a href="#" title="<%- i18next.t('Computer') %>" class="js-attachment-computer-open row"><%- i18next.t('Computer') %></a></li>
+						<%if(!_.isUndefined(DROPBOX_APPKEY) && !_.isEmpty(DROPBOX_APPKEY)){%>
 						<li class="col-xs-12"><a href="#" title="<%- i18next.t('Dropbox') %>" class="js-attachment-dropbox-open row"><%- i18next.t('Dropbox') %></a></li>
+						<% } %>
 						<li class="col-xs-12 divider"></li>
 						<li class="col-xs-12">
 						  <span class="col-xs-10 sr-only"><%- i18next.t('Attach a Link') %></span>
@@ -309,7 +364,49 @@
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 						<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Due Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 						<li class="col-xs-12 divider"></li>
-						<li class="js-show-card-due-date-form-response col-xs-12"> </li>
+						<li class="js-show-card-due-date-form-response col-xs-12">
+								<% 
+								var currentdate = new Date();
+								var date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10 ) ? '0'+ (currentdate.getMonth() + 1 ) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10)? '0' + currentdate.getDate() : currentdate.getDate());
+								var time = currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
+								if (!_.isEmpty(card.attributes.due_date) && card.attributes.due_date !== 'NULL' && card.attributes.due_date !== 'null') {
+									var date_time = card.attributes.due_date.replace('T',' ');
+									date_time = date_time.split(' ');
+									date = date_time[0];
+									time = date_time[1];
+									time = time.split(':');
+									time = time[0]+':'+time[1];
+								}
+								%>
+								<form id="cardDueDateEditForm2" class="form-horizontal clearfix js-card-edit-form">
+										<div class="form-group">
+											<div class="col-xs-6">
+												<label><%- i18next.t('Date') %>
+												</label>
+												<input type="text" class="form-control input-sm js-card-duedate-edit-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" value="<%= date %>" required>
+											</div>
+											<div class="col-xs-6">
+												<label><%- i18next.t('Time') %>
+												</label>
+												<input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm" value="<%= time %>" required>
+											</div>
+										</div>
+										<div class="form-group">
+											<div class="col-xs-6">
+												<label for="save" class="sr-only"><%- i18next.t('Save') %>
+												</label>
+												<input type="submit" value="<%- i18next.t('Save') %>" id="save" class="btn btn-primary" id="submitCardDueDateEditForm">
+											</div>
+											<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL') { %>
+											<div class="col-xs-6">
+												<label for="remove" class="sr-only"><%- i18next.t('Remove') %>
+												</label>
+												<input type="reset" value="<%- i18next.t('Remove') %>" class="btn btn-default js-remove-due-date">
+											</div>
+											<% } %>
+										</div>
+								</form>
+						</li>
 					  </ul>
 					</li>
 					<% } %>
@@ -322,7 +419,9 @@
 						  </ul>
 						</li>
 					<% } %>
+					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "get_custom_fields",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 					<li id="js-custom-fields-edi-listing-<%- card.id%>"></li>
+					<% } %> 
 					</ul>
 				</div>
 				<% } %>
@@ -518,6 +617,9 @@
 																	</div>
 																</li>
 															<% } %>
+
+															<div class="js-modal-card-wiki-add"></div>
+
 															<li class="dropdown pull-left radio-inline radio">
 																<div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block js-show-members" role="button" data-toggle="dropdown" title="<%- i18next.t('Mention a member') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Mention a member') %></span> </a>
 																<ul class="dropdown-menu arrow col-xs-3">
@@ -555,7 +657,7 @@
 				<li class="col-xs-12 divider"><hr></li>
 			  </ul>
 			  <div class="text-center clearfix hide" id="js-loader-img"><img src="img/select2-spinner.gif" alt="[Images:Loader]" title="<%- i18next.t('Loading...') %>" /></div>
-				<ul class="media-list col-xs-12 clearfix btn-block" id="js-card-activities-<%= card.attributes.id%>"></ul>			  
+				<ul class="media-list col-xs-12 clearfix btn-block card_activitiesnew" id="js-card-activities-<%= card.attributes.id%>"></ul>			  
 			</div>
 			</li>
 		  </ul>
@@ -623,7 +725,49 @@
 		  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 			<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Due Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 			<li class="col-xs-12 divider"></li>
-			<li class="js-show-card-due-date-form-response col-xs-12"> </li>
+			<% 
+			var currentdate = new Date();
+			var date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10 ) ? '0'+ (currentdate.getMonth() + 1 ) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10)? '0' + currentdate.getDate() : currentdate.getDate());
+			var time = currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
+			if (!_.isEmpty(card.attributes.due_date) && card.attributes.due_date !== 'NULL' && card.attributes.due_date !== 'null') {
+				var date_time = card.attributes.due_date.replace('T',' ');
+				date_time = date_time.split(' ');
+				date = date_time[0];
+				time = date_time[1];
+				time = time.split(':');
+				time = time[0]+':'+time[1];
+			}
+			%>
+			<li class="js-show-card-due-date-form-response col-xs-12">
+					<form id="cardDueDateEditForm3" class="form-horizontal clearfix js-card-edit-form">
+							<div class="form-group">
+								<div class="col-xs-6">
+									<label><%- i18next.t('Date') %>
+									</label>
+									<input type="text" class="form-control input-sm js-card-duedate-edit-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" value="<%= date %>" required>
+								</div>
+								<div class="col-xs-6">
+									<label><%- i18next.t('Time') %>
+									</label>
+									<input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm" value="<%= time %>" required>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-xs-6">
+									<label for="save" class="sr-only"><%- i18next.t('Save') %>
+									</label>
+									<input type="submit" value="<%- i18next.t('Save') %>" id="save" class="btn btn-primary" id="submitCardDueDateEditForm">
+								</div>
+								<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL') { %>
+								<div class="col-xs-6">
+									<label for="remove" class="sr-only"><%- i18next.t('Remove') %>
+									</label>
+									<input type="reset" value="<%- i18next.t('Remove') %>" class="btn btn-default js-remove-due-date">
+								</div>
+								<% } %>
+							</div>
+					</form>
+			</li>
 		  </ul>
 		</li>
 		<% } %>

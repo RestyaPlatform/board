@@ -1,7 +1,7 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
 <% var unread = ""; %>
 <% if(!_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %>
-	 <%if(parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)){%> 
+	 <%if(activity.attributes.token !== authuser.access_token){%> 
 	 <% var unread = "js-unread-activity"; %> 
 	 <span class="label label-primary col-xs-12 sr-only">&nbsp;</span>   
 	<%}%>    
@@ -16,17 +16,11 @@
 			<i class="avatar avatar-color-194 img-rounded"><%- activity.attributes.initials %></i>
 		<% } %>       
 	</a>
-	<div class="media-body">   
-    	<% if(activity.attributes.type == 'add_comment' && activity.attributes.type == 'edit_comment' ) { 
-		%>
-		<div class="media-heading">			
-            <span class="js-activity-<%- activity.attributes.id %>"><%= makeLink(converter.makeHtml((activity.attributes.comment)), activity.attributes.board_id) %></span>
-		</div>   
-        <% } else {%>
+	<div class="media-body">    
 		<% 
 			var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
 			var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
-			if(activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
+			if(activity.attributes.type != 'add_comment' || activity.attributes.type != 'edit_comment') {
 				if(activity.attributes.type !== 'add_card_desc') {
 					if(!_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
 						activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.difference['0']));
@@ -56,9 +50,9 @@
 					});
 					if(_.contains(_username, authuser.user.username)){
 						comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
-					}
-				} 
+					} 
 			}
+		}
 		%>             
 		<div class="col-xs-12 btn-block">  
 					<div class="activities-list js-activity-<%- activity.attributes.id %>">
@@ -100,6 +94,7 @@
 					
 					</div>
 					<small>
+					&nbsp;&nbsp;
 			<% setInterval(function() {%>
 				<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
 			<% }, 10000); %>
@@ -142,7 +137,6 @@
 				<span class="pull-left col-xs-12 js-activity-reply-form-response-<%- activity.attributes.id %>"></span>
 		</small>
 		</div>
-        <% } %>
 	</div>
 </div>
 

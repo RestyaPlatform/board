@@ -1,19 +1,19 @@
 /**
- * @fileOverview This file has functions related to card duedate form view. This view calling from modal card view.
+ * @fileOverview This file has functions related to organization 404 view. This view calling from application view.
  * Available Object:
  *	App.boards						: this object contain all boards(Based on logged in user)
- *	this.model						: card model. @see Available Object in CardView
+ *	this.model						: undefined
  */
 if (typeof App === 'undefined') {
     App = {};
 }
-/**
- * CardDuedateFrom View
- * @class CardDuedateFromView
+/** 
+ * ActivityAddForm View
+ * @class ActivityAddFormView
  * @constructor
  * @extends Backbone.View
  */
-App.CardDuedateFromView = Backbone.View.extend({
+App.Organization404View = Backbone.View.extend({
     /**
      * Constructor
      * initialize default values and actions
@@ -24,10 +24,8 @@ App.CardDuedateFromView = Backbone.View.extend({
         }
         this.render();
     },
-    template: JST['templates/card_duedate_from'],
-    tagName: 'form',
-    className: 'form-horizontal clearfix js-card-edit-form',
-    id: 'cardDueDateEditForm',
+    template: JST['templates/organization_404'],
+    tagName: 'section',
     /**
      * render()
      * populate the html to the dom
@@ -37,9 +35,8 @@ App.CardDuedateFromView = Backbone.View.extend({
      */
     render: function() {
         this.$el.html(this.template({
-            card: this.model
+            authuser: this.model
         }));
-        this.showTooltip();
         return this;
     }
 });

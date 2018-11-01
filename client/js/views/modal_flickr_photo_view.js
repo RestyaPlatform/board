@@ -23,6 +23,7 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
      */
     events: {
         'click .js-close-popover': 'closePopup',
+        'click .js-flickr-modal-close': 'closeFlickrModalClose',
         'click .js-flickr-loadmore': 'getPhotos',
         'click .js-flickr-search-box': 'getSearch',
         'click .js-flickr-changebackground': 'changeBackgroundImage',
@@ -45,6 +46,7 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
         this.search_text = 'Recent Photos';
         this.type = options.type;
         this.FLICKR_API_KEY = FLICKR_API_KEY;
+
         if (this.type == 'texture') {
             this.search_text = 'texture background';
             this.search_type = 'flickr.photos.search';
@@ -145,7 +147,16 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
             show: true,
             backdrop: false
         });
-        this.getPhotos();
+        if (_.isEmpty(this.FLICKR_API_KEY) || _.isUndefined(this.FLICKR_API_KEY)) {
+            $('#js-flickr-background-photos').hide();
+            $('.js-flickr-loader-and-more').hide();
+            $('.js-flick-search-block').hide();
+            $('.js-flick-search-block').hide();
+            $('.js-flickr-update').removeClass('hide');
+        } else {
+            this.getPhotos();
+        }
+
         this.showTooltip();
         return this;
     },
@@ -171,6 +182,19 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
     closePopup: function(e) {
         var target = $(e.target);
         target.parents('#flickr-modal').remove();
+        return false;
+    },
+    /**
+     * closeFlickrModalClose()
+     * hide displayed modal
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     */
+    closeFlickrModalClose: function(e) {
+        e.preventDefault();
+        $('#modalFlickrPhoto').modal('hide');
+        window.location.href = '#/settings/6';
         return false;
     },
     /**

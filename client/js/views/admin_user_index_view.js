@@ -33,6 +33,23 @@ App.AdminUserIndexView = Backbone.View.extend({
     },
     updateCollection: function() {
         var _this = this;
+        if (!_.isUndefined(APPS) && APPS !== null) {
+            if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                if ($.inArray('r_groups', APPS.enabled_apps) !== -1) {
+                    $.ajax({
+                        url: api_url + 'groups.json?limit=10000&token=' + this.getToken() + '&sort=name&direction=asc',
+                        cache: false,
+                        type: 'GET',
+                        success: function(response) {
+                            _this.overall_groups = [];
+                            if (response.data) {
+                                _this.overall_groups = response.data;
+                            }
+                        }
+                    });
+                }
+            }
+        }
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.users = new App.UserCollection();
         $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
@@ -57,6 +74,7 @@ App.AdminUserIndexView = Backbone.View.extend({
                 }).el);
                 users.each(function(user) {
                     user.roles = response.roles;
+                    user.overall_groups = _this.overall_groups;
                     $('.js-user-list').append(new App.UserIndex({
                         model: user
                     }).el);
@@ -76,5 +94,14 @@ App.AdminUserIndexView = Backbone.View.extend({
                 });
             }
         });
+    },
+    getToken: function() {
+        if ($.cookie('auth') !== undefined) {
+            var Auth = JSON.parse($.cookie('auth'));
+            api_token = Auth.access_token;
+            return api_token;
+        } else {
+            return false;
+        }
     }
 });

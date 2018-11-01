@@ -4,6 +4,30 @@
 <li class="col-xs-12 navbar-btn divider js-back"></li>
 <% if(!_.isEmpty(role_links.where({slug: "add_board"}))){ %>
 <li class="col-xs-12 btn-block js-back">
+	<a href="#" class="js-show-board-import-kantree-form col-xs-12 navbar-btn h6">
+		<span class="show clearfix text-primary navbar-btn h5">
+			<span class="pull-left"><%- i18next.t('Import Board from Kantree.io') %></span> <span class="cssloader pull-right hide" id="js-board-import-loader"></span>
+		</span>
+		<span class="show"><%- i18next.t('Upload json file exported from Kantree.io.') %></span>
+	</a>
+	<form class="hide" id="js-board-import-kantree" enctype="multipart/form-data">
+		<input type="file" name="board_import_kantree" class="js-board-import-kantree-file"/>
+	</form>
+</li>
+<li class="col-xs-12 navbar-btn divider js-back"></li>
+<li class="col-xs-12 btn-block js-back">
+	<a href="#" class="js-show-board-import-taiga-form col-xs-12 navbar-btn h6">
+		<span class="show clearfix text-primary navbar-btn h5">
+			<span class="pull-left"><%- i18next.t('Import Board from Taiga') %></span> <span class="cssloader pull-right hide" id="js-board-import-loader"></span>
+		</span>
+		<span class="show"><%- i18next.t('Upload json file exported from Taiga.') %></span>
+	</a>
+	<form class="hide" id="js-board-import-taiga" enctype="multipart/form-data">
+		<input type="file" name="board_import_taiga" class="js-board-import-taiga-file"/>
+	</form>
+</li>
+<li class="col-xs-12 navbar-btn divider js-back"></li>
+<li class="col-xs-12 btn-block js-back">
 	<a href="#" class="js-show-board-import-form col-xs-12 navbar-btn h6">
 		<span class="show clearfix text-primary navbar-btn h5">
 			<span class="pull-left"><%- i18next.t('Import Board from Trello') %></span> <span class="cssloader pull-right hide" id="js-board-import-loader"></span>

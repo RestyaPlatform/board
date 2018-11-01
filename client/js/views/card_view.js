@@ -134,7 +134,25 @@ App.CardView = Backbone.View.extend({
         'click .js-position': 'changeCardPosition',
         'click .js-add-card-member': 'addCardMember',
         'click .js-remove-card-member': 'removeCardMember',
+        'click .js-download-attachments': 'downloadAttachments',
         'cardSort': 'cardSort'
+    },
+    /**
+     * downloadAttachments()
+     * download Atttachments
+     * @param e
+     * @type Object(DOM event)
+     * @param data
+     * @type Object
+     *
+     */
+    downloadAttachments: function(e) {
+        var self = this;
+        e.preventDefault();
+        var hash = calcMD5(SecuritySalt + 'download' + self.model.attributes.board_id + self.model.id);
+        var link = window.location.protocol + '//' + window.location.host + '/download/' + self.model.attributes.board_id + '/' + self.model.id + '/' + hash;
+        window.open(link);
+        return false;
     },
     /**
      * cardSort()
@@ -197,34 +215,47 @@ App.CardView = Backbone.View.extend({
         var current_list = current_board.lists.findWhere({
             id: parseInt(list_id)
         });
-        var prev_list_card_count = parseInt(self.model.list.collection.board.lists.get(previous_list_id).get('card_count'));
-        var current_list_card_count = parseInt(self.model.list.collection.board.lists.get(list_id).get('card_count'));
+        if (parseInt(list_id) !== parseInt(previous_list_id)) {
+            var prev_list_card_count = parseInt(self.model.list.collection.board.lists.get(previous_list_id).get('card_count'));
+            var current_list_card_count = parseInt(self.model.list.collection.board.lists.get(list_id).get('card_count'));
 
-        self.model.list.collection.board.lists.get(previous_list_id).cards.remove(self.model);
-        self.model.list.collection.board.lists.get(previous_list_id).set('card_count', prev_list_card_count - 1);
-        prev_list.set('card_count', prev_list_card_count - 1);
+            self.model.list.collection.board.lists.get(previous_list_id).cards.remove(self.model);
+            self.model.list.collection.board.lists.get(previous_list_id).set('card_count', prev_list_card_count - 1);
+            prev_list.set('card_count', prev_list_card_count - 1);
 
-        self.model.list.collection.board.lists.get(list_id).cards.add(self.model);
-        self.model.list.collection.board.lists.get(list_id).set('card_count', current_list_card_count + 1);
-        current_list.set('card_count', current_list_card_count + 1);
+            self.model.list.collection.board.lists.get(list_id).cards.add(self.model);
+            self.model.list.collection.board.lists.get(list_id).set('card_count', current_list_card_count + 1);
+            current_list.set('card_count', current_list_card_count + 1);
 
+            _(function() {
+                if ((current_list !== null && !_.isUndefined(current_list) && !_.isEmpty(current_list)) && (prev_list !== null && !_.isUndefined(prev_list) && !_.isEmpty(prev_list))) {
+                    if (!_.isUndefined(APPS) && APPS !== null) {
+                        if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                            if ($.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                                $('body').trigger('cardSortRendered', [prev_list, current_list]);
+                            }
+                        }
+                    }
+                }
+            }).defer();
 
-        var attachments = self.model.list.collection.board.attachments.where({
-            card_id: self.model.attributes.id
-        });
-        var j = 1;
-        _.each(attachments, function(attachment) {
-            var options = {
-                silent: true
-            };
-            if (j === attachments.length) {
-                options.silent = false;
-            }
-            self.model.list.collection.board.attachments.get(attachment.id).set({
-                list_id: list_id
-            }, options);
-            j++;
-        });
+            var attachments = self.model.list.collection.board.attachments.where({
+                card_id: self.model.attributes.id
+            });
+            var j = 1;
+            _.each(attachments, function(attachment) {
+                var options = {
+                    silent: true
+                };
+                if (j === attachments.length) {
+                    options.silent = false;
+                }
+                self.model.list.collection.board.attachments.get(attachment.id).set({
+                    list_id: list_id
+                }, options);
+                j++;
+            });
+        }
     },
     /**
      * render()
@@ -242,6 +273,7 @@ App.CardView = Backbone.View.extend({
         var total_filter = 0;
         var filter_label_arr = [],
             filter_user_arr = [],
+            filter_color_arr = [],
             filter_due_arr = [];
         var filter_mode;
         var current_param = Backbone.history.fragment.split('?');
@@ -262,6 +294,9 @@ App.CardView = Backbone.View.extend({
                 if (value.indexOf('label:') > -1) {
                     total_filter += 1;
                     filter_label_arr.push(value.replace('label:', ''));
+                } else if (value.indexOf('color:') > -1) {
+                    total_filter += 1;
+                    filter_color_arr.push(value.replace('color:', ''));
                 } else if (value.indexOf('@') > -1) {
                     total_filter += 1;
                     filter_user_arr.push(value.replace('@', ''));
@@ -312,6 +347,35 @@ App.CardView = Backbone.View.extend({
                     }
                 }
             });
+            content = '<ul class="unstyled  js-card-colors hide">';
+            if (this.model.attributes.color !== null && this.model.attributes.color !== undefined) {
+                var card_color = this.model.attributes.color.replace('#', '');
+                content += '<li>' + card_color + '</li>';
+            }
+            content += '</ul>';
+            this.$el.append(content);
+            $(content).find('li').each(function(key, value) {
+                if (!_.isEmpty(filter_mode)) {
+                    if (filter_mode === 'and') {
+                        if ($.inArray($(value).text(), filter_color_arr) !== -1) {
+                            filter_count += 1;
+                        }
+                    }
+                } else {
+                    if (filter_color_arr.length != 1) {
+                        $(filter_color_arr).each(function(key, label) {
+                            if ($.inArray($(value).text(), filter_color_arr) !== -1) {
+                                filter_count += 1;
+                            }
+                        });
+                    } else {
+                        if ($.inArray($(value).text(), filter_color_arr) !== -1) {
+                            filter_count += 1;
+                        }
+                    }
+                }
+            });
+
             content = '<ul class="unstyled  js-card-users hide">';
             this.model.users.each(function(user) {
                 content += '<li>' + user.get('username') + '</li>';

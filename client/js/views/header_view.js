@@ -65,6 +65,10 @@ App.HeaderView = Backbone.View.extend({
         }
         var current_param_split = current_param[0].split('/');
         this.model.current_param = (current_param.indexOf('changepassword') === -1 && current_param.indexOf('login') === -1 && current_param.indexOf('forgotpassword') === -1 && current_param.indexOf('register') === -1 && current_param.indexOf('activation') === -1) ? current_param_split[0] : '';
+        if (!_.isEmpty(current_param_split[0]) && current_param_split[0] === 'user_logins') {
+            this.model.current_param = 'user_logins';
+            current_param = 'user_logins';
+        }
         if (!_.isEmpty(current_param_split[1]) && current_param_split[1] === 'list') {
             this.model.current_param = 'admin_boards_list';
         }
