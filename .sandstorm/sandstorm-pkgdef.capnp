@@ -48,10 +48,10 @@ const pkgdef :Spk.PackageDefinition = (
       # https://github.com/sandstorm-io/sandstorm/blob/master/src/sandstorm/package.capnp
       icons = (
         # Various icons to represent the app in various contexts.
-        #appGrid = (svg = embed "restyaboard-128x128.svg"),
-        #grain = (svg = embed "restyaboard-24x24.svg"),
-        #market = (svg = embed "restyaboard-150x150.svg"),
-        #marketBig = (svg = embed "restyaboard-300x300.svg"),
+        appGrid = (svg = embed "restyaboard-128x128.svg"),
+        grain = (svg = embed "restyaboard-24x24.svg"),
+        market = (svg = embed "restyaboard-150x150.svg"),
+        marketBig = (svg = embed "restyaboard-300x300.svg"),
       ),
 
       website = "https://restya.com",
