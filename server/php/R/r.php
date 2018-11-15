@@ -3056,7 +3056,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                         $row['id'],
                                         $organization_user['user_id']
                                     );
-                                    $check_board_users  = executeQuery('SELECT id FROM boards_users WHERE board_id = $1 and user_id = $2', $qry_val_arr);
+                                    $check_board_users = executeQuery('SELECT id FROM boards_users WHERE board_id = $1 and user_id = $2', $qry_val_arr);
                                     if (empty($check_board_users)) {
                                         pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, 2)', $qry_val_arr);
                                     }
