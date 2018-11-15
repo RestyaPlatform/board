@@ -25,6 +25,8 @@ App.UserView = Backbone.View.extend({
         'submit form.js-user-profile-edit': 'userProfileEdit',
         'click .js-user-cards': 'userCards',
         'click .js-membered-cards': 'userCards',
+        'click .js-show-closedBoards-cards': 'showClosedBoardsCards',
+        'click .js-hide-closedBoards-cards': 'hideClosedBoardsCards',
         'click .js-userCreated-cards': 'userCreatedCards',
         'click #js-user-activites-load-more': 'loadActivities',
         'click .js-remove-image': 'removeImage',
@@ -130,6 +132,26 @@ App.UserView = Backbone.View.extend({
                 }
             }
         });
+    },
+    /**
+     * showClosedBoardsCards()
+     * show the cards in the closed boards 
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    showClosedBoardsCards: function(e) {
+        this.userCards($(e.target), 'show_closed_boards_cards');
+    },
+    /**
+     * hideClosedBoardsCards()
+     * hide the cards of the closed boards 
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    hideClosedBoardsCards: function() {
+        this.userCards();
     },
     /**
      * render()
@@ -420,7 +442,7 @@ App.UserView = Backbone.View.extend({
      * @type Object(DOM event)
      * @return false
      */
-    userCards: function() {
+    userCards: function(e, param) {
         var self = this;
         if (self.$('.js-membered-cards-tab').hasClass('active')) {
             self.$('.js-userCreated-cards-tab').removeClass('active');
@@ -438,6 +460,11 @@ App.UserView = Backbone.View.extend({
             cache: false,
             success: function(card, response) {
                 self.$('#cards').html('');
+                if (!_.isUndefined(param) && !_.isEmpty(param)) {
+                    self.$('#cards').html('<div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-hide-closedBoards-cards" title="' + i18next.t('Hide Closed Boards Cards') + '">' + i18next.t('Hide Closed Boards Cards') + '</a></div>');
+                } else {
+                    self.$('#cards').html('<div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-show-closedBoards-cards" title="' + i18next.t('Show Closed Boards Cards') + '">' + i18next.t('Show Closed Boards Cards') + '</a></div>');
+                }
                 self.$('#created-cards').html('');
                 if (response.length === 0) {
                     self.$('#cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
@@ -450,14 +477,37 @@ App.UserView = Backbone.View.extend({
                         return [model.get('board_name')];
                     });
                     if (!_.isEmpty(card_users)) {
+                        var boards_count = 0;
                         _.map(card_users, function(card_user, key) {
-                            self.$('#cards').append(new App.UserCardsView({
-                                key: key,
-                                model: card_user
-                            }).el);
+                            var board = App.boards.findWhere({
+                                name: key
+                            });
+                            if (!_.isUndefined(param) && !_.isEmpty(param) && board.attributes.is_closed) {
+                                if (board.attributes.is_closed) {
+                                    ++boards_count;
+                                    self.$('#cards').append(new App.UserCardsView({
+                                        key: key,
+                                        model: card_user
+                                    }).el);
+                                }
+                            } else if (_.isUndefined(param) && _.isEmpty(param)) {
+                                if (!board.attributes.is_closed) {
+                                    ++boards_count;
+                                    self.$('#cards').append(new App.UserCardsView({
+                                        key: key,
+                                        model: card_user
+                                    }).el);
+                                }
+                            }
                         });
+                        if (!boards_count) {
+                            self.$('#cards').append('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
+                                postProcess: 'sprintf',
+                                sprintf: [i18next.t('cards')]
+                            }) + '</span>');
+                        }
                     } else {
-                        self.$('#cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
+                        self.$('#cards').append('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
                             postProcess: 'sprintf',
                             sprintf: [i18next.t('cards')]
                         }) + '</span>');
