@@ -1,0 +1,56 @@
+jpsVersion: 0.1
+jpsType: install
+name: Restyaboard
+logo: http://board.demo.restya.com/img/logo.png
+description: Trello like kanban board. Tasks, to-dos, chat, etc.
+homepage: https://restya.com/board
+appVersion: 0.6.6
+engine: php7.2
+nodes:
+  - cloudlets: 16
+    nodeType: nginxphp
+  - cloudlets: 16
+    nodeType: postgres9
+onInstall:
+  - upload [nginxphp]:
+      sourcePath: https://raw.githubusercontent.com/RestyaPlatform/board/master/restyaboard.conf
+      destPath: ${SERVER_CONF_D}/restyaboard.conf
+  - deploy:
+      archive: https://github.com/RestyaPlatform/board/releases/download/v0.6.6/board-v0.6.6.zip
+      name: board-v0.6.6.zip
+      context: ROOT
+  - replaceInFile [nginxphp]:
+        path: /var/www/webroot/ROOT/server/php/config.inc.php
+        nodeType: nginxphp
+        replacements:
+        - pattern: localhost
+          replacement: ${nodes.postgres9.address}
+        - pattern: hjVl2!rGd
+          replacement: ${nodes.postgres9.password}
+  - replaceInFile [nginxphp]:
+        path: /etc/php.ini
+        nodeType: nginxphp
+        replacements:
+        - pattern: ;extension=pgsql.so
+          replacement: extension=pgsql.so
+        - pattern: ;extension=gd.so
+          replacement: extension=gd.so
+  - replaceInFile [nginxphp]:
+        path: /etc/nginx/conf.d/restyaboard.conf
+        nodeType: nginxphp
+        replacements:
+        - pattern: /usr/share/nginx/html
+          replacement: /var/www/webroot/ROOT
+        - pattern: unix:/run/php/php7.2-fpm.sock
+          replacement: 127.0.0.1:9000
+  - cmd [nginxphp]: sed -i "s/^.*'R_DB_USER'.*$/define('R_DB_USER', 'webadmin');/g" "/var/www/webroot/ROOT/server/php/config.inc.php"
+  - cmd [nginxphp]: echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/nginx
+  - cmd [nginxphp]: echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/nginx
+  - cmd [nginxphp]: echo "*/30 * * * * $dir/server/php/shell/imap.sh > /dev/null 2> /dev/null" >> /var/spool/cron/nginx
+  - cmd [nginxphp]: echo "*/5 * * * * $dir/server/php/shell/webhook.sh > /dev/null 2> /dev/null" >> /var/spool/cron/nginx
+  - cmd [nginxphp]: echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/nginx
+  - restartNodes [nginxphp]
+  - cmd [postgres9]: curl -v -L -G -o /tmp/restyaboard_with_empty_data.sql https://raw.githubusercontent.com/RestyaPlatform/board/master/sql/restyaboard_with_empty_data.sql
+  - cmd [postgres9]: printf "PGPASSWORD=${nodes.postgres9.password};\nexport PGPASSWORD;\npsql postgres webadmin -c \"CREATE DATABASE restyaboard;\"\npsql -h ${nodes.postgres9.address} -d restyaboard -U webadmin < /tmp/restyaboard_with_empty_data.sql;\n" > /tmp/createDb
+  - cmd [postgres9]: chmod +x /tmp/createDb && /tmp/createDb
+success: Installation completed. username admin and password restya
