@@ -1,18 +1,7 @@
 <td>
 	<div class="form-group text-center">
 		<div class="checkbox">
-			<input <% if(user.attributes.role_id==1){%>disabled
-			<%}%> id="
-			<%- user.attributes.id%>" name="user_id[
-			<%- user.attributes.id %>]" value="
-			<%- user.attributes.id%>" class="
-			<% if(user.attributes.role_id != 1){%> js-checkbox-list
-			<%}%>
-			<%if(parseInt(user.attributes.is_active) === 1){%>js-checkbox-active
-			<%}else{%>js-checkbox-inactive
-			<%}%>
-			<% if(!user.attributes.is_email_confirmed){ %> js-checkbox-unconfirmed
-			<%}%>" type="checkbox">
+			<input <% if(parseInt(user.attributes.role_id) === 1 ){ %>disabled <%}%> id="<%- user.attributes.id%>" name="<%- user.attributes.username %>" value="<%- user.attributes.id%>" class="<% if(user.attributes.role_id != 1){%>js-checkbox-list<%}%><%if(parseInt(user.attributes.is_active) === 1){%> js-checkbox-active<%}else{%> js-checkbox-inactive<%}%><% if(!user.attributes.is_email_confirmed){ %> js-checkbox-unconfirmed<%}%>" type="checkbox">
 			<label class="js-update-user" data-user_id="<%- user.attributes.id %>" for="<%- user.attributes.id%>"></label>
 		</div>
 	</div>
@@ -97,13 +86,15 @@
 </td>
 <td class="text-center">
 	<span class="show">
-		<%- user.attributes.last_login_ip%></span>
+		<%- user.attributes.last_login_ip%>
+	</span>
 	<% if(!_.isEmpty(user.attributes.login_country_iso2)){ %>
-	<span class="flags flag-<%- user.attributes.login_country_iso2%> top-smspace" title="<%- user.attributes.login_country_name %>">
-		<%- user.attributes.login_country_name %></span>
+		<span class="flags flag-<%- user.attributes.login_country_iso2%> top-smspace" title="<%- user.attributes.login_country_name %>">
+			<%- user.attributes.login_country_name %>
+		</span>
 	<% } %>
 	<% if(!_.isEmpty(user.attributes.login_city_name)){ %>
-	<%- user.attributes.login_city_name %>
+		<%- user.attributes.login_city_name %>
 	<% } %>
 </td>
 <td class="text-center">
@@ -112,47 +103,43 @@
 </td>
 <td class="text-center">
 	<span class="show">
-		<%- user.attributes.registered_ip%></span>
+		<%- user.attributes.registered_ip%>
+	</span>
 	<% if(!_.isEmpty(user.attributes.register_country_iso2)){ %>
-	<span class="flags flag-<%- user.attributes.register_country_iso2%> top-smspace" title="<%- user.attributes.register_country_name %>">
-		<%- user.attributes.register_country_name %></span>
+		<span class="flags flag-<%- user.attributes.register_country_iso2%> top-smspace" title="<%- user.attributes.register_country_name %>">
+			<%- user.attributes.register_country_name %>
+		</span>
 	<% } %>
 	<% if(!_.isEmpty(user.attributes.register_city_name)){ %> <span>
 		<%- user.attributes.register_city_name %></span>
 	<% } %>
 </td>
-<% if (!_.isUndefined(APPS) && APPS !== null ) {
-    if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-    if ($.inArray('r_groups',APPS.enabled_apps) !== -1) { %>
-<td class="text-center">
-	<div class="dropdown btn-group js-Group-content-dropdown">
-		<!-- btn btn-default dropdown-toggle btn-xs -->
-		<a  href="#" aria-expanded="false" data-toggle="dropdown" class="btn btn-default btn-xs dropdown-toggle js-group-memeber-count-<%-user.id%>"
-		 type="button">
+<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups',APPS.enabled_apps) !== -1) { %>
+	<td class="text-center">
+		<div class="dropdown btn-group js-Group-content-dropdown">
+			<a  href="#" aria-expanded="false" data-toggle="dropdown" class="btn btn-default btn-xs dropdown-toggle js-group-memeber-count-<%-user.id%>" type="button">
 			<% if(!_.isEmpty(user.attributes.groups) && !_.isUndefined(user.attributes.groups)){ %>
-			<%-user.attributes.groups.length%>
-			<%}else{%>
-			0
-			<%}%>
-		</a>
-		<!-- js-admin-list-user-role -->
-		<% if (!_.isEmpty(user.overall_groups) && !_.isUndefined(user.overall_groups)) { %>
-			<ul class="dropdown-menu arrow arrow-right max-wid" role="menu">
+				<%-user.attributes.groups.length%>
+			<% } else { %>
+				0
+			<% } %>
+			</a>
+			<!-- js-admin-list-user-role -->
+			<% if (!_.isEmpty(user.overall_groups) && !_.isUndefined(user.overall_groups)) { %>
+				<ul class="dropdown-menu arrow arrow-right max-wid" role="menu">
 					<% _.each(user.overall_groups, function(group, group_key){ %>
-						<li class="text-left js-group-member" data-group_id="<%- group.id %>" data-user_id="<%- user.id %>" data-group_index="<%- group_key %>"
-							>
-							<a href="#" data-group_id="<%- group.id %>" data-user_id="<%- user.id %>" data-group_index="<%- group_key %>"
-						class="js-group-member" title="<%- group.name %>">
+						<li class="text-left js-group-member" data-group_id="<%- group.id %>" data-user_id="<%- user.id %>" data-group_index="<%- group_key %>">
+							<a href="#" data-group_id="<%- group.id %>" data-user_id="<%- user.id %>" data-group_index="<%- group_key %>" class="js-group-member" title="<%- group.name %>">
 							<span><%- group.name %></span>
 							<% var Exists = false, group_user_index; 
 								_.each(group.groups_users, function(group_user, group_user_key){
-										if(group_user.user_id == user.id){
-											Exists = true;
-											group_user_index = group_user_key;
-											return;
-										}
+									if(group_user.user_id == user.id){
+										Exists = true;
+										group_user_index = group_user_key;
+										return;
+									}
 								});
-								%>
+							%>
 							<% if(Exists === true){ %>
 								<i class="icon-ok js-group-member-check" data-group_user="<%-Exists%>"></i>
 							<% } %>
@@ -163,34 +150,33 @@
 			<% } else { %>
 				<div class="dropdown-menu arrow arrow-right max-wid" role="menu">
 					<strong class="alert-info"><%- i18next.t('No Groups available') %></strong>
-				</ul>
+				</div>
 			<% } %>
-	</div>
-</td>
-<% }
-    }
-} %>
+		</div>
+	</td>
+<% } %>
 
 <td class="text-center devices-td devices-td-new">
 	<div class="dropdown btn-group">
-		<% _.each(user.roles, function(role){%>
-		<%if(user.attributes.role_id == role.id){%>
-		<button class="btn btn-default btn-xs" type="button">
-			<%- role.name%></button>
-		<%}%>
-		<%})%>
+		<% _.each(user.roles, function(role){
+			if(user.attributes.role_id == role.id){ %>
+			<button class="btn btn-default btn-xs" type="button"><%- role.name %></button>
+		<% } 
+		}); %>
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-default btn-xs dropdown-toggle" type="button">
-			<span class="caret"></span><span class="sr-only">
-				<%- i18next.t("Toggle Dropdown") %></span>
+			<span class="caret"></span><span class="sr-only"><%- i18next.t("Toggle Dropdown") %></span>
 		</button>
 		<ul class="dropdown-menu arrow arrow-right js-admin-list-user-role max-wid" role="menu">
-			<% _.each(user.roles, function(role){%>
-			<li class="text-left"><a href="#" class="<% if(user.attributes.role_id == role.id){%>js-no-action<%}else{%>js-change-user-role<%}%>"
-				 data-role-id="<%- role.id %>">
-					<%- role.name%>
-					<% if(user.attributes.role_id == role.id){%><i class="icon-ok"></i>
-					<%}%></a></li>
-			<%})%>
+			<% _.each(user.roles, function(role) { %>
+			<li class="text-left">
+				<a href="#" class="<% if(user.attributes.role_id == role.id){%>js-no-action<%}else{%>js-change-user-role<%}%>" data-role-id="<%- role.id %>">
+				<%- role.name%>
+				<% if(user.attributes.role_id == role.id){ %>
+					<i class="icon-ok"></i>
+				<% } %>
+				</a>
+			</li>
+			<% }); %>
 		</ul>
 	</div>
 </td>
