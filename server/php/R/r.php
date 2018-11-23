@@ -1930,13 +1930,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/xmpp_login',
             '/boards/?/chat_history'
         );
-        $plugin_url['Report'] = array(
+        $plugin_url['Insights'] = array(
             '/boards/?/reports'
         );
         $plugin_url['Chart'] = array(
             '/boards'
         );
-        $plugin_url['BoardRole'] = array(
+        $plugin_url['BoardRoleMapper'] = array(
             '/board_roles'
         );
         $plugin_url['Broadcast'] = array(
@@ -3801,8 +3801,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $result = pg_execute_insert($table_name, $post);
             if ($result) {
                 $row = pg_fetch_assoc($result);
-                if (is_plugin_enabled('r_board_roles')) {
-                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'BoardRole' . DIRECTORY_SEPARATOR . 'functions.php';
+                if (is_plugin_enabled('r_board_role_mapper')) {
+                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'BoardRoleMapper' . DIRECTORY_SEPARATOR . 'functions.php';
                     $board_user_role_id = boardRoleAfterInsertBoardUser($r_post);
                     if (!empty($board_user_role_id)) {
                         $response['board_user_role_id'] = $board_user_role_id;
@@ -5624,7 +5624,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             '/users/import',
             '/users/test-connection'
         );
-        $plugin_url['BoardRole'] = array(
+        $plugin_url['BoardRoleMapper'] = array(
             '/board_roles'
         );
         $plugin_url['Broadcast'] = array(
