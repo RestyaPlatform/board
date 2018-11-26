@@ -34,7 +34,7 @@ App.AdminUserAddView = Backbone.View.extend({
      */
     events: {
         'submit form#AdminUserAddForm': 'adminUserAdd',
-        'focus #inputFullName': 'prefillUserdetails'
+        'blur #inputemail': 'prefillUserdetails'
     },
     /**
      * adminUserAdd()
@@ -75,7 +75,7 @@ App.AdminUserAddView = Backbone.View.extend({
      */
     prefillUserdetails: function(e) {
         var email = $('#inputemail').val();
-        if (new RegExp('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$').test(email)) {
+        if (!_.isEmpty(email) && new RegExp('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$').test(email)) {
             var name;
             var full_name;
             var user_initial;
