@@ -80,7 +80,7 @@ App.LoginView = Backbone.View.extend({
                         $('input#inputPassword', target).val('');
                         self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
                     } else {
-                        if (response && !_.isUndefined(response.user.is_two_factor_authentication_enabled)) {
+                        if (!_.isUndefined(response) && !_.isEmpty(response) && !_.isUndefined(response.user) && !_.isEmpty(response.user) && !_.isUndefined(response.user.is_two_factor_authentication_enabled)) {
                             authuser = response;
                             if (!_.isUndefined(response.access_token)) {
                                 var auth_response = {};

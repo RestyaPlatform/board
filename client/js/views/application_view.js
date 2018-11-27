@@ -97,7 +97,7 @@ App.ApplicationView = Backbone.View.extend({
                                     IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                     DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
                                     var current_language = DEFAULT_LANGUAGE;
-                                    if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
+                                    if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
                                         current_language = authuser.user.language;
                                     }
                                     i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
@@ -152,7 +152,7 @@ App.ApplicationView = Backbone.View.extend({
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
                                 var current_language = DEFAULT_LANGUAGE;
-                                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && authuser.user.language !== undefined) {
+                                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
                                     current_language = authuser.user.language;
                                 }
                                 i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
