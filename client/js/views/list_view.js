@@ -184,7 +184,8 @@ App.ListView = Backbone.View.extend({
         };
         var self = this;
         var list_id = self.model.id;
-        $('#js-list-color-' + list_id).closest('#colorPicker').attr('style', 'padding-bottom:8px');
+        $('#js-list-color-' + list_id).closest('#colorPicker').removeAttr('style');
+        $('#js-list-color-' + list_id).closest('#colorPicker').addClass('hide');
         $('#js-list-color-' + list_id).attr('style', 'background-color: ' + color_label + ' !important');
         $('#js-list-demo-' + list_id).attr('style', 'border-bottom: ' + color_label);
         $('.js-remove-list-color').addClass('hide');
@@ -219,6 +220,7 @@ App.ListView = Backbone.View.extend({
         var self = this;
         var list_id = self.model.id;
         $('#js-list-color-' + list_id).closest('#colorPicker').attr('style', 'padding-bottom:8px');
+        $('#js-list-color-' + list_id).closest('#colorPicker').removeClass('hide');
         $('#js-list-color-' + list_id).attr('style', 'background-color: ' + color_label + ' !important');
         $('#js-list-demo-' + list_id).attr('style', 'border-bottom: 2px solid' + color_label + ' !important');
         $('.js-remove-list-color').removeClass('hide');
@@ -782,6 +784,7 @@ App.ListView = Backbone.View.extend({
 
         this.model.cards.set(copied_cards);
         var view_card = $('#js-card-listing-' + move_list_id);
+        view_card.html('');
         _.each(copied_cards, function(copied_card) {
             var options = {
                 silent: false
@@ -822,6 +825,7 @@ App.ListView = Backbone.View.extend({
                 self.model.collection.board.lists.get(list_id).set('cards_count', 0);
                 App.boards.get(self.model.attributes.board_id).lists.get(list_id).set('cards_count', 0);
                 self.board.lists.get(list_id).set('cards_count', 0);
+                $('#js-card-listing-' + list_id).html('&nbsp;');
             }
         });
         return false;
@@ -1148,7 +1152,15 @@ App.ListView = Backbone.View.extend({
             $('#js-list-card-add-form-' + this.model.id).remove();
             $('.js-show-add-card-form', $('#js-card-listing-' + this.model.id).next()).removeClass('hide');
             var view_card = this.$('#js-card-listing-' + this.model.id);
-            view_card.html('&nbsp;');
+            _(function() {
+                unarchived_cards = self.model.collection.board.cards.where({
+                    list_id: parseInt(self.model.id),
+                    is_archived: 0
+                });
+                if (parseInt(unarchived_cards.length) === 0) {
+                    view_card.html('&nbsp;');
+                }
+            }).defer();
             if (sort_by !== null && sort_by !== null) {
                 this.model.cards.sortByColumn(sort_by, sort_direction);
             } else {
