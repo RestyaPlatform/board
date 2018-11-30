@@ -557,6 +557,9 @@
 				if [[ ${PSQL_VERSION} =~ ^10\.[0-9]{1,}$ ]]; then
 					PSQL_VERSION=10
 				fi
+				if [[ ${PSQL_VERSION} =~ ^11\.[0-9]{1,}$ ]]; then
+					PSQL_VERSION=11
+				fi
 				sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf > /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf.1
 				cd /etc/postgresql/${PSQL_VERSION}/main || exit
 				mv pg_hba.conf pg_hba.conf_old
