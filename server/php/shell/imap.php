@@ -50,7 +50,6 @@ if (!empty($emails)) {
         foreach ($header->to as $to) {
             if (isset($fetch_head['X-Forwarded-To']) && $fetch_head['X-Forwarded-To']!= 'undefined') {
                 $mail = explode('+', strstr($fetch_head['X-Forwarded-To'],"@",true));
-                echo $mail;
             } else {
                 $mail = explode('+', $to->mailbox);
             }
