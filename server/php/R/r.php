@@ -5951,6 +5951,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $r_resource_vars['lists']
             );
             pg_query_params($db_lnk, 'UPDATE card_attachments SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
+            pg_query_params($db_lnk, 'UPDATE activities SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
         }
         if (isset($r_put['position'])) {
             $comment = '##USER_NAME## changed list ' . $previous_value['name'] . ' position.';
