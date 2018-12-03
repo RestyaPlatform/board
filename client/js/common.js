@@ -166,7 +166,7 @@ function parse_date(dateTime, logged_user, classname) {
         tz = moment.tz(s, logged_user.user.timezone);
     }
     _(function() {
-        $('.' + classname).html('<abbr title="' + tz.format() + '">' + tz.fromNow() + '<abbr>');
+        $('.' + classname).html('<abbr title="' + tz.format() + '">' + tz.fromNow() + '</abbr>');
     }).defer();
     return true;
 }

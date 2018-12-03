@@ -14,6 +14,7 @@
  */
 $app_path = dirname(dirname(__FILE__));
 require_once $app_path . '/config.inc.php';
+require_once $app_path . '/libs/core.php';
 // Check is imap extension loaded
 if (!extension_loaded('imap')) {
     echo 'IMAP PHP extension not available on this server. Bounced email functions will not work.';
@@ -33,9 +34,25 @@ if (!$connection) {
 $emails = imap_search($connection, 'UNSEEN');
 if (!empty($emails)) {
     foreach ($emails as $key => $counter) {
+        $fetch_header = explode("\n", imap_fetchheader($connection, $counter));
+        if (is_array($fetch_header) && count($fetch_header)) {
+            $fetch_head = array();
+            foreach($fetch_header as $line) {
+                // is line with additional header?
+                if (eregi("^X-", $line)) {
+                    // separate name and value
+                    eregi("^([^:]*): (.*)", $line, $arg);
+                    $fetch_head[$arg[1]] = $arg[2];
+                }       
+            }
+        }
         $header = imap_header($connection, $counter);
         foreach ($header->to as $to) {
-            $mail = explode('+', $to->mailbox);
+            if (isset($fetch_head['X-Forwarded-To']) && $fetch_head['X-Forwarded-To']!= 'undefined') {
+                $mail = explode('+', strstr($fetch_head['X-Forwarded-To'],"@",true));
+            } else {
+                $mail = explode('+', $to->mailbox);
+            }
             // Email format for board - board+##board_id##+hash@restya.com
             // Email format for card  - board+##board_id##+##card_id##+hash@restya.com
             // Check to email address contains atleast one "+" symbol
