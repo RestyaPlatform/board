@@ -218,7 +218,14 @@ App.CardView = Backbone.View.extend({
         if (parseInt(list_id) !== parseInt(previous_list_id)) {
             var prev_list_card_count = parseInt(self.model.list.collection.board.lists.get(previous_list_id).get('card_count'));
             var current_list_card_count = parseInt(self.model.list.collection.board.lists.get(list_id).get('card_count'));
-
+            if (parseInt(prev_list_card_count) === 1) {
+                $('#js-card-listing-' + previous_list_id).html('&nbsp;');
+            }
+            if (parseInt(current_list_card_count) === 0) {
+                $('#js-card-listing-' + list_id).html(function(i,h){
+                    return h.replace(/&nbsp;/g,'');
+                });
+            }
             self.model.list.collection.board.lists.get(previous_list_id).cards.remove(self.model);
             self.model.list.collection.board.lists.get(previous_list_id).set('card_count', prev_list_card_count - 1);
             prev_list.set('card_count', prev_list_card_count - 1);
