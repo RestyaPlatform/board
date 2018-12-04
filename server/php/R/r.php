@@ -5715,7 +5715,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
     switch ($r_resource_cmd) {
     case '/users/?/activation': //users activation
         $qry_val_arr = array(
-            $r_put['id'],
+            $r_resource_vars['users'],
             'false'
         );
         $user = executeQuery('SELECT * FROM users WHERE id = $1 AND is_email_confirmed = $2', $qry_val_arr);
@@ -5723,7 +5723,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $qry_val_arr = array(
                 'true',
                 'true',
-                $r_put['id']
+                $r_resource_vars['users']
             );
             $sql = pg_query_params($db_lnk, "UPDATE users SET is_email_confirmed = $1, is_active = $2 WHERE id = $3", $qry_val_arr);
             if ($sql) {
