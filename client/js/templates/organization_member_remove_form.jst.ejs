@@ -1,6 +1,12 @@
 <li class="col-xs-12">
 	<a class="show row small well-xs js-delete-organization-member" data-organizations_user_id="<%- organization_users.organizations_user_id %>" href="#">
 		<span class="show text-primary navbar-btn h5"><%- i18next.t('Remove from organization') %></span>
-		<span class="navbar-btn"><%- i18next.t('Remove all access to the organization.  The member will remain on all their boards in this organization.') %></span>
+		<span class="navbar-btn">
+			<% if (parseInt(organization_users.organizations_user_roleid) === 1) { %>
+				<%- i18next.t('Remove all access to the organization. Please be sure that there is another user who is an owner of this organization. The member will remain on all their boards in this organization.') %>
+			<% } else { %>
+				<%- i18next.t('Remove all access to the organization.  The member will remain on all their boards in this organization.') %>
+			<% } %>
+		</span>
 	</a>
 </li>
