@@ -123,7 +123,9 @@ App.OrganizationsView = Backbone.View.extend({
         var insert = $('.js-show-confirm-delete-organization-member-response', parent);
         insert.nextAll().remove();
         var organizations_user_id = target.data('organizations_user_id');
+        var organizations_user_roleid = target.data('organizations_user_roleid');
         this.model.organizations_user_id = organizations_user_id;
+        this.model.organizations_user_roleid = organizations_user_roleid;
         $(new App.OrganizationMemberRemoveFormView({
             model: this.model
         }).el).insertAfter(insert);

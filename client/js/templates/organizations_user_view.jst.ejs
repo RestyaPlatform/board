@@ -112,8 +112,8 @@
 										<% if(organizations_users.length !== 1) { %>
 											<li class="dropdown navbar-btn text-left js-show-confirm-delete-organization-member-dropdown">
 												<% 
-												if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "remove_organization_user",organization_user_role_id: parseInt(organization.organization_user_role_id)})))){%>
-														<a class="btn btn-primary dropdown-toggle js-show-confirm-delete-organization-member" data-organizations_user_id="<%- organizations_user.attributes.id %>" data-toggle="dropdown" href="#"><span><i class="icon-remove"></i></span>
+												if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "remove_organization_user",organization_user_role_id: parseInt(organization.organization_user_role_id)})))){ %>
+														<a class="btn btn-primary dropdown-toggle js-show-confirm-delete-organization-member" data-organizations_user_id="<%- organizations_user.attributes.id %>" data-organizations_user_roleid="<%- organizations_user.attributes.organization_user_role_id %>" data-toggle="dropdown" href="#"><span><i class="icon-remove"></i></span>
 														<span>
 														<% if(!_.isUndefined(authuser.user) && organizations_user.attributes.user_id == authuser.user.id) { %>
 															<%- i18next.t('Leave') %>
