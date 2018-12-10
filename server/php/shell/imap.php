@@ -37,19 +37,19 @@ if (!empty($emails)) {
         $fetch_header = explode("\n", imap_fetchheader($connection, $counter));
         if (is_array($fetch_header) && count($fetch_header)) {
             $fetch_head = array();
-            foreach($fetch_header as $line) {
+            foreach ($fetch_header as $line) {
                 // is line with additional header?
                 if (eregi("^X-", $line)) {
                     // separate name and value
                     eregi("^([^:]*): (.*)", $line, $arg);
                     $fetch_head[$arg[1]] = $arg[2];
-                }       
+                }
             }
         }
         $header = imap_header($connection, $counter);
         foreach ($header->to as $to) {
-            if (isset($fetch_head['X-Forwarded-To']) && $fetch_head['X-Forwarded-To']!= 'undefined') {
-                $mail = explode('+', strstr($fetch_head['X-Forwarded-To'],"@",true));
+            if (isset($fetch_head['X-Forwarded-To']) && $fetch_head['X-Forwarded-To'] != 'undefined') {
+                $mail = explode('+', strstr($fetch_head['X-Forwarded-To'], "@", true));
             } else {
                 $mail = explode('+', $to->mailbox);
             }
