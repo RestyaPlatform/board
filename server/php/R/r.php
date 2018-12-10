@@ -4222,10 +4222,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $response['id'],
                         $r_post['cards_checklists_card_id']
                     );
-                    pg_query_params($db_lnk, 'INSERT INTO checklists (created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, position) SELECT created, modified, user_id, $1, name, checklist_item_count, checklist_item_completed_count, position FROM checklists WHERE card_id = $2 ORDER BY id', $qry_val_arr);
+                    $checklist = pg_query_params($db_lnk, 'INSERT INTO checklists (created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, position) SELECT created, modified, user_id, $1, name, checklist_item_count, checklist_item_completed_count, position FROM checklists WHERE card_id = $2 ORDER BY id', $qry_val_arr);
+                    $updateChecklist = pg_fetch_assoc($checklist);
                     $qry_val_arr = array(
                         $response['id']
                     );
+                    $query_val_arr = array(
+                        0,
+                        $updateChecklist['id']
+                    );
+                    $sql = pg_query_params($db_lnk, "UPDATE checklists SET checklist_item_completed_count = $1 WHERE id = $2", $query_val_arr);
                     $checklists = pg_query_params($db_lnk, 'SELECT id FROM checklists WHERE card_id = $1 order by id', $qry_val_arr);
                     $qry_val_arr = array(
                         $r_post['cards_checklists_card_id']
@@ -4242,8 +4248,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $checklist_id['id'],
                             $prev_checklist_ids[$i]
                         );
-                        pg_query_params($db_lnk, 'INSERT INTO checklist_items (created, modified, user_id, card_id, name, checklist_id, is_completed, position) SELECT created, modified, user_id, $1, name , $2, is_completed, position FROM checklist_items WHERE checklist_id = $3 ORDER BY id', $qry_val_arr);
+                        $items = pg_query_params($db_lnk, 'INSERT INTO checklist_items (created, modified, user_id, card_id, name, checklist_id, position) SELECT created, modified, user_id, $1, name , $2,  position FROM checklist_items WHERE checklist_id = $3 ORDER BY id', $qry_val_arr);
                         $i++;
+                        $checklist_items = pg_fetch_assoc($items);
+                        $qry_val_arr = array(
+                            0,
+                            $checklist_items['id']
+                        );
+                        $sql = pg_query_params($db_lnk, "UPDATE checklist_items SET is_completed = $1 WHERE id = $2", $qry_val_arr);
                     }
                 }
                 if (!empty($r_post['cards_custom_fields_card_id']) && is_plugin_enabled('r_custom_fields')) {
