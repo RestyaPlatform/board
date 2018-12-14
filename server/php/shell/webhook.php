@@ -33,7 +33,7 @@ if ($db_lnk) {
             while ($activity = pg_fetch_assoc($activities)) {
                 $qry_val_arr = array(
                     true
-                ); 
+                );
                 $result = pg_query_params($db_lnk, "SELECT * FROM webhooks WHERE is_active = $1", $qry_val_arr);
                 $count = pg_num_rows($result);
                 if ($count) {
@@ -54,7 +54,7 @@ if ($db_lnk) {
                             } else {
                                 $activity_json = json_encode($activity);
                             }
-                        }                        
+                        }
                         if (empty($activity_json)) {
                             $status = 0;
                             continue;

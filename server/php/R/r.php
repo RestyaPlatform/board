@@ -2417,12 +2417,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $val_arr = array(
             $r_post['email']
         );
-        if (filter_var($r_post['email'], FILTER_VALIDATE_EMAIL)!==false) {
+        if (filter_var($r_post['email'], FILTER_VALIDATE_EMAIL) !== false) {
             $where = 'LOWER(email) = LOWER($1)';
         } else {
             $where = 'LOWER(username)=LOWER($1)';
         }
-        $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE '. $where, $val_arr);
+        $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE ' . $where, $val_arr);
         if (is_plugin_enabled('r_ldap_login')) {
             require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'LdapLogin' . DIRECTORY_SEPARATOR . 'functions.php';
             $ldap_response = ldapUpdateUser($log_user, $r_post);
@@ -2436,7 +2436,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $r_post['password'],
                 1
             );
-            $user = executeQuery('SELECT * FROM users_listing WHERE '. $where .' AND password = $2 AND is_active = $3', $val_arr);
+            $user = executeQuery('SELECT * FROM users_listing WHERE ' . $where . ' AND password = $2 AND is_active = $3', $val_arr);
         }
         if (!empty($user)) {
             if (!IS_TWO_FACTOR_AUTHENTICATION_ENABLED || $user['is_two_factor_authentication_enabled'] == 'f' || ($user['is_two_factor_authentication_enabled'] == 't' && !empty($r_post['verification_code']))) {
