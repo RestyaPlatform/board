@@ -1359,6 +1359,7 @@ App.ListView = Backbone.View.extend({
             var view_card = $('#js-card-listing-' + data.list_id);
             var card = new App.Card();
             card.set('is_offline', true);
+            data.cards_checklist_item_count =  data.cards_checklist_item_count ? data.cards_checklist_item_count : 0;
             card.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.id + '/cards.json';
             card.set({
                 name: data.name,
