@@ -1371,6 +1371,7 @@ App.ListView = Backbone.View.extend({
             var view_card = $('#js-card-listing-' + data.list_id);
             var card = new App.Card();
             card.set('is_offline', true);
+            data.cards_checklist_item_count = data.cards_checklist_item_count ? data.cards_checklist_item_count : 0;
             card.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.id + '/cards.json';
             card.set({
                 name: data.name,
@@ -1378,7 +1379,7 @@ App.ListView = Backbone.View.extend({
                 list_id: parseInt(data.list_id),
                 board_id: parseInt(data.board_id),
                 due_date: null,
-                checklist_item_count: 0,
+                checklist_item_count: data.cards_checklist_item_count,
                 checklist_item_completed_count: 0
             }, {
                 silent: true
@@ -1459,8 +1460,52 @@ App.ListView = Backbone.View.extend({
                         card.labels.add(response.cards_labels);
                     }
                     if (!_.isUndefined(response.cards_checklists) && response.cards_checklists.length > 0) {
-                        card.set('cards_checklists', response.cards_checklists);
-                        card.checklists.add(response.cards_checklists);
+                        var option = {
+                            silent: true
+                        };
+                        _.each(response.cards_checklists, function(checklist) {
+                            var card_checklist = new App.CheckList();
+                            card_checklist.set('is_offline', true);
+                            card_checklist.set('card_id', parseInt(response.id));
+                            card_checklist.set('list_id', parseInt(card.list.id));
+                            card_checklist.set('board_id', parseInt(card.list.attributes.board_id));
+                            card_checklist.set({
+                                id: parseInt(checklist.id)
+                            });
+                            card_checklist.set('checklist_item_completed_count', 0);
+                            card_checklist.set('name', _.escape(checklist.name));
+                            card_checklist.set('card_id', parseInt(response.id));
+                            card_checklist.set('list_id', parseInt(card.list.id));
+                            card_checklist.set('board_id', parseInt(card.list.attributes.board_id));
+                            card_checklist.card = card;
+                            if (!_.isUndefined(checklist) && !_.isUndefined(checklist.checklists_items)) {
+                                var checklist_items = JSON.parse(checklist.checklists_items);
+                                card_checklist.set('checklist_items', checklist_items);
+                                _.each(checklist_items, function(item) {
+                                    checklist_item = new App.CheckListItem();
+                                    checklist_item.set('id', parseInt(item.id));
+                                    checklist_item.set('card_id', parseInt(response.id));
+                                    checklist_item.set('user_id', parseInt(item.user_id));
+                                    checklist_item.set('checklist_id', card_checklist.id);
+                                    checklist_item.set('name', item.name);
+                                    checklist_item.set('is_completed', 0);
+                                    checklist_item.card = card;
+                                    checklist_item.checklist = card_checklist;
+                                    card.list.collection.board.checklist_items.add(checklist_item, option);
+                                });
+
+                            }
+                            card.list.collection.board.checklists.add(card_checklist, option);
+                            card.checklists.add(card_checklist, option);
+                        });
+                        var __checklist_items = card.list.collection.board.checklist_items.where({
+                            card_id: parseInt(response.id)
+                        });
+                        items = new App.CheckListItemCollection();
+                        items.add(__checklist_items, option);
+                        var total_count = items.models.length;
+                        card.set('checklist_item_completed_count', 0);
+                        card.set('checklist_item_count', total_count);
                     }
                     var list = App.boards.get(card.attributes.board_id).lists.get(card.attributes.list_id);
                     if (!_.isUndefined(list)) {

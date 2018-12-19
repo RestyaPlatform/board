@@ -2415,9 +2415,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     case '/users/login': //users login
         $table_name = 'users';
         $val_arr = array(
-            strtolower($r_post['email'])
+            $r_post['email']
         );
-        $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
+        if (filter_var($r_post['email'], FILTER_VALIDATE_EMAIL) !== false) {
+            $where = 'LOWER(email) = LOWER($1)';
+        } else {
+            $where = 'LOWER(username)=LOWER($1)';
+        }
+        $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE ' . $where, $val_arr);
         if (is_plugin_enabled('r_ldap_login')) {
             require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'LdapLogin' . DIRECTORY_SEPARATOR . 'functions.php';
             $ldap_response = ldapUpdateUser($log_user, $r_post);
@@ -2427,11 +2432,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         if (!empty($log_user) && $log_user['is_ldap'] == 0) {
             $r_post['password'] = crypt($r_post['password'], $log_user['password']);
             $val_arr = array(
-                strtolower($r_post['email']),
+                $r_post['email'],
                 $r_post['password'],
                 1
             );
-            $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
+            $user = executeQuery('SELECT * FROM users_listing WHERE ' . $where . ' AND password = $2 AND is_active = $3', $val_arr);
         }
         if (!empty($user)) {
             if (!IS_TWO_FACTOR_AUTHENTICATION_ENABLED || $user['is_two_factor_authentication_enabled'] == 'f' || ($user['is_two_factor_authentication_enabled'] == 't' && !empty($r_post['verification_code']))) {
@@ -4222,10 +4227,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $response['id'],
                         $r_post['cards_checklists_card_id']
                     );
-                    pg_query_params($db_lnk, 'INSERT INTO checklists (created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, position) SELECT created, modified, user_id, $1, name, checklist_item_count, checklist_item_completed_count, position FROM checklists WHERE card_id = $2 ORDER BY id', $qry_val_arr);
+                    $checklist = pg_query_params($db_lnk, 'INSERT INTO checklists (created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, position) SELECT created, modified, user_id, $1, name, checklist_item_count, checklist_item_completed_count, position FROM checklists WHERE card_id = $2 ORDER BY id', $qry_val_arr);
+                    $updateChecklist = pg_fetch_assoc($checklist);
                     $qry_val_arr = array(
                         $response['id']
                     );
+                    $query_val_arr = array(
+                        0,
+                        $updateChecklist['id']
+                    );
+                    $sql = pg_query_params($db_lnk, "UPDATE checklists SET checklist_item_completed_count = $1 WHERE id = $2", $query_val_arr);
                     $checklists = pg_query_params($db_lnk, 'SELECT id FROM checklists WHERE card_id = $1 order by id', $qry_val_arr);
                     $qry_val_arr = array(
                         $r_post['cards_checklists_card_id']
@@ -4242,8 +4253,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $checklist_id['id'],
                             $prev_checklist_ids[$i]
                         );
-                        pg_query_params($db_lnk, 'INSERT INTO checklist_items (created, modified, user_id, card_id, name, checklist_id, is_completed, position) SELECT created, modified, user_id, $1, name , $2, is_completed, position FROM checklist_items WHERE checklist_id = $3 ORDER BY id', $qry_val_arr);
+                        $items = pg_query_params($db_lnk, 'INSERT INTO checklist_items (created, modified, user_id, card_id, name, checklist_id, position) SELECT created, modified, user_id, $1, name , $2,  position FROM checklist_items WHERE checklist_id = $3 ORDER BY id', $qry_val_arr);
                         $i++;
+                        $checklist_items = pg_fetch_assoc($items);
+                        $qry_val_arr = array(
+                            0,
+                            $checklist_items['id']
+                        );
+                        $sql = pg_query_params($db_lnk, "UPDATE checklist_items SET is_completed = $1 WHERE id = $2", $qry_val_arr);
                     }
                 }
                 if (!empty($r_post['cards_custom_fields_card_id']) && is_plugin_enabled('r_custom_fields')) {
@@ -5715,7 +5732,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
     switch ($r_resource_cmd) {
     case '/users/?/activation': //users activation
         $qry_val_arr = array(
-            $r_put['id'],
+            $r_resource_vars['users'],
             'false'
         );
         $user = executeQuery('SELECT * FROM users WHERE id = $1 AND is_email_confirmed = $2', $qry_val_arr);
@@ -5723,7 +5740,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $qry_val_arr = array(
                 'true',
                 'true',
-                $r_put['id']
+                $r_resource_vars['users']
             );
             $sql = pg_query_params($db_lnk, "UPDATE users SET is_email_confirmed = $1, is_active = $2 WHERE id = $3", $qry_val_arr);
             if ($sql) {

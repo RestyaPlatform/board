@@ -48,3 +48,7 @@ VALUES (now(), now(), (select id from acl_board_links where slug='view_board_lab
 
 INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id")
 VALUES (now(), now(), (select id from acl_board_links where slug='view_board_label_isting'), '2');
+
+CREATE UNIQUE index users_unique_lower_email_idx on users (lower(email));
+CREATE UNIQUE index users_unique_lower_username_idx on users(lower(username));
+UPDATE users SET email = lower(email), username=lower(username);
