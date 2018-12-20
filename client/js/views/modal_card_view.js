@@ -621,7 +621,7 @@ App.ModalCardView = Backbone.View.extend({
      * @return false
      */
     cancelCardDescEditForm: function(e) {
-        this.$el.find('.js-show-card-desc').next().show();
+        this.$el.find('.js-show-card-desc').show();
         this.$el.find('#cardDescriptionEditForm').addClass('hide');
         return false;
     },
@@ -723,7 +723,7 @@ App.ModalCardView = Backbone.View.extend({
      */
     showCardDescEditForm: function(e) {
         e.preventDefault();
-        this.$el.find('.js-show-card-desc').next().hide();
+        this.$el.find('.js-show-card-desc').hide();
         this.$el.find('#cardDescriptionEditForm').removeClass('hide').show();
         return false;
     },
