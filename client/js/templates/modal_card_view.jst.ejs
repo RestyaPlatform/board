@@ -233,10 +233,10 @@
 					  </a>
 					  <% } %>
 					  </h4>
-						<ul class="list-unstyled clearfix descriptionlist" id="js-card-description">
-						</ul>
 					  <% if(!_.isEmpty(card.attributes.description)){ %>
-					  <p class="js-show-card-desc"><%= converter.makeHtml((card.attributes.description)) %></p>
+					  <div class="js-show-card-desc">
+							<%= converter.makeHtml((card.attributes.description)) %>
+						</div>
 					  <% } %>
 					   <%if(!_.isUndefined(authuser.user)) {%>
 					  <form class="hide js-card-edit-form" name="cardDescriptionEditForm" id="cardDescriptionEditForm">
