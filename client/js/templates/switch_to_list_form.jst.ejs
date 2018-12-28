@@ -39,6 +39,15 @@
 		<th><a class="show" href="#" title="<%- i18next.t('Attachments') %>" ><span class="icon-caret-down hide"></span><i data-sort-by="attachment_count" class="js-sort-by icon-paper-clip h3"></i></a></th>
 		<th><a class="show" href="#" title="<%- i18next.t('Comments') %>"><span class="icon-caret-down hide"></span><i data-sort-by="comment_count" class="js-sort-by icon-comment h3"></i></a></th>
 		<th><a class="show" href="#" title="<%- i18next.t('Checklist') %>" ><span class="icon-caret-down hide"></span><i  data-sort-by="checklist_item_completed_count" class="js-sort-by icon-ok-sign h3"></i></a></th>
+		<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_field',APPS.enabled_apps) !== -1) {
+			if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && !_.isUndefined(App.current_board.attributes.custom_fields) && App.current_board.attributes.custom_fields !== null) {
+				_.each(App.current_board.attributes.custom_fields, function(customfield){ %>
+					<th class="js-list-customField-<%- customfield.id %>"><a class="show" href="javascript:void(0);" title="<%- customfield.label %>"><%- customfield.label %></a></th>
+			  <% });
+			} else { %>
+				<th class="hide js-custom-fields-list_view-header"></th>
+			<% } 
+		} %>
 	<tr>
 </thead>
 <tbody class="js-card-list-view-<%- board.id%>"></tbody>
