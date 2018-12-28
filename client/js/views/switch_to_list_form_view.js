@@ -74,7 +74,7 @@ App.SwitchToListView = Backbone.View.extend({
                     is_archived: 0
                 });
                 if (!_.isUndefined(list) && !_.isEmpty(list)) {
-                    card.set('list_name', _.escape(list.attributes.name));   
+                    card.set('list_name', _.escape(list.attributes.name));
                 }
                 card.labels.each(function(label, key) {
                     if (!_.isUndefined(label) && label.attributes.name !== "") {

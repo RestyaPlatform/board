@@ -998,7 +998,7 @@ App.BoardHeaderView = Backbone.View.extend({
             eventMouseover: function(calEvent, jsEvent, view) {
                 var target = $(jsEvent.currentTarget);
                 if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-                    if ($.inArray('r_custom_field',APPS.enabled_apps) !== -1) {
+                    if ($.inArray('r_custom_field', APPS.enabled_apps) !== -1) {
                         $.ajax({
                             url: api_url + 'cards/' + calEvent.id + '/cards_custom_fields.json?token=' + authuser.access_token,
                             cache: false,
@@ -1010,7 +1010,7 @@ App.BoardHeaderView = Backbone.View.extend({
                                     $(target).data('placement', 'top');
                                     $(target).data('html', 'true');
                                     var card_customfield_value = '';
-                                    _.each(response.response, function(customfield, key){
+                                    _.each(response.response, function(customfield, key) {
                                         if (customfield) {
                                             if (customfield.type === 'date') {
                                                 card_customfield_value += customfield.label + ' : ' + dateFormat(customfield.value, "mediumDate");
@@ -1045,9 +1045,9 @@ App.BoardHeaderView = Backbone.View.extend({
                                                     card_customfield_value += customfield.label + ' : ' + custom_field_val + ' at ' + hours_mins;
                                                 }
                                             } else {
-                                                card_customfield_value += customfield.label + ' : ' + customfield.value; 
+                                                card_customfield_value += customfield.label + ' : ' + customfield.value;
                                             }
-                                            if (key+1 !== response.response.length) {
+                                            if (key + 1 !== response.response.length) {
                                                 card_customfield_value += '<br/> ';
                                             }
                                         }
