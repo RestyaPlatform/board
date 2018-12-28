@@ -840,6 +840,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
             $_metadata = $paging_data['_metadata'];
         }
+        if (!empty($c_sql) && !empty($r_resource_filters['page'])) {
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM admin_boards_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ' limit ' . $_metadata['limit'] . ' offset ' . $_metadata['offset'] . ') as d ';
+        }
         if (!empty($sql)) {
             if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
                 $data = array();
@@ -868,7 +871,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($_metadata) && !empty($board_user_roles) && OAUTH_CLIENTID != 7857596005287233) {
                     $data['board_user_roles'] = $board_user_roles;
                 }
-                if (is_plugin_enabled('r_chart')) {
+                if (is_plugin_enabled('r_chart') && empty($r_resource_filters['page'])) {
                     require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chart' . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
                     $passed_values = array();
                     $passed_values['sort'] = $sort;
