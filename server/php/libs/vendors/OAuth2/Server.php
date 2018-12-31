@@ -452,6 +452,9 @@ class Server implements ResourceControllerInterface,
         if (!isset($this->storages['client'])) {
             throw new \LogicException("You must supply a storage object implementing OAuth2\Storage\ClientInterface to use the authorize server");
         }
+        if (!isset($this->responseTypes)) {
+            $this->responseTypes = array();
+        }
         if (0 == count($this->responseTypes)) {
             $this->responseTypes = $this->getDefaultResponseTypes();
         }
