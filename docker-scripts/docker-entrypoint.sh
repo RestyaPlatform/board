@@ -6,7 +6,7 @@ if [ "$1" = 'start' ]; then
   # config
   sed -i \
       -e "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_HOST}');/g" \
-      -e "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '5432');/g" \
+      -e "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_PORT}');/g" \
       -e "s/^.*'R_DB_USER'.*$/define('R_DB_USER', '${POSTGRES_USER}');/g" \
       -e "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_PASSWORD}');/g" \
       -e "s/^.*'R_DB_NAME'.*$/define('R_DB_NAME', '${POSTGRES_DB}');/g" \
@@ -45,7 +45,7 @@ if [ "$1" = 'start' ]; then
 
   # init db
   export PGHOST=${POSTGRES_HOST}
-  export PGPORT=5432
+  export PGPORT=${POSTGRES_PORT}
   export PGUSER=${POSTGRES_USER}
   export PGPASSWORD=${POSTGRES_PASSWORD}
   export PGDATABASE=${POSTGRES_DB}

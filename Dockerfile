@@ -60,6 +60,13 @@ RUN rm /etc/nginx/sites-enabled/default && \
 RUN apt-get autoremove -y --purge && \
     apt-get clean
 
+# Default values. Can be changed during container start.
+ENV POSTGRES_HOST=postgres \
+    POSTGRES_PORT=5432 \
+    POSTGRES_USER=admin \
+    POSTGRES_PASSWORD=admin \
+    POSTGRES_DB=restyaboard
+
 # entrypoint
 COPY docker-scripts/docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
