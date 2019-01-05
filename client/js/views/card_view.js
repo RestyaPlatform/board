@@ -228,10 +228,12 @@ App.CardView = Backbone.View.extend({
             }
             self.model.list.collection.board.lists.get(previous_list_id).cards.remove(self.model);
             self.model.list.collection.board.lists.get(previous_list_id).set('card_count', prev_list_card_count - 1);
+            App.current_board.lists.get(previous_list_id).set('card_count', prev_list_card_count - 1);
             prev_list.set('card_count', prev_list_card_count - 1);
 
             self.model.list.collection.board.lists.get(list_id).cards.add(self.model);
             self.model.list.collection.board.lists.get(list_id).set('card_count', current_list_card_count + 1);
+            App.current_board.lists.get(list_id).set('card_count', current_list_card_count + 1);
             current_list.set('card_count', current_list_card_count + 1);
 
             _(function() {

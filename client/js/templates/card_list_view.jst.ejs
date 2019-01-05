@@ -96,4 +96,13 @@
 	<% } else { %>
 	<td data-title="Checklist"><small>-</small></td>
 	<% } %>
+	<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_field',APPS.enabled_apps) !== -1) { 
+		if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && !_.isUndefined(App.current_board.attributes.custom_fields) && App.current_board.attributes.custom_fields !== null) {
+			_.each(App.current_board.attributes.custom_fields, function(customfield){ %>
+				<td class="js-list-view-card-<%- card.attributes.id %>-customfield-<%- customfield.id %> card-listing-truncate" data-title="<%- customfield.label %>"><small>-</small></td>
+			<% });
+		} else { %>
+			<td class="hide js-list-view-custom_fields-<%- card.attributes.id %>"></td>
+	 <% } 
+	} %>
 	<% } else { %><td colspan="12"  class="text-center alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('cards')] }) %></td><% } %>
