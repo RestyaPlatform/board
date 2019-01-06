@@ -14,7 +14,7 @@ if [ "$1" = 'start' ]; then
   echo $TZ > /etc/timezone
   rm /etc/localtime
   cp /usr/share/zoneinfo/$TZ /etc/localtime
-  sed -i "s|;date.timezone = |date.timezone = ${TZ}|" /etc/php/7.0/fpm/php.ini
+  sed -i "s|;date.timezone = |date.timezone = ${TZ}|" /etc/php/7.2/fpm/php.ini
 
   # postfix
   echo "[${SMTP_SERVER}]:${SMTP_PORT} ${SMTP_USERNAME}:${SMTP_PASSWORD}" > /etc/postfix/sasl_passwd
@@ -72,7 +72,7 @@ if [ "$1" = 'start' ]; then
 
   # service start
   service cron start
-  service php7.0-fpm start
+  service php7.2-fpm start
   service nginx start
   service postfix start
 
