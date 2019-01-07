@@ -24,7 +24,6 @@ jobs:
       script:
         - docker pull "${IMAGE_NAME}:dev"
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - npm run docker:prebuild
 
         # Direct push to dev
         - if [ "$TRAVIS_BRANCH" = "dev" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then

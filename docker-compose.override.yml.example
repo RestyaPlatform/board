@@ -1,3 +1,4 @@
+# If you want to use it just remove the extensions .example
 version: '2'
 services:
   restyaboard:
