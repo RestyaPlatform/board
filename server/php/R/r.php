@@ -5191,7 +5191,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, card_id, label_id, list_id, board_id) SELECT created, modified, $1, label_id, $2, $3 FROM cards_labels WHERE card_id = $4 ORDER BY id', $qry_val_arr);
                 }
-                if ($is_keep_custom_fields) {
+                if (isset($is_keep_custom_fields)) {
                     if (is_plugin_enabled('r_custom_fields')) {
                         $qry_val_arr = array(
                             $response['id'],

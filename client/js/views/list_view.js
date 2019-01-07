@@ -773,7 +773,6 @@ App.ListView = Backbone.View.extend({
 
         this.model.cards.set(copied_cards);
         var view_card = $('#js-card-listing-' + move_list_id);
-        view_card.html('');
         _.each(copied_cards, function(copied_card) {
             var options = {
                 silent: false
@@ -886,6 +885,7 @@ App.ListView = Backbone.View.extend({
         }, {
             patch: true
         });
+        $('#js-card-listing-' + self.model.id).html('&nbsp;');
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
                 if (!_.isUndefined(APPS) && APPS !== null) {
@@ -1529,6 +1529,12 @@ App.ListView = Backbone.View.extend({
                         card.set('id', data.uuid);
                     }
                     self.model.set('card_count', parseInt(self.model.attributes.card_count) + 1);
+                    if (parseInt(self.model.attributes.card_count) === 1) {
+                        // Removing the &nbsp; in the card listing after adding card
+                        $('#js-card-listing-' + self.model.id).html(function(i, h) {
+                            return h.replace(/&nbsp;/g, '');
+                        });
+                    }
                     self.model.collection.board.cards.add(card);
                     self.model.cards.add(card);
                     _(function() {
