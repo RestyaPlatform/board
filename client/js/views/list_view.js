@@ -812,16 +812,19 @@ App.ListView = Backbone.View.extend({
                 self.model.collection.board.cards.remove(copied_cards, {
                     silent: true
                 });
+                var options = {
+                    silent: true
+                };
                 var move_list_card_count = self.model.collection.board.lists.get(move_list_id).attributes.card_count;
                 var previous_list_card_count = self.model.collection.board.lists.get(list_id).attributes.card_count;
                 move_list_card_count = move_list_card_count ? move_list_card_count : 0;
                 previous_list_card_count = previous_list_card_count ? previous_list_card_count : 0;
                 move_list_card_count = move_list_card_count + previous_list_card_count;
-                self.model.collection.board.lists.get(move_list_id).set('cards_count', move_list_card_count);
+                self.model.collection.board.lists.get(move_list_id).set('cards_count', move_list_card_count, options);
                 self.model.collection.board.lists.get(list_id).set('cards_count', 0);
-                App.boards.get(self.model.attributes.board_id).lists.get(move_list_id).set('cards_count', move_list_card_count);
+                App.boards.get(self.model.attributes.board_id).lists.get(move_list_id).set('cards_count', move_list_card_count, options);
                 App.boards.get(self.model.attributes.board_id).lists.get(list_id).set('cards_count', 0);
-                self.board.lists.get(move_list_id).set('cards_count', move_list_card_count);
+                self.board.lists.get(move_list_id).set('cards_count', move_list_card_count, options);
                 self.board.lists.get(list_id).set('cards_count', 0);
                 $('#js-card-listing-' + list_id).html('&nbsp;');
                 App.current_board.lists.get(list_id).set('cards_count', 0);
