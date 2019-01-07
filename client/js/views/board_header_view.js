@@ -1554,6 +1554,11 @@ App.BoardHeaderView = Backbone.View.extend({
             currentBoardList.set('card_count', currentBoardList.attributes.card_count + 1, {
                 silent: true
             });
+            if (parseInt(currentBoardList.attributes.card_count) === 1) {
+                $('#js-card-listing-' + find_card.attributes.list_id).html(function(i, h) {
+                    return h.replace(/&nbsp;/g, '');
+                });
+            }
         }
         if (list !== null && !_.isUndefined(list) && !_.isEmpty(list)) {
             $('body').trigger('cardAddRendered', [list.id, list]);

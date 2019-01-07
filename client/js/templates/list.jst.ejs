@@ -1,7 +1,7 @@
 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 list">
 	<div class="list-header js-list-head <% if(!_.isUndefined(authuser.user)){%>cur-grab<%}%>">
 	  <div class="clearfix">
-		<a href="#" class="col-xs-6 <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-edit-list-form<% }else{ %> js-no-action<%}%>"><span><span class="clearfix row show">
+		<a href="#" class="col-xs-8 js-list-name-<%- list.id %> <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-edit-list-form<% }else{ %> js-no-action<%}%>"><span><span class="clearfix row show">
 		<strong class = "get-name-<%- list.attributes.id %>"><%- list.attributes.name %></strong><% var is_sub_class = 'hide'; if(!_.isEmpty(list.subscriber.attributes) && list.subscriber.attributes.is_subscribed == true){ is_sub_class = ''; }%><span class="pull-right"><i class="icon-eye-open js-list-subscribed-<%- list.attributes.id %> <%- is_sub_class %>"></i></span></span></span></a>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 		<form role="form" class="form-horizontal js-edit-list hide">
@@ -21,7 +21,7 @@
 		</form>
 		<% } %>
 		<%if(!_.isUndefined(authuser.user)) {%>
-		<div class="pull-right col-xs-6 clearfix js-list-header-<%- list.id %>">
+		<div class="pull-right col-xs-4 clearfix js-list-header-<%- list.id %>">
 			<div class="dropdown">
 			<a href="#" class="dropdown-toggle pull-right js-show-list-actions" id="js-show-list-actions-<%- list.attributes.id %>" data-toggle="dropdown" title="<%- i18next.t('List Actions') %>" data-list-id="<%- list.attributes.id %>"><i class="icon-cog text-primary"></i></a>
 			</div>
@@ -56,7 +56,7 @@
 			<span class="list-card-group-addon panel-body color-popover color-focusout" id="js-list-color-<%- list.attributes.id %>" style="background-color:<%- list.attributes.color %>; " data-color-format="hex"></span>
 		</div>
     <% } else {%>
-		<div id='colorPicker'>
+		<div id='colorPicker' class="hide">
         	<span class="list-card-group-addon input-new-addon-cl panel-body color-popover color-focusout" id="js-list-color-<%- list.attributes.id %>" data-color-format="hex"></span>
 		</div>
     <% } %>
