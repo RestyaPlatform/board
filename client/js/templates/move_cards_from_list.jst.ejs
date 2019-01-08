@@ -1,12 +1,8 @@
 <% 
 	var list_li = '';
 	var wip_enabled = false;
-	if (!_.isUndefined(APPS) && APPS !== null ) {
-		if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-			if ($.inArray('r_wip_limit',APPS.enabled_apps) !== -1) {
-				wip_enabled = true;
-			}
-		}
+	if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit',APPS.enabled_apps) !== -1) {
+		wip_enabled = true;
 	}
 	_.each(filtered_lists, function(filtered_list) {
 		 if (filtered_list.id == list.attributes.id) {
@@ -14,7 +10,7 @@
 		 } else {
 			if (wip_enabled &&  !_.isUndefined(filtered_list.attributes.custom_fields) && filtered_list.attributes.custom_fields) {
 				var wip_limit_count = JSON.parse(filtered_list.attributes.custom_fields);
-				if ((parseInt(wip_limit_count.wip_limit) !== parseInt(filtered_list.attributes.card_count))) {
+				if ((parseInt(wip_limit_count.wip_limit) !== parseInt(filtered_list.attributes.card_count)) || (!_.isUndefined(wip_limit_count.soft_wip_limit) && !_.isEmpty(wip_limit_count.soft_wip_limit))) {
 					 list_li += '<li class="navbar-btn"><a href="#" class="js-move-cards js-close-popup" data-move-list-id="' + filtered_list.id + '">' + _.escape(filtered_list.attributes.name) + '</a></li>';
 				}
 			} else {

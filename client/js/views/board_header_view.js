@@ -1560,8 +1560,10 @@ App.BoardHeaderView = Backbone.View.extend({
                 });
             }
         }
-        if (list !== null && !_.isUndefined(list) && !_.isEmpty(list)) {
-            $('body').trigger('cardAddRendered', [list.id, list]);
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+            if (list !== null && !_.isUndefined(list) && !_.isEmpty(list)) {
+                $('body').trigger('cardAddRendered', [list.id, list]);
+            }
         }
         $(e.currentTarget).parents('li').remove();
         var card = new App.Card();

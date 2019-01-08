@@ -1860,7 +1860,9 @@ App.ModalCardView = Backbone.View.extend({
             var changeList = this.boards.get(data.board_id).lists.get(data.list_id);
             _(function() {
                 if ((current_list !== null && !_.isUndefined(current_list) && !_.isEmpty(current_list)) && (change_list !== null && !_.isUndefined(change_list) && !_.isEmpty(change_list))) {
-                    $('body').trigger('cardSortRendered', [current_list, changeList]);
+                    if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                        $('body').trigger('cardSortRendered', [current_list, changeList]);
+                    }
                 }
             }).defer();
             if (data.board_id === current_board_id) {
@@ -1931,13 +1933,13 @@ App.ModalCardView = Backbone.View.extend({
                     currentBoardList.set('card_count', currentBoardList.attributes.card_count - 1, {
                         silent: true
                     });
+                    if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                        $('body').trigger('cardAddRendered', [currentBoardList.id, currentBoardList]);
+                    }
                 }
                 if (parseInt(currentBoardList.attributes.card_count) === 0) {
                     // Adding the &nbsp; to the list if there is no card
                     $('#js-card-listing-' + self.model.attributes.list_id).html('&nbsp;');
-                }
-                if (list !== null && !_.isUndefined(list) && !_.isEmpty(list)) {
-                    $('body').trigger('cardAddRendered', [list.id, list]);
                 }
                 var view = new App.ActivityView({
                     model: activity,
@@ -2011,9 +2013,9 @@ App.ModalCardView = Backbone.View.extend({
                     currentBoardList.set('card_count', currentBoardList.attributes.card_count + 1, {
                         silent: true
                     });
-                }
-                if (list !== null && !_.isUndefined(list) && !_.isEmpty(list)) {
-                    $('body').trigger('cardAddRendered', [list.id, list]);
+                    if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                        $('body').trigger('cardAddRendered', [currentBoardList.id, currentBoardList]);
+                    }
                 }
                 var view = new App.ActivityView({
                     model: activity,
