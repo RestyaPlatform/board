@@ -316,6 +316,7 @@ App.ListView = Backbone.View.extend({
         if (data.name === self.model.attributes.name) {
             $(e.target).addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
             $('#js-show-list-actions-' + self.model.id + ', #js-show-sort-form-' + self.model.id).removeClass('hide');
+            self.$el.find('.js-wip-limit-count-' + self.model.id).removeClass('hide');
         } else {
             self.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '.json';
             self.model.save(data, {
@@ -358,8 +359,10 @@ App.ListView = Backbone.View.extend({
             authuser: this.authuser
         }).el);
         _(function() {
-            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
-                $('body').trigger('listActionRendered', [self.model.id, self.model]);
+            if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                    $('body').trigger('listActionRendered', [self.model.id, self.model]);
+                }
             }
         }).defer();
     },
@@ -815,6 +818,11 @@ App.ListView = Backbone.View.extend({
                     silent: true
                 };
                 var move_list_card_count = self.model.collection.board.lists.get(move_list_id).attributes.card_count;
+                if (parseInt(move_list_card_count) === 0) {
+                    $('#js-card-listing-' + move_list_id).html(function(i, h) {
+                        return h.replace(/&nbsp;/g, '');
+                    });
+                }
                 var previous_list_card_count = self.model.collection.board.lists.get(list_id).attributes.card_count;
                 move_list_card_count = move_list_card_count ? move_list_card_count : 0;
                 previous_list_card_count = previous_list_card_count ? previous_list_card_count : 0;
@@ -888,12 +896,8 @@ App.ListView = Backbone.View.extend({
         $('#js-card-listing-' + self.model.id).html('&nbsp;');
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
-                if (!_.isUndefined(APPS) && APPS !== null) {
-                    if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-                        if ($.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
-                            $('body').trigger('cardAddRendered', [self.model.id, self.model]);
-                        }
-                    }
+                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                    $('body').trigger('cardAddRendered', [self.model.id, self.model]);
                 }
             }
         }).defer();
@@ -1314,6 +1318,7 @@ App.ListView = Backbone.View.extend({
         this.closePopup(e);
         $(e.currentTarget).addClass('hide').next('form').removeClass('hide');
         this.$('#js-show-list-actions-' + this.model.attributes.id + ', #js-show-sort-form-' + this.model.attributes.id).addClass('hide');
+        this.$el.find('.js-wip-limit-count-' + this.model.attributes.id).addClass('hide');
         return false;
     },
     /**
@@ -1330,6 +1335,7 @@ App.ListView = Backbone.View.extend({
         toggle.parents('.js-board-list').find('#inputListName').val($('.get-name-' + this.model.attributes.id).html());
         toggle.parents('form').addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
         this.$('#js-show-list-actions-' + this.model.attributes.id + ', #js-show-sort-form-' + this.model.attributes.id).removeClass('hide');
+        this.$el.find('.js-wip-limit-count-' + this.model.attributes.id).removeClass('hide');
         return false;
     },
     /**
@@ -1538,8 +1544,10 @@ App.ListView = Backbone.View.extend({
                     self.model.collection.board.cards.add(card);
                     self.model.cards.add(card);
                     _(function() {
-                        if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
-                            $('body').trigger('cardAddRendered', [self.model.id, self.model]);
+                        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                                $('body').trigger('cardAddRendered', [self.model.id, self.model]);
+                            }
                         }
                     }).defer();
                 }

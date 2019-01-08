@@ -752,6 +752,10 @@ App.FooterView = Backbone.View.extend({
      */
     userActivities: function(bool, mode) {
         var self = this;
+        var wip_enabled = false;
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+            wip_enabled = true;
+        }
         var activities = new App.ActivityCollection();
         var view_activity = $('#js-all-activities');
         var Auth, favCount;
@@ -972,6 +976,9 @@ App.FooterView = Backbone.View.extend({
                                             card_list.set('cards', activity.attributes.card);
                                             // Updating the list card count
                                             card_list.set('card_count', parseInt(card_list.attributes.card_count) + 1);
+                                            if (card_list !== null && !_.isEmpty(card_list) && wip_enabled) {
+                                                $('body').trigger('cardAddRendered', [card_list.id, card_list]);
+                                            }
                                         }
                                     }
                                     if (activity.attributes.type === 'add_card_color') {
@@ -1268,6 +1275,9 @@ App.FooterView = Backbone.View.extend({
                                                     return h.replace(/&nbsp;/g, '');
                                                 });
                                             }
+                                            if (!_.isUndefined(card_old_list) && !_.isUndefined(card_new_list) && wip_enabled) {
+                                                $('body').trigger('cardSortRendered', [card_old_list, card_new_list]);
+                                            }
                                             card.list = card_new_list;
                                             card.set('list_id', parseInt(activity.attributes.foreign_id));
                                             card.list.collection.board.lists.get(activity.attributes.foreign_id).cards.add(card);
@@ -1295,15 +1305,19 @@ App.FooterView = Backbone.View.extend({
                                             var Cardlist = self.board.lists.findWhere({
                                                 id: parseInt(activity.attributes.list_id)
                                             });
-                                            Cardlist.set('card_count', parseInt(Cardlist.attributes.card_count) - 1);
+                                            if (Cardlist !== null && !_.isUndefined(Cardlist) && !_.isEmpty(Cardlist) && wip_enabled) {
+                                                Cardlist.set('card_count', parseInt(Cardlist.attributes.card_count) - 1);
+                                                $('body').trigger('cardAddRendered', [Cardlist.id, Cardlist]);
+                                            }
                                             if (parseInt(Cardlist.attributes.card_count) === 0) {
                                                 $('#js-card-listing-' + Cardlist.id).html('&nbsp;');
                                             }
                                         } else if (activity.attributes.type === 'unarchived_card') {
-                                            var cardList = self.board.lists.findWhere({
-                                                id: parseInt(activity.attributes.list_id)
-                                            });
-                                            cardList.set('card_count', parseInt(cardList.attributes.card_count) + 1);
+                                            var cardList = self.board.lists.get(activity.attributes.list_id);
+                                            if (cardList !== null && !_.isUndefined(cardList) && !_.isEmpty(cardList) && wip_enabled) {
+                                                cardList.set('card_count', parseInt(cardList.attributes.card_count) + 1);
+                                                $('body').trigger('cardAddRendered', [cardList.id, cardList]);
+                                            }
                                             if (parseInt(cardList.attributes.card_count) === 1) {
                                                 $('#js-card-listing-' + cardList.id).html($('#js-card-listing-' + cardList.id).html().replace(/^\s*&nbsp;/m, ''));
                                             }
@@ -1419,6 +1433,14 @@ App.FooterView = Backbone.View.extend({
                                             var cards = self.board.cards.where({
                                                 list_id: parseInt(activity.attributes.list_id)
                                             });
+                                            var newList = self.board.lists.findWhere({
+                                                id: parseInt(activity.attributes.foreign_id)
+                                            });
+                                            var new_list_card_count = self.board.lists.get(activity.attributes.foreign_id).attributes.card_count;
+                                            var previous_list_card_count = self.board.lists.get(list.id).attributes.card_count;
+                                            new_list_card_count = new_list_card_count ? new_list_card_count : 0;
+                                            previous_list_card_count = previous_list_card_count ? previous_list_card_count : 0;
+                                            new_list_card_count = new_list_card_count + previous_list_card_count;
                                             if (!_.isUndefined(cards) && cards.length > 0) {
                                                 // Removing the &nbsp; from the new list card listing
                                                 $('#js-card-listing-' + activity.attributes.foreign_id).html(function(i, h) {
@@ -1434,7 +1456,11 @@ App.FooterView = Backbone.View.extend({
                                                         list_id: parseInt(activity.attributes.foreign_id)
                                                     }, options);
                                                 });
+                                                newList.set('card_count', new_list_card_count);
                                                 list.set('card_count', 0);
+                                                if (!_.isUndefined(list) && !_.isUndefined(newList) && wip_enabled) {
+                                                    $('body').trigger('listmoveActionRendered', [list.id, newList.id, new_list_card_count]);
+                                                }
                                                 // Adding the &nbsp; for the old list with no card
                                                 $('#js-card-listing-' + list.id).html('&nbsp;');
                                             }
@@ -1454,6 +1480,9 @@ App.FooterView = Backbone.View.extend({
                                                     }, options);
                                                 });
                                                 list.set('card_count', 0);
+                                                if (!_.isUndefined(list) && wip_enabled) {
+                                                    $('body').trigger('cardAddRendered', [list.id, list]);
+                                                }
                                                 $('#js-card-listing-' + list.id).html('&nbsp;');
                                             }
                                         }
