@@ -17,7 +17,7 @@
 									/>
 								</a>
 							</span>
-							</h1>
+							</h2>
 					</div>
 				</div>
 				<nav class="navbar-collapse collapse">
@@ -52,6 +52,15 @@
 					</div>
 				</nav>
 			</div>
+			<% if(typeof(user) !== "undefined") { %>
+				<section id="broadcast_information" class="hide hidden-xs">
+				</section>
+				<section id="broadcast_hide_arrow" class="hide hidden-xs">
+					<a href="#" class="broadcast-content-show js-broadcast-show pull-right" title="show">
+						<i class="icon-angle-up"></i>
+					</a>
+				</section>
+			<% } %>
 		</div>
 	</div>
 	<% } else if(typeof(user) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'user_logins' || current_param === 'roles' || current_param === 'apps' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list'|| current_param === 'oauth_clients' || current_param === 'board_user_roles' || current_param === 'organization_user_roles')){%>
@@ -270,7 +279,18 @@
 						</ul>
 					</div>
 				</nav>
-			</div>
+				</div>
+				<div class="container-fluid">
+					<section id="broadcast_information" class="hide hidden-xs">
+						<div class="row list-group-item-text"></div>
+					</section>
+					<section id="broadcast_hide_arrow" class="hide hidden-xs">
+						<a href="#" class="broadcast-content-show js-broadcast-show pull-right" title="show">
+							<i class="icon-angle-up"></i>
+							</i>
+						</a>
+					</section>
+				</div>
 			<% } else { %>
 				<div role="navigation" class="navbar navbar-default" id="js-navbar-default">
 					<div class="container-fluid">
