@@ -211,7 +211,7 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
         var server = $(e.currentTarget).data('server');
         var secret = $(e.currentTarget).data('secret');
         var title = $(e.currentTarget).data('title');
-        var image_path = '//farm' + farm + '.static.flickr.com/' + server + '/' + id + '_' + secret + '_b.jpg';
+        var image_path = window.location.protocol + '//farm' + farm + '.static.flickr.com/' + server + '/' + id + '_' + secret + '_b.jpg';
         if (this.type == 'image') {
             $('body').removeAttr('style').css({
                 'background': 'url(' + image_path + ') 25% 25% no-repeat fixed',
@@ -220,7 +220,7 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
             this.model.set('background_name', title);
             this.model.set('background_picture_url', image_path);
             this.model.set('background_pattern_url', '');
-            image_path = '//farm' + farm + '.static.flickr.com/' + server + '/' + id + '_' + secret + '_XXXX.jpg';
+            image_path = window.location.protocol + '//farm' + farm + '.static.flickr.com/' + server + '/' + id + '_' + secret + '_XXXX.jpg';
             data = {
                 background_name: title,
                 background_color: 'NULL',
