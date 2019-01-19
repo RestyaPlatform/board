@@ -2304,8 +2304,6 @@ App.ModalCardView = Backbone.View.extend({
             var view_activity = this.$('#js-card-activities-' + self.model.id);
             //view_activity.html('');
             if (!_.isEmpty(this.model.activities)) {
-                this.model.activities.setSortField('id', 'desc');
-                this.model.activities.sort();
                 var i = 1;
                 this.model.activities.each(function(activity) {
                     $('#js-loader-img').removeClass('hide');
