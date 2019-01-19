@@ -190,7 +190,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $filter_condition = "WHERE LOWER(full_name) LIKE '%" . strtolower($r_resource_filters['search']) . "%' OR LOWER(email) LIKE '%" . strtolower($r_resource_filters['search']) . "%' ";
         }
         $c_sql = 'SELECT COUNT(*) FROM admin_users_listing ul ';
-        if (!empty($r_resource_filters['search'])) {
+        if (!empty($r_resource_filters['search']) || !empty($r_resource_filters['filter'])) {
             $c_sql = 'SELECT COUNT(*) FROM admin_users_listing ul ' . $filter_condition;
         }
         if (!empty($c_sql)) {

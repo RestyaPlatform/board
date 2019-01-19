@@ -52,7 +52,11 @@ App.AdminUserIndexView = Backbone.View.extend({
         }
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.users = new App.UserCollection();
-        $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
+        var colspan = "15";
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
+            colspan = "16";
+        }
+        $('.js-user-list').html('<tr class="js-loader"><td colspan="' + colspan + '"><span class="cssloader"></span></td></tr>');
         _this.users.url = api_url + 'users.json?page=' + _this.current_page;
         app.navigate('#/' + 'users?page=' + _this.current_page, {
             trigger: false,
@@ -80,18 +84,21 @@ App.AdminUserIndexView = Backbone.View.extend({
                     }).el);
                 });
                 $('.pagination-boxes').unbind();
-                $('.pagination-boxes').pagination({
-                    total_pages: response._metadata.noOfPages,
-                    current_page: _this.current_page,
-                    display_max: 4,
-                    callback: function(event, page) {
-                        event.preventDefault();
-                        if (page) {
-                            _this.current_page = page;
-                            _this.updateCollection();
+                $('.pagination-boxes').html('');
+                if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
+                    $('.pagination-boxes').pagination({
+                        total_pages: response._metadata.noOfPages,
+                        current_page: _this.current_page,
+                        display_max: 4,
+                        callback: function(event, page) {
+                            event.preventDefault();
+                            if (page) {
+                                _this.current_page = page;
+                                _this.updateCollection();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
     },

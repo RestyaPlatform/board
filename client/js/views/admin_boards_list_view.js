@@ -61,18 +61,21 @@ App.AdminBoardsListView = Backbone.View.extend({
                     }).el);
                 });
                 $('.pagination-boxes').unbind();
-                $('.pagination-boxes').pagination({
-                    total_pages: response._metadata.noOfPages,
-                    current_page: _this.current_page,
-                    display_max: 4,
-                    callback: function(event, page) {
-                        event.preventDefault();
-                        if (page) {
-                            _this.current_page = page;
-                            _this.updateCollection();
+                $('.pagination-boxes').html('');
+                if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
+                    $('.pagination-boxes').pagination({
+                        total_pages: response._metadata.noOfPages,
+                        current_page: _this.current_page,
+                        display_max: 4,
+                        callback: function(event, page) {
+                            event.preventDefault();
+                            if (page) {
+                                _this.current_page = page;
+                                _this.updateCollection();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
     }
