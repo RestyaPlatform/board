@@ -115,7 +115,7 @@
 												var profile_picture_path = user.showImage('User', user.attributes.id, 'normal_thumb' ) +'?'+ new Date().getTime();
 											%>
 												<span class="js-remove-image  profile-block show"><i class="icon icon-remove close-block cur h6"></i></span>
-												<img src="<%- profile_picture_path %>" width="50" height="50" class="js-user-avatar">
+												<img src="<%- profile_picture_path %>" width="64" height="64" class="js-user-avatar">
 											<% } else {%>
 												<i class="avatar avatar-color-194 avatar-md img-rounded"><%- user.attributes.initials %></i>									
 											<% } %>
