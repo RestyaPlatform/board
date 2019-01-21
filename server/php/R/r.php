@@ -4086,7 +4086,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                             'pdf'
                                         ))) {
                                             $im = new Imagick($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
-                                            $im->setImageColorspace(255); // prevent image colors from inverting
+                                            $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
                                             $im->setimageformat('png');
                                             $im->thumbnailimage(200, 150); // width and height
                                             $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
@@ -4513,7 +4513,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             'pdf'
                         ))) {
                             $im = new Imagick($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
-                            $im->setImageColorspace(255); // prevent image colors from inverting
+                            $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
                             $im->setimageformat('png');
                             $im->thumbnailimage(200, 150); // width and height
                             $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
@@ -4632,7 +4632,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     'pdf'
                 ))) {
                     $im = new Imagick($mediadir . DIRECTORY_SEPARATOR . $file['name'] . "[0]"); // 0-first page, 1-second page
-                    $im->setImageColorspace(255); // prevent image colors from inverting
+                    $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
                     $im->setimageformat('png');
                     $im->thumbnailimage(200, 150); // width and height
                     $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
@@ -4700,7 +4700,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             'pdf'
                         ))) {
                             $im = new Imagick($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
-                            $im->setImageColorspace(255); // prevent image colors from inverting
+                            $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
                             $im->setimageformat('png');
                             $im->thumbnailimage(200, 150); // width and height
                             $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
