@@ -184,8 +184,6 @@ App.ListView = Backbone.View.extend({
         };
         var self = this;
         var list_id = self.model.id;
-        $('#js-list-color-' + list_id).closest('#colorPicker').removeAttr('style');
-        $('#js-list-color-' + list_id).closest('#colorPicker').addClass('hide');
         $('#js-list-color-' + list_id).attr('style', 'background-color: ' + color_label + ' !important');
         $('#js-list-demo-' + list_id).attr('style', 'border-bottom: ' + color_label);
         $('.js-remove-list-color').addClass('hide');
@@ -219,8 +217,6 @@ App.ListView = Backbone.View.extend({
         };
         var self = this;
         var list_id = self.model.id;
-        $('#js-list-color-' + list_id).closest('#colorPicker').attr('style', 'padding-bottom:8px');
-        $('#js-list-color-' + list_id).closest('#colorPicker').removeClass('hide');
         $('#js-list-color-' + list_id).attr('style', 'background-color: ' + color_label + ' !important');
         $('#js-list-demo-' + list_id).attr('style', 'border-bottom: 2px solid' + color_label + ' !important');
         $('.js-remove-list-color').removeClass('hide');
