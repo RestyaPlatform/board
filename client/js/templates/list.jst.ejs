@@ -51,15 +51,9 @@
 		<% } %>
 	  </div>
 	</div>
-	<% if(!_.isUndefined(list.attributes.color) && list.attributes.color !== null){ %>
-		<div id='colorPicker' style="padding-bottom:8px;"> 
-			<span class="list-card-group-addon panel-body color-popover color-focusout" id="js-list-color-<%- list.attributes.id %>" style="background-color:<%- list.attributes.color %>; " data-color-format="hex"></span>
-		</div>
-    <% } else {%>
-		<div id='colorPicker' class="hide">
-        	<span class="list-card-group-addon input-new-addon-cl panel-body color-popover color-focusout" id="js-list-color-<%- list.attributes.id %>" data-color-format="hex"></span>
-		</div>
-    <% } %>
+	<div id='colorPicker' style="padding-bottom:8px;"> 
+		<span class="list-card-group-addon panel-body color-popover color-focusout" id="js-list-color-<%- list.attributes.id %>" style="background-color:<%- list.attributes.color %>; " data-color-format="hex"></span>
+	</div>
 	<div class="list-content vertical-scrollbar vertical-scrollbar-box js-board-list-cards" id="js-card-listing-<%- list.attributes.id %>">
 	</div>
 	<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "add_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
