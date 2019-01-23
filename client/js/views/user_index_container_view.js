@@ -113,7 +113,11 @@ App.UserIndexContainerView = Backbone.View.extend({
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.filterField = (!_.isUndefined(e)) ? $(e.currentTarget).data('filter') : _this.filterField;
         var users = new App.UserCollection();
-        $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
+        var colspan = "15";
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
+            colspan = "16";
+        }
+        $('.js-user-list').html('<tr class="js-loader"><td colspan="' + colspan + '"><span class="cssloader"></span></td></tr>');
         users.url = api_url + 'users.json?page=' + _this.current_page + '&filter=' + _this.filterField;
         app.navigate('#/' + 'users?page=' + _this.current_page + '&filter=' + _this.filterField, {
             trigger: false,
@@ -133,23 +137,28 @@ App.UserIndexContainerView = Backbone.View.extend({
                         }).el);
                     });
                 } else {
-                    $('.js-user-list').html('<tr><td class="text-center" colspan="15">No record found</td></tr>');
+                    $('.js-user-list').html('<tr><td class="text-center" colspan="' + colspan + '">No record found</td></tr>');
                 }
                 $('.js-filter-list').children().removeClass('active');
-                $(e.currentTarget).parent().addClass('active');
+                if (!_.isUndefined(e)) {
+                    $(e.currentTarget).parent().addClass('active');
+                }
                 $('.pagination-boxes').unbind();
-                $('.pagination-boxes').pagination({
-                    total_pages: response._metadata.noOfPages,
-                    current_page: _this.current_page,
-                    display_max: 4,
-                    callback: function(event, page) {
-                        event.preventDefault();
-                        if (page) {
-                            _this.current_page = page;
-                            _this.filterUser();
+                $('.pagination-boxes').html('');
+                if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
+                    $('.pagination-boxes').pagination({
+                        total_pages: response._metadata.noOfPages,
+                        current_page: _this.current_page,
+                        display_max: 4,
+                        callback: function(event, page) {
+                            event.preventDefault();
+                            if (page) {
+                                _this.current_page = page;
+                                _this.filterUser();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
     },
@@ -161,11 +170,14 @@ App.UserIndexContainerView = Backbone.View.extend({
      */
     userSearch: function(e) {
         var _this = this;
-        console.log(this);
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.searchField = $('#user_search').val();
         var users = new App.UserCollection();
-        $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
+        var colspan = "15";
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
+            colspan = "16";
+        }
+        $('.js-user-list').html('<tr class="js-loader"><td colspan="' + colspan + '"><span class="cssloader"></span></td></tr>');
         if (!_.isUndefined(_this.searchField) && !_.isUndefined(_this.searchField)) {
             users.url = api_url + 'users.json?page=' + _this.current_page + '&search=' + _this.searchField;
         }
@@ -183,21 +195,24 @@ App.UserIndexContainerView = Backbone.View.extend({
                         }).el);
                     });
                 } else {
-                    $('.js-user-list').html('<tr><td class="text-center" colspan="15">No record found</td></tr>');
+                    $('.js-user-list').html('<tr><td class="text-center" colspan="' + colspan + '">No record found</td></tr>');
                 }
                 $('.pagination-boxes').unbind();
-                $('.pagination-boxes').pagination({
-                    total_pages: response._metadata.noOfPages,
-                    current_page: _this.current_page,
-                    display_max: 4,
-                    callback: function(event, page) {
-                        event.preventDefault();
-                        if (page) {
-                            _this.current_page = page;
-                            _this.sortUser();
+                $('.pagination-boxes').html('');
+                if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
+                    $('.pagination-boxes').pagination({
+                        total_pages: response._metadata.noOfPages,
+                        current_page: _this.current_page,
+                        display_max: 4,
+                        callback: function(event, page) {
+                            event.preventDefault();
+                            if (page) {
+                                _this.current_page = page;
+                                _this.sortUser();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
         return false;
@@ -209,14 +224,16 @@ App.UserIndexContainerView = Backbone.View.extend({
      *
      */
     sortUser: function(e) {
-
         var _this = this;
-        console.log(this);
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.sortField = (!_.isUndefined(e)) ? $(e.currentTarget).data('field') : _this.sortField;
         _this.sortDirection = (!_.isUndefined(e)) ? $(e.currentTarget).data('direction') : _this.sortDirection;
         var users = new App.UserCollection();
-        $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
+        var colspan = "15";
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
+            colspan = "16";
+        }
+        $('.js-user-list').html('<tr class="js-loader"><td colspan="' + colspan + '"><span class="cssloader"></span></td></tr>');
         if (!_.isUndefined(_this.sortDirection) && !_.isUndefined(_this.sortField)) {
             users.setSortField(_this.sortField, _this.sortDirection);
             if (!_.isUndefined(_this.searchField) && (_this.searchField !== '')) {
@@ -279,18 +296,21 @@ App.UserIndexContainerView = Backbone.View.extend({
                     }).el);
                 });
                 $('.pagination-boxes').unbind();
-                $('.pagination-boxes').pagination({
-                    total_pages: response._metadata.noOfPages,
-                    current_page: _this.current_page,
-                    display_max: 4,
-                    callback: function(event, page) {
-                        event.preventDefault();
-                        if (page) {
-                            _this.current_page = page;
-                            _this.sortUser();
+                $('.pagination-boxes').html('');
+                if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
+                    $('.pagination-boxes').pagination({
+                        total_pages: response._metadata.noOfPages,
+                        current_page: _this.current_page,
+                        display_max: 4,
+                        callback: function(event, page) {
+                            event.preventDefault();
+                            if (page) {
+                                _this.current_page = page;
+                                _this.sortUser();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
     },

@@ -621,7 +621,7 @@ App.ModalCardView = Backbone.View.extend({
      * @return false
      */
     cancelCardDescEditForm: function(e) {
-        this.$el.find('.js-show-card-desc').next().show();
+        this.$el.find('.js-show-card-desc').show();
         this.$el.find('#cardDescriptionEditForm').addClass('hide');
         return false;
     },
@@ -723,7 +723,7 @@ App.ModalCardView = Backbone.View.extend({
      */
     showCardDescEditForm: function(e) {
         e.preventDefault();
-        this.$el.find('.js-show-card-desc').next().hide();
+        this.$el.find('.js-show-card-desc').hide();
         this.$el.find('#cardDescriptionEditForm').removeClass('hide').show();
         return false;
     },
@@ -1802,18 +1802,23 @@ App.ModalCardView = Backbone.View.extend({
                 position: data.position
             });
         } else {
-            if (_.isUndefined(change_prev_card)) {
+            if (_.isUndefined(change_prev_card) && !_.isUndefined(change_next_card)) {
                 data.position = (change_next_card.attributes.position) / 2;
                 this.model.set({
                     position: data.position
                 });
-            } else if (_.isUndefined(change_next_card)) {
+            } else if (_.isUndefined(change_next_card) && !_.isUndefined(change_next_card)) {
                 data.position = (change_prev_card.attributes.position) + 1;
                 this.model.set({
                     position: data.position
                 });
             } else if (!_.isUndefined(change_prev_card)) {
                 data.position = (change_prev_card.attributes.position + change_next_card.attributes.position) / 2;
+                this.model.set({
+                    position: data.position
+                });
+            } else {
+                data.position = 1;
                 this.model.set({
                     position: data.position
                 });
@@ -1836,7 +1841,9 @@ App.ModalCardView = Backbone.View.extend({
         });
         if (data.list_id !== current_list_id) {
             this.model.list.collection.board.lists.get(current_list_id).cards.remove(this.model);
-            this.model.list.collection.board.lists.get(data.list_id).cards.add(this.model);
+            if (data.board_id === current_board_id) {
+                this.model.list.collection.board.lists.get(data.list_id).cards.add(this.model);
+            }
             this.model.list = this.model.list.collection.get(data.list_id);
             var prev_list_card_count = parseInt(this.boards.get(current_board_id).lists.get(current_list_id).get('card_count'));
             this.boards.get(current_board_id).lists.get(current_list_id).set('card_count', prev_list_card_count - 1);
@@ -1844,17 +1851,32 @@ App.ModalCardView = Backbone.View.extend({
                 id: current_list_id
             });
             current_list.set('card_count', prev_list_card_count - 1);
+            if (parseInt(current_list.attributes.card_count) === 0) {
+                // Adding the &nbsp; to the current list if it has no card
+                $('#js-card-listing-' + current_list.id).html('&nbsp;');
+            }
             var change_list_card_count = parseInt(this.boards.get(data.board_id).lists.get(data.list_id).get('card_count'));
             this.boards.get(data.board_id).lists.get(data.list_id).set('card_count', change_list_card_count + 1);
-            change_list = this.board.lists.findWhere({
-                id: data.list_id
-            });
-            change_list.set('card_count', change_list_card_count + 1);
+            var changeList = this.boards.get(data.board_id).lists.get(data.list_id);
             _(function() {
                 if ((current_list !== null && !_.isUndefined(current_list) && !_.isEmpty(current_list)) && (change_list !== null && !_.isUndefined(change_list) && !_.isEmpty(change_list))) {
-                    $('body').trigger('cardSortRendered', [current_list, change_list]);
+                    if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                        $('body').trigger('cardSortRendered', [current_list, changeList]);
+                    }
                 }
             }).defer();
+            if (data.board_id === current_board_id) {
+                change_list = this.board.lists.findWhere({
+                    id: data.list_id
+                });
+                change_list.set('card_count', change_list_card_count + 1);
+                if (parseInt(change_list.attributes.card_count) === 1) {
+                    // Removing the &nbsp; from the new list in the same board
+                    $('#js-card-listing-' + change_list.id).html(function(i, h) {
+                        return h.replace(/&nbsp;/g, '');
+                    });
+                }
+            }
         }
         return false;
 
@@ -1911,9 +1933,13 @@ App.ModalCardView = Backbone.View.extend({
                     currentBoardList.set('card_count', currentBoardList.attributes.card_count - 1, {
                         silent: true
                     });
+                    if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                        $('body').trigger('cardAddRendered', [currentBoardList.id, currentBoardList]);
+                    }
                 }
-                if (list !== null && !_.isUndefined(list) && !_.isEmpty(list)) {
-                    $('body').trigger('cardAddRendered', [list.id, list]);
+                if (parseInt(currentBoardList.attributes.card_count) === 0) {
+                    // Adding the &nbsp; to the list if there is no card
+                    $('#js-card-listing-' + self.model.attributes.list_id).html('&nbsp;');
                 }
                 var view = new App.ActivityView({
                     model: activity,
@@ -1944,6 +1970,11 @@ App.ModalCardView = Backbone.View.extend({
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
         this.model.set('is_offline', true);
         this.model.set('is_archived', 0);
+        if (parseInt(this.model.list.attributes.card_count) === 0) {
+            $('#js-card-listing-' + this.model.list.id).html(function(i, h) {
+                return h.replace(/&nbsp;/g, '');
+            });
+        }
         this.model.save({
             is_archived: 0
         }, {
@@ -1982,9 +2013,9 @@ App.ModalCardView = Backbone.View.extend({
                     currentBoardList.set('card_count', currentBoardList.attributes.card_count + 1, {
                         silent: true
                     });
-                }
-                if (list !== null && !_.isUndefined(list) && !_.isEmpty(list)) {
-                    $('body').trigger('cardAddRendered', [list.id, list]);
+                    if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                        $('body').trigger('cardAddRendered', [currentBoardList.id, currentBoardList]);
+                    }
                 }
                 var view = new App.ActivityView({
                     model: activity,
@@ -2256,11 +2287,11 @@ App.ModalCardView = Backbone.View.extend({
      * display card activities
      */
     renderActivitiesCollection: function() {
-        if (this.model.list.collection.board.attributes.board_visibility === 2 || (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
+        var self = this;
+        if ((!_.isUndefined(self.model.list) && self.model.list.collection.board.attributes.board_visibility === 2) || (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(self.model.list.collection.board.acl_links.where({
                 slug: "view_card_activities",
                 board_user_role_id: parseInt(this.model.board_user_role_id)
             }))))) {
-            var self = this;
             var filter = $.cookie('filter');
             if (!_.isUndefined(filter) && filter === 'activity' && !self.$el.find('#modal-activities').hasClass('active')) {
                 self.$el.find('#modal-activities').addClass('active');
@@ -2273,8 +2304,6 @@ App.ModalCardView = Backbone.View.extend({
             var view_activity = this.$('#js-card-activities-' + self.model.id);
             //view_activity.html('');
             if (!_.isEmpty(this.model.activities)) {
-                this.model.activities.setSortField('id', 'desc');
-                this.model.activities.sort();
                 var i = 1;
                 this.model.activities.each(function(activity) {
                     $('#js-loader-img').removeClass('hide');
@@ -2890,7 +2919,6 @@ App.ModalCardView = Backbone.View.extend({
     showConfirmCommentDelete: function(e) {
         e.preventDefault();
         var activity_id = $(e.currentTarget).data('activity-id');
-        $('.js-acticity-action-' + activity_id).css('height', '165px');
         $(e.currentTarget).siblings('ul').find('#js-acticity-actions-response-' + activity_id).html(new App.ActivityDeleteConfirmView({
             model: activity_id
         }).el);
@@ -3354,6 +3382,13 @@ App.ModalCardView = Backbone.View.extend({
                         i++;
                     });
                     self.model.list.collection.board.cards.add(card);
+                    var change_list_card_count = parseInt(self.boards.get(data.board_id).lists.get(data.list_id).get('card_count'));
+                    if (parseInt(change_list_card_count) === 1) {
+                        // Removing the &nbsp; from the new list
+                        $('#js-card-listing-' + data.list_id).html(function(i, h) {
+                            return h.replace(/&nbsp;/g, '');
+                        });
+                    }
                     if (!_.isUndefined(response.cards.cards_checklists) && !_.isEmpty(response.cards.cards_checklists)) {
                         if (response.cards.cards_checklists.length > 0) {
                             _.each(response.cards.cards_checklists, function(card_checklist) {

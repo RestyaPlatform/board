@@ -190,7 +190,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $filter_condition = "WHERE LOWER(full_name) LIKE '%" . strtolower($r_resource_filters['search']) . "%' OR LOWER(email) LIKE '%" . strtolower($r_resource_filters['search']) . "%' ";
         }
         $c_sql = 'SELECT COUNT(*) FROM admin_users_listing ul ';
-        if (!empty($r_resource_filters['search'])) {
+        if (!empty($r_resource_filters['search']) || !empty($r_resource_filters['filter'])) {
             $c_sql = 'SELECT COUNT(*) FROM admin_users_listing ul ' . $filter_condition;
         }
         if (!empty($c_sql)) {
@@ -840,6 +840,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
             $_metadata = $paging_data['_metadata'];
         }
+        if (!empty($c_sql) && !empty($r_resource_filters['page'])) {
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM admin_boards_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ' limit ' . $_metadata['limit'] . ' offset ' . $_metadata['offset'] . ') as d ';
+        }
         if (!empty($sql)) {
             if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
                 $data = array();
@@ -868,7 +871,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($_metadata) && !empty($board_user_roles) && OAUTH_CLIENTID != 7857596005287233) {
                     $data['board_user_roles'] = $board_user_roles;
                 }
-                if (is_plugin_enabled('r_chart')) {
+                if (is_plugin_enabled('r_chart') && empty($r_resource_filters['page'])) {
                     require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chart' . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
                     $passed_values = array();
                     $passed_values['sort'] = $sort;
@@ -2415,9 +2418,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     case '/users/login': //users login
         $table_name = 'users';
         $val_arr = array(
-            strtolower($r_post['email'])
+            $r_post['email']
         );
-        $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
+        if (filter_var($r_post['email'], FILTER_VALIDATE_EMAIL) !== false) {
+            $where = 'LOWER(email) = LOWER($1)';
+        } else {
+            $where = 'LOWER(username)=LOWER($1)';
+        }
+        $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE ' . $where, $val_arr);
         if (is_plugin_enabled('r_ldap_login')) {
             require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'LdapLogin' . DIRECTORY_SEPARATOR . 'functions.php';
             $ldap_response = ldapUpdateUser($log_user, $r_post);
@@ -2427,11 +2435,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         if (!empty($log_user) && $log_user['is_ldap'] == 0) {
             $r_post['password'] = crypt($r_post['password'], $log_user['password']);
             $val_arr = array(
-                strtolower($r_post['email']),
+                $r_post['email'],
                 $r_post['password'],
                 1
             );
-            $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
+            $user = executeQuery('SELECT * FROM users_listing WHERE ' . $where . ' AND password = $2 AND is_active = $3', $val_arr);
         }
         if (!empty($user)) {
             if (!IS_TWO_FACTOR_AUTHENTICATION_ENABLED || $user['is_two_factor_authentication_enabled'] == 'f' || ($user['is_two_factor_authentication_enabled'] == 't' && !empty($r_post['verification_code']))) {
@@ -3768,6 +3776,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $hash = md5(SECURITYSALT . 'Board' . $r_resource_vars['boards'] . 'jpg' . 'extra_large_thumb');
                     $background_picture_url = $_server_domain_url . '/img/extra_large_thumb/Board/' . $r_resource_vars['boards'] . '.' . $hash . '.jpg';
                     $r_post['background_picture_path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'];
+                    $background_picture_url = preg_replace('/(http|https):/', '', $background_picture_url);
                     $r_post['path'] = $background_picture_url;
                     $response['background_picture_url'] = $background_picture_url;
                 }
@@ -4078,7 +4087,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                             'pdf'
                                         ))) {
                                             $im = new Imagick($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
-                                            $im->setImageColorspace(255); // prevent image colors from inverting
+                                            $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
                                             $im->setimageformat('png');
                                             $im->thumbnailimage(200, 150); // width and height
                                             $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
@@ -4222,10 +4231,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $response['id'],
                         $r_post['cards_checklists_card_id']
                     );
-                    pg_query_params($db_lnk, 'INSERT INTO checklists (created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, position) SELECT created, modified, user_id, $1, name, checklist_item_count, checklist_item_completed_count, position FROM checklists WHERE card_id = $2 ORDER BY id', $qry_val_arr);
+                    $checklist = pg_query_params($db_lnk, 'INSERT INTO checklists (created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, position) SELECT created, modified, user_id, $1, name, checklist_item_count, checklist_item_completed_count, position FROM checklists WHERE card_id = $2 ORDER BY id', $qry_val_arr);
+                    $updateChecklist = pg_fetch_assoc($checklist);
                     $qry_val_arr = array(
                         $response['id']
                     );
+                    $query_val_arr = array(
+                        0,
+                        $updateChecklist['id']
+                    );
+                    $sql = pg_query_params($db_lnk, "UPDATE checklists SET checklist_item_completed_count = $1 WHERE id = $2", $query_val_arr);
                     $checklists = pg_query_params($db_lnk, 'SELECT id FROM checklists WHERE card_id = $1 order by id', $qry_val_arr);
                     $qry_val_arr = array(
                         $r_post['cards_checklists_card_id']
@@ -4242,8 +4257,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $checklist_id['id'],
                             $prev_checklist_ids[$i]
                         );
-                        pg_query_params($db_lnk, 'INSERT INTO checklist_items (created, modified, user_id, card_id, name, checklist_id, is_completed, position) SELECT created, modified, user_id, $1, name , $2, is_completed, position FROM checklist_items WHERE checklist_id = $3 ORDER BY id', $qry_val_arr);
+                        $items = pg_query_params($db_lnk, 'INSERT INTO checklist_items (created, modified, user_id, card_id, name, checklist_id, position) SELECT created, modified, user_id, $1, name , $2,  position FROM checklist_items WHERE checklist_id = $3 ORDER BY id', $qry_val_arr);
                         $i++;
+                        $checklist_items = pg_fetch_assoc($items);
+                        $qry_val_arr = array(
+                            0,
+                            $checklist_items['id']
+                        );
+                        $sql = pg_query_params($db_lnk, "UPDATE checklist_items SET is_completed = $1 WHERE id = $2", $qry_val_arr);
                     }
                 }
                 if (!empty($r_post['cards_custom_fields_card_id']) && is_plugin_enabled('r_custom_fields')) {
@@ -4493,7 +4514,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             'pdf'
                         ))) {
                             $im = new Imagick($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
-                            $im->setImageColorspace(255); // prevent image colors from inverting
+                            $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
                             $im->setimageformat('png');
                             $im->thumbnailimage(200, 150); // width and height
                             $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
@@ -4612,7 +4633,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     'pdf'
                 ))) {
                     $im = new Imagick($mediadir . DIRECTORY_SEPARATOR . $file['name'] . "[0]"); // 0-first page, 1-second page
-                    $im->setImageColorspace(255); // prevent image colors from inverting
+                    $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
                     $im->setimageformat('png');
                     $im->thumbnailimage(200, 150); // width and height
                     $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
@@ -4680,7 +4701,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             'pdf'
                         ))) {
                             $im = new Imagick($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
-                            $im->setImageColorspace(255); // prevent image colors from inverting
+                            $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
                             $im->setimageformat('png');
                             $im->thumbnailimage(200, 150); // width and height
                             $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
@@ -5171,7 +5192,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, card_id, label_id, list_id, board_id) SELECT created, modified, $1, label_id, $2, $3 FROM cards_labels WHERE card_id = $4 ORDER BY id', $qry_val_arr);
                 }
-                if ($is_keep_custom_fields) {
+                if (isset($is_keep_custom_fields)) {
                     if (is_plugin_enabled('r_custom_fields')) {
                         $qry_val_arr = array(
                             $response['id'],
@@ -5715,7 +5736,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
     switch ($r_resource_cmd) {
     case '/users/?/activation': //users activation
         $qry_val_arr = array(
-            $r_put['id'],
+            $r_resource_vars['users'],
             'false'
         );
         $user = executeQuery('SELECT * FROM users WHERE id = $1 AND is_email_confirmed = $2', $qry_val_arr);
@@ -5723,7 +5744,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $qry_val_arr = array(
                 'true',
                 'true',
-                $r_put['id']
+                $r_resource_vars['users']
             );
             $sql = pg_query_params($db_lnk, "UPDATE users SET is_email_confirmed = $1, is_active = $2 WHERE id = $3", $qry_val_arr);
             if ($sql) {

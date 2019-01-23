@@ -200,6 +200,7 @@ App.CardView = Backbone.View.extend({
                 }
                 _(function() {
                     if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                        self.model.set('triggersort', true);
                         $('body').trigger('cardRendered', self.model.id, self.model);
                     }
                 }).defer();
@@ -215,26 +216,38 @@ App.CardView = Backbone.View.extend({
         var current_list = current_board.lists.findWhere({
             id: parseInt(list_id)
         });
+        var current_board_prev_list = App.current_board.lists.findWhere({
+            id: parseInt(previous_list_id)
+        });
+        var current_board_new_list = App.current_board.lists.findWhere({
+            id: parseInt(list_id)
+        });
         if (parseInt(list_id) !== parseInt(previous_list_id)) {
             var prev_list_card_count = parseInt(self.model.list.collection.board.lists.get(previous_list_id).get('card_count'));
             var current_list_card_count = parseInt(self.model.list.collection.board.lists.get(list_id).get('card_count'));
-
             self.model.list.collection.board.lists.get(previous_list_id).cards.remove(self.model);
             self.model.list.collection.board.lists.get(previous_list_id).set('card_count', prev_list_card_count - 1);
+            current_board_prev_list.set('card_count', prev_list_card_count - 1);
             prev_list.set('card_count', prev_list_card_count - 1);
+            if (parseInt(prev_list.attributes.card_count) === 0) {
+                $('#js-card-listing-' + previous_list_id).html('&nbsp;');
+            }
 
             self.model.list.collection.board.lists.get(list_id).cards.add(self.model);
             self.model.list.collection.board.lists.get(list_id).set('card_count', current_list_card_count + 1);
+            current_board_new_list.set('card_count', current_list_card_count + 1);
             current_list.set('card_count', current_list_card_count + 1);
+            if (parseInt(current_list.attributes.card_count) === 1) {
+                $('#js-card-listing-' + list_id).html(function(i, h) {
+                    return h.replace(/&nbsp;/g, '');
+                });
+            }
 
             _(function() {
                 if ((current_list !== null && !_.isUndefined(current_list) && !_.isEmpty(current_list)) && (prev_list !== null && !_.isUndefined(prev_list) && !_.isEmpty(prev_list))) {
-                    if (!_.isUndefined(APPS) && APPS !== null) {
-                        if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-                            if ($.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
-                                $('body').trigger('cardSortRendered', [prev_list, current_list]);
-                            }
-                        }
+                    if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+                        $('body').trigger('cardSortRendered', [current_board_prev_list, current_board_new_list]);
+
                     }
                 }
             }).defer();

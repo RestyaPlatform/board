@@ -76,7 +76,7 @@ App.LoginView = Backbone.View.extend({
                         self.flash('danger', i18next.t('Sorry, login failed. Internet connection not available.'));
                     } else if (response.code === 'LDAP' && response.error === 'ERROR_LDAP_USER_LIMIT_EXCEED') {
                         self.flash('danger', i18next.t('Sorry, LDAP users limit exceed.'));
-                    } else if (response.code === 'email' || (response.code === 'LDAP' && response.error === 'ERROR_LDAP_SERVER_CONNECT_FAILED')) {
+                    } else if (response.code === 'email' || (response.code === 'LDAP' && (response.error === 'ERROR_LDAP_SERVER_CONNECT_FAILED' || response.error === 'ERROR_LDAP_EMAIL_NOT_ASSOCIATED'))) {
                         $('input#inputPassword', target).val('');
                         self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
                     } else {

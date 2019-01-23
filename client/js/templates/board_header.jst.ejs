@@ -265,7 +265,8 @@
 								<a href="#" class="js-show-subscribe-form navbar-btn h4" name="subscribe" title="<%- i18next.t('Subscribe') %>"><i class="icon-eye-open"></i><span class="hidden-xs"><%- i18next.t('Subscribe') %></span></a>
 								<% } %>
 								<% } %>
-							  </li>
+								</li>
+								<li class="js-background-change"></li>
 						    <% }%>
 							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
 							<% 
@@ -283,7 +284,7 @@
 									preview = '<span style="background-color:' + background_color + '" class=" background-box show well-lg"></span>'; 
 								 }
 							%>
-							<li class="js-background-change"><a href="#" class="nav-list-item nav-list-sub-item js-change-background"> <%- i18next.t('Change Background') %></a></li>
+							<li><a href="#" class="nav-list-item nav-list-sub-item js-change-background"> <%- i18next.t('Change Background') %></a></li>
 							<% if(!_.isEmpty(IMAP_EMAIL)){ %>
 							<li><a href="#" class="nav-list-item nav-list-sub-item js-email-to-board-settings"> <%- i18next.t('Email to board settings') %></a></li>
 							<% } %>
@@ -323,4 +324,11 @@
 			  </div>
 			  </nav>
 		</div>
+		<section id="broadcast_information" class="hide hidden-xs">
+		</section>
+		<section id="broadcast_hide_arrow" class="hide hidden-xs">
+			<a href="#" class="broadcast-content-show js-broadcast-show pull-right" title="show">
+				<i class="icon-angle-up"></i>
+			</a>
+		</section>
 	</div>

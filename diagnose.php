@@ -78,7 +78,13 @@ $imap_version = $imap_connection = '';
 if (function_exists('imap_open')) {
     $imap_class = true;
     if ($imap_setting_class) {
-        $connection = imap_open('{' . IMAP_HOST . ':' . IMAP_PORT . '/imap/ssl/novalidate-cert/notls}INBOX', IMAP_EMAIL, str_rot13(base64_decode(IMAP_EMAIL_PASSWORD)));
+        $is_ssl = (IMAP_PORT === '993') ? 'ssl/' : '';
+        $imap_email_password = IMAP_EMAIL_PASSWORD;
+        $imap_email_password_decode = base64_decode($imap_email_password);
+        $imap_email_password = str_rot13($imap_email_password_decode);
+        $connection = imap_open('{' . IMAP_HOST . ':' . IMAP_PORT . '/imap/' . $is_ssl . 'novalidate-cert}INBOX', IMAP_EMAIL, $imap_email_password, NULL, 1, array(
+            'DISABLE_AUTHENTICATOR' => 'PLAIN'
+        ));
         if ($connection) {
             $imap_connection = 'Success';
             $imap_connection_class = true;

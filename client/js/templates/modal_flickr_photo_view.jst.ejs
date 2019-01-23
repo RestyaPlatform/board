@@ -14,7 +14,8 @@
 			<div class="modal-body clearfix">
 				<div class="hide js-flickr-update">
 					<p class="alert alert-info text-center">
-						<a href="#" class="js-flickr-modal-close"><%- i18next.t('Click here') %></a> <%- i18next.t('to configure Flickr API key.') %></p>
+						<% if (!_.isUndefined(authuser.user) && parseInt(authuser.user.role_id) === 1) { %><a href="#" class="js-flickr-modal-close"><%- i18next.t('Click here') %></a><% } else { %><%- i18next.t('Ask admin') %><% } %> <%- i18next.t('to configure Flickr API key.') %>
+					</p>
 				</div>
 				<div class="navbar-btn col-xs-4 nav js-flick-search-block">
 					<div class="input-group">

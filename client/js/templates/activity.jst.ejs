@@ -1,151 +1,152 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
-<% var unread = ""; %>
-<% if(!_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %>
-	 <%if(activity.attributes.token !== authuser.access_token){%> 
-	 <% var unread = "js-unread-activity"; %> 
-	 <span class="label label-primary col-xs-12 sr-only">&nbsp;</span>   
-	<%}%>    
-<% } %>                   
-<div class="media <%= unread %> modal-<% if((activity.attributes.type == 'add_comment' ||  activity.attributes.type == 'edit_comment')) {%>comments<%} else { %>activities<%}%> <% if(!_.isUndefined(authuser.user) &&  activity.attributes.user_id == authuser.user.id) {%>modal-logged-user-activities<%}%>">
-<a  title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" data-toggle="tooltip" class="js-tooltip pull-left" href="#/user/<%- activity.attributes.user_id %>">
-		<% if(!_.isEmpty(activity.attributes.profile_picture_path)) {
-			var profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'small_thumb' );
-	 	%>      
-			<img src="<%=profile_picture_path %>" alt="[Image: <%-activity.attributes.full_name %>]" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" class="img-rounded img-responsive">
-		<% } else {%> 
-			<i class="avatar avatar-color-194 img-rounded"><%- activity.attributes.initials %></i>
-		<% } %>       
-	</a>
-	<div class="media-body">    
-		<% 
-			var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
-			var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
-			if(activity.attributes.type != 'add_comment' || activity.attributes.type != 'edit_comment') {
-				if(activity.attributes.type !== 'add_card_desc') {
-					if(!_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
-						activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.difference['0']));
-					}else{
-							activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
+	<% var unread = ""; %>
+	<% if(!_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %>
+		 <%if(activity.attributes.token !== authuser.access_token){%> 
+		 <% var unread = "js-unread-activity"; %> 
+		 <span class="label label-primary col-xs-12 sr-only">&nbsp;</span>   
+		<%}%>    
+	<% } %>                   
+	<div class="media <%= unread %> modal-<% if((activity.attributes.type == 'add_comment' ||  activity.attributes.type == 'edit_comment')) {%>comments<%} else { %>activities<%}%> <% if(!_.isUndefined(authuser.user) &&  activity.attributes.user_id == authuser.user.id) {%>modal-logged-user-activities<%}%>">
+	<a  title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" data-toggle="tooltip" class="js-tooltip pull-left" href="#/user/<%- activity.attributes.user_id %>">
+			<% if(!_.isEmpty(activity.attributes.profile_picture_path)) {
+				var profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'small_thumb' );
+			 %>      
+				<img src="<%=profile_picture_path %>" alt="[Image: <%-activity.attributes.full_name %>]" title="<%-activity.attributes.full_name %> (<%-activity.attributes.username %>)" class="img-rounded img-responsive">
+			<% } else {%> 
+				<i class="avatar avatar-color-194 img-rounded"><%- activity.attributes.initials %></i>
+			<% } %>       
+		</a>
+		<div class="media-body">    
+			<% 
+				var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
+				var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
+				if(activity.attributes.type != 'add_comment' || activity.attributes.type != 'edit_comment') {
+					if(activity.attributes.type !== 'add_card_desc') {
+						if(!_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
+							activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.difference['0']));
+						}else{
+								activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
+						}
+					} else {
+						activity.attributes.comment = activity.attributes.comment.replace(' - ##DESCRIPTION##', "");
 					}
+					activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
+					activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
+					activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', (activity.attributes.label_name));
+					activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', (activity.attributes.card_name));
+					activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
+					activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', (activity.attributes.board_name));
+					activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');
+					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
+					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
+					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
 				} else {
-					activity.attributes.comment = activity.attributes.comment.replace(' - ##DESCRIPTION##', "");
+					if(!_.isUndefined(activity.from_footer)) {
+						var comment = '<span class="h5">' + filterXSS(activity.attributes.full_name) + '</span> commented in card ' + cardLink;
+						var matches = activity.attributes.comment.match(/@([^ ]*)/g);
+						var _username = [];
+						_.each(matches, function(match) {
+							_username.push(match.substr(1));
+						});
+						if(_.contains(_username, authuser.user.username)){
+							comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
+						} 
 				}
-				activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
-				activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
-				activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', (activity.attributes.label_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', (activity.attributes.card_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', (activity.attributes.board_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');
-				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
-			} else {
-				if(!_.isUndefined(activity.from_footer)) {
-					var comment = '<span class="h5">' + filterXSS(activity.attributes.full_name) + '</span> commented in card ' + cardLink;
-					var matches = activity.attributes.comment.match(/@([^ ]*)/g);
-					var _username = [];
-					_.each(matches, function(match) {
-						_username.push(match.substr(1));
-					});
-					if(_.contains(_username, authuser.user.username)){
-						comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
-					} 
 			}
-		}
-		%>             
-		<div class="col-xs-12 btn-block">  
-					<div class="activities-list js-activity-<%- activity.attributes.id %>">
-					<% if((activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment' || activity.attributes.type == 'delete_card_comment')) { %>
-						<%if(!_.isUndefined(activity.from_footer)) { %>
-							<span><%= comment %></span>
-						<% } %>
-							<div class="panel no-mar"><div class="panel-body github-markdown">
-							<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
-							<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color', 'delete_list_color'], activity.attributes.type)) { %>
-						<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text">
-							<% _.each(activity.attributes.difference, function(difference) { %>
-								<%= converter.makeHtml(difference) %>
-							<% }); %>
-						</div>
-					<% } %>
-							</div></div>
-					<% } else { %>
-						<%if(_.isUndefined(activity.from_footer)) { %>
-							<div class="panel no-mar"><div class="panel-body github-markdown">
-						<% } %>
-							<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
-							<% if(activity.attributes.type == 'add_card_desc'){ %>
-								<div class="thumbnail list-group-item-text">
-									<%= makeLink(converter.makeHtml(activity.attributes.description), activity.attributes.board_id) %>
-								</div>
+			%>             
+			<div class="col-xs-12 btn-block">  
+						<div class="activities-list js-activity-<%- activity.attributes.id %>">
+						<% if((activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment' || activity.attributes.type == 'delete_card_comment')) { %>
+							<%if(!_.isUndefined(activity.from_footer)) { %>
+								<span><%= comment %></span>
 							<% } %>
-							<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'edit_list_color', 'delete_list_color', 'edit_card_color', 'delete_card_color', 'edit_card_desc'], activity.attributes.type)) { %>
-						<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text">
-							<% _.each(activity.attributes.difference, function(difference) { %>
-								<%= converter.makeHtml(difference) %>
-							<% }); %>
+								<div class="panel no-mar"><div class="panel-body github-markdown">
+								<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
+								<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color', 'delete_list_color'], activity.attributes.type)) { %>
+							<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text">
+								<% _.each(activity.attributes.difference, function(difference) { %>
+									<%= converter.makeHtml(difference) %>
+								<% }); %>
+							</div>
+						<% } %>
+								</div></div>
+						<% } else { %>
+							<%if(_.isUndefined(activity.from_footer)) { %>
+								<div class="panel no-mar"><div class="panel-body github-markdown">
+							<% } %>
+								<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
+								<% if(activity.attributes.type == 'add_card_desc'){ %>
+									<div class="thumbnail list-group-item-text">
+										<%= makeLink(converter.makeHtml(activity.attributes.description), activity.attributes.board_id) %>
+									</div>
+								<% } %>
+								<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'edit_list_color', 'delete_list_color', 'edit_card_color', 'delete_card_color', 'edit_card_desc'], activity.attributes.type)) { %>
+							<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text">
+								<% _.each(activity.attributes.difference, function(difference) { %>
+									<%= converter.makeHtml(difference) %>
+								<% }); %>
+							</div>
+						<% } %>
+							<%if(_.isUndefined(activity.from_footer)) { %>
+								</div></div>
+							<% } %>
+						<% }%>
+						
 						</div>
-					<% } %>
-						<%if(_.isUndefined(activity.from_footer)) { %>
-							</div></div>
-						<% } %>
-					<% }%>
-					
-					</div>
-					<small>
-					&nbsp;&nbsp;
-			<% setInterval(function() {%>
-				<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
-			<% }, 10000); %>
-			<span class="js-timeago-<%- activity.attributes.id %>"></span>
-			<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
-			<% if((activity.attributes.type == 'add_organization_attachment' || activity.attributes.type == 'change_visibility' || activity.attributes.type == 'add_organization_user' || activity.attributes.type == 'delete_organization_user') && (!_.isEmpty(activity.attributes.organization_name))) { %>
-				<a href="#/organization/<%= activity.attributes.organization_id %>">&nbsp;<%- i18next.t("on") %>&nbsp;<%- activity.attributes.organization_name %></a>
-			<% } else if(type == 'all' && activity.attributes.type != 'edit_organization' && activity.attributes.type != 'add_organization' && (!_.isEmpty(activity.attributes.board_name))) { %>
-				<a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;<%- i18next.t("on") %>&nbsp;<%- activity.attributes.board_name %></a>
-			<% } %>
-				<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all" && (_.isUndefined(activity.from_footer))) { %>
-					<div class="js-acticity-action-<%- activity.attributes.id %> pull-left navbar-btn col-md-10 col-xs-12">
-						<ul class="list-inline">
-							<li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-repeat"></i><%- i18next.t("Reply") %></a></li>
-						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "delete_comment", board_user_role_id: parseInt(activity.board_user_role_id)})))){ %>
-								<li class="dropdown pull-right">
-									<a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete text-danger" data-toggle="dropdown" href="#" data-activity-id="<%- activity.attributes.id %>" role="button"><i class="icon-remove"></i><%- i18next.t("Delete") %></a>
-									<ul class="dropdown-menu arrow arrow-right">
-										<li id="js-acticity-actions-response-<%- activity.attributes.id %>" class="js-dropdown-popup dropdown-popup"></li>
-									</ul>
-								</li>
-							
-						<% } %>
-						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_comment", board_user_role_id: parseInt(activity.board_user_role_id)})))){ %>
-							<li class="pull-right">
-								<a title="Edit" class="js-show-edit-activity js-edit-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"  data-activity-temp-id="<%- activity.attributes.temp_id %>"><i class="icon-edit" data-activity-id="<%- activity.attributes.id %>"  data-activity-temp-id="<%- activity.attributes.temp_id %>"></i><%- i18next.t("Edit") %></a>
-							</li>
-						<% } %> 
-						</ul>
-					</div>
-				<% } else if(activity.attributes.revisions != null && activity.attributes.revisions != "" && !_.isUndefined(authuser.user)){ %>
-					<% if(!_.isEmpty(role_links.where({slug: "undo_activity"}))){ %>
-						<% if(!_.isUndefined(activity.from_footer)) { %>
-							<div class="js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline"><li><a title="Undo" class="js-undo2 col-xs-12 nav navbar-btn" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>							
-						<% } else { %>	
-							<div class="js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline"><li><a title="Undo" class="js-undo col-xs-12 nav navbar-btn no-print" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>
-						<% }%>	
-					<% } %>
+						<small>
+						&nbsp;&nbsp;
+				<% if((activity.attributes.type == 'add_organization_attachment' || activity.attributes.type == 'change_visibility' || activity.attributes.type == 'add_organization_user' || activity.attributes.type == 'delete_organization_user') && (!_.isEmpty(activity.attributes.organization_name))) { %>
+					<a href="#/organization/<%= activity.attributes.organization_id %>">&nbsp;<%- i18next.t("on") %>&nbsp;<%- activity.attributes.organization_name %></a>
+				<% } else if(type == 'all' && activity.attributes.type != 'edit_organization' && activity.attributes.type != 'add_organization' && (!_.isEmpty(activity.attributes.board_name))) { %>
+					<a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;<%- i18next.t("on") %>&nbsp;<%- activity.attributes.board_name %></a>
 				<% } %>
-				<span class="pull-left col-xs-12 js-activity-reply-form-response-<%- activity.attributes.id %>"></span>
-		</small>
+				<% setInterval(function() {%>
+					<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
+				<% }, 10000); %>
+				<span class="<% if(!_.isUndefined(type) && !_.isEmpty(type) && type === 'all' && activity.attributes.type !== 'add_organization' && activity.attributes.type !== 'edit_organization') { %>show<% } %> js-timeago-<%- activity.attributes.id %>"></span>
+				<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
+					<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all" && (_.isUndefined(activity.from_footer))) { %>
+						<div class="js-acticity-action-<%- activity.attributes.id %> pull-left navbar-btn col-md-10 col-xs-12">
+							<ul class="list-inline">
+								<li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-repeat"></i><%- i18next.t("Reply") %></a></li>
+							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "delete_comment", board_user_role_id: parseInt(activity.board_user_role_id)})))){ %>
+									<li class="dropdown pull-right">
+										<a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete text-danger" data-toggle="dropdown" href="#" data-activity-id="<%- activity.attributes.id %>" role="button"><i class="icon-remove"></i><%- i18next.t("Delete") %></a>
+										<ul class="dropdown-menu arrow arrow-right">
+											<li id="js-acticity-actions-response-<%- activity.attributes.id %>" class="js-dropdown-popup dropdown-popup"></li>
+										</ul>
+									</li>
+								
+							<% } %>
+							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_comment", board_user_role_id: parseInt(activity.board_user_role_id)})))){ %>
+								<li class="pull-right">
+									<a title="Edit" class="js-show-edit-activity js-edit-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"  data-activity-temp-id="<%- activity.attributes.temp_id %>"><i class="icon-edit" data-activity-id="<%- activity.attributes.id %>"  data-activity-temp-id="<%- activity.attributes.temp_id %>"></i><%- i18next.t("Edit") %></a>
+								</li>
+							<% } %> 
+							</ul>
+						</div>
+					<% } else if(activity.attributes.revisions != null && activity.attributes.revisions != "" && !_.isUndefined(authuser.user)){ %>
+						<% if(!_.isEmpty(role_links.where({slug: "undo_activity"}))){ %>
+							<% if(!_.isUndefined(activity.from_footer)) { %>
+								<div class="js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline"><li><a title="Undo" class="js-undo2 col-xs-12 nav navbar-btn" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>							
+							<% } else { %>	
+								<div class="js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline"><li><a title="Undo" class="js-undo col-xs-12 nav navbar-btn no-print" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>
+							<% }%>	
+						<% } %>
+					<% } %>
+					<span class="pull-left col-xs-12 js-activity-reply-form-response-<%- activity.attributes.id %>"></span>
+			</small>
+			</div>
 		</div>
 	</div>
-</div>
-
-
-
-	<% if(_.isEmpty(unread)){ %> 
-		<hr class="clearfix col-xs-12 btn-block"/>
-	<%}%>
-	<% if(!_.isEmpty(unread)){ %>
-		<div class="well-sm clearfix"></div>
-	<%}%>
-<% }else{ %><div class="media-body alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></div><% } %>
+	
+	
+	
+		<% if(_.isEmpty(unread)){ %> 
+			<hr class="clearfix col-xs-12 btn-block"/>
+		<%}%>
+		<% if(!_.isEmpty(unread)){ %>
+			<div class="well-sm clearfix"></div>
+		<%}%>
+	<% }else{ %><div class="media-body alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></div><% } %>
+	

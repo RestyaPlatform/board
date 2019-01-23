@@ -9,10 +9,6 @@ if (typeof App === 'undefined') {
  */
 App.ActivityCollection = Backbone.Collection.extend({
     model: App.Activity,
-    initialize: function() {
-        this.sortField = 'id';
-        this.sortDirection = 'desc';
-    },
     setSortField: function(field, direction) {
         this.sortField = field;
         this.sortDirection = direction;

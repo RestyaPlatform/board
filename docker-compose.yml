@@ -6,6 +6,7 @@ services:
       - 1234:80
     environment:
       - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=restyaboard

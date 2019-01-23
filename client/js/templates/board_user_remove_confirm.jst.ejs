@@ -13,8 +13,11 @@
 			<ul class="dropdown-menu dropdown-list show">
 				<li>
 					<a class="js-delete-board-member" data-board_user_id="<%- board_user.attributes.id %>" href="#">
-					 
-					 <%- i18next.t('Remove %s from %s Boards? The member will be removed from all cards on this board.', { postProcess: 'sprintf', sprintf: [board_user.attributes.username,board_user.attributes.board_name]}) %>
+					<% if(parseInt(board_user.attributes.board_user_role_id) == 1) { %> 
+					 <%- i18next.t('Remove %s from %s Boards? Please be sure that there is another user who is an owner of this board. The member will be removed from all cards on this board.', { postProcess: 'sprintf', sprintf: [board_user.attributes.username,board_user.attributes.board_name]}) %>
+					<% } else { %>
+						<%- i18next.t('Remove %s from %s Boards? The member will be removed from all cards on this board.', { postProcess: 'sprintf', sprintf: [board_user.attributes.username,board_user.attributes.board_name]}) %>
+					<% } %>
 				 </li>
 			</ul>
 		</form>

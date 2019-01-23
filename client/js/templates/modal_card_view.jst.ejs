@@ -233,10 +233,10 @@
 					  </a>
 					  <% } %>
 					  </h4>
-						<ul class="list-unstyled clearfix descriptionlist" id="js-card-description">
-						</ul>
 					  <% if(!_.isEmpty(card.attributes.description)){ %>
-					  <p class="js-show-card-desc"><%= converter.makeHtml((card.attributes.description)) %></p>
+					  <div class="js-show-card-desc">
+							<%= converter.makeHtml((card.attributes.description)) %>
+						</div>
 					  <% } %>
 					   <%if(!_.isUndefined(authuser.user)) {%>
 					  <form class="hide js-card-edit-form" name="cardDescriptionEditForm" id="cardDescriptionEditForm">
@@ -252,7 +252,7 @@
 							</div>
 						</div>
 						<div class="col-xs-12 list-group-item-text navbar-right"><a target="_blank" class="pull-right text-muted btn-xs" title="<%- i18next.t('Markdown') %>" href="http://restya.com/board/docs/markdown?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=markdown_help">Styling with Markdown is supported</a></div>
-						<div class="submit panel-body">
+						<div class="submit">
 						  <input type="submit" value="<%- i18next.t('Save') %>" id="submitCardDescriptionEditForm" class="btn btn-primary">
 						  <a class="js-cancel-card-description-edit"><i class="icon-remove btn btn-link"></i></a> </div>
 					  </form>
@@ -557,10 +557,12 @@
 			  <ul class="media-list comment-list activity-mod-comments">
 				<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || ((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "comment_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(role_links.where({slug: "comment_card"})) && card.list.collection.board.attributes.board_visibility == 2)))){ %>
 				<li class="media media-comment comment-block">
-						<ul class="nav nav-tabs no-bor h3">
-							<li class="active js-show-comment show-comment-<%-card.attributes.id%> cur" data-id="<%-card.attributes.id%>"><a><%- i18next.t("Write") %></a></li>
-							 <li class="js-preview-comment preview-comment-<%-card.attributes.id%> cur" data-id="<%-card.attributes.id%>"><a><%- i18next.t("Preview") %></a></li>
-						</ul>
+						<div class="row">
+							<ul class="nav nav-tabs no-bor h3">
+								<li class="active js-show-comment show-comment-<%-card.attributes.id%> cur" data-id="<%-card.attributes.id%>"><a><%- i18next.t("Write") %></a></li>
+								<li class="js-preview-comment preview-comment-<%-card.attributes.id%> cur" data-id="<%-card.attributes.id%>"><a><%- i18next.t("Preview") %></a></li>
+							</ul>
+						</div>
 						<div class="well-sm"></div>
 						<div class="row">
 							<form method="post" class="form-horizontal js-add-comment no-print">
