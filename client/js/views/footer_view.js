@@ -26,6 +26,7 @@ App.FooterView = Backbone.View.extend({
     events: {
         'click .js-open-popover': 'openPopup',
         'click .js-show-organizations-board-from': 'showOrganizationsBoardFrom',
+        'click .js-show-board-import-forms': 'showBoardImports',
         'click .js-show-board-add-form': 'showBoardAddForm',
         'click .js-show-organizations-add-form': 'showOrganizationsAddForm',
         'click .js-show-qr-code': 'showQrCode',
@@ -60,6 +61,7 @@ App.FooterView = Backbone.View.extend({
         'click .js-show-notification': 'showNotification',
         'click .js-change-language': 'changeLanguage',
         'click .js-back-boards-list': 'showBackBoardsList',
+        'click .js-back-add-boards-list': 'showBackAddBoardList',
         'click .js-board-load-more': function(e) {
             e.preventDefault();
             this.loadMore('board', '1');
@@ -376,6 +378,21 @@ App.FooterView = Backbone.View.extend({
         return false;
     },
     /**
+     * showBackAddBoardList()
+     * Back to Add Boards list form
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showBackAddBoardList: function(e) {
+        var target = $(e.target);
+        target.parents('li.dropdown').addClass('open');
+        this.$el.find('li.js-import-boards-back').remove();
+        this.$el.find('.js-back').removeClass('hide');
+        return false;
+    },
+    /**
      * openPopup()
      * show dropdown
      * @param e
@@ -418,6 +435,24 @@ App.FooterView = Backbone.View.extend({
         var parent = target.parents('.js-show-add-boards-list');
         var insert = $('.js-show-boards-list-response', parent);
         $(new App.OrganizationsBoardFormView({}).el).insertAfter(insert);
+        $('.js-show-boards-list-response').html('');
+        return false;
+    },
+    /**
+     * showBoardImportForm()
+     * show board import options
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    showBoardImports: function(e) {
+        e.preventDefault();
+        var target = $(e.target);
+        this.$el.find('.js-back').addClass('hide');
+        var parent = target.parents('.js-show-add-boards-list');
+        var insert = $('.js-show-boards-list-response', parent);
+        $(new App.BoardImportFormView({}).el).insertAfter(insert);
         $('.js-show-boards-list-response').html('');
         return false;
     },
@@ -481,6 +516,7 @@ App.FooterView = Backbone.View.extend({
         $('.js-qsearch-container').removeClass('hide');
         $('.js-show-boards-list-response').addClass('hide');
         this.$el.find('li.js-back').remove();
+        this.$el.find('li.js-import-boards-back').remove();
         var recent_boards = '';
         var my_boards = '';
         var self = this;
