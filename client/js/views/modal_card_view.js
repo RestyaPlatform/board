@@ -1278,7 +1278,7 @@ App.ModalCardView = Backbone.View.extend({
                     }).on('changeDate', function(ev) {
                         $(this).datetimepicker('hide');
                         $(this).blur();
-                    });                    
+                    });
                 },
                 beforeClose: function(event, dialog) {
                     var description;
