@@ -197,3 +197,55 @@ SELECT board.id,
    FROM ((boards board
      LEFT JOIN users users ON ((users.id = board.user_id)))
      LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
+
+DELETE FROM "email_templates" WHERE "name" = 'due_date_notification';
+
+INSERT INTO "email_templates" ("created", "modified", "from_email",
+"reply_to_email", "name", "description", "subject",
+"email_text_content", "email_variables", "display_name")
+VALUES (now(), now(), '##SITE_NAME## Restyaboard <##FROM_EMAIL##>',
+'##REPLY_TO_EMAIL##', 'due_date_notification', 'We will send this
+mail, One day before when the card due date end.', '##SUBJECT##',
+'<html>
+<head><meta http-equiv="Content-Type" content="text/html;
+charset=utf-8" /></head>
+<body style="margin:0">
+<header style="display:block;width:100%;padding-left:0;padding-right:0;
+border-bottom:solid 1px #dedede; float:left;background-color:
+#f7f7f7;">
+<div style="border: 1px solid #EEEEEE;">
+<h1 style="text-align:center;margin:10px 15px 5px;"> <a
+href="##SITE_URL##" title="##SITE_NAME##"><img
+src="##SITE_URL##/img/logo.png" alt="[Restyaboard]"
+title="##SITE_NAME##"></a> </h1>
+</div>
+</header>
+<main style="width:100%;padding-top:10px; padding-bottom:10px;
+margin:0 auto; float:left;">
+<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
+<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
+<pre style="font-family: Arial, Helvetica, sans-serif; font-size:
+13px;line-height:20px;">
+<h2 style="font-size:18px; font-family:Arial, Helvetica, sans-serif;
+padding: 59px 0px 0px 0px;">Due soon…</h2>
+<p style="white-space: normal; width: 100%;margin: 10px 0px 0px;
+font-family:Arial, Helvetica, sans-serif;">##CONTENT##</p>
+</pre>
+</div>
+</div>
+</main>
+<footer style="width:100%;padding-left:0;margin:0px auto;border-top:
+solid 1px #dedede; padding-bottom:10px; background:#fff;clear:
+both;padding-top: 10px;border-bottom: solid 1px
+#dedede;background-color: #f7f7f7;">
+<h6 style="text-align:center;margin:5px 15px;">
+<a href="http://restya.com/board/?utm_source=Restyaboard -
+##SITE_NAME##&utm_medium=email&utm_campaign=due_date_notification_email"
+title="Open source. Trello like kanban board." rel="generator"
+style="font-size: 11px;text-align: center;text-decoration: none;color:
+#000;font-family: arial; padding-left:10px;">Powered by
+Restyaboard</a>
+</h6>
+</footer>
+</body>
+</html>', 'SITE_URL, SITE_NAME, SUBJECT, CONTENT', 'Due Date Notification');
