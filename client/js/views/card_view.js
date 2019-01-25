@@ -106,6 +106,9 @@ App.CardView = Backbone.View.extend({
                     this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
                 }
             }
+            this.model.bind('change:is_filtered', function(e) {
+                this.render(null);
+            }, this);
         }
     },
     className: 'panel js-show-modal-card-view js-board-list-card cur',
@@ -182,8 +185,6 @@ App.CardView = Backbone.View.extend({
         }
         self.model.set({
             list_id: list_id
-        }, {
-            silent: true
         });
         data.position = self.model.attributes.position;
         self.model.save(data, {
@@ -430,7 +431,10 @@ App.CardView = Backbone.View.extend({
                 converter: this.converter
             }));
             if (filter_count < total_filter && (query_params)) {
-                this.$el.css('display', 'none');
+                if (_.isUndefined(ops) && ops !== null) {
+                    this.model.set('is_filtered', true);
+                    this.$el.css('display', 'none');
+                }
             }
             if (!_.isUndefined(this.model.attributes.name) && this.model.attributes.name !== '') {
                 this.$el.addClass('panel js-show-modal-card-view js-board-list-card non-select cur').removeAttr('id').attr('data-toggle', 'modal').attr('data-target', '#myModal').attr('data-card_id', this.model.id).attr('id', 'js-card-' + this.model.id).css("border-left-color", this.model.attributes.color).css("border-left-width", "8px");
@@ -517,12 +521,18 @@ App.CardView = Backbone.View.extend({
                 converter: this.converter
             }));
             if (filter_count < total_filter && (query_params)) {
+                this.model.set('is_filtered', true);
                 this.$el.css('display', 'none');
             }
         } else if (self.model === null) {
             $('.js-card-list-view-' + this.board_id).html(this.$el.append(self.template({
                 card: self.model
             })));
+        }
+        if (this.model.get('is_filtered')) {
+            this.$el.hide();
+        } else {
+            this.$el.show();
         }
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {

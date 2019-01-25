@@ -31,6 +31,8 @@ App.Card = Backbone.Model.extend({
         this.card_voters = new App.CardVoterCollection();
         this.board_activities = new App.ActivityCollection();
         this.cards_subscribers = new App.CardSubscriberCollection();
+        this.attributes.is_filtered = false;
+
     },
     moveAfter: function(beforeId) {
         var before;
