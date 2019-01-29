@@ -2,7 +2,7 @@
 	<div class="list-header js-list-head <% if(!_.isUndefined(authuser.user)){%>cur-grab<%}%>">
 	  <div class="clearfix">
 		<a href="#" class="col-xs-8 js-list-name-<%- list.id %> <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-edit-list-form<% }else{ %> js-no-action<%}%>"><span><span class="clearfix row show">
-		<strong class = "get-name-<%- list.attributes.id %>"><%- list.attributes.name %></strong><% var is_sub_class = 'hide'; if(!_.isEmpty(list.subscriber.attributes) && list.subscriber.attributes.is_subscribed == true){ is_sub_class = ''; }%><span class="pull-right"><i class="icon-eye-open js-list-subscribed-<%- list.attributes.id %> <%- is_sub_class %>"></i></span></span></span></a>
+		<strong class = "get-name-<%- list.attributes.id %>"><%- list.attributes.name %></strong><% var is_sub_class = 'hide'; if(!_.isEmpty(list.subscriber.attributes) && list.subscriber.attributes.is_subscribed == true){ is_sub_class = ''; }%><span class="pull-right"><i class="icon-eye-open js-list-subscribed-<%- list.attributes.id %> <%- is_sub_class %>"></i><span id="list-card-number-<%- list.attributes.id %>" class="label label-primary" title="<%- i18next.t('Number Of Cards') %>">INIT</span></span></span></span></a>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 		<form role="form" class="form-horizontal js-edit-list hide">
 			<div class="form-group">

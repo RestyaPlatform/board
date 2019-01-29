@@ -63,13 +63,25 @@ App.ListView = Backbone.View.extend({
             this.model.collection.board.attachments.bind('add', this.renderCardsCollection);
             this.model.collection.board.attachments.bind('remove', this.renderCardsCollection);
             this.model.collection.board.cards.bind('add', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('add', function(e) {
+                this.renderCardNumbers();
+            }, this);
             this.model.collection.board.cards.bind('add:name', this.renderCardsCollection);
             this.model.collection.board.cards.bind('add:id', this.renderCardsCollection);
             this.model.collection.board.cards.bind('remove', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:position', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:is_archived', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:is_archived', function(e) {
+                this.renderCardNumbers();
+            }, this);
             this.model.collection.board.cards.bind('change:comment_count', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:list_id', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:list_id', function(e) {
+                this.renderCardNumbers();
+            }, this);
+            this.model.collection.board.cards.bind('change:is_filtered', function(e) {
+                this.renderCardNumbers();
+            }, this);
         }
         this.model.bind('remove', this.removeRender);
         if (!_.isUndefined(authuser.user)) {
@@ -1241,6 +1253,18 @@ App.ListView = Backbone.View.extend({
                     }
                 });
             }
+        }
+        this.renderCardNumbers();
+    },
+
+    renderCardNumbers: function() {
+        var self = this;
+        var element = self.$el.find('#list-card-number-' + self.model.id);
+        if (!_.isUndefined(self.model.collection) && !_.isUndefined(self.model.collection.board.cards)) {
+            var filteredElements = self.model.collection.board.cards.filter(function(card) {
+                return card.get('is_archived') !== 1 && card.get('list_id') === parseInt(self.model.attributes.id) && card.get('is_filtered') === false;
+            });
+            element.text(filteredElements.length);
         }
     },
     /**
