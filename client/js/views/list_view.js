@@ -1259,13 +1259,17 @@ App.ListView = Backbone.View.extend({
 
     renderCardNumbers: function() {
         var self = this;
-        var element = self.$el.find('#list-card-number-' + self.model.id);
-        if (!_.isUndefined(self.model.collection) && !_.isUndefined(self.model.collection.board.cards)) {
-            var filteredElements = self.model.collection.board.cards.filter(function(card) {
-                return card.get('is_archived') !== 1 && card.get('list_id') === parseInt(self.model.attributes.id) && card.get('is_filtered') === false;
-            });
-            element.text(filteredElements.length);
-        }
+        _(function() {
+            if (!_.isUndefined(APPS) && APPS !== null) {
+                if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                    if ($.inArray('r_card_counter', APPS.enabled_apps) !== -1) {
+                        if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                            $('body').trigger('cardCounterRendered', [self.model.id, self.model]);
+                        }
+                    }
+                }
+            }
+        }).defer();
     },
     /**
      * showAddCardForm()
