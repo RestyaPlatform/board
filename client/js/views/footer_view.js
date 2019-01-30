@@ -1010,8 +1010,9 @@ App.FooterView = Backbone.View.extend({
                                         self.board.cards.add(new_card);
                                         if (!_.isUndefined(card_list)) {
                                             card_list.set('cards', activity.attributes.card);
+                                            var card_list_card_count = isNaN(card_list.attributes.card_count) ? 0 : card_list.attributes.card_count;
                                             // Updating the list card count
-                                            card_list.set('card_count', parseInt(card_list.attributes.card_count) + 1);
+                                            card_list.set('card_count', parseInt(card_list_card_count) + 1);
                                             if (card_list !== null && !_.isEmpty(card_list) && wip_enabled) {
                                                 $('body').trigger('cardAddRendered', [card_list.id, card_list]);
                                             }
@@ -1304,7 +1305,8 @@ App.FooterView = Backbone.View.extend({
                                                 $('#js-card-listing-' + card_old_list.id).html('&nbsp;');
                                             }
                                             // Updating the new list card count
-                                            card_new_list.set('card_count', card_new_list.attributes.card_count + 1);
+                                            var card_new_list_card_count = isNaN(card_new_list.attributes.card_count) ? 0 : card_new_list.attributes.card_count;
+                                            card_new_list.set('card_count', parseInt(card_new_list_card_count) + 1);
                                             if (parseInt(card_new_list.attributes.card_count) === 1) {
                                                 // Removing the &nbsp; fom new lsit card listing 
                                                 $('#js-card-listing-' + card_new_list.id).html(function(i, h) {
