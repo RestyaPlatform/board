@@ -233,7 +233,7 @@ App.CardView = Backbone.View.extend({
             if (parseInt(prev_list.attributes.card_count) === 0) {
                 $('#js-card-listing-' + previous_list_id).html('&nbsp;');
             }
-
+            current_list_card_count = isNaN(current_list_card_count) ? 0 : current_list_card_count;
             self.model.list.collection.board.lists.get(list_id).cards.add(self.model);
             self.model.list.collection.board.lists.get(list_id).set('card_count', current_list_card_count + 1);
             current_board_new_list.set('card_count', current_list_card_count + 1);

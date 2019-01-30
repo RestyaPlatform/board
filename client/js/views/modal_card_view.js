@@ -1856,6 +1856,7 @@ App.ModalCardView = Backbone.View.extend({
                 $('#js-card-listing-' + current_list.id).html('&nbsp;');
             }
             var change_list_card_count = parseInt(this.boards.get(data.board_id).lists.get(data.list_id).get('card_count'));
+            change_list_card_count = isNaN(change_list_card_count) ? 0 : change_list_card_count;
             this.boards.get(data.board_id).lists.get(data.list_id).set('card_count', change_list_card_count + 1);
             var changeList = this.boards.get(data.board_id).lists.get(data.list_id);
             _(function() {
@@ -3341,6 +3342,8 @@ App.ModalCardView = Backbone.View.extend({
                         card.set('id', data.uuid);
                     }
                     self.model.list.collection.get(data.list_id).cards.add(card);
+                    var copy_list_cards_count = isNaN(self.model.list.collection.get(data.list_id).attributes.card_count) ? 0 : self.model.list.collection.get(data.list_id).attributes.card_count;
+                    self.model.list.collection.get(data.list_id).set('card_count', copy_list_cards_count + 1);
                     var list = App.boards.get(response.cards.board_id).lists.get(response.cards.list_id);
                     if (!_.isUndefined(list)) {
                         list.set('card_count', list.attributes.card_count + 1);
