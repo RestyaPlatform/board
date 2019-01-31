@@ -118,25 +118,28 @@ if (file_exists(APP_PATH . '/client/apps/r_ldap_login/app.json')) {
     $g_ldap_bind_dn = R_LDAP_LOGIN_BIND_DN;
     $g_ldap_bind_passwd = R_LDAP_LOGIN_BIND_PASSWORD;
     $t_ldap_server = ($g_enable_ssl_connectivity == 'true') ? 'ldaps://' . $g_ldap_server : 'ldap://' . $g_ldap_server;
-    $t_ds = ldap_connect($t_ldap_server, $g_ldap_port);
     $ldap_connection_class = false;
-    if ($t_ds > 0) {
-        if ($g_ldap_protocol_version > 0) {
-            ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, $g_ldap_protocol_version);
-        }
-        if (!empty($g_ldap_bind_dn) && !empty($g_ldap_bind_passwd)) {
-            $t_br = ldap_bind($t_ds, $g_ldap_bind_dn, str_rot13(base64_decode($g_ldap_bind_passwd)));
+    $ldap_connection = '';
+    if (function_exists('ldap_connect')) {
+        $t_ds = ldap_connect($t_ldap_server, $g_ldap_port);
+        if ($t_ds > 0) {
+            if ($g_ldap_protocol_version > 0) {
+                ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, $g_ldap_protocol_version);
+            }
+            if (!empty($g_ldap_bind_dn) && !empty($g_ldap_bind_passwd)) {
+                $t_br = ldap_bind($t_ds, $g_ldap_bind_dn, str_rot13(base64_decode($g_ldap_bind_passwd)));
+            } else {
+                $t_br = ldap_bind($t_ds);
+            }
+            if ($t_br) {
+                $ldap_connection = 'Success';
+                $ldap_connection_class = true;
+            } else {
+                $ldap_connection = 'ERROR_LDAP_AUTH_FAILED';
+            }
         } else {
-            $t_br = ldap_bind($t_ds);
+            $ldap_connection = 'ERROR_LDAP_SERVER_CONNECT_FAILED';
         }
-        if ($t_br) {
-            $ldap_connection = 'Success';
-            $ldap_connection_class = true;
-        } else {
-            $ldap_connection = 'ERROR_LDAP_AUTH_FAILED';
-        }
-    } else {
-        $ldap_connection = 'ERROR_LDAP_SERVER_CONNECT_FAILED';
     }
 }
 if (file_exists(APP_PATH . '/client/apps/r_elasticsearch/app.json')) {
