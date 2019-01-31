@@ -665,9 +665,9 @@ App.UserView = Backbone.View.extend({
                     Auth.user.profile_picture_path = response.profile_picture_path + "?uid=" + Math.floor((Math.random() * 9999) + 1);
                     $.cookie('auth', JSON.stringify(Auth));
                     authuser = Auth;
-                    var hash = calcMD5(SecuritySalt + 'User' + self.model.id + 'png' + 'small_thumb');
-                    var profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + self.model.id + '.' + hash + '.png?uid=' + Math.floor((Math.random() * 9999) + 1);
-                    $('.js-use-uploaded-avatar').html('<span class="js-remove-image  profile-block show"><i class="icon icon-remove close-block cur h6"></i></span><img src="' + profile_picture_path + '" width="50" height="50" class="js-user-avatar">');
+                    var hash = calcMD5(SecuritySalt + 'User' + self.model.id + 'png' + 'normal_thumb');
+                    var profile_picture_path = window.location.pathname + 'img/normal_thumb/User/' + self.model.id + '.' + hash + '.png?uid=' + Math.floor((Math.random() * 9999) + 1);
+                    $('.js-use-uploaded-avatar').html('<span class="js-remove-image  profile-block show"><i class="icon icon-remove close-block cur h6"></i></span><img src="' + profile_picture_path + '" width="64" height="64" class="js-user-avatar">');
                     this.footerView = new App.FooterView({
                         model: Auth,
                     }).render();
