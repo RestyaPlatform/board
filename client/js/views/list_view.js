@@ -773,7 +773,6 @@ App.ListView = Backbone.View.extend({
      *
      */
     moveCards: function(e) {
-        console.log("1 >>> ");
         $('li.dropdown').removeClass('open');
         var list_id = this.model.id;
         var self = this;
@@ -954,7 +953,6 @@ App.ListView = Backbone.View.extend({
                         var list_id = list.split('js-card-listing-');
                         list_id = list_id['1'];
                         var current_list = App.current_board.lists.get(parseInt(list_id));
-                        console.log(current_list);
                         var current_list_card_count = isNaN(current_list.attributes.card_count) ? 0 : current_list.attributes.card_count;
                         if (parseInt(current_list_card_count) === 1) {
                             $('#' + list).append('&nbsp;');
