@@ -789,7 +789,7 @@ App.FooterView = Backbone.View.extend({
     userActivities: function(bool, mode) {
         var self = this;
         var wip_enabled = false;
-        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_wip_limit', APPS.enabled_apps) !== -1) {
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
             wip_enabled = true;
         }
         var activities = new App.ActivityCollection();
