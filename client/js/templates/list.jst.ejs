@@ -1,4 +1,4 @@
-<div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 list">
+<div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 list js-list-<%- list.id %> js-list-sort">
 	<div class="list-header js-list-head <% if(!_.isUndefined(authuser.user)){%>cur-grab<%}%>">
 	  <div class="clearfix">
 		<a href="#" class="col-xs-8 js-list-name-<%- list.id %> <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-edit-list-form<% }else{ %> js-no-action<%}%>"><span><span class="clearfix row show">
