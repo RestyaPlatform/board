@@ -189,7 +189,8 @@
 
 		<li class="navbar-btn">
 			<a href="#" class="btn btn-default btn-xs <%if(parseInt(user.attributes.is_active) === 1){%>js-block-user<%}else{%>js-unblock-user<%}%>"
-			 title="<%- i18next.t('Block') %>" <% if(user.attributes.role_id==1){%> disabled="disabled"
+			 title="<%if(parseInt(user.attributes.is_active) === 1){%><%- i18next.t('Block') %><%}else{%><%- i18next.t('Unblock') %>
+				<%}%>" <% if(user.attributes.role_id==1){%> disabled="disabled"
 				<% } %>>
 				<i class="icon-exclamation"></i>
 				<span>
