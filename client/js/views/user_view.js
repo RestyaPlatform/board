@@ -290,6 +290,7 @@ App.UserView = Backbone.View.extend({
         var self = this;
         var form = $(e.target);
         var fileData = new FormData(form[0]);
+        fileData.delete("attachment");
         var data = $(e.target).serializeObject();
         data.default_desktop_notification = 'false';
         if ($("#default_desktop_notification").val() === 'Enabled') {
