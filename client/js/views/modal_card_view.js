@@ -779,6 +779,16 @@ App.ModalCardView = Backbone.View.extend({
                 due_date: data.due_date + ' ' + data.due_time,
                 start: data.due_date + 'T' + data.due_time
             };
+            var card_id = $(e.target).parents('.dockmodal.no-footer').find('.card-id > strong').html().split('#');
+            card_id = card_id[1];
+            /* Start Date Exists */
+            var start_form_data = $('.js-card-dock-modal-' + card_id).find('form#cardStartDateEditForm1').serializeArray();
+            if (start_form_data.length) {
+                if (new Date(data.due_date).getTime() <= new Date(start_form_data[0].value + ' ' + start_form_data[1].value).getTime()) {
+                    self.flash('danger', i18next.t('Due Date should be greater than Start Date.'));
+                    return true;
+                }
+            }
         }
         if (!_.isUndefined(data.start_date) || !_.isUndefined(data.start_time)) {
             data = {
