@@ -777,6 +777,23 @@ App.ListView = Backbone.View.extend({
         var list_id = this.model.id;
         var self = this;
         var move_list_id = parseInt($(e.currentTarget).data('move-list-id'));
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
+            var move_list = this.model.collection.board.lists.findWhere({
+                id: move_list_id
+            });
+            if (!_.isUndefined(move_list.attributes.custom_fields) && !_.isEmpty(move_list.attributes.custom_fields)) {
+                var move_list_custom_fields = JSON.parse(move_list.attributes.custom_fields);
+                var move_list_card_count = isNaN(move_list.attributes.card_count) ? 0 : move_list.attributes.card_count;
+                var list_card_count = isNaN(self.model.attributes.card_count) ? 0 : self.model.attributes.card_count;
+                move_list_card_count = move_list_card_count + list_card_count;
+                if (!_.isUndefined(move_list_custom_fields.wip_limit) && !_.isEmpty(move_list_custom_fields.wip_limit)) {
+                    if (parseInt(move_list_card_count) > parseInt(move_list_custom_fields.wip_limit) && !_.isUndefined(move_list_custom_fields.hard_wip_limit) && !_.isEmpty(move_list_custom_fields.hard_wip_limit)) {
+                        self.flash('danger', i18next.t('Agile WIP limit will be exceeded'));
+                        return false;
+                    }
+                }
+            }
+        }
         var copied_cards = this.model.collection.board.cards.where({
             list_id: list_id
         });
@@ -825,6 +842,12 @@ App.ListView = Backbone.View.extend({
                 var options = {
                     silent: true
                 };
+                var current_board_prev_list = App.current_board.lists.findWhere({
+                    id: parseInt(list_id)
+                });
+                var current_board_new_list = App.current_board.lists.findWhere({
+                    id: parseInt(move_list_id)
+                });
                 var move_list_card_count = self.model.collection.board.lists.get(move_list_id).attributes.card_count;
                 if (parseInt(move_list_card_count) === 0) {
                     $('#js-card-listing-' + move_list_id).html(function(i, h) {
@@ -837,6 +860,8 @@ App.ListView = Backbone.View.extend({
                 move_list_card_count = move_list_card_count + previous_list_card_count;
                 self.model.collection.board.lists.get(move_list_id).set('cards_count', move_list_card_count, options);
                 self.model.collection.board.lists.get(list_id).set('cards_count', 0);
+                current_board_prev_list.set('card_count', 0);
+                current_board_new_list.set('card_count', move_list_card_count);
                 App.boards.get(self.model.attributes.board_id).lists.get(move_list_id).set('cards_count', move_list_card_count, options);
                 App.boards.get(self.model.attributes.board_id).lists.get(list_id).set('cards_count', 0);
                 self.board.lists.get(move_list_id).set('cards_count', move_list_card_count, options);
