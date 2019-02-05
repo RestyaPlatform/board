@@ -8,10 +8,19 @@
 		 if (filtered_list.id == list.attributes.id) {
 			 list_li += '<li class="disabled navbar-btn"><a href="#" class="js-no-action text-muted">' + _.escape(filtered_list.attributes.name) + ' '+i18next.t('(current)')+'</a></li>';
 		 } else {
-			if (wip_enabled &&  !_.isUndefined(filtered_list.attributes.custom_fields) && filtered_list.attributes.custom_fields) {
+			if (wip_enabled &&  !_.isUndefined(filtered_list.attributes.custom_fields) && !_.isEmpty(filtered_list.attributes.custom_fields)) {
 				var list_custom_fields = JSON.parse(filtered_list.attributes.custom_fields);
-				if ((parseInt(list_custom_fields.wip_limit) !== parseInt(filtered_list.attributes.card_count)) || (_.isUndefined(list_custom_fields.hard_wip_limit) || _.isEmpty(list_custom_fields.hard_wip_limit))) {
-					 list_li += '<li class="navbar-btn"><a href="#" class="js-move-cards js-close-popup" data-move-list-id="' + filtered_list.id + '">' + _.escape(filtered_list.attributes.name) + '</a></li>';
+				var list_card_count = isNaN(filtered_list.attributes.card_count) ? 0 : filtered_list.attributes.card_count;
+				if (!_.isUndefined(list_custom_fields.wip_limit) && !_.isEmpty(list_custom_fields.wip_limit)) {
+					if (parseInt(list_card_count) === parseInt(list_custom_fields.wip_limit) && !_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit)) {
+						list_li += '<li class="disabled navbar-btn"><a href="#" class="js-no-action text-muted">' + _.escape(filtered_list.attributes.name) + ' ('+ i18next.t('Agile WIP exceeded')+')</a></li>';
+					} else if(parseInt(list_card_count) > parseInt(list_custom_fields.wip_limit)) {
+						list_li += '<li class="navbar-btn"><a href="#" class="js-move-cards js-close-popup" data-move-list-id="' + filtered_list.id + '">' + _.escape(filtered_list.attributes.name) + ' ( > '+ i18next.t('WIP limit')+')</a></li>';	
+					} else {
+						list_li += '<li class="navbar-btn"><a href="#" class="js-move-cards js-close-popup" data-move-list-id="' + filtered_list.id + '">' + _.escape(filtered_list.attributes.name) + '</a></li>';	
+					}
+				} else {
+					list_li += '<li class="navbar-btn"><a href="#" class="js-move-cards js-close-popup" data-move-list-id="' + filtered_list.id + '">' + _.escape(filtered_list.attributes.name) + '</a></li>';
 				}
 			} else {
 				list_li += '<li class="navbar-btn"><a href="#" class="js-move-cards js-close-popup" data-move-list-id="' + filtered_list.id + '">' + _.escape(filtered_list.attributes.name) + '</a></li>';
