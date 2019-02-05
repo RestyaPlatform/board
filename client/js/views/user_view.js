@@ -379,6 +379,20 @@ App.UserView = Backbone.View.extend({
                         $.cookie('auth', JSON.stringify(Auth));
                         authuser = Auth;
                     }
+                    if (!_.isUndefined(response.activity.full_name) && response.activity.full_name !== null) {
+                        self.model.set('full_name', response.activity.full_name);
+                        Auth = JSON.parse($.cookie('auth'));
+                        Auth.user.full_name = response.activity.full_name;
+                        $.cookie('auth', JSON.stringify(Auth));
+                        authuser = Auth;
+                    }
+                    if (!_.isUndefined(response.activity.initials) && response.activity.initials !== null) {
+                        self.model.set('initials', response.activity.initials);
+                        Auth = JSON.parse($.cookie('auth'));
+                        Auth.user.initials = response.activity.initials;
+                        $.cookie('auth', JSON.stringify(Auth));
+                        authuser = Auth;
+                    }
                     if (!_.isUndefined(response.activity.profile_picture_path) && response.activity.profile_picture_path !== null) {
                         self.model.set('profile_picture_path', response.activity.profile_picture_path);
                         Auth = JSON.parse($.cookie('auth'));

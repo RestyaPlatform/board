@@ -2876,6 +2876,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     pg_query_params($db_lnk, 'UPDATE oauth_access_tokens set user_id = $1 WHERE user_id= $2', $conditions);
                     pg_query_params($db_lnk, 'UPDATE oauth_refresh_tokens set user_id = $1 WHERE user_id= $2', $conditions);
                 }
+                if (!empty($response['activity']['id'])) {
+                    $qry_val_arr = array(
+                        $response['activity']['id']
+                    );
+                    $new_activity = pg_query_params($db_lnk, 'SELECT * FROM activities_listing WHERE id = $1', $qry_val_arr);
+                    $response['activity'] = pg_fetch_assoc($new_activity);
+                }
             } else {
                 $response['error']['message'] = 'Unauthorized';
                 header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
