@@ -22,6 +22,7 @@ App.UserIndex = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
+        'click .js-close-popover': 'closePopup',
         'click .js-user-activity-menu': 'userActivityMenu',
         'click .js-user-board-list': 'userBoardList',
         'click .js-no-action': 'noAction',
@@ -158,6 +159,20 @@ App.UserIndex = Backbone.View.extend({
         this.model.destroy();
         this.model.url = api_url + 'users/' + this.model.id + '.json';
         this.$el.remove();
+        return false;
+    },
+    /**
+     * closePopup()
+     * close the opend dropdown
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    closePopup: function(e) {
+        var el = this.$el;
+        var target = el.find(e.target);
+        target.parents('.dropdown').removeClass('open');
         return false;
     },
     /**
