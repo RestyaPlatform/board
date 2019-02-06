@@ -116,17 +116,17 @@
 							%>
 							<% if(_.isEmpty(voted_user)){  %>
 							  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-							  <button type="button" class="btn btn-primary js-add-card-vote no-print"><i class=" icon-thumbs-up"></i></button> 
+							  <button type="button" class="btn btn-primary js-add-card-vote no-print"  title="<%- i18next.t('Vote') %>"><i class=" icon-thumbs-up"></i></button> 
 							  <% } %>  
 							  <% } else{ %>
 							  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-							  <button type="button" class="btn btn-default active js-delete-card-vote"><i class="  icon-thumbs-up"></i></button>  
+							  <button type="button" class="btn btn-default active js-delete-card-vote" title="<%- i18next.t('Unvote') %>"><i class="  icon-thumbs-up"></i></button>  
 							  <% } %>
 							  <% } }%>         
 					   </li>
 		          <% } %>
 					  
-					  <li class="dropdown"><a href="#" title="<%- i18next.t('Add Vote') %>" class="btn btn-default js-show-card-voters-list dropdown-toggle" data-toggle="dropdown"><%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %></a>
+					  <li class="dropdown"><a href="#" title="<%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %>" class="btn btn-default js-show-card-voters-list dropdown-toggle" data-toggle="dropdown"><%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %></a>
 						<ul class="dropdown-menu dropdown-menu-left arrow js-show-card-voters-list-response">
 						</ul>
 					  </li>
