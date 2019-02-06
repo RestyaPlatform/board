@@ -153,7 +153,7 @@ App.CardView = Backbone.View.extend({
         var self = this;
         e.preventDefault();
         var hash = calcMD5(SecuritySalt + 'download' + self.model.attributes.board_id + self.model.id);
-        var link = window.location.protocol + '//' + window.location.host + window.location.pathname + 'download/' + card.attributes.board_id + '/' + card.id + '/' + hash;
+        var link = window.location.protocol + '//' + window.location.host + window.location.pathname + 'download/' + self.model.attributes.board_id + '/' + self.model.id + '/' + hash;
         window.open(link);
         return false;
     },
