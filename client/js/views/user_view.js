@@ -181,7 +181,11 @@ App.UserView = Backbone.View.extend({
                             return activity.id;
                         });
                         last_activity_id = last_activity.id;
-                        $('#js-user-activites-load-more').removeClass('hide');
+                        if (!response._metadata.noOfPages || response._metadata.noOfPages <= 1) {
+                            self.$('#js-user-activites-load-more').remove();
+                        } else {
+                            $('#js-user-activites-load-more').removeClass('hide');
+                        }
                         for (var i = 0; i < activities.models.length; i++) {
                             var activity = activities.models[i];
                             self.$('#js-user-activites').append(new App.UserActivityView({
@@ -578,6 +582,9 @@ App.UserView = Backbone.View.extend({
             cache: false,
             success: function(user, response) {
                 if (!_.isEmpty(activities) && !_.isEmpty(activities.models)) {
+                    if (!response._metadata.noOfPages || response._metadata.noOfPages <= 1) {
+                        self.$('#js-user-activites-load-more').remove();
+                    }
                     for (var i = 0; i < activities.models.length; i++) {
                         var activity = activities.models[i];
                         self.$('#js-user-activites').append(new App.UserActivityView({
