@@ -1052,9 +1052,10 @@ App.BoardHeaderView = Backbone.View.extend({
                                             }
                                         }
                                     });
-                                    $(target).prop('title', card_customfield_value);
-                                    $(target).data('original-title', card_customfield_value);
-                                    $(target).tooltip();
+                                    $(target).tooltip({
+                                        title: card_customfield_value,
+                                        html: true
+                                    });
                                 }
                             }
                         });
