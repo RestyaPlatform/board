@@ -410,6 +410,7 @@ App.CardCheckListView = Backbone.View.extend({
                     self.renderItemsCollection(false);
                     checklist_item.save(data, {
                         success: function(model, response) {
+                            checklist_item.set('position', response.checklist_items[0].position);
                             self.model.checklist_items.get(data.uuid).id = parseInt(response.checklist_items[0].id);
                             self.model.checklist_items.get(data.uuid).attributes.id = parseInt(response.checklist_items[0].id);
                             self.model.card.list.collection.board.checklist_items.get(data.uuid).attributes.id = parseInt(response.checklist_items[0].id);
