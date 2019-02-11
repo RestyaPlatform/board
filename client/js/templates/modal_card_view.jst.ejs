@@ -498,9 +498,9 @@
 						%>
 						<li class="navbar-btn">
 							<% if(!_.isEmpty(cards_subscribers)){ %>
-								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-open"></i><%- i18next.t('Unsubsribe') %></a> 
+								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-close"></i><%- i18next.t('Unsubsribe') %></a> 
 							<% } else { %>
-								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-close"></i><%- i18next.t('Subscribe') %></a>
+								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-open"></i><%- i18next.t('Subscribe') %></a>
 							<% } %>
 					  </li>
 				   <% } %>
