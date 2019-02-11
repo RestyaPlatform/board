@@ -4927,6 +4927,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $r_post['position']+= 1;
                 if (empty($r_post['member'])) {
                     unset($r_post['member']);
+                    unset($r_post['checklist_items']);
                 }
                 $result = pg_execute_insert($table_name, $r_post);
                 $item = pg_fetch_assoc($result);
