@@ -47,9 +47,14 @@ App.ActivityReplyFormView = Backbone.View.extend({
      *
      */
     render: function() {
+        var self = this;
         this.converter.setFlavor('github');
+        var card = self.model.cards.findWhere({
+            id: parseInt(self.model.attributes.card_id)
+        });
         this.$el.html(this.template({
-            activity: this.model
+            activity: this.model,
+            card: card
         }));
         this.showTooltip();
         return this;
