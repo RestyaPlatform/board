@@ -95,6 +95,7 @@ App.UserCardsView = Backbone.View.extend({
                 board.board_stars.add(boards_stars, {
                     silent: true
                 });
+                App.current_board = board;
                 board.lists.each(function(list) {
                     var cards = list.get('cards') || [];
                     if (!_.isEmpty(cards)) {

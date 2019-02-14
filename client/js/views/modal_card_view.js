@@ -579,7 +579,6 @@ App.ModalCardView = Backbone.View.extend({
             card: this.model
         }).el);
         $('.inputCardLabel', doc).select2({
-            formatSelection: this.repoFormatResult,
             tags: _.uniq(self.model.list.collection.board.labels.pluck('name')),
             tokenSeparators: [',', ' '],
             dropdownParent: '.dockmodal'
@@ -590,15 +589,6 @@ App.ModalCardView = Backbone.View.extend({
         if (target.hasClass('js-card-header-action')) {
             return false;
         }
-    },
-    repoFormatResult: function(label) {
-        var current_label = self.model.labels.findWhere({
-            'name': label.id
-        });
-        if (current_label) {
-            return '<span data-color="' + current_label.attributes.color + '" data-label="' + label.id + '">' + label.id + '</span>';
-        }
-        return label.id;
     },
     /**
      * showCardDueDateForm()
