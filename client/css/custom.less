@@ -912,8 +912,10 @@ table.acl-link-list > tbody> tr {
 				}
 			}
 		}
+	}
+	.board-list-outer{
 		&:first-child {
-			margin-left: 15px;
+			margin-left: 15px;	
 			margin-left: 20px \9;
 		}
 	}
@@ -2529,4 +2531,13 @@ header{
 }
 .no-whitespace ins,del,code{
 	white-space: normal;
+}
+footer{
+	.open > a {
+		&,
+		&:hover,
+		&:focus {
+		  border-color:#f47564 !important;
+		}
+	  }
 }
