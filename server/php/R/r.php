@@ -5688,6 +5688,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $plugin_url['Gantt'] = array(
             '/boards/?/card_dependencies'
         );
+        $plugin_url['SupportApp'] = array(
+            '/card_support_users'
+        );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
                 $pluginToBePassed = $plugin_key;
@@ -5887,6 +5890,13 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         );
         $comment = '';
         $foreign_ids['board_id'] = $r_resource_vars['boards'];
+        if (!empty($r_put['is_support_app'])) {
+            if (is_plugin_enabled('r_support_app')) {
+                require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'SupportApp' . DIRECTORY_SEPARATOR . 'functions.php';
+                $r_put['id'] = $r_resource_vars['boards'];
+                $supportAppResponse = checkSupportAppFields($r_put, $r_resource_cmd);
+            }
+        }
         if (isset($r_put['default_email_list_id']) || isset($r_put['sort_by']) || isset($r_put['is_default_email_position_as_bottom'])) {
             $comment = '';
         } else if (isset($r_put['board_visibility'])) {
@@ -6982,6 +6992,9 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $plugin_url['Salesforce'] = array(
             '/salesforce/?'
         );
+        $plugin_url['SupportApp'] = array(
+            '/card_support_users'
+        );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
                 $pluginToBePassed = $plugin_key;
@@ -7033,14 +7046,16 @@ $exception_url = array(
     '/settings',
     '/boards/?',
     '/oauth/token',
-    '/users/logout'
+    '/users/logout',
+    '/card_support_users'
 );
 $scope_exception_url = array(
     '/users/login',
     '/users/register',
     '/oauth/token',
     '/users/?/activation',
-    '/users/forgotpassword'
+    '/users/forgotpassword',
+    '/card_support_users'
 );
 $token_exception_url = array(
     '/users/logout',
