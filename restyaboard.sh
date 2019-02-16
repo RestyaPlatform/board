@@ -895,6 +895,7 @@
 
 					yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
 					yum install -y php72w-pear
+					yum install -y php72w-gd
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
