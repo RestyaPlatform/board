@@ -4017,7 +4017,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['image_link'] = $_POST['image_link'];
         }
         $table_name = 'cards';
-        $r_post['user_id'] = $authUser['id'];
+        if (!empty($r_post['is_support_app'])) {
+            $admin = executeQuery('SELECT id FROM users WHERE role_id = $1', [1]);
+            $r_post['user_id'] = $userID = $admin['id'];
+        } else {
+            $r_post['user_id'] = $userID = $authUser['id'];
+        }
         $qry_val_arr = array(
             $r_post['board_id'],
             $r_post['list_id']
@@ -4049,7 +4054,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $foreign_ids['card_id'] = $response['id'];
                 $foreign_ids['list_id'] = $r_post['list_id'];
                 $comment = '##USER_NAME## added card ##CARD_LINK## to list "' . $list['name'] . '".';
-                $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card', $foreign_ids, '', $r_post['list_id']);
+                $response['activity'] = insertActivity($userID, $comment, 'add_card', $foreign_ids, '', $r_post['list_id']);
                 if (isset($_POST) && !empty($_POST) && isset($_POST['is_instant_add_Card'])) {
                     $is_return_vlaue = true;
                     $table_name = 'card_attachments';
@@ -4117,7 +4122,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                         $foreign_ids['list_id'] = $r_post['list_id'];
                                         $foreign_ids['card_id'] = $r_post['card_id'];
                                         $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
-                                        $response_file['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response_file['card_attachments'][$i]['id']);
+                                        $response_file['activity'] = insertActivity($userID, $comment, 'add_card_attachment', $foreign_ids, null, $response_file['card_attachments'][$i]['id']);
                                         foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                                             $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response_file['card_attachments'][$i]['id'];
                                             $list = glob($imgdir . '.*');
@@ -4149,7 +4154,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $foreign_ids['list_id'] = $r_post['list_id'];
                             $foreign_ids['card_id'] = $r_post['card_id'];
                             $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
-                            $response_file['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response_file['card_attachments'][$i]['id']);
+                            $response_file['activity'] = insertActivity($userID, $comment, 'add_card_attachment', $foreign_ids, null, $response_file['card_attachments'][$i]['id']);
                             $i++;
                         }
                     }
@@ -4168,7 +4173,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $foreign_ids['list_id'] = $r_post['list_id'];
                                 $foreign_ids['card_id'] = $r_post['card_id'];
                                 $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
-                                $response_file['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $row['id']);
+                                $response_file['activity'] = insertActivity($userID, $comment, 'add_card_attachment', $foreign_ids, null, $row['id']);
                                 foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                                     $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $row['id'];
                                     $list = glob($mediadir . '.*');
@@ -4197,7 +4202,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         );
                         $_user = executeQuery('SELECT username FROM users WHERE id = $1', $qry_val_arr);
                         $comment = '##USER_NAME## added "' . $_user['username'] . '" as member to this card ##CARD_LINK##';
-                        $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_user', $foreign_ids, '', $card_user['id']);
+                        $response['activity'] = insertActivity($userID, $comment, 'add_card_user', $foreign_ids, '', $card_user['id']);
                     }
                 }
                 if (!empty($r_post['labels'])) {
@@ -4231,7 +4236,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, card_id, label_id, board_id, list_id) VALUES (now(), now(), $1, $2, $3, $4) RETURNING *', $qry_val_arr);
                     }
                     $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ##LABEL_NAME##';
-                    insertActivity($authUser['id'], $comment, 'add_card_label', $foreign_ids, null, $r_post['label_id']);
+                    insertActivity($userID, $comment, 'add_card_label', $foreign_ids, null, $r_post['label_id']);
                 }
                 if (!empty($r_post['cards_checklists_card_id'])) {
                     $qry_val_arr = array(
@@ -5894,7 +5899,11 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             if (is_plugin_enabled('r_support_app')) {
                 require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'SupportApp' . DIRECTORY_SEPARATOR . 'functions.php';
                 $r_put['id'] = $r_resource_vars['boards'];
-                $supportAppResponse = checkSupportAppFields($r_put, $r_resource_cmd);
+                $SupportAppResponse = checkSupportAppFields($r_put, $r_resource_cmd);
+                if (empty($r_put['support_custom_fields']) || empty($r_put['support_list_id'])) {
+                    echo json_encode($SupportAppResponse);
+                    break;
+                }
             }
         }
         if (isset($r_put['default_email_list_id']) || isset($r_put['sort_by']) || isset($r_put['is_default_email_position_as_bottom'])) {
@@ -7046,16 +7055,14 @@ $exception_url = array(
     '/settings',
     '/boards/?',
     '/oauth/token',
-    '/users/logout',
-    '/card_support_users'
+    '/users/logout'
 );
 $scope_exception_url = array(
     '/users/login',
     '/users/register',
     '/oauth/token',
     '/users/?/activation',
-    '/users/forgotpassword',
-    '/card_support_users'
+    '/users/forgotpassword'
 );
 $token_exception_url = array(
     '/users/logout',
