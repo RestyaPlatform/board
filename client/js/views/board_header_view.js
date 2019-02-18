@@ -1145,6 +1145,9 @@ App.BoardHeaderView = Backbone.View.extend({
         el.find('.js-setting-response').html(new App.ShowCopyBoardView({
             model: this.model
         }).el);
+        if (parseInt(this.model.attributes.organization_id) !== 0) {
+            this.showBoardAddeOrganizationForm(e);
+        }
     },
     /**
      * selectGoogleSyncUrl()

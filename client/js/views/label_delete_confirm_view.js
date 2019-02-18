@@ -25,7 +25,7 @@ App.LabelDeleteConfirmView = Backbone.View.extend({
         self.model.url = api_url + 'boards/' + self.model.id + '/labels/' + self.label_id + '.json';
         self.model.destroy({
             success: function(model, response) {
-                self.flash('success', i18next.t('Labels deleted successfully.'));
+                self.flash('success', i18next.t('Label deleted successfully.'));
                 $('.js-show-labels').trigger('click');
                 var filter_labels = self.model.labels.filter(function(model) {
                     return parseInt(model.get('label_id')) === parseInt(self.label_id);
