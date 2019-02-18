@@ -102,5 +102,6 @@ App.ActivityReplyFormView = Backbone.View.extend({
             $(target).parents('.js-reply-form').find('.js-card-replyComment-preview').html("<p>Nothing to preview</p>");
         }
         $(target).parents('.js-reply-form').find('.js-card-replyComment-preview-panel').removeClass('hide').addClass('show');
+        emojify.run();
     }
 });

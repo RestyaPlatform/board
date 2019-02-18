@@ -105,6 +105,7 @@ App.CardCheckListView = Backbone.View.extend({
         this.$el.html(this.template({
             checklist: this.model
         }));
+        emojify.run();
         if (!_.isUndefined(authuser.user)) {
             $('.js-checklist-items-sorting', this.$el).sortable({
                 items: 'div.js-checklist-item',

@@ -192,6 +192,7 @@ App.ModalCardView = Backbone.View.extend({
             $(target).parents('#card_activities').find('.js-card-comment-preview').html("<p>Nothing to preview</p>");
         }
         $(target).parents('#card_activities').find('.js-card-comment-preview-panel').removeClass('hide').addClass('show');
+        emojify.run();
     },
     /**
      * showColorPicker()
@@ -2898,6 +2899,7 @@ App.ModalCardView = Backbone.View.extend({
         this.$el.find('.js-hide-edit-comment-form').parents('div.js-activity-' + activity_id).html(html_content);
         $('.js-acticity-action-' + activity_id).removeClass('hide');
         $('.js-timeago-' + activity_id).removeClass('hide');
+        emojify.run();
     },
     /**
      * hideReplyCommentForm()
