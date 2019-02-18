@@ -2716,6 +2716,7 @@ App.ModalCardView = Backbone.View.extend({
         if (!$.trim($(e.target).find('#inputAddComment').val()).length) {
             $(e.target).find('.error-msg').remove();
             $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter($(e.target).find('#inputAddComment'));
+            $('#submitCommentAdd').removeClass('disabled');
         } else {
             $(e.target).find('.error-msg').remove();
             var self = this;
