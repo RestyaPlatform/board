@@ -249,3 +249,7 @@ Restyaboard</a>
 </footer>
 </body>
 </html>', 'SITE_URL, SITE_NAME, SUBJECT, CONTENT', 'Due Date Notification');
+
+UPDATE "settings" SET "description" = '<a href="https://fontawesome.com/v3.2.1/icons/" target="_blank">Font
+Awesome</a> class name. Recommended: icon-circle, icon-bullhorn,
+icon-tag, icon-bookmark, icon-pushpin, icon-star' WHERE "name" = 'LABEL_ICON';
