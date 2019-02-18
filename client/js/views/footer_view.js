@@ -187,12 +187,18 @@ App.FooterView = Backbone.View.extend({
                     });
                 });
             }
+            var in_boards_page = false;
+            var url = window.location.hash.split('/');
+            if (url.length === 2 && url['1'] === 'boards') {
+                in_boards_page = true;
+            }
             self.$el.html(self.template({
                 model: self.model,
                 board_id: self.board_id,
                 board: self.board,
                 languages: ($.cookie('languages')) ? $.cookie('languages').split(',') : null,
                 apps: getting_new_array,
+                'in_boards_page': in_boards_page,
                 converter: self.converter,
             }));
         });

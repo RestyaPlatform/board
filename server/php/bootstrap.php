@@ -126,7 +126,7 @@ function main()
                     break;
 
                 case 'POST':
-                    if ((in_array('write', $scope) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) || in_array($r_resource_cmd, $scope_exception_url)) {
+                    if ((in_array('write', $scope) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser))) || (is_plugin_enabled('r_support_app') && ($r_resource_cmd == '/card_support_users' || !empty($r_resource_vars['boards'])))) || in_array($r_resource_cmd, $scope_exception_url)) {
                         $r_post = json_decode(file_get_contents('php://input'));
                         $r_post = (array)$r_post;
                         r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post);

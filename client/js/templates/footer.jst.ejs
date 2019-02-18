@@ -129,11 +129,13 @@ if (_.isEmpty(role_links.where({
 															<%
 			} 		
 		%>
-																<li class="clearfix js-boards-list-container-search">
+															<% if(!in_boards_page) { %>
+																<li class="clearfix js-boards-list-container-search js-a">
 																	<a href="#/boards" title="<%- i18next.t('Boards') %>">
 																		<%- i18next.t("Boards") %>
 																	</a>
 																</li>
+															<% } %>
 																<%
 
 			if (!_.isEmpty(role_links.where({
