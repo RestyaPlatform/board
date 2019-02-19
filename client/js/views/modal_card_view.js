@@ -956,6 +956,11 @@ App.ModalCardView = Backbone.View.extend({
             })).dockmodal('refreshLayout');
             self.$el.find('.js-modal-settings').removeClass('hide');
             _(function() {
+                var file_extension_regex;
+                if (!_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
+                    var allowextensions = ALLOWED_FILE_EXTENSIONS.replace(',', '|').replace('/./', '').replace(' ', '');
+                    file_extension_regex = new RegExp("(\.|\/)(" + allowextensions + ")$");
+                }
                 Backbone.TemplateManager.baseUrl = '{name}';
                 var uploadManager = new Backbone.UploadManager({
                     uploadUrl: api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/attachments.json?token=' + api_token,
@@ -963,7 +968,8 @@ App.ModalCardView = Backbone.View.extend({
                     singleFileUploads: false,
                     formData: $('form.js-user-profile-edit').serialize(),
                     dropZone: $('#dropzone' + self.model.id),
-                    pasteZone: $('#dropzone' + self.model.id)
+                    pasteZone: $('#dropzone' + self.model.id),
+                    acceptFileTypes: file_extension_regex
                 });
                 var loader_id = '';
                 uploadManager.on('fileadd', function(file) {
@@ -975,6 +981,12 @@ App.ModalCardView = Backbone.View.extend({
                     $('#js-card-modal-' + self.model.id).parent('.dockmodal-body').prev('.dockmodal-header').find('.cssloader').remove();
                     $('#js-card-modal-' + self.model.id).parent('.dockmodal-body').prev('.dockmodal-header').append('<span id="' + loader_id + '" class="cssloader"></span>');
                     self.$('.js_card_image_upload').addClass('cssloader');
+                    if (!_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
+                        if (!file_extension_regex.exec(file.attributes.data.name)) {
+                            self.flash('danger', i18next.t('File extension not supported. It supports only ' + ALLOWED_FILE_EXTENSIONS + '.'));
+                            self.$('.js_card_image_upload').removeClass('cssloader');
+                        }
+                    }
                 });
                 uploadManager.on('fileuploaddragover', function(e) {
                     $('#js-card-modal-' + self.model.id).addClass('drophover');
@@ -1334,13 +1346,19 @@ App.ModalCardView = Backbone.View.extend({
         this.$el.find('.js-comment-member-search-response').nextAll().remove();
         _(function() {
             Backbone.TemplateManager.baseUrl = '{name}';
+            var file_extension_regex;
+            if (!_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
+                var allowextensions = ALLOWED_FILE_EXTENSIONS.replace(',', '|').replace('/./', '').replace(' ', '');
+                file_extension_regex = new RegExp("(\.|\/)(" + allowextensions + ")$");
+            }
             var uploadManager = new Backbone.UploadManager({
                 uploadUrl: api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/attachments.json?token=' + api_token,
                 autoUpload: true,
                 singleFileUploads: false,
                 formData: $('form.js-user-profile-edit').serialize(),
                 dropZone: $('#dropzone' + self.model.id),
-                pasteZone: $('#dropzone' + self.model.id)
+                pasteZone: $('#dropzone' + self.model.id),
+                acceptFileTypes: file_extension_regex
             });
             var loader_id = '';
             uploadManager.on('fileadd', function(file) {
@@ -1351,6 +1369,12 @@ App.ModalCardView = Backbone.View.extend({
                 loader_id = new Date().getTime();
                 $('.js-attachment-loader', $('#js-card-modal-' + self.model.id)).html('<div class="navbar-btn dockheader-loader"><span class="cssloader"></span></div>');
                 self.$('.js_card_image_upload').addClass('cssloader');
+                if (!_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
+                    if (!file_extension_regex.exec(file.attributes.data.name)) {
+                        self.flash('danger', i18next.t('File extension not supported. It supports only ' + ALLOWED_FILE_EXTENSIONS + '.'));
+                        self.$('.js_card_image_upload').removeClass('cssloader');
+                    }
+                }
             });
             uploadManager.on('fileuploaddragover', function(e) {
                 $('#js-card-modal-' + self.model.id).addClass('drophover');
@@ -2161,60 +2185,89 @@ App.ModalCardView = Backbone.View.extend({
         var form = $('form.js-card-attachment-form');
         var target = $(e.target);
         target.parents('li.dropdown').removeClass('open');
-        var fileData = new FormData(form[0]);
+        var fileData = new FormData(form[0]),
+            invalidFiles = [];
+        //Checking valid and invalid files
+        if (fileData.getAll('attachment[]').length && !_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
+            var allowed_extensions = ALLOWED_FILE_EXTENSIONS.replace(' ', '').split(','),
+                uploaded_files = fileData.getAll('attachment[]');
+            allowedfiles = uploaded_files.filter(function(uploaded_file) {
+                return (allowed_extensions.indexOf('.' + uploaded_file.name.split('.').pop()) != -1);
+            });
+            invalidFiles = uploaded_files.filter(function(uploaded_file) {
+                return (allowed_extensions.indexOf('.' + uploaded_file.name.split('.').pop()) == -1);
+            }).map(function(uploaded_file) {
+                return uploaded_file.name;
+            });
+            fileData.delete("attachment[]");
+            $.each(allowedfiles, function(i, allowedfile) {
+                fileData.append("attachment[]", allowedfile);
+            });
+        }
         var card_attachment = new App.CardAttachment();
         card_attachment.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/attachments.json';
         self.closePopup(e);
-        card_attachment.save(fileData, {
-            type: 'POST',
-            data: fileData,
-            processData: false,
-            cache: false,
-            contentType: false,
-            success: function(model, response) {
-                if (is_offline_data) {
-                    self.flash('danger', i18next.t('Sorry, attachment not added. Internet connection not available.'));
-                } else {
-                    $('#js-card-modal-' + self.model.id).parent('.dockmodal-body').prev('.dockmodal-header').find('.cssloader').remove();
-                    $('.js-attachment-loader', $('#js-card-modal-' + self.model.id)).html('');
-                    var card_attachments = new App.CardAttachmentCollection();
-                    var i = 1;
-                    card_attachments.add(response.card_attachments);
-                    card_attachments.each(function(attachment) {
-                        var options = {
-                            silent: true
-                        };
-                        if (i === card_attachments.models.length) {
-                            options.silent = false;
-                        }
-                        attachment.set('id', parseInt(attachment.attributes.id));
-                        attachment.set('board_id', parseInt(attachment.attributes.board_id));
-                        attachment.set('list_id', parseInt(attachment.attributes.list_id));
-                        attachment.set('card_id', parseInt(attachment.attributes.card_id));
-                        self.model.attachments.unshift(attachment, options);
-                        self.model.list.collection.board.attachments.unshift(attachment, {
-                            silent: true
+        if (fileData.getAll('attachment[]').length) {
+            card_attachment.save(fileData, {
+                type: 'POST',
+                data: fileData,
+                processData: false,
+                cache: false,
+                contentType: false,
+                success: function(model, response) {
+                    if (is_offline_data) {
+                        self.flash('danger', i18next.t('Sorry, attachment not added. Internet connection not available.'));
+                    } else {
+                        $('#js-card-modal-' + self.model.id).parent('.dockmodal-body').prev('.dockmodal-header').find('.cssloader').remove();
+                        $('.js-attachment-loader', $('#js-card-modal-' + self.model.id)).html('');
+                        var card_attachments = new App.CardAttachmentCollection();
+                        var i = 1;
+                        card_attachments.add(response.card_attachments);
+                        card_attachments.each(function(attachment) {
+                            var options = {
+                                silent: true
+                            };
+                            if (i === card_attachments.models.length) {
+                                options.silent = false;
+                            }
+                            attachment.set('id', parseInt(attachment.attributes.id));
+                            attachment.set('board_id', parseInt(attachment.attributes.board_id));
+                            attachment.set('list_id', parseInt(attachment.attributes.list_id));
+                            attachment.set('card_id', parseInt(attachment.attributes.card_id));
+                            self.model.attachments.unshift(attachment, options);
+                            self.model.list.collection.board.attachments.unshift(attachment, {
+                                silent: true
+                            });
+                            i++;
                         });
-                        i++;
-                    });
-                    var view_attachment = this.$('#js-card-attachments-list');
-                    var activity = new App.Activity();
-                    activity.set(response.activity);
-                    activity.board_users = self.model.board_users;
-                    var view_act = new App.ActivityView({
-                        model: activity,
-                        board: self.model.list.collection.board,
-                        flag: '1'
-                    });
-                    self.model.activities.unshift(activity);
-                    if ($.cookie('filter') !== 'comment') {
-                        var view_activity = $('#js-card-activities-' + self.model.id);
-                        view_activity.prepend(view_act.render().el);
+                        var view_attachment = this.$('#js-card-attachments-list');
+                        var activity = new App.Activity();
+                        activity.set(response.activity);
+                        activity.board_users = self.model.board_users;
+                        var view_act = new App.ActivityView({
+                            model: activity,
+                            board: self.model.list.collection.board,
+                            flag: '1'
+                        });
+                        self.model.activities.unshift(activity);
+                        if ($.cookie('filter') !== 'comment') {
+                            var view_activity = $('#js-card-activities-' + self.model.id);
+                            view_activity.prepend(view_act.render().el);
+                        }
+                        emojify.run();
+                        if (invalidFiles.length) {
+                            self.flash('danger', i18next.t(invalidFiles.join(',') + ' file type are not allowed to upload.'));
+                        }
                     }
-                    emojify.run();
                 }
+            });
+        } else {
+            $('#js-card-modal-' + self.model.id).parent('.dockmodal-body').prev('.dockmodal-header').find('.cssloader').remove();
+            $('.js-attachment-loader', $('#js-card-modal-' + self.model.id)).html('');
+            if (invalidFiles.length) {
+                self.flash('danger', i18next.t(invalidFiles.join(',') + ' file type are not allowed to upload.'));
             }
-        });
+        }
     },
     /**
      * renderAttachmentsCollection()
@@ -2987,35 +3040,45 @@ App.ModalCardView = Backbone.View.extend({
         var target = $(e.target);
         target.parents('li.dropdown').removeClass('open');
         var data = target.serializeObject();
-        target[0].reset();
-        var card_attachment = new App.CardAttachment();
-        card_attachment.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/attachments.json';
-        card_attachment.save(data, {
-            success: function(model, response) {
-                if (is_offline_data) {
-                    self.flash('danger', i18next.t('Sorry, attachment not added. Internet connection not available.'));
-                } else {
-                    self.closePopup(e);
-                    card_attachment.set(response.card_attachments);
-                    card_attachment.set('id', parseInt(response.card_attachments.id));
-                    card_attachment.set('board_id', parseInt(response.card_attachments.board_id));
-                    card_attachment.set('list_id', parseInt(response.card_attachments.list_id));
-                    card_attachment.set('card_id', parseInt(response.card_attachments.card_id));
-                    self.model.list.collection.board.attachments.unshift(card_attachment, {
-                        silent: true
-                    });
-                    self.model.attachments.unshift(card_attachment, {
-                        silent: true
-                    });
-                    var view = new App.CardAttachmentView({
-                        model: card_attachment,
-                        board: self.model.list.collection.board
-                    });
-                    var view_attachment = self.$('#js-card-attachments-list');
-                    view_attachment.append(view.render().el);
-                }
+        //Checking valid and invalid files
+        if (data.image_link && !_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
+            var allowed_extensions = ALLOWED_FILE_EXTENSIONS.replace(' ', '').split(',');
+            if (allowed_extensions.indexOf('.' + data.image_link.split('.').pop()) == -1) {
+                self.flash('danger', i18next.t('Sorry, attachment type are not allowed to upload.'));
+                delete data.image_link;
             }
-        });
+        }
+        if (data.image_link) {
+            target[0].reset();
+            var card_attachment = new App.CardAttachment();
+            card_attachment.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/attachments.json';
+            card_attachment.save(data, {
+                success: function(model, response) {
+                    if (is_offline_data) {
+                        self.flash('danger', i18next.t('Sorry, attachment not added. Internet connection not available.'));
+                    } else {
+                        self.closePopup(e);
+                        card_attachment.set(response.card_attachments);
+                        card_attachment.set('id', parseInt(response.card_attachments.id));
+                        card_attachment.set('board_id', parseInt(response.card_attachments.board_id));
+                        card_attachment.set('list_id', parseInt(response.card_attachments.list_id));
+                        card_attachment.set('card_id', parseInt(response.card_attachments.card_id));
+                        self.model.list.collection.board.attachments.unshift(card_attachment, {
+                            silent: true
+                        });
+                        self.model.attachments.unshift(card_attachment, {
+                            silent: true
+                        });
+                        var view = new App.CardAttachmentView({
+                            model: card_attachment,
+                            board: self.model.list.collection.board
+                        });
+                        var view_attachment = self.$('#js-card-attachments-list');
+                        view_attachment.append(view.render().el);
+                    }
+                }
+            });
+        }
     },
     /**
      * showCardVotersList()
