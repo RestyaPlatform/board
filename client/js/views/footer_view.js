@@ -19,6 +19,7 @@ App.FooterView = Backbone.View.extend({
     }),
     template: JST['templates/footer'],
     className: 'action-sheet',
+    id: 'footer-sheet',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
