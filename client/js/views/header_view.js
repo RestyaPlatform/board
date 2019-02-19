@@ -82,6 +82,8 @@ App.HeaderView = Backbone.View.extend({
         this.showTooltip();
         if (load_count === 1) {
             load_count++;
+            var nodes = Array();
+            var appsFunc = Array();
             _.each(APPS, function(app, key) {
                 var s, l, v = '';
                 if (key === 'settings') {
@@ -127,7 +129,43 @@ App.HeaderView = Backbone.View.extend({
                         document.head.appendChild(l);
                     });
                 }
+                if (key === 'mutationObservers') {
+                    _.each(app, function(mutation, node) {
+                        if (nodes[node] !== 'undefined') {
+                            nodes[node] = Array();
+                        }
+                        _.each(mutation, function(appFunction, targetElement) {
+                            if (nodes[node].indexOf(targetElement) === -1) {
+                                nodes[node].push(targetElement);
+                            }
+                            if (appsFunc[targetElement] !== 'undefined') {
+                                appsFunc[targetElement] = Array();
+                            }
+                            appsFunc[targetElement].push(appFunction);
+                        });
+                    });
+                }
             });
+            var whatToObserve = {
+                childList: true
+            };
+            var mutationObserver = new MutationObserver(function(mutationRecords) {
+                _.each(mutationRecords, function(mutationRecord) {
+                    if (mutationRecord.addedNodes.length > 0 && nodes[mutationRecord.target.id].indexOf(mutationRecord.addedNodes[0].id) !== -1) {
+                        _(function() {
+                            _.each(appsFunc[mutationRecord.addedNodes[0].id], function(
+                                functionName
+                            ) {
+                                AppsFunction[functionName]();
+                            });
+                        }).defer();
+                    }
+                });
+            });
+            for (var node in nodes) {
+                var targetNode = document.getElementById(node);
+                mutationObserver.observe(targetNode, whatToObserve);
+            }
         }
         return this;
     },

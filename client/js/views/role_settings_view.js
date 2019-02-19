@@ -16,6 +16,7 @@ if (typeof App === 'undefined') {
 App.RoleSettingsView = Backbone.View.extend({
     template: JST['templates/role_settings'],
     tagName: 'section',
+    id: 'role_settings',
     className: 'clearfix row',
     /**
      * Events
