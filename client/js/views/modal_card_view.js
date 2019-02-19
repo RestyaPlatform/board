@@ -2185,7 +2185,8 @@ App.ModalCardView = Backbone.View.extend({
         var form = $('form.js-card-attachment-form');
         var target = $(e.target);
         target.parents('li.dropdown').removeClass('open');
-        var fileData = new FormData(form[0]);
+        var fileData = new FormData(form[0]),
+            invalidFiles = [];
         //Checking valid and invalid files
         if (fileData.getAll('attachment[]').length && !_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
             var allowed_extensions = ALLOWED_FILE_EXTENSIONS.replace(' ', '').split(','),
