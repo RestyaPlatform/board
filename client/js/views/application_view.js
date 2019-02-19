@@ -1094,7 +1094,7 @@ App.ApplicationView = Backbone.View.extend({
                 $('#js-navbar-default').remove();
                 if (!_.isEmpty(authuser.user) && authuser.user.role_id == 1 && !_.isEmpty(page.options.name)) {
                     var custom_field_page_id = 'admin_' + page.options.name + '_view';
-                    $('#content').html('<section id="'+ custom_field_page_id +'"></section>');
+                    $('#content').html('<section id="' + custom_field_page_id + '"></section>');
                 } else {
                     app.navigate('#/boards', {
                         trigger: true,
@@ -1106,7 +1106,7 @@ App.ApplicationView = Backbone.View.extend({
                 $('#js-navbar-default').remove();
                 if (!_.isEmpty(authuser.user) && authuser.user) {
                     var app_page = page.options.name + '_' + page.options.page;
-                    $('#content').html('<section id="'+ app_page +'"></section>');
+                    $('#content').html('<section id="' + app_page + '"></section>');
                 } else {
                     app.navigate('#/boards', {
                         trigger: true,
