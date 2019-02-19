@@ -30,6 +30,7 @@ App.BoardHeaderView = Backbone.View.extend({
         role: 'navigation'
     },
     template: JST['templates/board_header'],
+    id: "board_view_header",
     /**
      * Constructor
      * initialize default values and actions
