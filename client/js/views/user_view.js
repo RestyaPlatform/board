@@ -16,6 +16,7 @@ if (typeof App === 'undefined') {
 App.UserView = Backbone.View.extend({
     template: JST['templates/user_view'],
     tagName: 'div',
+    id: 'user_view',
     className: '',
     /**
      * Events
