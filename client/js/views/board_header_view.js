@@ -831,6 +831,7 @@ App.BoardHeaderView = Backbone.View.extend({
         $('div.js-board-view-' + self.model.id).html(new App.SwitchToListView({
             model: self.model
         }).el);
+        $('main').trigger('listViewRendered');
         var is_card_empty = true;
         var board_view = $('.js-card-list-view-' + self.model.attributes.id);
         var lists = self.model.lists;
