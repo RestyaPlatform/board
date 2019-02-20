@@ -460,6 +460,7 @@ App.FooterView = Backbone.View.extend({
         var parent = target.parents('.js-show-add-boards-list');
         var insert = $('.js-show-boards-list-response', parent);
         $(new App.BoardImportFormView({}).el).insertAfter(insert);
+        $('body').trigger('footerActionRendered');
         $('.js-show-boards-list-response').html('');
         return false;
     },
