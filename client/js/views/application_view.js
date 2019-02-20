@@ -695,7 +695,7 @@ App.ApplicationView = Backbone.View.extend({
                                     model: page_title,
                                 }).el);
                                 if (page.model == 'starred_boards_index') {
-                                    board_index.append(new App.StarredBoardsIndexView().el);
+                                    board_index.find('#boards-index').append(new App.StarredBoardsIndexView().el);
                                     if (!_.isEmpty(role_links.where({
                                             slug: 'view_stared_boards'
                                         }))) {
@@ -783,7 +783,7 @@ App.ApplicationView = Backbone.View.extend({
 
                                     }
                                 } else if (page.model == 'closed_boards_index') {
-                                    board_index.append(new App.ClosedBoardsIndexView().el);
+                                    board_index.find('#boards-index').append(new App.ClosedBoardsIndexView().el);
                                     if (!_.isEmpty(role_links.where({
                                             slug: 'view_closed_boards'
                                         }))) {
@@ -864,7 +864,7 @@ App.ApplicationView = Backbone.View.extend({
                                         }
                                     }
                                 } else {
-                                    board_index.append(new App.BoardsIndexView().el);
+                                    board_index.find('#boards-index').append(new App.BoardsIndexView().el);
                                     App.boards.setSortField('name', 'asc');
                                     App.boards.sort();
                                     var my_boards = App.boards.where({
