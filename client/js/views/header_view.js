@@ -130,18 +130,20 @@ App.HeaderView = Backbone.View.extend({
                     });
                 }
                 if (key === 'mutationObservers') {
-                    _.each(app, function(mutation, node) {
-                        if (nodes[node] !== 'undefined') {
-                            nodes[node] = Array();
-                        }
-                        _.each(mutation, function(appFunction, targetElement) {
-                            if (nodes[node].indexOf(targetElement) === -1) {
-                                nodes[node].push(targetElement);
+                    _.each(app, function(appTmp) {
+                        _.each(appTmp, function(mutation, node) {
+                            if (nodes[node] !== 'undefined') {
+                                nodes[node] = Array();
                             }
-                            if (appsFunc[targetElement] !== 'undefined') {
-                                appsFunc[targetElement] = Array();
-                            }
-                            appsFunc[targetElement].push(appFunction);
+                            _.each(mutation, function(appFunction, targetElement) {
+                                if (nodes[node].indexOf(targetElement) === -1) {
+                                    nodes[node].push(targetElement);
+                                }
+                                if (appsFunc[targetElement] !== 'undefined') {
+                                    appsFunc[targetElement] = Array();
+                                }
+                                appsFunc[targetElement].push(appFunction);
+                            });
                         });
                     });
                 }
