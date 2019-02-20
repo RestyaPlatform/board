@@ -460,7 +460,7 @@ App.FooterView = Backbone.View.extend({
         var parent = target.parents('.js-show-add-boards-list');
         var insert = $('.js-show-boards-list-response', parent);
         $(new App.BoardImportFormView({}).el).insertAfter(insert);
-        $('body').trigger('footerActionRendered');
+        $('footer').trigger('footerActionRendered');
         $('.js-show-boards-list-response').html('');
         return false;
     },
@@ -491,6 +491,7 @@ App.FooterView = Backbone.View.extend({
                         return markup;
                     }
                 });
+                $('footer').trigger('footerActionRendered');
             }
         });
         return false;
@@ -509,6 +510,7 @@ App.FooterView = Backbone.View.extend({
         var parent = target.parents('.js-show-add-boards-list');
         var insert = $('.js-show-boards-list-response', parent);
         $('.js-show-boards-list-response').html(new App.OrganizationAddView().el);
+        $('footer').trigger('footerActionRendered');
         return false;
     },
     /**

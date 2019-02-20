@@ -42,6 +42,7 @@ App.UserIndexContainerView = Backbone.View.extend({
     },
     template: JST['templates/user_index_container'],
     tag: 'section',
+    id: 'user_index_container',
     className: 'clearfix row',
     /**
      * render()
