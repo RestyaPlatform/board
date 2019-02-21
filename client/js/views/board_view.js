@@ -42,6 +42,7 @@ App.BoardView = Backbone.View.extend({
         if (_.isUndefined($.cookie('music_play'))) {
             $.cookie('music_play', "1");
         }
+        console.log(this.model);
         this.model.attachments.add(this.model.get('attachments'));
         _.bindAll(this, 'render', 'renderListsCollection', 'renderActivitiesCollection', 'setBoardBackground');
         this.model.bind('change:name change:is_closed', this.render);
@@ -52,6 +53,7 @@ App.BoardView = Backbone.View.extend({
         this.model.bind('change:music_content', this.musical);
         this.model.labels.bind('remove', this.renderListsCollection);
         this.model.lists.bind('add', this.renderListsCollection);
+        this.model.cards.bind('add', this.renderListsCollection);
         this.model.lists.bind('change:name', this.renderListsCollection);
         this.model.lists.bind('change:position', this.renderListsCollection);
         this.model.lists.bind('change:is_archived', this.renderListsCollection, this);
