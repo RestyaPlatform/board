@@ -42,7 +42,6 @@ App.BoardView = Backbone.View.extend({
         if (_.isUndefined($.cookie('music_play'))) {
             $.cookie('music_play', "1");
         }
-        console.log(this.model);
         this.model.attachments.add(this.model.get('attachments'));
         _.bindAll(this, 'render', 'renderListsCollection', 'renderActivitiesCollection', 'setBoardBackground');
         this.model.bind('change:name change:is_closed', this.render);
