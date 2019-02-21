@@ -2753,6 +2753,7 @@ App.ModalCardView = Backbone.View.extend({
         $('.js-activity-reply-form-response-' + activity_id).html(new App.ActivityReplyFormView({
             model: activitiy
         }).el);
+        $('main').trigger('wikiActionRendered');
         return false;
     },
     /**
@@ -2876,6 +2877,7 @@ App.ModalCardView = Backbone.View.extend({
             }
         }).el);
         $('.js-inputComment', e.target).focus();
+        $('main').trigger('wikiActionRendered');
     },
     /**
      * editComment()

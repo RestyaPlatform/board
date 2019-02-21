@@ -125,6 +125,7 @@ App.OrganizationBoardView = Backbone.View.extend({
                 });
             }
         });
+        $('footer').trigger('footerActionRendered');
         return false;
     },
     /**

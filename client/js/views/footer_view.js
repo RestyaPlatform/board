@@ -19,6 +19,7 @@ App.FooterView = Backbone.View.extend({
     }),
     template: JST['templates/footer'],
     className: 'action-sheet',
+    id: 'footer-menu',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
@@ -459,6 +460,7 @@ App.FooterView = Backbone.View.extend({
         var parent = target.parents('.js-show-add-boards-list');
         var insert = $('.js-show-boards-list-response', parent);
         $(new App.BoardImportFormView({}).el).insertAfter(insert);
+        $('footer').trigger('footerActionRendered');
         $('.js-show-boards-list-response').html('');
         return false;
     },
@@ -489,6 +491,7 @@ App.FooterView = Backbone.View.extend({
                         return markup;
                     }
                 });
+                $('footer').trigger('footerActionRendered');
             }
         });
         return false;
@@ -507,6 +510,7 @@ App.FooterView = Backbone.View.extend({
         var parent = target.parents('.js-show-add-boards-list');
         var insert = $('.js-show-boards-list-response', parent);
         $('.js-show-boards-list-response').html(new App.OrganizationAddView().el);
+        $('footer').trigger('footerActionRendered');
         return false;
     },
     /**

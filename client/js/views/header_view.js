@@ -78,6 +78,10 @@ App.HeaderView = Backbone.View.extend({
         if (typeof Notification != 'undefined') {
             this.model.is_show_enable_notification = (Notification.permission == 'default') ? true : false;
         }
+        current_param = this.model.current_param;
+        if (typeof(authuser) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'user_logins' || current_param === 'roles' || current_param === 'apps' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list' || current_param === 'oauth_clients' || current_param === 'board_user_roles' || current_param === 'organization_user_roles')) {
+            this.$el.attr('id', 'admin-panel');
+        }
         this.$el.html(this.template(this.model));
         this.showTooltip();
         if (load_count === 1) {
@@ -130,18 +134,20 @@ App.HeaderView = Backbone.View.extend({
                     });
                 }
                 if (key === 'mutationObservers') {
-                    _.each(app, function(mutation, node) {
-                        if (nodes[node] !== 'undefined') {
-                            nodes[node] = Array();
-                        }
-                        _.each(mutation, function(appFunction, targetElement) {
-                            if (nodes[node].indexOf(targetElement) === -1) {
-                                nodes[node].push(targetElement);
+                    _.each(app, function(appTmp) {
+                        _.each(appTmp, function(mutation, node) {
+                            if (_.isUndefined(nodes[node])) {
+                                nodes[node] = Array();
                             }
-                            if (appsFunc[targetElement] !== 'undefined') {
-                                appsFunc[targetElement] = Array();
-                            }
-                            appsFunc[targetElement].push(appFunction);
+                            _.each(mutation, function(appFunction, targetElement) {
+                                if (nodes[node].indexOf(targetElement) === -1) {
+                                    nodes[node].push(targetElement);
+                                }
+                                if (_.isUndefined(appsFunc[targetElement])) {
+                                    appsFunc[targetElement] = Array();
+                                }
+                                appsFunc[targetElement].push(appFunction);
+                            });
                         });
                     });
                 }
