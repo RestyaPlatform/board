@@ -31,7 +31,7 @@ if [ "$1" = 'start' ]; then
       -e '$ a myorigin = $mydomain' \
       -e '$ a mydestination = localhost, $myhostname, localhost.$mydomain' \
       -e '$ a sender_canonical_maps = hash:/etc/postfix/sender_canonical' \
-      -e "s/#relayhost =.*$/relayhost = [${SMTP_SERVER}]:${SMTP_PORT}/" \
+      -e "s/relayhost =.*$/relayhost = [${SMTP_SERVER}]:${SMTP_PORT}/" \
       -e '/smtp_.*/d' \
       -e '$ a smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache' \
       -e '$ a smtp_sasl_auth_enable = yes' \
