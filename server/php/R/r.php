@@ -5903,7 +5903,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'SupportApp' . DIRECTORY_SEPARATOR . 'functions.php';
                 $r_put['id'] = $r_resource_vars['boards'];
                 $SupportAppResponse = checkSupportAppFields($r_put, $r_resource_cmd);
-                if (empty($r_put['support_custom_fields']) || empty($r_put['support_list_id'])) {
+                if (empty($r_put['support_list_id'])) {
                     echo json_encode($SupportAppResponse);
                     break;
                 }
