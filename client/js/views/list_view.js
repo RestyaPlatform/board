@@ -1177,6 +1177,7 @@ App.ListView = Backbone.View.extend({
         var self = this;
         if (!_.isUndefined(e) && e.storeName === 'card') {
             if (e.attributes.list_id === self.model.id) {
+                e.attributes.triggersort = true;
                 var view = new App.CardView({
                     tagName: 'div',
                     model: e,
