@@ -19,8 +19,8 @@
 		</a>
 	<% } else {%>	
 		<% if(!activity.attributes.full_name || !activity.attributes.username){
-			activity.attributes.full_name = "[deleted account]";
-			activity.attributes.username = "deleted user";
+			activity.attributes.full_name = i18next.t("[deleted account]");
+			activity.attributes.username =  i18next.t("[deleted user]");
 		}%>
 		<i class="avatar avatar-color-194 img-rounded pull-left" title="<%-activity.attributes.full_name %>"></i>
 	<% } %>
