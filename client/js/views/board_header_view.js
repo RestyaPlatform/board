@@ -2004,6 +2004,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 replace: true
             });
         }
+        $('body').trigger('GanttFilterRendered');
     },
     /**
      * computerOpenBoardBackground()
@@ -2176,6 +2177,7 @@ App.BoardHeaderView = Backbone.View.extend({
             replace: true
         });
         this.$el.find('.js-clear-filter-btn').removeClass('show').addClass('hide');
+        $('body').trigger('GanttFilterRendered');
         return false;
     },
     /**
