@@ -166,6 +166,16 @@ App.FooterView = Backbone.View.extend({
                 }
             });
         }
+        APPS.permission_checked_apps = [];
+        _.each(APPS.enabled_apps, function(app) {
+            if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user)) {
+                if ((!_.isEmpty(role_links.where({
+                        slug: app
+                    })) || parseInt(authuser.user.role_id) === 1) && $.inArray(app, APPS.permission_checked_apps) === -1) {
+                    APPS.permission_checked_apps.push(app);
+                }
+            }
+        });
         var getting_new_array = [];
         localforage.getItem('apps', function(err, value) {
             if (!_.isEmpty(value)) {
