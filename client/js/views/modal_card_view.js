@@ -908,6 +908,24 @@ App.ModalCardView = Backbone.View.extend({
         $('#js-card-' + this.model.id).addClass('active');
         $('#js-card-modal-' + this.model.id).find('.js-load-more-block').remove();
         this.render();
+        var self = this;
+        self.model.activities = new App.ActivityCollection();
+        var filter = $.cookie('filter');
+        if (filter === undefined || filter === 'all') {
+            filter = 'all';
+        } else if (filter === 'comment') {
+            filter = 'comment';
+        } else if (filter === 'activity') {
+            filter = 'activity';
+        }
+        self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?mode=' + filter + '&page=0';
+        self.model.activities.fetch({
+            cache: false,
+            success: function(model, response) {
+                self.model.set('activity_count', response._metadata.total_records);
+                self.renderActivitiesCollection();
+            }
+        });
     },
     /**
      * CloseDragDrop()
@@ -1137,6 +1155,7 @@ App.ModalCardView = Backbone.View.extend({
             this.renderAttachmentsCollection();
             this.renderLabelsCollection();
             this.renderUsersCollection();
+            this.renderChecklistsCollection();
             var title = i18next.t('%s in list %s %s', {
                 postProcess: 'sprintf',
                 sprintf: [_.escape(this.model.attributes.name), _.escape(this.model.list.attributes.name), subscribed]
@@ -1245,54 +1264,6 @@ App.ModalCardView = Backbone.View.extend({
                     });
                     self.$el.find('.js-modal-settings').removeClass('hide');
                 },
-                popout: function(event) {
-                    self.model.activities = new App.ActivityCollection();
-                    var filter = $.cookie('filter');
-                    if (filter === undefined || filter === 'all') {
-                        filter = 'all';
-                    } else if (filter === 'comment') {
-                        filter = 'comment';
-                    } else if (filter === 'activity') {
-                        filter = 'activity';
-                    }
-                    self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?mode=' + filter + '&page=0';
-                    self.model.activities.fetch({
-                        cache: false,
-                        success: function(model, response) {
-                            self.model.set('activity_count', response._metadata.total_records);
-                            self.renderActivitiesCollection();
-                        }
-                    });
-                    self.renderChecklistsCollection();
-                    $('.js-card-duedate-edit-' + self.model.id).datetimepicker({
-                        format: 'yyyy-mm-dd',
-                        autoclose: true,
-                        todayBtn: true,
-                        pickerPosition: 'top-right',
-                        todayHighlight: 1,
-                        startView: 2,
-                        minView: 2,
-                        bootcssVer: 2,
-                        pickTime: false
-                    }).on('changeDate', function(ev) {
-                        $(this).datetimepicker('hide');
-                        $(this).blur();
-                    });
-                    $('.js-card-duetime-edit-' + self.model.id).datetimepicker({
-                        format: 'hh:ii',
-                        autoclose: true,
-                        showMeridian: false,
-                        pickerPosition: 'top-right',
-                        startView: 1,
-                        maxView: 1,
-                        pickDate: false,
-                        use24hours: true,
-                        timepicker: 1,
-                    }).on('changeDate', function(ev) {
-                        $(this).datetimepicker('hide');
-                        $(this).blur();
-                    });
-                },
                 beforeClose: function(event, dialog) {
                     var description;
                     var comment = $('#js-card-modal-' + self.model.id).find('#inputAddComment').val();
@@ -1338,6 +1309,34 @@ App.ModalCardView = Backbone.View.extend({
                         self.model.unbind('change:list_id');
                     }
                 }
+            });
+            $('.js-card-duedate-edit-' + self.model.id).datetimepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayBtn: true,
+                pickerPosition: 'top-right',
+                todayHighlight: 1,
+                startView: 2,
+                minView: 2,
+                bootcssVer: 2,
+                pickTime: false
+            }).on('changeDate', function(ev) {
+                $(this).datetimepicker('hide');
+                $(this).blur();
+            });
+            $('.js-card-duetime-edit-' + self.model.id).datetimepicker({
+                format: 'hh:ii',
+                autoclose: true,
+                showMeridian: false,
+                pickerPosition: 'top-right',
+                startView: 1,
+                maxView: 1,
+                pickDate: false,
+                use24hours: true,
+                timepicker: 1,
+            }).on('changeDate', function(ev) {
+                $(this).datetimepicker('hide');
+                $(this).blur();
             });
         } else {
             doc.dockmodal('restore');
