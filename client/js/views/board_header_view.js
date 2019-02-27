@@ -999,69 +999,67 @@ App.BoardHeaderView = Backbone.View.extend({
             },
             eventMouseover: function(calEvent, jsEvent, view) {
                 var target = $(jsEvent.currentTarget);
-                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-                    if ($.inArray('r_custom_field', APPS.enabled_apps) !== -1) {
-                        $.ajax({
-                            url: api_url + 'cards/' + calEvent.id + '/cards_custom_fields.json?token=' + authuser.access_token,
-                            cache: false,
-                            type: 'GET',
-                            success: function(response) {
-                                if (!_.isEmpty(response.response) && !_.isUndefined(response.response) && response.response.length !== 0) {
-                                    $(target).data('toggle', 'tooltip');
-                                    $(target).data('container', 'body');
-                                    $(target).data('placement', 'top');
-                                    $(target).data('html', 'true');
-                                    var card_customfield_value = '';
-                                    _.each(response.response, function(customfield, key) {
-                                        if (customfield) {
-                                            if (customfield.type === 'date') {
-                                                card_customfield_value += customfield.label + ' : ' + dateFormat(customfield.value, "mediumDate");
-                                            } else if (customfield.type === 'time') {
-                                                var field_time = customfield.value.split(':');
-                                                var time_noon = '';
-                                                if (field_time[0] <= 12) {
-                                                    time_noon = 'AM';
-                                                } else {
-                                                    time_noon = 'PM';
-                                                    field_time[0] = field_time[0] - 12;
-                                                }
-                                                card_customfield_value += customfield.label + ' : ' + field_time[0] + ':' + field_time[1] + ' ' + time_noon;
-                                            } else if (customfield.type === 'datetime') {
-                                                if (customfield.value.indexOf('T') > -1) {
-                                                    var custom_field_val;
-                                                    custom_field_val = customfield.value.replace('T', ' ');
-                                                    var date = custom_field_val.split(' ');
-                                                    custom_field_val = date['0'];
-                                                    custom_field_val = dateFormat(custom_field_val, "mediumDate");
-                                                    if (!_.isEmpty(date[1])) {
-                                                        hours_mins = date[1].split(':');
-                                                        var noon = '';
-                                                        if (hours_mins[0] <= 12) {
-                                                            noon = 'AM';
-                                                        } else {
-                                                            noon = 'PM';
-                                                            hours_mins[0] = hours_mins[0] - 12;
-                                                        }
-                                                        hours_mins = hours_mins[0] + ':' + hours_mins[1] + ' ' + noon;
-                                                    }
-                                                    card_customfield_value += customfield.label + ' : ' + custom_field_val + ' at ' + hours_mins;
-                                                }
+                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps) !== -1) {
+                    $.ajax({
+                        url: api_url + 'cards/' + calEvent.id + '/cards_custom_fields.json?token=' + authuser.access_token,
+                        cache: false,
+                        type: 'GET',
+                        success: function(response) {
+                            if (!_.isEmpty(response.response) && !_.isUndefined(response.response) && response.response.length !== 0) {
+                                $(target).data('toggle', 'tooltip');
+                                $(target).data('container', 'body');
+                                $(target).data('placement', 'top');
+                                $(target).data('html', 'true');
+                                var card_customfield_value = '';
+                                _.each(response.response, function(customfield, key) {
+                                    if (customfield) {
+                                        if (customfield.type === 'date') {
+                                            card_customfield_value += customfield.label + ' : ' + dateFormat(customfield.value, "mediumDate");
+                                        } else if (customfield.type === 'time') {
+                                            var field_time = customfield.value.split(':');
+                                            var time_noon = '';
+                                            if (field_time[0] <= 12) {
+                                                time_noon = 'AM';
                                             } else {
-                                                card_customfield_value += customfield.label + ' : ' + customfield.value;
+                                                time_noon = 'PM';
+                                                field_time[0] = field_time[0] - 12;
                                             }
-                                            if (key + 1 !== response.response.length) {
-                                                card_customfield_value += '<br/> ';
+                                            card_customfield_value += customfield.label + ' : ' + field_time[0] + ':' + field_time[1] + ' ' + time_noon;
+                                        } else if (customfield.type === 'datetime') {
+                                            if (customfield.value.indexOf('T') > -1) {
+                                                var custom_field_val;
+                                                custom_field_val = customfield.value.replace('T', ' ');
+                                                var date = custom_field_val.split(' ');
+                                                custom_field_val = date['0'];
+                                                custom_field_val = dateFormat(custom_field_val, "mediumDate");
+                                                if (!_.isEmpty(date[1])) {
+                                                    hours_mins = date[1].split(':');
+                                                    var noon = '';
+                                                    if (hours_mins[0] <= 12) {
+                                                        noon = 'AM';
+                                                    } else {
+                                                        noon = 'PM';
+                                                        hours_mins[0] = hours_mins[0] - 12;
+                                                    }
+                                                    hours_mins = hours_mins[0] + ':' + hours_mins[1] + ' ' + noon;
+                                                }
+                                                card_customfield_value += customfield.label + ' : ' + custom_field_val + ' at ' + hours_mins;
                                             }
+                                        } else {
+                                            card_customfield_value += customfield.label + ' : ' + customfield.value;
                                         }
-                                    });
-                                    $(target).tooltip({
-                                        title: card_customfield_value,
-                                        html: true
-                                    });
-                                }
+                                        if (key + 1 !== response.response.length) {
+                                            card_customfield_value += '<br/> ';
+                                        }
+                                    }
+                                });
+                                $(target).tooltip({
+                                    title: card_customfield_value,
+                                    html: true
+                                });
                             }
-                        });
-                    }
+                        }
+                    });
                 }
             }
         });
