@@ -222,7 +222,7 @@ if (_.isEmpty(role_links.where({
 			<div class="js-appModalContent">
 				<% if (!_.isEmpty(apps) && apps.length !== 0) {
 					_.each(apps, function(key,value) {
-						if (APPS.enabled_apps.indexOf(key.id) !== -1 && (key.price === 'Free' || (!_.isEmpty(role_links.where({slug: key.id})) || parseInt(authuser.user.role_id) === 1))) { %>
+						if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user) && APPS.enabled_apps.indexOf(key.id) !== -1 && (key.price === 'Free' || (!_.isEmpty(role_links.where({slug: key.id})) || parseInt(authuser.user.role_id) === 1))) { %>
 					<div class="modal fade" id="<%- key.id %>_modal" tabindex="-1" role="dialog" aria-labelledby="<%- key.name %>ModalLabel"
 					aria-hidden="false">
 						<div class="modal-dialog">
