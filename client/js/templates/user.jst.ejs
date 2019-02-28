@@ -184,11 +184,11 @@
 
 <td>
 	<ul class="list-inline list-group-item-text">
-		<li class="navbar-btn"><a href="#" title="<%- i18next.t('Activities') %>" class="btn btn-default btn-xs js-all-user-activities">
+		<li class="navbar-btn"><a href="javascript:void(0);" title="<%- i18next.t('Activities') %>" class="btn btn-default btn-xs js-all-user-activities">
 				<%- i18next.t("Activities") %></a></li>
 
 		<li class="navbar-btn">
-			<a href="#" class="btn btn-default btn-xs <%if(parseInt(user.attributes.is_active) === 1){%>js-block-user<%}else{%>js-unblock-user<%}%>"
+			<a href="javascript:void(0);" class="btn btn-default btn-xs <%if(parseInt(user.attributes.is_active) === 1){%>js-block-user<%}else{%>js-unblock-user<%}%>"
 			 title="<%if(parseInt(user.attributes.is_active) === 1){%><%- i18next.t('Block') %><%}else{%><%- i18next.t('Unblock') %>
 				<%}%>" <% if(user.attributes.role_id==1){%> disabled="disabled"
 				<% } %>>
