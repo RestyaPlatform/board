@@ -158,15 +158,17 @@ App.HeaderView = Backbone.View.extend({
             var mutationObserver = new MutationObserver(function(mutationRecords) {
                 _.each(mutationRecords, function(mutationRecord) {
                     if (mutationRecord.addedNodes.length > 0 && nodes[mutationRecord.target.id].indexOf(mutationRecord.addedNodes[0].id) !== -1) {
-                        _(function() {
-                            _.each(appsFunc[mutationRecord.addedNodes[0].id], function(
-                                functionName
-                            ) {
-                                if (typeof AppsFunction[functionName] === 'function') {
-                                    AppsFunction[functionName]();
-                                }
-                            });
-                        }).defer();
+                        setTimeout(function() {
+                            _(function() {
+                                _.each(appsFunc[mutationRecord.addedNodes[0].id], function(
+                                    functionName
+                                ) {
+                                    if (typeof AppsFunction[functionName] === 'function') {
+                                        AppsFunction[functionName]();
+                                    }
+                                });
+                            }).defer();
+                        }, 100);
                     }
                 });
             });
