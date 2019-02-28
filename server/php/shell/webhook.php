@@ -12,9 +12,11 @@
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
-$app_path = dirname(dirname(__FILE__));
-require_once $app_path . '/config.inc.php';
-require_once $app_path . '/libs/core.php';
+if (!defined('APP_PATH')) {
+    $app_path = dirname(dirname(__FILE__));
+    require_once $app_path . '/config.inc.php';
+    require_once $app_path . '/libs/core.php';
+}
 global $_server_domain_url;
 if ($db_lnk) {
     $qry_val_arr = array(
