@@ -1224,6 +1224,7 @@ App.ListView = Backbone.View.extend({
             $('#js-list-card-add-form-' + this.model.id).remove();
             $('.js-show-add-card-form', $('#js-card-listing-' + this.model.id).next()).removeClass('hide');
             var view_card = this.$('#js-card-listing-' + this.model.id);
+            view_card.html('');
             _(function() {
                 unarchived_cards = self.model.collection.board.cards.where({
                     list_id: parseInt(self.model.id),
