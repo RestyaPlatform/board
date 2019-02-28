@@ -2813,7 +2813,13 @@ App.ModalCardView = Backbone.View.extend({
                     }
 
                     model.set('type', 'add_comment');
+                    model.set('username', authuser.user.username);
+                    model.set('full_name', authuser.user.full_name);
+                    model.set('profile_picture_path', authuser.user.profile_picture_path);
+                    model.set('initials', authuser.user.initials);
+
                     activity.set('username', authuser.user.username);
+                    activity.set('full_name', authuser.user.full_name);
                     activity.set('profile_picture_path', authuser.user.profile_picture_path);
                     activity.set('initials', authuser.user.initials);
                     self.model.activities.unshift(activity, {
