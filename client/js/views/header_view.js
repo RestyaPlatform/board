@@ -120,16 +120,16 @@ App.HeaderView = Backbone.View.extend({
                 }
                 if (key === 'html') {
                     _.each(app, function(html, key) {
+                        /* create app template element */
+                        app_tmpl = document.createElement(html.split('/')[1] + '-template');
+                        document.head.appendChild(app_tmpl);
+                        /* create link for template element */
                         l = document.createElement('link');
-                        l.rel = 'import';
+                        l.setAttribute('crossorigin', 'anonymous');
+                        l.rel = 'preload';
+                        l.as = "fetch";
+                        l.id = html.split('/')[1] + '-template';
                         l.href = html;
-                        l.onload = function(e) {
-                            var content = e.target.import;
-                            var get_script = content.querySelectorAll("script");
-                            _.each(get_script, function(html, key) {
-                                document.body.appendChild(html.cloneNode(true));
-                            });
-                        };
                         document.head.appendChild(l);
                     });
                 }
