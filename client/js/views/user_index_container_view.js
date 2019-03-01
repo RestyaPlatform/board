@@ -41,8 +41,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         this.render();
     },
     template: JST['templates/user_index_container'],
-    tag: 'section',
-    id: 'user_index_container',
+    tagName: 'section',
     className: 'clearfix row',
     /**
      * render()
@@ -53,28 +52,35 @@ App.UserIndexContainerView = Backbone.View.extend({
      */
     render: function() {
         var self = this;
-        this.$el.html(this.template({
-            filter_count: this.filter_count,
-            roles: this.roles
-        }));
-        if (!_.isUndefined(APPS) && APPS !== null) {
-            if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-                if ($.inArray('r_groups', APPS.enabled_apps) !== -1) {
-                    $.ajax({
-                        url: api_url + 'groups.json?limit=10000&token=' + this.getToken(),
-                        cache: false,
-                        type: 'GET',
-                        success: function(response) {
-                            self.overall_groups = [];
-                            if (response.data) {
-                                self.overall_groups = response.data;
-                            }
-                        }
-                    });
-                }
-            }
+        var is_group_app_enabled = false;
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
+            is_group_app_enabled = true;
         }
-
+        if (is_group_app_enabled) {
+            this.$el.html('<div class="r_group_app_tabs" id="js-group_app_tabs"><div class="col-xs-12 well-lg navbar-btn"><div class="navbar-btn"><ul id = "myTab" class = "nav nav-tabs"><li class = "active"><a href = "#users" data-toggle = "tab" id="js-groupuser-tab">' + i18next.t('Users') + '</a></li><li><a href = "#groups" data-toggle = "tab" id="js-group-tab">' + i18next.t('Groups') + '</a></li></ul></div></div><div id = "myGroupTabContent" class = "tab-content"><div class = "tab-pane fade in active" id = "users"></div><div class = "tab-pane fade" id = "groups"></div></div></div>');
+            console.log(this.$el.find('#users'));
+            this.$el.find('#users').html(this.template({
+                filter_count: this.filter_count,
+                roles: this.roles
+            }));
+            $.ajax({
+                url: api_url + 'groups.json?limit=10000&token=' + this.getToken(),
+                cache: false,
+                type: 'GET',
+                success: function(response) {
+                    self.overall_groups = [];
+                    if (response.data) {
+                        self.overall_groups = response.data;
+                    }
+                }
+            });
+        } else {
+            this.$el.html(this.template({
+                filter_count: this.filter_count,
+                roles: this.roles
+            }));
+        }
+        
         if (!_.isUndefined(this.sortField)) {
             this.renderUserCollection();
         }
