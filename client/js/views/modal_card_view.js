@@ -2822,6 +2822,11 @@ App.ModalCardView = Backbone.View.extend({
                     activity.set('full_name', authuser.user.full_name);
                     activity.set('profile_picture_path', authuser.user.profile_picture_path);
                     activity.set('initials', authuser.user.initials);
+                    if (!_.isEmpty(self.model.collection)) {
+                        activity.cards.add(self.model.collection.models);
+                    }
+                    activity.board_users = self.model.board_users;
+
                     self.model.activities.unshift(activity, {
                         silent: true
                     });
