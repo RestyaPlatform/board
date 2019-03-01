@@ -80,7 +80,7 @@ App.UserIndexContainerView = Backbone.View.extend({
                 roles: this.roles
             }));
         }
-        
+
         if (!_.isUndefined(this.sortField)) {
             this.renderUserCollection();
         }

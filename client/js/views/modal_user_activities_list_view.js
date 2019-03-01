@@ -72,13 +72,13 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
         var activities = new App.ActivityCollection();
         activities.url = api_url + 'users/' + this.user_id + '/activities.json?board_id=' + this.model.attributes.board_id;
         activities.fetch({
-            success: function(response) {
+            success: function(model, response) {
                 if (!_.isEmpty(activities.models)) {
                     var last_activity = _.min(activities.models, function(activity) {
                         return activity.id;
                     });
                     self.last_activity_id = last_activity.id;
-                    self.$('#js-admin-activites-load-more').removeClass('hide');
+                    self.model.set('activity_count', response._metadata.total_records);
                     self.renderActivitiesCollection(activities);
                 } else {
                     var view = new App.ActivityView({
@@ -141,6 +141,9 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
         var view_user_activities = this.$('#js-list-user-activities-list');
         view_user_activities.html('');
         if (!_.isEmpty(activities)) {
+            if (self.model.attributes.activity_count != PAGING_COUNT && activities.models.length >= PAGING_COUNT) {
+                self.$('#js-admin-activites-load-more').removeClass('hide');
+            }
             for (var i = 0; i < activities.models.length; i++) {
                 var activity = activities.models[i];
                 activity.from_footer = true;
