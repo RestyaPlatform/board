@@ -976,7 +976,7 @@ App.ModalCardView = Backbone.View.extend({
             _(function() {
                 var file_extension_regex;
                 if (!_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
-                    var allowextensions = ALLOWED_FILE_EXTENSIONS.replace(',', '|').replace('/./', '').replace(' ', '');
+                    var allowextensions = ALLOWED_FILE_EXTENSIONS.replace(/\,/g, '|').replace('/\./g', '').replace(/\ /g, '');
                     file_extension_regex = new RegExp("(\.|\/)(" + allowextensions + ")$");
                 }
                 Backbone.TemplateManager.baseUrl = '{name}';
@@ -1347,7 +1347,7 @@ App.ModalCardView = Backbone.View.extend({
             Backbone.TemplateManager.baseUrl = '{name}';
             var file_extension_regex;
             if (!_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
-                var allowextensions = ALLOWED_FILE_EXTENSIONS.replace(',', '|').replace('/./', '').replace(' ', '');
+                var allowextensions = ALLOWED_FILE_EXTENSIONS.replace(/\,/g, '|').replace('/\./g', '').replace(/\ /g, '');
                 file_extension_regex = new RegExp("(\.|\/)(" + allowextensions + ")$");
             }
             var uploadManager = new Backbone.UploadManager({
@@ -2188,8 +2188,9 @@ App.ModalCardView = Backbone.View.extend({
             invalidFiles = [];
         //Checking valid and invalid files
         if (fileData.getAll('attachment[]').length && !_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
-            var allowed_extensions = ALLOWED_FILE_EXTENSIONS.replace(' ', '').split(','),
+            var allowed_extensions = ALLOWED_FILE_EXTENSIONS.replace(/\ /g, '').split(','),
                 uploaded_files = fileData.getAll('attachment[]');
+            console.log(allowed_extensions);
             allowedfiles = uploaded_files.filter(function(uploaded_file) {
                 return (allowed_extensions.indexOf('.' + uploaded_file.name.split('.').pop()) != -1);
             });
@@ -3054,7 +3055,7 @@ App.ModalCardView = Backbone.View.extend({
         var data = target.serializeObject();
         //Checking valid and invalid files
         if (data.image_link && !_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
-            var allowed_extensions = ALLOWED_FILE_EXTENSIONS.replace(' ', '').split(',');
+            var allowed_extensions = ALLOWED_FILE_EXTENSIONS.replace(/\ /g, '').split(',');
             if (allowed_extensions.indexOf('.' + data.image_link.split('.').pop()) == -1) {
                 self.flash('danger', i18next.t('Sorry, attachment type are not allowed to upload.'));
                 delete data.image_link;
