@@ -33,22 +33,18 @@ App.AdminUserIndexView = Backbone.View.extend({
     },
     updateCollection: function() {
         var _this = this;
-        if (!_.isUndefined(APPS) && APPS !== null) {
-            if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-                if ($.inArray('r_groups', APPS.enabled_apps) !== -1) {
-                    $.ajax({
-                        url: api_url + 'groups.json?limit=10000&token=' + this.getToken() + '&sort=name&direction=asc',
-                        cache: false,
-                        type: 'GET',
-                        success: function(response) {
-                            _this.overall_groups = [];
-                            if (response.data) {
-                                _this.overall_groups = response.data;
-                            }
-                        }
-                    });
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
+            $.ajax({
+                url: api_url + 'groups.json?limit=10000&token=' + this.getToken() + '&sort=name&direction=asc',
+                cache: false,
+                type: 'GET',
+                success: function(response) {
+                    _this.overall_groups = [];
+                    if (response.data) {
+                        _this.overall_groups = response.data;
+                    }
                 }
-            }
+            });
         }
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.users = new App.UserCollection();
