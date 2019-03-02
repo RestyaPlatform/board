@@ -5,8 +5,8 @@
  * @return string
  */
 require_once 'config.inc.php';
-require_once 'libs' . DIRECTORY_SEPARATOR . 'core.php';
-require_once 'libs' . DIRECTORY_SEPARATOR . 'vendors' . DIRECTORY_SEPARATOR . 'OAuth2' . DIRECTORY_SEPARATOR . 'Autoloader.php';
+require_once 'libs' . DS . 'core.php';
+require_once 'libs' . DS . 'vendors' . DS . 'OAuth2' . DS . 'Autoloader.php';
 function main()
 {
     global $r_debug, $authUser, $token, $localAccessIps, $db_lnk, $token_exception_url, $exception_url, $scope_exception_url, $post_exception_url, $put_exception_url, $exception_before_token, $exception_url, $admin_access_url, $put_admin_access_url, $_server_domain_url, $locales;
@@ -91,8 +91,8 @@ function main()
                 }
             }
         }
-        if (!empty($current_locale) && file_exists(APP_PATH . 'client' . DIRECTORY_SEPARATOR . 'locales' . DIRECTORY_SEPARATOR . $current_locale . DIRECTORY_SEPARATOR . 'translation.json')) {
-            $locale = file_get_contents(APP_PATH . 'client' . DIRECTORY_SEPARATOR . 'locales' . DIRECTORY_SEPARATOR . $current_locale . DIRECTORY_SEPARATOR . 'translation.json');
+        if (!empty($current_locale) && file_exists(APP_PATH . 'client' . DS . 'locales' . DS . $current_locale . DS . 'translation.json')) {
+            $locale = file_get_contents(APP_PATH . 'client' . DS . 'locales' . DS . $current_locale . DS . 'translation.json');
             $locales = json_decode($locale, true);
         }
         $r_resource_vars = array();

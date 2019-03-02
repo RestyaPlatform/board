@@ -16,15 +16,16 @@ $app_path = dirname(dirname(__FILE__));
 require_once $app_path . '/config.inc.php';
 require_once $app_path . '/libs/core.php';
 require_once $app_path . '/libs/vendors/finediff.php';
-$files = glob(APP_PATH . '/server/php/shell/*.php', GLOB_BRACE);
+$files = glob(APP_PATH . DS . 'server/php/shell/*.php', GLOB_BRACE);
 if (!empty($files)) {
     foreach ($files as $file) {
-        if ($file !== APP_PATH . '/server/php/shell/main.php') {
+        if ($file !== APP_PATH . DS . 'server/php/shell/main.php') {
             include_once $file;
         }
     }
 }
-$pluginfiles = glob(APP_PATH . '/server/php/plugins/*/shell/*.php', GLOB_BRACE);
+
+$pluginfiles = glob(PLUGIN_PATH . DS . '*' . DS . 'shell' . DS . '*.php', GLOB_BRACE);
 if (!empty($pluginfiles)) {
     foreach ($pluginfiles as $pluginfile) {
         include_once $pluginfile;

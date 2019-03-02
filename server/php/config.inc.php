@@ -12,7 +12,7 @@
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
-define('R_DEBUG', true);
+define('R_DEBUG', false);
 ini_set('display_errors', R_DEBUG);
 define('R_API_VERSION', 1);
 if (!defined('JSON_PRETTY_PRINT')) {
@@ -25,9 +25,14 @@ if (!defined('JSON_UNESCAPED_UNICODE')) {
     define('JSON_UNESCAPED_UNICODE', 256);
 }
 define('APP_PATH', dirname(dirname(dirname(__FILE__))));
-define('SITE_URL_FOR_SHELL', APP_PATH . '/tmp/cache/site_url_for_shell.php');
-define('CLIENT_INFORMATION', APP_PATH . '/tmp/cache/client_information.php');
-
+define('DS', DIRECTORY_SEPARATOR);
+define('MEDIA_PATH', APP_PATH . DS .'media');
+define('TMP_PATH', APP_PATH . DS .'tmp');
+define('CACHE_PATH', APP_PATH . DS .'tmp'. DS .'cache');
+define('IMG_PATH', APP_PATH . DS .'client'. DS .'img');
+define('PLUGIN_PATH', APP_PATH . DS . 'server' . DS . 'php' . DS . 'plugins');
+define('SITE_URL_FOR_SHELL', CACHE_PATH . DS . 'site_url_for_shell.php');
+define('CLIENT_INFORMATION', CACHE_PATH . DS . 'client_information.php');
 // While changing below oAuth credentials, have to update in oauth_clients table also.
 if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
     define('OAUTH_CLIENTID', $_SERVER['PHP_AUTH_USER']);

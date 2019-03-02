@@ -18,7 +18,7 @@ if (!defined('APP_PATH')) {
     require_once $app_path . '/libs/vendors/finediff.php';
     require_once $app_path . '/libs/core.php';
 }
-define('PERIODIC_TEMP_FILE', APP_PATH . '/tmp/cache/periodic_email_notification.php');
+define('PERIODIC_TEMP_FILE', CACHE_PATH . DS . 'periodic_email_notification.php');
 date_default_timezone_set('GMT');
 global $_server_domain_url;
 if (file_exists(SITE_URL_FOR_SHELL)) {

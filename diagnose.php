@@ -146,7 +146,7 @@ if (file_exists(APP_PATH . '/client/apps/r_elasticsearch/app.json')) {
     $is_having_elasticsearch_plugin = true;
     $elasticsearch_server_class = $elasticsearch_port_class = $elasticsearch_index_class = $elasticsearch_class = false;
     $elasticsearch_version = $elasticsearch_connection = '';
-    $elasticsearch_json = file_get_contents(APP_PATH . '/client/apps/r_elasticsearch/app.json');
+    $elasticsearch_json = file_get_contents(APP_PATH . DS .'client' . DS . 'apps' . DS . 'r_elasticsearch' . DS . 'app.json');
     $elasticsearch_data = json_decode($elasticsearch_json, true);
     if ($elasticsearch_data['settings']['r_elasticsearch_server_host']['value'] != 'REPLACE_ELASTIC_SEARCH_SERVER_HOST') {
         $elasticsearch_server_class = $elasticsearch_data['settings']['r_elasticsearch_server_host']['value'];
@@ -176,9 +176,9 @@ if (file_exists(APP_PATH . '/client/apps/r_elasticsearch/app.json')) {
     }
 }
 $_writable_folders = array(
-    APP_PATH . '/tmp',
-    APP_PATH . '/media',
-    APP_PATH . '/client/img'
+    TMP_PATH,
+    MEDIA_PATH,
+    IMG_PATH
 );
 $writable = '';
 foreach($_writable_folders as $folder) {

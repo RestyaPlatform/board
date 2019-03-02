@@ -66,12 +66,12 @@ if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size)) {
         $row = pg_fetch_assoc($s_result);
         $fullPath = $row['path'];
     }
-    $fullPath = APP_PATH . '/' . $fullPath;
+    $fullPath = MEDIA_PATH . DS . $fullPath;
     $is_aspect = false;
     if (!empty($aspect[$model][$size])) {
         $is_aspect = true;
     }
-    $mediadir = APP_PATH . '/client/img/' . $size . '/' . $model . '/';
+    $mediadir = IMG_PATH . DS . $size . DS . $model . DS;
     if (!file_exists($mediadir)) {
         mkdir($mediadir, 0777, true);
     }

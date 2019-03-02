@@ -33,9 +33,9 @@ $j_username = $j_password = '';
 require_once '../bootstrap.php';
 global $jabberHost, $jaxlDebug;
 if (is_plugin_enabled('r_chat')) {
-    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chat' . DIRECTORY_SEPARATOR . 'functions.php';
-    require APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chat' . DIRECTORY_SEPARATOR . 'libs/vendors/jaxl3/jaxl.php';
-    $json = file_get_contents(APP_PATH . '/client/apps/r_chat/app.json');
+    require_once PLUGIN_PATH . DS . 'Chat' . DS . 'functions.php';
+    require PLUGIN_PATH . DS . 'Chat' . DS . 'libs/vendors/jaxl3/jaxl.php';
+    $json = file_get_contents(APP_PATH . DS . 'client' . DS . 'apps' . DS . 'r_chat' . DS . 'app.json');
     $chat_data = json_decode($json, true);
     $chatDBHost = $chat_data['settings']['r_chat_db_host']['value'];
     $chatDBPort = $chat_data['settings']['r_chat_db_port']['value'];
@@ -116,7 +116,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $languages[$row['iso2']] = $row['name'];
             }
             $response['languages'] = json_encode($languages);
-            $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
+            $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
             if (!empty($files)) {
                 foreach ($files as $file) {
                     $content = file_get_contents($file);
@@ -872,7 +872,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['board_user_roles'] = $board_user_roles;
                 }
                 if (is_plugin_enabled('r_chart') && empty($r_resource_filters['page'])) {
-                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chart' . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+                    require_once PLUGIN_PATH . DS . 'Chart' . DS . 'R' . DS . 'r.php';
                     $passed_values = array();
                     $passed_values['sort'] = $sort;
                     $passed_values['field'] = $field;
@@ -908,7 +908,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($_metadata)) {
                     $data['_metadata'] = $_metadata;
                 }
-                require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chart' . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+                require_once PLUGIN_PATH . DS . 'Chart' . DS . 'R' . DS . 'r.php';
                 $passed_values = array();
                 $passed_values['sort'] = $sort;
                 $passed_values['field'] = $field;
@@ -1030,12 +1030,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             $data = $obj;
                         }
                         if (is_plugin_enabled('r_custom_fields')) {
-                            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
+                            require_once PLUGIN_PATH . DS . 'CustomFields' . DS . 'functions.php';
                             $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
                             array_merge($data, $data);
                         }
                         if (is_plugin_enabled('r_gantt_view')) {
-                            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Gantt' . DIRECTORY_SEPARATOR . 'functions.php';
+                            require_once PLUGIN_PATH . DS . 'Gantt' . DS . 'functions.php';
                             $data = cardDependencyAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
                             array_merge($data, $data);
                         }
@@ -1283,7 +1283,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $order = 'ORDER BY al.id DESC';
             }
             if (isset($r_resource_filters['page'])) {
-                $offset_val = $r_resource_filters['page'] * 20;
+                $offset_val = ($r_resource_filters['page'] - 1) * PAGING_COUNT;
                 $construct_offset = ' offset ' . $offset_val;
             }
             $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ' . $order . ' LIMIT ' . $limit . ' ' . $construct_offset . ') as d ';
@@ -1501,7 +1501,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data['_metadata'] = $_metadata;
             }
             if (is_plugin_enabled('r_custom_fields')) {
-                require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
+                require_once PLUGIN_PATH . DS . 'CustomFields' . DS . 'functions.php';
                 $data = customFieldAfterFetchBoardsListsCards($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
             }
             echo json_encode($data);
@@ -1629,7 +1629,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/workflow_templates':
-        $files = glob(APP_PATH . '/client/js/workflow_templates/*.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'js' . DS . 'workflow_templates' . DS . '*.json', GLOB_BRACE);
         foreach ($files as $file) {
             $data = file_get_contents($file);
             $json = json_decode($data, true);
@@ -1733,7 +1733,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
-        $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
         if (!empty($files)) {
             foreach ($files as $file) {
                 $content = file_get_contents($file);
@@ -1786,7 +1786,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/apps':
-        $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
         if (!empty($files)) {
             foreach ($files as $file) {
                 $folder = explode('/', $file);
@@ -1800,7 +1800,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/apps/settings':
-        $content = file_get_contents(APP_PATH . '/client/apps/' . $r_resource_filters['app'] . '/app.json');
+        $content = file_get_contents(APP_PATH . DS . 'client' . DS . 'apps' . DS . $r_resource_filters['app'] . DS . 'app.json');
         $data = json_decode($content, true);
         if (file_exists(SITE_URL_FOR_SHELL)) {
             include_once SITE_URL_FOR_SHELL;
@@ -1988,7 +1988,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
         }
         if (!empty($pluginToBePassed)) {
-            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginToBePassed . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+            require_once PLUGIN_PATH . DS . $pluginToBePassed . DS . 'R' . DS . 'r.php';
             $passed_values = array();
             $passed_values['sort'] = $sort;
             $passed_values['field'] = $field;
@@ -2430,7 +2430,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE ' . $where, $val_arr);
         if (is_plugin_enabled('r_ldap_login')) {
-            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'LdapLogin' . DIRECTORY_SEPARATOR . 'functions.php';
+            require_once PLUGIN_PATH . DS . 'LdapLogin' . DS . 'functions.php';
             $ldap_response = ldapUpdateUser($log_user, $r_post);
             $ldap_error = $ldap_response['ldap_error'];
             $user = $ldap_response['user'];
@@ -2689,17 +2689,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $filename = $_FILES['attachment']['name'];
             $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
             if (in_array($file_ext, $allowed_ext)) {
-                $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'User' . DIRECTORY_SEPARATOR . $r_resource_vars['users'];
-                $save_path = 'media' . DIRECTORY_SEPARATOR . 'User' . DIRECTORY_SEPARATOR . $r_resource_vars['users'];
+                $mediadir = MEDIA_PATH . DS . 'User' . DS . $r_resource_vars['users'];
+                $save_path = 'User' . DS . $r_resource_vars['users'];
                 if (!file_exists($mediadir)) {
                     mkdir($mediadir, 0777, true);
                 }
                 $file = $_FILES['attachment'];
                 $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
-                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
-                    $profile_picture_path = $save_path . DIRECTORY_SEPARATOR . $file['name'];
+                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DS . $file['name'])) {
+                    $profile_picture_path = $save_path . DS . $file['name'];
                     foreach ($thumbsizes['User'] as $key => $value) {
-                        $mediadir = APP_PATH . '/client/img/' . $key . '/User/' . $r_resource_vars['users'];
+                        $mediadir = IMG_PATH . DS . $key . DS . 'User' . DS . $r_resource_vars['users'];
                         $list = glob($mediadir . '.*');
                         if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                             unlink($list[0]);
@@ -3767,17 +3767,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $filename = $_FILES['attachment']['name'];
             $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
             if (in_array($file_ext, $allowed_ext)) {
-                $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Board' . DIRECTORY_SEPARATOR . $r_resource_vars['boards'];
-                $save_path = 'media' . DIRECTORY_SEPARATOR . 'Board' . DIRECTORY_SEPARATOR . $r_resource_vars['boards'];
+                $mediadir = MEDIA_PATH . DS . 'Board' . DS . $r_resource_vars['boards'];
+                $save_path = 'Board' . DS . $r_resource_vars['boards'];
                 if (!file_exists($mediadir)) {
                     mkdir($mediadir, 0777, true);
                 }
                 $file = $_FILES['attachment'];
                 $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
-                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
+                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DS . $file['name'])) {
                     $r_post['name'] = $file['name'];
                     foreach ($thumbsizes['Board'] as $key => $value) {
-                        $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Board' . DIRECTORY_SEPARATOR . $r_resource_vars['boards'];
+                        $mediadir = IMG_PATH . DS . $key . DS . 'Board' . DS . $r_resource_vars['boards'];
                         $list = glob($mediadir . '.*');
                         if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                             unlink($list[0]);
@@ -3785,7 +3785,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     }
                     $hash = md5(SECURITYSALT . 'Board' . $r_resource_vars['boards'] . 'jpg' . 'extra_large_thumb');
                     $background_picture_url = $_server_domain_url . '/img/extra_large_thumb/Board/' . $r_resource_vars['boards'] . '.' . $hash . '.jpg';
-                    $r_post['background_picture_path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'];
+                    $r_post['background_picture_path'] = $save_path . DS . $file['name'];
                     $background_picture_url = preg_replace('/(http|https):/', '', $background_picture_url);
                     $r_post['path'] = $background_picture_url;
                     $response['background_picture_url'] = $background_picture_url;
@@ -3821,7 +3821,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             if ($result) {
                 $row = pg_fetch_assoc($result);
                 if (is_plugin_enabled('r_board_role_mapper')) {
-                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'BoardRoleMapper' . DIRECTORY_SEPARATOR . 'functions.php';
+                    require_once PLUGIN_PATH . DS . 'BoardRoleMapper' . DS . 'functions.php';
                     $board_user_role_id = boardRoleAfterInsertBoardUser($r_post);
                     if (!empty($board_user_role_id)) {
                         $response['board_user_role_id'] = $board_user_role_id;
@@ -4062,8 +4062,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $is_return_vlaue = true;
                     $table_name = 'card_attachments';
                     $r_post['card_id'] = $response['id'];
-                    $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_post['card_id'];
-                    $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_post['card_id'];
+                    $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_post['card_id'];
+                    $save_path = 'Card' . DS . $r_post['card_id'];
                     $save_path = str_replace('\\', '/', $save_path);
                     if (!empty($_FILES['attachment']) && is_array($_FILES['attachment']['name']) && $_FILES['attachment']['error'][0] == 0) {
                         $file = $_FILES['attachment'];
@@ -4080,12 +4080,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                     }
                                     $file_arr = pathinfo($file['name'][$i]);
                                     $filename_without_ext = $file_arr['filename'];
-                                    if (file_exists($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
+                                    if (file_exists($mediadir . DS . $file['name'][$i])) {
                                         $filename_without_ext = $file_arr['filename'] . '-' . mt_rand(0, 999);
                                         $file['name'][$i] = $filename_without_ext . '.' . $file_arr['extension'];
                                     }
-                                    if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
-                                        $r_post[$i]['path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'][$i];
+                                    if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DS . $file['name'][$i])) {
+                                        $r_post[$i]['path'] = $save_path . DS . $file['name'][$i];
                                         $r_post[$i]['name'] = $file['name'][$i];
                                         $r_post[$i]['mimetype'] = $file['type'][$i];
                                         $qry_val_arr = array(
@@ -4101,20 +4101,20 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                         if (class_exists('imagick') && in_array($file_arr['extension'], array(
                                             'pdf'
                                         ))) {
-                                            $im = new Imagick($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
+                                            $im = new Imagick($mediadir . DS . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
                                             $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
                                             $im->setimageformat('png');
                                             $im->thumbnailimage(200, 150); // width and height
                                             $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
-                                            $target_dir = APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR . 'CardAttachment';
-                                            $target = $target_dir . DIRECTORY_SEPARATOR . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                                            $target_dir = IMG_PATH . DS . 'original' . DS . 'CardAttachment';
+                                            $target = $target_dir . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
                                             if (!file_exists($target_dir)) {
                                                 mkdir($target_dir, 0777, true);
                                             }
                                             $im->writeimage($target);
                                             $im->clear();
                                             $im->destroy();
-                                            $response_file['card_attachments'][$i]['doc_image_path'] = DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR . 'CardAttachment' . DIRECTORY_SEPARATOR . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                                            $response_file['card_attachments'][$i]['doc_image_path'] = 'original' . DS . 'CardAttachment' . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
                                             $qry_val_arr = array(
                                                 $response_file['card_attachments'][$i]['doc_image_path'],
                                                 $cardAttachment['id']
@@ -4127,7 +4127,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                         $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
                                         $response_file['activity'] = insertActivity($userID, $comment, 'add_card_attachment', $foreign_ids, null, $response_file['card_attachments'][$i]['id']);
                                         foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                                            $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response_file['card_attachments'][$i]['id'];
+                                            $imgdir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $response_file['card_attachments'][$i]['id'];
                                             $list = glob($imgdir . '.*');
                                             if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                                 unlink($list[0]);
@@ -4178,7 +4178,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
                                 $response_file['activity'] = insertActivity($userID, $comment, 'add_card_attachment', $foreign_ids, null, $row['id']);
                                 foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                                    $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $row['id'];
+                                    $mediadir = IMG_PATH . DS . $key . DS .'CardAttachment' . DS . $row['id'];
                                     $list = glob($mediadir . '.*');
                                     if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                         unlink($list[0]);
@@ -4490,8 +4490,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $r_post['card_id'] = $r_resource_vars['cards'];
         $r_post['list_id'] = $r_resource_vars['lists'];
         $r_post['board_id'] = $r_resource_vars['boards'];
-        $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_resource_vars['cards'];
-        $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_resource_vars['cards'];
+        $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_resource_vars['cards'];
+        $save_path = 'Card' . DS . $r_resource_vars['cards'];
         $save_path = str_replace('\\', '/', $save_path);
         if (!empty($_FILES['attachments']) && $_FILES['attachment']['error'] == 0) {
             $file = $_FILES['attachments'];
@@ -4507,12 +4507,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     }
                     $file_arr = pathinfo($file['name'][$i]);
                     $filename_without_ext = $file_arr['filename'];
-                    if (file_exists($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
+                    if (file_exists($mediadir . DS . $file['name'][$i])) {
                         $filename_without_ext = $file_arr['filename'] . '-' . mt_rand(0, 999);
                         $file['name'][$i] = $filename_without_ext . '.' . $file_arr['extension'];
                     }
-                    if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
-                        $r_post[$i]['path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'][$i];
+                    if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DS . $file['name'][$i])) {
+                        $r_post[$i]['path'] = $save_path . DS . $file['name'][$i];
                         $r_post[$i]['name'] = $file['name'][$i];
                         $r_post[$i]['mimetype'] = $file['type'][$i];
                         $qry_val_arr = array(
@@ -4528,20 +4528,20 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         if (class_exists('imagick') && in_array($file_arr['extension'], array(
                             'pdf'
                         ))) {
-                            $im = new Imagick($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
+                            $im = new Imagick($mediadir . DS . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
                             $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
                             $im->setimageformat('png');
                             $im->thumbnailimage(200, 150); // width and height
                             $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
-                            $target_dir = APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR . 'CardAttachment';
-                            $target = $target_dir . DIRECTORY_SEPARATOR . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                            $target_dir = IMG_PATH . DS . 'original' . DS . 'CardAttachment';
+                            $target = $target_dir . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
                             if (!file_exists($target_dir)) {
                                 mkdir($target_dir, 0777, true);
                             }
                             $im->writeimage($target);
                             $im->clear();
                             $im->destroy();
-                            $response['card_attachments'][$i]['doc_image_path'] = DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR . 'CardAttachment' . DIRECTORY_SEPARATOR . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                            $response['card_attachments'][$i]['doc_image_path'] = 'original' . DS . 'CardAttachment' . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
                             $qry_val_arr = array(
                                 $response['card_attachments'][$i]['doc_image_path'],
                                 $cardAttachment['id']
@@ -4554,7 +4554,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
                         $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['card_attachments'][$i]['id']);
                         foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                            $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
+                            $imgdir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $response['card_attachments'][$i]['id'];
                             $list = glob($imgdir . '.*');
                             if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                 unlink($list[0]);
@@ -4612,8 +4612,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $r_post['card_id'] = $r_resource_vars['cards'];
         $r_post['list_id'] = $r_resource_vars['lists'];
         $r_post['board_id'] = $r_resource_vars['boards'];
-        $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_resource_vars['cards'];
-        $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_resource_vars['cards'];
+        $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_resource_vars['cards'];
+        $save_path = 'Card' . DS . $r_resource_vars['cards'];
         $save_path = str_replace('\\', '/', $save_path);
         if (!empty($_FILES['attachment']) && $_FILES['attachment']['error'] == 0) {
             if (!file_exists($mediadir)) {
@@ -4626,11 +4626,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             }
             $file_arr = pathinfo($file['name']);
             $filename_without_ext = $file_arr['filename'];
-            if (file_exists($mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
+            if (file_exists($mediadir . DS . $file['name'])) {
                 $filename_without_ext = $file_arr['filename'] . '-' . mt_rand(0, 999);
                 $file['name'] = $filename_without_ext . '.' . $file_arr['extension'];
             }
-            if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
+            if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DS . $file['name'])) {
                 $r_post['path'] = $save_path . '/' . $file['name'];
                 $r_post['name'] = $file['name'];
                 $r_post['mimetype'] = $file['type'];
@@ -4647,20 +4647,20 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (class_exists('imagick') && in_array($file_arr['extension'], array(
                     'pdf'
                 ))) {
-                    $im = new Imagick($mediadir . DIRECTORY_SEPARATOR . $file['name'] . "[0]"); // 0-first page, 1-second page
+                    $im = new Imagick($mediadir . DS . $file['name'] . "[0]"); // 0-first page, 1-second page
                     $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
                     $im->setimageformat('png');
                     $im->thumbnailimage(200, 150); // width and height
                     $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
-                    $target_dir = APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR . 'CardAttachment';
-                    $target = $target_dir . DIRECTORY_SEPARATOR . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                    $target_dir = IMG_PATH . DS . 'original' . DS . 'CardAttachment';
+                    $target = $target_dir . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
                     if (!file_exists($target_dir)) {
                         mkdir($target_dir, 0777, true);
                     }
                     $im->writeimage($target);
                     $im->clear();
                     $im->destroy();
-                    $response['card_attachments'][0]['doc_image_path'] = DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR . 'CardAttachment' . DIRECTORY_SEPARATOR . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                    $response['card_attachments'][0]['doc_image_path'] = 'original' . DS . 'CardAttachment' . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
                     $qry_val_arr = array(
                         $response['card_attachments'][0]['doc_image_path'],
                         $cardAttachment['id']
@@ -4669,7 +4669,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
             }
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][0]['id'];
+                $mediadir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $response['card_attachments'][0]['id'];
                 $list = glob($mediadir . '.*');
                 if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                     unlink($list[0]);
@@ -4694,12 +4694,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     }
                     $file_arr = pathinfo($file['name'][$i]);
                     $filename_without_ext = $file_arr['filename'];
-                    if (file_exists($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
+                    if (file_exists($mediadir . DS . $file['name'][$i])) {
                         $filename_without_ext = $file_arr['filename'] . '-' . mt_rand(0, 999);
                         $file['name'][$i] = $filename_without_ext . '.' . $file_arr['extension'];
                     }
-                    if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
-                        $r_post[$i]['path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'][$i];
+                    if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DS . $file['name'][$i])) {
+                        $r_post[$i]['path'] = $save_path . DS . $file['name'][$i];
                         $r_post[$i]['name'] = $file['name'][$i];
                         $r_post[$i]['mimetype'] = $file['type'][$i];
                         $qry_val_arr = array(
@@ -4715,20 +4715,20 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         if (class_exists('imagick') && in_array($file_arr['extension'], array(
                             'pdf'
                         ))) {
-                            $im = new Imagick($mediadir . DIRECTORY_SEPARATOR . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
+                            $im = new Imagick($mediadir . DS . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
                             $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
                             $im->setimageformat('png');
                             $im->thumbnailimage(200, 150); // width and height
                             $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
-                            $target_dir = APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR . 'CardAttachment';
-                            $target = $target_dir . DIRECTORY_SEPARATOR . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                            $target_dir = IMG_PATH . DS . 'original' . DS . 'CardAttachment';
+                            $target = $target_dir . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
                             if (!file_exists($target_dir)) {
                                 mkdir($target_dir, 0777, true);
                             }
                             $im->writeimage($target);
                             $im->clear();
                             $im->destroy();
-                            $response['card_attachments'][$i]['doc_image_path'] = DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR . 'CardAttachment' . DIRECTORY_SEPARATOR . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                            $response['card_attachments'][$i]['doc_image_path'] = 'original' . DS . 'CardAttachment' . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
                             $qry_val_arr = array(
                                 $response['card_attachments'][$i]['doc_image_path'],
                                 $cardAttachment['id']
@@ -4741,7 +4741,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
                         $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['card_attachments'][$i]['id']);
                         foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                            $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
+                            $imgdir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $response['card_attachments'][$i]['id'];
                             $list = glob($imgdir . '.*');
                             if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                 unlink($list[0]);
@@ -4790,7 +4790,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
                         $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $row['id']);
                         foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                            $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $row['id'];
+                            $mediadir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $row['id'];
                             $list = glob($mediadir . '.*');
                             if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                 unlink($list[0]);
@@ -5297,12 +5297,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $response['cards']['attachments'][] = $attachment;
                 }
                 if (is_plugin_enabled('r_custom_fields')) {
-                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
+                    require_once PLUGIN_PATH . DS . 'CustomFields' . DS . 'functions.php';
                     $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $response);
                     $response = $data;
                 }
                 if (is_plugin_enabled('r_gantt_view')) {
-                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Gantt' . DIRECTORY_SEPARATOR . 'functions.php';
+                    require_once PLUGIN_PATH . DS . 'Gantt' . DS . 'functions.php';
                     $data = cardDependencyAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $response);
                     $response = $data;
                 }
@@ -5421,23 +5421,23 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $filename = $_FILES['attachment']['name'];
             $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
             if (in_array($file_ext, $allowed_ext)) {
-                $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'];
-                $save_path = 'media' . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'];
+                $mediadir = MEDIA_PATH . DS . 'Organization' . DS . $r_resource_vars['organizations'];
+                $save_path = 'Organization' . DS . $r_resource_vars['organizations'];
                 if (!file_exists($mediadir)) {
                     mkdir($mediadir, 0777, true);
                 }
                 $file = $_FILES['attachment'];
                 $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
-                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
-                    $logo_url = $save_path . DIRECTORY_SEPARATOR . $file['name'];
+                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DS . $file['name'])) {
+                    $logo_url = $save_path . DS . $file['name'];
                     foreach ($thumbsizes['Organization'] as $key => $value) {
-                        $list = glob(APP_PATH . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'] . '.*');
+                        $list = glob(MEDIA_PATH . DS . $key . DS . 'Organization' . DS . $r_resource_vars['organizations'] . '.*');
                         if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                             unlink($list[0]);
                         }
                     }
                     foreach ($thumbsizes['Organization'] as $key => $value) {
-                        $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $r_resource_vars['organizations'];
+                        $mediadir = IMG_PATH . DS . $key . DS . 'Organization' . DS . $r_resource_vars['organizations'];
                         $list = glob($mediadir . '.*');
                         if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                             unlink($list[0]);
@@ -5500,7 +5500,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     case '/apps/settings':
         $folder_name = $r_post['folder'];
         unset($r_post['folder']);
-        $content = file_get_contents(APP_PATH . '/client/apps/' . $folder_name . '/app.json');
+        $content = file_get_contents(APP_PATH . DS . 'client' . DS . 'apps' . DS . $folder_name . DS . 'app.json');
         if (is_writable(APP_PATH . '/client/apps/' . $folder_name . '/app.json')) {
             $app = json_decode($content, true);
             if (isset($r_post['enable'])) {
@@ -5537,7 +5537,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         }
                         if (strpos($key, 'r_elasticsearch_index_name') !== false) {
                             if (trim(strtolower($app['settings'][$key]['value'])) !== trim(strtolower($val))) {
-                                $filename = APP_PATH . '/tmp/cache/r_elasticsearch_last_processed_activity_id.php';
+                                $filename = CACHE_PATH . DS . 'r_elasticsearch_last_processed_activity_id.php';
                                 if (file_exists($filename)) {
                                     unlink($filename);
                                 }
@@ -5706,7 +5706,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             }
         }
         if (!empty($pluginToBePassed)) {
-            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginToBePassed . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+            require_once PLUGIN_PATH . DS . $pluginToBePassed . DS . 'R' . DS . 'r.php';
             $passed_values = array();
             $passed_values['sql'] = $sql;
             $passed_values['r_resource_cmd'] = $r_resource_cmd;
@@ -5900,7 +5900,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $foreign_ids['board_id'] = $r_resource_vars['boards'];
         if (!empty($r_put['is_support_app'])) {
             if (is_plugin_enabled('r_support_app')) {
-                require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'SupportApp' . DIRECTORY_SEPARATOR . 'functions.php';
+                require_once PLUGIN_PATH . DS . 'SupportApp' . DS . 'functions.php';
                 $r_put['id'] = $r_resource_vars['boards'];
                 $SupportAppResponse = checkSupportAppFields($r_put, $r_resource_cmd);
                 if (empty($r_put['support_list_id'])) {
@@ -6170,7 +6170,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $activity_type = 'add_card_duedate';
             }
             if (is_plugin_enabled('r_gantt_view')) {
-                require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Gantt' . DIRECTORY_SEPARATOR . 'functions.php';
+                require_once PLUGIN_PATH . DS . 'Gantt' . DS . 'functions.php';
                 $r_put['id'] = $r_resource_vars['cards'];
                 $childCardResponse = updateDependencyCards($r_put, array());
             }
@@ -6469,7 +6469,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $foreign_ids['organization_id'] = $r_resource_vars['organizations'];
         if (isset($r_put['logo_url']) && ($r_put['logo_url'] == 'null' || $r_put['logo_url'] == 'NULL')) {
             foreach ($thumbsizes['Organization'] as $key => $value) {
-                $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $id;
+                $mediadir = IMG_PATH . DS . $key . DS . 'Organization' . DS . $id;
                 $list = glob($mediadir . '.*');
                 if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                     unlink($list[0]);
@@ -6574,7 +6574,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
         }
         if (!empty($pluginToBePassed)) {
-            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginToBePassed . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+            require_once PLUGIN_PATH . DS . $pluginToBePassed . DS . 'R' . DS . 'r.php';
             $passed_values = array();
             $passed_values['sql'] = $sql;
             $passed_values['r_resource_cmd'] = $r_resource_cmd;
@@ -6771,7 +6771,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $sql = 'DELETE FROM cards WHERE id = $1';
         array_push($pg_params, $r_resource_vars['cards']);
         if (is_plugin_enabled('r_elasticsearch')) {
-            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'ElasticSearch' . DIRECTORY_SEPARATOR . 'functions.php';
+            require_once PLUGIN_PATH . DS . 'ElasticSearch' . DS . 'functions.php';
             deleteCardFromElastica($r_resource_vars['cards']);
         }
         break;
@@ -6864,20 +6864,20 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $foreign_ids['card_id'] = $r_resource_vars['cards'];
         $comment = '##USER_NAME## deleted attachment from card ##CARD_LINK##';
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_card_attachment', $foreign_ids, null, $r_resource_vars['attachments']);
-        $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_resource_vars['cards'];
+        $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_resource_vars['cards'];
         $qry_val_arr = array(
             $r_resource_vars['attachments']
         );
         $attachment = executeQuery('SELECT name, path FROM card_attachments WHERE id =  $1', $qry_val_arr);
         if (!empty($attachment)) {
-            $file = APP_PATH . DIRECTORY_SEPARATOR . $attachment['path'];
+            $file = APP_PATH . DS . $attachment['path'];
             if (file_exists($file)) {
                 unlink($file);
             }
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                 $file_ext = explode('.', $attachment['name']);
                 $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
-                $thumb_file = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
+                $thumb_file = IMG_PATH . DS . $key . DS . 'Organization' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
                 if (file_exists($thumb_file)) {
                     unlink($thumb_file);
                 }
@@ -7014,7 +7014,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
         }
         if (!empty($pluginToBePassed)) {
-            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginToBePassed . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+            require_once PLUGIN_PATH . DS . $pluginToBePassed . DS . 'R' . DS . 'r.php';
             $passed_values = array();
             $passed_values['sql'] = $sql;
             $passed_values['r_resource_cmd'] = $r_resource_cmd;
