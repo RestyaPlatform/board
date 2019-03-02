@@ -430,7 +430,7 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
     global $r_debug, $db_lnk, $authUser;
     $role = 3; // Guest role id
     if (is_plugin_enabled('r_support_app')) {
-        require_once APP_PATH . DS . 'server' . DS . 'php' . DS . 'plugins' . DS . 'SupportApp' . DS . 'functions.php';
+        require_once PLUGIN_PATH . DS . 'SupportApp' . DS . 'functions.php';
         if (checkSupportAppEnabled($r_resource_vars, $r_request_method, $r_resource_cmd)) {
             return true;
         }
@@ -2814,7 +2814,7 @@ function slugify($string)
 }
 function is_plugin_enabled($plugin_name)
 {
-    $file = APP_PATH . '/client/apps/' . $plugin_name . '/app.json';
+    $file = APP_PATH . DS . 'client'. DS .'apps'. DS . $plugin_name . DS . 'app.json';
     if (file_exists($file)) {
         $content = file_get_contents($file);
         $data = json_decode($content, true);

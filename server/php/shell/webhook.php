@@ -50,7 +50,7 @@ if ($db_lnk) {
                         }
                         if (empty($activities_enabled) || (!empty($activities_enabled) && in_array($activity['type'], $activities_enabled))) {
                             if ($row['type'] != 'Default') {
-                                require_once $app_path . '/plugins/' . $row['type'] . '/functions.php';
+                                require_once $app_path . DS . 'plugins' . DS . $row['type'] . DS . 'functions.php';
                                 $function_name = 'postIn' . $row['type'];
                                 $activity_json = $function_name($row, $activity, $_server_domain_url);
                             } else {
