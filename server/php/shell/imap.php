@@ -17,7 +17,7 @@ if (!defined('APP_PATH')) {
     require_once $app_path . '/config.inc.php';
     require_once $app_path . '/libs/core.php';
 }
-define('IMAP_TEMP_FILE', APP_PATH . '/tmp/cache/imap.php');
+define('IMAP_TEMP_FILE', CACHE_PATH . DS . 'imap.php');
 if (!defined('STDIN') && !file_exists(IMAP_TEMP_FILE)) {
     $fh = fopen(IMAP_TEMP_FILE, "a");
     fwrite($fh, '<?php' . "\n" . '$_imap_time_trace = \'' . strtotime('now') . '\';');
@@ -241,14 +241,14 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                                             if ($attachments[$i]['is_attachment'] === true) {
                                                 // Generating filename with time to avoid duplicate filename for same card
                                                 $file_attachments = true;
+                                                $mediadir = MEDIA_PATH . DS . 'Card' . DS . $card_id;
                                                 $filename = date('Y_m_d', time()) . '_at_' . date('H_i_s', time()) . '_' . $attachments[$i]['filename'];
-                                                $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $card_id;
-                                                $mediadir = APP_PATH . DIRECTORY_SEPARATOR . $save_path;
+                                                $save_path = 'Card' . DS . $card_id;
                                                 if (!file_exists($mediadir)) {
                                                     mkdir($mediadir, 0777, true);
                                                 }
                                                 // Saving attachment content in file
-                                                $fh = fopen($mediadir . DIRECTORY_SEPARATOR . $filename, 'x+');
+                                                $fh = fopen($mediadir . DS . $filename, 'x+');
                                                 fputs($fh, $attachments[$i]['attachment']);
                                                 fclose($fh);
                                                 $val_arr = array(

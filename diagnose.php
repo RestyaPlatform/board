@@ -176,9 +176,9 @@ if (file_exists(APP_PATH . '/client/apps/r_elasticsearch/app.json')) {
     }
 }
 $_writable_folders = array(
-    APP_PATH . '/tmp',
-    APP_PATH . '/media',
-    APP_PATH . '/client/img'
+    TMP_PATH,
+    MEDIA_PATH,
+    IMG_PATH
 );
 $writable = '';
 foreach($_writable_folders as $folder) {

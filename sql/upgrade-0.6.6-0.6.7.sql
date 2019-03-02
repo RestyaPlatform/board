@@ -253,3 +253,9 @@ Restyaboard</a>
 UPDATE "settings" SET "description" = '<a href="https://fontawesome.com/v3.2.1/icons/" target="_blank">Font
 Awesome</a> class name. Recommended: icon-circle, icon-bullhorn,
 icon-tag, icon-bookmark, icon-pushpin, icon-star' WHERE "name" = 'LABEL_ICON';
+
+UPDATE users SET profile_picture_path = REPLACE(profile_picture_path, 'media/', '');
+UPDATE card_attachments SET path = REPLACE(path, 'media/', '');
+UPDATE card_attachments SET doc_image_path = REPLACE(doc_image_path, '/img/', '');
+UPDATE boards SET background_picture_path = REPLACE(background_picture_path, 'media/', '');
+UPDATE organizations SET logo_url = REPLACE(logo_url, 'media/', '');

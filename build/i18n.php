@@ -53,7 +53,7 @@ while ($email_templates_row = pg_fetch_assoc($email_templates_result)) {
 	}
 }
 
-$json = json_decode(file_get_contents($app_path . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'apps' . DIRECTORY_SEPARATOR . 'apps.json'), true);
+$json = json_decode(file_get_contents($app_path . DS . 'client' . DS . 'apps' . DS . 'apps.json'), true);
 $auto_json_arr = array();
 foreach($json as $data) {
 	if (!empty($data['name'])) {
