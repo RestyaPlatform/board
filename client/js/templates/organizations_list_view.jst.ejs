@@ -35,7 +35,15 @@ if (!_.isUndefined(authuser.user)) {
 	<li class="pull-right ">
 		<ul class="list-inline navbar-btn clearfix">
 			<li class="dropdown navbar-btn">
-				<a title="<%- i18next.t('New Board') %>" class="btn btn-default <% if(organization.attributes.organizations_user_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.organizations_user_count != 0){ %>data-toggle="dropdown"<%}%>><%- organization.attributes.organizations_user_count%> <%- i18next.t('Members') %></a>
+				<% var user_count = '';
+				   if(parseInt(organization.attributes.organizations_user_count) != 0){
+					user_count = parseInt(organization.attributes.organizations_user_count);
+					user_count = (user_count > 1) ? 's' : '';
+				   }
+				%>
+				<a title="<%- i18next.t('Members') %>" class="btn btn-default <% if(organization.attributes.organizations_user_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.organizations_user_count != 0){ %>data-toggle="dropdown"<%}%>>
+					<%- i18next.t('{{count}} Member{{user_count}}', {count: organization.attributes.organizations_user_count, user_count: user_count}) %>
+				</a>
 				<% if(organization.attributes.organizations_user_count != 0){ %>
 					<ul class="dropdown-menu arrow arrow-left  text-left" role="boards">
 						<% _.each(organization.attributes.organizations_users, function(organizations_user){%>
@@ -46,7 +54,15 @@ if (!_.isUndefined(authuser.user)) {
 			</li>
 			<li class="navbar-btn">
 				<div class="checkbox-inline dropdown">
-					<a title="<%- i18next.t('Boards') %>" class="btn btn-default <% if(organization.attributes.board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.board_count != 0){ %>data-toggle="dropdown"<%}%>><%- organization.attributes.board_count%> <%- i18next.t('Boards') %></a>
+					<% var org_board_count = '';
+					   if(organization.attributes.board_count != 0){
+						org_board_count = organization.attributes.board_count;
+						org_board_count = (org_board_count > 1) ? 's' : '';
+					   }
+					%>
+					<a title="<%- i18next.t('Boards') %>" class="btn btn-default <% if(organization.attributes.board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.board_count != 0){ %>data-toggle="dropdown"<%}%>>
+						<%- i18next.t('{{count}} Board{{board_count}}', {count: organization.attributes.board_count, board_count: org_board_count}) %>
+					</a>
 					<% if(organization.attributes.board_count != 0){ %>
 						<ul class="dropdown-menu arrow arrow-right  text-left" role="boards">
 							<% _.each(organization.attributes.boards_listing, function(board){%>

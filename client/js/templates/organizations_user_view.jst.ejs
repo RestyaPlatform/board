@@ -68,8 +68,14 @@
 								<div class="text-right">
 									<ul class="list-inline clearfix">
 										<li class="dropdown navbar-btn">
+											<% var user_board_count = '';
+											   if(organizations_user.attributes.user_board_count != 0){
+												user_board_count = organizations_user.attributes.user_board_count;
+												user_board_count = (user_board_count > 1) ? 's' : '';
+											   }
+											%>
 											<a title="<%- i18next.t('Boards') %>" class="btn btn-default <% if(organizations_user.attributes.user_board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organizations_user.attributes.user_board_count != 0){ %>data-toggle="dropdown"<%}%>>
-											<%- i18next.t('{{count}} Board', {count: organizations_user.attributes.user_board_count}) %>
+											<%- i18next.t('{{count}} Board{{boards_count}}', {count: organizations_user.attributes.user_board_count, boards_count: user_board_count}) %>
 											</a>
 											<% if(organizations_user.attributes.boards_users != null && organizations_user.attributes.user_board_count != 0){ %>
 												<ul class="dropdown-menu arrow arrow-left  text-left" role="boards" id="js-user-activity-menu-response-<%- organizations_user.attributes.id%>">
