@@ -157,6 +157,7 @@
       value = _.trim(value);
       if (value === '#') return '#';
       if (!(value.substr(0, 7) === 'http://' ||
+            value.substr(0, 6) === 'ftp://' ||
            value.substr(0, 8) === 'https://' ||
            value.substr(0, 7) === 'mailto:' ||
            value.substr(0, 4) === 'tel:' ||
