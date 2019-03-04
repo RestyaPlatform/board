@@ -26,10 +26,10 @@ if (!defined('JSON_UNESCAPED_UNICODE')) {
 }
 define('APP_PATH', dirname(dirname(dirname(__FILE__))));
 define('DS', DIRECTORY_SEPARATOR);
-define('MEDIA_PATH', APP_PATH . DS .'media');
-define('TMP_PATH', APP_PATH . DS .'tmp');
-define('CACHE_PATH', APP_PATH . DS .'tmp'. DS .'cache');
-define('IMG_PATH', APP_PATH . DS .'client'. DS .'img');
+define('MEDIA_PATH', APP_PATH . DS . 'media');
+define('TMP_PATH', APP_PATH . DS . 'tmp');
+define('CACHE_PATH', APP_PATH . DS . 'tmp' . DS . 'cache');
+define('IMG_PATH', APP_PATH . DS . 'client' . DS . 'img');
 define('PLUGIN_PATH', APP_PATH . DS . 'server' . DS . 'php' . DS . 'plugins');
 define('SITE_URL_FOR_SHELL', CACHE_PATH . DS . 'site_url_for_shell.php');
 define('CLIENT_INFORMATION', CACHE_PATH . DS . 'client_information.php');
