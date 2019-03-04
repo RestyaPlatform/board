@@ -6163,7 +6163,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             );
             pg_query_params($db_lnk, 'update cards set is_due_date_notification_sent = $1 where id = $2', $data_val);
             if (isset($previous_value['due_date']) && ($previous_value['due_date'] != 'null' && $previous_value['due_date'] != '')) {
-                $comment = 'Due date - ' . $r_put['due_date'] . ' was updated to this card ##CARD_LINK##';
+                $comment = '##USER_NAME## updated Due date - ' . $r_put['due_date'] . ' to this card ##CARD_LINK##';
                 $activity_type = 'edit_card_duedate';
             } else {
                 $comment = '##USER_NAME## set due date - ' . $r_put['due_date'] . ' to this card ##CARD_LINK##';
@@ -6175,7 +6175,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $childCardResponse = updateDependencyCards($r_put, array());
             }
         } else if (isset($r_put['due_date'])) {
-            $comment = 'Due date - ' . $previous_value['due_date'] . ' was removed to this card ##CARD_LINK##';
+            $comment = '##USER_NAME## removed Due date - ' . $previous_value['due_date'] . ' from this card ##CARD_LINK##';
             $activity_type = 'delete_card_duedate';
         }
         if (is_plugin_enabled('r_gantt_view')) {
@@ -6188,7 +6188,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     $activity_type = 'add_card_startdate';
                 }
             } else if (isset($present_custom_fields['start_date'])) {
-                $comment = 'Start date - ' . $previous_custom_fields['start_date'] . ' was removed to this card ##CARD_LINK##';
+                $comment = '##USER_NAME## removed Start date - ' . $previous_custom_fields['start_date'] . ' from this card ##CARD_LINK##';
                 $activity_type = 'delete_card_startdate';
             }
         }
