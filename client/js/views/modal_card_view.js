@@ -438,11 +438,15 @@ App.ModalCardView = Backbone.View.extend({
         var view_activity = $('#js-card-activities-' + this.model.id);
         view_activity.html('');
         self.model.activities = new App.ActivityCollection();
-        self.model.activities.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/activities.json?mode=' + mode;
+        self.model.activities.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/activities.json?mode=' + mode + '&page=1';
         self.model.activities.fetch({
             cache: false,
             success: function(model, response) {
                 self.model.set('activity_count', response._metadata.total_records);
+                self.model.set('activity_page_count', response._metadata.noOfPages);
+                if (self.model.attributes.activity_count != PAGING_COUNT && self.model.activities.length >= PAGING_COUNT) {
+                    $('#js-card-activities-' + self.model.id).after('<div class="text-center js-load-more-block"></div>');
+                }
                 self.renderActivitiesCollection();
             }
         });
@@ -918,11 +922,15 @@ App.ModalCardView = Backbone.View.extend({
         } else if (filter === 'activity') {
             filter = 'activity';
         }
-        self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?mode=' + filter + '&page=0';
+        self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?mode=' + filter + '&page=1';
         self.model.activities.fetch({
             cache: false,
             success: function(model, response) {
                 self.model.set('activity_count', response._metadata.total_records);
+                self.model.set('activity_page_count', response._metadata.noOfPages);
+                if (self.model.attributes.activity_count != PAGING_COUNT && self.model.activities.length >= PAGING_COUNT) {
+                    $('#js-card-activities-' + self.model.id).after('<div class="text-center js-load-more-block"></div>');
+                }
                 self.renderActivitiesCollection();
             }
         });
@@ -1071,11 +1079,15 @@ App.ModalCardView = Backbone.View.extend({
             } else if (filter === 'activity') {
                 filter = 'activity';
             }
-            this.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?mode=' + filter + '&page=0';
+            this.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?mode=' + filter + '&page=1';
             this.model.activities.fetch({
                 cache: false,
                 success: function(model, response) {
                     self.model.set('activity_count', response._metadata.total_records);
+                    self.model.set('activity_page_count', response._metadata.noOfPages);
+                    if (self.model.attributes.activity_count != PAGING_COUNT && self.model.activities.length >= PAGING_COUNT) {
+                        $('#js-card-activities-' + self.model.id).after('<div class="text-center js-load-more-block"></div>');
+                    }
                     self.renderActivitiesCollection();
                 }
             });
@@ -2376,7 +2388,7 @@ App.ModalCardView = Backbone.View.extend({
                     i++;
                 });
                 var page_count = $('.js-load-more-block').length + 1;
-                if (this.model.attributes.activity_count != PAGING_COUNT && this.model.activities.length >= PAGING_COUNT) {
+                if (this.model.attributes.activity_count != PAGING_COUNT && this.model.activities.length >= PAGING_COUNT && this.model.attributes.activity_page_count >= page_count) {
                     $('#js-card-activities-' + self.model.id).after('<div class="text-center js-load-more-block"><div class="btn btn-primary js-card-activites-load-more js-remove-card-activity" title="' + i18next.t('Load More') + '" data-attr="' + page_count + '" >' + i18next.t('Load next %s of %s', {
                         postProcess: 'sprintf',
                         sprintf: [PAGING_COUNT, this.model.attributes.activity_count]
@@ -3771,7 +3783,7 @@ App.ModalCardView = Backbone.View.extend({
                     self.model.set('activity_count', response._metadata.total_records);
                     self.renderActivitiesCollection();
                 } else {
-                    $('#js-card-modal-' + this.model.id).find('.js-load-more-block').remove();
+                    $('#js-card-modal-' + self.model.id).find('.js-load-more-block').remove();
                 }
             }
         });
