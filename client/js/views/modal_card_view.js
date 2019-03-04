@@ -113,7 +113,8 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-show-comment': 'showComment',
         'click .js-preview-comment': 'previewComment',
         'click .js-card-activites-load-more': 'cardActivityLoadMore',
-        'mouseenter .js-close-drag': 'CloseDragDrop'
+        'mouseenter .js-close-drag': 'CloseDragDrop',
+        'click .js-app-activity-trigger': 'refreshdock'
     },
     /**
      * Constructor

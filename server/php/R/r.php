@@ -4178,7 +4178,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
                                 $response_file['activity'] = insertActivity($userID, $comment, 'add_card_attachment', $foreign_ids, null, $row['id']);
                                 foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                                    $mediadir = IMG_PATH . DS . $key . DS .'CardAttachment' . DS . $row['id'];
+                                    $mediadir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $row['id'];
                                     $list = glob($mediadir . '.*');
                                     if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                         unlink($list[0]);
@@ -6207,6 +6207,20 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             } else if (isset($present_custom_fields['hour']) && isset($present_custom_fields['min'])) {
                 $comment = '##USER_NAME## removed estimated time to this card ##CARD_LINK##';
                 $activity_type = 'delete_card_estimatedtime';
+            }
+        }
+        if (is_plugin_enabled('r_spent_time')) {
+            if ((isset($present_custom_fields['number']) && $present_custom_fields['number'] != 'NULL' && $present_custom_fields['number'] != '') && (isset($present_custom_fields['period']) && $present_custom_fields['period'] != 'NULL' && $present_custom_fields['period'] != '')) {
+                if (isset($previous_custom_fields['number']) && ($previous_custom_fields['number'] != 'null' && $previous_custom_fields['number'] != '') && isset($previous_custom_fields['period']) && ($previous_custom_fields['period'] != 'null' && $previous_custom_fields['period'] != '')) {
+                    $comment = '##USER_NAME## updated spent time ' . $present_custom_fields['number'] . ' ' . $present_custom_fields['period'] . ' to this card ##CARD_LINK##';
+                    $activity_type = 'edit_card_spenttime';
+                } else {
+                    $comment = '##USER_NAME## set spent time ' . $present_custom_fields['number'] . ' ' . $present_custom_fields['period'] . ' to this card ##CARD_LINK##';
+                    $activity_type = 'add_card_spenttime';
+                }
+            } else if (isset($present_custom_fields['period']) && isset($present_custom_fields['number'])) {
+                $comment = '##USER_NAME## removed spent time to this card ##CARD_LINK##';
+                $activity_type = 'delete_card_spenttime';
             }
         }
         if (isset($previous_value['board_id']) && isset($r_put['board_id']) && $r_put['board_id'] != $previous_value['board_id']) {
