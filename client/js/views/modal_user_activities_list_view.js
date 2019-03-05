@@ -70,7 +70,7 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
         var view_user_activities = this.$('#js-list-user-activities-list');
         view_user_activities.html('');
         var activities = new App.ActivityCollection();
-        activities.url = api_url + 'users/' + this.user_id + '/activities.json?board_id=' + this.model.attributes.board_id;
+        activities.url = api_url + 'users/' + this.user_id + '/activities.json?board_id=' + this.model.attributes.board_id +'&type=board_user_activity';
         activities.fetch({
             success: function(model, response) {
                 if (!_.isEmpty(activities.models)) {
@@ -118,7 +118,7 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
         var self = this;
         var query_string = (this.last_activity_id !== 0) ? '?last_activity_id=' + this.last_activity_id : '';
         var activities = new App.ActivityCollection();
-        activities.url = api_url + 'users/' + this.user_id + '/activities.json' + query_string + '&board_id=' + this.model.attributes.board_id;
+        activities.url = api_url + 'users/' + this.user_id + '/activities.json' + query_string + '&board_id=' + this.model.attributes.board_id +'&type=board_user_activity';
         activities.fetch({
             cache: false,
             success: function(user, response) {
