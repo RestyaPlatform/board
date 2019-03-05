@@ -1,4 +1,4 @@
-<% if(card != null && !_.isEmpty(card)){ %>
+<% if(card != null && !_.isEmpty(card)) { %>
 <td data-title="<%- i18next.t('ID') %>" class="card-id ">#<%- card.attributes.id %></td>
 <%if (!_.isUndefined(card.labels) && !_.isEmpty(card.labels) && card.labels.length > 0) { %>
 	<td data-title="<%- i18next.t('Labels') %>">
@@ -6,15 +6,15 @@
 		if (!_.isUndefined(label) && label.attributes.name !== "") { %>
 		<span data-container="body" data-placement="bottom" title="<%- label.attributes.name %>" data-toggle="tooltip"><%- label.attributes.name %></span><br />
 			
-<%         }
+	<% }
 	});
-} else {%>
+} else { %>
 	<td data-title="<%- i18next.t('Labels') %>" > - </td>
-	<% } %>
+<% } %>
 </td>
 <td data-title="<%- i18next.t('Card Name') %>"><%- card.attributes.name %></td>
 <td data-title="<%- i18next.t('List Name') %>"><%- card.list_name %></td>
-<% if(!_.isUndefined(card.users) && !_.isEmpty(card.users) && card.users.length > 0) { %>}
+<% if(!_.isUndefined(card.users) && !_.isEmpty(card.users) && card.users.length > 0) { %>
 <td data-title="<%- i18next.t('Members') %>" >
 	<%
 		card.users.each(function(card_user) {
@@ -29,7 +29,7 @@
 		</ul>
 </td>
 <% } else { %>
-	<td data-title="<%- i18next.t('Members') %>" > - </td>
+<td data-title="<%- i18next.t('Members') %>" > - </td>
 <% } %>
 <td class="hide js-list-view-start-date-data js-list-view-start-date-<%- card.attributes.id %>" data-title="<%- i18next.t('Start Date') %>" title="<%- i18next.t('Start Date') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
 <% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){ %>

@@ -2814,7 +2814,7 @@ function slugify($string)
 }
 function is_plugin_enabled($plugin_name)
 {
-    $file = APP_PATH . DS . 'client'. DS .'apps'. DS . $plugin_name . DS . 'app.json';
+    $file = APP_PATH . DS . 'client' . DS . 'apps' . DS . $plugin_name . DS . 'app.json';
     if (file_exists($file)) {
         $content = file_get_contents($file);
         $data = json_decode($content, true);

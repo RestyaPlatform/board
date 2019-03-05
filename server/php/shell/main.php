@@ -24,7 +24,6 @@ if (!empty($files)) {
         }
     }
 }
-
 $pluginfiles = glob(PLUGIN_PATH . DS . '*' . DS . 'shell' . DS . '*.php', GLOB_BRACE);
 if (!empty($pluginfiles)) {
     foreach ($pluginfiles as $pluginfile) {

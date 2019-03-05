@@ -527,8 +527,17 @@ App.CardView = Backbone.View.extend({
             $('.js-card-list-view-' + this.board_id).html(this.$el.append(self.template({
                 card: self.model
             })));
+            if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps) !== -1) {
+                if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && !_.isUndefined(App.current_board.attributes.custom_fields) && App.current_board.attributes.custom_fields !== null) {
+                    var table_heads_count = $('#listview_table thead').find('th').length;
+                    $('#listview_table tbody').html('<tr><td colspan="' + table_heads_count + '"  class="text-center alert alert-info">' + i18next.t('No %s available.', {
+                        postProcess: 'sprintf',
+                        sprintf: [i18next.t('cards')]
+                    }) + '</td></tr>');
+                }
+            }
         }
-        if (this.model.get('is_filtered')) {
+        if (self.model !== null && !_.isUndefined(self.model) && this.model.get('is_filtered')) {
             this.$el.hide();
         } else {
             this.$el.show();
