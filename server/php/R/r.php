@@ -4812,6 +4812,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $qry_val_arr = array(
             $r_resource_vars['cards']
         );
+        $previous_label_results = pg_query_params($db_lnk, 'SELECT l.name FROM labels l inner join cards_labels cl on cl.label_id = l.id WHERE card_id = $1', $qry_val_arr);
+        $previous_cards_labels = array();
+        while ($previous_label_result = pg_fetch_assoc($previous_label_results)) {
+            $previous_cards_labels[] = $previous_label_result['name'];
+        }
         $label_names = pg_query_params($db_lnk, 'SELECT l.name FROM labels l inner join cards_labels cl on cl.label_id = l.id WHERE card_id = $1', $qry_val_arr);
         $delete_labels = pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE card_id = $1 RETURNING label_id', $qry_val_arr);
         $delete_label = pg_fetch_assoc($delete_labels);
@@ -4819,8 +4824,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $names = '';
         if (!empty($r_post['name'])) {
             $label_names = explode(',', $r_post['name']);
-            unset($r_post['name']);
+            $oldlabel = array();
+            $newlabel = array();
             foreach ($label_names as $label_name) {
+                if (in_array($label_name, $previous_cards_labels)) {
+                    $oldlabel[] = $label_name;
+                } else {
+                    $newlabel[] = $label_name;
+                }
                 $names.= $label_name . ', ';
                 $qry_val_arr = array(
                     $label_name
@@ -4849,9 +4860,20 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $s_result = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE card_id = $1', $qry_val_arr);
             $cards_labels = pg_fetch_all($s_result);
             $response['cards_labels'] = $cards_labels;
-            $names = substr($names, 0, -2);
-            $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ' . $names;
-            $type = 'add_card_label';
+            if (count($newlabel) && !count(array_diff($previous_cards_labels, $oldlabel))) {
+                $names = implode(",", $newlabel);
+                $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ' . $names;
+                $type = 'add_card_label';
+            } else if (!count($newlabel) && count(array_diff($previous_cards_labels, $oldlabel))) {
+                $names = implode(",", array_diff($previous_cards_labels, $oldlabel));
+                $comment = '##USER_NAME## removed label(s) to this card ##CARD_LINK## - ' . $names;
+                $type = 'update_card_label';
+            } else if (count($newlabel) && count(array_diff($previous_cards_labels, $oldlabel))) {
+                $deletenames = implode(",", array_diff($previous_cards_labels, $oldlabel));
+                $names = implode(",", $newlabel);
+                $comment = '##USER_NAME## removed the label(s) ' . ' - ' . $deletenames . ' and added the lables ' . '-' . $names . ' to this card ##CARD_LINK##';
+                $type = 'update_card_label';
+            }
         } else {
             $response['cards_labels'] = array();
             while ($labels_data = pg_fetch_assoc($label_names)) {
