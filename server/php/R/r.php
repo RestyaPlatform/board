@@ -388,13 +388,20 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ' . $str . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str;
-            } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] = 'all') {
+            } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all') {
                 if (!empty($r_resource_filters['last_activity_id'])) {
                     $condition = ' AND al.id > $3';
                 }
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition;
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
+            } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id'] && $r_resource_filters['type'] == 'board_user_activity') {
+                if (!empty($r_resource_filters['last_activity_id'])) {
+                    $condition = ' AND al.id < $3';
+                }
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE user_id = $1 AND board_id = $2' . $condition . ' ORDER BY freshness_ts DESC LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE user_id = $1 AND board_id = $2' . $condition;
+                array_push($pg_params, $r_resource_vars['users'], $r_resource_filters['board_id']);
             } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id']) {
                 if (!empty($r_resource_filters['last_activity_id'])) {
                     $condition = ' AND al.id > $3';
@@ -6185,7 +6192,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             );
             pg_query_params($db_lnk, 'update cards set is_due_date_notification_sent = $1 where id = $2', $data_val);
             if (isset($previous_value['due_date']) && ($previous_value['due_date'] != 'null' && $previous_value['due_date'] != '')) {
-                $comment = '##USER_NAME## updated Due date - ' . $r_put['due_date'] . ' to this card ##CARD_LINK##';
+                $comment = 'Due date - ' . $r_put['due_date'] . ' was updated to this card ##CARD_LINK##';
                 $activity_type = 'edit_card_duedate';
             } else {
                 $comment = '##USER_NAME## set due date - ' . $r_put['due_date'] . ' to this card ##CARD_LINK##';
@@ -6197,7 +6204,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $childCardResponse = updateDependencyCards($r_put, array());
             }
         } else if (isset($r_put['due_date'])) {
-            $comment = '##USER_NAME## removed Due date - ' . $previous_value['due_date'] . ' from this card ##CARD_LINK##';
+            $comment = 'Due date - ' . $previous_value['due_date'] . ' was removed to this card ##CARD_LINK##';
             $activity_type = 'delete_card_duedate';
         }
         if (is_plugin_enabled('r_gantt_view')) {
@@ -6210,7 +6217,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     $activity_type = 'add_card_startdate';
                 }
             } else if (isset($present_custom_fields['start_date'])) {
-                $comment = '##USER_NAME## removed Start date - ' . $previous_custom_fields['start_date'] . ' from this card ##CARD_LINK##';
+                $comment = 'Start date - ' . $previous_custom_fields['start_date'] . ' was removed to this card ##CARD_LINK##';
                 $activity_type = 'delete_card_startdate';
             }
         }
