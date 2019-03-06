@@ -1,5 +1,9 @@
-<% if(card != null && !_.isEmpty(card)) { %>
-<td data-title="<%- i18next.t('ID') %>" class="card-id ">#<%- card.attributes.id %></td>
+<% if(card != null && !_.isEmpty(card)) { 
+	var hide_card_informations = false;
+	if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_hide_card_additional_informations',APPS.enabled_apps) !== -1) {
+		hide_card_informations = true;
+	} %>
+<td data-title="<%- i18next.t('ID') %>" class="card-id" <% if (hide_card_informations) { %>style="display: none;"<% } %>>#<%- card.attributes.id %></td>
 <%if (!_.isUndefined(card.labels) && !_.isEmpty(card.labels) && card.labels.length > 0) { %>
 	<td data-title="<%- i18next.t('Labels') %>">
 	<% card.labels.each(function(label) {

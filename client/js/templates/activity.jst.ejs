@@ -30,7 +30,7 @@
 				var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
 				if(activity.attributes.type != 'add_comment' || activity.attributes.type != 'edit_comment') {
 					if(activity.attributes.type !== 'add_card_desc') {
-						if(!_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
+						if(!_.isEmpty(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
 							activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.difference['0']));
 						}else{
 								activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
@@ -70,7 +70,7 @@
 							<% } %>
 								<div class="panel no-mar"><div class="panel-body github-markdown no-whitespace">
 								<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
-								<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color', 'delete_list_color'], activity.attributes.type)) { %>
+								<% if(activity.attributes.difference != null && activity.attributes.difference != '' && !_.isUndefined(activity.attributes.difference['0']) && activity.attributes.difference['0'] != '' && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color', 'delete_list_color'], activity.attributes.type)) { %>
 							<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text no-whitespace">
 								<% _.each(activity.attributes.difference, function(difference) { %>
 									<%= converter.makeHtml(difference) %>

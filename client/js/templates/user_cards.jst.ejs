@@ -6,8 +6,8 @@
 				<th>
 					<ul class="list-inline navbar-btn clearfix">	
 						<li class="col-md-1 col-xs-2"><%- i18next.t("ID") %></li>
-						<li class="col-md-4 col-xs-3"><%- i18next.t("Card Name") %></li>
-						<li class="col-md-4 col-xs-3"><%- i18next.t("List Name") %></li>
+						<li class="col-md-4 col-xs-3 pl0"><%- i18next.t("Card Name") %></li>
+						<li class="col-md-4 col-xs-3 pl0"><%- i18next.t("List Name") %></li>
 						<li class="col-md-3 col-xs-4"></li>                            
 					</ul>
 				</th>
@@ -18,13 +18,13 @@
 		<% if(parseInt(user_card.attributes.is_archived) === 0) { %>
 			<tr>
 			<td>
-				<div class="panel cur" id="js-card-1449">
-					<div class="panel-body"> 
+				<div class="panel cur pl0" id="js-card-1449">
+					<div class="panel-body pl0"> 
 						<ul class="list-inline navbar-btn clearfix js-open-model-car-view" data-id="<%- user_card.id%>">
-							<li class="col-md-1 col-xs-2"><span class="card-id">#<%- user_card.id%></span></li>
-							<li class="col-md-4 col-xs-3"><span class="js-open-model-car-view" data-id="<%- user_card.id%>" title="<%- user_card.attributes.name %>"><%- user_card.attributes.name %></span></li> 
-							<li class="col-md-4 col-xs-3"><span title="<%- user_card.attributes.list_name %>"><%- user_card.attributes.list_name %></span></li>
-							<li class="col-md-3 col-xs-4">
+							<li class="col-md-1 col-xs-2 pl0"><span class="card-id">#<%- user_card.id%></span></li>
+							<li class="col-md-4 col-xs-3 pl0"><span class="js-open-model-car-view" data-id="<%- user_card.id%>" title="<%- user_card.attributes.name %>"><%- user_card.attributes.name %></span></li> 
+							<li class="col-md-4 col-xs-3 pl0"><span title="<%- user_card.attributes.list_name %>"><%- user_card.attributes.list_name %></span></li>
+							<li class="col-md-3 col-xs-4 pl0">
 								<ul class="list-inline text-muted clearfix">
 									<% if(user_card.attributes.cards_subscriber_count > 0){ %>
 										<li><small title="<%- i18next.t('Subscribed') %>"><span class="icon-eye-open"></span></small></li>

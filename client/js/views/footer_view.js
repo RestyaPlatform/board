@@ -916,9 +916,9 @@ App.FooterView = Backbone.View.extend({
                                     localforage.setItem("unreaded_cards", cards);
                                 }
                                 if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
-                                    $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification bg-primary"><small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
+                                    $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
                                 } else {
-                                    $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="icon-bell"></span><span>' + count + '</span></small>');
+                                    $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
                                 }
 
                             }
