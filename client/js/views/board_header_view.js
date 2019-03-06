@@ -1128,6 +1128,7 @@ App.BoardHeaderView = Backbone.View.extend({
     showSyncGoogleCalendar: function(e) {
         e.preventDefault();
         var el = this.$el;
+        el.find('.js-setting-response').addClass('icallfeed-dropdown');
         el.find('.js-setting-response').html(new App.ShowSyncGoogleCalendarView({
             model: this.model
         }).el);
