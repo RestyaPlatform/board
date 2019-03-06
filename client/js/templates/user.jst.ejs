@@ -22,7 +22,7 @@
 						<%  } %>
 					</a>
 					<a class="col-xs-10 htruncate left-mar-sm js-board-name-truncate js-user-view" data-user_id="<%- user.attributes.id%>"
-					 href="#">
+					 href="#/user/<%- user.attributes.id%>"">
 						<%- user.attributes.full_name%></a><a>
 						<% if(!user.attributes.is_email_confirmed){ %>
 						<span class="label label-warning navbar-right">
