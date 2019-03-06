@@ -295,6 +295,7 @@ App.BoardView = Backbone.View.extend({
     closeSubPopup: function(e) {
         var el = this.$el;
         var target = el.find(e.target);
+        target.parents('.js-list-response.dropdown').removeClass('open');
         target.parents('li.dropdown').removeClass('open');
         return false;
     },

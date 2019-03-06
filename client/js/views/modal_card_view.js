@@ -1063,7 +1063,6 @@ App.ModalCardView = Backbone.View.extend({
                 });
                 $('body').trigger('modalCardRendered', self.model.id, self.model);
             }).defer();
-            this.$el.find('#inputAddComment').val(comment).focus();
             this.$el.find('#inputCarddescriptions').val(description).focus();
             this.$el.find('#checklistEditName').val(checklistEditName).focus();
             this.$el.find('#ChecklistItem').val(ChecklistItem).focus();
