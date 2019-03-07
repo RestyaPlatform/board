@@ -877,7 +877,7 @@ App.FooterView = Backbone.View.extend({
                         }
                         if ($.cookie('auth')) {
                             Auth = JSON.parse($.cookie('auth'));
-                            Auth.user.last_activity_id = update_last_activity.id;
+                            Auth.user.last_activity_id = (parseInt(Auth.user.last_activity_id) > parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id;
                             Auth.user.notify_count = favCount;
                             $.cookie('auth', JSON.stringify(Auth));
                         }
@@ -890,7 +890,7 @@ App.FooterView = Backbone.View.extend({
                                 user.url = api_url + 'users/' + authuser.user.id + '.json';
                                 user.set('id', parseInt(authuser.user.id));
                                 user.save({
-                                    'last_activity_id': update_last_activity.id
+                                    'last_activity_id': (parseInt(Auth.user.last_activity_id) > parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id
                                 });
                                 authuser.user.notify_count = 0;
                                 Auth.user.notify_count = 0;
@@ -1696,10 +1696,16 @@ App.FooterView = Backbone.View.extend({
                         var unread_activity_id = _.max(activities.models, function(activity) {
                             return activity.id;
                         });
+
                         if ($.cookie('auth')) {
                             Auth = JSON.parse($.cookie('auth'));
-                            Auth.user.unread_activity_id = unread_activity_id.id;
-                            authuser.user.unread_activity_id = unread_activity_id.id;
+                            if (!_.isUndefined(Auth.user.unread_activity_id)) {
+                                Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                                authuser.user.unread_activity_id = (parseInt(unread_activity_id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                            } else {
+                                Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                                authuser.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                            }
                             $.cookie('auth', JSON.stringify(Auth));
                         }
                     }
@@ -1774,10 +1780,18 @@ App.FooterView = Backbone.View.extend({
                     var unread_activity_id = _.max(activities.models, function(activity) {
                         return activity.id;
                     });
-                    Auth = JSON.parse($.cookie('auth'));
-                    Auth.user.unread_activity_id = unread_activity_id.id;
-                    authuser.user.unread_activity_id = unread_activity_id.id;
-                    $.cookie('auth', JSON.stringify(Auth));
+                    if ($.cookie('auth')) {
+                        Auth = JSON.parse($.cookie('auth'));
+                        if (!_.isUndefined(Auth.user.unread_activity_id)) {
+                            Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                            authuser.user.unread_activity_id = (parseInt(unread_activity_id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                        } else {
+                            Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                            authuser.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                        }
+                        $.cookie('auth', JSON.stringify(Auth));
+                    }
+
                     var last_board_activity = _.min(activities.models, function(activity) {
                         return activity.id;
                     });
