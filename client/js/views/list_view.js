@@ -1545,6 +1545,9 @@ App.ListView = Backbone.View.extend({
                         card.users.add(response.cards_users);
                     }
                     if (!_.isUndefined(response.cards_labels) && response.cards_labels.length > 0) {
+                        response.cards_labels.forEach(function(label) {
+                            label.card_id = parseInt(label.card_id);
+                        });
                         self.board.labels.add(response.cards_labels, {
                             silent: true
                         });
@@ -1603,7 +1606,6 @@ App.ListView = Backbone.View.extend({
                         var list_cards_count = isNaN(list.attributes.card_count) ? 0 : list.attributes.card_count;
                         list.set('card_count', parseInt(list_cards_count) + 1);
                     }
-                    
                     if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
                         card.set({
                             id: parseInt(response.id)
@@ -1627,6 +1629,7 @@ App.ListView = Backbone.View.extend({
                             }
                         }
                     }).defer();
+                    self.renderCardsCollection();
                 }
             });
         }
