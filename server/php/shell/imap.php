@@ -36,8 +36,8 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
         $imap_email_password_decode = base64_decode($imap_email_password);
         $imap_email_password = str_rot13($imap_email_password_decode);
         $is_ssl = (IMAP_PORT === '993') ? 'ssl/' : '';
-        $connection = imap_open('{' . IMAP_HOST . ':' . IMAP_PORT . '/imap/' . $is_ssl . 'novalidate-cert}INBOX', IMAP_EMAIL, $imap_email_password, NULL, 1, array(
-            'DISABLE_AUTHENTICATOR' => 'PLAIN'
+        $connection = imap_open('{' . IMAP_HOST . ':' . IMAP_PORT . '/imap/' . $is_ssl . 'novalidate-cert}INBOX', IMAP_EMAIL, $imap_email_password, null, 1, array(
+            'DISABLE_AUTHENTICATOR' => 'PLAIN',
         ));
         if ($connection) {
             $emails = imap_search($connection, 'UNSEEN');
@@ -70,7 +70,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                             $s = imap_fetchstructure($connection, $counter);
                             if (empty($s->parts)) { // simple
                                 $body = imapBodyDecode($connection, $counter, $s, 0); // pass 0 as part-number
-                                
+
                             } else { // multipart: cycle through each part
                                 foreach ($s->parts as $partno => $p) {
                                     $body_data[] = imapBodyDecode($connection, $counter, $p, $partno + 1);
@@ -83,6 +83,10 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                                     }
                                 }
                             }
+                            $body_charset = mb_detect_encoding($body);
+                            if ($body_charset !== 'UTF-8') {
+                                $body = iconv($body_charset, "UTF-8//TRANSLIT", $body);
+                            }
                             $board_id = $mail[1];
                             $card_id = '';
                             $hash = $mail[2];
@@ -93,7 +97,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                             // Check email hash with generated hash
                             if ($hash == md5(SECURITYSALT . $board_id . $card_id)) {
                                 $condition = array(
-                                    $board_id
+                                    $board_id,
                                 );
                                 // Check from email is a member/owner in board
                                 $board_query = pg_query_params($db_lnk, 'SELECT default_email_list_id, is_default_email_position_as_bottom, user_id FROM boards_users_listing WHERE board_id = $1', $condition);
@@ -108,7 +112,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                                         $list_id = $board['default_email_list_id'];
                                         $val_arr = array(
                                             $board_id,
-                                            $list_id
+                                            $list_id,
                                         );
                                         // Select minimum/maximum card position based on email to board settings
                                         $card_query = pg_query_params('SELECT ' . $str . ' as position FROM cards WHERE board_id = $1 AND list_id = $2', $val_arr);
@@ -116,13 +120,17 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                                         $position = empty($card['position']) ? 1 : (!empty($board['is_default_email_position_as_bottom'])) ? $card['position'] + 1 : ($card['position'] / 2);
                                         // Fetch email header
                                         $title = imap_utf8($header->subject);
+                                        $title_charset = mb_detect_encoding($body);
+                                        if ($title_charset !== 'UTF-8') {
+                                            $title = iconv($title_charset, "UTF-8//TRANSLIT", $title);
+                                        }
                                         $val_arr = array(
                                             $board_id,
                                             $list_id,
                                             $title,
                                             $body,
                                             $position,
-                                            $board['user_id']
+                                            $board['user_id'],
                                         );
                                         // Insert card in default list id and position as selected in email to board settings
                                         $card_query = pg_query_params($db_lnk, 'INSERT INTO cards (created, modified, board_id, list_id, name, description, position, user_id) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING id', $val_arr);
@@ -135,13 +143,13 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                                             $list_id,
                                             $board_id,
                                             'add_card',
-                                            __l('##USER_NAME## added card ##CARD_LINK## to list ##LIST_NAME##.')
+                                            __l('##USER_NAME## added card ##CARD_LINK## to list ##LIST_NAME##.'),
                                         );
                                         $activity_res = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
                                     } else {
                                         // To email address is for specific card then insert the email as card comment
                                         $val_arr = array(
-                                            $card_id
+                                            $card_id,
                                         );
                                         // Fetching list_id to update in card comment
                                         $card_query = pg_query_params('SELECT list_id FROM cards WHERE id = $1', $val_arr);
@@ -153,7 +161,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                                             $list_id,
                                             $board_id,
                                             'add_comment',
-                                            $body
+                                            $body,
                                         );
                                         // Insert email content as comment in respective card
                                         $activity_res = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
@@ -171,12 +179,12 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                                                 $depth,
                                                 $root,
                                                 $freshness_ts,
-                                                $activity['id']
+                                                $activity['id'],
                                             );
                                             pg_query_params($db_lnk, 'UPDATE activities SET materialized_path = $1, path = $2, depth = $3, root = $4, freshness_ts = $5 WHERE id = $6', $qry_val_arr);
                                             $qry_val_arr = array(
                                                 $freshness_ts,
-                                                $root
+                                                $root,
                                             );
                                             pg_query_params($db_lnk, 'UPDATE activities SET freshness_ts = $1 WHERE root = $2', $qry_val_arr);
                                         }
@@ -257,7 +265,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                                                     $save_path . '/' . $filename,
                                                     $list_id,
                                                     $board_id,
-                                                    strtolower('image/' . $structure->parts[1]->subtype)
+                                                    strtolower('image/' . $structure->parts[1]->subtype),
                                                 );
                                                 // Inserting attachments for the card
                                                 pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id , board_id, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
@@ -268,7 +276,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                                                     $list_id,
                                                     $board_id,
                                                     'add_card_attachment',
-                                                    __l('##USER_NAME## added attachment to this card ##CARD_LINK##')
+                                                    __l('##USER_NAME## added attachment to this card ##CARD_LINK##'),
                                                 );
                                                 $activity_res = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
                                             }
@@ -307,9 +315,9 @@ function imapBodyDecode($mbox, $mid, $p, $partno)
         // Messages may be split in different parts because of inline attachments,
         // so append parts together with blank row.
         if (strtolower($p->subtype) == 'plain') {
-            $message.= trim($data) . "\n\n";
+            $message .= trim($data) . "\n\n";
         } else {
-            $message.= $data . "<br><br>";
+            $message .= $data . "<br><br>";
         }
     }
     // EMBEDDED MESSAGE
@@ -318,12 +326,15 @@ function imapBodyDecode($mbox, $mid, $p, $partno)
     // There are no PHP functions to parse embedded messages,
     // so this just appends the raw source to the main message.
     elseif ($p->type == 2 && $data) {
-        $message.= $data . "\n\n";
+        $message .= $data . "\n\n";
     }
     // SUBPART RECURSION
     if (!empty($p->parts)) {
-        foreach ($p->parts as $partno0 => $p2) $message = imapBodyDecode($mbox, $mid, $p2, $partno . '.' . ($partno0 + 1)); // 1.2, 1.2.1, etc.
-        
+        foreach ($p->parts as $partno0 => $p2) {
+            $message = imapBodyDecode($mbox, $mid, $p2, $partno . '.' . ($partno0 + 1));
+        }
+        // 1.2, 1.2.1, etc.
+
     }
     return $message;
 }
