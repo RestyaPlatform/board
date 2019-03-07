@@ -546,13 +546,7 @@
 		<ul class="list-unstyled navbar-btn row"  id="card_activities">
 		  <li class="list-group-item list-group-item-info clearfix">
 			<div class="list-group-item-heading clearfix">
-				  <h3 class="pull-left"><%- i18next.t('Activity') %></h3>
-				  <div class="clearfix pull-right well-sm user-filter no-print">
-                        <ul class="nav nav-pills">
-                            <li id="modal-activities"><a href="#" title="<%- i18next.t('Filter by activities') %>" class="text-muted" ><i class="icon-time small"></i></a></li>
-                            <li id="modal-comments"><a href="#" title="<%- i18next.t('Filter by comments') %>" class="text-muted"><i class="icon-comment-alt small"></i></a></li>
-                        </ul>      
-                  </div>   
+				  <h3 class="pull-left"><%- i18next.t('Add Comment') %></h3>
 			</div>
 			<div class="list-group-item-text">
 			  <ul class="media-list comment-list activity-mod-comments">
@@ -657,9 +651,18 @@
 				</li>
 				<% } %>
 				<li> </li>
+				<div class="list-group-item-heading clearfix">
+				  <h3 class="pull-left"><%- i18next.t('Activity') %></h3>
+				  <div class="clearfix pull-right well-sm  no-print">
+                        <ul class="nav nav-pills">
+                            <li id="modal-activities"><a href="#" title="<%- i18next.t('Filter by activities') %>" class="text-muted"><i class="icon-time small"></i></a></li>
+                            <li id="modal-comments"><a href="#" title="<%- i18next.t('Filter by comments') %>" class="text-muted"><i class="icon-comment-alt small"></i></a></li>
+                        </ul>      
+                  </div>   
+			</div>
 				<li class="col-xs-12 divider"><hr></li>
 			  </ul>
-			  <div class="text-center clearfix hide" id="js-loader-img"><img src="img/select2-spinner.gif" alt="[Images:Loader]" title="<%- i18next.t('Loading...') %>" /></div>
+			  <div class="text-center clearfix hide" id="js-loader-img"><div class="cssloader"></div></div>
 				<ul class="media-list col-xs-12 clearfix btn-block card_activitiesnew" id="js-card-activities-<%= card.attributes.id%>"></ul>			  
 			</div>
 			</li>
