@@ -326,10 +326,30 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/users/?/activities':
         $condition = '';
         if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users'] && empty($r_resource_filters['organization_id']) && empty($r_resource_filters['board_id'])) {
-            if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
-                $condition = (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE al.id < $1' : '';
+            $i = 1;
+            if (!empty($r_resource_filters['mode']) && $r_resource_filters['mode'] != 'all') {
+                if ($r_resource_filters['mode'] == 'activity') {
+                    $condition.= ' WHERE (al.type != $' . $i;
+                    array_push($pg_params, 'add_comment');
+                    $i++;
+                    $condition.= ' and al.type != $' . $i . ')';
+                    array_push($pg_params, 'edit_comment');
+                    $i++;
+                } else if ($r_resource_filters['mode'] == 'comment') {
+                    $condition.= ' WHERE al.type = $' . $i;
+                    array_push($pg_params, 'add_comment');
+                    $i++;
+                }
+                $condition.= (!empty($r_resource_filters['last_activity_id'])) ? ' AND ' : '';
             } else {
-                $condition = (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE al.id > $1' : '';
+                $condition.= (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE ' : '';
+            }
+            if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
+                $condition.= (!empty($r_resource_filters['last_activity_id'])) ? 'al.id < $' . $i : '';
+                $i++;
+            } else {
+                $condition.= (!empty($r_resource_filters['last_activity_id'])) ? 'al.id > $' . $i : '';
+                $i++;
             }
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
