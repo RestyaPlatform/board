@@ -1603,7 +1603,7 @@ App.ListView = Backbone.View.extend({
                         var list_cards_count = isNaN(list.attributes.card_count) ? 0 : list.attributes.card_count;
                         list.set('card_count', parseInt(list_cards_count) + 1);
                     }
-
+                    
                     if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
                         card.set({
                             id: parseInt(response.id)
@@ -1612,8 +1612,6 @@ App.ListView = Backbone.View.extend({
                         global_uuid[data.uuid] = options.temp_id;
                         card.set('id', data.uuid);
                     }
-                    var cards_count = isNaN(self.model.attributes.card_count) ? 0 : self.model.attributes.card_count;
-                    self.model.set('card_count', parseInt(cards_count) + 1);
                     if (parseInt(self.model.attributes.card_count) === 1) {
                         // Removing the &nbsp; in the card listing after adding card
                         $('#js-card-listing-' + self.model.id).html(function(i, h) {
