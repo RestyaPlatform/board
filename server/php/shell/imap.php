@@ -70,7 +70,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                             $s = imap_fetchstructure($connection, $counter);
                             if (empty($s->parts)) { // simple
                                 $body = imapBodyDecode($connection, $counter, $s, 0); // pass 0 as part-number
-
+                                
                             } else { // multipart: cycle through each part
                                 foreach ($s->parts as $partno => $p) {
                                     $body_data[] = imapBodyDecode($connection, $counter, $p, $partno + 1);
@@ -143,7 +143,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                                             $list_id,
                                             $board_id,
                                             'add_card',
-                                            __l('##USER_NAME## added card ##CARD_LINK## to list ##LIST_NAME##.'),
+                                            __l('##USER_NAME## added card ##CARD_LINK## to list ##LIST_NAME##.') ,
                                         );
                                         $activity_res = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
                                     } else {
@@ -265,7 +265,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                                                     $save_path . '/' . $filename,
                                                     $list_id,
                                                     $board_id,
-                                                    strtolower('image/' . $structure->parts[1]->subtype),
+                                                    strtolower('image/' . $structure->parts[1]->subtype) ,
                                                 );
                                                 // Inserting attachments for the card
                                                 pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id , board_id, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
@@ -276,7 +276,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                                                     $list_id,
                                                     $board_id,
                                                     'add_card_attachment',
-                                                    __l('##USER_NAME## added attachment to this card ##CARD_LINK##'),
+                                                    __l('##USER_NAME## added attachment to this card ##CARD_LINK##') ,
                                                 );
                                                 $activity_res = pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, type, comment) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $val_arr);
                                             }
@@ -315,9 +315,9 @@ function imapBodyDecode($mbox, $mid, $p, $partno)
         // Messages may be split in different parts because of inline attachments,
         // so append parts together with blank row.
         if (strtolower($p->subtype) == 'plain') {
-            $message .= trim($data) . "\n\n";
+            $message.= trim($data) . "\n\n";
         } else {
-            $message .= $data . "<br><br>";
+            $message.= $data . "<br><br>";
         }
     }
     // EMBEDDED MESSAGE
@@ -326,7 +326,7 @@ function imapBodyDecode($mbox, $mid, $p, $partno)
     // There are no PHP functions to parse embedded messages,
     // so this just appends the raw source to the main message.
     elseif ($p->type == 2 && $data) {
-        $message .= $data . "\n\n";
+        $message.= $data . "\n\n";
     }
     // SUBPART RECURSION
     if (!empty($p->parts)) {
@@ -334,7 +334,7 @@ function imapBodyDecode($mbox, $mid, $p, $partno)
             $message = imapBodyDecode($mbox, $mid, $p2, $partno . '.' . ($partno0 + 1));
         }
         // 1.2, 1.2.1, etc.
-
+        
     }
     return $message;
 }

@@ -45,6 +45,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.cards.bind('change:name', this.showArchivedCardsList, this);
         this.model.cards.bind('change:is_archived', this.showArchivedCardsList, this);
         this.model.cards.bind('remove', this.showArchivedCardsList, this);
+        this.model.cards.bind('add', this.cardFilter, this);
         this.model.bind('change:organization_id', this.render, this);
         this.model.bind('change:background_picture_url', this.showChangeBackground, this);
         this.model.bind('change:background_pattern_url', this.showChangeBackground, this);
@@ -1944,7 +1945,7 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     cardFilter: function(e) {
-        this.$el.find('.js-clear-filter-btn').removeClass('hide').addClass('show');
+        $('div#board_view_header').find('.js-clear-filter-btn').removeClass('hide').addClass('show');
         var current_param = Backbone.history.fragment.split('?');
         $('i.js-filter-icon').remove();
 
