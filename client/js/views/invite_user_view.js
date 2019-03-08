@@ -83,7 +83,7 @@ App.InviteUserView = Backbone.View.extend({
             }
             $(target).closest('form').find('.js-invite-user-fullname').val(fullname);
             $(target).closest('form').find('.js-invite-user-info').html('');
-            $(target).closest('form').find('.js-invite-user-info').html('<strong>' + email + '</strong>?' + i18next.t('We don\'t know that person. Add a name and click "Send" and we’ll add a virtual member and send them an invite email. They\'ll automatically receive access to the board once they sign up and confirm their email address.'));
+            $(target).closest('form').find('.js-invite-user-info').html('<strong>' + email + '</strong>? ' + i18next.t('We don\'t know that person. Add a name and click "Send" and we’ll add a virtual member and send them an invite email. They\'ll automatically receive access to the board once they sign up and confirm their email address.'));
             $(target).closest('form').find('.js-invite-user-info-block').removeClass('hide').addClass('show');
         } else {
             $(target).closest('form').find('.js-invite-user-fullname').val('');
