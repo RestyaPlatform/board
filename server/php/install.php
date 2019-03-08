@@ -15,7 +15,7 @@ if (!empty($relationships['database'])) {
 echo exec(R_DB_HOST.':'.R_DB_PORT.':'.R_DB_NAME.':'.R_DB_USER.':'.R_DB_PASSWORD.' > /tmp/pgpass/.pgpass');
 exec('chmod go-rwx /tmp/pgpass/.pgpass');
 exec('export PGPASSFILE=/tmp/pgpass/.pgpass');
-exec('psql --port='.R_DB_PORT.' --dbname='.R_DB_NAME.' --username='.R_DB_USER.' --no-password --file=../sql/restyaboard_with_empty_data.sql');
+exec('psql --port='.R_DB_PORT.' --dbname='.R_DB_NAME.' --username='.R_DB_USER.' --no-password --file=../../sql/restyaboard_with_empty_data.sql');
 exec('rm -rf /tmp/pgpass');
 exec('touch tmp/cache/.sql.installed');
 
