@@ -25,8 +25,6 @@ App.StarredBoardsIndexView = Backbone.View.extend({
         this.render();
     },
     template: JST['templates/starred_boards_index'],
-    tagName: 'section',
-    className: 'clearfix',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)

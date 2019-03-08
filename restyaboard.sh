@@ -140,6 +140,11 @@
 				unzip /tmp/r_codenames-v0.1.1.zip -d "$dir/client/apps"
 			fi
 		}
+		
+		upgrade-0.6.6-0.6.7(){
+			: > /var/spool/cron/crontabs/root
+			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/main.sh//" /var/spool/cron/crontabs/root
+		}
 
 		update_version()
 		{
@@ -898,6 +903,7 @@
 
 					yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
 					yum install -y php72w-pear
+					yum install -y php72w-gd
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then

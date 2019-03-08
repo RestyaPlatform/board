@@ -25,6 +25,9 @@ App.UserDashboardView = Backbone.View.extend({
         'click .dashboard-search': 'dashboardSearch'
     },
     template: JST['templates/user_dashboard'],
+    tagName: 'section',
+    className: 'clearfix',
+    id: 'boards-index',
     /**
      * render()
      * populate the html to the dom

@@ -1,6 +1,6 @@
 <div class="row">
 <div class="pull-right dropdown js-list-response">
-	<a data-toggle="dropdown" class="navbar-btn icon h4 btn btn-primary dropdown-toggle col-sm-offset-1 show" type="button"><i class="icon-sort h3 cur"></i></a>
+	<a data-toggle="dropdown" class="btn btn-primary dropdown-toggle col-sm-offset-1 show" type="button"><i class="icon-sort h3 cur"></i></a>
 	<ul class="dropdown-menu arrow arrow-right col-xs-12">
 		<div class="clearfix text-center col-xs-12">
 			<span class="col-xs-10 navbar-btn"><strong>Sort</strong></span>
@@ -23,6 +23,7 @@
 	</ul>
 </div>
 </div>
+<div class="well-sm"></div>
 <table class="table">
 <thead>
 	<tr>
@@ -38,7 +39,16 @@
 		<th><a class="show" href="#" title="<%- i18next.t('Votes') %>" ><span class="icon-caret-down hide"></span><i  data-sort-by="card_voter_count" class="js-sort-by icon-thumbs-up h3"></i></a></th>
 		<th><a class="show" href="#" title="<%- i18next.t('Attachments') %>" ><span class="icon-caret-down hide"></span><i data-sort-by="attachment_count" class="js-sort-by icon-paper-clip h3"></i></a></th>
 		<th><a class="show" href="#" title="<%- i18next.t('Comments') %>"><span class="icon-caret-down hide"></span><i data-sort-by="comment_count" class="js-sort-by icon-comment h3"></i></a></th>
-		<th><a class="show" href="#" title="<%- i18next.t('Checklist') %>" ><span class="icon-caret-down hide"></span><i  data-sort-by="checklist_item_completed_count" class="js-sort-by icon-ok-sign h3"></i></a></th>
+		<th><a class="show" href="#" title="<%- i18next.t('Checklist') %>" ><span class="icon-caret-down hide"></span><i  data-sort-by="checklist_item_completed_count" class="js-sort-by icon-list-ul h3"></i></a></th>
+		<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields',APPS.enabled_apps) !== -1) {
+			if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && !_.isUndefined(App.current_board.attributes.custom_fields) && App.current_board.attributes.custom_fields !== null) {
+				_.each(App.current_board.attributes.custom_fields, function(customfield){ %>
+					<th class="js-list-customField-<%- customfield.id %>"><a class="show" href="javascript:void(0);" title="<%- customfield.label %>"><%- customfield.label %></a></th>
+			  <% });
+			} else { %>
+				<th class="hide js-custom-fields-list_view-header"></th>
+			<% } 
+		} %>
 	<tr>
 </thead>
 <tbody class="js-card-list-view-<%- board.id%>"></tbody>

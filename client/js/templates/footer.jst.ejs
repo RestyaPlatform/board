@@ -8,17 +8,8 @@ if (_.isEmpty(role_links.where({
 	}
 }
 %>
-	<section id="cookie_information" class="hide">
-		<div class="row navbar navbar-default list-group-item-text"></div>
-	</section>
-	<section id="broadcast_information" class="hide">
-		<div class="row navbar navbar-default list-group-item-text"></div>
-	</section>
-	<section id="broadcast_hide_arrow" class="hide">
-		<a href="#" class="broadcast-content-show js-broadcast-show pull-right" title="show">
-			<i class="icon-angle-up"></i>
-			</i>
-		</a>
+	<section id="cookie_information" class="hide hidden-xs">
+		<div class="js-cookie-information-row row navbar navbar-default list-group-item-text"></div>
 	</section>
 	<section class="action-block action-content">
 		<div class="row navbar navbar-default list-group-item-text">
@@ -138,11 +129,13 @@ if (_.isEmpty(role_links.where({
 															<%
 			} 		
 		%>
-																<li class="clearfix js-boards-list-container-search">
+															<% if(!in_boards_page) { %>
+																<li class="clearfix js-boards-list-container-search js-a">
 																	<a href="#/boards" title="<%- i18next.t('Boards') %>">
 																		<%- i18next.t("Boards") %>
 																	</a>
 																</li>
+															<% } %>
 																<%
 
 			if (!_.isEmpty(role_links.where({
@@ -176,7 +169,7 @@ if (_.isEmpty(role_links.where({
 										</a>
 									</li>
 									<% } %>
-									<% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user) && (!_.isEmpty(role_links.where({slug: "get_wiki"})))){ %>
+									<% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user) && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && APPS.enabled_apps.indexOf('r_wiki') !== -1 && !_.isEmpty(authuser.user) && !_.isUndefined(authuser.user) && (!_.isEmpty(role_links.where({slug: "get_wiki"})))){ %>
 										<li class="hidden-xs org-btn">
 											<a title="<%- i18next.t('Wiki') %>" href="javascript:void(0);" class="btn btn-default js-view-wiki-menu">
 												<span>
@@ -196,16 +189,22 @@ if (_.isEmpty(role_links.where({
 													</span>
 												</a>
 												<ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12 pre-scrollable vertical-scrollbar">
-													<% _.each(apps, function(key,value) { %>
-														<li id="<%- value %>" class="org-btn">
-															<a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- key.id %>_modal" class="highlight-icon clearfix js-appModal-open">
-																<span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span>
-																<span class="details btn-block navbar-btn">
-																	<%- i18next.t(key.name) %>
-																</span>
-															</a>
-														</li>
-														<% }); %>
+													<% if (!_.isEmpty(apps) && apps.length !== 0) {
+														_.each(apps, function(key,value) { 
+															if (APPS.enabled_apps.indexOf(key.id) !== -1 && (key.price === 'Free' || (!_.isEmpty(role_links.where({
+																slug: key.id
+															})) || parseInt(authuser.user.role_id) === 1))) { %>
+																<li id="<%- value %>" class="org-btn">
+																	<a title="<%- i18next.t(key.name) %>" href="#" data-toggle="modal" data-target="#<%- key.id %>_modal" class="highlight-icon clearfix js-appModal-open">
+																		<span style="background-image:url(<%- key.icon %>); background-size:cover;" class="preview-thumbnail"></span>
+																		<span class="details btn-block navbar-btn">
+																			<%- i18next.t(key.name) %>
+																		</span>
+																	</a>
+																</li>
+															<% } 
+														});
+													 } %>
 															<li class="divider js-apps-list-container-search"></li>
 															<li class="dropdown clearfix">
 																<a title="<%- i18next.t('Add Apps') %>" class="dropdown-toggle  btn-link" target="_blank" href="http://restya.com/board/apps/?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=add_apps_footer">
@@ -221,9 +220,11 @@ if (_.isEmpty(role_links.where({
 												<% } %>
 			</ul>
 			<div class="js-appModalContent">
-				<% _.each(apps, function(key,value) { %>
+				<% if (!_.isEmpty(apps) && apps.length !== 0) {
+					_.each(apps, function(key,value) {
+						if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user) && APPS.enabled_apps.indexOf(key.id) !== -1 && (key.price === 'Free' || (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: key.id})) || parseInt(authuser.user.role_id) === 1))) { %>
 					<div class="modal fade" id="<%- key.id %>_modal" tabindex="-1" role="dialog" aria-labelledby="<%- key.name %>ModalLabel"
-					 aria-hidden="false">
+					aria-hidden="false">
 						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
@@ -263,8 +264,7 @@ if (_.isEmpty(role_links.where({
 									<% if (!_.isUndefined(key.sponsor) && !_.isEmpty(key.sponsor)) { %>
 										<p class="pull-left">
 											<strong>
-												<%- i18next.t('Sponsor') %>
-											</strong>:
+												<%- i18next.t('Sponsor') %></strong>:
 											<%- key.sponsor %>
 										</p>
 										<% } %>
@@ -275,7 +275,9 @@ if (_.isEmpty(role_links.where({
 							</div>
 						</div>
 					</div>
-					<% }); %>
+					<% }
+					});
+				} %>
 			</div>
 			<div class="navbar-right clearfix">
 				<ul class="nav nav-pills navbar-right">
@@ -329,7 +331,7 @@ if (_.isEmpty(role_links.where({
 														</li>
 														<li class="divider"></li>
 														<li>
-															<a href="#" class="js-show-shortcuts-modal" data-toggle="modal" data-target="#ModalShortcutView">
+															<a href="#"  title="<%- i18next.t('Shortcuts') %>"  class="js-show-shortcuts-modal" data-toggle="modal" data-target="#ModalShortcutView">
 																<%- i18next.t('Shortcuts') %>
 															</a>
 														</li>

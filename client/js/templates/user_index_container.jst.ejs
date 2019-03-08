@@ -1,13 +1,5 @@
 <div class="well-sm"></div>
 
-<% if (!_.isUndefined(APPS) && APPS !== null ) {
-  if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-  if ($.inArray('r_groups',APPS.enabled_apps) !== -1) { %>
-    <div class="r_group_app_tabs" id="js-group_app_tabs"> </div>
-<% }
-  }
-} %>
-
 <div class="js-admin-user-lists">
   <section class="clearfix">
     <div class="col-xs-12">

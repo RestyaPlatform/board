@@ -6,7 +6,7 @@ if [ "$1" = 'start' ]; then
   # config
   sed -i \
       -e "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_HOST}');/g" \
-      -e "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '5432');/g" \
+      -e "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_PORT}');/g" \
       -e "s/^.*'R_DB_USER'.*$/define('R_DB_USER', '${POSTGRES_USER}');/g" \
       -e "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_PASSWORD}');/g" \
       -e "s/^.*'R_DB_NAME'.*$/define('R_DB_NAME', '${POSTGRES_DB}');/g" \
@@ -14,7 +14,7 @@ if [ "$1" = 'start' ]; then
   echo $TZ > /etc/timezone
   rm /etc/localtime
   cp /usr/share/zoneinfo/$TZ /etc/localtime
-  sed -i "s|;date.timezone = |date.timezone = ${TZ}|" /etc/php/7.0/fpm/php.ini
+  sed -i "s|;date.timezone = |date.timezone = ${TZ}|" /etc/php/7.2/fpm/php.ini
 
   # postfix
   echo "[${SMTP_SERVER}]:${SMTP_PORT} ${SMTP_USERNAME}:${SMTP_PASSWORD}" > /etc/postfix/sasl_passwd
@@ -31,7 +31,7 @@ if [ "$1" = 'start' ]; then
       -e '$ a myorigin = $mydomain' \
       -e '$ a mydestination = localhost, $myhostname, localhost.$mydomain' \
       -e '$ a sender_canonical_maps = hash:/etc/postfix/sender_canonical' \
-      -e "s/#relayhost =.*$/relayhost = [${SMTP_SERVER}]:${SMTP_PORT}/" \
+      -e "s/relayhost =.*$/relayhost = [${SMTP_SERVER}]:${SMTP_PORT}/" \
       -e '/smtp_.*/d' \
       -e '$ a smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache' \
       -e '$ a smtp_sasl_auth_enable = yes' \
@@ -45,7 +45,7 @@ if [ "$1" = 'start' ]; then
 
   # init db
   export PGHOST=${POSTGRES_HOST}
-  export PGPORT=5432
+  export PGPORT=${POSTGRES_PORT}
   export PGUSER=${POSTGRES_USER}
   export PGPASSWORD=${POSTGRES_PASSWORD}
   export PGDATABASE=${POSTGRES_DB}
@@ -72,7 +72,7 @@ if [ "$1" = 'start' ]; then
 
   # service start
   service cron start
-  service php7.0-fpm start
+  service php7.2-fpm start
   service nginx start
   service postfix start
 

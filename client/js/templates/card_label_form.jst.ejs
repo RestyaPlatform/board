@@ -2,7 +2,7 @@
 <% var currenturl = window.location;
 var currentss = currenturl.hash;
 var get_match_url = currentss.split("/");
-if ((!_.isUndefined(get_match_url['1']) && get_match_url['1'] == 'board' && ((!_.isUndefined(get_match_url['3']) && get_match_url['3'] == 'card') || (!_.isUndefined(get_match_url['3']) && get_match_url['3'] == 'list')))) {
+if ((!_.isUndefined(get_match_url['1']) && get_match_url['1'] == 'board' && ((!_.isUndefined(get_match_url['3']) && get_match_url['3'] == 'card') || (!_.isUndefined(get_match_url['3']) && get_match_url['3'] == 'list'))) || (!_.isUndefined(get_match_url['1']) && !_.isUndefined(get_match_url['3']) && get_match_url['1'] === 'user' && get_match_url['3'] === 'cards') || (!_.isUndefined(get_match_url['1']) && get_match_url['1'] == 'search')) {
 		var cols = 'form-group';
 } else { %>
 	<a class="js-back-to-card-actions pull-left" href="#"><i class="icon-caret-left"></i></a>
@@ -24,7 +24,7 @@ if ((!_.isUndefined(get_match_url['1']) && get_match_url['1'] == 'board' && ((!_
 <% var currenturl = window.location;
 var currentss = currenturl.hash;
 var get_match_url = currentss.split("/");
-if ((!_.isUndefined(get_match_url['1']) && get_match_url['1'] == 'board' && ((!_.isUndefined(get_match_url['3']) && get_match_url['3'] == 'card') || (!_.isUndefined(get_match_url['3']) && get_match_url['3'] == 'list')))) { %>
+if ((!_.isUndefined(get_match_url['1']) && get_match_url['1'] == 'board' && ((!_.isUndefined(get_match_url['3']) && get_match_url['3'] == 'card') || (!_.isUndefined(get_match_url['3']) && get_match_url['3'] == 'list'))) || (!_.isUndefined(get_match_url['1']) && !_.isUndefined(get_match_url['3']) && get_match_url['1'] === 'user' && get_match_url['3'] === 'cards') || (!_.isUndefined(get_match_url['1']) && get_match_url['1'] == 'search')) { %>
 		<div class="submit">
 			<input type="submit" value="<%- i18next.t('Save') %>" class="btn btn-primary pull-left">
 		</div>

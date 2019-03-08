@@ -29,7 +29,7 @@ App.OrganizationBoardView = Backbone.View.extend({
         this.render();
     },
     template: JST['templates/organization_board'],
-    className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 js-org-board',
+    className: 'col-lg-3 col-md-3 col-sm-6 col-xs-12 js-org-board',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
@@ -125,6 +125,7 @@ App.OrganizationBoardView = Backbone.View.extend({
                 });
             }
         });
+        $('footer').trigger('footerActionRendered');
         return false;
     },
     /**

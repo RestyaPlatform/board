@@ -134,6 +134,7 @@ App.BoardSimpleView = Backbone.View.extend({
                 });
             }
         });
+        $('footer').trigger('footerActionRendered');
         return false;
     },
     /**

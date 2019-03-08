@@ -5,8 +5,8 @@
  * @return string
  */
 require_once 'config.inc.php';
-require_once 'libs' . DIRECTORY_SEPARATOR . 'core.php';
-require_once 'libs' . DIRECTORY_SEPARATOR . 'vendors' . DIRECTORY_SEPARATOR . 'OAuth2' . DIRECTORY_SEPARATOR . 'Autoloader.php';
+require_once 'libs' . DS . 'core.php';
+require_once 'libs' . DS . 'vendors' . DS . 'OAuth2' . DS . 'Autoloader.php';
 function main()
 {
     global $r_debug, $authUser, $token, $localAccessIps, $db_lnk, $token_exception_url, $exception_url, $scope_exception_url, $post_exception_url, $put_exception_url, $exception_before_token, $exception_url, $admin_access_url, $put_admin_access_url, $_server_domain_url, $locales;
@@ -91,8 +91,8 @@ function main()
                 }
             }
         }
-        if (!empty($current_locale) && file_exists(APP_PATH . 'client' . DIRECTORY_SEPARATOR . 'locales' . DIRECTORY_SEPARATOR . $current_locale . DIRECTORY_SEPARATOR . 'translation.json')) {
-            $locale = file_get_contents(APP_PATH . 'client' . DIRECTORY_SEPARATOR . 'locales' . DIRECTORY_SEPARATOR . $current_locale . DIRECTORY_SEPARATOR . 'translation.json');
+        if (!empty($current_locale) && file_exists(APP_PATH . 'client' . DS . 'locales' . DS . $current_locale . DS . 'translation.json')) {
+            $locale = file_get_contents(APP_PATH . 'client' . DS . 'locales' . DS . $current_locale . DS . 'translation.json');
             $locales = json_decode($locale, true);
         }
         $r_resource_vars = array();
@@ -126,7 +126,7 @@ function main()
                     break;
 
                 case 'POST':
-                    if ((in_array('write', $scope) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) || in_array($r_resource_cmd, $scope_exception_url)) {
+                    if ((in_array('write', $scope) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser))) || (is_plugin_enabled('r_support_app') && ($r_resource_cmd == '/card_support_users' || !empty($r_resource_vars['boards'])))) || in_array($r_resource_cmd, $scope_exception_url)) {
                         $r_post = json_decode(file_get_contents('php://input'));
                         $r_post = (array)$r_post;
                         r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post);

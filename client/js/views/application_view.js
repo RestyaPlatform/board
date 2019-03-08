@@ -695,7 +695,7 @@ App.ApplicationView = Backbone.View.extend({
                                     model: page_title,
                                 }).el);
                                 if (page.model == 'starred_boards_index') {
-                                    board_index.append(new App.StarredBoardsIndexView().el);
+                                    board_index.find('#boards-index').append(new App.StarredBoardsIndexView().el);
                                     if (!_.isEmpty(role_links.where({
                                             slug: 'view_stared_boards'
                                         }))) {
@@ -783,7 +783,7 @@ App.ApplicationView = Backbone.View.extend({
 
                                     }
                                 } else if (page.model == 'closed_boards_index') {
-                                    board_index.append(new App.ClosedBoardsIndexView().el);
+                                    board_index.find('#boards-index').append(new App.ClosedBoardsIndexView().el);
                                     if (!_.isEmpty(role_links.where({
                                             slug: 'view_closed_boards'
                                         }))) {
@@ -864,7 +864,7 @@ App.ApplicationView = Backbone.View.extend({
                                         }
                                     }
                                 } else {
-                                    board_index.append(new App.BoardsIndexView().el);
+                                    board_index.find('#boards-index').append(new App.BoardsIndexView().el);
                                     App.boards.setSortField('name', 'asc');
                                     App.boards.sort();
                                     var my_boards = App.boards.where({
@@ -1093,11 +1093,8 @@ App.ApplicationView = Backbone.View.extend({
                 changeTitle(i18next.t('App Settings Manage'));
                 $('#js-navbar-default').remove();
                 if (!_.isEmpty(authuser.user) && authuser.user.role_id == 1 && !_.isEmpty(page.options.name)) {
-                    _(function() {
-                        if (!_.isUndefined(App['admin_' + page.options.name + '_view'])) {
-                            $('#content').html(new App['admin_' + page.options.name + '_view']().el);
-                        }
-                    }).defer();
+                    var custom_field_page_id = 'admin_' + page.options.name + '_view';
+                    $('#content').html('<section id="' + custom_field_page_id + '"></section>');
                 } else {
                     app.navigate('#/boards', {
                         trigger: true,
@@ -1109,11 +1106,7 @@ App.ApplicationView = Backbone.View.extend({
                 $('#js-navbar-default').remove();
                 if (!_.isEmpty(authuser.user) && authuser.user) {
                     var app_page = page.options.name + '_' + page.options.page;
-                    if (!_.isUndefined(App.app_page)) {
-                        _(function() {
-                            $('#content').html(new App[app_page]().el);
-                        }).defer();
-                    }
+                    $('#content').html('<section id="' + app_page + '"></section>');
                 } else {
                     app.navigate('#/boards', {
                         trigger: true,
