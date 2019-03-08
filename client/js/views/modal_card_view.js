@@ -473,6 +473,10 @@ App.ModalCardView = Backbone.View.extend({
         var filtered_labels = self.model.list.collection.board.labels.where({
             card_id: self.model.id
         });
+        if (_.isEmpty(filtered_labels) && data.name.trim() === '') {
+            self.flash('danger', i18next.t('Please enter valid labels.'));
+            return false;
+        }
         var labels = new App.CardLabelCollection();
         labels.add(filtered_labels);
         labels.each(function(label) {
