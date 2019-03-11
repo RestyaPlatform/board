@@ -27,7 +27,7 @@ if (typeof App === 'undefined') {
  */
 App.BoardView = Backbone.View.extend({
     tagName: 'section',
-    className: 'clearfix',
+    className: 'clearfix js-boards-view',
     id: 'boards-view',
     /**
      * Constructor

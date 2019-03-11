@@ -1630,6 +1630,7 @@ App.ListView = Backbone.View.extend({
                         }
                     }).defer();
                     self.renderCardsCollection();
+                    $('.js-list-' + self.model.id + ' .js-show-add-card-form').trigger('click');
                 }
             });
         }

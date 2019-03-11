@@ -814,6 +814,7 @@ App.BoardHeaderView = Backbone.View.extend({
      */
     switchListView: function() {
         $('body').removeClass('modal-open');
+        $('.js-boards-view').attr('id', 'boards-view');
         $('#boards-view').removeClass('col-xs-12');
         $('#switch-board-view').removeClass('calendar-view');
         $('#switch-board-view').addClass('col-xs-12');
@@ -922,6 +923,7 @@ App.BoardHeaderView = Backbone.View.extend({
     switchCalendarView: function() {
         var self = this;
         $('body').removeClass('modal-open');
+        $('.js-boards-view').attr('id', 'boards-view');
         $('#boards-view').addClass('col-xs-12');
         $('#switch-board-view').addClass('calendar-view');
         $('#switch-board-view').removeClass('board-viewlist col-xs-12');
