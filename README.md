@@ -3,7 +3,13 @@
 [![Build Status](https://travis-ci.org/RestyaPlatform/board.svg?branch=master)](https://travis-ci.org/RestyaPlatform/board) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/RestyaPlatform/board.svg)](http://isitmaintained.com/project/RestyaPlatform/board "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/RestyaPlatform/board.svg)](http://isitmaintained.com/project/RestyaPlatform/board "Percentage of issues still open")
 [![Known Vulnerabilities](https://snyk.io/test/github/RestyaPlatform/board/badge.svg)](https://snyk.io/test/github/RestyaPlatform/board)
 
-Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [Restya platform](http://restya.com/).
+### What is Restyaboard?
+Trello like kanban board. Tasks, to-dos, chat, etc., [Restyaboard](http://restya.com/board/) is based on [Restya platform](http://restya.com/) with dual License ([OSL 3.0](LICENSE.txt) & [Commercial License](http://restya.com/contact)).
+
+Whether you’re creating a personal todo list, planning your holidays with some friends, or working in a team on your next revolutionary concept, Restyaboard is an simple and effective tool to keep your tasks organized. The boards of restyaboard will give you a visual overview of the current state of your projects, and make you productive by allowing you to focus on the few items that matter the most.
+
+### Why use Restyaboard?
+Since Restyaboard is a free software, you don’t have to give us your data and you can install the Restyaboard on your own internal server. You can also increase the productivity even more by reducing the time of managing the projects with the help of Restyaboard plugin which is available in [RestyaPlatform](http://restya.com/board/apps).
 
 # For Free Installation, [contact us](http://restya.com/contact?category=free-installation) 
 
@@ -43,6 +49,7 @@ To upgrade, overwrite application files and apply respective DB script:
 *  v0.6.1 to v0.6.2 - [`/sql/upgrade-0.6.1-0.6.2.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.1-0.6.2.sql)
 *  v0.6.2 to v0.6.3 - [`/sql/upgrade-0.6.2-0.6.3.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.2-0.6.3.sql)
 *  v0.6.3 to v0.6.4 - [`/sql/upgrade-0.6.3-0.6.4.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.3-0.6.4.sql)
+*  v0.6.5 to v0.6.6 - [`/sql/upgrade-0.6.5-0.6.6.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.5-0.6.6.sql)
 
 ### Configuring Restyaboard
 

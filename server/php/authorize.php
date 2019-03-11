@@ -47,7 +47,7 @@ if (!empty($_POST['email']) && !empty($_POST['password'])) {
     );
     $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
     if (is_plugin_enabled('r_ldap_login')) {
-        require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'LdapLogin' . DIRECTORY_SEPARATOR . 'functions.php';
+        require_once PLUGIN_PATH . DS . 'LdapLogin' . DS . 'functions.php';
         $ldap_response = ldapUpdateUser($log_user, $_POST);
         $ldap_error = $ldap_response['ldap_error'];
         $user = $ldap_response['user'];

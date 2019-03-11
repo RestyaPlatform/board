@@ -55,7 +55,10 @@ App.BoardAdditionalSettingsView = Backbone.View.extend({
             sort_direction: sort_direction,
             id: this.model.id
         }, {
-            success: function(model, response) {}
+            success: function(model, response) {
+                $('.js-back-to-sidebar').trigger('click');
+                $('.js-show-board-actions').parent('.dropdown').removeClass('open');
+            }
         });
         return false;
     },

@@ -12,7 +12,7 @@
 		<li class="col-xs-12">
 		<form role="form" class="js-move-card" name="MoveCardForm" id="MoveCardForm">
 		  <div class="js-show-move-card-form-response"> </div>
-		  <div class="form-group clearfix panel-body">
+		  <div class="form-group clearfix">
 			<label class="sr-only"><%- i18next.t('Move') %></label>
 			<input type="submit" id="submitListMove" class="btn btn-primary col-xs-12" value="<%- i18next.t('Move') %>" />
 		  </div>
@@ -116,17 +116,17 @@
 							%>
 							<% if(_.isEmpty(voted_user)){  %>
 							  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-							  <button type="button" class="btn btn-primary js-add-card-vote no-print"><i class=" icon-thumbs-up"></i></button> 
+							  <button type="button" class="btn btn-primary js-add-card-vote no-print"  title="<%- i18next.t('Vote') %>"><i class=" icon-thumbs-up"></i></button> 
 							  <% } %>  
 							  <% } else{ %>
 							  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-							  <button type="button" class="btn btn-default active js-delete-card-vote"><i class="  icon-thumbs-up"></i></button>  
+							  <button type="button" class="btn btn-default active js-delete-card-vote" title="<%- i18next.t('Unvote') %>"><i class="  icon-thumbs-up"></i></button>  
 							  <% } %>
 							  <% } }%>         
 					   </li>
 		          <% } %>
 					  
-					  <li class="dropdown"><a href="#" title="<%- i18next.t('Add Vote') %>" class="btn btn-default js-show-card-voters-list dropdown-toggle" data-toggle="dropdown"><%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %></a>
+					  <li class="dropdown"><a href="#" title="<%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %>" class="btn btn-default js-show-card-voters-list dropdown-toggle" data-toggle="dropdown"><%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %></a>
 						<ul class="dropdown-menu dropdown-menu-left arrow js-show-card-voters-list-response">
 						</ul>
 					  </li>
@@ -233,10 +233,10 @@
 					  </a>
 					  <% } %>
 					  </h4>
-						<ul class="list-unstyled clearfix descriptionlist" id="js-card-description">
-						</ul>
 					  <% if(!_.isEmpty(card.attributes.description)){ %>
-					  <p class="js-show-card-desc"><%= converter.makeHtml((card.attributes.description)) %></p>
+					  <div class="js-show-card-desc">
+							<%= converter.makeHtml((card.attributes.description)) %>
+						</div>
 					  <% } %>
 					   <%if(!_.isUndefined(authuser.user)) {%>
 					  <form class="hide js-card-edit-form" name="cardDescriptionEditForm" id="cardDescriptionEditForm">
@@ -252,7 +252,7 @@
 							</div>
 						</div>
 						<div class="col-xs-12 list-group-item-text navbar-right"><a target="_blank" class="pull-right text-muted btn-xs" title="<%- i18next.t('Markdown') %>" href="http://restya.com/board/docs/markdown?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=markdown_help">Styling with Markdown is supported</a></div>
-						<div class="submit panel-body">
+						<div class="submit">
 						  <input type="submit" value="<%- i18next.t('Save') %>" id="submitCardDescriptionEditForm" class="btn btn-primary">
 						  <a class="js-cancel-card-description-edit"><i class="icon-remove btn btn-link"></i></a> </div>
 					  </form>
@@ -260,7 +260,12 @@
 					</div>
 				<div class="list-group-item-text clearfix js-card_dependency-listing-<%- card.attributes.id %>">
 				</div>
+				<div class="list-group-item-text clearfix js-salesforce-listing-<%- card.attributes.id %>">
+				</div>
 				<div id="js-card-checklists"></div>
+					<div class="list-group-item-text clearfix js-card-drawio-section">
+						<ul class="list-unstyled clearfix attachment-list" id="js-card-drawio-list"></ul>
+					</div>
 				<% if(!_.isEmpty(card.attachments)){ %>
 				<div class="list-group-item-heading clearfix js-modalCard-attachments-<%- card.id %>">
 				  <h3 class="pull-left"> <span class="pull-left"><i class="icon-paper-clip lead"></i></span><%- i18next.t('Attachment') %></h3>
@@ -302,6 +307,7 @@
 					<div class="col-xs-12 row">
 						<h3 class="pull-left"><%- i18next.t('Add') %></h3>
 					</div>
+					<a class="hide js-app-activity-trigger"></a>
 					<ul class="js-card-actions js-card-add list-inline action-list navbar-btn">
 						<li class="dropdown">
 								<% if(!_.isEmpty(card.attributes.color)){ %>
@@ -434,7 +440,7 @@
 						<li class="col-xs-12">
 						  <form role="form" class="js-move-card" name="MoveCardForm" id="MoveCardForm">
 							<div class="js-show-move-card-form-response"> </div>
-							<div class="form-group clearfix panel-body">
+							<div class="form-group clearfix">
 							  <label class="sr-only"><%- i18next.t('Move') %></label>
 							  <input type="submit" id="submitListMove" class="btn btn-primary col-xs-12" value="<%- i18next.t('Move') %>" />
 							</div>
@@ -455,7 +461,7 @@
 								  <input type="text" id="card-title" class="form-control" name="name" value="<%- card.attributes.name%>">
 								</div>
 								<div class="js-show-copy-card-form-response"> </div>
-								<div class="form-group clearfix panel-body">
+								<div class="form-group clearfix">
 								  <label class="sr-only"><%- i18next.t('Create card') %></label>
 								  <input type="submit" class="btn btn-primary col-xs-12" value="<%- i18next.t('Create card') %>">
 								</div>
@@ -493,9 +499,9 @@
 						%>
 						<li class="navbar-btn">
 							<% if(!_.isEmpty(cards_subscribers)){ %>
-								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-open"></i><%- i18next.t('Unsubsribe') %></a> 
+								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-close"></i><%- i18next.t('Unsubsribe') %></a> 
 							<% } else { %>
-								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-close"></i><%- i18next.t('Subscribe') %></a>
+								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-open"></i><%- i18next.t('Subscribe') %></a>
 							<% } %>
 					  </li>
 				   <% } %>
@@ -540,22 +546,18 @@
 		<ul class="list-unstyled navbar-btn row"  id="card_activities">
 		  <li class="list-group-item list-group-item-info clearfix">
 			<div class="list-group-item-heading clearfix">
-				  <h3 class="pull-left"><%- i18next.t('Activity') %></h3>
-				  <div class="clearfix pull-right well-sm user-filter no-print">
-                        <ul class="nav nav-pills">
-                            <li id="modal-activities"><a href="#" title="<%- i18next.t('Filter by activities') %>" class="text-muted" ><i class="icon-time small"></i></a></li>
-                            <li id="modal-comments"><a href="#" title="<%- i18next.t('Filter by comments') %>" class="text-muted"><i class="icon-comment-alt small"></i></a></li>
-                        </ul>      
-                  </div>   
+				  <h3 class="pull-left"><%- i18next.t('Add Comment') %></h3>
 			</div>
 			<div class="list-group-item-text">
 			  <ul class="media-list comment-list activity-mod-comments">
 				<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || ((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "comment_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(role_links.where({slug: "comment_card"})) && card.list.collection.board.attributes.board_visibility == 2)))){ %>
 				<li class="media media-comment comment-block">
-						<ul class="nav nav-tabs no-bor h3">
-							<li class="active js-show-comment show-comment-<%-card.attributes.id%> cur" data-id="<%-card.attributes.id%>"><a><%- i18next.t("Write") %></a></li>
-							 <li class="js-preview-comment preview-comment-<%-card.attributes.id%> cur" data-id="<%-card.attributes.id%>"><a><%- i18next.t("Preview") %></a></li>
-						</ul>
+						<div class="row">
+							<ul class="nav nav-tabs no-bor h3">
+								<li class="active js-show-comment show-comment-<%-card.attributes.id%> cur" data-id="<%-card.attributes.id%>"><a><%- i18next.t("Write") %></a></li>
+								<li class="js-preview-comment preview-comment-<%-card.attributes.id%> cur" data-id="<%-card.attributes.id%>"><a><%- i18next.t("Preview") %></a></li>
+							</ul>
+						</div>
 						<div class="well-sm"></div>
 						<div class="row">
 							<form method="post" class="form-horizontal js-add-comment no-print">
@@ -612,6 +614,9 @@
 																	</div>
 																</li>
 															<% } %>
+
+															<div class="js-modal-card-wiki-add"></div>
+
 															<li class="dropdown pull-left radio-inline radio">
 																<div class="clearfix dropdown"> <a class="show dropdown-toggle btn-link btn-xs btn-block js-show-members" role="button" data-toggle="dropdown" title="<%- i18next.t('Mention a member') %>" href="#"> <span class="text-muted show" ><%- i18next.t('Mention a member') %></span> </a>
 																<ul class="dropdown-menu arrow col-xs-3">
@@ -646,9 +651,18 @@
 				</li>
 				<% } %>
 				<li> </li>
+				<div class="list-group-item-heading clearfix">
+				  <h3 class="pull-left"><%- i18next.t('Activity') %></h3>
+				  <div class="clearfix pull-right well-sm  no-print">
+                        <ul class="nav nav-pills">
+                            <li id="modal-activities"><a href="#" title="<%- i18next.t('Filter by activities') %>" class="text-muted"><i class="icon-time small"></i></a></li>
+                            <li id="modal-comments"><a href="#" title="<%- i18next.t('Filter by comments') %>" class="text-muted"><i class="icon-comment-alt small"></i></a></li>
+                        </ul>      
+                  </div>   
+			</div>
 				<li class="col-xs-12 divider"><hr></li>
 			  </ul>
-			  <div class="text-center clearfix hide" id="js-loader-img"><img src="img/select2-spinner.gif" alt="[Images:Loader]" title="<%- i18next.t('Loading...') %>" /></div>
+			  <div class="text-center clearfix hide" id="js-loader-img"><div class="cssloader"></div></div>
 				<ul class="media-list col-xs-12 clearfix btn-block card_activitiesnew" id="js-card-activities-<%= card.attributes.id%>"></ul>			  
 			</div>
 			</li>
@@ -798,7 +812,7 @@
 		    </li>
 	    <% } %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-			<li class="dropdown"> <a class="js-show-side-card-title-edit-form" role="button" data-toggle="dropdown" title="<%- i18next.t('Checklist') %>" href="#"><%- i18next.t('Info') %></a>
+			<li class="dropdown"> <a class="js-show-side-card-title-edit-form" role="button" data-toggle="dropdown" title="<%- i18next.t('Info') %>" href="#"><%- i18next.t('Info') %></a>
 			  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 				<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Edit Card Info') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 				<li class="col-xs-12 divider"></li>
@@ -857,7 +871,7 @@
 			<li class="col-xs-12">
 				<form role="form" class="js-move-card" name="MoveCardForm" id="MoveCardForm">
 				<div class="js-show-move-card-form-response"> </div>
-				<div class="form-group clearfix panel-body">
+				<div class="form-group clearfix">
 					<label class="sr-only"><%- i18next.t('Move') %></label>
 					<input type="submit" id="submitListMove" class="btn btn-primary col-xs-12" value="<%- i18next.t('Move') %>" />
 				</div>
@@ -878,7 +892,7 @@
 						<input type="text" id="card-title" class="form-control" name="name" value="<%- card.attributes.name%>">
 					</div>
 					<div class="js-show-copy-card-form-response"> </div>
-					<div class="form-group clearfix panel-body">
+					<div class="form-group clearfix">
 						<label class="sr-only"><%- i18next.t('Create card') %></label>
 						<input type="submit" class="btn btn-primary col-xs-12" value="<%- i18next.t('Create card') %>">
 					</div>
@@ -972,7 +986,7 @@
 	  <li class="dropdown js-more-dropdown">
 	  <div class="col-xs-12 divider"></div>
 	  <a class="show btn btn-link js-more-menu quiet-button" data-toggle="dropdown" title="<%- i18next.t('More options share, print, export, and delete.') %>" href="#"><%- i18next.t('Share and more...') %></a>
-		<ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
+		<ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 pre-scrollable vertical-scrollbar" style="max-height: 110px; overflow-y: auto;">
 			<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('More') %></strong></span> <a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 			<li class="col-xs-12 divider"></li>  
 			<li class="dropdown js-more-dropdown"> 

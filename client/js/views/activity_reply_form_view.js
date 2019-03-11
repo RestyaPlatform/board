@@ -47,9 +47,14 @@ App.ActivityReplyFormView = Backbone.View.extend({
      *
      */
     render: function() {
+        var self = this;
         this.converter.setFlavor('github');
+        var card = self.model.cards.findWhere({
+            id: parseInt(self.model.attributes.card_id)
+        });
         this.$el.html(this.template({
-            activity: this.model
+            activity: this.model,
+            card: card
         }));
         this.showTooltip();
         return this;
@@ -97,5 +102,6 @@ App.ActivityReplyFormView = Backbone.View.extend({
             $(target).parents('.js-reply-form').find('.js-card-replyComment-preview').html("<p>Nothing to preview</p>");
         }
         $(target).parents('.js-reply-form').find('.js-card-replyComment-preview-panel').removeClass('hide').addClass('show');
+        emojify.run();
     }
 });

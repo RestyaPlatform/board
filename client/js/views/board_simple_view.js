@@ -122,6 +122,7 @@ App.BoardSimpleView = Backbone.View.extend({
                 data.page_mode = 1;
                 if (organization_id) {
                     data.organization_id = organization_id;
+                    data.page_mode = 2;
                 }
                 $('.js-show-boards-list-simple-response', parent).html(new App.BoardAddView({
                     model: data
@@ -133,6 +134,7 @@ App.BoardSimpleView = Backbone.View.extend({
                 });
             }
         });
+        $('footer').trigger('footerActionRendered');
         return false;
     },
     /**

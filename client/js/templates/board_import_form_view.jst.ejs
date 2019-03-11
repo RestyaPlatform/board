@@ -1,0 +1,53 @@
+<li class="js-import-boards-back">
+	 <div class="col-xs-12 text-center clearfix"><a href="#" class="js-back-add-boards-list pull-left"><i class="icon-caret-left"></i></a><span class="col-xs-10"><strong><%- i18next.t('Import') %> </strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove"></i> </a></div> 
+</li>
+<li class="col-xs-12 navbar-btn divider js-import-boards-back "></li>
+<% if(!_.isEmpty(role_links.where({slug: "add_board"}))){ %>
+<li class="col-xs-12 btn-block js-import-boards-back">
+	<a href="#" class="js-show-board-import-kantree-form col-xs-12 navbar-btn h6">
+		<span class="show clearfix text-primary navbar-btn h5">
+			<span class="pull-left"><%- i18next.t('Import Board from Kantree.io') %></span> <span class="cssloader pull-right hide" id="js-board-import-loader"></span>
+		</span>
+		<span class="show"><%- i18next.t('Upload json file exported from Kantree.io.') %></span>
+	</a>
+	<form class="hide" id="js-board-import-kantree" enctype="multipart/form-data">
+		<input type="file" name="board_import_kantree" class="js-board-import-kantree-file"/>
+	</form>
+</li>
+<li class="col-xs-12 navbar-btn divider js-import-boards-back"></li>
+<li class="col-xs-12 btn-block js-import-boards-back">
+	<a href="#" class="js-show-board-import-taiga-form col-xs-12 navbar-btn h6">
+		<span class="show clearfix text-primary navbar-btn h5">
+			<span class="pull-left"><%- i18next.t('Import Board from Taiga') %></span> <span class="cssloader pull-right hide" id="js-board-import-loader"></span>
+		</span>
+		<span class="show"><%- i18next.t('Upload json file exported from Taiga.') %></span>
+	</a>
+	<form class="hide" id="js-board-import-taiga" enctype="multipart/form-data">
+		<input type="file" name="board_import_taiga" class="js-board-import-taiga-file"/>
+	</form>
+</li>
+<li class="col-xs-12 navbar-btn divider js-import-boards-back"></li>
+<li class="col-xs-12 btn-block js-import-boards-back">
+	<a href="#" class="js-show-board-import-form col-xs-12 navbar-btn h6">
+		<span class="show clearfix text-primary navbar-btn h5">
+			<span class="pull-left"><%- i18next.t('Import Board from Trello') %></span> <span class="cssloader pull-right hide" id="js-board-import-loader"></span>
+		</span>
+		<span class="show"><%- i18next.t('Upload json file exported from Trello.') %></span>
+	</a>
+	<form class="hide" id="js-board-import" enctype="multipart/form-data">
+		<input type="file" name="board_import" class="js-board-import-file"/>
+	</form>
+</li>
+<li class="col-xs-12 navbar-btn divider js-import-boards-back"></li>
+<li class="col-xs-12 btn-block js-import-boards-back">
+	<a href="#" class="js-show-board-import-wekan-form col-xs-12 navbar-btn h6">
+		<span class="show clearfix text-primary navbar-btn h5">
+			<span class="pull-left"><%- i18next.t('Import Board from Wekan') %></span> <span class="cssloader pull-right hide" id="js-board-import-loader"></span>
+		</span>
+		<span class="show"><%- i18next.t('Upload json file exported from Wekan.') %></span>
+	</a>
+	<form class="hide" id="js-board-import-wekan" enctype="multipart/form-data">
+		<input type="file" name="board_import_wekan" class="js-board-import-wekan-file"/>
+	</form>
+</li>
+<% } %>

@@ -97,7 +97,7 @@ App.ApplicationView = Backbone.View.extend({
                                     IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                     DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
                                     var current_language = DEFAULT_LANGUAGE;
-                                    if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
+                                    if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
                                         current_language = authuser.user.language;
                                     }
                                     i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
@@ -152,7 +152,7 @@ App.ApplicationView = Backbone.View.extend({
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
                                 var current_language = DEFAULT_LANGUAGE;
-                                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && authuser.user.language !== undefined) {
+                                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
                                     current_language = authuser.user.language;
                                 }
                                 i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
@@ -352,18 +352,12 @@ App.ApplicationView = Backbone.View.extend({
                         } else if (view_type === 'calendar') {
                             $('.js-switch-calendar-view').trigger('click');
                             view_type = null;
-                        } else if (view_type === 'gantt') {
-                            $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">' + i18next.t('Loading ....') + '</h4></div></div></div>');
+                        } else if (!_.isEmpty(view_type) && !_.isEmpty(view_type)) {
+                            $('#content .js-boards-view').addClass('hide');
                             _(function() {
-                                $('.js-switch-timeline-view').trigger('click');
+                                $('#content .js-boards-view').remove('');
+                                $('#content').html('<section id="boards-view-' + view_type + '" class="clearfix js-boards-view"></section>');
                             }).defer();
-                            view_type = null;
-                        } else if (view_type === 'report') {
-                            $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">' + i18next.t('Loading ....') + '</h4></div></div></div>');
-                            view_type = null;
-                        } else if (view_type === 'attachments') {
-                            $('.js-show-board-modal').trigger('click');
-                            view_type = null;
                         } else if (view_type === null || view_type === '') {
                             $('.js-switch-grid-view').trigger('click');
                             view_type = null;
@@ -695,7 +689,7 @@ App.ApplicationView = Backbone.View.extend({
                                     model: page_title,
                                 }).el);
                                 if (page.model == 'starred_boards_index') {
-                                    board_index.append(new App.StarredBoardsIndexView().el);
+                                    board_index.find('#boards-index').append(new App.StarredBoardsIndexView().el);
                                     if (!_.isEmpty(role_links.where({
                                             slug: 'view_stared_boards'
                                         }))) {
@@ -783,7 +777,7 @@ App.ApplicationView = Backbone.View.extend({
 
                                     }
                                 } else if (page.model == 'closed_boards_index') {
-                                    board_index.append(new App.ClosedBoardsIndexView().el);
+                                    board_index.find('#boards-index').append(new App.ClosedBoardsIndexView().el);
                                     if (!_.isEmpty(role_links.where({
                                             slug: 'view_closed_boards'
                                         }))) {
@@ -864,7 +858,7 @@ App.ApplicationView = Backbone.View.extend({
                                         }
                                     }
                                 } else {
-                                    board_index.append(new App.BoardsIndexView().el);
+                                    board_index.find('#boards-index').append(new App.BoardsIndexView().el);
                                     App.boards.setSortField('name', 'asc');
                                     App.boards.sort();
                                     var my_boards = App.boards.where({
@@ -1093,11 +1087,8 @@ App.ApplicationView = Backbone.View.extend({
                 changeTitle(i18next.t('App Settings Manage'));
                 $('#js-navbar-default').remove();
                 if (!_.isEmpty(authuser.user) && authuser.user.role_id == 1 && !_.isEmpty(page.options.name)) {
-                    _(function() {
-                        if (!_.isUndefined(App['admin_' + page.options.name + '_view'])) {
-                            $('#content').html(new App['admin_' + page.options.name + '_view']().el);
-                        }
-                    }).defer();
+                    var custom_field_page_id = 'admin_' + page.options.name + '_view';
+                    $('#content').html('<section id="' + custom_field_page_id + '"></section>');
                 } else {
                     app.navigate('#/boards', {
                         trigger: true,
@@ -1109,11 +1100,7 @@ App.ApplicationView = Backbone.View.extend({
                 $('#js-navbar-default').remove();
                 if (!_.isEmpty(authuser.user) && authuser.user) {
                     var app_page = page.options.name + '_' + page.options.page;
-                    if (!_.isUndefined(App.app_page)) {
-                        _(function() {
-                            $('#content').html(new App[app_page]().el);
-                        }).defer();
-                    }
+                    $('#content').html('<section id="' + app_page + '"></section>');
                 } else {
                     app.navigate('#/boards', {
                         trigger: true,

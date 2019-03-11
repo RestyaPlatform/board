@@ -238,10 +238,10 @@ function curlExecute($url, $method = 'get', $post = array() , $format = 'plain')
         $filename['file_name'] = (strpos($filename['file_name'], '.') !== false) ? $filename['file_name'] : $filename['file_name'] . '.' . $content_type[1];
         $filename['file_name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $filename['file_name']);
         curl_close($ch);
-        if (file_exists($mediadir . DIRECTORY_SEPARATOR . $filename['file_name'])) {
-            unlink($mediadir . DIRECTORY_SEPARATOR . $filename['file_name']);
+        if (file_exists($mediadir . DS . $filename['file_name'])) {
+            unlink($mediadir . DS . $filename['file_name']);
         }
-        $fp = fopen($mediadir . DIRECTORY_SEPARATOR . $filename['file_name'], 'x');
+        $fp = fopen($mediadir . DS . $filename['file_name'], 'x');
         fwrite($fp, $response);
         fclose($fp);
         return $filename;
@@ -430,8 +430,8 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
     global $r_debug, $db_lnk, $authUser;
     $role = 3; // Guest role id
     if (is_plugin_enabled('r_support_app')) {
-        require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'SupportApp' . DIRECTORY_SEPARATOR . 'functions.php';
-        if (checkSupportAppEnabled($r_resource_vars)) {
+        require_once PLUGIN_PATH . DS . 'SupportApp' . DS . 'functions.php';
+        if (checkSupportAppEnabled($r_resource_vars, $r_request_method, $r_resource_cmd)) {
             return true;
         }
     }
@@ -469,7 +469,8 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
         '/boards/?'
     );
     $board_exception_method_arr = array(
-        'PUT'
+        'PUT',
+        'DELETE'
     );
     $organization_exception_arr = array(
         '/organizations/?'
@@ -607,7 +608,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.6.5; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.6.6; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         $result = mail($to, $subject, $message, $headers, '-f' . DEFAULT_FROM_EMAIL_ADDRESS);
         if (R_DEBUG) {
@@ -616,7 +617,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
             } else {
                 $compose_string = 'S, ' . $from_email . ', ' . $to . ', ' . $subject;
             }
-            error_log($compose_string, 3, APP_PATH . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'mail.log');
+            error_log($compose_string, 3, CACHE_PATH . DS . 'mail.log');
         }
     }
 }
@@ -1134,11 +1135,11 @@ function importTrelloBoard($board = array())
                     $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
                     $users[$member['id']] = $user['id'];
                     if ($member['avatarUrl']) {
-                        $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'User' . DIRECTORY_SEPARATOR . $user['id'];
-                        $save_path = 'media' . DIRECTORY_SEPARATOR . 'User' . DIRECTORY_SEPARATOR . $user['id'];
+                        $mediadir = MEDIA_PATH . DS . 'User' . DS . $user['id'];
+                        $save_path = 'User' . DS . $user['id'];
                         $save_path = str_replace('\\', '/', $save_path);
                         $filename = curlExecute($member['avatarUrl'] . '/170.png', 'get', $mediadir, 'image');
-                        $path = $save_path . DIRECTORY_SEPARATOR . $filename['file_name'];
+                        $path = $save_path . DS . $filename['file_name'];
                         $qry_val_arr = array(
                             $path,
                             $user['id']
@@ -1245,11 +1246,11 @@ function importTrelloBoard($board = array())
                     foreach ($card['attachments'] as $attachment) {
                         $created = $modified = $attachment['date'];
                         if ($attachment['isUpload']) {
-                            $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
-                            $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
+                            $mediadir = MEDIA_PATH . DS . 'Card' . DS . $_card['id'];
+                            $save_path = 'Card' . DS . $_card['id'];
                             $save_path = str_replace('\\', '/', $save_path);
                             $filename = curlExecute($attachment['url'], 'get', $mediadir, 'image');
-                            $path = $save_path . DIRECTORY_SEPARATOR . $filename['file_name'];
+                            $path = $save_path . DS . $filename['file_name'];
                             $qry_val_arr = array(
                                 $created,
                                 $modified,
@@ -1719,11 +1720,11 @@ function importKantreeBoard($jsonArr = array())
                     }
                     if (!empty($card['attachments'])) {
                         foreach ($card['attachments'] as $attachment) {
-                            $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
-                            $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
+                            $mediadir = MEDIA_PATH . DS . 'Card' . DS . $_card['id'];
+                            $save_path = 'Card' . DS . $_card['id'];
                             $save_path = str_replace('\\', '/', $save_path);
                             $filename = curlExecute($attachment['url'], 'get', $mediadir, 'image');
-                            $path = $save_path . DIRECTORY_SEPARATOR . $filename['file_name'];
+                            $path = $save_path . DS . $filename['file_name'];
                             $qry_val_arr = array(
                                 $new_board['id'],
                                 $lists[$card['idList']],
@@ -2040,10 +2041,10 @@ function importTaigaBoard($board = array())
                 }
                 if (!empty($card['attachments'])) {
                     foreach ($card['attachments'] as $attachment) {
-                        $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
-                        $save_path = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
+                        $mediadir = MEDIA_PATH . DS . 'Card' . DS . $_card['id'];
+                        $save_path = MEDIA_PATH . DS . 'Card' . DS . $_card['id'];
                         $save_path = str_replace('\\', '/', $save_path);
-                        $path = $save_path . DIRECTORY_SEPARATOR . $attachment['name'];
+                        $path = $save_path . DS . $attachment['name'];
                         $fh = fopen($path, 'w');
                         fwrite($fh, $attachment['attached_file']['data']);
                         fclose($fh);
@@ -2390,11 +2391,11 @@ function importWekanBoard($board = array())
                 if (!empty($board['attachments'])) {
                     foreach ($board['attachments'] as $attachment) {
                         if ($card['_id'] === $attachment['cardId']) {
-                            $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
-                            $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $_card['id'];
+                            $mediadir = MEDIA_PATH . DS . 'Card' . DS . $_card['id'];
+                            $save_path = 'Card' . DS . $_card['id'];
                             $save_path = str_replace('\\', '/', $save_path);
                             $filename = curlExecute($attachment['url'], 'get', $mediadir, 'image');
-                            $path = $save_path . DIRECTORY_SEPARATOR . $filename['file_name'];
+                            $path = $save_path . DS . $filename['file_name'];
                             $created = $modified = date('Y-m-d h:i:s');
                             $qry_val_arr = array(
                                 $created,
@@ -2619,7 +2620,7 @@ function convertBooleanValues($table, $row)
     }
     return $row;
 }
-function paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters)
+function paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters, $limit = PAGING_COUNT)
 {
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
     $c_result = pg_query_params($db_lnk, $c_sql, $pg_params);
@@ -2628,6 +2629,8 @@ function paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters)
     $page_count = PAGING_COUNT;
     if (!empty($limit) && $limit == 'all') {
         $page_count = $c_data->count;
+    } elseif (!empty($limit)) {
+        $page_count = $limit;
     }
     $start = ($page - 1) * $page_count;
     $total_page = !empty($page_count) ? ceil($c_data->count / $page_count) : 0;
@@ -2811,7 +2814,7 @@ function slugify($string)
 }
 function is_plugin_enabled($plugin_name)
 {
-    $file = APP_PATH . '/client/apps/' . $plugin_name . '/app.json';
+    $file = APP_PATH . DS . 'client' . DS . 'apps' . DS . $plugin_name . DS . 'app.json';
     if (file_exists($file)) {
         $content = file_get_contents($file);
         $data = json_decode($content, true);
@@ -2860,11 +2863,11 @@ function importMember($member, $new_board)
         $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
         $users[$member['id']] = $user['id'];
         if (isset($member['avatarUrl']) && !empty($member['avatarUrl'])) {
-            $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'User' . DIRECTORY_SEPARATOR . $user['id'];
-            $save_path = 'media' . DIRECTORY_SEPARATOR . 'User' . DIRECTORY_SEPARATOR . $user['id'];
+            $mediadir = MEDIA_PATH . DS . 'User' . DS . $user['id'];
+            $save_path = 'User' . DS . $user['id'];
             $save_path = str_replace('\\', '/', $save_path);
             $filename = curlExecute($member['avatarUrl'], 'get', $mediadir, 'image');
-            $path = $save_path . DIRECTORY_SEPARATOR . $filename['file_name'];
+            $path = $save_path . DS . $filename['file_name'];
             $qry_val_arr = array(
                 $path,
                 $user['id']

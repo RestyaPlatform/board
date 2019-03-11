@@ -1,5 +1,5 @@
 <div class="well-sm"></div>
-<div class="r_group_app_tabs" id="js-group_app_tabs"> </div>
+
 <div class="js-admin-user-lists">
   <section class="clearfix">
     <div class="col-xs-12">
@@ -27,50 +27,50 @@
         <% if (!_.isUndefined(APPS) && APPS !== null ) {
               if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
                 if ($.inArray('r_ldap_login',APPS.enabled_apps) !== -1) { %>
-          <li>
-            <a class="js-filter cur ldap_login_check" data-filter="ldap" title="<%- i18next.t('LDAP') %>">
-              <span class="show">
-                <strong>
-                  <%- filter_count.ldap %>
-                </strong>
-              </span>
-              <%- i18next.t('LDAP') %>
-            </a>
-          </li>
-          <% }
+        <li>
+          <a class="js-filter cur ldap_login_check" data-filter="ldap" title="<%- i18next.t('LDAP') %>">
+            <span class="show">
+              <strong>
+                <%- filter_count.ldap %>
+              </strong>
+            </span>
+            <%- i18next.t('LDAP') %>
+          </a>
+        </li>
+        <% }
               }
           } %>
-            <% if(!_.isEmpty(roles)){ 
+        <% if(!_.isEmpty(roles)){ 
             _.each(roles, function(role) {
           %>
-              <li>
-                <a class="js-filter cur" data-filter="<%- role.id %>" title="<%- role.name %>">
-                  <span class="show">
-                    <strong>
-                      <%- role.count %>
-                    </strong>
-                  </span>
-                  <%- i18next.t(role.name) %>
-                </a>
-              </li>
-              <% });
+        <li>
+          <a class="js-filter cur" data-filter="<%- role.id %>" title="<%- role.name %>">
+            <span class="show">
+              <strong>
+                <%- role.count %>
+              </strong>
+            </span>
+            <%- i18next.t(role.name) %>
+          </a>
+        </li>
+        <% });
           } %>
-                <% var all = parseInt(filter_count.active) + parseInt(filter_count.inactive); %>
-                  <li class="active">
-                    <a href="#/users" title="<%- i18next.t('All') %>">
-                      <span class="show">
-                        <strong>
-                          <%-  all %>
-                        </strong>
-                      </span>
-                      <%- i18next.t('All') %>
-                    </a>
-                  </li>
-                  <li class="pull-right h4">
-                    <form id="UserSearch" name="UserSearch" class="form-horizontal col-xs-12">
-                      <input type="text" placeholder="Search" name="user_search" id="user_search" class="form-control" />
-                    </form>
-                  </li>
+        <% var all = parseInt(filter_count.active) + parseInt(filter_count.inactive); %>
+        <li class="active">
+          <a href="#/users" title="<%- i18next.t('All') %>">
+            <span class="show">
+              <strong>
+                <%-  all %>
+              </strong>
+            </span>
+            <%- i18next.t('All') %>
+          </a>
+        </li>
+        <li class="pull-right h4">
+          <form id="UserSearch" name="UserSearch" class="form-horizontal col-xs-12">
+            <input type="text" placeholder="Search" name="user_search" id="user_search" class="form-control" />
+          </form>
+        </li>
       </ul>
     </div>
   </section>
@@ -102,6 +102,15 @@
               <th colspan="2" class="text-center">
                 <%- i18next.t("Registered") %>
               </th>
+              <% if (!_.isUndefined(APPS) && APPS !== null ) {
+                if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                if ($.inArray('r_groups',APPS.enabled_apps) !== -1) { %>
+              <th rowspan="2" class="text-center" title="<%- i18next.t('Group Count') %>">
+                <%- i18next.t("Group Count") %>
+              </th>
+              <% }
+                }
+            } %>
               <th rowspan="2" class="text-center col-xs-1">
                 <span data-field="role_id" data-direction="asc" title="<%- i18next.t('Role') %>">
                   <span class="icon-caret-down hide"></span>
@@ -115,55 +124,64 @@
             <tr class="active">
               <th class="text-center">
                 <span class="icon-caret-down hide"></span>
-                <span class="js-sort cur verticalTableHeader show" data-field="created_organization_count" data-direction="asc" title="<%- i18next.t('Created') %>">
+                <span class="js-sort cur verticalTableHeader show" data-field="created_organization_count"
+                  data-direction="asc" title="<%- i18next.t('Created') %>">
                   <%- i18next.t("Created") %>
                 </span>
               </th>
               <th class="text-center">
                 <span class="icon-caret-down hide"></span>
-                <span class="js-sort cur verticalTableHeader show" data-field="owner_organization_count" data-direction="asc" title="<%- i18next.t('Owner') %>">
+                <span class="js-sort cur verticalTableHeader show" data-field="owner_organization_count" data-direction="asc"
+                  title="<%- i18next.t('Owner') %>">
                   <%- i18next.t("Owner") %>
                 </span>
               </th>
               <th class="text-center">
                 <span class="icon-caret-down hide"></span>
-                <span class="js-sort cur verticalTableHeader show" data-field="member_organization_count" data-direction="asc" title="<%- i18next.t('Member') %>">
+                <span class="js-sort cur verticalTableHeader show" data-field="member_organization_count"
+                  data-direction="asc" title="<%- i18next.t('Member') %>">
                   <%- i18next.t("Member") %>
                 </span>
               </th>
               <th class="text-center">
                 <span class="icon-caret-down hide"></span>
-                <span class="js-sort cur verticalTableHeader show" data-field="created_board_count" data-direction="asc" title="<%- i18next.t('Created') %>">
+                <span class="js-sort cur verticalTableHeader show" data-field="created_board_count" data-direction="asc"
+                  title="<%- i18next.t('Created') %>">
                   <%- i18next.t("Created") %>
                 </span>
               </th>
               <th class="text-center">
                 <span class="icon-caret-down hide"></span>
-                <span class="js-sort cur verticalTableHeader show" data-field="owner_board_count" data-direction="asc" title="<%- i18next.t('Owner') %>">
+                <span class="js-sort cur verticalTableHeader show" data-field="owner_board_count" data-direction="asc"
+                  title="<%- i18next.t('Owner') %>">
                   <%- i18next.t("Owner") %>
                 </span>
               </th>
               <th class="text-center">
                 <span class="icon-caret-down hide"></span>
-                <span class="js-sort cur verticalTableHeader show" data-field="member_board_count" data-direction="asc" title="<%- i18next.t('Member') %>">
+                <span class="js-sort cur verticalTableHeader show" data-field="member_board_count" data-direction="asc"
+                  title="<%- i18next.t('Member') %>">
                   <%- i18next.t("Member") %>
                 </span>
               </th>
               <th class="text-center">
                 <span class="icon-caret-down hide"></span>
-                <span class="js-sort cur verticalTableHeader show" data-field="user_login_count" data-direction="asc" title="<%- i18next.t('Count') %>">
+                <span class="js-sort cur verticalTableHeader show" data-field="user_login_count" data-direction="asc"
+                  title="<%- i18next.t('Count') %>">
                   <%- i18next.t("Count") %>
                 </span>
               </th>
               <th class="text-center">
                 <span class="icon-caret-down hide"></span>
-                <span class="js-sort cur verticalTableHeader show" data-field="last_login_date" data-direction="asc" title="<%- i18next.t('Time') %>">
+                <span class="js-sort cur verticalTableHeader show" data-field="last_login_date" data-direction="asc"
+                  title="<%- i18next.t('Time') %>">
                   <%- i18next.t("Time") %>
                 </span>
               </th>
               <th class="text-center">
                 <span class="icon-caret-down hide"></span>
-                <span class="js-sort cur verticalTableHeader show" data-field="login_country_name" data-direction="asc" title="<%- i18next.t('IP') %>">
+                <span class="js-sort cur verticalTableHeader show" data-field="login_country_name" data-direction="asc"
+                  title="<%- i18next.t('IP') %>">
                   <%- i18next.t("IP") %>
                 </span>
               </th>
@@ -175,7 +193,8 @@
               </th>
               <th class="text-center">
                 <span class="icon-caret-down hide"></span>
-                <span class="js-sort cur verticalTableHeader show" data-field="register_country_name" data-direction="asc" title="<%- i18next.t('IP') %>">
+                <span class="js-sort cur verticalTableHeader show" data-field="register_country_name" data-direction="asc"
+                  title="<%- i18next.t('IP') %>">
                   <%- i18next.t("IP") %>
                 </span>
               </th>
@@ -204,12 +223,14 @@
           </a>
         </li>
         <li>
-          <a title="<%- i18next.t('Blocked') %>" href="#/users" class="js-select" data-unchecked="js-checkbox-active" data-checked="js-checkbox-inactive">
+          <a title="<%- i18next.t('Blocked') %>" href="#/users" class="js-select" data-unchecked="js-checkbox-active"
+            data-checked="js-checkbox-inactive">
             <%- i18next.t("Blocked") %>
           </a>
         </li>
         <li>
-          <a title="<%- i18next.t('Unblocked') %>" href="#/users" class="js-select" data-unchecked="js-checkbox-inactive" data-checked="js-checkbox-active">
+          <a title="<%- i18next.t('Unblocked') %>" href="#/users" class="js-select" data-unchecked="js-checkbox-inactive"
+            data-checked="js-checkbox-active">
             <%- i18next.t("Unblocked") %>
           </a>
         </li>

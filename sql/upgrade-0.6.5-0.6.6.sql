@@ -491,3 +491,38 @@ DO $$
         END; 
   END;
 $$;   
+
+DO $$ 
+   BEGIN
+        BEGIN
+            ALTER TABLE "webhooks"
+            ALTER "name" TYPE character varying(255),
+            ALTER "name" DROP DEFAULT,
+            ALTER "name" DROP NOT NULL,
+            ALTER "description" TYPE character varying(255),
+            ALTER "description" DROP DEFAULT,
+            ALTER "description" DROP NOT NULL,
+            ALTER "secret" TYPE character varying(255),
+            ALTER "secret" DROP DEFAULT,
+            ALTER "secret" DROP NOT NULL;
+            COMMENT ON COLUMN "webhooks"."name" IS '';
+            COMMENT ON COLUMN "webhooks"."description" IS '';
+            COMMENT ON COLUMN "webhooks"."secret" IS '';
+            COMMENT ON TABLE "webhooks" IS '';
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'name,type,description,secret already exists in webhooks';
+        END; 
+  END;
+$$;   
+
+DO $$ 
+   BEGIN
+        BEGIN
+            ALTER TABLE "webhooks"
+            ADD "activities_enabled" text NOT NULL DEFAULT '';
+            COMMENT ON TABLE "webhooks" IS '';
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'activities_enabled already exists in webhooks';
+        END; 
+  END;
+$$; 

@@ -25,8 +25,6 @@ App.BoardsIndexView = Backbone.View.extend({
         this.render();
     },
     template: JST['templates/board_index'],
-    tagName: 'section',
-    className: 'clearfix',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)

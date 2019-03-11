@@ -69,6 +69,7 @@ App.OrganizationHeaderView = Backbone.View.extend({
     closePopup: function(e) {
         var target = $(e.target);
         target.parents('li.dropdown').removeClass('open');
+        this.render();
         return false;
     },
     /**
@@ -77,15 +78,19 @@ App.OrganizationHeaderView = Backbone.View.extend({
      * @return false
      */
     editOrganization: function(e) {
+        var data = $('form#OrganizationEditForm').serializeObject();
+        $('.error-msg').remove();
+        $('.error-msg-description').remove();
         if (!$.trim($('#inputOrganizationName').val()).length) {
-            $('.error-msg').remove();
             $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputOrganizationName');
-            return false;
-        } else {
+        }
+        if ($.trim(data.description) === '') {
+            $('<div class="error-msg-description text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputOrganizationDescription');
+        }
+        if ($.trim(data.description) !== '' && $.trim(data.name) !== '') {
             $('.error-msg').remove();
             e.preventDefault();
             var self = this.model;
-            var data = $('form#OrganizationEditForm').serializeObject();
             this.closePopup(e);
             this.model.set(data);
             this.model.url = api_url + 'organizations/' + this.model.organization_id + '.json';

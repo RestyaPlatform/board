@@ -174,13 +174,13 @@
 </td>
  
 <td class="text-center">
-	<%- board.attributes.list_count%>
+	<%- (parseInt(board.attributes.list_count) - parseInt(board.attributes.archived_list_count))%>
 </td>
 <td class="text-center">
 	<%- board.attributes.archived_list_count%>
 </td>
 <td class="text-center"> 
-	<%- board.attributes.card_count%> 
+	<%- (parseInt(board.attributes.card_count) - parseInt(board.attributes.archived_card_count))%> 
 </td> 
 <td class="text-center"> 
 	<%- board.attributes.archived_card_count%> 

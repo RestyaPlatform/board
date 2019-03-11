@@ -6,29 +6,29 @@
 	<input type="hidden" name="card_labels" class="js-card-add-labels" value="">
 	<input type="hidden" name="cards_custom_fields_card_id" class="js-custom_field-card-id" value="">
 	<input type="hidden" name="cards_checklists_card_id" class="js-checklist-card-id" value="">
-	
+	<input type="hidden" name="cards_checklist_item_count" class="js-checklists-item-count" value="">
 	<input type="hidden" name="position" class="js-card-add-position" value="">
 	<div class="form-group">
 		<textarea placeholder=" <%- i18next.t('Add a card') %>" rows="3" id="AddCard" class="form-control" name="name" required><%- name %></textarea> 
 	</div>
-	<div class="row js-users-list">
+	<div class="row js-users-list hide">
 		<ul class="list-unstyled list-inline text-muted clearfix"></ul>
 	</div>
-	<div class="row js-checklist-list">
+	<div class="row js-checklist-list hide">
 		<ul class="list-unstyled list-inline text-muted clearfix"></ul>
 	</div>
-	<div class="row js-custom_fields-list">
+	<div class="row js-custom_fields-list hide">
 		<ul class="list-unstyled list-inline text-muted clearfix"></ul>
 	</div>
 	<div class="row">     
-		<div class="pull-left">
+		<div class="pull-left js-list-<%- model.attributes.list_id %>-addCardForm">
 			<input type="submit" value="<%- i18next.t('Add') %>" class="btn btn-primary js-cardAddForm-btn">
 		</div>
 		<ul class="list-unstyled pull-right">
 			<li class="pull-left">
 				<a title="<%- i18next.t('Cancel') %>" href="#" class="btn btn-link js-cancel-card-add"><i class="icon-remove text-muted"></i></a>
 			</li>
-			<li class="pull-right dropdown inner-dropdown">
+			<li class="pull-right js-addcard-settings-response dropdown inner-dropdown">
 				<a title="<%- i18next.t('Options') %>" data-toggle="dropdown" class="btn btn-link btn-block dropdown-toggle js-show-card-action-list" href="#"><i class="icon-cog text-muted"></i></a>
 			</li>
 		</ul>

@@ -27,7 +27,7 @@ if (typeof App === 'undefined') {
  */
 App.BoardView = Backbone.View.extend({
     tagName: 'section',
-    className: 'clearfix',
+    className: 'clearfix js-boards-view',
     id: 'boards-view',
     /**
      * Constructor
@@ -294,6 +294,7 @@ App.BoardView = Backbone.View.extend({
     closeSubPopup: function(e) {
         var el = this.$el;
         var target = el.find(e.target);
+        target.parents('.js-list-response.dropdown').removeClass('open');
         target.parents('li.dropdown').removeClass('open');
         return false;
     },

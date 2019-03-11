@@ -33,6 +33,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         this.sortField = options.sortField;
         this.filter_count = options.filter_count;
         this.roles = options.roles;
+        this.overall_groups = [];
         this.sortDirection = options.sortDirection;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
@@ -40,7 +41,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         this.render();
     },
     template: JST['templates/user_index_container'],
-    tag: 'section',
+    tagName: 'section',
     className: 'clearfix row',
     /**
      * render()
@@ -50,13 +51,40 @@ App.UserIndexContainerView = Backbone.View.extend({
      *
      */
     render: function() {
-        this.$el.html(this.template({
-            filter_count: this.filter_count,
-            roles: this.roles
-        }));
+        var self = this;
+        var is_group_app_enabled = false;
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
+            is_group_app_enabled = true;
+        }
+        if (is_group_app_enabled) {
+            this.$el.html('<div class="r_group_app_tabs" id="js-group_app_tabs"><div class="col-xs-12 well-lg navbar-btn"><div class="navbar-btn"><ul id = "myTab" class = "nav nav-tabs"><li class = "active"><a href = "#users" data-toggle = "tab" id="js-groupuser-tab">' + i18next.t('Users') + '</a></li><li><a href = "#groups" data-toggle = "tab" id="js-group-tab">' + i18next.t('Groups') + '</a></li></ul></div></div><div id = "myGroupTabContent" class = "tab-content"><div class = "tab-pane fade in active" id = "users"></div><div class = "tab-pane fade" id = "groups"></div></div></div>');
+            console.log(this.$el.find('#users'));
+            this.$el.find('#users').html(this.template({
+                filter_count: this.filter_count,
+                roles: this.roles
+            }));
+            $.ajax({
+                url: api_url + 'groups.json?limit=10000&token=' + this.getToken(),
+                cache: false,
+                type: 'GET',
+                success: function(response) {
+                    self.overall_groups = [];
+                    if (response.data) {
+                        self.overall_groups = response.data;
+                    }
+                }
+            });
+        } else {
+            this.$el.html(this.template({
+                filter_count: this.filter_count,
+                roles: this.roles
+            }));
+        }
+
         if (!_.isUndefined(this.sortField)) {
             this.renderUserCollection();
         }
+
         this.showTooltip();
         return this;
     },
@@ -74,6 +102,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         this.model.sort();
         this.model.each(function(user) {
             user.roles = self.roles;
+            user.overall_groups = self.overall_groups;
             view.append(new App.UserIndex({
                 model: user
             }).el);
@@ -91,7 +120,11 @@ App.UserIndexContainerView = Backbone.View.extend({
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.filterField = (!_.isUndefined(e)) ? $(e.currentTarget).data('filter') : _this.filterField;
         var users = new App.UserCollection();
-        $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
+        var colspan = "15";
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
+            colspan = "16";
+        }
+        $('.js-user-list').html('<tr class="js-loader"><td colspan="' + colspan + '"><span class="cssloader"></span></td></tr>');
         users.url = api_url + 'users.json?page=' + _this.current_page + '&filter=' + _this.filterField;
         app.navigate('#/' + 'users?page=' + _this.current_page + '&filter=' + _this.filterField, {
             trigger: false,
@@ -105,28 +138,34 @@ App.UserIndexContainerView = Backbone.View.extend({
                 if (users.length !== 0) {
                     users.each(function(user) {
                         user.roles = response.roles;
+                        user.overall_groups = _this.overall_groups;
                         $('.js-user-list').append(new App.UserIndex({
                             model: user
                         }).el);
                     });
                 } else {
-                    $('.js-user-list').html('<tr><td class="text-center" colspan="15">No record found</td></tr>');
+                    $('.js-user-list').html('<tr><td class="text-center" colspan="' + colspan + '">No record found</td></tr>');
                 }
                 $('.js-filter-list').children().removeClass('active');
-                $(e.currentTarget).parent().addClass('active');
+                if (!_.isUndefined(e)) {
+                    $(e.currentTarget).parent().addClass('active');
+                }
                 $('.pagination-boxes').unbind();
-                $('.pagination-boxes').pagination({
-                    total_pages: response._metadata.noOfPages,
-                    current_page: _this.current_page,
-                    display_max: 4,
-                    callback: function(event, page) {
-                        event.preventDefault();
-                        if (page) {
-                            _this.current_page = page;
-                            _this.filterUser();
+                $('.pagination-boxes').html('');
+                if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
+                    $('.pagination-boxes').pagination({
+                        total_pages: response._metadata.noOfPages,
+                        current_page: _this.current_page,
+                        display_max: 4,
+                        callback: function(event, page) {
+                            event.preventDefault();
+                            if (page) {
+                                _this.current_page = page;
+                                _this.filterUser();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
     },
@@ -141,7 +180,11 @@ App.UserIndexContainerView = Backbone.View.extend({
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.searchField = $('#user_search').val();
         var users = new App.UserCollection();
-        $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
+        var colspan = "15";
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
+            colspan = "16";
+        }
+        $('.js-user-list').html('<tr class="js-loader"><td colspan="' + colspan + '"><span class="cssloader"></span></td></tr>');
         if (!_.isUndefined(_this.searchField) && !_.isUndefined(_this.searchField)) {
             users.url = api_url + 'users.json?page=' + _this.current_page + '&search=' + _this.searchField;
         }
@@ -153,26 +196,30 @@ App.UserIndexContainerView = Backbone.View.extend({
                 if (users.length !== 0) {
                     users.each(function(user) {
                         user.roles = response.roles;
+                        user.overall_groups = _this.overall_groups;
                         $('.js-user-list').append(new App.UserIndex({
                             model: user
                         }).el);
                     });
                 } else {
-                    $('.js-user-list').html('<tr><td class="text-center" colspan="15">No record found</td></tr>');
+                    $('.js-user-list').html('<tr><td class="text-center" colspan="' + colspan + '">No record found</td></tr>');
                 }
                 $('.pagination-boxes').unbind();
-                $('.pagination-boxes').pagination({
-                    total_pages: response._metadata.noOfPages,
-                    current_page: _this.current_page,
-                    display_max: 4,
-                    callback: function(event, page) {
-                        event.preventDefault();
-                        if (page) {
-                            _this.current_page = page;
-                            _this.sortUser();
+                $('.pagination-boxes').html('');
+                if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
+                    $('.pagination-boxes').pagination({
+                        total_pages: response._metadata.noOfPages,
+                        current_page: _this.current_page,
+                        display_max: 4,
+                        callback: function(event, page) {
+                            event.preventDefault();
+                            if (page) {
+                                _this.current_page = page;
+                                _this.sortUser();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
         return false;
@@ -189,7 +236,11 @@ App.UserIndexContainerView = Backbone.View.extend({
         _this.sortField = (!_.isUndefined(e)) ? $(e.currentTarget).data('field') : _this.sortField;
         _this.sortDirection = (!_.isUndefined(e)) ? $(e.currentTarget).data('direction') : _this.sortDirection;
         var users = new App.UserCollection();
-        $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
+        var colspan = "15";
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
+            colspan = "16";
+        }
+        $('.js-user-list').html('<tr class="js-loader"><td colspan="' + colspan + '"><span class="cssloader"></span></td></tr>');
         if (!_.isUndefined(_this.sortDirection) && !_.isUndefined(_this.sortField)) {
             users.setSortField(_this.sortField, _this.sortDirection);
             if (!_.isUndefined(_this.searchField) && (_this.searchField !== '')) {
@@ -252,18 +303,21 @@ App.UserIndexContainerView = Backbone.View.extend({
                     }).el);
                 });
                 $('.pagination-boxes').unbind();
-                $('.pagination-boxes').pagination({
-                    total_pages: response._metadata.noOfPages,
-                    current_page: _this.current_page,
-                    display_max: 4,
-                    callback: function(event, page) {
-                        event.preventDefault();
-                        if (page) {
-                            _this.current_page = page;
-                            _this.sortUser();
+                $('.pagination-boxes').html('');
+                if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
+                    $('.pagination-boxes').pagination({
+                        total_pages: response._metadata.noOfPages,
+                        current_page: _this.current_page,
+                        display_max: 4,
+                        callback: function(event, page) {
+                            event.preventDefault();
+                            if (page) {
+                                _this.current_page = page;
+                                _this.sortUser();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
     },
@@ -319,6 +373,16 @@ App.UserIndexContainerView = Backbone.View.extend({
                 $("#js-more-action").val('0');
                 return false;
             }
+        }
+    },
+
+    getToken: function() {
+        if ($.cookie('auth') !== undefined) {
+            var Auth = JSON.parse($.cookie('auth'));
+            api_token = Auth.access_token;
+            return api_token;
+        } else {
+            return false;
         }
     }
 });

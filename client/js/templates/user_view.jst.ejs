@@ -40,7 +40,8 @@
 							</div>
 							<div class="row">
 								<div class="tab-content">
-										<div class="modal-body tab-pane js-membered-cards-tabContent <% if (_.isUndefined(type) || type == 'cards') { %>active<%}%>" id="cards"></div>
+									<div class="modal-body tab-pane js-membered-cards-tabContent <% if (_.isUndefined(type) || type == 'cards') { %>active<%}%>" id="cards">
+									</div>
 									<div class="modal-body tab-pane js-userCreated-cards-tabContent" id="created-cards">
 									</div>
 								</div>
@@ -52,13 +53,13 @@
 					<div class="modal-body tab-pane <% if (!_.isUndefined(type) && type == 'settings') { %>active<%}%>" id="settings">
 						<form class="form-horizontal clearfix pull-left js-user-profile-edit" role="form" enctype="multipart/form-data" id="js-user-profile-edit">
 							<div class="form-group">
-								<label for="inputFullName" class="col-sm-4 control-label"><%- i18next.t("Full Name") %></label>
+								<label for="inputFullName" class="col-sm-2 control-label"><%- i18next.t("Full Name") %></label>
 								<div class="col-sm-8">
-									<input type="text" id="inputFullName" class="form-control" name="full_name" value="<%- user.attributes.full_name %>" maxlength="90">
+									<input type="text" id="inputFullName" class="form-control" name="full_name" value="<%- user.attributes.full_name %>" maxlength="90" required>
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="AboutMe" class="col-sm-4 control-label"><%- i18next.t("About Me") %></label>
+								<label for="AboutMe" class="col-sm-2 control-label"><%- i18next.t("About Me") %></label>
 								<div class="col-sm-8">
 									<textarea class="form-control" id="AboutMe" rows="6" name="about_me"><%- user.attributes.about_me %></textarea>
 								</div>
@@ -66,27 +67,27 @@
 							<% if(!_.isUndefined(authuser.user) && authuser.user.is_ldap != 1){ %>
 								<% if(!_.isUndefined(authuser.user) && authuser.user.role_id == 1){ %>
 									<div class="form-group required">
-										<label for="inputemail" class="col-sm-4 control-label"><%- i18next.t("Email") %></label>
+										<label for="inputemail" class="col-sm-2 control-label"><%- i18next.t("Email") %></label>
 										<div class="col-sm-8">
 											<input type="email" id="inputemail" class="form-control" name="email" value="<%- user.attributes.email %>" required>
 										</div>
 									</div>
 								<% } %>
 								<div class="form-group required">
-									<label for="inputusername" class="col-sm-4 control-label"><%- i18next.t("Username") %></label>
+									<label for="inputusername" class="col-sm-2 control-label"><%- i18next.t("Username") %></label>
 									<div class="col-sm-8">
-										<input type="text" id="inputusername" class="form-control" name="username" value="<%- user.attributes.username %>" pattern="^[a-zA-Z0-9]{2,90}$" title="<%- i18next.t('Username. Minimum 3 characters and Maximum 90 characters and spaces not allowed') %>">
+										<input type="text" id="inputusername" class="form-control" name="username" value="<%- user.attributes.username %>" pattern="^[a-zA-Z0-9]{2,90}$" title="<%- i18next.t('Username. Minimum 3 characters and Maximum 90 characters and spaces not allowed') %>" required>
 									</div>
 								</div>
 							<% } %>
 							<div class="form-group required">
-								<label for="inputinitials" class="col-sm-4 control-label"><%- i18next.t("Initials") %></label>
+								<label for="inputinitials" class="col-sm-2 control-label"><%- i18next.t("Initials") %></label>
 								<div class="col-sm-8">
 									<input type="text" id="inputinitials" class="form-control initialism" name="initials" value="<% if (!_.isUndefined(user.attributes.initials) && !_.isEmpty(user.attributes.initials) && user.attributes.initials !== 'null' && user.attributes.initials !== 'NULL') {%><%- user.attributes.initials.toUpperCase() %><% } %>" maxlength="2" required>
 								</div>
 							</div>
 							<div class="form-group required">
-								<label for="inputtimezone" class="col-sm-4 control-label"><%- i18next.t("Timezone") %></label>
+								<label for="inputtimezone" class="col-sm-2 control-label"><%- i18next.t("Timezone") %></label>
 								<div class="col-sm-8">
 									<%
 										user_timezone = SITE_TIMEZONE;
@@ -107,14 +108,14 @@
 							</div>
 							<% if(!_.isEmpty(role_links.where({slug: "add_user_profile_picture"}))){ %>
 								<div class="form-group" id="dropzone" data-mode="1">
-									<label for="inputAttachment" class="col-sm-4 control-label sr-only"><%- i18next.t("Upload Avatar") %></label>
-									<div class="col-xs-8">
+									<label for="inputAttachment" class="col-sm-2 control-label sr-only"><%- i18next.t("Upload Avatar") %></label>
+									<div class="col-xs-2">
 										<a data-placement="bottom" title="<%- user.attributes.username%>" data-toggle="tooltip" href="#" class="avatar-option js-use-uploaded-avatar drag-box navbar-left"> 
 											<% if(!_.isEmpty(user.attributes.profile_picture_path) && user.attributes.profile_picture_path != 'NULL') { 
-												var profile_picture_path = user.showImage('User', user.attributes.id, 'small_thumb' ) +'?'+ new Date().getTime();
+												var profile_picture_path = user.showImage('User', user.attributes.id, 'normal_thumb' ) +'?'+ new Date().getTime();
 											%>
-												<span class="js-remove-image  profile-block show"><i class="icon icon-remove close-block cur h6"></i></span>
-												<img src="<%- profile_picture_path %>" width="50" height="50" class="js-user-avatar">
+												<span class="js-remove-image  profile-block show" title="<%- i18next.t("Remove user Avatar") %>"><i class="icon icon-remove close-block cur h6"></i></span>
+												<img src="<%- profile_picture_path %>" width="64" height="64" class="js-user-avatar">
 											<% } else {%>
 												<i class="avatar avatar-color-194 avatar-md img-rounded"><%- user.attributes.initials %></i>									
 											<% } %>

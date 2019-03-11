@@ -107,21 +107,6 @@
 			sed -i "s/rewrite ^\/ical\/.*/rewrite ^\/ical\/([0-9]*)\/([0-9]*)\/([a-z0-9]*).ics\$ \/server\/php\/ical.php?board_id=\$1\&user_id=\$2\&hash=\$3 last;/" /etc/nginx/conf.d/restyaboard.conf
 		}
 
-		upgrade-0.6.1-0.6.2()
-		{
-			set +x
-			echo "Do you want to install Restyaboard app 'Hide Card Additional Informations' (y/n)?"
-			read -r answer
-			set -x
-			case "${answer}" in
-				[Yy])
-				mkdir "$dir/client/apps"
-				chmod -R go+w "$dir/client/apps"
-				curl -v -L -G -o /tmp/r_hide_card_additional_informations-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_hide_card_additional_informations-v0.1.1.zip
-				unzip /tmp/r_hide_card_additional_informations-v0.1.1.zip -d "$dir/client/apps"
-			esac
-		}
-
 		upgrade-0.6.3-0.6.4()
 		{
 			if [ -d "$dir/client/apps/r_hide_card_created_date" ]; then
@@ -140,6 +125,25 @@
 				curl -v -L -G -o /tmp/r_hide_card_additional_informations-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_hide_card_additional_informations-v0.1.2.zip
 				unzip /tmp/r_hide_card_additional_informations-v0.1.2.zip -d "$dir/client/apps"
 			fi
+		}
+
+		upgrade-0.6.5-0.6.6()
+		{
+			if [ -d "$dir/client/apps" ]; then
+				chmod -R go+w "$dir/client/apps"
+				curl -v -L -G -o /tmp/r_codenames-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.1.zip
+				unzip /tmp/r_codenames-v0.1.1.zip -d "$dir/client/apps"
+			else 
+				mkdir "$dir/client/apps"
+				chmod -R go+w "$dir/client/apps"
+				curl -v -L -G -o /tmp/r_codenames-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.1.zip
+				unzip /tmp/r_codenames-v0.1.1.zip -d "$dir/client/apps"
+			fi
+		}
+		
+		upgrade-0.6.6-0.6.7(){
+			: > /var/spool/cron/crontabs/root
+			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/main.sh//" /var/spool/cron/crontabs/root
 		}
 
 		update_version()
@@ -224,7 +228,11 @@
 				if [[ $version < "v0.6.5" ]];
 				then
 					upgrade+=("upgrade-0.6.4-0.6.5")
-				fi				
+				fi	
+				if [[ $version < "v0.6.6" ]];
+				then
+					upgrade+=("upgrade-0.6.5-0.6.6")
+				fi			
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
 				do
@@ -892,6 +900,7 @@
 
 					yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
 					yum install -y php72w-pear
+					yum install -y php72w-gd
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then

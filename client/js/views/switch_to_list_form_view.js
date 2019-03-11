@@ -73,7 +73,9 @@ App.SwitchToListView = Backbone.View.extend({
                     id: card.attributes.list_id,
                     is_archived: 0
                 });
-                card.set('list_name', _.escape(list.attributes.name));
+                if (!_.isUndefined(list) && !_.isEmpty(list)) {
+                    card.set('list_name', _.escape(list.attributes.name));
+                }
                 card.labels.each(function(label, key) {
                     if (!_.isUndefined(label) && label.attributes.name !== "") {
                         if (key === 0) {
@@ -169,7 +171,7 @@ App.SwitchToListView = Backbone.View.extend({
                     });
                     view = new App.CardView({
                         tagName: 'tr',
-                        className: 'js-show-modal-card-view',
+                        className: 'js-show-modal-card-view cur txt-aligns',
                         model: card,
                         template: 'list_view'
                     });
