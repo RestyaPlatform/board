@@ -79,8 +79,8 @@ App.BoardAdditionalSettingsView = Backbone.View.extend({
         var self = this;
         this.showTooltip();
         _(function() {
-            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
-                $('body').trigger('boardAdditionalSettingsRendered');
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model) && !_.isUndefined(self.model.attributes.sort_by) && !_.isEmpty(self.model.attributes.sort_by)) {
+                $('body').trigger('boardAdditionalSettingsRendered', self.model.attributes.sort_by);
             }
         }).defer();
         return this;
