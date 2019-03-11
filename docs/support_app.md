@@ -2,7 +2,7 @@
 
 ## Instructions for support desk plugin configuration
 
-[![How to configure Support Desk plugin](http://img.youtube.com/vi/7wYDzb_v1Kc/0.jpg)](http://www.youtube.com/watch?v=7wYDzb_v1Kc)
+[![How to configure Support Desk plugin](support_plugin_installation.png)](http://www.youtube.com/watch?v=8Adlx13YKmM)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., "/usr/share/nginx/html/restyaboard/"

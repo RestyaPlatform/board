@@ -3,7 +3,7 @@
 	<div class="panel-body bg-warning">
 		<div class="clearfix">
 			<h4 class="col-sm-7 col-xs-5 navbar-btn">
-				<span class="show row navbar-btn">
+				<span class="htruncate show row navbar-btn">
 				<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
 					<a class="htruncate btn-block" href="#/board/<%- board.id %>" title="<%- board.attributes.name %>"><%- board.attributes.name%></a>
 				<% } else { %>

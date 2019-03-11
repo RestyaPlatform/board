@@ -25,6 +25,9 @@ App.SwitchToListView = Backbone.View.extend({
         this.sort_by = null;
         this.render();
     },
+    attributes: {
+        id: 'js-board-lists'
+    },
     template: JST['templates/switch_to_list_form'],
     /**
      * Events
@@ -70,7 +73,23 @@ App.SwitchToListView = Backbone.View.extend({
                     id: card.attributes.list_id,
                     is_archived: 0
                 });
-                card.set('list_name', _.escape(list.attributes.name));
+                if (!_.isUndefined(list) && !_.isEmpty(list)) {
+                    card.set('list_name', _.escape(list.attributes.name));
+                }
+                card.labels.each(function(label, key) {
+                    if (!_.isUndefined(label) && label.attributes.name !== "") {
+                        if (key === 0) {
+                            card.set('sort_group_label', label.attributes.name);
+                        }
+                    }
+                });
+                card.users.each(function(user, key) {
+                    if (!_.isUndefined(user) && user.attributes.username !== "") {
+                        if (key === 0) {
+                            card.set('sort_group_user', user.attributes.username);
+                        }
+                    }
+                });
             });
             var cards = new App.CardCollection();
             if (this.sort_by === sort_by) {
@@ -96,17 +115,19 @@ App.SwitchToListView = Backbone.View.extend({
             }
             cards.comparator = function(item) {
                 var str = '' + item.get(sort_by);
-                if (sort_by === 'name' || sort_by === 'list_name') {
+                if (sort_by === 'name' || sort_by === 'list_name' || sort_by === 'sort_group_label' || sort_by === 'sort_group_user') {
                     str = str.toLowerCase();
-                    str = str.split('');
-                    str = _.map(str, function(letter) {
-                        if (cards.sortDirection.toLowerCase() === 'desc') {
-                            return String.fromCharCode(-(letter.charCodeAt(0)));
-                        } else {
-                            return String.fromCharCode((letter.charCodeAt(0)));
-                        }
-                    });
-                    return str;
+                    if (str !== 'undefined' && !_.isUndefined(str) && !_.isEmpty(str) && str !== null) {
+                        str = str.split('');
+                        str = _.map(str, function(letter) {
+                            if (cards.sortDirection.toLowerCase() === 'desc') {
+                                return String.fromCharCode(-(letter.charCodeAt(0)));
+                            } else {
+                                return String.fromCharCode((letter.charCodeAt(0)));
+                            }
+                        });
+                        return str;
+                    }
                 } else if (sort_by === 'due_date') {
                     if (item.get('due_date') !== null) {
                         var date = item.get('due_date').split(' ');
@@ -150,7 +171,7 @@ App.SwitchToListView = Backbone.View.extend({
                     });
                     view = new App.CardView({
                         tagName: 'tr',
-                        className: 'js-show-modal-card-view',
+                        className: 'js-show-modal-card-view cur txt-aligns',
                         model: card,
                         template: 'list_view'
                     });

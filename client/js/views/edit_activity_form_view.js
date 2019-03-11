@@ -96,5 +96,6 @@ App.EditActivityFormView = Backbone.View.extend({
             $(target).parents('.js-edit-comment').find('.js-card-editComment-preview').html("<p>Nothing to preview</p>");
         }
         $(target).parents('.js-edit-comment').find('.js-card-editComment-preview-panel').removeClass('hide').addClass('show');
+        emojify.run();
     }
 });

@@ -16,10 +16,15 @@ if (typeof App === 'undefined') {
 App.CardAttachmentView = Backbone.View.extend({
     template: JST['templates/card_attachment'],
     initialize: function(options) {
+        if (options.card_id) {
+            this.card_id = options.card_id;
+        }
         this.model.board = options.board;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
             this.model.downloadLink = this.downloadLink;
+            this.model.documentLink = this.documentLink;
+            this.model.videoLink = this.videoLink;
         }
     },
     tagName: 'li',
@@ -43,7 +48,8 @@ App.CardAttachmentView = Backbone.View.extend({
      */
     render: function() {
         this.$el.html(this.template({
-            attachment: this.model
+            attachment: this.model,
+            card_id: this.card_id
         }));
         this.showTooltip();
         return this;

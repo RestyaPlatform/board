@@ -1,6 +1,6 @@
 #Desktop Notifications
 
-##Desktop Notification
+##Desktop Notifications
 
 
 Browser will ask about this notifications in every page.
@@ -21,6 +21,11 @@ Browser will ask about this notifications in every page.
 **If you select allow, then the following details will be display on the user profile page.**
 
 ![Desktop Notifications Granted](desktop-notification-granted.png "Desktop Notifications Granted")
+
+##Shows Notifications for other user actions
+**If you have enabled the notification, you will recieve the notifications about other users action in card, list. you will recieve the notification about members mentioning in the card also.**
+
+![Shows Notifications for other user actions](desktop_notification_for_users_action.png "Desktop Notifications Disabled")
 
 ## After disabling desktop Notification
 

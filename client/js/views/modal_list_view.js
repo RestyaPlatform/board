@@ -95,11 +95,22 @@ App.ModalListView = Backbone.View.extend({
         if (filtered_attachments.length > 0) {
             filtered_attachments.each(function(attachment) {
                 var view = new App.AttachmentView({
+                    id: self.model.id,
                     model: attachment,
                     board: self.model.board
                 });
                 view_attachment.append(view.render().el);
             });
+            _(function() {
+                $(".js-attachment-" + self.model.id).fancybox({
+                    'transitionIn': 'elastic',
+                    'transitionOut': 'elastic',
+                    'speedIn': 600,
+                    'speedOut': 200,
+                    'overlayShow': false
+                });
+            }).defer();
+
         } else {
             var view = new App.AttachmentView({
                 model: null

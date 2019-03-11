@@ -11,6 +11,14 @@ var current_position = card.list.cards.indexOf(card.list.cards.get(card.attribut
 if(current_position == 0){
 	current_position = 1;
 }
+var wip_enabled = false;
+if (!_.isUndefined(APPS) && APPS !== null ) {
+	if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+		if ($.inArray('r_agile_wip',APPS.enabled_apps) !== -1) {
+			wip_enabled = true;
+		}
+	}
+}
 boards.each(function(board) {
 	if (card.attributes.board_id == board.id) {
 		content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) +  ' '+i18next.t('(current)')+'</option>';
@@ -20,14 +28,15 @@ boards.each(function(board) {
 			board_id: card.attributes.board_id
 		});
 		_.each(filtered_lists, function(list) {
-		
+			
 			if (card.attributes.list_id == list.id) {
 				content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) +  ' '+ i18next.t('(current)')+'</option>';
 				for(var i = 1; i <= list.attributes.card_count; i++){
+					
 					if (card.attributes.list_id == list.attributes.id && i == current_position) {
 						content_position += '<option value="' + i + '" selected="selected">' + i +  ' '+i18next.t('(current)')+'</option>';
 					} else {
-						content_position += '<option value="' + i + '">' + i+ '</option>';
+							content_position += '<option value="' + i + '">' + i+ '</option>';
 					}
 				}
 				if (card.attributes.list_id != list.attributes.id) {
@@ -36,13 +45,33 @@ boards.each(function(board) {
 				}
 				
 			} else {
-				content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+				if (wip_enabled && !_.isUndefined(list.attributes.custom_fields) && !_.isEmpty(list.attributes.custom_fields)) {
+					var list_custom_fields = JSON.parse(list.attributes.custom_fields);
+					var list_card_count = isNaN(list.attributes.card_count) ? 0 : list.attributes.card_count;
+					if (!_.isUndefined(list_custom_fields.wip_limit) && !_.isEmpty(list_custom_fields.wip_limit)) {
+						if (parseInt(list_card_count) === parseInt(list_custom_fields.wip_limit) && !_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit)) {
+							content_list += '<option value="' + list.id + '" disabled>' + _.escape(list.attributes.name) + ' (' + i18next.t('Agile WIP exceeded') + ')</option>';
+						} else if(parseInt(list_card_count) > parseInt(list_custom_fields.wip_limit)){
+							content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + ' ( > ' + i18next.t('WIP limit') + ')</option>';
+						} else {
+							content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+						}
+					} else {
+						content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+					}
+				} else {
+					content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+				}
 			}
 
 		});
 	} else {
 		if(parseInt(board.attributes.is_closed) === 0){
-			content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + '</option>';
+			if(!_.isEmpty(board.attributes.organization_name) && parseInt(board.attributes.organization_id) != 0) {
+				content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + ' (' + _.escape(board.attributes.organization_name) + ') </option>';
+			} else {
+				content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + '</option>';
+			}
 		}
 	}
 

@@ -3,8 +3,16 @@ $(window).resize(function() {
     var footerH = $("footer").height();
     var windowH = $(window).height();
     var notificationH = windowH - footerH;
-    var boardH = windowH - headerH - footerH - 14;
+    var boardH;
+    if (!_.isEmpty(footerH)) {
+        boardH = windowH - headerH - footerH - 14;
+    } else {
+        boardH = windowH - headerH - 50;
+    }
     $(".board-list-view").css("height", (boardH + 'px'));
+    if ($(".js-board-list") && (/Edge/.test(navigator.userAgent) || !!navigator.userAgent.match(/Trident.*rv\:11\./))) {
+        $(".js-board-list").css("height", (boardH + 'px'));
+    }
     $(".notification-list").css({
         'height': notificationH - 100,
         'overflow-y': 'scroll'
@@ -58,6 +66,14 @@ $dc.ready(function() {
                 window.location.reload();
             }
         });
+        return false;
+    }).on('click', '.js-switch-board-view', function(e) {
+        if (!_.isEmpty($(this).data('board-viewtype')) && !_.isUndefined($(this).data('board-viewtype'))) {
+            if ($('#content #boards-view-' + $(this).data('board-viewtype')).length === 0) {
+                $('#content .js-boards-view').remove('');
+                $('#content').html('<section id="boards-view-' + $(this).data('board-viewtype') + '" class="clearfix js-boards-view"></section>');
+            }
+        }
         return false;
     });
     if ((navigator.userAgent.toLowerCase().indexOf('android') > -1) && (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)) {
@@ -133,6 +149,14 @@ function checkKeycode(keycode, c) {
 
 function makeLink(text, board_id) {
     text = text.replace(/#(\d+)/g, '<a class="js-open-card-view" data-card_id="$1" href="#/board/' + board_id + '/card/$1">#$1</a>');
+    if (!_.isUndefined(APPS) && APPS !== null) {
+        if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+            if ($.inArray('r_wiki', APPS.enabled_apps) !== -1) {
+                text = text.replace(/%(\d+)/g, '<a class="js-open-wiki-view" target="_blank" data-card_id="$1" href="#/apps/r_wiki/pages?id=$1">%$1</a>');
+            }
+        }
+    }
+
     text = text.replace(/(?!\b)(@\w+\b)/g, '<span class="atMention">$1</span>');
     return text;
 }
@@ -150,7 +174,7 @@ function parse_date(dateTime, logged_user, classname) {
         tz = moment.tz(s, logged_user.user.timezone);
     }
     _(function() {
-        $('.' + classname).html('<abbr title="' + tz.format() + '">' + tz.fromNow() + '<abbr>');
+        $('.' + classname).html('<abbr title="' + tz.format() + '">' + tz.fromNow() + '</abbr>');
     }).defer();
     return true;
 }

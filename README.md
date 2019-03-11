@@ -1,8 +1,15 @@
 ### Restyaboard
 
 [![Build Status](https://travis-ci.org/RestyaPlatform/board.svg?branch=master)](https://travis-ci.org/RestyaPlatform/board) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/RestyaPlatform/board.svg)](http://isitmaintained.com/project/RestyaPlatform/board "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/RestyaPlatform/board.svg)](http://isitmaintained.com/project/RestyaPlatform/board "Percentage of issues still open")
+[![Known Vulnerabilities](https://snyk.io/test/github/RestyaPlatform/board/badge.svg)](https://snyk.io/test/github/RestyaPlatform/board)
 
-Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [Restya platform](http://restya.com/).
+### What is Restyaboard?
+Trello like kanban board. Tasks, to-dos, chat, etc., [Restyaboard](http://restya.com/board/) is based on [Restya platform](http://restya.com/) with dual License ([OSL 3.0](LICENSE.txt) & [Commercial License](http://restya.com/contact)).
+
+Whether you’re creating a personal todo list, planning your holidays with some friends, or working in a team on your next revolutionary concept, Restyaboard is an simple and effective tool to keep your tasks organized. The boards of restyaboard will give you a visual overview of the current state of your projects, and make you productive by allowing you to focus on the few items that matter the most.
+
+### Why use Restyaboard?
+Since Restyaboard is a free software, you don’t have to give us your data and you can install the Restyaboard on your own internal server. You can also increase the productivity even more by reducing the time of managing the projects with the help of Restyaboard plugin which is available in [RestyaPlatform](http://restya.com/board/apps).
 
 # For Free Installation, [contact us](http://restya.com/contact?category=free-installation) 
 
@@ -25,22 +32,35 @@ Trello like kanban board. [Restyaboard](http://restya.com/board/) is based on [R
 
 To upgrade, overwrite application files and apply respective DB script:
 
-*  v0.1.1 to v0.1.2 - `/sql/upgrade-0.1.1-0.1.2.sql`
-*  v0.1.2 to v0.1.3 - `/sql/upgrade-0.1.2-0.1.3.sql`
-*  v0.1.3 to v0.1.4 - `/sql/upgrade-0.1.3-0.1.4.sql`
-*  v0.1.4 to v0.1.5 - `/sql/upgrade-0.1.4-0.1.5.sql`
-*  v0.1.5 to v0.1.6 - `/sql/upgrade-0.1.5-0.1.6.sql`
-*  v0.1.6 to v0.2 - `/sql/upgrade-0.1.6-0.2.sql`
-*  v0.2 to v0.2.1 - `/sql/upgrade-0.2-0.2.1.sql`
-*  v0.2.1 to v0.3 - `/sql/upgrade-0.2.1-0.3.sql`
-*  v0.3 to v0.4 - `/sql/upgrade-0.3-0.4.sql`
-*  v0.4 to v0.4.1 - `/sql/upgrade-0.4-0.4.1.sql`
-*  v0.4.2 to v0.5 - `/sql/upgrade-0.4.2-0.5.sql`
-*  v0.5.1 to v0.5.2 - `/sql/upgrade-0.5.1-0.5.2.sql`
-*  v0.5.2 to v0.6 - `/sql/upgrade-0.5.2-0.6.sql`
-*  v0.6 to v0.6.1 - `/sql/upgrade-0.6-0.6.1.sql`
-*  v0.6.1 to v0.6.2 - `/sql/upgrade-0.6.1-0.6.2.sql`
-*  v0.6.2 to v0.6.3 - `/sql/upgrade-0.6.2-0.6.3.sql`
+*  v0.1.1 to v0.1.2 - [`/sql/upgrade-0.1.1-0.1.2.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.1.1-0.1.2.sql)
+*  v0.1.2 to v0.1.3 - [`/sql/upgrade-0.1.2-0.1.3.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.1.2-0.1.3.sql)
+*  v0.1.3 to v0.1.4 - [`/sql/upgrade-0.1.3-0.1.4.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.1.3-0.1.4.sql)
+*  v0.1.4 to v0.1.5 - [`/sql/upgrade-0.1.4-0.1.5.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.1.1-4.1.5.sql)
+*  v0.1.5 to v0.1.6 - [`/sql/upgrade-0.1.5-0.1.6.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.1.5-0.1.6.sql)
+*  v0.1.6 to v0.2 - [`/sql/upgrade-0.1.6-0.2.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.1.6-0.2.sql)
+*  v0.2 to v0.2.1 - [`/sql/upgrade-0.2-0.2.1.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.2-0.2.1.sql)
+*  v0.2.1 to v0.3 - [`/sql/upgrade-0.2.1-0.3.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.2.1-0.3.sql)
+*  v0.3 to v0.4 - [`/sql/upgrade-0.3-0.4.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.3-0.4.sql)
+*  v0.4 to v0.4.1 - [`/sql/upgrade-0.4-0.4.1.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.4-0.4.1.sql)
+*  v0.4.2 to v0.5 - [`/sql/upgrade-0.4.2-0.5.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.4.2-0.5.sql)
+*  v0.5.1 to v0.5.2 - [`/sql/upgrade-0.5.1-0.5.2.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.5.1-0.5.2.sql)
+*  v0.5.2 to v0.6 - [`/sql/upgrade-0.5.2-0.6.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.5.2-0.6.sql)
+*  v0.6 to v0.6.1 - [`/sql/upgrade-0.6-0.6.1.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6-0.6.1.sql)
+*  v0.6.1 to v0.6.2 - [`/sql/upgrade-0.6.1-0.6.2.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.1-0.6.2.sql)
+*  v0.6.2 to v0.6.3 - [`/sql/upgrade-0.6.2-0.6.3.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.2-0.6.3.sql)
+*  v0.6.3 to v0.6.4 - [`/sql/upgrade-0.6.3-0.6.4.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.3-0.6.4.sql)
+*  v0.6.5 to v0.6.6 - [`/sql/upgrade-0.6.5-0.6.6.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.5-0.6.6.sql)
+
+### Configuring Restyaboard
+
+* Login using username `admin`, password `restya`
+* If installed via Amazon AMI, then login using the username `admin` and the `instance_id` of the instance as the password
+* Visit admin panel at `/#/settings/6`
+* Update Dropbox App Key by visiting [https://www.dropbox.com/developers/apps/](https://www.dropbox.com/developers/apps/)
+* Update Flickr API Key by visiting [https://www.flickr.com/services/apps/](https://www.flickr.com/services/apps/)
+* Visit `/#/settings/3` for configuring site name, email and server timezone.
+* Change admin email and password
+* To add/reply cards via email, visit `/#/settings/10` to configure IMAP settings
 
 ### Forum
 
@@ -54,8 +74,14 @@ To give you some idea about of our plans:
 
 #### Under release
 
-* Notifier iOS App (Non-open source; free with IAP)
-
+* Export CSV app
+* WIP limit app
+* Enhancing Custom fields, LDAP, Gantt app
+* Download all attachments in a card app
+* iCal feed for user app
+* Board reports app
+* Board member roles app
+* GitHub issues & enhancements etc.,
 
 #### Next
 

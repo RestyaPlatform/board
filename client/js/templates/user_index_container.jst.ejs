@@ -1,83 +1,270 @@
 <div class="well-sm"></div>
-<section class="clearfix">
- <div class="col-xs-12">
-	<ul class="nav nav-pills text-center thumbnail js-filter-list">
-		<li><a class="js-filter cur" data-filter="active" title="<%- i18next.t('Active') %>"><span class="show"><strong><%- filter_count.active %></strong></span><%- i18next.t('Active') %></a></li>
-		<li><a class="js-filter cur" data-filter="inactive" title="<%- i18next.t('Inactive') %>"><span class="show"><strong><%- filter_count.inactive %></strong></span><%- i18next.t('Inactive') %></a></li>
-			<li><a class="js-filter cur ldap_login_check" data-filter="ldap" title="<%- i18next.t('LDAP') %>"><span class="show"><strong><%- filter_count.ldap %></strong></span><%- i18next.t('LDAP') %></a></li>
-		<% if(!_.isEmpty(roles)){ 
-			_.each(roles, function(role) {
-		%>
-			<li><a class="js-filter cur" data-filter="<%- role.id %>" title="<%- role.name %>"><span class="show"><strong><%- role.count %></strong></span><%- i18next.t(role.name) %></a></li>
-		<% });
-		} %>
-		<% var all = parseInt(filter_count.active) + parseInt(filter_count.inactive); %>
-		<li class="active"><a href="#/users" title="<%- i18next.t('All') %>"><span class="show"><strong><%-  all %></strong></span><%- i18next.t('All') %></a></li>
-		<li class="pull-right h4"><form id="UserSearch" name="UserSearch" class="form-horizontal col-xs-12"><input type="text" placeholder="Search" name="user_search" id="user_search" class="form-control" /></form></li>
-	</ul>
- </div>
-</section>
-<section>
-<div class="well-sm"></div>
-<form role="form" class="col-xs-12">
-	<div class="table-responsive">
-		<table class="table table-striped table-bordered table-hover list-group-item-text">
-		<thead>
-                <tr class="active">
-                  <th rowspan="2" class="text-center"><%- i18next.t("Select") %></th>
-				  <th rowspan="2" class="col-xs-2"><span class="js-sort cur" data-field="username" data-direction="asc" title="<%- i18next.t('User') %>"><span class="icon-caret-down"></span><%- i18next.t("User") %></span></th>
-                  <th colspan="3" class="text-center"><%- i18next.t("Organizations") %></th>
-                  <th colspan="3" class="text-center"><%- i18next.t("Boards") %></th>
-                  <th colspan="3" class="text-center"><%- i18next.t("Login") %></th>
-                  <th colspan="2" class="text-center"><%- i18next.t("Registered") %></th>
-                  <th rowspan="2" class="text-center col-xs-1"><span data-field="role_id" data-direction="asc" title="<%- i18next.t('Role') %>"><span class="icon-caret-down hide"></span><%- i18next.t("Role") %></span></th>
-				  <th rowspan="2" class="text-center"><%- i18next.t("Actions") %></th>
-                </tr>
-                <tr class="active">
-				  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="created_organization_count" data-direction="asc" title="<%- i18next.t('Created') %>"><%- i18next.t("Created") %></span></th>
-                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="owner_organization_count" data-direction="asc" title="<%- i18next.t('Owner') %>"><%- i18next.t("Owner") %></span></th>
-                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="member_organization_count" data-direction="asc" title="<%- i18next.t('Member') %>"><%- i18next.t("Member") %></span></th>
-				  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="created_board_count" data-direction="asc" title="<%- i18next.t('Created') %>"><%- i18next.t("Created") %></span></th>
-                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="owner_board_count" data-direction="asc" title="<%- i18next.t('Owner') %>"><%- i18next.t("Owner") %></span></th>
-                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="member_board_count" data-direction="asc" title="<%- i18next.t('Member') %>"><%- i18next.t("Member") %></span></th>
-                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="user_login_count" data-direction="asc" title="<%- i18next.t('Count') %>"><%- i18next.t("Count") %></span></th>
-                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="last_login_date" data-direction="asc" title="<%- i18next.t('Time') %>"><%- i18next.t("Time") %></span></th>
-                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="login_country_name" data-direction="asc" title="<%- i18next.t('IP') %>"><%- i18next.t("IP") %></span></th>
-				  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="created" data-direction="asc" title="<%- i18next.t('Time') %>"><%- i18next.t("Time") %></span></th>
-                  <th class="text-center"><span class="icon-caret-down hide"></span><span class="js-sort cur verticalTableHeader show" data-field="register_country_name" data-direction="asc" title="<%- i18next.t('IP') %>"><%- i18next.t("IP") %></span></th>
-                </tr>
-			
-        </thead>
-			<tbody class="js-user-list">
-			 </tbody>
-	    </thead>
+
+<div class="js-admin-user-lists">
+  <section class="clearfix">
+    <div class="col-xs-12">
+      <ul class="nav nav-pills text-center thumbnail js-filter-list">
+        <li>
+          <a class="js-filter cur" data-filter="active" title="<%- i18next.t('Active') %>">
+            <span class="show">
+              <strong>
+                <%- filter_count.active %>
+              </strong>
+            </span>
+            <%- i18next.t('Active') %>
+          </a>
+        </li>
+        <li>
+          <a class="js-filter cur" data-filter="inactive" title="<%- i18next.t('Inactive') %>">
+            <span class="show">
+              <strong>
+                <%- filter_count.inactive %>
+              </strong>
+            </span>
+            <%- i18next.t('Inactive') %>
+          </a>
+        </li>
+        <% if (!_.isUndefined(APPS) && APPS !== null ) {
+              if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                if ($.inArray('r_ldap_login',APPS.enabled_apps) !== -1) { %>
+        <li>
+          <a class="js-filter cur ldap_login_check" data-filter="ldap" title="<%- i18next.t('LDAP') %>">
+            <span class="show">
+              <strong>
+                <%- filter_count.ldap %>
+              </strong>
+            </span>
+            <%- i18next.t('LDAP') %>
+          </a>
+        </li>
+        <% }
+              }
+          } %>
+        <% if(!_.isEmpty(roles)){ 
+            _.each(roles, function(role) {
+          %>
+        <li>
+          <a class="js-filter cur" data-filter="<%- role.id %>" title="<%- role.name %>">
+            <span class="show">
+              <strong>
+                <%- role.count %>
+              </strong>
+            </span>
+            <%- i18next.t(role.name) %>
+          </a>
+        </li>
+        <% });
+          } %>
+        <% var all = parseInt(filter_count.active) + parseInt(filter_count.inactive); %>
+        <li class="active">
+          <a href="#/users" title="<%- i18next.t('All') %>">
+            <span class="show">
+              <strong>
+                <%-  all %>
+              </strong>
+            </span>
+            <%- i18next.t('All') %>
+          </a>
+        </li>
+        <li class="pull-right h4">
+          <form id="UserSearch" name="UserSearch" class="form-horizontal col-xs-12">
+            <input type="text" placeholder="Search" name="user_search" id="user_search" class="form-control" />
+          </form>
+        </li>
+      </ul>
+    </div>
+  </section>
+  <section>
+    <div class="well-sm"></div>
+    <form role="form" class="col-xs-12">
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover list-group-item-text">
+          <thead>
+            <tr class="active">
+              <th rowspan="2" class="text-center">
+                <%- i18next.t("Select") %>
+              </th>
+              <th rowspan="2" class="col-xs-2">
+                <span class="js-sort cur" data-field="username" data-direction="asc" title="<%- i18next.t('User') %>">
+                  <span class="icon-caret-down"></span>
+                  <%- i18next.t("User") %>
+                </span>
+              </th>
+              <th colspan="3" class="text-center">
+                <%- i18next.t("Organizations") %>
+              </th>
+              <th colspan="3" class="text-center">
+                <%- i18next.t("Boards") %>
+              </th>
+              <th colspan="3" class="text-center">
+                <%- i18next.t("Login") %>
+              </th>
+              <th colspan="2" class="text-center">
+                <%- i18next.t("Registered") %>
+              </th>
+              <% if (!_.isUndefined(APPS) && APPS !== null ) {
+                if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                if ($.inArray('r_groups',APPS.enabled_apps) !== -1) { %>
+              <th rowspan="2" class="text-center" title="<%- i18next.t('Group Count') %>">
+                <%- i18next.t("Group Count") %>
+              </th>
+              <% }
+                }
+            } %>
+              <th rowspan="2" class="text-center col-xs-1">
+                <span data-field="role_id" data-direction="asc" title="<%- i18next.t('Role') %>">
+                  <span class="icon-caret-down hide"></span>
+                  <%- i18next.t("Role") %>
+                </span>
+              </th>
+              <th rowspan="2" class="text-center">
+                <%- i18next.t("Actions") %>
+              </th>
+            </tr>
+            <tr class="active">
+              <th class="text-center">
+                <span class="icon-caret-down hide"></span>
+                <span class="js-sort cur verticalTableHeader show" data-field="created_organization_count"
+                  data-direction="asc" title="<%- i18next.t('Created') %>">
+                  <%- i18next.t("Created") %>
+                </span>
+              </th>
+              <th class="text-center">
+                <span class="icon-caret-down hide"></span>
+                <span class="js-sort cur verticalTableHeader show" data-field="owner_organization_count" data-direction="asc"
+                  title="<%- i18next.t('Owner') %>">
+                  <%- i18next.t("Owner") %>
+                </span>
+              </th>
+              <th class="text-center">
+                <span class="icon-caret-down hide"></span>
+                <span class="js-sort cur verticalTableHeader show" data-field="member_organization_count"
+                  data-direction="asc" title="<%- i18next.t('Member') %>">
+                  <%- i18next.t("Member") %>
+                </span>
+              </th>
+              <th class="text-center">
+                <span class="icon-caret-down hide"></span>
+                <span class="js-sort cur verticalTableHeader show" data-field="created_board_count" data-direction="asc"
+                  title="<%- i18next.t('Created') %>">
+                  <%- i18next.t("Created") %>
+                </span>
+              </th>
+              <th class="text-center">
+                <span class="icon-caret-down hide"></span>
+                <span class="js-sort cur verticalTableHeader show" data-field="owner_board_count" data-direction="asc"
+                  title="<%- i18next.t('Owner') %>">
+                  <%- i18next.t("Owner") %>
+                </span>
+              </th>
+              <th class="text-center">
+                <span class="icon-caret-down hide"></span>
+                <span class="js-sort cur verticalTableHeader show" data-field="member_board_count" data-direction="asc"
+                  title="<%- i18next.t('Member') %>">
+                  <%- i18next.t("Member") %>
+                </span>
+              </th>
+              <th class="text-center">
+                <span class="icon-caret-down hide"></span>
+                <span class="js-sort cur verticalTableHeader show" data-field="user_login_count" data-direction="asc"
+                  title="<%- i18next.t('Count') %>">
+                  <%- i18next.t("Count") %>
+                </span>
+              </th>
+              <th class="text-center">
+                <span class="icon-caret-down hide"></span>
+                <span class="js-sort cur verticalTableHeader show" data-field="last_login_date" data-direction="asc"
+                  title="<%- i18next.t('Time') %>">
+                  <%- i18next.t("Time") %>
+                </span>
+              </th>
+              <th class="text-center">
+                <span class="icon-caret-down hide"></span>
+                <span class="js-sort cur verticalTableHeader show" data-field="login_country_name" data-direction="asc"
+                  title="<%- i18next.t('IP') %>">
+                  <%- i18next.t("IP") %>
+                </span>
+              </th>
+              <th class="text-center">
+                <span class="icon-caret-down hide"></span>
+                <span class="js-sort cur verticalTableHeader show" data-field="created" data-direction="asc" title="<%- i18next.t('Time') %>">
+                  <%- i18next.t("Time") %>
+                </span>
+              </th>
+              <th class="text-center">
+                <span class="icon-caret-down hide"></span>
+                <span class="js-sort cur verticalTableHeader show" data-field="register_country_name" data-direction="asc"
+                  title="<%- i18next.t('IP') %>">
+                  <%- i18next.t("IP") %>
+                </span>
+              </th>
+            </tr>
+
+          </thead>
+          <tbody class="js-user-list">
+          </tbody>
+          </thead>
         </table>
-	</div>
-</form>
-<div class="clearfix navbar-btn col-xs-12">
-		  <div class="well-sm navbar-btn"></div>
-          <ul class="list-inline pull-left">
-            <li><%- i18next.t("Select") %>:</li>
-            <li><a href="#/users" class="js-select js-no-pjax" data-checked="js-checkbox-list" title="<%- i18next.t('All') %>"><%- i18next.t("All") %></a></li>
-            <li><a href="#/users" class="js-select js-no-pjax" data-unchecked="js-checkbox-list" title="<%- i18next.t('None') %>"><%- i18next.t("None") %></a></li>
-            <li><a title="<%- i18next.t('Blocked') %>" href="#/users" class="js-select" data-unchecked="js-checkbox-active" data-checked="js-checkbox-inactive"><%- i18next.t("Blocked") %></a></li>
-            <li><a title="<%- i18next.t('Unblocked') %>" href="#/users" class="js-select" data-unchecked="js-checkbox-inactive" data-checked="js-checkbox-active"><%- i18next.t("Unblocked") %></a></li>
-            <li><a title="<%- i18next.t('Unconfirmed') %>" href="#/users" class="js-select" data-checked="js-checkbox-unconfirmed"><%- i18next.t("Unconfirmed") %></a></li>
-			 				  
-          </ul>
-          <div class="pull-left">
-            <form class="form-inline" role="form">
-              <div class="pr clearfix">
-	                <select class="js-more-action-user" id="js-more-action">
-	                  <option value="0"><%- i18next.t("More Actions") %></option>
-	                  <option value="1"><%- i18next.t("Block") %></option>
-	                  <option value="2"><%- i18next.t("Unblock") %></option>
-	                  <option value="3"><%- i18next.t("Delete") %></option>
-                    <option value="4"><%- i18next.t("Confirm Email") %></option>
-	                </select>
-                </div>
-            </form>
-          </div>
-		  <div class="pull-right pagination pagination-right pagination-boxes list-group-item-heading"></div>
       </div>
-</section>
+    </form>
+    <div class="clearfix navbar-btn col-xs-12">
+      <div class="well-sm navbar-btn"></div>
+      <ul class="list-inline pull-left">
+        <li>
+          <%- i18next.t("Select") %>:</li>
+        <li>
+          <a href="#/users" class="js-select js-no-pjax" data-checked="js-checkbox-list" title="<%- i18next.t('All') %>">
+            <%- i18next.t("All") %>
+          </a>
+        </li>
+        <li>
+          <a href="#/users" class="js-select js-no-pjax" data-unchecked="js-checkbox-list" title="<%- i18next.t('None') %>">
+            <%- i18next.t("None") %>
+          </a>
+        </li>
+        <li>
+          <a title="<%- i18next.t('Blocked') %>" href="#/users" class="js-select" data-unchecked="js-checkbox-active"
+            data-checked="js-checkbox-inactive">
+            <%- i18next.t("Blocked") %>
+          </a>
+        </li>
+        <li>
+          <a title="<%- i18next.t('Unblocked') %>" href="#/users" class="js-select" data-unchecked="js-checkbox-inactive"
+            data-checked="js-checkbox-active">
+            <%- i18next.t("Unblocked") %>
+          </a>
+        </li>
+        <li>
+          <a title="<%- i18next.t('Unconfirmed') %>" href="#/users" class="js-select" data-checked="js-checkbox-unconfirmed">
+            <%- i18next.t("Unconfirmed") %>
+          </a>
+        </li>
+
+      </ul>
+      <div class="pull-left">
+        <form class="form-inline" role="form">
+          <div class="pr clearfix">
+            <select class="js-more-action-user" id="js-more-action">
+              <option value="0">
+                <%- i18next.t("More Actions") %>
+              </option>
+              <option value="1">
+                <%- i18next.t("Block") %>
+              </option>
+              <option value="2">
+                <%- i18next.t("Unblock") %>
+              </option>
+              <option value="3">
+                <%- i18next.t("Delete") %>
+              </option>
+              <option value="4">
+                <%- i18next.t("Confirm Email") %>
+              </option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="pull-right pagination pagination-right pagination-boxes list-group-item-heading"></div>
+    </div>
+  </section>
+</div>

@@ -12,12 +12,37 @@
                  <li class="text-center text-muted"><strong><%- i18next.t('Sort') %></strong></li>
                  <li class="divider"></li>
                  <li><a title="<%- i18next.t('Name') %>" href="#" class="js-sort-by" data-field="name"><%- i18next.t('Name') %></a></li>
-                <li><a title="<%- i18next.t('Owner') %>" href="#" data-field="username" class="js-sort-by"><%- i18next.t('Owner') %></a></li>
+                <% _.each(user.models,function(organization,key) {
+                  if(key === 1) {
+                    _.each(organization.attributes.organization_user_roles,function(organization_user_role) {
+                      var organzationOwnerRole;
+                      if(organization_user_role.id === 1) { 
+                        organzationOwnerRole = organization_user_role.name;%>
+                        <li><a title="<%- i18next.t('%s', {
+                          postProcess: 'sprintf',
+                          sprintf: [organzationOwnerRole]
+                      }) %>" href="#" data-field="username" class="js-sort-by"><%- i18next.t('%s', {
+                        postProcess: 'sprintf',
+                        sprintf: [organzationOwnerRole]
+                    }) %> </a></li>
+                      <% }
+                  });
+                }
+                }); %>
                 <li><a title="<%- i18next.t('Created') %>" href="#" data-field="created" class="js-sort-by"><%- i18next.t('Created') %></a></li>
                 <li><a title="<%- i18next.t('Users Count') %>" href="#" data-field="organizations_user_count" class="js-sort-by"><%- i18next.t('Users Count') %></a></li>
                 <li><a title="<%- i18next.t('Board Count') %>" href="#" data-field="board_count" class="js-sort-by"><%- i18next.t('Board Count') %></a></li>
               </ul>
             </div></div>
-	</div>
   </div>
+  </div>
+  <div class="container-fluid">
+    <section id="broadcast_information" class="hide hidden-xs">
+    </section>
+    <section id="broadcast_hide_arrow" class="hide hidden-xs">
+      <a href="#" class="broadcast-content-show js-broadcast-show pull-right" title="show">
+        <i class="icon-angle-up"></i>
+      </a>
+    </section>
+</div>
 </div>

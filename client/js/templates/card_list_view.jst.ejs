@@ -1,7 +1,40 @@
-<% if(card != null && !_.isEmpty(card)){ %>
-<td data-title="ID">#<%- card.attributes.id %></td>
-<td data-title="Card Name"><%- card.attributes.name %></td>
-<td data-title="List Name"><%- card.list_name %></td>
+<% if(card != null && !_.isEmpty(card)) { 
+	var hide_card_informations = false;
+	if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_hide_card_additional_informations',APPS.enabled_apps) !== -1) {
+		hide_card_informations = true;
+	} %>
+<td data-title="<%- i18next.t('ID') %>" class="card-id" <% if (hide_card_informations) { %>style="display: none;"<% } %>>#<%- card.attributes.id %></td>
+<%if (!_.isUndefined(card.labels) && !_.isEmpty(card.labels) && card.labels.length > 0) { %>
+	<td data-title="<%- i18next.t('Labels') %>">
+	<% card.labels.each(function(label) {
+		if (!_.isUndefined(label) && label.attributes.name !== "") { %>
+		<span data-container="body" data-placement="bottom" title="<%- label.attributes.name %>" data-toggle="tooltip"><%- label.attributes.name %></span><br />
+			
+	<% }
+	});
+} else { %>
+	<td data-title="<%- i18next.t('Labels') %>" > - </td>
+<% } %>
+</td>
+<td data-title="<%- i18next.t('Card Name') %>"><%- card.attributes.name %></td>
+<td data-title="<%- i18next.t('List Name') %>"><%- card.list_name %></td>
+<% if(!_.isUndefined(card.users) && !_.isEmpty(card.users) && card.users.length > 0) { %>
+<td data-title="<%- i18next.t('Members') %>" >
+	<%
+		card.users.each(function(card_user) {
+			if (!_.isUndefined(card_user)) {
+	%>
+				<span data-container="body" data-placement="bottom" title="<%-card_user.attributes.full_name %> (<%-card_user.attributes.username %>)" data-toggle="tooltip"><%-card_user.attributes.full_name %></span><br />
+					
+	<%		
+			}
+		});
+	%>
+		</ul>
+</td>
+<% } else { %>
+<td data-title="<%- i18next.t('Members') %>" > - </td>
+<% } %>
 <td class="hide js-list-view-start-date-data js-list-view-start-date-<%- card.attributes.id %>" data-title="<%- i18next.t('Start Date') %>" title="<%- i18next.t('Start Date') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
 <% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){ %>
 	<%
@@ -37,6 +70,7 @@
 	<td data-title="End Date"> - </td>
 	<% } %>
 	<td class="hide js-list-view-estimated-time-data js-list-view-estimated-time-<%- card.attributes.id %>" title="<%- i18next.t('Estimated time') %>" data-title="<%- i18next.t('Estimated time') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
+	<td class="hide js-list-view-spent-time-data js-list-view-spent-time-<%- card.attributes.id %>" title="<%- i18next.t('Spent time') %>" data-title="<%- i18next.t('Spent time') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
 	<% 
 	if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
 	var cards_subscribers = card.cards_subscribers.where({ is_subscribed: 1, user_id: parseInt(authuser.user.id) }); 
@@ -66,4 +100,13 @@
 	<% } else { %>
 	<td data-title="Checklist"><small>-</small></td>
 	<% } %>
-	<% } else { %><td colspan="10"  class="text-center alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('cards')] }) %></td><% } %>
+	<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields',APPS.enabled_apps) !== -1) { 
+		if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && !_.isUndefined(App.current_board.attributes.custom_fields) && App.current_board.attributes.custom_fields !== null) {
+			_.each(App.current_board.attributes.custom_fields, function(customfield){ %>
+				<td class="js-list-view-card-<%- card.attributes.id %>-customfield-<%- customfield.id %> card-listing-truncate" data-title="<%- customfield.label %>"><small>-</small></td>
+			<% });
+		} else { %>
+			<td class="hide js-list-view-custom_fields-<%- card.attributes.id %>"></td>
+	 <% } 
+	} %>
+	<% } else { %><td colspan="12"  class="text-center alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('cards')] }) %></td><% } %>

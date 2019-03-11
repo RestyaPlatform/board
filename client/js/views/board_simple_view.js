@@ -59,6 +59,7 @@ App.BoardSimpleView = Backbone.View.extend({
      *
      */
     render: function() {
+        var self = this;
         this.$el.html(this.template({
             board: this.model,
             message: this.message,
@@ -74,7 +75,11 @@ App.BoardSimpleView = Backbone.View.extend({
                     var _data = {};
                     _data.title = list.attributes.name;
                     _data.value = list.attributes.card_count;
-                    _data.color = color_codes[i];
+                    if (!_.isEmpty(list.attributes.color) && !_.isUndefined(list.attributes.color) && list.attributes.color !== null && list.attributes.color !== 'null' && list.attributes.color !== 'NULL') {
+                        _data.color = list.attributes.color;
+                    } else {
+                        _data.color = color_codes[i];
+                    }
                     i++;
                     if (i > 20) {
                         i = 0;
@@ -84,9 +89,8 @@ App.BoardSimpleView = Backbone.View.extend({
                     }
                 }
             });
-            var _this = this;
             _(function() {
-                _this.$el.find('.js-chart').html('').drawDoughnutChart(data);
+                self.$el.find('.js-chart-' + self.model.id).html('').drawDoughnutChart(data);
             }).defer();
         }
         this.showTooltip();
@@ -107,11 +111,19 @@ App.BoardSimpleView = Backbone.View.extend({
             success: function(model, response) {
                 var templates = '';
                 var target = $(e.target);
+                var organization_id;
+                if (target.parents('.js-organization_boards')) {
+                    organization_id = target.parents('.js-organization_boards').data('organization_id');
+                }
                 var parent = target.parents('.js-show-add-boards-list-simple');
-                $('li.js-back').addClass('hide');
+                target.parents('li.js-back').addClass('hide');
                 var data = {};
                 data = workflow_template;
                 data.page_mode = 1;
+                if (organization_id) {
+                    data.organization_id = organization_id;
+                    data.page_mode = 2;
+                }
                 $('.js-show-boards-list-simple-response', parent).html(new App.BoardAddView({
                     model: data
                 }).el).find('#inputtemplatelist').select2({
@@ -122,6 +134,7 @@ App.BoardSimpleView = Backbone.View.extend({
                 });
             }
         });
+        $('footer').trigger('footerActionRendered');
         return false;
     },
     /**
@@ -227,8 +240,7 @@ App.BoardSimpleView = Backbone.View.extend({
      *
      */
     closePopup: function(e) {
-        var el = this.$el;
-        var target = el.find(e.target);
+        var target = $(e.currentTarget);
         target.parents('.js-show-add-boards-list-simple').find('.js-show-add-boards-simple').removeClass('hide');
         target.parents('.js-show-add-boards-list-simple').find('.js-show-boards-list-simple-response').html('');
         return false;

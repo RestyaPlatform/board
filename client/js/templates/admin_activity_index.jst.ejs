@@ -10,19 +10,19 @@
 		activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
 		activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
 		activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', (activity.attributes.board_name));
-		activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+(activity.attributes.full_name)+'</span>');
+		activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');
 		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
 		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
 		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
 	} else {
-		var comment = activity.attributes.full_name + ' commented in card ' + cardLink;
+		var comment = filterXSS(activity.attributes.full_name) + ' commented in card ' + cardLink;
 		var matches = activity.attributes.comment.match(/@([^ ]*)/g);
 		var _username = [];
 		_.each(matches, function(match) {
 			_username.push(match.substr(1));
 		});
 		if(_.contains(_username, authuser.user.username)){
-			comment = activity.attributes.full_name + ' has mentioned you in card ' + cardLink;
+			comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
 		}
 	}
 %>
@@ -80,6 +80,7 @@
 <div class="clearfix col-xs-12">
 	<div class="clearfix col-xs-12">
 		<small class="col-xs-12 pull-left">
+			&nbsp;&nbsp;
 			<% setInterval(function() {%>
 				<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
 			<% }, 10000); %>

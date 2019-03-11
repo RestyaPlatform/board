@@ -15,10 +15,10 @@
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', _.escape(activity.attributes.checklist_item_parent_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
 			} else {
-				var comment = activity.attributes.full_name + ' commented in card ' + cardLink;
+				var comment = filterXSS(activity.attributes.full_name) + ' commented in card ' + cardLink;
 				var patt = /@\w+/g;
 				if(patt.test(activity.attributes.comment)) {
-					comment = activity.attributes.full_name + ' mentioned you in card ' + cardLink;
+					comment = filterXSS(activity.attributes.full_name) + ' mentioned you in card ' + cardLink;
 				}
 			}
 		%>   
@@ -49,6 +49,7 @@
 							</div>
 						<% } %>
 						<small class="pull-left">
+						&nbsp;&nbsp;
 						<% setInterval(function() {%>
 							<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
 						<% }, 10000); %>

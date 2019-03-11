@@ -123,7 +123,9 @@ App.OrganizationsView = Backbone.View.extend({
         var insert = $('.js-show-confirm-delete-organization-member-response', parent);
         insert.nextAll().remove();
         var organizations_user_id = target.data('organizations_user_id');
+        var organizations_user_roleid = target.data('organizations_user_roleid');
         this.model.organizations_user_id = organizations_user_id;
+        this.model.organizations_user_roleid = organizations_user_roleid;
         $(new App.OrganizationMemberRemoveFormView({
             model: this.model
         }).el).insertAfter(insert);
@@ -191,6 +193,8 @@ App.OrganizationsView = Backbone.View.extend({
             model: this.model,
             type: self.page_view_type
         }).el);
+        this.model.boards.setSortField('name', 'asc');
+        this.model.boards.sort();
         this.$el.html(this.template({
             organization: this.model,
             type: this.type
@@ -246,7 +250,6 @@ App.OrganizationsView = Backbone.View.extend({
                     }
                 }
             });
-            uploadManager.renderTo($('#manager-area'));
         }).defer();
         this.showTooltip();
         return this;
@@ -333,11 +336,18 @@ App.OrganizationsView = Backbone.View.extend({
                             is_starred: 1
                         });
                     }
-                    view = new App.OrganizationBoardView({
-                        model: board,
-                        stared: stared
+                    var board_user;
+                    board_user = self.model.board_users.findWhere({
+                        user_id: parseInt(authuser.user.id),
+                        board_id: parseInt(board.attributes.id)
                     });
-                    view_board.append(view.el);
+                    if (parseInt(authuser.user.role_id) === 1 || (!_.isUndefined(board_user) && !_.isEmpty(board_user))) {
+                        view = new App.OrganizationBoardView({
+                            model: board,
+                            stared: stared
+                        });
+                        view_board.append(view.el);
+                    }
                 }
             });
             view = new App.OrganizationBoardView({

@@ -1,8 +1,8 @@
-
+<div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 list js-list-<%- list.id %> js-list-sort">
 	<div class="list-header js-list-head <% if(!_.isUndefined(authuser.user)){%>cur-grab<%}%>">
 	  <div class="clearfix">
-		<a href="#" class="col-xs-8 <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-edit-list-form<% }else{ %> js-no-action<%}%>"><span><span class="clearfix row show">
-		<strong class = "get-name-<%- list.attributes.id %>"><%- list.attributes.name %></strong><% var is_sub_class = 'hide'; if(!_.isEmpty(list.subscriber.attributes) && list.subscriber.attributes.is_subscribed == true){ is_sub_class = ''; }%><span class="pull-right"><i class="icon-eye-open js-list-subscribed-<%- list.attributes.id %> <%- is_sub_class %>"></i></span></span></span></a>
+		<a href="#" class="col-xs-8 js-list-name-<%- list.id %> <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-edit-list-form<% }else{ %> js-no-action<%}%>"><span><span class="clearfix row show">
+		<strong class = "get-name-<%- list.attributes.id %>"><%- list.attributes.name %></strong> <span id="list-card-number-<%- list.attributes.id %>" title="<%- i18next.t('Number Of Cards') %>"></span><% var is_sub_class = 'hide'; if(!_.isEmpty(list.subscriber.attributes) && list.subscriber.attributes.is_subscribed == true){ is_sub_class = ''; }%><span class="pull-right"><i class="icon-eye-open js-list-subscribed-<%- list.attributes.id %> <%- is_sub_class %>"></i></span></span></span></a>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 		<form role="form" class="form-horizontal js-edit-list hide">
 			<div class="form-group">
@@ -21,7 +21,7 @@
 		</form>
 		<% } %>
 		<%if(!_.isUndefined(authuser.user)) {%>
-		<div class="pull-right col-xs-4 clearfix">
+		<div class="pull-right col-xs-4 clearfix js-list-header-<%- list.id %>">
 			<div class="dropdown">
 			<a href="#" class="dropdown-toggle pull-right js-show-list-actions" id="js-show-list-actions-<%- list.attributes.id %>" data-toggle="dropdown" title="<%- i18next.t('List Actions') %>" data-list-id="<%- list.attributes.id %>"><i class="icon-cog text-primary"></i></a>
 			</div>
@@ -34,6 +34,8 @@
 				 <li class="js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Attachments') %>" href="#" class="js-sort-by" data-sort-by="attachment_count"><%- i18next.t("Attachments") %></a></li>
 				 <li class="js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Comments') %>" href="#" class="js-sort-by" data-sort-by="comment_count"><%- i18next.t("Comments") %></a>
 				 </li>
+				 <li class="js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Card Name') %>" href="#" class="js-sort-by" data-sort-by="name"><%- i18next.t("Card Name") %></a>
+				 </li>
 				 <li class="js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Checklist pending count') %>" href="#" class="js-sort-by" data-sort-by="checklist_item_count"><%- i18next.t("Checklist pending count") %></a>
 				 </li>
 				 <li class="js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Checklist completed count') %>" href="#" class="js-sort-by" data-sort-by="checklist_item_completed_count"><%- i18next.t("Checklist completed count") %></a>
@@ -42,21 +44,16 @@
 				 </li>
 				 <li class=" js-createdDate js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('Created Date') %>" href="#" class="js-sort-by" data-sort-by="created_date"><%- i18next.t('Created Date') %></a></li>
 				 <li class=" js-listMovedDate js-sort-by-<%- list.attributes.id %>"><a title="<%- i18next.t('List Moved Date') %>" href="#" class="js-sort-by" data-sort-by="list_moved_date"><%- i18next.t('List Moved Date') %></a></li>
+				 <li class=" js-startDate js-sort-by-<%- list.attributes.id %> hide"><a title="<%- i18next.t('Start Date') %>" href="#" class="js-sort-by" data-sort-by="start_date"><%- i18next.t('Start Date') %></a></li>
 			 </ul>
 			</div>
 		</div>
 		<% } %>
 	  </div>
 	</div>
-	<% if(!_.isUndefined(list.attributes.color) && list.attributes.color !== null){ %>
-		<div id='colorPicker' style="padding-bottom:8px;"> 
-			<span class="list-card-group-addon panel-body color-popover color-focusout" id="js-list-color-<%- list.attributes.id %>" style="background-color:<%- list.attributes.color %>; " data-color-format="hex"></span>
-		</div>
-    <% } else {%>
-		<div id='colorPicker'>
-        	<span class="list-card-group-addon input-new-addon-cl panel-body color-popover color-focusout" id="js-list-color-<%- list.attributes.id %>" data-color-format="hex"></span>
-		</div>
-    <% } %>
+	<div id='colorPicker' style="padding-bottom:8px;"> 
+		<span class="list-card-group-addon panel-body color-popover color-focusout" id="js-list-color-<%- list.attributes.id %>" style="background-color:<%- list.attributes.color %>; " data-color-format="hex"></span>
+	</div>
 	<div class="list-content vertical-scrollbar vertical-scrollbar-box js-board-list-cards" id="js-card-listing-<%- list.attributes.id %>">
 	</div>
 	<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "add_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
@@ -65,4 +62,4 @@
 <div class="js-card-add-form-<%= list.attributes.id %>"></div>			
 		</div>
 	<% } %>
-  
+</div>

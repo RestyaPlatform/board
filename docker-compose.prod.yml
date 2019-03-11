@@ -1,0 +1,28 @@
+version: '2'
+services:
+  restyaboard:
+    volumes:
+       - /var/opt/restya/media:/usr/share/nginx/html/media
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=restyaboard
+      - SMTP_DOMAIN=domain
+      - SMTP_USERNAME=user
+      - SMTP_PASSWORD=pass
+      - SMTP_SERVER=server
+      - SMTP_PORT=465
+      - TZ=Etc/UTC
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    image: postgres:9-alpine
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=restyaboard
+    restart: always

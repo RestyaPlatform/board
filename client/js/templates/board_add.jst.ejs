@@ -14,6 +14,9 @@
 			<label for="inputBoardName"><%- i18next.t("Name") %></label>
 			<input class="form-control input-sm" type="text" id="inputBoardName" name="name" title="<%- i18next.t('Whitespace is not allowed') %>" required pattern=".*\S+.*">
 		</div>
+		<% if (!_.isUndefined(templates.organization_id) && !_.isEmpty(templates.organization_id)) { %>
+			<input type="hidden" name="organization_id" value="<%- templates.organization_id %>">
+		<% } %>
 		<% if (templates.models.length > 0 && !_.isEmpty(role_links.where({slug: "view_organization_visibility"}))) { %>
 			<div class="form-group">
 				<label for="inputchecklist"><%- i18next.t("Template") %></label>
@@ -46,4 +49,5 @@
 						<div class="js-visibility-chooser dropdown-menu"></div>
 					</div>
 				<% } %>
+				<div id="js-board-add-group"></div>
 					<div class="submit"><input type="submit" value="<%- i18next.t('Add') %>" id="submitBoardAdd" class="btn btn-primary"></div></form></li>

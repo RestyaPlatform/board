@@ -27,7 +27,7 @@ if (typeof App === 'undefined') {
  */
 App.BoardView = Backbone.View.extend({
     tagName: 'section',
-    className: 'clearfix',
+    className: 'clearfix js-boards-view',
     id: 'boards-view',
     /**
      * Constructor
@@ -214,6 +214,7 @@ App.BoardView = Backbone.View.extend({
         'click .js-star-board': 'starredBoard',
         'click .js-close-board': 'closeBoard',
         'submit #BoardReopenForm': 'reopenBoard',
+        'submit #BoardDeleteForm': 'deleteBoard',
         'click .js-change-visibility': 'showAllVisibility',
         'click .js-select': 'copyBoardVisibility',
         'click .js-hide-sidebar': 'hideSidebar',
@@ -293,6 +294,7 @@ App.BoardView = Backbone.View.extend({
     closeSubPopup: function(e) {
         var el = this.$el;
         var target = el.find(e.target);
+        target.parents('.js-list-response.dropdown').removeClass('open');
         target.parents('li.dropdown').removeClass('open');
         return false;
     },
@@ -469,6 +471,26 @@ App.BoardView = Backbone.View.extend({
         }, {
             patch: true,
             success: function(model, response) {}
+        });
+        return false;
+    },
+    /**
+     * deleteBoard()
+     * delete the board
+     * @return false
+     *
+     */
+    deleteBoard: function(e) {
+        var data = $(e.target).serializeObject();
+        this.model.url = api_url + 'boards/' + this.model.id + '.json';
+        App.boards.remove(self.model);
+        this.model.destroy({
+            success: function(model, response) {
+                app.navigate('#/boards', {
+                    trigger: false,
+                    replace: false
+                });
+            }
         });
         return false;
     },
@@ -670,7 +692,7 @@ App.BoardView = Backbone.View.extend({
                 containment: 'window',
                 axis: 'x',
                 items: 'div.js-board-list',
-                placeholder: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 board-list-placeholder list ',
+                placeholder: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 board-list-placeholder board-list-height ',
                 forcePlaceholderSize: true,
                 cursor: 'grab',
                 scrollSensitivity: 100,

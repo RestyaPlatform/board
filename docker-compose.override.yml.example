@@ -1,0 +1,16 @@
+# If you want to use it just remove the extensions .example
+version: '2'
+services:
+  restyaboard:
+    volumes:
+    # useful for dev: code is directly used in container
+       - ./client/:/usr/share/nginx/html/client
+       - ./server/:/usr/share/nginx/html/server
+
+#  pgadmin:
+#    image: fenglc/pgadmin4
+#    ports:
+#      - 1235:5050
+#    environment:
+#      - DEFAULT_USER=admin
+#      - DEFAULT_PASSWORD=admin

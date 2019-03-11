@@ -29,7 +29,7 @@ App.OrganizationBoardView = Backbone.View.extend({
         this.render();
     },
     template: JST['templates/organization_board'],
-    className: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 js-org-board',
+    className: 'col-lg-3 col-md-3 col-sm-6 col-xs-12 js-org-board',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
@@ -67,7 +67,11 @@ App.OrganizationBoardView = Backbone.View.extend({
                     var _data = {};
                     _data.title = list.name;
                     _data.value = list.card_count;
-                    _data.color = color_codes[i];
+                    if (!_.isEmpty(list.color) && !_.isUndefined(list.color) && list.color !== null && list.color !== 'null' && list.color !== 'NULL') {
+                        _data.color = list.color;
+                    } else {
+                        _data.color = color_codes[i];
+                    }
                     i++;
                     if (i > 20) {
                         i = 0;
@@ -121,6 +125,7 @@ App.OrganizationBoardView = Backbone.View.extend({
                 });
             }
         });
+        $('footer').trigger('footerActionRendered');
         return false;
     },
     /**

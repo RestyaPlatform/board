@@ -1,8 +1,8 @@
-# ElasticSearch plugin installation instructions
+# ElasticSearch Plugin Installation
 
-## Instructions for elasticsearch plugin configuration
+## ElasticSearch Plugin Installation
 
-[![How to configure elasticsearch plugin](http://img.youtube.com/vi/4ra-PhePZpg/0.jpg)](http://www.youtube.com/watch?v=4ra-PhePZpg)
+[![How to configure elasticsearch plugin](elasticsearch_installation.png)](http://www.youtube.com/watch?v=jDp-3cJuPeM)
 
 1.  Goto your Restyaboard installation root directory. e.g., directory: "/usr/share/nginx/html/restyaboard/"
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., "/usr/share/nginx/html/restyaboard/"

@@ -33,7 +33,8 @@ App.AdminUserAddView = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
-        'submit form#AdminUserAddForm': 'adminUserAdd'
+        'submit form#AdminUserAddForm': 'adminUserAdd',
+        'blur #inputemail': 'prefillUserdetails'
     },
     /**
      * adminUserAdd()
@@ -66,6 +67,42 @@ App.AdminUserAddView = Backbone.View.extend({
             }
         });
         return false;
+    },
+    /**
+     * prefillUserdetails()
+     * prefill user details from given email
+     * @return false
+     */
+    prefillUserdetails: function(e) {
+        var email = $('#inputemail').val();
+        if (!_.isEmpty(email) && new RegExp('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$').test(email)) {
+            var name;
+            var full_name;
+            var user_initial;
+            if (email) {
+                var index = email.lastIndexOf("@");
+                email = email.substr(0, index);
+                // replace non-text
+                name = email.replace('/[\W\d_]+/', ' ');
+                // capitalize first letter in every word
+                name = name.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+                    return letter.toUpperCase();
+                });
+                // remove white space
+                name = name.trim();
+                // check for spces between words
+                var matches = name.match(/(.*)?\s(.*)$/);
+                if (matches) {
+                    full_name = matches[1] + ' ' + matches[2];
+                } else {
+                    full_name = name;
+                }
+                $('#inputFullName').val(full_name);
+                user_initial = name.substr(0, 1).toUpperCase();
+                $('#inputinitials').val(user_initial);
+                $('#inputusername').focus();
+            }
+        }
     },
     /**
      * render()

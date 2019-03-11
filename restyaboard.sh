@@ -25,8 +25,8 @@
 		OS_VERSION=$(lsb_release -rs | cut -f1 -d.)
 		if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 		then
-			apt-get update
-			apt-get install -y curl unzip
+			apt update
+			apt install -y curl unzip
 		else
 			yum install -y curl unzip
 		fi
@@ -107,21 +107,6 @@
 			sed -i "s/rewrite ^\/ical\/.*/rewrite ^\/ical\/([0-9]*)\/([0-9]*)\/([a-z0-9]*).ics\$ \/server\/php\/ical.php?board_id=\$1\&user_id=\$2\&hash=\$3 last;/" /etc/nginx/conf.d/restyaboard.conf
 		}
 
-		upgrade-0.6.1-0.6.2()
-		{
-			set +x
-			echo "Do you want to install Restyaboard app 'Hide Card Additional Informations' (y/n)?"
-			read -r answer
-			set -x
-			case "${answer}" in
-				[Yy])
-				mkdir "$dir/client/apps"
-				chmod -R go+w "$dir/client/apps"
-				curl -v -L -G -o /tmp/r_hide_card_additional_informations-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_hide_card_additional_informations-v0.1.1.zip
-				unzip /tmp/r_hide_card_additional_informations-v0.1.1.zip -d "$dir/client/apps"
-			esac
-		}
-
 		upgrade-0.6.3-0.6.4()
 		{
 			if [ -d "$dir/client/apps/r_hide_card_created_date" ]; then
@@ -130,6 +115,35 @@
 				curl -v -L -G -o /tmp/r_hide_card_additional_informations-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_hide_card_additional_informations-v0.1.1.zip
 				unzip /tmp/r_hide_card_additional_informations-v0.1.1.zip -d "$dir/client/apps"
 			fi
+		}
+
+		upgrade-0.6.4-0.6.5()
+		{
+			if [ -d "$dir/client/apps/r_hide_card_id" ]; then
+				rm -rf $dir/client/apps/r_hide_card_id/
+				chmod -R go+w "$dir/client/apps"
+				curl -v -L -G -o /tmp/r_hide_card_additional_informations-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_hide_card_additional_informations-v0.1.2.zip
+				unzip /tmp/r_hide_card_additional_informations-v0.1.2.zip -d "$dir/client/apps"
+			fi
+		}
+
+		upgrade-0.6.5-0.6.6()
+		{
+			if [ -d "$dir/client/apps" ]; then
+				chmod -R go+w "$dir/client/apps"
+				curl -v -L -G -o /tmp/r_codenames-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.1.zip
+				unzip /tmp/r_codenames-v0.1.1.zip -d "$dir/client/apps"
+			else 
+				mkdir "$dir/client/apps"
+				chmod -R go+w "$dir/client/apps"
+				curl -v -L -G -o /tmp/r_codenames-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.1.zip
+				unzip /tmp/r_codenames-v0.1.1.zip -d "$dir/client/apps"
+			fi
+		}
+		
+		upgrade-0.6.6-0.6.7(){
+			: > /var/spool/cron/crontabs/root
+			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/main.sh//" /var/spool/cron/crontabs/root
 		}
 
 		update_version()
@@ -172,7 +186,7 @@
 				sed -i "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_DBPASS}');/g" "$dir/server/php/config.inc.php"
 				sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 				sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
-
+				PHP_VERSION=$(php --version | head -n 1 | cut -d " " -f 2 | grep --only-matching --perl-regexp "^\\d\.\\d+")
 				version=$(cat ${DOWNLOAD_DIR}/release)
 				declare -a upgrade;
 				if [[ $version < "v0.4" ]];
@@ -211,6 +225,14 @@
 				then
 					upgrade+=("upgrade-0.6.3-0.6.4")
 				fi
+				if [[ $version < "v0.6.5" ]];
+				then
+					upgrade+=("upgrade-0.6.4-0.6.5")
+				fi	
+				if [[ $version < "v0.6.6" ]];
+				then
+					upgrade+=("upgrade-0.6.5-0.6.6")
+				fi			
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
 				do
@@ -222,7 +244,6 @@
 					then
 						echo "Updating SQL..."
 						psql -d ${POSTGRES_DBNAME} -f "$dir/sql/${i}.sql" -U ${POSTGRES_DBUSER}
-						/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -231,11 +252,12 @@
 						fi
 					fi
 				done
+				/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 
 				if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 				then
 					service nginx restart
-					service php7.0-fpm restart
+					service php${PHP_VERSION}-fpm restart
 				else
 					if [ -f "/bin/systemctl" ]; then
 						echo "Starting services with systemd..."
@@ -264,7 +286,7 @@
 			fi
 		else
 			set +x
-			echo "Is Restyaboard already installed y/n?"
+			echo "Is Restyaboard already installed and configured/working y/n?"
 			read -r answer
 			set -x
 			case "${answer}" in
@@ -281,19 +303,29 @@
 			set -x
 			case "${answer}" in
 				[Yy])
-				apt-get install debian-keyring debian-archive-keyring
-				error_code=$?
-				if [ ${error_code} != 0 ]
+				if ([ "$OS_REQUIREMENT" = "Debian" ])
 				then
-					echo "debian-keyring installation failed with error code ${error_code} (debian-keyring installation failed with error code 1)"
+					sed -i -e 's/deb cdrom/#deb cdrom/g' /etc/apt/sources.list
+					sh -c 'echo "deb http://ftp.de.debian.org/debian jessie main" > /etc/apt/sources.list.d/debjessie.list'
+					apt install apt-transport-https lsb-release ca-certificates -y
+					wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+					echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
 				fi
-				
-				apt-get update -y
-				apt-get upgrade -y
-				apt-get install python-software-properties -y
-				add-apt-repository ppa:ondrej/php
-				apt-get update -y
-				apt-get install libjpeg8 -y --allow-unauthenticated
+				apt install debian-keyring debian-archive-keyring -y
+				apt update -y
+				apt upgrade -y
+				apt install python-software-properties -y
+				apt install software-properties-common -y
+				set +x
+				echo "To install latest version of PHP, script will add 'ppa:ondrej/php' repository in sources.list.d directory. Do you want to continue (y/n)?"
+				read -r answer
+				set -x
+				case "${answer}" in
+					[Yy])
+					add-apt-repository ppa:ondrej/php
+				esac
+				apt update -y
+				apt install libjpeg8 -y --allow-unauthenticated
 				
 				echo "Checking nginx..."
 				if ! which nginx > /dev/null 2>&1; then
@@ -305,12 +337,21 @@
 					case "${answer}" in
 						[Yy])
 						echo "Installing nginx..."
-						apt-get install -y cron nginx
+						apt install -y cron nginx
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
 							echo "nginx installation failed with error code ${error_code} (nginx installation failed with error code 2)"
 							return 2
+						fi
+						if [ -f "/etc/nginx/conf.d/default.conf" ]; then
+							rm -rf /etc/nginx/conf.d/default.conf
+						fi
+						if [ -f "/etc/nginx/sites-available/default.conf" ]; then
+							rm -rf /etc/nginx/sites-available/default.conf
+						fi
+						if [ -f "/etc/nginx/sites-enabled/default.conf" ]; then
+							rm -rf /etc/nginx/sites-enabled/default.conf
 						fi
 						service nginx start
 					esac
@@ -326,7 +367,7 @@
 					case "${answer}" in
 						[Yy])
 						echo "Installing PHP..."
-						apt-get install -y php7.0 php7.0-common
+						apt install -y php7.2 php7.2-common --allow-unauthenticated
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -337,23 +378,23 @@
 				fi
 				
 				echo "Installing PHP fpm and cli extension..."
-				apt-get install -y php7.0-fpm php7.0-cli
+				apt install -y php7.2-fpm php7.2-cli --allow-unauthenticated
 				error_code=$?
 				if [ ${error_code} != 0 ]
 				then
-					echo "php7.0-cli installation failed with error code ${error_code} (php7.0-cli installation failed with error code 4)"
+					echo "php7.2-cli installation failed with error code ${error_code} (php7.2-cli installation failed with error code 4)"
 				fi
-				service php7.0-fpm start
+				service php7.2-fpm start
 				
 				echo "Checking PHP curl extension..."
 				php -m | grep curl
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-curl..."
-					apt-get install -y php7.0-curl
+					echo "Installing php7.2-curl..."
+					apt install -y php7.2-curl --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-curl installation failed with error code ${error_code} (php7.0-curl installation failed with error code 5)"
+						echo "php7.2-curl installation failed with error code ${error_code} (php7.2-curl installation failed with error code 5)"
 						return 5
 					fi
 				fi
@@ -361,13 +402,13 @@
 				echo "Checking PHP pgsql extension..."
 				php -m | grep pgsql
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-pgsql..."
-					apt-get install libpq5
-					apt-get install -y php7.0-pgsql
+					echo "Installing php7.2-pgsql..."
+					apt install libpq5
+					apt install -y php7.2-pgsql --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-pgsql installation failed with error code ${error_code} (php7.0-pgsql installation failed with error code 6)"
+						echo "php7.2-pgsql installation failed with error code ${error_code} (php7.2-pgsql installation failed with error code 6)"
 						return 6
 					fi
 				fi
@@ -375,12 +416,12 @@
 				echo "Checking PHP mbstring extension..."
 				php -m | grep mbstring
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-mbstring..."
-					apt-get install -y php7.0-mbstring
+					echo "Installing php7.2-mbstring..."
+					apt install -y php7.2-mbstring --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-mbstring installation failed with error code ${error_code} (php7.0-mbstring installation failed with error code 7)"
+						echo "php7.2-mbstring installation failed with error code ${error_code} (php7.2-mbstring installation failed with error code 7)"
 						return 7
 					fi
 				fi
@@ -388,12 +429,12 @@
 				echo "Checking PHP ldap extension..."
 				php -m | grep ldap
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-ldap..."
-					apt-get install -y php7.0-ldap
+					echo "Installing php7.2-ldap..."
+					apt install -y php7.2-ldap --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-ldap installation failed with error code ${error_code} (php7.0-ldap installation failed with error code 8)"
+						echo "php7.2-ldap installation failed with error code ${error_code} (php7.2-ldap installation failed with error code 8)"
 						return 8
 					fi
 				fi
@@ -401,26 +442,26 @@
 				echo "Checking PHP imagick extension..."
 				php -m | grep imagick
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-imagick..."
-					apt-get install -y gcc
+					echo "Installing php7.2-imagick..."
+					apt install -y gcc
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
 						echo "gcc installation failed with error code ${error_code} (gcc installation failed with error code 9)"
 						return 9
 					fi
-					apt-get install -y imagemagick
+					apt install -y imagemagick
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
 						echo "imagemagick installation failed with error code ${error_code} (imagemagick installation failed with error code 9)"
 						return 9
 					fi
-					apt-get install -y php7.0-imagick
+					apt install -y php7.2-imagick --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-imagick installation failed with error code ${error_code} (php7.0-imagick installation failed with error code 10)"
+						echo "php7.2-imagick installation failed with error code ${error_code} (php7.2-imagick installation failed with error code 10)"
 						return 10
 					fi
 				fi
@@ -428,12 +469,12 @@
 				echo "Checking PHP imap extension..."
 				php -m | grep imap
 				if [ "$?" -gt 0 ]; then
-					echo "Installing php7.0-imap..."
-					apt-get install -y php7.0-imap
+					echo "Installing php7.2-imap..."
+					apt install -y php7.2-imap --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-imap installation failed with error code ${error_code} (php7.0-imap installation failed with error code 11)"
+						echo "php7.2-imap installation failed with error code ${error_code} (php7.2-imap installation failed with error code 11)"
 						return 11
 					fi
 				fi
@@ -442,7 +483,7 @@
 				php -m | grep xml
 				if [ "$?" -gt 0 ]; then
 					echo "Installing xml..."
-					apt-get install php7.0-xml
+					apt install php7.2-xml --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -453,8 +494,8 @@
 
 				echo "Setting up timezone..."
 				timezone=$(cat /etc/timezone)
-				sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.0/fpm/php.ini
-				echo "date.timezone = $timezone" >> /etc/php/7.0/fpm/php.ini
+				sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.2/fpm/php.ini
+				echo "date.timezone = $timezone" >> /etc/php/7.2/fpm/php.ini
 				
 				echo "Checking PostgreSQL..."
 				id -a postgres
@@ -469,7 +510,7 @@
 						[Yy])
 						echo "Installing PostgreSQL..."
 						sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-						apt-get install wget ca-certificates
+						apt install wget ca-certificates
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -477,22 +518,25 @@
 						fi
 						wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 						apt-key add ACCC4CF8.asc
-						apt-get update
-						apt-get install -y postgresql-9.6 --allow-unauthenticated
+						apt update
+						apt install -y postgresql --allow-unauthenticated
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
-							echo "postgresql-9.6 installation failed with error code ${error_code} (postgresql-9.6 installation failed with error code 13)"
+							echo "postgresql installation failed with error code ${error_code} (postgresql installation failed with error code 13)"
 							return 13
 						fi
 					esac
 				else
-					PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+					PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}' | head -1)
+					if [[ ${PSQL_VERSION} == "" ]]; then
+						PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+					fi
 					if [[ $PSQL_VERSION < 9.3 ]]; then
 						set +x
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
 						sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-						apt-get install wget ca-certificates
+						apt install wget ca-certificates
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -500,18 +544,24 @@
 						fi
 						wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc
 						apt-key add ACCC4CF8.asc
-						apt-get update
-						apt-get upgrade
-						apt-get install -y postgresql-9.6 --allow-unauthenticated
+						apt update
+						apt upgrade
+						apt install -y postgresql --allow-unauthenticated
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
-							echo "postgresql-9.6 installation failed with error code ${error_code} (postgresql-9.6 installation failed with error code 13)"
+							echo "postgresql installation failed with error code ${error_code} (postgresql installation failed with error code 13)"
 							return 13
 						fi
 					fi
 				fi
-				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}' | head -1)
+				if [[ ${PSQL_VERSION} == "" ]]; then
+					PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+				fi
+				if [[ ${PSQL_VERSION} =~ ^10\.[0-9]{1,}$ ]]; then
+					PSQL_VERSION=10
+				fi
 				sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf > /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf.1
 				cd /etc/postgresql/${PSQL_VERSION}/main || exit
 				mv pg_hba.conf pg_hba.conf_old
@@ -520,11 +570,11 @@
 				
 				if ! hash GeoIP-devel 2>&-;
 				then
-					apt-get install -y php7.0-geoip php7.0-dev libgeoip-dev
+					apt install -y php7.2-geoip php7.2-dev libgeoip-dev
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.0-geoip php7.0-dev libgeoip-dev installation failed with error code ${error_code} (php7.0-geoip php7.0-dev libgeoip-dev installation failed with error code 50)"
+						echo "php7.2-geoip php7.2-dev libgeoip-dev installation failed with error code ${error_code} (php7.2-geoip php7.2-dev libgeoip-dev installation failed with error code 50)"
 					fi
 				fi
 
@@ -549,26 +599,8 @@
 
 				get_geoip_data
 				
-				apt-get install -y autotools-dev
-
-				apt-get install -y automake
-
-				apt-get install -y erlang
-
-				apt-get install -y libyaml-dev
-
-				apt-get install -y rebar
-
-				cd /opt
-				wget http://liquidtelecom.dl.sourceforge.net/project/expat/expat/2.1.1/expat-2.1.1.tar.bz2
-				tar -jvxf expat-2.1.1.tar.bz2
-				cd expat-2.1.1/
-				./configure
-				make
-				make install
-
 				echo "Downloading Restyaboard script..."
-				apt-get install -y curl
+				apt install -y curl
 				mkdir ${DOWNLOAD_DIR}
 				curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
 				unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
@@ -608,12 +640,12 @@
 				| debconf-set-selections &&\
 				echo "postfix postfix/main_mailer_type string 'Internet Site'"\
 				| debconf-set-selections &&\
-				apt-get install -y postfix
-					error_code=$?
-						if [ ${error_code} != 0 ]
-					then
-						echo "postfix installation failed with error code ${error_code} (postfix installation failed with error code 16)"
-					fi
+				apt install -y postfix
+				error_code=$?
+				if [ ${error_code} != 0 ]
+				then
+					echo "postfix installation failed with error code ${error_code} (postfix installation failed with error code 16)"
+				fi
 				echo "Changing permission..."
 				find $dir -type d -exec chmod 755 {} \;
 				find $dir -type f -exec chmod 644 {} \;
@@ -689,26 +721,6 @@
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
 
 				set +x
-				echo "Do you want to setup SMTP configuration (y/n)?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					echo "Enter SMTP server address (e.g., smtp.gmail.com)"
-					read -r smtp_server
-					echo "Enter SMTP port"
-					read -r smtp_port
-					echo "Enter SMTP username"
-					read -r smtp_username
-					echo "Enter SMTP password"
-					read -r smtp_password
-					sed -i "1021 i auth_username = $smtp_username" /etc/php.ini
-					sed -i "1022 i auth_password = $smtp_password" /etc/php.ini
-					sed -i "s/SMTP = localhost/SMTP = $smtp_server/" /etc/php.ini
-					sed -i "s/smtp_port = 25/smtp_port = $smtp_port/" /etc/php.ini
-				esac
-							
-				set +x
 				echo "Do you want to install Restyaboard apps (y/n)?"
 				read -r answer
 				set -x
@@ -717,7 +729,7 @@
 					if ! hash jq 2>&-;
 					then
 						echo "Installing jq..."
-						apt-get install -y jq
+						apt install -y jq
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -734,17 +746,19 @@
     					app_price=$(echo ${fid} | cut -d"#" -f2)
 						if ([ "$app_price" = "Free" ])
     					then
-							curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-							unzip /tmp/$fid.zip -d "$dir/client/apps"
+							curl -v -L -G -o /tmp/$app_name.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$app_name.zip
+							unzip /tmp/$app_name.zip -d "$dir/client/apps"
 						fi
 					done
 				esac
 				
 				echo "Starting services..."
 				service cron restart
-				service php7.0-fpm restart
+				service php7.2-fpm restart
 				service nginx restart
 				service postfix restart
+				apt install -y python-pip
+				pip install virtualenv
 			esac
 		else
 			set +x
@@ -773,6 +787,15 @@
 							echo "cron nginx installation failed with error code ${error_code} cron nginx installation failed with error code 18"
 							return 18
 						fi
+						if [ -f "/etc/nginx/conf.d/default.conf" ]; then
+							rm -rf /etc/nginx/conf.d/default.conf
+						fi
+						if [ -f "/etc/nginx/sites-available/default.conf" ]; then
+							rm -rf /etc/nginx/sites-available/default.conf
+						fi
+						if [ -f "/etc/nginx/sites-enabled/default.conf" ]; then
+							rm -rf /etc/nginx/sites-enabled/default.conf
+						fi
 						service nginx start
 						chkconfig --levels 35 nginx on
 					esac
@@ -792,7 +815,7 @@
 						echo "Installing PHP..."
 						rpm -Uvh "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm"
 						rpm -Uvh "https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm"
-						yum install -y php70w php70w-opcache
+						yum install -y php72w php72w-opcache
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -803,7 +826,7 @@
 				fi
 				
 				echo "Installing PHP fpm and cli extension..."
-				yum install -y php70w-fpm php70w-devel php70w-cli php70w-opcache
+				yum install -y php72w-fpm php72w-devel php72w-cli php72w-opcache
 				error_code=$?
 				if [ ${error_code} != 0 ]
 				then
@@ -811,14 +834,14 @@
 					return 21
 				fi
 				service php-fpm start
-				chkconfig --levels 35 php70w-fpm on
+				chkconfig --levels 35 php-fpm on
 
 				echo "Checking PHP curl extension..."
 				php -m | grep curl
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-curl..."
-					yum install -y php70w-curl
+					yum install -y php72w-curl
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -832,7 +855,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-pgsql..."
-					yum install -y php70w-pgsql
+					yum install -y php72w-pgsql
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -846,7 +869,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-mbstring..."
-					yum install -y php70w-mbstring
+					yum install -y php72w-mbstring
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -860,7 +883,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-ldap..."
-					yum install -y php70w-ldap
+					yum install -y php72w-ldap
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -876,7 +899,8 @@
 					echo "Installing php-imagick..."
 
 					yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
-					yum install -y php70w-pear
+					yum install -y php72w-pear
+					yum install -y php72w-gd
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -901,7 +925,7 @@
 				if [ "$?" -gt 0 ];
 				then
 					echo "Installing php-imap..."
-					yum install -y php70w-imap
+					yum install -y php72w-imap
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -915,7 +939,7 @@
 				php -m | grep xml
 				if [ "$?" -gt 0 ]; then
 					echo "Installing xml..."
-					yum install -y php70w-xml
+					yum install -y php72w-xml
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -1032,19 +1056,6 @@
 					fi
 				fi
 
-				yum install -y git
-				git clone git://github.com/rebar/rebar.git
-				cd rebar
-				./bootstrap
-
-				yum install -y gcc glibc-devel make ncurses-devel openssl-devel autoconf expat-devel
-
-				cd /opt
-				wget http://erlang.org/download/otp_src_R15B01.tar.gz
-				tar zxvf otp_src_R15B01.tar.gz
-				cd otp_src_R15B01
-				./configure && make && make install
-
 				yum install -y php-xml
 
 				echo "Downloading Restyaboard script..."
@@ -1157,31 +1168,11 @@
 				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
 				
 				echo "Reset php-fpm (use unix socket mode)..."
-				if [ -f "/run/php/php7.0-fpm.sock" ]; then
-					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.0-fpm.sock/g" /etc/php-fpm.d/www.conf
+				if [ -f "/run/php/php7.2-fpm.sock" ]; then
+					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.2-fpm.sock/g" /etc/php-fpm.d/www.conf
 				else
-					sed -i "s/unix:\/run\/php\/php7.0-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
+					sed -i "s/unix:\/run\/php\/php7.2-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
 				fi
-
-				set +x
-				echo "Do you want to setup SMTP configuration (y/n)?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					echo "Enter SMTP server address (e.g., smtp.gmail.com)"
-					read -r smtp_server
-					echo "Enter SMTP port"
-					read -r smtp_port
-					echo "Enter SMTP username"
-					read -r smtp_username
-					echo "Enter SMTP password"
-					read -r smtp_password
-					sed -i "1021 i auth_username = $smtp_username" /etc/php.ini
-					sed -i "1022 i auth_password = $smtp_password" /etc/php.ini
-					sed -i "s/SMTP = localhost/SMTP = $smtp_server/" /etc/php.ini
-					sed -i "s/smtp_port = 25/smtp_port = $smtp_port/" /etc/php.ini
-				esac
 
 				set +x
 				echo "Do you want to install Restyaboard apps (y/n)?"
@@ -1210,8 +1201,8 @@
 						app_price=$(echo ${fid} | cut -d"#" -f2)
 						if ([ "$app_price" = "Free" ])
 						then
-							curl -v -L -G -o /tmp/$fid.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$fid.zip
-							unzip /tmp/$fid.zip -d "$dir/client/apps"
+							curl -v -L -G -o /tmp/$app_name.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$app_name.zip
+							unzip /tmp/$app_name.zip -d "$dir/client/apps"
 						fi
 					done
 				esac
@@ -1225,13 +1216,48 @@
 					/etc/init.d/php-fpm restart
 					/etc/init.d/nginx restart
 				fi
+				yum install -y python-pip
+				pip install virtualenv
 				
-				/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 			esac
 		fi
+		/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
+		
+		set +x
+		echo "Do you want to setup SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance (y/n)?"
+		read -r answer
+		set -x
+		case "${answer}" in
+			[Yy])
+		cd /opt/
+		wget https://github.com/certbot/certbot/archive/master.zip -O certbot-master.zip
+		unzip certbot-master.zip
+		cd /opt/certbot-master/
+		sudo -H ./certbot-auto certonly --webroot --no-bootstrap -d $webdir -w "$dir/client"
+		sed -i "s/restya\.com/$webdir/g" ${DOWNLOAD_DIR}/restyaboard-ssl.conf
+
+		sed -i "/client_max_body_size 300M;/r ${DOWNLOAD_DIR}/restyaboard-ssl.conf"  /etc/nginx/conf.d/restyaboard.conf
+		if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+		then
+			service nginx restart
+			service php7.2-fpm restart
+		else
+			if [ -f "/bin/systemctl" ]; then
+				echo "Starting services with systemd..."
+				systemctl restart nginx
+				systemctl restart php-fpm
+			else
+				echo "Starting services..."
+				/etc/init.d/php-fpm restart
+				/etc/init.d/nginx restart
+			fi
+		fi
+		esac
+
 		set +x
 		curl -v -L -G -d "app=board&os=${os}&version=${version}" "http://restya.com/success_installation.php"
 		echo "Restyaboard URL : $webdir"
+
 		echo "Login with username admin and password restya"
 		exit 1
 	}

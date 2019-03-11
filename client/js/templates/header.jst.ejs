@@ -1,40 +1,76 @@
-<% if(_.isEmpty(current_param) || ((typeof(user) == "undefined" || (typeof(user) != "undefined" && user.role_id != 1)) || (current_param !== 'activities' && current_param !== 'users' && current_param !== 'roles' && current_param !== 'apps' && current_param !== 'settings' && current_param !== 'email_templates' && current_param !== 'boards' && current_param !== 'admin_boards_list' && current_param !== 'oauth_clients' && current_param !== 'board_user_roles' && current_param !== 'organization_user_roles'))){ %>
-<div id="js-navbar-default" class="navbar navbar-default" role="navigation">
-  <div class="container-fluid">
-  <div class="row">
-	<div class="navbar-left">
-	  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-	  <div class="clearfix"><h2 class="navbar-left navbar-btn list-group-item-text"><span class="navbar-left"><a href="#/boards" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span></h1>
-	  </div>
-	</div>
-	<nav class="navbar-collapse collapse">
-	<div class="navbar-right navbar-btn h4">
-	  
-	  <%  if(typeof(user) == "undefined") { %>
-	  	<ul class="nav nav-pills navbar-left">
-	  	<%
+<% if(_.isEmpty(current_param) || ((typeof(user) == "undefined" || (typeof(user) != "undefined" && user.role_id != 1)) || (current_param !== 'activities' && current_param !== 'users' && current_param !== 'user_logins' && current_param !== 'roles' && current_param !== 'apps' && current_param !== 'settings' && current_param !== 'email_templates' && current_param !== 'boards' && current_param !== 'admin_boards_list' && current_param !== 'oauth_clients' && current_param !== 'board_user_roles' && current_param !== 'organization_user_roles'))){ %>
+	<div id="js-navbar-default" class="navbar navbar-default" role="navigation">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="navbar-left">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<div class="clearfix">
+						<h2 class="navbar-left navbar-btn list-group-item-text">
+							<span class="navbar-left">
+								<a href="#/boards" title="<%- SITE_NAME %>">
+									<img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"
+									/>
+								</a>
+							</span>
+							</h2>
+					</div>
+				</div>
+				<nav class="navbar-collapse collapse">
+					<div class="navbar-right navbar-btn h4">
+
+						<%  if(typeof(user) == "undefined") { %>
+							<ul class="nav nav-pills navbar-left">
+								<%
 			if(!_.isEmpty(role_links.where({slug: "users_register"}))) {	%>
-		<li class="ldap_login_check <% if(Backbone.history.fragment.indexOf('users/register') != -1){%>active<%}%>"><a href="#/users/register" title="<%- i18next.t('Register') %>"><strong><%- i18next.t("Register") %></strong></a></li>
-		 <% 	}
+									<li class="ldap_login_check <% if(Backbone.history.fragment.indexOf('users/register') != -1){%>active<%}%>">
+										<a href="#/users/register" title="<%- i18next.t('Register') %>">
+											<strong>
+												<%- i18next.t("Register") %>
+											</strong>
+										</a>
+									</li>
+									<% 	}
 			if(!_.isEmpty(role_links.where({slug: "users_login"}))){
 		 %>
-		<li class="<% if(Backbone.history.fragment.indexOf('users/login') != -1){%>active<%}%>"><a href="#/users/login" title="<%- i18next.t('Login') %>"><strong><%- i18next.t("Login") %></strong></a></li>
-		 <%
+										<li class="<% if(Backbone.history.fragment.indexOf('users/login') != -1){%>active<%}%>">
+											<a href="#/users/login" title="<%- i18next.t('Login') %>">
+												<strong>
+													<%- i18next.t("Login") %>
+												</strong>
+											</a>
+										</li>
+										<%
 		 	}
 		 %>
-		 </ul>
-	 <% } %>   
+							</ul>
+							<% } %>
+					</div>
+				</nav>
+			</div>
+			<% if(typeof(user) !== "undefined") { %>
+				<section id="broadcast_information" class="hide hidden-xs">
+				</section>
+				<section id="broadcast_hide_arrow" class="hide hidden-xs">
+					<a href="#" class="broadcast-content-show js-broadcast-show pull-right" title="show">
+						<i class="icon-angle-up"></i>
+					</a>
+				</section>
+			<% } %>
+		</div>
 	</div>
-	</nav>
-   </div>
-  </div>
-</div>
-<% } else if(typeof(user) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'roles' || current_param === 'apps' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list'|| current_param === 'oauth_clients' || current_param === 'board_user_roles' || current_param === 'organization_user_roles')){ %>
-<% 
+	<% } else if(typeof(user) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'user_logins' || current_param === 'roles' || current_param === 'apps' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list'|| current_param === 'oauth_clients' || current_param === 'board_user_roles' || current_param === 'organization_user_roles')){%>
+		<% 
 	if(!_.isEmpty(current_param) && (current_param === 'activities')) {
 		current_title = i18next.t('Activities');
 	} else if(!_.isEmpty(current_param) && (current_param === 'users')){ 
 		current_title = i18next.t('Users');
+	}else if(!_.isEmpty(current_param) && (current_param === 'user_logins')){ 
+		current_title = i18next.t('Users Logins');
 	} else if(!_.isEmpty(current_param) && (current_param === 'roles' || current_param === 'board_user_roles' || current_param === 'organization_user_roles')){ 
 		current_title = i18next.t('Roles');
 	} else if(!_.isEmpty(current_param) && (current_param === 'apps')){ 
@@ -50,96 +86,230 @@
 	}
 %>
 
-<div class="container-fluid bg-primary">
-<div class="navbar-header">
-	<button data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle" type="button"> 
-		<span class="sr-only"><%- i18next.t("Toggle navigation") %></span> 
-		<span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> 
-	</button>
-  <div class="clearfix navbar-left"> 
-	<h1 class="navbar-left navbar-btn mob-no-mar clearfix"><div class="navbar-left"><a href="#/boards" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"></a></div></h1>
-	<ul class="list-inline navbar-left h2 navbar-btn navbar-form whitec text-center hidden-xs">
-            <li class="navbar-btn "><span class="h5">/</span></li>
-            <li><span class="icon-user h3"></span><span class="h4"> <%- i18next.t("Admin CP") %></span></li>
-            <li class="navbar-btn "><span class="h5">/</span></li>
-            <li id="js-navbar-header"><span class="h4"><%- current_title %></span></li>
-     </ul>
-	 <% if(!_.isEmpty(current_param) && (current_param === 'users')){ %>
-	 <div class="pull-left well-sm"> <div class="js-dropdown dropdown  docmodal-submenu row">
-              <a data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle label" href="#"> <i class="icon-cog h3"></i></a>
-              <ul role="menu" class="dropdown-menu arrow">
-                 <li class="text-center text-muted"><strong><%- i18next.t("Sort") %></strong></li>
-                 <li class="divider"></li>
-                 <li><a title="<%- i18next.t('Username') %>" href="#" class="js-sort-by" data-field="username"><%- i18next.t("Username") %></a></li>
-				 <li class="dropdown-submenu inner-dropdown dropdown"> <a href="#" title="<%- i18next.t('Roles') %>" data-toggle="dropdown" class="dropdown-toggle js-open-popover"><%- i18next.t("Roles") %></a>
-                  <ul class="dropdown-menu">
-				    <li class="inner-dropdown dropdown">
-						<a title="<%- i18next.t('Admin (%s)', { postProcess: 'sprintf', sprintf: [this.admin_board_users]}) %>" href="#" class="js-sort-by" data-field="role_id"><%- i18next.t("Admin (%s)", { postProcess: 'sprintf', sprintf: [this.admin_board_users]}) %></a>
-					</li>
-                    <li class="inner-dropdown dropdown">
-						<a title="<%- i18next.t('User (%s)', { postProcess: 'sprintf', sprintf: [this.normal_board_users]}) %>" href="#" class="js-sort-by" data-field="role_id"><%- i18next.t("User (%s)", { postProcess: 'sprintf', sprintf: [this.normal_board_users]}) %></a>
-					</li>
-                  </ul>
-                </li>
-                <li class="dropdown-submenu inner-dropdown dropdown"> <a href="#" title="<%- i18next.t('Login') %>" data-toggle="dropdown" class="dropdown-toggle js-open-popover"><%- i18next.t("Login") %></a>
-                  <ul class="dropdown-menu">
-                    <li class="inner-dropdown dropdown">
-						<a title="<%- i18next.t('Login Time') %>" href="#" class="js-sort-by" data-field="last_login_date"><%- i18next.t("Time") %></a>
-					</li>
-                    <li class="inner-dropdown dropdown">
-						<a title="<%- i18next.t('Login IP') %>" href="#" class="js-sort-by" data-field="last_login_ip"><%- i18next.t("IP") %></a>
-					</li>
-                  </ul>
-                </li>
-                <li class="dropdown-submenu inner-dropdown dropdown"> <a href="#" title="<%- i18next.t('Registered') %>" data-toggle="dropdown" class="dropdown-toggle js-open-popover"><%- i18next.t("Registered") %></a>
-                  <ul class="dropdown-menu">
-                    <li class="inner-dropdown dropdown">
-						<a title="<%- i18next.t('Time') %>" href="#" class="js-sort-by" data-field="created"><%- i18next.t("Time") %></a>
-					</li>
-                    <li>
-						<a title="<%- i18next.t('IP') %>" href="#" class="js-sort-by" data-field="registered_ip"><%- i18next.t("IP") %></a>
-					</li>
-                  </ul>
-                </li>
-                <li><a title="<%- i18next.t('Organizations Count') %>" href="#" class="js-sort-by" data-field="joined_organization_count"><%- i18next.t("Organizations Count") %></a>
-				</li>
-                <li><a title="<%- i18next.t('Board Count') %>" href="#" class="js-sort-by" data-field="joined_board_count"><%- i18next.t("Board Count") %></a>
-				</li>
-              </ul>
-            </div></div>
-					<div class="ldap_login_check pull-left well-sm"><a class="label" href="#/users/admin_user_add" title="<%- i18next.t('Add User') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("Add User") %></span></a></div>
-			<% } %>
-			<% if(!_.isEmpty(current_param) && (current_param === 'oauth_clients')){ %>
-				<div class="pull-left well-sm"><a class="label" href="#/oauth_clients/add" title="<%- i18next.t('New application') %>"><i class="icon-plus-sign h3"></i><span class="h4"><%- i18next.t("New application") %></span></a></div>
-			<% } %>
-	</div>
-	</div>
-	<nav class="navbar-collapse collapse"> 
-	<div class="navbar-right clearfix">
-		<ul class="nav nav-pills navbar-left navbar-btn">
-			<li class="js-admin-activity-menu navbar-btn"><a title="<%- i18next.t('Activities') %>" href="#/activities"><%- i18next.t("Activities") %></a></li>
-			<li class="js-admin-user-menu navbar-btn"><a title="<%- i18next.t('Users') %>" href="#/users"><%- i18next.t("Users") %></a></li>
-			<li class="js-admin-board-menu navbar-btn"><a title="<%- i18next.t('Boards') %>" href="#/boards/list"><%- i18next.t("Boards") %></a></li>
-			<li class="js-admin-role-menu navbar-btn"><a title="<%- i18next.t('Roles') %>" href="#/roles"><%- i18next.t("Roles") %></a></li>
-			<li class="js-admin-app-menu navbar-btn"><a title="<%- i18next.t('Apps') %>" href="#/apps"><%- i18next.t("Apps") %></a></li>
-			<li class="js-admin-client-menu navbar-btn"><a title="<%- i18next.t('Developer applications') %>" href="#/oauth_clients"><%- i18next.t("Developer applications") %></a></li>
-			<li class="js-admin-setting-menu navbar-btn"><a title="<%- i18next.t('Settings') %>" href="#/settings"><%- i18next.t("Settings") %></a></li>
-			<li class="js-admin-email-menu navbar-btn"><a title="<%- i18next.t('Email Templates') %>" href="#/email_templates"><%- i18next.t("Email Templates") %></a></li>
-		</ul>
-	</div>
-	</nav>
-</div>
-<% } else { %>
-<div role="navigation" class="navbar navbar-default" id="js-navbar-default">
-  <div class="container-fluid">
-  <div class="row">
-	<div class="navbar-left">
-	  
-	  <div class="clearfix"><h2 class="navbar-left navbar-btn list-group-item-text"><span class="navbar-left"><a title="Restyaboard1" href="#/boards"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span></h2>
-	  </div>
-	</div>
-	
-   </div>
-  </div>
-</div>
-<% } %>
+			<div class="container-fluid bg-primary">
+				<div class="navbar-header">
+					<button data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle" type="button">
+						<span class="sr-only">
+							<%- i18next.t("Toggle navigation") %>
+						</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<div class="clearfix navbar-left">
+						<h1 class="navbar-left navbar-btn mob-no-mar clearfix">
+							<div class="navbar-left">
+								<a href="#/boards" title="<%- SITE_NAME %>">
+									<img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block">
+								</a>
+							</div>
+						</h1>
+						<ul class="list-inline navbar-left h2 navbar-btn navbar-form whitec text-center hidden-xs">
+							<li class="navbar-btn ">
+								<span class="h5">/</span>
+							</li>
+							<li>
+								<span class="icon-user h3"></span>
+								<span class="h4">
+									<%- i18next.t("Admin CP") %>
+								</span>
+							</li>
+							<li class="navbar-btn ">
+								<span class="h5">/</span>
+							</li>
+							<li id="js-navbar-header">
+								<span class="h4">
+									<%- current_title %>
+								</span>
+							</li>
+						</ul>
+						<% if(!_.isEmpty(current_param) && (current_param === 'users')){ %>
+							<div class="pull-left well-sm">
+								<div class="js-dropdown dropdown  docmodal-submenu row">
+									<a data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle label" href="#">
+										<i class="icon-cog h3"></i>
+									</a>
+									<ul role="menu" class="dropdown-menu arrow">
+										<li class="text-center text-muted">
+											<strong>
+												<%- i18next.t("Sort") %>
+											</strong>
+										</li>
+										<li class="divider"></li>
+										<li>
+											<a title="<%- i18next.t('Username') %>" href="#" class="js-sort-by" data-field="username">
+												<%- i18next.t("Username") %>
+											</a>
+										</li>
+										<li class="dropdown-submenu inner-dropdown dropdown">
+											<a href="#" title="<%- i18next.t('Roles') %>" data-toggle="dropdown" class="dropdown-toggle js-open-popover">
+												<%- i18next.t("Roles") %>
+											</a>
+											<ul class="dropdown-menu">
+												<li class="inner-dropdown dropdown">
+													<a title="<%- i18next.t('Admin (%s)', { postProcess: 'sprintf', sprintf: [this.admin_board_users]}) %>" href="#" class="js-sort-by"
+													 data-field="role_id">
+														<%- i18next.t("Admin (%s)", { postProcess: 'sprintf', sprintf: [this.admin_board_users]}) %>
+													</a>
+												</li>
+												<li class="inner-dropdown dropdown">
+													<a title="<%- i18next.t('User (%s)', { postProcess: 'sprintf', sprintf: [this.normal_board_users]}) %>" href="#" class="js-sort-by"
+													 data-field="role_id">
+														<%- i18next.t("User (%s)", { postProcess: 'sprintf', sprintf: [this.normal_board_users]}) %>
+													</a>
+												</li>
+											</ul>
+										</li>
+										<li class="dropdown-submenu inner-dropdown dropdown">
+											<a href="#" title="<%- i18next.t('Login') %>" data-toggle="dropdown" class="dropdown-toggle js-open-popover">
+												<%- i18next.t("Login") %>
+											</a>
+											<ul class="dropdown-menu">
+												<li class="inner-dropdown dropdown">
+													<a title="<%- i18next.t('Login Time') %>" href="#" class="js-sort-by" data-field="last_login_date">
+														<%- i18next.t("Time") %>
+													</a>
+												</li>
+												<li class="inner-dropdown dropdown">
+													<a title="<%- i18next.t('Login IP') %>" href="#" class="js-sort-by" data-field="last_login_ip">
+														<%- i18next.t("IP") %>
+													</a>
+												</li>
+											</ul>
+										</li>
+										<li class="dropdown-submenu inner-dropdown dropdown">
+											<a href="#" title="<%- i18next.t('Registered') %>" data-toggle="dropdown" class="dropdown-toggle js-open-popover">
+												<%- i18next.t("Registered") %>
+											</a>
+											<ul class="dropdown-menu">
+												<li class="inner-dropdown dropdown">
+													<a title="<%- i18next.t('Time') %>" href="#" class="js-sort-by" data-field="created">
+														<%- i18next.t("Time") %>
+													</a>
+												</li>
+												<li>
+													<a title="<%- i18next.t('IP') %>" href="#" class="js-sort-by" data-field="registered_ip">
+														<%- i18next.t("IP") %>
+													</a>
+												</li>
+											</ul>
+										</li>
+										<li>
+											<a title="<%- i18next.t('Organizations Count') %>" href="#" class="js-sort-by" data-field="joined_organization_count">
+												<%- i18next.t("Organizations Count") %>
+											</a>
+										</li>
+										<li>
+											<a title="<%- i18next.t('Board Count') %>" href="#" class="js-sort-by" data-field="joined_board_count">
+												<%- i18next.t("Board Count") %>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div class="ldap_login_check pull-left well-sm">
+								<a class="label" href="#/users/admin_user_add" title="<%- i18next.t('Add User') %>">
+									<i class="icon-plus-sign h3"></i>
+									<span class="h4">
+										<%- i18next.t("Add User") %>
+									</span>
+								</a>
+							</div>
+							<% } %>
+								<% if(!_.isEmpty(current_param) && (current_param === 'oauth_clients')){ %>
+									<div class="pull-left well-sm">
+										<a class="label" href="#/oauth_clients/add" title="<%- i18next.t('New application') %>">
+											<i class="icon-plus-sign h3"></i>
+											<span class="h4">
+												<%- i18next.t("New application") %>
+											</span>
+										</a>
+									</div>
+									<% } %>
+					</div>
+				</div>
+				<nav class="navbar-collapse collapse">
+					<div class="navbar-right clearfix">
+						<ul class="nav nav-pills navbar-left navbar-btn js-admin-panel-header">
+							<li class="js-admin-activity-menu navbar-btn">
+								<a title="<%- i18next.t('Activities') %>" href="#/activities">
+									<%- i18next.t("Activities") %>
+								</a>
+							</li>
+							<li class="js-admin-user-menu navbar-btn">
+								<a title="<%- i18next.t('Users') %>" href="#/users">
+									<%- i18next.t("Users") %>
+								</a>
+							</li>
+							<li class="js-admin-users_logins-menu navbar-btn">
+								<a title="<%- i18next.t('Users Logins') %>" href="#/user_logins">
+									<%- i18next.t("User Logins") %>
+								</a>
+							</li>
+							<li class="js-admin-role-menu navbar-btn">
+								<a title="<%- i18next.t('Roles') %>" href="#/roles">
+									<%- i18next.t("Roles") %>
+								</a>
+							</li>
+							<li class="js-admin-board-menu navbar-btn">
+								<a title="<%- i18next.t('Boards') %>" href="#/boards/list">
+									<%- i18next.t("Boards") %>
+								</a>
+							</li>
+							<li class="js-admin-app-menu navbar-btn">
+								<a title="<%- i18next.t('Apps') %>" href="#/apps">
+									<%- i18next.t("Apps") %>
+								</a>
+							</li>
+							<li class="js-admin-client-menu navbar-btn">
+								<a title="<%- i18next.t('Developer applications') %>" href="#/oauth_clients">
+									<%- i18next.t("Developer applications") %>
+								</a>
+							</li>
+							<li class="js-admin-setting-menu navbar-btn">
+								<a title="<%- i18next.t('Settings') %>" href="#/settings">
+									<%- i18next.t("Settings") %>
+								</a>
+							</li>
+							<li class="js-admin-email-menu navbar-btn">
+								<a title="<%- i18next.t('Email Templates') %>" href="#/email_templates">
+									<%- i18next.t("Email Templates") %>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</nav>
+				</div>
+				<div class="container-fluid">
+					<section id="broadcast_information" class="hide hidden-xs">
+						<div class="row list-group-item-text"></div>
+					</section>
+					<section id="broadcast_hide_arrow" class="hide hidden-xs">
+						<a href="#" class="broadcast-content-show js-broadcast-show pull-right" title="show">
+							<i class="icon-angle-up"></i>
+							</i>
+						</a>
+					</section>
+				</div>
+			<% } else { %>
+				<div role="navigation" class="navbar navbar-default" id="js-navbar-default">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="navbar-left">
+
+								<div class="clearfix">
+									<h2 class="navbar-left navbar-btn list-group-item-text">
+										<span class="navbar-left">
+											<a title="Restyaboard1" href="#/boards">
+												<img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"
+												/>
+											</a>
+										</span>
+									</h2>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+				<% } %>

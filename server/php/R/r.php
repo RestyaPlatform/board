@@ -25,6 +25,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: *');
 require_once '../config.inc.php';
 require_once '../libs/vendors/finediff.php';
+require_once '../libs/vendors/GoogleAuthenticator.php';
 require_once '../libs/core.php';
 require_once '../libs/vendors/OAuth2/Autoloader.php';
 require_once '../libs/ActivityHandler.php';
@@ -32,9 +33,9 @@ $j_username = $j_password = '';
 require_once '../bootstrap.php';
 global $jabberHost, $jaxlDebug;
 if (is_plugin_enabled('r_chat')) {
-    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chat' . DIRECTORY_SEPARATOR . 'functions.php';
-    require APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chat' . DIRECTORY_SEPARATOR . 'libs/vendors/jaxl3/jaxl.php';
-    $json = file_get_contents(APP_PATH . '/client/apps/r_chat/app.json');
+    require_once PLUGIN_PATH . DS . 'Chat' . DS . 'functions.php';
+    require PLUGIN_PATH . DS . 'Chat' . DS . 'libs/vendors/jaxl3/jaxl.php';
+    $json = file_get_contents(APP_PATH . DS . 'client' . DS . 'apps' . DS . 'r_chat' . DS . 'app.json');
     $chat_data = json_decode($json, true);
     $chatDBHost = $chat_data['settings']['r_chat_db_host']['value'];
     $chatDBPort = $chat_data['settings']['r_chat_db_port']['value'];
@@ -44,7 +45,7 @@ if (is_plugin_enabled('r_chat')) {
     $jabberHost = $chat_data['settings']['r_chat_jabber_host']['value'];
     $jaxlDebug = $chat_data['settings']['r_chat_jaxl_debug']['value'];
 }
-/** 
+/**
  * Common method to handle GET method
  *
  * @param string $r_resource_cmd     URL
@@ -77,7 +78,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             );
             $response = executeQuery("SELECT user_id as username, expires, scope, client_id FROM oauth_refresh_tokens WHERE refresh_token = $1", $conditions);
             if ($response['client_id'] == 6664115227792148 && OAUTH_CLIENTID == 7742632501382313) {
-                $oauth_clientid = 6664115227792148;
+                $oauth_clientid = '6664115227792148';
                 $oauth_client_secret = 'hw3wpe2cfsxxygogwue47cwnf7';
             }
             $post_val = array(
@@ -106,6 +107,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $folder_iso2_code = $folder[count($folder) - 2];
                 array_push($lang_iso2_codes, $folder_iso2_code);
             }
+            $languages = array();
             $qry_val_arr = array(
                 '{' . implode($lang_iso2_codes, ',') . '}'
             );
@@ -114,7 +116,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $languages[$row['iso2']] = $row['name'];
             }
             $response['languages'] = json_encode($languages);
-            $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
+            $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
             if (!empty($files)) {
                 foreach ($files as $file) {
                     $content = file_get_contents($file);
@@ -188,7 +190,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $filter_condition = "WHERE LOWER(full_name) LIKE '%" . strtolower($r_resource_filters['search']) . "%' OR LOWER(email) LIKE '%" . strtolower($r_resource_filters['search']) . "%' ";
         }
         $c_sql = 'SELECT COUNT(*) FROM admin_users_listing ul ';
-        if (!empty($r_resource_filters['search'])) {
+        if (!empty($r_resource_filters['search']) || !empty($r_resource_filters['filter'])) {
             $c_sql = 'SELECT COUNT(*) FROM admin_users_listing ul ' . $filter_condition;
         }
         if (!empty($c_sql)) {
@@ -236,6 +238,18 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $board_lists = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
+                    if (is_plugin_enabled('r_groups')) {
+                        $group_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM groups_users Where user_id = $1 ORDER BY id DESC) as d ';
+                        $obj['groups'] = null;
+                        if ($group_result = pg_query_params($db_lnk, $group_sql, array(
+                            $obj['id']
+                        ))) {
+                            while ($group = pg_fetch_row($group_result)) {
+                                $group = json_decode($group[0], true);
+                                $obj['groups'][] = $group;
+                            }
+                        }
+                    }
                     $data['data'][] = $obj;
                 }
                 if (!empty($_metadata) && !empty($filter_count)) {
@@ -243,6 +257,47 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
                 if (!empty($roles)) {
                     $data['roles'] = $roles;
+                }
+                if (!empty($_metadata)) {
+                    $data['_metadata'] = $_metadata;
+                }
+                echo json_encode($data);
+            } else {
+                $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+            }
+        } else {
+            echo json_encode($response);
+        }
+        break;
+
+    case '/user_logins':
+        $response['users'] = array();
+        $order_by = 'id';
+        $direction = 'desc';
+        $filter_condition = '';
+        $_metadata = array();
+        if (!empty($r_resource_filters['sort'])) {
+            $order_by = $r_resource_filters['sort'];
+            $direction = $r_resource_filters['direction'];
+        } else if (!empty($r_resource_filters['search'])) {
+            $filter_condition = "WHERE LOWER(full_name) LIKE '%" . strtolower($r_resource_filters['search']) . "%' OR LOWER(email) LIKE '%" . strtolower($r_resource_filters['search']) . "%' ";
+        }
+        $c_sql = 'SELECT COUNT(*) FROM user_logins_listing ul ';
+        if (!empty($r_resource_filters['search'])) {
+            $c_sql = 'SELECT COUNT(*) FROM user_logins_listing ul ' . $filter_condition;
+        }
+        if (!empty($c_sql)) {
+            $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
+            $_metadata = $paging_data['_metadata'];
+        }
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM user_logins_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ' limit ' . $_metadata['limit'] . ' offset ' . $_metadata['offset'] . ') as d ';
+        if (!empty($sql)) {
+            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                $data = array();
+                $board_lists = array();
+                while ($row = pg_fetch_row($result)) {
+                    $obj = json_decode($row[0], true);
+                    $data['data'][] = $obj;
                 }
                 if (!empty($_metadata)) {
                     $data['_metadata'] = $_metadata;
@@ -271,10 +326,30 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/users/?/activities':
         $condition = '';
         if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users'] && empty($r_resource_filters['organization_id']) && empty($r_resource_filters['board_id'])) {
-            if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
-                $condition = (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE al.id < $1' : '';
+            $i = 1;
+            if (!empty($r_resource_filters['mode']) && $r_resource_filters['mode'] != 'all') {
+                if ($r_resource_filters['mode'] == 'activity') {
+                    $condition.= ' WHERE (al.type != $' . $i;
+                    array_push($pg_params, 'add_comment');
+                    $i++;
+                    $condition.= ' and al.type != $' . $i . ')';
+                    array_push($pg_params, 'edit_comment');
+                    $i++;
+                } else if ($r_resource_filters['mode'] == 'comment') {
+                    $condition.= ' WHERE al.type = $' . $i;
+                    array_push($pg_params, 'add_comment');
+                    $i++;
+                }
+                $condition.= (!empty($r_resource_filters['last_activity_id'])) ? ' AND ' : '';
             } else {
-                $condition = (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE al.id > $1' : '';
+                $condition.= (!empty($r_resource_filters['last_activity_id'])) ? ' WHERE ' : '';
+            }
+            if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'profile') {
+                $condition.= (!empty($r_resource_filters['last_activity_id'])) ? 'al.id < $' . $i : '';
+                $i++;
+            } else {
+                $condition.= (!empty($r_resource_filters['last_activity_id'])) ? 'al.id > $' . $i : '';
+                $i++;
             }
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
@@ -333,13 +408,20 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ' . $str . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str;
-            } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] = 'all') {
+            } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all') {
                 if (!empty($r_resource_filters['last_activity_id'])) {
                     $condition = ' AND al.id > $3';
                 }
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition;
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
+            } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id'] && $r_resource_filters['type'] == 'board_user_activity') {
+                if (!empty($r_resource_filters['last_activity_id'])) {
+                    $condition = ' AND al.id < $3';
+                }
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE user_id = $1 AND board_id = $2' . $condition . ' ORDER BY freshness_ts DESC LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE user_id = $1 AND board_id = $2' . $condition;
+                array_push($pg_params, $r_resource_vars['users'], $r_resource_filters['board_id']);
             } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id']) {
                 if (!empty($r_resource_filters['last_activity_id'])) {
                     $condition = ' AND al.id > $3';
@@ -462,6 +544,18 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
+                    if (IS_TWO_FACTOR_AUTHENTICATION_ENABLED) {
+                        $ga = new PHPGangsta_GoogleAuthenticator();
+                        if (empty($obj['two_factor_authentication_hash'])) {
+                            $obj['two_factor_authentication_hash'] = $ga->createSecret();
+                            $data = array(
+                                $obj['two_factor_authentication_hash'],
+                                $obj['id']
+                            );
+                            pg_query_params($db_lnk, 'UPDATE users SET two_factor_authentication_hash = $1 WHERE id = $2', $data);
+                        }
+                        $obj['qr_code_url'] = $ga->getQRCodeGoogleUrl($obj['full_name'] . ' (' . $obj['email'] . ')', $obj['two_factor_authentication_hash']);
+                    }
                     $data = $obj;
                 }
                 if ($data['id'] != $authUser['id'] && $authUser['role_id'] != 1) {
@@ -477,10 +571,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['timezones'] = array();
                     while ($row = pg_fetch_assoc($s_result)) {
                         $data['timezones'][] = $row;
-                    }
-                    if (is_plugin_enabled('r_custom_fields')) {
-                        require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
-                        $data = customFieldAfterFetchUser($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
                     }
                     echo json_encode($data);
                 }
@@ -533,8 +623,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $i++;
             array_push($pg_params, '{' . implode(',', $logged_user_board_ids) . '}');
         }
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_cards_listing ucl WHERE ' . $str . ' user_id = $' . $i . ' ORDER BY board_id ASC) as d';
-        array_push($pg_params, $r_resource_vars['users']);
+        if (empty($r_resource_filters['type'])) {
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users_cards_listing ucl WHERE ' . $str . ' user_id = ANY ( $' . $i . ' ) ORDER BY board_name ASC) as d';
+        } else {
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM created_cards_listing ucl WHERE ' . $str . ' created_user_id = ANY ( $' . $i . ' ) ORDER BY board_name ASC) as d';
+        }
+        if (!empty($r_resource_filters['user_ids'])) {
+            array_push($pg_params, '{' . $r_resource_vars['users'] . ',' . $r_resource_filters['user_ids'] . '}');
+        } else {
+            array_push($pg_params, '{' . $r_resource_vars['users'] . '}');
+        }
         if (!empty($sql)) {
             if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
                 $data = array();
@@ -769,6 +867,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
             $_metadata = $paging_data['_metadata'];
         }
+        if (!empty($c_sql) && !empty($r_resource_filters['page'])) {
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM admin_boards_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ' limit ' . $_metadata['limit'] . ' offset ' . $_metadata['offset'] . ') as d ';
+        }
         if (!empty($sql)) {
             if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
                 $data = array();
@@ -797,8 +898,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($_metadata) && !empty($board_user_roles) && OAUTH_CLIENTID != 7857596005287233) {
                     $data['board_user_roles'] = $board_user_roles;
                 }
-                if (is_plugin_enabled('r_chart')) {
-                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chart' . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+                if (is_plugin_enabled('r_chart') && empty($r_resource_filters['page'])) {
+                    require_once PLUGIN_PATH . DS . 'Chart' . DS . 'R' . DS . 'r.php';
                     $passed_values = array();
                     $passed_values['sort'] = $sort;
                     $passed_values['field'] = $field;
@@ -834,7 +935,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($_metadata)) {
                     $data['_metadata'] = $_metadata;
                 }
-                require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'Chart' . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+                require_once PLUGIN_PATH . DS . 'Chart' . DS . 'R' . DS . 'r.php';
                 $passed_values = array();
                 $passed_values['sort'] = $sort;
                 $passed_values['field'] = $field;
@@ -956,8 +1057,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             $data = $obj;
                         }
                         if (is_plugin_enabled('r_custom_fields')) {
-                            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
+                            require_once PLUGIN_PATH . DS . 'CustomFields' . DS . 'functions.php';
                             $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
+                            array_merge($data, $data);
+                        }
+                        if (is_plugin_enabled('r_gantt_view')) {
+                            require_once PLUGIN_PATH . DS . 'Gantt' . DS . 'functions.php';
+                            $data = cardDependencyAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
                             array_merge($data, $data);
                         }
                         echo json_encode($data);
@@ -1187,12 +1293,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     array_push($pg_params, 'edit_comment');
                     $i++;
                 } else if ($r_resource_filters['mode'] == 'comment') {
-                    $condition.= ' AND (al.type = $' . $i;
+                    $condition.= ' AND al.type = $' . $i;
                     array_push($pg_params, 'add_comment');
                     $i++;
-                    $condition.= ' OR al.type = $' . $i . ')';
-                    array_push($pg_params, 'edit_comment');
-                    $i++;
+                    /* $condition.= ' OR al.type = $' . $i . ')';
+                        array_push($pg_params, 'edit_comment');
+                        $i++; */
                 }
             }
             $limit = PAGING_COUNT;
@@ -1204,7 +1310,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $order = 'ORDER BY al.id DESC';
             }
             if (isset($r_resource_filters['page'])) {
-                $offset_val = $r_resource_filters['page'] * 20;
+                $offset_val = ($r_resource_filters['page'] - 1) * PAGING_COUNT;
                 $construct_offset = ' offset ' . $offset_val;
             }
             $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ' . $order . ' LIMIT ' . $limit . ' ' . $construct_offset . ') as d ';
@@ -1324,6 +1430,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/boards/?/lists/?/cards/?':
+    case '/boards/?/cards/?':
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM cards_listing cll WHERE id = $1) as d ';
         array_push($pg_params, $r_resource_vars['cards']);
         if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
@@ -1331,6 +1438,26 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 $data = $obj;
+            }
+            echo json_encode($data);
+        } else {
+            $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+        }
+        break;
+
+    case '/boards/?/labels':
+        $metadata = array();
+        array_push($pg_params, $r_resource_vars['boards']);
+        $sql = 'SELECT distinct(label_id) FROM cards_labels_listing cll WHERE board_id = $1';
+        if ($res = pg_query_params($db_lnk, $sql, $pg_params)) {
+            while ($row = pg_fetch_assoc($res)) {
+                $val_arr = array(
+                    $row['label_id']
+                );
+                $label = executeQuery('SELECT * FROM labels WHERE id = $1', $val_arr);
+                if ($label) {
+                    $data['data'][] = $label;
+                }
             }
             echo json_encode($data);
         } else {
@@ -1401,7 +1528,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data['_metadata'] = $_metadata;
             }
             if (is_plugin_enabled('r_custom_fields')) {
-                require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
+                require_once PLUGIN_PATH . DS . 'CustomFields' . DS . 'functions.php';
                 $data = customFieldAfterFetchBoardsListsCards($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
             }
             echo json_encode($data);
@@ -1529,7 +1656,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/workflow_templates':
-        $files = glob(APP_PATH . '/client/js/workflow_templates/*.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'js' . DS . 'workflow_templates' . DS . '*.json', GLOB_BRACE);
         foreach ($files as $file) {
             $data = file_get_contents($file);
             $json = json_decode($data, true);
@@ -1589,7 +1716,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/acl_links':
         $sql = false;
-        $acl_links_sql = 'SELECT row_to_json(d) FROM (SELECT acl_links.id,  acl_links.name, acl_links.group_id, ( SELECT array_to_json(array_agg(row_to_json(alr.*))) AS array_to_json FROM ( SELECT acl_links_roles.role_id FROM acl_links_roles acl_links_roles WHERE acl_links_roles.acl_link_id = acl_links.id ORDER BY acl_links_roles.role_id) alr) AS acl_links_roles, acl_links.is_guest_action, acl_links.is_user_action, acl_links.is_admin_action, acl_links.is_hide FROM acl_links acl_links ORDER BY group_id ASC, id ASC) as d';
+        $acl_links_sql = 'SELECT row_to_json(d) FROM (SELECT acl_links.id,  acl_links.name, acl_links.group_id, acl_links.slug, ( SELECT array_to_json(array_agg(row_to_json(alr.*))) AS array_to_json FROM ( SELECT acl_links_roles.role_id FROM acl_links_roles acl_links_roles WHERE acl_links_roles.acl_link_id = acl_links.id ORDER BY acl_links_roles.role_id) alr) AS acl_links_roles, acl_links.is_guest_action, acl_links.is_user_action, acl_links.is_admin_action, acl_links.is_hide FROM acl_links acl_links ORDER BY group_id ASC, id ASC) as d';
         $acl_links_result = pg_query_params($db_lnk, $acl_links_sql, array());
         $response['acl_links'] = array();
         while ($row = pg_fetch_assoc($acl_links_result)) {
@@ -1629,22 +1756,21 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/settings':
-        $s_sql = pg_query_params($db_lnk, 'SELECT name, value FROM settings WHERE name = \'SITE_NAME\' OR name = \'SITE_TIMEZONE\' OR name = \'DROPBOX_APPKEY\' OR name = \'LABEL_ICON\' OR name = \'FLICKR_API_KEY\'  OR name = \'DEFAULT_LANGUAGE\' OR name = \'IMAP_EMAIL\' OR name = \'PAGING_COUNT\' OR name = \'ALLOWED_FILE_EXTENSIONS\' OR name = \'DEFAULT_CARD_VIEW\'', array());
+        $s_sql = pg_query_params($db_lnk, "SELECT name, value FROM settings WHERE name IN ('SITE_NAME', 'SITE_TIMEZONE', 'DROPBOX_APPKEY', 'LABEL_ICON', 'FLICKR_API_KEY', 'DEFAULT_LANGUAGE', 'IS_TWO_FACTOR_AUTHENTICATION_ENABLED', 'IMAP_EMAIL', 'PAGING_COUNT', 'ALLOWED_FILE_EXTENSIONS', 'DEFAULT_CARD_VIEW', 'DEFAULT_CARD_VIEW', 'R_LDAP_LOGIN_HANDLE')", array());
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
-        $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
         if (!empty($files)) {
             foreach ($files as $file) {
                 $content = file_get_contents($file);
                 $data = json_decode($content, true);
                 if ($data['enabled'] === true) {
+                    $response['apps']['enabled_apps'][] = $data['id'];
                     $folder = explode('/', $file);
-                    if ($data['enabled'] === true) {
-                        foreach ($data as $key => $value) {
-                            if ($key != 'settings') {
-                                $response['apps_data'][$folder[count($folder) - 2]][$key] = $value;
-                            }
+                    foreach ($data as $key => $value) {
+                        if ($key != 'settings') {
+                            $response['apps_data'][$folder[count($folder) - 2]][$key] = $value;
                         }
                     }
                     if (!empty($data['settings'])) {
@@ -1675,6 +1801,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                                 $response['apps']['html'][] = $htmlfiles;
                             }
                         }
+                        if (!empty($data['mutationObservers'])) {
+                            $response['apps']['mutationObservers'][] = $data['mutationObservers'];
+                        }
                     }
                 }
             }
@@ -1684,7 +1813,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/apps':
-        $files = glob(APP_PATH . '/client/apps/*/app.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
         if (!empty($files)) {
             foreach ($files as $file) {
                 $folder = explode('/', $file);
@@ -1698,10 +1827,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/apps/settings':
-        $content = file_get_contents(APP_PATH . '/client/apps/' . $r_resource_filters['app'] . '/app.json');
+        $content = file_get_contents(APP_PATH . DS . 'client' . DS . 'apps' . DS . $r_resource_filters['app'] . DS . 'app.json');
         $data = json_decode($content, true);
-        if (file_exists(APP_PATH . '/tmp/cache/site_url_for_shell.php')) {
-            include_once APP_PATH . '/tmp/cache/site_url_for_shell.php';
+        if (file_exists(SITE_URL_FOR_SHELL)) {
+            include_once SITE_URL_FOR_SHELL;
         }
         if (!empty($data['settings_from_db'])) {
             $fields = $data['settings_from_db'];
@@ -1794,7 +1923,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/webhooks':
         $response['webhooks'] = array();
-        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM webhooks w ORDER BY id ASC) as d ';
+        $filter_condition = '';
+        if (!empty($r_resource_filters['board_id'])) {
+            $board_id = $r_resource_filters['board_id'];
+            $filter_condition = "WHERE board_id = $board_id";
+        }
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM webhooks w  ' . $filter_condition . ' ORDER BY id ASC) as d ';
         $c_sql = 'SELECT COUNT(*) FROM webhooks w';
         if (!empty($c_sql)) {
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
@@ -1822,18 +1956,55 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $plugin_url['CardTemplate'] = array(
             '/boards/?/card_template',
-            '/card_templates/?'
+            '/card_templates/?',
+            '/boards/?/card_templates/?'
         );
         $plugin_url['Chat'] = array(
             '/xmpp_login',
             '/boards/?/chat_history'
         );
+        $plugin_url['Insights'] = array(
+            '/boards/?/reports'
+        );
         $plugin_url['Chart'] = array(
             '/boards'
+        );
+        $plugin_url['BoardRoleMapper'] = array(
+            '/board_roles'
+        );
+        $plugin_url['Broadcast'] = array(
+            '/broadcasts',
+            '/broadcasts/?',
+            '/me/broadcasts'
+        );
+        $plugin_url['Group'] = array(
+            '/groups',
+            '/groups/?'
+        );
+        $plugin_url['DrawIO'] = array(
+            '/card_diagrams',
+            '/card_diagrams/?'
+        );
+        $plugin_url['Wiki'] = array(
+            '/pages',
+            '/pages/?'
+        );
+        $plugin_url['CRM'] = array(
+            '/contacts',
+            '/contacts/?'
+        );
+        $plugin_url['Salesforce'] = array(
+            '/salesforce',
+            '/salesforce/?',
+            '/salesforce/search',
+            '/salesforce/proxy'
         );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
             '/custom_fields/?',
+            '/boards/?/custom_fields',
+            '/boards/?/custom_fields/?',
+            '/boards/?/cards_custom_fields',
             '/cards/?/cards_custom_fields',
             '/cards/?/cards_custom_fields/?'
         );
@@ -1844,7 +2015,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
         }
         if (!empty($pluginToBePassed)) {
-            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginToBePassed . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+            require_once PLUGIN_PATH . DS . $pluginToBePassed . DS . 'R' . DS . 'r.php';
             $passed_values = array();
             $passed_values['sort'] = $sort;
             $passed_values['field'] = $field;
@@ -1932,13 +2103,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
         } else if ($action_id == 3) {
             foreach ($user_ids as $user_id) {
+                if (is_plugin_enabled('r_chat') && $jabberHost && $user_id['user_id']) {
+                    xmppDeleteUser($user_id['user_id']);
+                }
                 $conditions = array(
                     $user_id['user_id']
                 );
                 $users = pg_query_params($db_lnk, 'DELETE FROM users WHERE id= $1 RETURNING username', $conditions);
-                if (is_plugin_enabled('r_chat') && $jabberHost) {
-                    xmppDeleteUser($users);
-                }
             }
             $response = array(
                 'success' => 'Checked users are deleted successfully.'
@@ -1991,13 +2162,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $xmpp = xmppObj();
             }
             foreach ($board_ids as $board_id) {
+                if (is_plugin_enabled('r_chat') && $jabberHost) {
+                    xmppDestroyRoom($board_id['board_id'], $xmpp);
+                }
                 $conditions = array(
                     $board_id['board_id']
                 );
                 $boards = pg_query_params($db_lnk, 'DELETE FROM boards WHERE id= $1', $conditions);
-                if (is_plugin_enabled('r_chat') && $jabberHost && $boards) {
-                    xmppDestroyRoom($boards, $xmpp);
-                }
             }
             $response = array(
                 'success' => 'Checked boards are deleted successfully.'
@@ -2155,13 +2326,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $row = pg_fetch_assoc($result);
                     $response['id'] = $row['id'];
                     $emailFindReplace = array(
-                        '##NAME##' => $user['full_name'],
+                        '##NAME##' => $r_post['full_name'],
                         '##CURRENT_USER##' => $authUser['full_name'],
                         '##BOARD_NAME##' => $r_post['board_name'],
                         '##BOARD_URL##' => $_server_domain_url . '/#/board/' . $r_post['board_id'],
                         '##REGISTRATION_URL##' => $_server_domain_url . '/#/users/register'
                     );
-                    sendMail('new_project_user_invite', $emailFindReplace, $user['email']);
+                    sendMail('new_project_user_invite', $emailFindReplace, $r_post['email']);
                 }
             }
         } else {
@@ -2279,9 +2450,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $val_arr = array(
             $r_post['email']
         );
-        $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE email = $1 or username = $1', $val_arr);
+        if (filter_var($r_post['email'], FILTER_VALIDATE_EMAIL) !== false) {
+            $where = 'LOWER(email) = LOWER($1)';
+        } else {
+            $where = 'LOWER(username)=LOWER($1)';
+        }
+        $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE ' . $where, $val_arr);
         if (is_plugin_enabled('r_ldap_login')) {
-            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'LdapLogin' . DIRECTORY_SEPARATOR . 'functions.php';
+            require_once PLUGIN_PATH . DS . 'LdapLogin' . DS . 'functions.php';
             $ldap_response = ldapUpdateUser($log_user, $r_post);
             $ldap_error = $ldap_response['ldap_error'];
             $user = $ldap_response['user'];
@@ -2293,63 +2469,104 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $r_post['password'],
                 1
             );
-            $user = executeQuery('SELECT * FROM users_listing WHERE (email = $1 or username = $1) AND password = $2 AND is_active = $3', $val_arr);
+            $user = executeQuery('SELECT * FROM users_listing WHERE ' . $where . ' AND password = $2 AND is_active = $3', $val_arr);
         }
         if (!empty($user)) {
-            if (is_plugin_enabled('r_ldap_login')) {
-                $login_type_id = 1;
-            } else {
-                $login_type_id = 2;
-            }
-            $last_login_ip_id = saveIp();
-            $val_arr = array(
-                $login_type_id,
-                $last_login_ip_id,
-                $user['id']
-            );
-            pg_query_params($db_lnk, 'UPDATE users SET last_login_date = now(), login_type_id = $1, last_login_ip_id = $2 WHERE id = $3', $val_arr);
-            unset($user['password']);
-            $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-            $val_arr = array(
-                $user['id'],
-                $last_login_ip_id,
-                $user_agent
-            );
-            pg_query_params($db_lnk, 'INSERT INTO user_logins (created, modified, user_id, ip_id, user_agent) VALUES (now(), now(), $1, $2, $3)', $val_arr);
-            $conditions = array(
-                true
-            );
-            $role_val_arr = array(
-                $user['role_id']
-            );
-            $role_links = executeQuery('SELECT links FROM role_links_listing WHERE id = $1', $role_val_arr);
-            $post_val = array(
-                'grant_type' => 'password',
-                'username' => $user['username'],
-                'password' => $r_post['password'],
-                'client_id' => OAUTH_CLIENTID,
-                'client_secret' => OAUTH_CLIENT_SECRET,
-                'scope' => 'read write'
-            );
-            $response = getToken($post_val);
-            $response = array_merge($role_links, $response);
-            $board_ids = array();
-            if (!empty($user['boards_users'])) {
-                $boards_users = json_decode($user['boards_users'], true);
-                foreach ($boards_users as $boards_user) {
-                    $board_ids[] = $boards_user['board_id'];
+            if (!IS_TWO_FACTOR_AUTHENTICATION_ENABLED || $user['is_two_factor_authentication_enabled'] == 'f' || ($user['is_two_factor_authentication_enabled'] == 't' && !empty($r_post['verification_code']))) {
+                $is_provide_access_token = false;
+                if (!empty($r_post['verification_code'])) {
+                    $qry_val_arr = array(
+                        $user['id']
+                    );
+                    $s_result = pg_query_params($db_lnk, 'SELECT two_factor_authentication_hash FROM users WHERE id = $1', $qry_val_arr);
+                    $row = pg_fetch_assoc($s_result);
+                    $ga = new PHPGangsta_GoogleAuthenticator();
+                    $r_post['verification_code'] = (string)$r_post['verification_code'];
+                    $checkResult = $ga->verifyCode($row['two_factor_authentication_hash'], $r_post['verification_code'], 2);
+                    if ($checkResult) {
+                        $is_provide_access_token = true;
+                    }
+                } else {
+                    $is_provide_access_token = true;
                 }
+                if ($is_provide_access_token) {
+                    if (is_plugin_enabled('r_ldap_login')) {
+                        $login_type_id = 1;
+                    } else {
+                        $login_type_id = 2;
+                    }
+                    $last_login_ip_id = saveIp();
+                    $val_arr = array(
+                        $login_type_id,
+                        $last_login_ip_id,
+                        $user['id']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET last_login_date = now(), login_type_id = $1, last_login_ip_id = $2 WHERE id = $3', $val_arr);
+                    unset($user['password']);
+                    $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+                    $val_arr = array(
+                        $user['id'],
+                        $last_login_ip_id,
+                        $user_agent
+                    );
+                    pg_query_params($db_lnk, 'INSERT INTO user_logins (created, modified, user_id, ip_id, user_agent) VALUES (now(), now(), $1, $2, $3)', $val_arr);
+                    $conditions = array(
+                        true
+                    );
+                    $role_val_arr = array(
+                        $user['role_id']
+                    );
+                    $role_links = executeQuery('SELECT links FROM role_links_listing WHERE id = $1', $role_val_arr);
+                    $post_val = array(
+                        'grant_type' => 'password',
+                        'username' => $user['username'],
+                        'password' => $r_post['password'],
+                        'client_id' => OAUTH_CLIENTID,
+                        'client_secret' => OAUTH_CLIENT_SECRET,
+                        'scope' => 'read write'
+                    );
+                    $response = getToken($post_val);
+                    $response = array_merge($role_links, $response);
+                    $board_ids = array();
+                    if (!empty($user['boards_users'])) {
+                        $boards_users = json_decode($user['boards_users'], true);
+                        foreach ($boards_users as $boards_user) {
+                            $board_ids[] = $boards_user['board_id'];
+                        }
+                    }
+                    $notify_val_arr = array(
+                        $user['last_activity_id'],
+                        '{' . implode(',', $board_ids) . '}'
+                    );
+                    $notify_count = executeQuery('SELECT max(id) AS last_activity_id, count(a.*) AS notify_count FROM activities a  WHERE a.id > $1 AND board_id = ANY ($2) ', $notify_val_arr);
+                    $notify_count['last_activity_id'] = (!empty($notify_count['last_activity_id'])) ? $notify_count['last_activity_id'] : $user['last_activity_id'];
+                    $user = array_merge($user, $notify_count);
+                    $response['user'] = $user;
+                    $response['user']['organizations'] = json_decode($user['organizations'], true);
+                } else {
+                    $response = array(
+                        'code' => 'verification_code',
+                        'error' => 'Entered verification code is wrong. Please try again.'
+                    );
+                }
+            } else {
+                $response = array(
+                    'code' => 'enter_verification_code',
+                    'success' => 'User authenticated successfully'
+                );
             }
-            $notify_val_arr = array(
-                $user['last_activity_id'],
-                '{' . implode(',', $board_ids) . '}'
-            );
-            $notify_count = executeQuery('SELECT max(id) AS last_activity_id, count(a.*) AS notify_count FROM activities a  WHERE a.id > $1 AND board_id = ANY ($2) ', $notify_val_arr);
-            $notify_count['last_activity_id'] = (!empty($notify_count['last_activity_id'])) ? $notify_count['last_activity_id'] : $user['last_activity_id'];
-            $user = array_merge($user, $notify_count);
-            $response['user'] = $user;
-            $response['user']['organizations'] = json_decode($user['organizations'], true);
         } else {
+            if (!empty($log_user)) {
+                $last_login_ip_id = saveIp();
+                $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+                $val_arr = array(
+                    $log_user['id'],
+                    $last_login_ip_id,
+                    $user_agent,
+                    't'
+                );
+                pg_query_params($db_lnk, 'INSERT INTO user_logins (created, modified, user_id, ip_id, user_agent, is_login_failed) VALUES (now(), now(), $1, $2, $3, $4)', $val_arr);
+            }
             if (!empty($ldap_error)) {
                 $response = array(
                     'code' => 'LDAP',
@@ -2499,17 +2716,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $filename = $_FILES['attachment']['name'];
             $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
             if (in_array($file_ext, $allowed_ext)) {
-                $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'User' . DIRECTORY_SEPARATOR . $r_resource_vars['users'];
-                $save_path = 'media' . DIRECTORY_SEPARATOR . 'User' . DIRECTORY_SEPARATOR . $r_resource_vars['users'];
+                $mediadir = MEDIA_PATH . DS . 'User' . DS . $r_resource_vars['users'];
+                $save_path = 'User' . DS . $r_resource_vars['users'];
                 if (!file_exists($mediadir)) {
                     mkdir($mediadir, 0777, true);
                 }
                 $file = $_FILES['attachment'];
                 $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
-                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
-                    $profile_picture_path = $save_path . DIRECTORY_SEPARATOR . $file['name'];
+                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DS . $file['name'])) {
+                    $profile_picture_path = $save_path . DS . $file['name'];
                     foreach ($thumbsizes['User'] as $key => $value) {
-                        $mediadir = APP_PATH . '/client/img/' . $key . '/User/' . $r_resource_vars['users'];
+                        $mediadir = IMG_PATH . DS . $key . DS . 'User' . DS . $r_resource_vars['users'];
                         $list = glob($mediadir . '.*');
                         if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                             unlink($list[0]);
@@ -2580,11 +2797,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 $sfields = '';
                 foreach ($put as $key => $value) {
-                    if ($key != 'id') {
-                        $fields.= ', ' . $key;
-                    }
-                    if ($key != 'id' && $key != 'position') {
-                        $sfields.= (empty($sfields)) ? $key : ", " . $key;
+                    if ($key != 'is_send_newsletter') {
+                        if ($key != 'id') {
+                            $fields.= ', ' . $key;
+                        }
+                        if ($key != 'id' && $key != 'position') {
+                            $sfields.= (empty($sfields)) ? $key : ", " . $key;
+                        }
                     }
                 }
                 if (!empty($comment)) {
@@ -2592,8 +2811,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $id
                     );
                     $revisions['old_value'] = executeQuery('SELECT ' . $sfields . ' FROM ' . $table_name . ' WHERE id =  $1', $qry_va_arr);
-                    unset($revisions['old_value']['is_send_newsletter']);
-                    unset($_POST['is_send_newsletter']);
+                    /* unset($revisions['old_value']['is_send_newsletter']);
+                     unset($_POST['is_send_newsletter']); */
                     $temp_revisions = array_diff($revisions['old_value'], $_POST);
                     foreach ($temp_revisions as $key => $value) {
                         $revisions['new_value'][$key] = (isset($_POST[$key])) ? $_POST[$key] : '';
@@ -2649,7 +2868,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET timezone= $1 WHERE id = $2', $qry_val_arr);
                 }
-                if (!empty($_POST['is_send_newsletter'])) {
+                if (isset($_POST['is_send_newsletter'])) {
                     $qry_val_arr = array(
                         $_POST['is_send_newsletter'],
                         $r_resource_vars['users']
@@ -2686,6 +2905,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'UPDATE oauth_access_tokens set user_id = $1 WHERE user_id= $2', $conditions);
                     pg_query_params($db_lnk, 'UPDATE oauth_refresh_tokens set user_id = $1 WHERE user_id= $2', $conditions);
+                }
+                if (!empty($response['activity']['id'])) {
+                    $qry_val_arr = array(
+                        $response['activity']['id']
+                    );
+                    $new_activity = pg_query_params($db_lnk, 'SELECT * FROM activities_listing WHERE id = $1', $qry_val_arr);
+                    $response['activity'] = pg_fetch_assoc($new_activity);
                 }
             } else {
                 $response['error']['message'] = 'Unauthorized';
@@ -2759,6 +2985,42 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             } else {
                 $response['error'] = 'Unable to import. please try again.';
             }
+        } elseif (!empty($_FILES['board_import_kantree'])) {
+            if ($_FILES['board_import_kantree']['error'] == 0) {
+                $get_files = file_get_contents($_FILES['board_import_kantree']['tmp_name']);
+                $utf8_encoded_content = utf8_encode($get_files);
+                if (version_compare(phpversion() , '5.4.0', '<')) {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512);
+                } else {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512, JSON_UNESCAPED_UNICODE);
+                }
+                if (!empty($imported_board)) {
+                    $board = importKantreeBoard($imported_board);
+                    $response['id'] = $board['id'];
+                } else {
+                    $response['error'] = 'Invalid file format. Upload json file';
+                }
+            } else {
+                $response['error'] = 'Unable to import. please try again.';
+            }
+        } elseif (!empty($_FILES['board_import_taiga'])) {
+            if ($_FILES['board_import_taiga']['error'] == 0) {
+                $get_files = file_get_contents($_FILES['board_import_taiga']['tmp_name']);
+                $utf8_encoded_content = utf8_encode($get_files);
+                if (version_compare(phpversion() , '5.4.0', '<')) {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512);
+                } else {
+                    $imported_board = json_decode($utf8_encoded_content, true, 512, JSON_UNESCAPED_UNICODE);
+                }
+                if (!empty($imported_board)) {
+                    $board = importTaigaBoard($imported_board);
+                    $response['id'] = $board['id'];
+                } else {
+                    $response['error'] = 'Invalid file format. Upload json file';
+                }
+            } else {
+                $response['error'] = 'Unable to import. please try again.';
+            }
         } else {
             $table_name = 'boards';
             $qry_val_arr = array(
@@ -2774,6 +3036,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         if (!empty($sql)) {
             $post = getbindValues($table_name, $r_post);
+            $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
+            $post['auto_subscribe_on_board'] = $auto_subscribe_on_board;
+            $auto_subscribe_on_card = (AUTO_SUBSCRIBE_ON_CARD === 'Enabled') ? 'true' : false;
+            $post['auto_subscribe_on_card'] = $auto_subscribe_on_card;
             $result = pg_execute_insert($table_name, $post);
             if ($result) {
                 $row = pg_fetch_assoc($result);
@@ -2789,6 +3055,22 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (is_plugin_enabled('r_chat') && $jabberHost) {
                     xmppCreateRoom($r_post, $response);
                 }
+                if (is_plugin_enabled('r_groups') && !empty($r_post['group_id'])) {
+                    $condition = array(
+                        $r_post['group_id'],
+                        $r_post['user_id']
+                    );
+                    $groups_users = pg_query_params($db_lnk, 'SELECT user_id FROM groups_users WHERE group_id = $1 AND user_id != $2', $condition);
+                    while ($groups_user = pg_fetch_assoc($groups_users)) {
+                        if (!empty($groups_user)) {
+                            $qry_val_arr = array(
+                                $response['id'],
+                                $groups_user['user_id']
+                            );
+                            pg_query_params($db_lnk, "INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, '2')", $qry_val_arr);
+                        }
+                    }
+                }
                 if (!$is_import_board) {
                     $foreign_id['board_id'] = $response['id'];
                     $comment = '##USER_NAME## created board';
@@ -2798,7 +3080,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     $response['activity'] = insertActivity($authUser['id'], $comment, 'add_board', $foreign_id);
                     pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, 1)', $qry_val_arr);
-                    $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : 'false';
+                    $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
                     if ($auto_subscribe_on_board) {
                         $qry_val_arr = array(
                             $row['id'],
@@ -2819,7 +3101,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                         $row['id'],
                                         $organization_user['user_id']
                                     );
-                                    pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, 2)', $qry_val_arr);
+                                    $check_board_users = executeQuery('SELECT id FROM boards_users WHERE board_id = $1 and user_id = $2', $qry_val_arr);
+                                    if (empty($check_board_users)) {
+                                        pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, board_id , user_id, board_user_role_id) VALUES (now(), now(), $1, $2, 2)', $qry_val_arr);
+                                    }
                                     $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
                                     if ($auto_subscribe_on_board) {
                                         $qry_val_arr = array(
@@ -3063,7 +3348,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $r_post['user_id'],
                             $boards_subscriber['is_subscribed']
                         );
-                        pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, board_id, user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3', $boards_subscriber_values);
+                        pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, board_id, user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $boards_subscriber_values);
                     }
                 }
                 //Copy board star
@@ -3100,12 +3385,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $qry_val_arr = array(
                         $r_resource_vars['boards']
                     );
-                    $lists = pg_query_params($db_lnk, 'SELECT id, name, position, is_archived, card_count, lists_subscriber_count FROM lists WHERE board_id = $1', $qry_val_arr);
+                    $lists = pg_query_params($db_lnk, 'SELECT id, name, position, is_archived, card_count, lists_subscriber_count, color FROM lists WHERE board_id = $1', $qry_val_arr);
                 } else {
                     $qry_val_arr = array(
                         $r_resource_vars['boards']
                     );
-                    $lists = pg_query_params($db_lnk, 'SELECT id, name, position, is_archived, lists_subscriber_count FROM lists WHERE board_id = $1', $qry_val_arr);
+                    $lists = pg_query_params($db_lnk, 'SELECT id, name, position, is_archived, lists_subscriber_count, color FROM lists WHERE board_id = $1', $qry_val_arr);
                 }
                 if ($lists) {
                     // Copy lists
@@ -3181,7 +3466,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 }
                             }
                             // Copy cards
-                            $card_fields = 'name, description, due_date, position, is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, user_id';
+                            $card_fields = 'name, description, due_date, position, is_archived, attachment_count, checklist_count, checklist_item_count, checklist_item_completed_count, label_count, user_id, color';
                             if ($keepcards) {
                                 $qry_val_arr = array(
                                     $list_id
@@ -3306,6 +3591,37 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                                             pg_query_params($db_lnk, 'INSERT INTO checklist_items (' . $checklist_item_fields . ') VALUES (' . $checklist_item_val . ')', $checklist_item_values);
                                                         }
                                                     }
+                                                }
+                                            }
+                                        }
+                                        if (is_plugin_enabled('r_custom_fields')) {
+                                            $condition = array(
+                                                $card_id
+                                            );
+                                            $card_custom_fields = pg_query_params($db_lnk, 'SELECT custom_field_id, value, is_active  FROM cards_custom_fields WHERE card_id = $1', $condition);
+                                            if ($card_custom_fields && pg_num_rows($card_custom_fields)) {
+                                                $card_custom_field_values = 'created, modified, card_id, card_id, custom_field_id, value,is_active,board_id,list_id';
+                                                while ($card_custom_field = pg_fetch_object($card_custom_fields)) {
+                                                    $card_custom_field_values = array();
+                                                    array_push($card_custom_field_values, 'now()', 'now()', $new_card_id);
+                                                    foreach ($card_custom_field as $key => $value) {
+                                                        if ($key != 'id') {
+                                                            if ($value === false) {
+                                                                array_push($card_custom_field_values, 'false');
+                                                            } else if ($value === null) {
+                                                                array_push($card_custom_field_values, null);
+                                                            } else {
+                                                                array_push($card_custom_field_values, $value);
+                                                            }
+                                                        }
+                                                    }
+                                                    array_push($card_custom_field_values, $new_board_id, $new_list_id);
+                                                    $card_custom_field_val = '';
+                                                    for ($i = 1, $len = count($card_custom_field_values); $i <= $len; $i++) {
+                                                        $card_custom_field_val.= '$' . $i;
+                                                        $card_custom_field_val.= ($i != $len) ? ', ' : '';
+                                                    }
+                                                    pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value, is_active, board_id, list_id) VALUES (' . $card_custom_field_val . ')', $card_custom_field_values);
                                                 }
                                             }
                                         }
@@ -3478,17 +3794,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $filename = $_FILES['attachment']['name'];
             $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
             if (in_array($file_ext, $allowed_ext)) {
-                $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Board' . DIRECTORY_SEPARATOR . $r_resource_vars['boards'];
-                $save_path = 'media' . DIRECTORY_SEPARATOR . 'Board' . DIRECTORY_SEPARATOR . $r_resource_vars['boards'];
+                $mediadir = MEDIA_PATH . DS . 'Board' . DS . $r_resource_vars['boards'];
+                $save_path = 'Board' . DS . $r_resource_vars['boards'];
                 if (!file_exists($mediadir)) {
                     mkdir($mediadir, 0777, true);
                 }
                 $file = $_FILES['attachment'];
                 $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
-                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
+                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DS . $file['name'])) {
                     $r_post['name'] = $file['name'];
                     foreach ($thumbsizes['Board'] as $key => $value) {
-                        $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Board' . DIRECTORY_SEPARATOR . $r_resource_vars['boards'];
+                        $mediadir = IMG_PATH . DS . $key . DS . 'Board' . DS . $r_resource_vars['boards'];
                         $list = glob($mediadir . '.*');
                         if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                             unlink($list[0]);
@@ -3496,7 +3812,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     }
                     $hash = md5(SECURITYSALT . 'Board' . $r_resource_vars['boards'] . 'jpg' . 'extra_large_thumb');
                     $background_picture_url = $_server_domain_url . '/img/extra_large_thumb/Board/' . $r_resource_vars['boards'] . '.' . $hash . '.jpg';
-                    $r_post['background_picture_path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'];
+                    $r_post['background_picture_path'] = $save_path . DS . $file['name'];
+                    $background_picture_url = preg_replace('/(http|https):/', '', $background_picture_url);
                     $r_post['path'] = $background_picture_url;
                     $response['background_picture_url'] = $background_picture_url;
                 }
@@ -3530,6 +3847,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $result = pg_execute_insert($table_name, $post);
             if ($result) {
                 $row = pg_fetch_assoc($result);
+                if (is_plugin_enabled('r_board_role_mapper')) {
+                    require_once PLUGIN_PATH . DS . 'BoardRoleMapper' . DS . 'functions.php';
+                    $board_user_role_id = boardRoleAfterInsertBoardUser($r_post);
+                    if (!empty($board_user_role_id)) {
+                        $response['board_user_role_id'] = $board_user_role_id;
+                    }
+                }
                 $response['id'] = $row['id'];
                 if ($is_return_vlaue) {
                     $row = convertBooleanValues($table_name, $row);
@@ -3540,16 +3864,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 );
                 $s_result = pg_query_params($db_lnk, 'SELECT id, name, auto_subscribe_on_board FROM boards WHERE id = $1', $qry_val_arr);
                 $previous_value = pg_fetch_assoc($s_result);
-                $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : 'false';
-                if ($auto_subscribe_on_board) {
-                    if ($previous_value['auto_subscribe_on_board'] === 't') {
-                        $qry_val_arr = array(
-                            $r_post['board_id'],
-                            $r_post['user_id'],
-                            true
-                        );
-                        pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, board_id , user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
-                    }
+                if ($previous_value['auto_subscribe_on_board'] === 't') {
+                    $qry_val_arr = array(
+                        $r_post['board_id'],
+                        $r_post['user_id'],
+                        true
+                    );
+                    pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, board_id , user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
                 }
                 $foreign_ids['board_id'] = $r_resource_vars['boards'];
                 $foreign_ids['board_id'] = $r_post['board_id'];
@@ -3562,7 +3883,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         '##NAME##' => $user['full_name'],
                         '##CURRENT_USER##' => $authUser['full_name'],
                         '##BOARD_NAME##' => $previous_value['name'],
-                        '##BOARD_URL##' => $_server_domain_url . '/#/board/' . $r_post['board_id'],
+                        '##BOARD_URL##' => $_server_domain_url . '/#/board/' . $r_post['board_id']
                     );
                     sendMail('newprojectuser', $emailFindReplace, $user['email']);
                 }
@@ -3683,11 +4004,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'UPDATE boards SET default_email_list_id = $2 WHERE id = $1', $qry_val_arr);
                 }
-                if (is_plugin_enabled('r_custom_fields')) {
-                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
-                    $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $response);
-                    $response = $data;
-                }
             }
         }
         echo json_encode($response);
@@ -3731,7 +4047,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['image_link'] = $_POST['image_link'];
         }
         $table_name = 'cards';
-        $r_post['user_id'] = $authUser['id'];
+        if (!empty($r_post['is_support_app'])) {
+            $admin = executeQuery('SELECT id FROM users WHERE role_id = $1', [1]);
+            $r_post['user_id'] = $userID = $admin['id'];
+        } else {
+            $r_post['user_id'] = $userID = $authUser['id'];
+        }
         $qry_val_arr = array(
             $r_post['board_id'],
             $r_post['list_id']
@@ -3763,13 +4084,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $foreign_ids['card_id'] = $response['id'];
                 $foreign_ids['list_id'] = $r_post['list_id'];
                 $comment = '##USER_NAME## added card ##CARD_LINK## to list "' . $list['name'] . '".';
-                $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card', $foreign_ids, '', $r_post['list_id']);
+                $response['activity'] = insertActivity($userID, $comment, 'add_card', $foreign_ids, '', $r_post['list_id']);
                 if (isset($_POST) && !empty($_POST) && isset($_POST['is_instant_add_Card'])) {
                     $is_return_vlaue = true;
                     $table_name = 'card_attachments';
                     $r_post['card_id'] = $response['id'];
-                    $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_post['card_id'];
-                    $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_post['card_id'];
+                    $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_post['card_id'];
+                    $save_path = 'Card' . DS . $r_post['card_id'];
                     $save_path = str_replace('\\', '/', $save_path);
                     if (!empty($_FILES['attachment']) && is_array($_FILES['attachment']['name']) && $_FILES['attachment']['error'][0] == 0) {
                         $file = $_FILES['attachment'];
@@ -3780,8 +4101,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                     if (!file_exists($mediadir)) {
                                         mkdir($mediadir, 0777, true);
                                     }
-                                    if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
-                                        $r_post[$i]['path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'][$i];
+                                    $cur_os = strtolower(PHP_OS);
+                                    if (substr($cur_os, 0, 3) === 'win') {
+                                        $file['name'][$i] = urlencode($file['name'][$i]);
+                                    }
+                                    $file_arr = pathinfo($file['name'][$i]);
+                                    $filename_without_ext = $file_arr['filename'];
+                                    if (file_exists($mediadir . DS . $file['name'][$i])) {
+                                        $filename_without_ext = $file_arr['filename'] . '-' . mt_rand(0, 999);
+                                        $file['name'][$i] = $filename_without_ext . '.' . $file_arr['extension'];
+                                    }
+                                    if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DS . $file['name'][$i])) {
+                                        $r_post[$i]['path'] = $save_path . DS . $file['name'][$i];
                                         $r_post[$i]['name'] = $file['name'][$i];
                                         $r_post[$i]['mimetype'] = $file['type'][$i];
                                         $qry_val_arr = array(
@@ -3793,24 +4124,40 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                             $r_post[$i]['mimetype']
                                         );
                                         $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING *', $qry_val_arr);
-                                        $response_file['card_attachments'][] = pg_fetch_assoc($s_result);
+                                        $cardAttachment = $response_file['card_attachments'][$i] = pg_fetch_assoc($s_result);
+                                        if (class_exists('imagick') && in_array($file_arr['extension'], array(
+                                            'pdf'
+                                        ))) {
+                                            $im = new Imagick($mediadir . DS . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
+                                            $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
+                                            $im->setimageformat('png');
+                                            $im->thumbnailimage(200, 150); // width and height
+                                            $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
+                                            $target_dir = IMG_PATH . DS . 'original' . DS . 'CardAttachment';
+                                            $target = $target_dir . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                                            if (!file_exists($target_dir)) {
+                                                mkdir($target_dir, 0777, true);
+                                            }
+                                            $im->writeimage($target);
+                                            $im->clear();
+                                            $im->destroy();
+                                            $response_file['card_attachments'][$i]['doc_image_path'] = 'original' . DS . 'CardAttachment' . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                                            $qry_val_arr = array(
+                                                $response_file['card_attachments'][$i]['doc_image_path'],
+                                                $cardAttachment['id']
+                                            );
+                                            pg_query_params($db_lnk, 'UPDATE card_attachments SET doc_image_path = $1 WHERE id = $2', $qry_val_arr);
+                                        }
                                         $foreign_ids['board_id'] = $r_post['board_id'];
                                         $foreign_ids['list_id'] = $r_post['list_id'];
                                         $foreign_ids['card_id'] = $r_post['card_id'];
                                         $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
-                                        $response_file['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response_file['card_attachments'][$i]['id']);
+                                        $response_file['activity'] = insertActivity($userID, $comment, 'add_card_attachment', $foreign_ids, null, $response_file['card_attachments'][$i]['id']);
                                         foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                                            $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response_file['card_attachments'][$i]['id'];
+                                            $imgdir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $response_file['card_attachments'][$i]['id'];
                                             $list = glob($imgdir . '.*');
                                             if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                                 unlink($list[0]);
-                                            }
-                                            $qry_val_arr = array(
-                                                $response['id']
-                                            );
-                                            $card_attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1', $qry_val_arr);
-                                            while ($card_attachment = pg_fetch_assoc($card_attachments)) {
-                                                $response['card_attachments'][] = $card_attachment;
                                             }
                                         }
                                     }
@@ -3837,15 +4184,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $foreign_ids['list_id'] = $r_post['list_id'];
                             $foreign_ids['card_id'] = $r_post['card_id'];
                             $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
-                            $response_file['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response_file['card_attachments'][$i]['id']);
+                            $response_file['activity'] = insertActivity($userID, $comment, 'add_card_attachment', $foreign_ids, null, $response_file['card_attachments'][$i]['id']);
                             $i++;
-                            $qry_val_arr = array(
-                                $response['id']
-                            );
-                            $card_attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1', $qry_val_arr);
-                            while ($card_attachment = pg_fetch_assoc($card_attachments)) {
-                                $response['card_attachments'][] = $card_attachment;
-                            }
                         }
                     }
                     if (isset($r_post['image_link']) && !empty($r_post['image_link'])) {
@@ -3863,23 +4203,23 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $foreign_ids['list_id'] = $r_post['list_id'];
                                 $foreign_ids['card_id'] = $r_post['card_id'];
                                 $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
-                                $response_file['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $row['id']);
+                                $response_file['activity'] = insertActivity($userID, $comment, 'add_card_attachment', $foreign_ids, null, $row['id']);
                                 foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                                    $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $row['id'];
+                                    $mediadir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $row['id'];
                                     $list = glob($mediadir . '.*');
                                     if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                         unlink($list[0]);
                                     }
-                                    $qry_val_arr = array(
-                                        $response['id']
-                                    );
-                                    $card_attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1', $qry_val_arr);
-                                    while ($card_attachment = pg_fetch_assoc($card_attachments)) {
-                                        $response['card_attachments'][] = $card_attachment;
-                                    }
                                 }
                             }
                         }
+                    }
+                    $qry_val_arr = array(
+                        $response['id']
+                    );
+                    $card_attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1', $qry_val_arr);
+                    while ($card_attachment = pg_fetch_assoc($card_attachments)) {
+                        $response['card_attachments'][] = $card_attachment;
                     }
                 }
                 if (!empty($r_post['members'])) {
@@ -3892,7 +4232,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         );
                         $_user = executeQuery('SELECT username FROM users WHERE id = $1', $qry_val_arr);
                         $comment = '##USER_NAME## added "' . $_user['username'] . '" as member to this card ##CARD_LINK##';
-                        $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_user', $foreign_ids, '', $card_user['id']);
+                        $response['activity'] = insertActivity($userID, $comment, 'add_card_user', $foreign_ids, '', $card_user['id']);
                     }
                 }
                 if (!empty($r_post['labels'])) {
@@ -3926,7 +4266,57 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, card_id, label_id, board_id, list_id) VALUES (now(), now(), $1, $2, $3, $4) RETURNING *', $qry_val_arr);
                     }
                     $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ##LABEL_NAME##';
-                    insertActivity($authUser['id'], $comment, 'add_card_label', $foreign_ids, null, $r_post['label_id']);
+                    insertActivity($userID, $comment, 'add_card_label', $foreign_ids, null, $r_post['label_id']);
+                }
+                if (!empty($r_post['cards_checklists_card_id'])) {
+                    $qry_val_arr = array(
+                        $response['id'],
+                        $r_post['cards_checklists_card_id']
+                    );
+                    $checklist = pg_query_params($db_lnk, 'INSERT INTO checklists (created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, position) SELECT created, modified, user_id, $1, name, checklist_item_count, checklist_item_completed_count, position FROM checklists WHERE card_id = $2 ORDER BY id', $qry_val_arr);
+                    $updateChecklist = pg_fetch_assoc($checklist);
+                    $qry_val_arr = array(
+                        $response['id']
+                    );
+                    $query_val_arr = array(
+                        0,
+                        $updateChecklist['id']
+                    );
+                    $sql = pg_query_params($db_lnk, "UPDATE checklists SET checklist_item_completed_count = $1 WHERE id = $2", $query_val_arr);
+                    $checklists = pg_query_params($db_lnk, 'SELECT id FROM checklists WHERE card_id = $1 order by id', $qry_val_arr);
+                    $qry_val_arr = array(
+                        $r_post['cards_checklists_card_id']
+                    );
+                    $prev_checklists = pg_query_params($db_lnk, 'SELECT id FROM checklists WHERE card_id = $1 order by id', $qry_val_arr);
+                    $prev_checklist_ids = array();
+                    while ($prev_checklist_id = pg_fetch_assoc($prev_checklists)) {
+                        $prev_checklist_ids[] = $prev_checklist_id['id'];
+                    }
+                    $i = 0;
+                    while ($checklist_id = pg_fetch_assoc($checklists)) {
+                        $qry_val_arr = array(
+                            $response['id'],
+                            $checklist_id['id'],
+                            $prev_checklist_ids[$i]
+                        );
+                        $items = pg_query_params($db_lnk, 'INSERT INTO checklist_items (created, modified, user_id, card_id, name, checklist_id, position) SELECT created, modified, user_id, $1, name , $2,  position FROM checklist_items WHERE checklist_id = $3 ORDER BY id', $qry_val_arr);
+                        $i++;
+                        $checklist_items = pg_fetch_assoc($items);
+                        $qry_val_arr = array(
+                            0,
+                            $checklist_items['id']
+                        );
+                        $sql = pg_query_params($db_lnk, "UPDATE checklist_items SET is_completed = $1 WHERE id = $2", $qry_val_arr);
+                    }
+                }
+                if (!empty($r_post['cards_custom_fields_card_id']) && is_plugin_enabled('r_custom_fields')) {
+                    $qry_val_arr = array(
+                        $response['id'],
+                        $r_post['list_id'],
+                        $r_post['board_id'],
+                        $r_post['cards_custom_fields_card_id']
+                    );
+                    pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value, is_active, board_id, list_id) SELECT created, modified, $1, custom_field_id, value, is_active, $2, $3 FROM cards_custom_fields WHERE card_id = $4 ORDER BY id', $qry_val_arr);
                 }
                 $qry_val_arr = array(
                     $response['id']
@@ -3941,6 +4331,24 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $cards_labels = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE card_id = $1', $qry_val_arr);
                 while ($cards_label = pg_fetch_assoc($cards_labels)) {
                     $response['cards_labels'][] = $cards_label;
+                }
+                $qry_val_arr = array(
+                    $response['id']
+                );
+                $cards_checklists = pg_query_params($db_lnk, 'SELECT * FROM checklists_listing WHERE card_id = $1', $qry_val_arr);
+                while ($cards_checklist = pg_fetch_assoc($cards_checklists)) {
+                    $response['cards_checklists'][] = $cards_checklist;
+                }
+                if (!empty($r_post['cards_custom_fields_card_id']) && is_plugin_enabled('r_custom_fields')) {
+                    $qry_val_arr = array(
+                        $response['id']
+                    );
+                    $cards_custom_fields = pg_query_params($db_lnk, 'SELECT ccf.*, cf.label, cf.color, cf.type, cf.visibility FROM cards_custom_fields as ccf LEFT JOIN custom_fields as cf ON cf.id = ccf.custom_field_id WHERE ccf.card_id = $1', $qry_val_arr);
+                    while ($cards_custom_field = pg_fetch_assoc($cards_custom_fields)) {
+                        if (!empty($cards_custom_field['value'])) {
+                            $response['cards_custom_fields'][] = $cards_custom_field;
+                        }
+                    }
                 }
             }
         }
@@ -3960,6 +4368,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         $r_post['freshness_ts'] = date('Y-m-d h:i:s');
         $r_post['type'] = 'add_comment';
+        $r_post['token'] = $_GET['token'];
         if (empty($r_post['user_id'])) {
             $r_post['user_id'] = $authUser['id'];
         }
@@ -4102,6 +4511,89 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         break;
 
+    case '/boards/?/lists/?/cards/?/multiple-attachments':
+        $is_return_vlaue = true;
+        $table_name = 'card_attachments';
+        $r_post['card_id'] = $r_resource_vars['cards'];
+        $r_post['list_id'] = $r_resource_vars['lists'];
+        $r_post['board_id'] = $r_resource_vars['boards'];
+        $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_resource_vars['cards'];
+        $save_path = 'Card' . DS . $r_resource_vars['cards'];
+        $save_path = str_replace('\\', '/', $save_path);
+        if (!empty($_FILES['attachments']) && $_FILES['attachment']['error'] == 0) {
+            $file = $_FILES['attachments'];
+            $file_count = $_POST['total_attachment'];
+            for ($i = 0; $i < $file_count; $i++) {
+                if ($file['name'][$i] != 'undefined') {
+                    if (!file_exists($mediadir)) {
+                        mkdir($mediadir, 0777, true);
+                    }
+                    $cur_os = strtolower(PHP_OS);
+                    if (substr($cur_os, 0, 3) === 'win') {
+                        $file['name'][$i] = urlencode($file['name'][$i]);
+                    }
+                    $file_arr = pathinfo($file['name'][$i]);
+                    $filename_without_ext = $file_arr['filename'];
+                    if (file_exists($mediadir . DS . $file['name'][$i])) {
+                        $filename_without_ext = $file_arr['filename'] . '-' . mt_rand(0, 999);
+                        $file['name'][$i] = $filename_without_ext . '.' . $file_arr['extension'];
+                    }
+                    if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DS . $file['name'][$i])) {
+                        $r_post[$i]['path'] = $save_path . DS . $file['name'][$i];
+                        $r_post[$i]['name'] = $file['name'][$i];
+                        $r_post[$i]['mimetype'] = $file['type'][$i];
+                        $qry_val_arr = array(
+                            $r_post['card_id'],
+                            $r_post[$i]['name'],
+                            $r_post[$i]['path'],
+                            $r_post['list_id'],
+                            $r_post['board_id'],
+                            $r_post[$i]['mimetype']
+                        );
+                        $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING *', $qry_val_arr);
+                        $cardAttachment = $response['card_attachments'][$i] = pg_fetch_assoc($s_result);
+                        if (class_exists('imagick') && in_array($file_arr['extension'], array(
+                            'pdf'
+                        ))) {
+                            $im = new Imagick($mediadir . DS . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
+                            $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
+                            $im->setimageformat('png');
+                            $im->thumbnailimage(200, 150); // width and height
+                            $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
+                            $target_dir = IMG_PATH . DS . 'original' . DS . 'CardAttachment';
+                            $target = $target_dir . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                            if (!file_exists($target_dir)) {
+                                mkdir($target_dir, 0777, true);
+                            }
+                            $im->writeimage($target);
+                            $im->clear();
+                            $im->destroy();
+                            $response['card_attachments'][$i]['doc_image_path'] = 'original' . DS . 'CardAttachment' . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                            $qry_val_arr = array(
+                                $response['card_attachments'][$i]['doc_image_path'],
+                                $cardAttachment['id']
+                            );
+                            pg_query_params($db_lnk, 'UPDATE card_attachments SET doc_image_path = $1 WHERE id = $2', $qry_val_arr);
+                        }
+                        $foreign_ids['board_id'] = $r_resource_vars['boards'];
+                        $foreign_ids['list_id'] = $r_resource_vars['lists'];
+                        $foreign_ids['card_id'] = $r_resource_vars['cards'];
+                        $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
+                        $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['card_attachments'][$i]['id']);
+                        foreach ($thumbsizes['CardAttachment'] as $key => $value) {
+                            $imgdir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $response['card_attachments'][$i]['id'];
+                            $list = glob($imgdir . '.*');
+                            if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
+                                unlink($list[0]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        echo json_encode($response);
+        break;
+
     case '/boards/?/lists/?/cards/?/card_voters':
         $table_name = 'card_voters';
         $r_post['card_id'] = $r_resource_vars['cards'];
@@ -4147,15 +4639,25 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $r_post['card_id'] = $r_resource_vars['cards'];
         $r_post['list_id'] = $r_resource_vars['lists'];
         $r_post['board_id'] = $r_resource_vars['boards'];
-        $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_resource_vars['cards'];
-        $save_path = 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_resource_vars['cards'];
+        $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_resource_vars['cards'];
+        $save_path = 'Card' . DS . $r_resource_vars['cards'];
         $save_path = str_replace('\\', '/', $save_path);
         if (!empty($_FILES['attachment']) && $_FILES['attachment']['error'] == 0) {
             if (!file_exists($mediadir)) {
                 mkdir($mediadir, 0777, true);
             }
             $file = $_FILES['attachment'];
-            if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
+            $cur_os = strtolower(PHP_OS);
+            if (substr($cur_os, 0, 3) === 'win') {
+                $file['name'] = urlencode($file['name']);
+            }
+            $file_arr = pathinfo($file['name']);
+            $filename_without_ext = $file_arr['filename'];
+            if (file_exists($mediadir . DS . $file['name'])) {
+                $filename_without_ext = $file_arr['filename'] . '-' . mt_rand(0, 999);
+                $file['name'] = $filename_without_ext . '.' . $file_arr['extension'];
+            }
+            if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DS . $file['name'])) {
                 $r_post['path'] = $save_path . '/' . $file['name'];
                 $r_post['name'] = $file['name'];
                 $r_post['mimetype'] = $file['type'];
@@ -4168,10 +4670,33 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $r_post['mimetype']
                 );
                 $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING *', $qry_val_arr);
-                $response['card_attachments'][] = pg_fetch_assoc($s_result);
+                $cardAttachment = $response['card_attachments'][0] = pg_fetch_assoc($s_result);
+                if (class_exists('imagick') && in_array($file_arr['extension'], array(
+                    'pdf'
+                ))) {
+                    $im = new Imagick($mediadir . DS . $file['name'] . "[0]"); // 0-first page, 1-second page
+                    $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
+                    $im->setimageformat('png');
+                    $im->thumbnailimage(200, 150); // width and height
+                    $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
+                    $target_dir = IMG_PATH . DS . 'original' . DS . 'CardAttachment';
+                    $target = $target_dir . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                    if (!file_exists($target_dir)) {
+                        mkdir($target_dir, 0777, true);
+                    }
+                    $im->writeimage($target);
+                    $im->clear();
+                    $im->destroy();
+                    $response['card_attachments'][0]['doc_image_path'] = 'original' . DS . 'CardAttachment' . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                    $qry_val_arr = array(
+                        $response['card_attachments'][0]['doc_image_path'],
+                        $cardAttachment['id']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE card_attachments SET doc_image_path = $1 WHERE id = $2', $qry_val_arr);
+                }
             }
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][0]['id'];
+                $mediadir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $response['card_attachments'][0]['id'];
                 $list = glob($mediadir . '.*');
                 if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                     unlink($list[0]);
@@ -4190,8 +4715,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     if (!file_exists($mediadir)) {
                         mkdir($mediadir, 0777, true);
                     }
-                    if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DIRECTORY_SEPARATOR . $file['name'][$i])) {
-                        $r_post[$i]['path'] = $save_path . DIRECTORY_SEPARATOR . $file['name'][$i];
+                    $cur_os = strtolower(PHP_OS);
+                    if (substr($cur_os, 0, 3) === 'win') {
+                        $file['name'][$i] = urlencode($file['name'][$i]);
+                    }
+                    $file_arr = pathinfo($file['name'][$i]);
+                    $filename_without_ext = $file_arr['filename'];
+                    if (file_exists($mediadir . DS . $file['name'][$i])) {
+                        $filename_without_ext = $file_arr['filename'] . '-' . mt_rand(0, 999);
+                        $file['name'][$i] = $filename_without_ext . '.' . $file_arr['extension'];
+                    }
+                    if (is_uploaded_file($file['tmp_name'][$i]) && move_uploaded_file($file['tmp_name'][$i], $mediadir . DS . $file['name'][$i])) {
+                        $r_post[$i]['path'] = $save_path . DS . $file['name'][$i];
                         $r_post[$i]['name'] = $file['name'][$i];
                         $r_post[$i]['mimetype'] = $file['type'][$i];
                         $qry_val_arr = array(
@@ -4203,14 +4738,37 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $r_post[$i]['mimetype']
                         );
                         $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING *', $qry_val_arr);
-                        $response['card_attachments'][] = pg_fetch_assoc($s_result);
+                        $cardAttachment = $response['card_attachments'][$i] = pg_fetch_assoc($s_result);
+                        if (class_exists('imagick') && in_array($file_arr['extension'], array(
+                            'pdf'
+                        ))) {
+                            $im = new Imagick($mediadir . DS . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
+                            $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
+                            $im->setimageformat('png');
+                            $im->thumbnailimage(200, 150); // width and height
+                            $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
+                            $target_dir = IMG_PATH . DS . 'original' . DS . 'CardAttachment';
+                            $target = $target_dir . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                            if (!file_exists($target_dir)) {
+                                mkdir($target_dir, 0777, true);
+                            }
+                            $im->writeimage($target);
+                            $im->clear();
+                            $im->destroy();
+                            $response['card_attachments'][$i]['doc_image_path'] = 'original' . DS . 'CardAttachment' . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                            $qry_val_arr = array(
+                                $response['card_attachments'][$i]['doc_image_path'],
+                                $cardAttachment['id']
+                            );
+                            pg_query_params($db_lnk, 'UPDATE card_attachments SET doc_image_path = $1 WHERE id = $2', $qry_val_arr);
+                        }
                         $foreign_ids['board_id'] = $r_resource_vars['boards'];
                         $foreign_ids['list_id'] = $r_resource_vars['lists'];
                         $foreign_ids['card_id'] = $r_resource_vars['cards'];
                         $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
                         $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['card_attachments'][$i]['id']);
                         foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                            $imgdir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $response['card_attachments'][$i]['id'];
+                            $imgdir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $response['card_attachments'][$i]['id'];
                             $list = glob($imgdir . '.*');
                             if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                 unlink($list[0]);
@@ -4259,7 +4817,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $comment = '##USER_NAME## added attachment to this card ##CARD_LINK##';
                         $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $row['id']);
                         foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                            $mediadir = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $row['id'];
+                            $mediadir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $row['id'];
                             $list = glob($mediadir . '.*');
                             if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                                 unlink($list[0]);
@@ -4281,6 +4839,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $qry_val_arr = array(
             $r_resource_vars['cards']
         );
+        $previous_label_results = pg_query_params($db_lnk, 'SELECT l.name FROM labels l inner join cards_labels cl on cl.label_id = l.id WHERE card_id = $1', $qry_val_arr);
+        $previous_cards_labels = array();
+        while ($previous_label_result = pg_fetch_assoc($previous_label_results)) {
+            $previous_cards_labels[] = $previous_label_result['name'];
+        }
         $label_names = pg_query_params($db_lnk, 'SELECT l.name FROM labels l inner join cards_labels cl on cl.label_id = l.id WHERE card_id = $1', $qry_val_arr);
         $delete_labels = pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE card_id = $1 RETURNING label_id', $qry_val_arr);
         $delete_label = pg_fetch_assoc($delete_labels);
@@ -4288,8 +4851,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $names = '';
         if (!empty($r_post['name'])) {
             $label_names = explode(',', $r_post['name']);
-            unset($r_post['name']);
+            $oldlabel = array();
+            $newlabel = array();
             foreach ($label_names as $label_name) {
+                if (in_array($label_name, $previous_cards_labels)) {
+                    $oldlabel[] = $label_name;
+                } else {
+                    $newlabel[] = $label_name;
+                }
                 $names.= $label_name . ', ';
                 $qry_val_arr = array(
                     $label_name
@@ -4318,9 +4887,20 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $s_result = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE card_id = $1', $qry_val_arr);
             $cards_labels = pg_fetch_all($s_result);
             $response['cards_labels'] = $cards_labels;
-            $names = substr($names, 0, -2);
-            $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ' . $names;
-            $type = 'add_card_label';
+            if (count($newlabel) && !count(array_diff($previous_cards_labels, $oldlabel))) {
+                $names = implode(",", $newlabel);
+                $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ' . $names;
+                $type = 'add_card_label';
+            } else if (!count($newlabel) && count(array_diff($previous_cards_labels, $oldlabel))) {
+                $names = implode(",", array_diff($previous_cards_labels, $oldlabel));
+                $comment = '##USER_NAME## removed label(s) to this card ##CARD_LINK## - ' . $names;
+                $type = 'update_card_label';
+            } else if (count($newlabel) && count(array_diff($previous_cards_labels, $oldlabel))) {
+                $deletenames = implode(",", array_diff($previous_cards_labels, $oldlabel));
+                $names = implode(",", $newlabel);
+                $comment = '##USER_NAME## removed the label(s) ' . ' - ' . $deletenames . ' and added the lables ' . '-' . $names . ' to this card ##CARD_LINK##';
+                $type = 'update_card_label';
+            }
         } else {
             $response['cards_labels'] = array();
             while ($labels_data = pg_fetch_assoc($label_names)) {
@@ -4405,6 +4985,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (empty($r_post['member'])) {
                     unset($r_post['member']);
                 }
+                unset($r_post['checklist_items']);
                 $result = pg_execute_insert($table_name, $r_post);
                 $item = pg_fetch_assoc($result);
                 $response[$table_name][] = $item;
@@ -4547,20 +5128,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if ($result) {
                     $row = pg_fetch_assoc($result);
                     $response['id'] = $row['id'];
-                    $auto_subscribe_on_card = (AUTO_SUBSCRIBE_ON_CARD === 'Enabled') ? 'true' : 'false';
-                    if ($auto_subscribe_on_card) {
+                    $qry_val_arr = array(
+                        $r_resource_vars['cards']
+                    );
+                    $board = executeQuery('SELECT b.auto_subscribe_on_card FROM cards c left join boards b on b.id = c.board_id WHERE c.id = $1', $qry_val_arr);
+                    if (!empty($board) && ($board['auto_subscribe_on_card'] === 't')) {
                         $qry_val_arr = array(
-                            $r_resource_vars['cards']
+                            $r_post['card_id'],
+                            $r_post['user_id'],
+                            true
                         );
-                        $board = executeQuery('SELECT b.auto_subscribe_on_card FROM cards c left join boards b on b.id = c.board_id WHERE c.id = $1', $qry_val_arr);
-                        if (!empty($board) && ($board['auto_subscribe_on_card'] === 't')) {
-                            $qry_val_arr = array(
-                                $r_post['card_id'],
-                                $r_post['user_id'],
-                                true
-                            );
-                            pg_query_params($db_lnk, 'INSERT INTO card_subscribers (created, modified, card_id , user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
-                        }
+                        pg_query_params($db_lnk, 'INSERT INTO card_subscribers (created, modified, card_id , user_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
                     }
                     if ($is_return_vlaue) {
                         $row = convertBooleanValues($table_name, $row);
@@ -4679,14 +5257,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, card_id, label_id, list_id, board_id) SELECT created, modified, $1, label_id, $2, $3 FROM cards_labels WHERE card_id = $4 ORDER BY id', $qry_val_arr);
                 }
-                if ($is_keep_custom_fields) {
-                    $qry_val_arr = array(
-                        $response['id'],
-                        $r_post['list_id'],
-                        $r_post['board_id'],
-                        $copied_card_id
-                    );
-                    pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value,is_active,board_id,list_id) SELECT created, modified, $1, custom_field_id,value,is_active, $2, $3 FROM cards_custom_fields WHERE card_id = $4 ORDER BY id', $qry_val_arr);
+                if (isset($is_keep_custom_fields)) {
+                    if (is_plugin_enabled('r_custom_fields')) {
+                        $qry_val_arr = array(
+                            $response['id'],
+                            $r_post['board_id'],
+                            $r_post['list_id'],
+                            $copied_card_id
+                        );
+                        pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value,is_active,board_id,list_id) SELECT created, modified, $1, custom_field_id,value,is_active, $2, $3 FROM cards_custom_fields WHERE card_id = $4 ORDER BY id', $qry_val_arr);
+                    }
                 }
                 if ($is_keep_activity) {
                     $qry_val_arr = array(
@@ -4766,8 +5346,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $response['cards']['attachments'][] = $attachment;
                 }
                 if (is_plugin_enabled('r_custom_fields')) {
-                    require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'CustomFields' . DIRECTORY_SEPARATOR . 'functions.php';
+                    require_once PLUGIN_PATH . DS . 'CustomFields' . DS . 'functions.php';
                     $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $response);
+                    $response = $data;
+                }
+                if (is_plugin_enabled('r_gantt_view')) {
+                    require_once PLUGIN_PATH . DS . 'Gantt' . DS . 'functions.php';
+                    $data = cardDependencyAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $response);
                     $response = $data;
                 }
             }
@@ -4847,6 +5432,22 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $foreign_id['organization_id'] = $row['id'];
                 $comment = '##USER_NAME## created organization "##ORGANIZATION_LINK##"';
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'add_organization', $foreign_id);
+                if (is_plugin_enabled('r_groups') && !empty($r_post['group_id'])) {
+                    $condition = array(
+                        $r_post['group_id'],
+                        $r_post['user_id']
+                    );
+                    $groups_users = pg_query_params($db_lnk, 'SELECT user_id FROM groups_users WHERE group_id = $1 AND user_id != $2', $condition);
+                    while ($groups_user = pg_fetch_assoc($groups_users)) {
+                        if (!empty($groups_user)) {
+                            $qry_val_arr = array(
+                                $row['id'],
+                                $groups_user['user_id']
+                            );
+                            pg_query_params($db_lnk, "INSERT INTO organizations_users (created, modified, organization_id , user_id, organization_user_role_id) VALUES (now(), now(), $1, $2, '2')", $qry_val_arr);
+                        }
+                    }
+                }
             }
         }
         echo json_encode($response);
@@ -4869,23 +5470,23 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $filename = $_FILES['attachment']['name'];
             $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
             if (in_array($file_ext, $allowed_ext)) {
-                $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'];
-                $save_path = 'media' . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'];
+                $mediadir = MEDIA_PATH . DS . 'Organization' . DS . $r_resource_vars['organizations'];
+                $save_path = 'Organization' . DS . $r_resource_vars['organizations'];
                 if (!file_exists($mediadir)) {
                     mkdir($mediadir, 0777, true);
                 }
                 $file = $_FILES['attachment'];
                 $file['name'] = preg_replace('/[^A-Za-z0-9\-.]/', '', $file['name']);
-                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DIRECTORY_SEPARATOR . $file['name'])) {
-                    $logo_url = $save_path . DIRECTORY_SEPARATOR . $file['name'];
+                if (is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $mediadir . DS . $file['name'])) {
+                    $logo_url = $save_path . DS . $file['name'];
                     foreach ($thumbsizes['Organization'] as $key => $value) {
-                        $list = glob(APP_PATH . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . 'Organization' . DIRECTORY_SEPARATOR . $r_resource_vars['organizations'] . '.*');
+                        $list = glob(MEDIA_PATH . DS . $key . DS . 'Organization' . DS . $r_resource_vars['organizations'] . '.*');
                         if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                             unlink($list[0]);
                         }
                     }
                     foreach ($thumbsizes['Organization'] as $key => $value) {
-                        $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $r_resource_vars['organizations'];
+                        $mediadir = IMG_PATH . DS . $key . DS . 'Organization' . DS . $r_resource_vars['organizations'];
                         $list = glob($mediadir . '.*');
                         if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                             unlink($list[0]);
@@ -4948,56 +5549,61 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     case '/apps/settings':
         $folder_name = $r_post['folder'];
         unset($r_post['folder']);
-        $content = file_get_contents(APP_PATH . '/client/apps/' . $folder_name . '/app.json');
-        $app = json_decode($content, true);
-        if (isset($r_post['enable'])) {
-            $app['enabled'] = $r_post['enable'];
-            $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
-            fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-            fclose($fh);
-        } else {
-            if (!empty($app['settings_from_db'])) {
-                foreach ($r_post as $key => $val) {
-                    if (strpos($key, 'PASSWORD') !== false) {
-                        if (!empty($val)) {
-                            $value_encode = str_rot13($val);
-                            $val = base64_encode($value_encode);
-                        } else {
-                            break;
-                        }
-                    }
-                    $qry_val_arr = array(
-                        $val,
-                        trim($key)
-                    );
-                    pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $qry_val_arr);
-                }
-            } else {
-                foreach ($r_post as $key => $val) {
-                    if (!empty($app['settings'][$key]['is_encrypted'])) {
-                        if (!empty($val)) {
-                            $value_encode = str_rot13($val);
-                            $val = base64_encode($value_encode);
-                        } else {
-                            break;
-                        }
-                    }
-                    if (strpos($key, 'r_elasticsearch_index_name') !== false) {
-                        if (trim(strtolower($app['settings'][$key]['value'])) !== trim(strtolower($val))) {
-                            $filename = APP_PATH . '/tmp/cache/r_elasticsearch_last_processed_activity_id.php';
-                            if (file_exists($filename)) {
-                                unlink($filename);
-                            }
-                        }
-                    }
-                    $app['settings'][$key]['value'] = $val;
-                }
+        $content = file_get_contents(APP_PATH . DS . 'client' . DS . 'apps' . DS . $folder_name . DS . 'app.json');
+        if (is_writable(APP_PATH . '/client/apps/' . $folder_name . '/app.json')) {
+            $app = json_decode($content, true);
+            if (isset($r_post['enable'])) {
+                $app['enabled'] = $r_post['enable'];
                 $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
                 fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
                 fclose($fh);
+            } else {
+                if (!empty($app['settings_from_db'])) {
+                    foreach ($r_post as $key => $val) {
+                        if (strpos($key, 'PASSWORD') !== false) {
+                            if (!empty($val)) {
+                                $value_encode = str_rot13($val);
+                                $val = base64_encode($value_encode);
+                            } else {
+                                continue;
+                            }
+                        }
+                        $qry_val_arr = array(
+                            $val,
+                            trim($key)
+                        );
+                        pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $qry_val_arr);
+                    }
+                } else {
+                    foreach ($r_post as $key => $val) {
+                        if (!empty($app['settings'][$key]['is_encrypted'])) {
+                            if (!empty($val)) {
+                                $value_encode = str_rot13($val);
+                                $val = base64_encode($value_encode);
+                            } else {
+                                break;
+                            }
+                        }
+                        if (strpos($key, 'r_elasticsearch_index_name') !== false) {
+                            if (trim(strtolower($app['settings'][$key]['value'])) !== trim(strtolower($val))) {
+                                $filename = CACHE_PATH . DS . 'r_elasticsearch_last_processed_activity_id.php';
+                                if (file_exists($filename)) {
+                                    unlink($filename);
+                                }
+                            }
+                        }
+                        $app['settings'][$key]['value'] = $val;
+                    }
+                    $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
+                    fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+                    fclose($fh);
+                }
             }
+            $response['success'] = 'App updated successfully';
+        } else {
+            $response['error']['type'] = 'File permission';
+            $response['error']['content'] = '/client/apps/ ' . $folder_name . ' / app.json';
         }
-        $response['success'] = 'App updated successfully';
         echo json_encode($response);
         break;
 
@@ -5101,15 +5707,46 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
 
     default:
         $plugin_url['LdapLogin'] = array(
-            '/users/import'
+            '/users/import',
+            '/users/test-connection'
+        );
+        $plugin_url['BoardRoleMapper'] = array(
+            '/board_roles'
+        );
+        $plugin_url['Broadcast'] = array(
+            '/broadcasts',
+            '/broadcasts/?'
+        );
+        $plugin_url['Group'] = array(
+            '/groups',
+            '/groups_users'
+        );
+        $plugin_url['DrawIO'] = array(
+            '/card_diagrams'
+        );
+        $plugin_url['Wiki'] = array(
+            '/pages'
+        );
+        $plugin_url['CRM'] = array(
+            '/contacts'
+        );
+        $plugin_url['Salesforce'] = array(
+            '/salesforce'
         );
         $plugin_url['CardTemplate'] = array(
-            '/boards/?/cards/?/card_template'
+            '/boards/?/cards/?/card_template',
+            '/boards/?/card_templates/?'
         );
         $plugin_url['CustomFields'] = array(
             '/custom_fields',
-            '/cards_custom_fields',
-            '/cards/?/cards_custom_fields'
+            '/boards/?/custom_fields',
+            '/boards/?/cards_custom_fields'
+        );
+        $plugin_url['Gantt'] = array(
+            '/boards/?/card_dependencies'
+        );
+        $plugin_url['SupportApp'] = array(
+            '/card_support_users'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -5118,7 +5755,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             }
         }
         if (!empty($pluginToBePassed)) {
-            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginToBePassed . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+            require_once PLUGIN_PATH . DS . $pluginToBePassed . DS . 'R' . DS . 'r.php';
             $passed_values = array();
             $passed_values['sql'] = $sql;
             $passed_values['r_resource_cmd'] = $r_resource_cmd;
@@ -5167,7 +5804,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
     switch ($r_resource_cmd) {
     case '/users/?/activation': //users activation
         $qry_val_arr = array(
-            $r_put['id'],
+            $r_resource_vars['users'],
             'false'
         );
         $user = executeQuery('SELECT * FROM users WHERE id = $1 AND is_email_confirmed = $2', $qry_val_arr);
@@ -5175,7 +5812,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $qry_val_arr = array(
                 'true',
                 'true',
-                $r_put['id']
+                $r_resource_vars['users']
             );
             $sql = pg_query_params($db_lnk, "UPDATE users SET is_email_confirmed = $1, is_active = $2 WHERE id = $3", $qry_val_arr);
             if ($sql) {
@@ -5198,6 +5835,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $id = $r_resource_vars['users'];
         $comment = '##USER_NAME## updated the profile.';
         $activity_type = 'update_profile';
+        $response = array();
+        if (!empty($r_put['is_two_factor_authentication_enabled'])) {
+            unset($r_put['is_two_factor_authentication_enabled']);
+        }
         if (isset($r_put['profile_picture_path'])) {
             $comment = '##USER_NAME## deleted the profile image';
             $activity_type = 'delete_profile_attachment';
@@ -5225,12 +5866,31 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         } else if (isset($r_put['last_activity_id']) || isset($r_put['language'])) {
             $comment = '';
             $response['success'] = 'Language changed successfully.';
+        } else if (isset($r_put['verification_code'])) {
+            $qry_val_arr = array(
+                $r_resource_vars['users']
+            );
+            $s_result = pg_query_params($db_lnk, 'SELECT two_factor_authentication_hash FROM users WHERE id = $1', $qry_val_arr);
+            $row = pg_fetch_assoc($s_result);
+            $ga = new PHPGangsta_GoogleAuthenticator();
+            $r_put['verification_code'] = (string)$r_put['verification_code'];
+            $checkResult = $ga->verifyCode($row['two_factor_authentication_hash'], $r_put['verification_code'], 2);
+            if ($checkResult) {
+                $r_put['is_two_factor_authentication_enabled'] = true;
+            } else {
+                $response = array(
+                    'code' => 'verification_code',
+                    'error' => 'Entered verification code is wrong. Please try again.'
+                );
+            }
         }
         if (isset($r_put['password'])) {
             unset($r_put['password']);
         }
         $foreign_ids['user_id'] = $authUser['id'];
-        $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
+        if (empty($response['error'])) {
+            $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
+        }
         echo json_encode($response);
         break;
 
@@ -5285,7 +5945,19 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             'Organization',
             'Public'
         );
+        $comment = '';
         $foreign_ids['board_id'] = $r_resource_vars['boards'];
+        if (!empty($r_put['is_support_app'])) {
+            if (is_plugin_enabled('r_support_app')) {
+                require_once PLUGIN_PATH . DS . 'SupportApp' . DS . 'functions.php';
+                $r_put['id'] = $r_resource_vars['boards'];
+                $SupportAppResponse = checkSupportAppFields($r_put, $r_resource_cmd);
+                if (empty($r_put['support_list_id'])) {
+                    echo json_encode($SupportAppResponse);
+                    break;
+                }
+            }
+        }
         if (isset($r_put['default_email_list_id']) || isset($r_put['sort_by']) || isset($r_put['is_default_email_position_as_bottom'])) {
             $comment = '';
         } else if (isset($r_put['board_visibility'])) {
@@ -5365,6 +6037,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $s_result = pg_query_params($db_lnk, $s_sql, $qry_val_arr);
             $previous_value = pg_fetch_assoc($s_result);
         }
+        $comment = '';
         $foreign_ids['board_id'] = $r_resource_vars['boards'];
         $foreign_ids['list_id'] = $r_resource_vars['lists'];
         if (isset($r_put['board_id']) && !empty($r_put['board_id'])) {
@@ -5378,6 +6051,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $r_resource_vars['lists']
             );
             pg_query_params($db_lnk, 'UPDATE card_attachments SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
+            pg_query_params($db_lnk, 'UPDATE activities SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
         }
         if (isset($r_put['position'])) {
             $comment = '##USER_NAME## changed list ' . $previous_value['name'] . ' position.';
@@ -5395,8 +6069,11 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
         } else if (isset($r_put['custom_fields'])) {
             $custom_fields = json_decode($r_put['custom_fields'], true);
-            if (is_plugin_enabled('r_auto_archive_expired_cards')) {
+            if (is_plugin_enabled('r_auto_archive_expired_cards') && !empty($custom_fields['auto_archive_days'])) {
                 $comment = '##USER_NAME## set Auto archive days to ##LIST_NAME## for ' . $custom_fields['auto_archive_days'];
+            }
+            if (is_plugin_enabled('r_wip_limit') && !empty($custom_fields['wip_limit'])) {
+                $comment = '##USER_NAME## set Work In Progress cards Limit to ##LIST_NAME## as ' . $custom_fields['wip_limit'];
             }
         } else if (isset($r_put['color'])) {
             if (empty($previous_value['color']) && isset($r_put['color'])) {
@@ -5541,6 +6218,11 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $comment = '##USER_NAME## set due date - ' . $r_put['due_date'] . ' to this card ##CARD_LINK##';
                 $activity_type = 'add_card_duedate';
             }
+            if (is_plugin_enabled('r_gantt_view')) {
+                require_once PLUGIN_PATH . DS . 'Gantt' . DS . 'functions.php';
+                $r_put['id'] = $r_resource_vars['cards'];
+                $childCardResponse = updateDependencyCards($r_put, array());
+            }
         } else if (isset($r_put['due_date'])) {
             $comment = 'Due date - ' . $previous_value['due_date'] . ' was removed to this card ##CARD_LINK##';
             $activity_type = 'delete_card_duedate';
@@ -5560,17 +6242,34 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
         }
         if (is_plugin_enabled('r_estimated_time')) {
-            if (isset($present_custom_fields['hour']) && $present_custom_fields['hour'] != 'NULL') {
-                if (isset($previous_custom_fields['hour']) && ($previous_custom_fields['hour'] != 'null' && $previous_custom_fields['hour'] != '')) {
-                    $comment = '##USER_NAME## updated estimated time - ' . $present_custom_fields['hour'] . ':' . $present_custom_fields['min'] . ' to this card ##CARD_LINK##';
+            if ((isset($present_custom_fields['hour']) && $present_custom_fields['hour'] != 'NULL') || (isset($present_custom_fields['min']) && $present_custom_fields['min'] != 'NULL')) {
+                if (isset($present_custom_fields['hour']) && ($present_custom_fields['hour'] != 'null' && $present_custom_fields['hour'] != '') && isset($present_custom_fields['min']) && ($present_custom_fields['min'] != 'null' && $present_custom_fields['min'] != '')) {
+                    $comment = '##USER_NAME## updated estimated time ' . $present_custom_fields['hour'] . ' hour(s) ' . $present_custom_fields['min'] . ' min(s) to this card ##CARD_LINK##';
                     $activity_type = 'edit_card_estimatedtime';
-                } else {
-                    $comment = '##USER_NAME## set estimated time - ' . $present_custom_fields['hour'] . ':' . $present_custom_fields['min'] . ' to this card ##CARD_LINK##';
+                } else if (isset($present_custom_fields['hour']) && ($present_custom_fields['hour'] != 'null' && $present_custom_fields['hour'] != '')) {
+                    $comment = '##USER_NAME## set estimated time ' . $present_custom_fields['hour'] . ' hour(s) to this card ##CARD_LINK##';
+                    $activity_type = 'add_card_estimatedtime';
+                } else if (isset($present_custom_fields['min']) && ($present_custom_fields['min'] != 'null' && $present_custom_fields['min'] != '')) {
+                    $comment = '##USER_NAME## set estimated time ' . $present_custom_fields['min'] . ' min(s) to this card ##CARD_LINK##';
                     $activity_type = 'add_card_estimatedtime';
                 }
-            } else if (isset($present_custom_fields['hour'])) {
-                $comment = 'Estimated time - ' . $previous_custom_fields['hour'] . ':' . $previous_custom_fields['min'] . ' was removed to this card ##CARD_LINK##';
+            } else if (isset($present_custom_fields['hour']) && isset($present_custom_fields['min'])) {
+                $comment = '##USER_NAME## removed estimated time to this card ##CARD_LINK##';
                 $activity_type = 'delete_card_estimatedtime';
+            }
+        }
+        if (is_plugin_enabled('r_spent_time')) {
+            if ((isset($present_custom_fields['number']) && $present_custom_fields['number'] != 'NULL' && $present_custom_fields['number'] != '') && (isset($present_custom_fields['period']) && $present_custom_fields['period'] != 'NULL' && $present_custom_fields['period'] != '')) {
+                if (isset($previous_custom_fields['number']) && ($previous_custom_fields['number'] != 'null' && $previous_custom_fields['number'] != '') && isset($previous_custom_fields['period']) && ($previous_custom_fields['period'] != 'null' && $previous_custom_fields['period'] != '')) {
+                    $comment = '##USER_NAME## updated spent time ' . $present_custom_fields['number'] . ' ' . $present_custom_fields['period'] . ' to this card ##CARD_LINK##';
+                    $activity_type = 'edit_card_spenttime';
+                } else {
+                    $comment = '##USER_NAME## set spent time ' . $present_custom_fields['number'] . ' ' . $present_custom_fields['period'] . ' to this card ##CARD_LINK##';
+                    $activity_type = 'add_card_spenttime';
+                }
+            } else if (isset($present_custom_fields['period']) && isset($present_custom_fields['number'])) {
+                $comment = '##USER_NAME## removed spent time to this card ##CARD_LINK##';
+                $activity_type = 'delete_card_spenttime';
             }
         }
         if (isset($previous_value['board_id']) && isset($r_put['board_id']) && $r_put['board_id'] != $previous_value['board_id']) {
@@ -5617,6 +6316,9 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         }
         unset($r_put['start']);
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
+        if (!empty($childCardResponse)) {
+            $response['child_cards'] = $childCardResponse;
+        }
         echo json_encode($response);
         break;
 
@@ -5830,7 +6532,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $foreign_ids['organization_id'] = $r_resource_vars['organizations'];
         if (isset($r_put['logo_url']) && ($r_put['logo_url'] == 'null' || $r_put['logo_url'] == 'NULL')) {
             foreach ($thumbsizes['Organization'] as $key => $value) {
-                $mediadir = APP_PATH . '/client/img/' . $key . '/Organization/' . $id;
+                $mediadir = IMG_PATH . DS . $key . DS . 'Organization' . DS . $id;
                 $list = glob($mediadir . '.*');
                 if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
                     unlink($list[0]);
@@ -5906,7 +6608,27 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
 
     default:
         $plugin_url['CustomFields'] = array(
-            '/custom_fields/?'
+            '/custom_fields/?',
+            '/boards/?/custom_fields/?',
+            '/custom_fields/update_position'
+        );
+        $plugin_url['Broadcast'] = array(
+            '/broadcasts/?'
+        );
+        $plugin_url['Group'] = array(
+            '/groups/?'
+        );
+        $plugin_url['DrawIO'] = array(
+            '/card_diagrams/?'
+        );
+        $plugin_url['Wiki'] = array(
+            '/pages/?'
+        );
+        $plugin_url['CRM'] = array(
+            '/contacts/?'
+        );
+        $plugin_url['Salesforce'] = array(
+            '/salesforce/?'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -5915,7 +6637,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
         }
         if (!empty($pluginToBePassed)) {
-            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginToBePassed . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+            require_once PLUGIN_PATH . DS . $pluginToBePassed . DS . 'R' . DS . 'r.php';
             $passed_values = array();
             $passed_values['sql'] = $sql;
             $passed_values['r_resource_cmd'] = $r_resource_cmd;
@@ -6036,6 +6758,15 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         break;
 
+    case '/boards/?': // delete boards
+        if (is_plugin_enabled('r_chat') && $jabberHost) {
+            $xmpp = xmppObj();
+            xmppDestroyRoom($r_resource_vars['boards'], $xmpp);
+        }
+        $sql = 'DELETE FROM boards WHERE id = $1';
+        array_push($pg_params, $r_resource_vars['boards']);
+        break;
+
     case '/boards/?/lists/?': // delete lists
         $qry_val_arr = array(
             $r_resource_vars['lists']
@@ -6103,7 +6834,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $sql = 'DELETE FROM cards WHERE id = $1';
         array_push($pg_params, $r_resource_vars['cards']);
         if (is_plugin_enabled('r_elasticsearch')) {
-            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'ElasticSearch' . DIRECTORY_SEPARATOR . 'functions.php';
+            require_once PLUGIN_PATH . DS . 'ElasticSearch' . DS . 'functions.php';
             deleteCardFromElastica($r_resource_vars['cards']);
         }
         break;
@@ -6181,6 +6912,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $r_resource_vars['cards']
         );
         pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
+        $response['activity']['comment_count'] = $activity_count;
         $response['error'] = array(
             'code' => (!$result) ? 1 : 0
         );
@@ -6195,20 +6927,20 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $foreign_ids['card_id'] = $r_resource_vars['cards'];
         $comment = '##USER_NAME## deleted attachment from card ##CARD_LINK##';
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_card_attachment', $foreign_ids, null, $r_resource_vars['attachments']);
-        $mediadir = APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'Card' . DIRECTORY_SEPARATOR . $r_resource_vars['cards'];
+        $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_resource_vars['cards'];
         $qry_val_arr = array(
             $r_resource_vars['attachments']
         );
         $attachment = executeQuery('SELECT name, path FROM card_attachments WHERE id =  $1', $qry_val_arr);
         if (!empty($attachment)) {
-            $file = APP_PATH . DIRECTORY_SEPARATOR . $attachment['path'];
+            $file = APP_PATH . DS . $attachment['path'];
             if (file_exists($file)) {
                 unlink($file);
             }
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                 $file_ext = explode('.', $attachment['name']);
                 $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
-                $thumb_file = APP_PATH . '/client/img/' . $key . '/CardAttachment/' . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
+                $thumb_file = IMG_PATH . DS . $key . DS . 'Organization' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
                 if (file_exists($thumb_file)) {
                     unlink($thumb_file);
                 }
@@ -6307,7 +7039,36 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     default:
         $plugin_url['CustomFields'] = array(
-            '/custom_fields/?'
+            '/custom_fields/?',
+            '/boards/?/custom_fields/?'
+        );
+        $plugin_url['CardTemplate'] = array(
+            '/boards/?/card_templates/?'
+        );
+        $plugin_url['Gantt'] = array(
+            '/boards/?/card_dependencies/?'
+        );
+        $plugin_url['Broadcast'] = array(
+            '/broadcasts/?'
+        );
+        $plugin_url['Group'] = array(
+            '/groups/?',
+            '/groups/?/users/?'
+        );
+        $plugin_url['DrawIO'] = array(
+            '/card_diagrams/?'
+        );
+        $plugin_url['Wiki'] = array(
+            '/pages/?'
+        );
+        $plugin_url['CRM'] = array(
+            '/contacts/?'
+        );
+        $plugin_url['Salesforce'] = array(
+            '/salesforce/?'
+        );
+        $plugin_url['SupportApp'] = array(
+            '/card_support_users'
         );
         foreach ($plugin_url as $plugin_key => $plugin_values) {
             if (in_array($r_resource_cmd, $plugin_values)) {
@@ -6316,7 +7077,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
         }
         if (!empty($pluginToBePassed)) {
-            require_once APP_PATH . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'php' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginToBePassed . DIRECTORY_SEPARATOR . 'R' . DIRECTORY_SEPARATOR . 'r.php';
+            require_once PLUGIN_PATH . DS . $pluginToBePassed . DS . 'R' . DS . 'r.php';
             $passed_values = array();
             $passed_values['sql'] = $sql;
             $passed_values['r_resource_cmd'] = $r_resource_cmd;
@@ -6334,6 +7095,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             $plugin_return = call_user_func($plugin_key . '_r_delete', $passed_values);
             echo json_encode($plugin_return);
+            exit;
             break;
         }
         header($_SERVER['SERVER_PROTOCOL'] . ' 501 Not Implemented', true, 501);
@@ -6370,7 +7132,8 @@ $scope_exception_url = array(
 );
 $token_exception_url = array(
     '/users/logout',
-    '/users/register',
-    '/oauth'
+    '/oauth',
+    '/oauth/token',
+    '/settings'
 );
 main();

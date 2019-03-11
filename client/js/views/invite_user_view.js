@@ -75,16 +75,22 @@ App.InviteUserView = Backbone.View.extend({
         var email = $(e.currentTarget).val();
         var nameMatch = email.match(/^([^@]*)@/);
         var name = nameMatch ? nameMatch[1] : null;
-        var nameParts = name.split(".");
-        var fullname = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
-        if (nameParts.length > 1) {
-            fullname = nameParts[0].toUpperCase() + ' ' + nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1);
+        if (name !== null) {
+            var nameParts = name.split(".");
+            var fullname = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
+            if (nameParts.length > 1) {
+                fullname = nameParts[0].toUpperCase() + ' ' + nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1);
+            }
+            $(target).closest('form').find('.js-invite-user-fullname').val(fullname);
+            $(target).closest('form').find('.js-invite-user-info').html('');
+            $(target).closest('form').find('.js-invite-user-info').html('<strong>' + email + '</strong>? ' + i18next.t('We don\'t know that person. Add a name and click "Send" and we’ll add a virtual member and send them an invite email. They\'ll automatically receive access to the board once they sign up and confirm their email address.'));
+            $(target).closest('form').find('.js-invite-user-info-block').removeClass('hide').addClass('show');
+        } else {
+            $(target).closest('form').find('.js-invite-user-fullname').val('');
+            $(target).closest('form').find('.js-invite-user-info').html('');
+            $(target).closest('form').find('.js-invite-user-info').html('<strong>' + i18next.t('Please enter valid email-id') + '</strong>');
+            $(target).closest('form').find('.js-invite-user-info-block').removeClass('hide').addClass('show');
         }
-        $(target).closest('form').find('.js-invite-user-fullname').val(fullname);
-        $(target).closest('form').find('.js-invite-user-info').html('');
-        $(target).closest('form').find('.js-invite-user-info').html('<strong>' + email + '</strong>? We don\'t know that person. Add a name and click "Send" and we’ll add a virtual member and send them an invite email. They\'ll automatically receive access to the board once they sign up and confirm their email address.');
-        $(target).closest('form').find('.js-invite-user-info-block').removeClass('hide').addClass('show');
-
         return false;
     },
     /**

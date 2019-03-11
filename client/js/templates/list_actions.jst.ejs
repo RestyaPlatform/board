@@ -64,13 +64,14 @@
     <% }else{ %>
         <button type="button" class="hide btn btn-primary js-remove-list-color">Remove color</button>
     <% } %>
-  </ul><div class="well-sm"></div></div></li></ul></li>
+  </ul><div class="well-sm"></div></div></li>
+
+</ul></li>
 <li class="panel-settings" id="js-list-setting-<%- list.attributes.id %>">
 </li>
 <% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "add_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 	<li><a href="#" title="<%- i18next.t('Add Card') %>" class="js-show-add-card-form"><%- i18next.t("Add Card") %></a></li>
 <% } %>	
-<li class="divider"></li>
 <% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "add_list",board_user_role_id: parseInt(list.board_user_role_id)}))) && !is_offline_data){ %>
 	<li class="js-hide-on-offline"><a href="#" title="<%- i18next.t('Copy List') %>" class="js-show-copy-list-form"><%- i18next.t("Copy List") %></a></li>
 <% } %>	
@@ -93,12 +94,14 @@
 	%>
 	<li class="<%= subscribe_disabled %>"><a href="javascript:void(0);" title="<%- subscribe_title %>" class="highlight-icon <%= subscribe_class %>" data-list-id="<%- list.id %>" data-subscribe-id="<%- subscribe_id %>"><span class="js-subscribe-text"><%if (!_.isEmpty(subscribe) && parseInt(subscribe.attributes.is_subscribed) === 1) {%><%- i18next.t("Subscribed") %><%}else{%><%- i18next.t("Subscribe") %><% } %></span> <%= is_subscribed %></a></li>
 <% } %>	
+<li class="divider"></li>
+
 <li><a href="#" title="<%- i18next.t('Show Attachments') %>" class="js-show-list-modal"><%- i18next.t("Show Attachments") %></a></li>
 <li class="divider"></li>
 <% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 	<li><a href="#" title="<%- i18next.t('Move All Cards in This List') %>" class="js-show-move-card-list-form" data-list-id="<%- list.id %>"><%- i18next.t("Move All Cards in This List") %></a></li>
 <% } %>
-<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 ||  !_.isEmpty(list.collection.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 ||  !_.isEmpty(list.collection.board.acl_links.where({slug: "archive_all_cards_in_the_list",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 	<li><a href="#" title="<%- i18next.t('Archive All Cards in this List') %>" class="js-show-confirm-archive-cards" data-list-id="<%- list.id %>"><%- i18next.t("Archive All Cards in this List") %></a></li>
 <% } %>
 <li class="divider"></li>

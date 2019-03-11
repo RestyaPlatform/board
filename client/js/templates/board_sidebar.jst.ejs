@@ -33,14 +33,15 @@
 	</form> 
 	<% if(!_.isUndefined(subscriber) && parseInt(subscriber.attributes.is_subscribed)) { %>
 	<% if(authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "board_subscriber",board_user_role_id: parseInt(board.board_user_role_id)}))) { %>
-	<a href="#" class="js-show-unsubscribe-form navbar-btn h4 list-group-item-text" name="unsubscribe" title="<%- i18next.t('Subscribed') %>"><i class="icon-eye-close"></i><span class="hidden-xs"><%- i18next.t('Subscribed') %> <i class="icon-ok js-filter-icon cur"></i></span></a>
+	<a href="#" class="js-show-unsubscribe-form navbar-btn h4 list-group-item-text" name="unsubscribe" title="<%- i18next.t('Subscribed') %>"><i class="icon-eye-close"></i><span><%- i18next.t('Subscribed') %> <i class="icon-ok js-filter-icon cur"></i></span></a>
 	<% } %>
 	<% } else {%> 
 	<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || ((!_.isEmpty(board.acl_links.where({slug: "subscribe_board",board_user_role_id: parseInt(board.board_user_role_id)})))  || (!_.isEmpty(role_links.where({slug: "subscribe_board"})) && board.attributes.board_visibility == 2)))){ %>
-	<a href="#" class="js-show-subscribe-form navbar-btn h4" name="subscribe" title="<%- i18next.t('Subscribe') %>"><i class="icon-eye-open"></i><span class="hidden-xs"><%- i18next.t('Subscribe') %></span></a>
+	<a href="#" class="js-show-subscribe-form navbar-btn h4" name="subscribe" title="<%- i18next.t('Subscribe') %>"><i class="icon-eye-open"></i><span><%- i18next.t('Subscribe') %></span></a>
 	<% } %>
 	<% } %>
-  </li>
+	</li>
+	<li class="js-background-change"></li>
 <% } %>  
 <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
 <li><a href="#" class="nav-list-item nav-list-sub-item js-change-background"><%- i18next.t('Change Background') %></a></li>

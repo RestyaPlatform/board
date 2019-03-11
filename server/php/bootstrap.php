@@ -5,11 +5,11 @@
  * @return string
  */
 require_once 'config.inc.php';
-require_once 'libs' . DIRECTORY_SEPARATOR . 'core.php';
-require_once 'libs' . DIRECTORY_SEPARATOR . 'vendors' . DIRECTORY_SEPARATOR . 'OAuth2' . DIRECTORY_SEPARATOR . 'Autoloader.php';
+require_once 'libs' . DS . 'core.php';
+require_once 'libs' . DS . 'vendors' . DS . 'OAuth2' . DS . 'Autoloader.php';
 function main()
 {
-    global $r_debug, $authUser, $token, $localAccessIps, $db_lnk, $token_exception_url, $exception_url, $scope_exception_url, $post_exception_url, $put_exception_url, $exception_before_token, $exception_url, $admin_access_url, $put_admin_access_url, $_server_domain_url;
+    global $r_debug, $authUser, $token, $localAccessIps, $db_lnk, $token_exception_url, $exception_url, $scope_exception_url, $post_exception_url, $put_exception_url, $exception_before_token, $exception_url, $admin_access_url, $put_admin_access_url, $_server_domain_url, $locales;
     if (PHP_SAPI == 'cli') { // if command line mode...
         if ($_SERVER['argc'] < 2) {
             echo 'Usage: php ' . __FILE__ . ' <relative url>' . "\n";
@@ -43,17 +43,18 @@ function main()
         // /users/5/products/10 -> /users/?/products/? ...
         $r_resource_cmd = preg_replace('/\/\d+/', '/?', $_url_parts_with_ext[0]);
         header('Content-Type: application/json');
-        if (!defined('STDIN') && !file_exists(APP_PATH . '/tmp/cache/client.php') && !empty($_server_domain_url)) {
+        if (!defined('STDIN') && !file_exists(CLIENT_INFORMATION) && !empty($_server_domain_url)) {
             doPost('http://restya.com/clients', array(
                 'app' => 'board',
-                'ver' => '0.6.3',
+                'ver' => '0.6.6',
                 'url' => $_server_domain_url
             ));
-            $fh = fopen(APP_PATH . '/tmp/cache/client.php', 'a');
+            $fh = fopen(CLIENT_INFORMATION, 'a');
             fwrite($fh, '<?php' . "\n");
             fwrite($fh, '$_server_domain_url = \'' . $_server_domain_url . '\';');
             fclose($fh);
         }
+        $current_locale = DEFAULT_LANGUAGE;
         if ($r_resource_cmd != '/users/login') {
             if (!empty($_GET['token'])) {
                 $conditions = array(
@@ -85,7 +86,14 @@ function main()
                     $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $qry_val_arr);
                 }
                 $authUser = array_merge($role_links, $user);
+                if (!empty($user['language'])) {
+                    $current_locale = $user['language'];
+                }
             }
+        }
+        if (!empty($current_locale) && file_exists(APP_PATH . 'client' . DS . 'locales' . DS . $current_locale . DS . 'translation.json')) {
+            $locale = file_get_contents(APP_PATH . 'client' . DS . 'locales' . DS . $current_locale . DS . 'translation.json');
+            $locales = json_decode($locale, true);
         }
         $r_resource_vars = array();
         if (preg_match_all('/([^\/]+)\/(\d+)/', $_url_parts_with_ext[0], $matches)) {
@@ -118,7 +126,7 @@ function main()
                     break;
 
                 case 'POST':
-                    if ((in_array('write', $scope) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser)))) || in_array($r_resource_cmd, $scope_exception_url)) {
+                    if ((in_array('write', $scope) && ((!empty($authUser)) || (in_array($r_resource_cmd, $exception_url) && empty($authUser))) || (is_plugin_enabled('r_support_app') && ($r_resource_cmd == '/card_support_users' || !empty($r_resource_vars['boards'])))) || in_array($r_resource_cmd, $scope_exception_url)) {
                         $r_post = json_decode(file_get_contents('php://input'));
                         $r_post = (array)$r_post;
                         r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post);

@@ -109,9 +109,10 @@ App.CardCheckListItemView = Backbone.View.extend({
         this.converter.setFlavor('github');
         this.$el.html(this.template({
             checklist_item: this.model,
-            converter: this.converter
+            converter: this.converter,
         }));
         this.showTooltip();
+        emojify.run();
         return this;
     },
 

@@ -16,6 +16,7 @@ if (typeof App === 'undefined') {
 App.UserView = Backbone.View.extend({
     template: JST['templates/user_view'],
     tagName: 'div',
+    id: 'user_view',
     className: '',
     /**
      * Events
@@ -24,11 +25,17 @@ App.UserView = Backbone.View.extend({
     events: {
         'submit form.js-user-profile-edit': 'userProfileEdit',
         'click .js-user-cards': 'userCards',
+        'click .js-membered-cards': 'userCards',
+        'click .js-show-closedBoards-cards': 'showClosedBoardsCards',
+        'click .js-hide-closedBoards-cards': 'hideClosedBoardsCards',
+        'click .js-userCreated-cards': 'userCreatedCards',
         'click #js-user-activites-load-more': 'loadActivities',
         'click .js-remove-image': 'removeImage',
         'click .js-use-uploaded-avatar': 'computerOpenUserProfile',
         'change #js-user-profile-attachment': 'addUserProfile',
-        'click .js-enable-user-desktop-notification': 'enabledesktopNotification'
+        'click .js-enable-user-desktop-notification': 'enabledesktopNotification',
+        'click .js-enable-twoFactor-authentication': 'enableAuthentication',
+        'click .js-disable-twoFactor-authentication': 'disableAuthentication'
 
     },
     /**
@@ -80,6 +87,74 @@ App.UserView = Backbone.View.extend({
         });
     },
     /**
+     * enableAuthentication()
+     * enable user authentication 
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    enableAuthentication: function(e) {
+        var authenticate_view = new App.AuthenticateView({
+            model: this.model,
+            templateName: 'two-step-verification'
+        });
+        $('#content').html(authenticate_view.render().el);
+        app.navigate('#/user/' + this.model.id + '/two-step-verification', {
+            trigger: false,
+            trigger_function: false,
+        });
+    },
+    /**
+     * disableAuthentication()
+     * disable user authentication 
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    disableAuthentication: function(e) {
+        e.preventDefault();
+        var self = this;
+        var data = {};
+        data.is_two_factor_authentication_enabled = false;
+        var user = new App.User();
+        user.url = api_url + 'users/' + authuser.user.id + '.json';
+        user.set('id', parseInt(authuser.user.id));
+        user.save(data, {
+            success: function(response) {
+                if (response) {
+                    var Auth = JSON.parse($.cookie('auth'));
+                    Auth.user.is_two_factor_authentication_enabled = false;
+                    $.cookie('auth', JSON.stringify(Auth));
+                    authuser = Auth;
+                    app.navigate('#/user/' + self.model.id + '/settings', {
+                        trigger: true,
+                        trigger_function: true
+                    });
+                }
+            }
+        });
+    },
+    /**
+     * showClosedBoardsCards()
+     * show the cards in the closed boards 
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    showClosedBoardsCards: function(e) {
+        this.userCards($(e.target), 'show_closed_boards_cards');
+    },
+    /**
+     * hideClosedBoardsCards()
+     * hide the cards of the closed boards 
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    hideClosedBoardsCards: function() {
+        this.userCards();
+    },
+    /**
      * render()
      * populate the html to the dom
      * @param NULL
@@ -107,7 +182,11 @@ App.UserView = Backbone.View.extend({
                             return activity.id;
                         });
                         last_activity_id = last_activity.id;
-                        $('#js-user-activites-load-more').removeClass('hide');
+                        if (!response._metadata.noOfPages || response._metadata.noOfPages <= 1) {
+                            self.$('#js-user-activites-load-more').remove();
+                        } else {
+                            $('#js-user-activites-load-more').removeClass('hide');
+                        }
                         for (var i = 0; i < activities.models.length; i++) {
                             var activity = activities.models[i];
                             self.$('#js-user-activites').append(new App.UserActivityView({
@@ -216,6 +295,7 @@ App.UserView = Backbone.View.extend({
         var self = this;
         var form = $(e.target);
         var fileData = new FormData(form[0]);
+        fileData.delete("attachment");
         var data = $(e.target).serializeObject();
         data.default_desktop_notification = 'false';
         if ($("#default_desktop_notification").val() === 'Enabled') {
@@ -261,19 +341,61 @@ App.UserView = Backbone.View.extend({
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
                     var Auth = JSON.parse($.cookie('auth'));
-                    Auth.user.default_desktop_notification = response.activity.default_desktop_notification;
-                    Auth.user.is_list_notifications_enabled = response.activity.is_list_notifications_enabled;
-                    Auth.user.is_card_notifications_enabled = response.activity.is_card_notifications_enabled;
-                    Auth.user.is_card_members_notifications_enabled = response.activity.is_card_members_notifications_enabled;
-                    Auth.user.is_card_labels_notifications_enabled = response.activity.is_card_labels_notifications_enabled;
-                    Auth.user.is_card_checklists_notifications_enabled = response.activity.is_card_checklists_notifications_enabled;
-                    Auth.user.is_card_attachments_notifications_enabled = response.activity.is_card_attachments_notifications_enabled;
+                    if (!_.isUndefined(response.activity.default_desktop_notification) && !_.isEmpty(response.activity.default_desktop_notification)) {
+                        Auth.user.default_desktop_notification = response.activity.default_desktop_notification;
+                    } else {
+                        Auth.user.default_desktop_notification = data.default_desktop_notification;
+                    }
+                    if (!_.isUndefined(response.activity.is_list_notifications_enabled) && !_.isEmpty(response.activity.is_list_notifications_enabled)) {
+                        Auth.user.is_list_notifications_enabled = response.activity.is_list_notifications_enabled;
+                    } else {
+                        Auth.user.is_list_notifications_enabled = data.is_list_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_notifications_enabled) && !_.isEmpty(response.activity.is_card_notifications_enabled)) {
+                        Auth.user.is_card_notifications_enabled = response.activity.is_card_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_notifications_enabled = data.is_card_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_members_notifications_enabled) && !_.isEmpty(response.activity.is_card_members_notifications_enabled)) {
+                        Auth.user.is_card_members_notifications_enabled = response.activity.is_card_members_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_members_notifications_enabled = data.is_card_members_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_labels_notifications_enabled) && !_.isEmpty(response.activity.is_card_labels_notifications_enabled)) {
+                        Auth.user.is_card_labels_notifications_enabled = response.activity.is_card_labels_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_labels_notifications_enabled = data.is_card_labels_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_checklists_notifications_enabled) && !_.isEmpty(response.activity.is_card_checklists_notifications_enabled)) {
+                        Auth.user.is_card_checklists_notifications_enabled = response.activity.is_card_checklists_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_checklists_notifications_enabled = data.is_card_checklists_notifications_enabled;
+                    }
+                    if (!_.isUndefined(response.activity.is_card_attachments_notifications_enabled) && !_.isEmpty(response.activity.is_card_attachments_notifications_enabled)) {
+                        Auth.user.is_card_attachments_notifications_enabled = response.activity.is_card_attachments_notifications_enabled;
+                    } else {
+                        Auth.user.is_card_attachments_notifications_enabled = data.is_card_attachments_notifications_enabled;
+                    }
                     $.cookie('auth', JSON.stringify(Auth));
                     authuser = Auth;
                     if (!_.isUndefined(response.activity.username) && response.activity.username !== null) {
                         self.model.set('username', response.activity.username);
                         Auth = JSON.parse($.cookie('auth'));
                         Auth.user.username = response.activity.username;
+                        $.cookie('auth', JSON.stringify(Auth));
+                        authuser = Auth;
+                    }
+                    if (!_.isUndefined(response.activity.full_name) && response.activity.full_name !== null) {
+                        self.model.set('full_name', response.activity.full_name);
+                        Auth = JSON.parse($.cookie('auth'));
+                        Auth.user.full_name = response.activity.full_name;
+                        $.cookie('auth', JSON.stringify(Auth));
+                        authuser = Auth;
+                    }
+                    if (!_.isUndefined(response.activity.initials) && response.activity.initials !== null) {
+                        self.model.set('initials', response.activity.initials);
+                        Auth = JSON.parse($.cookie('auth'));
+                        Auth.user.initials = response.activity.initials;
                         $.cookie('auth', JSON.stringify(Auth));
                         authuser = Auth;
                     }
@@ -340,26 +462,106 @@ App.UserView = Backbone.View.extend({
      * @type Object(DOM event)
      * @return false
      */
-    userCards: function() {
+    userCards: function(e, param) {
         var self = this;
+        if (self.$('.js-membered-cards-tab').hasClass('active')) {
+            self.$('.js-userCreated-cards-tab').removeClass('active');
+            self.$('.js-membered-cards-tabContent').addClass('active');
+            self.$('.js-userCreated-cards-tabContent').removeClass('active');
+        }
+        if (self.$('.js-userCreated-cards-tab').hasClass('active')) {
+            self.$('.js-membered-cards-tab').addClass('active');
+            self.$('.js-membered-cards-tabContent').addClass('active');
+            self.$('.js-userCreated-cards-tab').removeClass('active');
+            self.$('.js-userCreated-cards-tabContent').removeClass('active');
+        }
         self.model.cards.url = api_url + 'users/' + self.model.id + '/cards.json?';
         self.model.cards.fetch({
             cache: false,
             success: function(card, response) {
                 self.$('#cards').html('');
+                if (!_.isUndefined(param) && !_.isEmpty(param)) {
+                    self.$('#cards').html('<div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-hide-closedBoards-cards" title="' + i18next.t('Hide Closed Boards Cards') + '">' + i18next.t('Hide Closed Boards Cards') + '</a></div>');
+                } else {
+                    self.$('#cards').html('<div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-show-closedBoards-cards" title="' + i18next.t('Show Closed Boards Cards') + '">' + i18next.t('Show Closed Boards Cards') + '</a></div>');
+                }
+                self.$('#created-cards').html('');
+                if (response.length === 0) {
+                    self.$('#cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
+                        postProcess: 'sprintf',
+                        sprintf: [i18next.t('cards')]
+                    }) + '</span>');
+                } else {
+                    var card_users = new App.CardUserCollection();
+                    card_users = self.model.cards.groupBy(function(model) {
+                        return [model.get('board_name')];
+                    });
+                    if (!_.isEmpty(card_users)) {
+                        var boards_count = 0;
+                        _.map(card_users, function(card_user, key) {
+                            var board = App.boards.findWhere({
+                                name: key
+                            });
+                            if (!_.isUndefined(param) && !_.isEmpty(param) && board.attributes.is_closed) {
+                                if (board.attributes.is_closed) {
+                                    ++boards_count;
+                                    self.$('#cards').append(new App.UserCardsView({
+                                        key: key,
+                                        model: card_user
+                                    }).el);
+                                }
+                            } else if (_.isUndefined(param) && _.isEmpty(param)) {
+                                if (!board.attributes.is_closed) {
+                                    ++boards_count;
+                                    self.$('#cards').append(new App.UserCardsView({
+                                        key: key,
+                                        model: card_user
+                                    }).el);
+                                }
+                            }
+                        });
+                        if (!boards_count) {
+                            self.$('#cards').append('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
+                                postProcess: 'sprintf',
+                                sprintf: [i18next.t('cards')]
+                            }) + '</span>');
+                        }
+                    } else {
+                        self.$('#cards').append('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
+                            postProcess: 'sprintf',
+                            sprintf: [i18next.t('cards')]
+                        }) + '</span>');
+                    }
+                }
+                $('#tab-loaded-content').load();
+            }
+        });
+    },
+    userCreatedCards: function() {
+        var self = this;
+        self.$('.js-userCreated-cards-tab').addClass('active');
+        self.$('.js-membered-cards-tab').removeClass('active');
+        self.model.cards.url = api_url + 'users/' + self.model.id + '/cards.json?type=created';
+        self.model.cards.fetch({
+            cache: false,
+            success: function(card, response) {
+                self.$('#cards').html('');
+                self.$('#created-cards').html('');
+                self.$('.js-userCreated-cards-tabContent').addClass('active');
+                self.$('.js-membered-cards-tabContent').removeClass('active');
                 var card_users = new App.CardUserCollection();
                 card_users = self.model.cards.groupBy(function(model) {
                     return [model.get('board_name')];
                 });
                 if (!_.isEmpty(card_users)) {
                     _.map(card_users, function(card_user, key) {
-                        self.$('#cards').append(new App.UserCardsView({
+                        self.$('#created-cards').append(new App.UserCardsView({
                             key: key,
                             model: card_user
                         }).el);
                     });
                 } else {
-                    self.$('#cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
+                    self.$('#created-cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
                         postProcess: 'sprintf',
                         sprintf: [i18next.t('cards')]
                     }) + '</span>');
@@ -381,6 +583,9 @@ App.UserView = Backbone.View.extend({
             cache: false,
             success: function(user, response) {
                 if (!_.isEmpty(activities) && !_.isEmpty(activities.models)) {
+                    if (!response._metadata.noOfPages || response._metadata.noOfPages <= 1) {
+                        self.$('#js-user-activites-load-more').remove();
+                    }
                     for (var i = 0; i < activities.models.length; i++) {
                         var activity = activities.models[i];
                         self.$('#js-user-activites').append(new App.UserActivityView({
@@ -483,9 +688,9 @@ App.UserView = Backbone.View.extend({
                     Auth.user.profile_picture_path = response.profile_picture_path + "?uid=" + Math.floor((Math.random() * 9999) + 1);
                     $.cookie('auth', JSON.stringify(Auth));
                     authuser = Auth;
-                    var hash = calcMD5(SecuritySalt + 'User' + self.model.id + 'png' + 'small_thumb');
-                    var profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + self.model.id + '.' + hash + '.png?uid=' + Math.floor((Math.random() * 9999) + 1);
-                    $('.js-use-uploaded-avatar').html('<span class="js-remove-image  profile-block show"><i class="icon icon-remove close-block cur h6"></i></span><img src="' + profile_picture_path + '" width="50" height="50" class="js-user-avatar">');
+                    var hash = calcMD5(SecuritySalt + 'User' + self.model.id + 'png' + 'normal_thumb');
+                    var profile_picture_path = window.location.pathname + 'img/normal_thumb/User/' + self.model.id + '.' + hash + '.png?uid=' + Math.floor((Math.random() * 9999) + 1);
+                    $('.js-use-uploaded-avatar').html('<span class="js-remove-image  profile-block show"><i class="icon icon-remove close-block cur h6"></i></span><img src="' + profile_picture_path + '" width="64" height="64" class="js-user-avatar">');
                     this.footerView = new App.FooterView({
                         model: Auth,
                     }).render();

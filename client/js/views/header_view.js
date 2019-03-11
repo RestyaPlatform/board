@@ -65,6 +65,10 @@ App.HeaderView = Backbone.View.extend({
         }
         var current_param_split = current_param[0].split('/');
         this.model.current_param = (current_param.indexOf('changepassword') === -1 && current_param.indexOf('login') === -1 && current_param.indexOf('forgotpassword') === -1 && current_param.indexOf('register') === -1 && current_param.indexOf('activation') === -1) ? current_param_split[0] : '';
+        if (!_.isEmpty(current_param_split[0]) && current_param_split[0] === 'user_logins') {
+            this.model.current_param = 'user_logins';
+            current_param = 'user_logins';
+        }
         if (!_.isEmpty(current_param_split[1]) && current_param_split[1] === 'list') {
             this.model.current_param = 'admin_boards_list';
         }
@@ -74,10 +78,16 @@ App.HeaderView = Backbone.View.extend({
         if (typeof Notification != 'undefined') {
             this.model.is_show_enable_notification = (Notification.permission == 'default') ? true : false;
         }
+        current_param = this.model.current_param;
+        if (typeof(authuser) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'user_logins' || current_param === 'roles' || current_param === 'apps' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list' || current_param === 'oauth_clients' || current_param === 'board_user_roles' || current_param === 'organization_user_roles')) {
+            this.$el.attr('id', 'admin-panel');
+        }
         this.$el.html(this.template(this.model));
         this.showTooltip();
         if (load_count === 1) {
             load_count++;
+            var nodes = Array();
+            var appsFunc = Array();
             _.each(APPS, function(app, key) {
                 var s, l, v = '';
                 if (key === 'settings') {
@@ -100,6 +110,9 @@ App.HeaderView = Backbone.View.extend({
                     _.each(app, function(css, key) {
                         l = document.createElement('link');
                         l.rel = 'stylesheet';
+                        if (css.indexOf('r_kanban_printer') > -1) {
+                            l.title = 'r_kanban_printer';
+                        }
                         l.type = 'text/css';
                         l.href = css;
                         document.head.appendChild(l);
@@ -107,20 +120,62 @@ App.HeaderView = Backbone.View.extend({
                 }
                 if (key === 'html') {
                     _.each(app, function(html, key) {
+                        /* create app template element */
+                        app_tmpl = document.createElement(html.split('/')[1] + '-template');
+                        document.head.appendChild(app_tmpl);
+                        /* create link for template element */
                         l = document.createElement('link');
-                        l.rel = 'import';
+                        l.setAttribute('crossorigin', 'anonymous');
+                        l.rel = 'preload';
+                        l.as = "fetch";
+                        l.id = html.split('/')[1] + '-template';
                         l.href = html;
-                        l.onload = function(e) {
-                            var content = e.target.import;
-                            var get_script = content.querySelectorAll("script");
-                            _.each(get_script, function(html, key) {
-                                document.body.appendChild(html.cloneNode(true));
-                            });
-                        };
                         document.head.appendChild(l);
                     });
                 }
+                if (key === 'mutationObservers') {
+                    _.each(app, function(appTmp) {
+                        _.each(appTmp, function(mutation, node) {
+                            if (_.isUndefined(nodes[node])) {
+                                nodes[node] = Array();
+                            }
+                            _.each(mutation, function(appFunction, targetElement) {
+                                if (nodes[node].indexOf(targetElement) === -1) {
+                                    nodes[node].push(targetElement);
+                                }
+                                if (_.isUndefined(appsFunc[targetElement])) {
+                                    appsFunc[targetElement] = Array();
+                                }
+                                appsFunc[targetElement].push(appFunction);
+                            });
+                        });
+                    });
+                }
             });
+            var whatToObserve = {
+                childList: true
+            };
+            var mutationObserver = new MutationObserver(function(mutationRecords) {
+                _.each(mutationRecords, function(mutationRecord) {
+                    if (mutationRecord.addedNodes.length > 0 && nodes[mutationRecord.target.id].indexOf(mutationRecord.addedNodes[0].id) !== -1) {
+                        setTimeout(function() {
+                            _(function() {
+                                _.each(appsFunc[mutationRecord.addedNodes[0].id], function(
+                                    functionName
+                                ) {
+                                    if (typeof AppsFunction[functionName] === 'function') {
+                                        AppsFunction[functionName]();
+                                    }
+                                });
+                            }).defer();
+                        }, 100);
+                    }
+                });
+            });
+            for (var node in nodes) {
+                var targetNode = document.getElementById(node);
+                mutationObserver.observe(targetNode, whatToObserve);
+            }
         }
         return this;
     },

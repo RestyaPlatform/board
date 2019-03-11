@@ -1,5 +1,13 @@
 <% if(organization != null){ 
 var organization_user_role_id = 0;
+if (!_.isUndefined(authuser.user)) {
+	var organization_user_role_id = organization.organizations_users.findWhere({
+		user_id: parseInt(authuser.user.id)
+	});
+	if (!_.isEmpty(organization_user_role_id)) {
+		organization_user_role_id = organization_user_role_id.attributes.organization_user_role_id;
+	}
+}
 %>
 <td class="col-lg-5 col-md-3 col-sm-6 col-xs-5">
 	<div class="media">
@@ -27,14 +35,18 @@ var organization_user_role_id = 0;
 	<li class="pull-right ">
 		<ul class="list-inline navbar-btn clearfix">
 			<li class="dropdown navbar-btn">
-				<a title="<%- i18next.t('New Board') %>" class="btn btn-default <% if(organization.attributes.organizations_user_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.organizations_user_count != 0){ %>data-toggle="dropdown"<%}%>><%- organization.attributes.organizations_user_count%> <%- i18next.t('Members') %></a>
+				<% var user_count = '';
+				   if(parseInt(organization.attributes.organizations_user_count) != 0){
+					user_count = parseInt(organization.attributes.organizations_user_count);
+					user_count = (user_count > 1) ? 's' : '';
+				   }
+				%>
+				<a title="<%- i18next.t('Members') %>" class="btn btn-default <% if(organization.attributes.organizations_user_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.organizations_user_count != 0){ %>data-toggle="dropdown"<%}%>>
+					<%- i18next.t('{{count}} Member{{user_count}}', {count: organization.attributes.organizations_user_count, user_count: user_count}) %>
+				</a>
 				<% if(organization.attributes.organizations_user_count != 0){ %>
 					<ul class="dropdown-menu arrow arrow-left  text-left" role="boards">
-						<% _.each(organization.attributes.organizations_users, function(organizations_user){
-							if(organization_user_role_id === 0) {
-								organization_user_role_id = (parseInt(organizations_user.id) === parseInt(authuser.user.id)) ? organizations_user.id : 0;
-							}
-						%>
+						<% _.each(organization.attributes.organizations_users, function(organizations_user){%>
 							<li><a href="#/user/<%-organizations_user.user_id%>"><%-organizations_user.username%></a></li>
 						<%})%>
 					</ul>
@@ -42,7 +54,15 @@ var organization_user_role_id = 0;
 			</li>
 			<li class="navbar-btn">
 				<div class="checkbox-inline dropdown">
-					<a title="<%- i18next.t('Boards') %>" class="btn btn-default <% if(organization.attributes.board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.board_count != 0){ %>data-toggle="dropdown"<%}%>><%- organization.attributes.board_count%> <%- i18next.t('Boards') %></a>
+					<% var org_board_count = '';
+					   if(organization.attributes.board_count != 0){
+						org_board_count = organization.attributes.board_count;
+						org_board_count = (org_board_count > 1) ? 's' : '';
+					   }
+					%>
+					<a title="<%- i18next.t('Boards') %>" class="btn btn-default <% if(organization.attributes.board_count != 0){ %>dropdown-toggle<%}else{%>js-no-action<%}%>" href="#" <% if(organization.attributes.board_count != 0){ %>data-toggle="dropdown"<%}%>>
+						<%- i18next.t('{{count}} Board{{board_count}}', {count: organization.attributes.board_count, board_count: org_board_count}) %>
+					</a>
 					<% if(organization.attributes.board_count != 0){ %>
 						<ul class="dropdown-menu arrow arrow-right  text-left" role="boards">
 							<% _.each(organization.attributes.boards_listing, function(board){%>
@@ -72,7 +92,7 @@ var organization_user_role_id = 0;
 						</ul>
 					<%}%>
 				</div>
-			</li>
+			</li>						
 			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "delete_organization",organization_user_role_id: parseInt(organization_user_role_id)})))){%>
 				<li class="dropdown navbar-btn pull-right">
 					<a class="btn btn-primary dropdown-toggle js-show-confirm-delete-organization" data-organization_id="<%- organization.attributes.id %>" data-toggle="dropdown" href="#"><span><i class="icon-remove"></i></span><span><%- i18next.t('Delete') %></span></a>
@@ -116,7 +136,12 @@ var organization_user_role_id = 0;
 						<dt>
 							<div class="btn-group navbar-btn list-activity"> <% if(organization.attributes.username != null){ %><a href="#/user/<%- organization.attributes.user_id %>" class="btn btn-default htruncate" title="<%- organization.attributes.username %>"><%- organization.attributes.username %></a><%}else{%>-<%}%></div>
 						</dt>
-						<dd><h6 class="text-center h4 navbar-btn"><%- i18next.t('Owner') %></h6></dd>
+						<dd><h6 class="text-center h4 navbar-btn">
+							<% _.each(organization.attributes.organization_user_roles,function(organization_user_role) {
+							if(organization_user_role.id === 1) { %>
+								<%- i18next.t(organization_user_role.name) %></h6></dd>
+							<%}
+						});%>
 					</dl>
 				</li>
 			 </ul>

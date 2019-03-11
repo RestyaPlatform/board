@@ -29,15 +29,22 @@ _.each(app_settings, function(app_setting) {
 <input type="hidden" value="<%- folder %>" name="folder" id="folder">
   <div class="form-group">
 	<label for="submit" class="sr-only  col-sm-4  control-label col-xs-12"><%- i18next.t('Submit') %></label>
-	<div class="col-xs-offset-2">
-	<input type="submit" value="<%- i18next.t('Update') %>" id="submit" class="btn btn-primary">
+	<div class="col-lg-offset-2 col-lg-10">
+		<input type="submit" value="<%- i18next.t('Update') %>" id="submit" class="btn btn-primary">
+		<%  var currenturl = window.location;
+			if(!_.isUndefined(currenturl.hash) && (currenturl.hash === '#/apps/r_ldap_login')){
+	   %>
+			<input type="button" value="<%- i18next.t('Test Connection') %>" class="btn btn-info js-test-connection">
+			<button type="button" id="importUsersSubmit" class="js-import-users btn btn-warning"><%- i18next.t('Import users') %></button>
+			<span class="clearfix hide" id="js-loader-img"><span class="cssloader"></span></span>
+		<% } %>
 	</div>
   </div>
 </form>
 <%  var currenturl = window.location;
 	if(!_.isUndefined(currenturl.hash) && (currenturl.hash === '#/apps/r_ldap_login')){
 	   %>
-<div class="well-sm">
+<!--<div class="well-sm">
 		<legend>
 			<span class="show h4"><%- i18next.t('Import LDAP users') %></span>
 		</legend>
@@ -59,5 +66,5 @@ _.each(app_settings, function(app_setting) {
 			<span class="clearfix hide" id="js-loader-img"><span class="cssloader"></span></span>
 			</div>
 			</div>
-		</div>
+		</div>-->
 <% } %>
