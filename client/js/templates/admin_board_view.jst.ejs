@@ -50,7 +50,7 @@
 <% if(!_.isEmpty(board.attributes.organization_name)){ %>
 <div class="clearfix"> 
 <a href="#/board/<%- board.id %>"" class="small-user pull-left show"><img alt="[Image: Organization]" title="<%-board.attributes.organization_name%>" width="16" height="16" src="<%- logo_path %>"></a>
- <a class="col-xs-9 htruncate" title="<%-board.attributes.organization_name%>" href="#/board/<%- board.id %>"><%-board.attributes.organization_name%></a></div>
+ <a class="col-xs-9 htruncate" title="<%-board.attributes.organization_name%>" href="#/organization/<%- board.attributes.organization_id %>"><%-board.attributes.organization_name%></a></div>
  <% }else{%>
  <a class="col-xs-9 htruncate" title="-">-</a>
  <% }%>
