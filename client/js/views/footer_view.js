@@ -849,6 +849,8 @@ App.FooterView = Backbone.View.extend({
         activities.fetch({
             cache: false,
             success: function() {
+                activities.setSortField('id', 'asc');
+                activities.sort();
                 $('#js-activity-loader').remove();
                 if (!_.isEmpty(activities.models)) {
                     $('#js-load-link').removeClass('hide');
@@ -1020,6 +1022,10 @@ App.FooterView = Backbone.View.extend({
                                     });
                                     if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card') {
                                         var new_card = new App.Card();
+                                        if (activity.attributes.type === 'add_card') {
+                                            activity.attributes.card.cards_labels = null;
+                                            activity.attributes.card.cards_users = null;
+                                        }
                                         new_card.set(activity.attributes.card);
                                         new_card.set('id', parseInt(activity.attributes.card.id));
                                         new_card.set('board_id', parseInt(activity.attributes.card.board_id));
@@ -1225,6 +1231,10 @@ App.FooterView = Backbone.View.extend({
                                             new_user.set('id', parseInt(activity.attributes.user.id));
                                             new_user.set('user_id', parseInt(activity.attributes.user.user_id));
                                             new_user.set('card_id', parseInt(activity.attributes.user.card_id));
+                                            new_user.set('profile_picture_path', activity.attributes.user.profile_picture_path);
+                                            new_user.set('username', activity.attributes.user.username);
+                                            new_user.set('initials', activity.attributes.user.initials);
+                                            new_user.set('full_name', activity.attributes.user.full_name);
                                             card.users.add(new_user);
                                             card.set('users', new_user);
                                         } else if (activity.attributes.type === 'add_comment') {
