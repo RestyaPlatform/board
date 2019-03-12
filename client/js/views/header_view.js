@@ -163,6 +163,7 @@ App.HeaderView = Backbone.View.extend({
                                 _.each(appsFunc[mutationRecord.addedNodes[0].id], function(
                                     functionName
                                 ) {
+                                    console.log(functionName);
                                     if (typeof AppsFunction[functionName] === 'function') {
                                         AppsFunction[functionName]();
                                     }
