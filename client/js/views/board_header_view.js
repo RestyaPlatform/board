@@ -25,10 +25,6 @@ if (typeof App === 'undefined') {
  * @extends Backbone.View
  */
 App.BoardHeaderView = Backbone.View.extend({
-    className: 'navbar navbar-default',
-    attributes: {
-        role: 'navigation'
-    },
     template: JST['templates/board_header'],
     id: "board_view_header",
     /**

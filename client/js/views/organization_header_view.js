@@ -15,11 +15,7 @@ if (typeof App === 'undefined') {
  */
 App.OrganizationHeaderView = Backbone.View.extend({
     template: JST['templates/organization_header'],
-    className: 'navbar navbar-default',
     id: 'js-navbar-default',
-    attributes: {
-        role: 'navigation'
-    },
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
