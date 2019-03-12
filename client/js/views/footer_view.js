@@ -816,9 +816,7 @@ App.FooterView = Backbone.View.extend({
         var view_activity = $('#js-all-activities');
         var Auth, favCount;
         var list_notifications_array = ['add_list_color', 'edit_list_color', 'delete_list_color', 'add_card', 'change_list_position', 'archive_list', 'unarchive_list', 'delete_list'];
-        var card_notifications_array = ['add_card_color', 'edit_card_color', 'delete_card_color', 'add_card_duedate', 'edit_card_duedate', 'delete_card_duedate', 'move_card', 'archived_card',
-            'unarchived_card', 'delete_card'
-        ];
+        var card_notifications_array = ['add_card_color', 'edit_card_color', 'delete_card_color', 'add_card_duedate', 'edit_card_duedate', 'delete_card_duedate', 'move_card', 'archived_card', 'unarchived_card', 'delete_card', 'add_card_desc'];
         var card_members_notifications_array = ['add_card_user', 'delete_card_users'];
         var card_labels_notifications_array = ['add_card_label', 'delete_card_label'];
         var card_checklists_notifications_array = ['add_card_checklist', 'add_checklist_item', '	update_card_checklist', 'update_card_checklist_item', 'delete_checklist_item', 'delete_checklist'];
@@ -1057,6 +1055,9 @@ App.FooterView = Backbone.View.extend({
                                     }
                                     if (activity.attributes.type === 'edit_card_color') {
                                         card.set('color', activity.attributes.color);
+                                    }
+                                    if (activity.attributes.type === 'add_card_desc' || activity.attributes.type === 'add_card_desc' === 'edit_card_desc') {
+                                        card.set('description', activity.attributes.revisions.new_value.description);
                                     }
                                     if (!_.isUndefined(card)) {
                                         if (activity.attributes.type === 'add_card_duedate') {
@@ -1492,7 +1493,7 @@ App.FooterView = Backbone.View.extend({
                                     }
                                     if (!_.isUndefined(list)) {
                                         if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
-                                            if(!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)){
+                                            if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
                                                 list.set(activity.attributes.revisions.new_value);
                                             }
                                         }
@@ -1570,7 +1571,7 @@ App.FooterView = Backbone.View.extend({
                                         }
                                     }
                                 } else if (!_.isUndefined(self.board) && !_.isUndefined(activity.attributes.board_id) && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update Board
-                                    if(!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)){
+                                    if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
                                         self.board.set(activity.attributes.revisions.new_value);
                                     }
                                     if (activity.attributes.type === 'add_board_user') {
@@ -1714,11 +1715,11 @@ App.FooterView = Backbone.View.extend({
                         if ($.cookie('auth')) {
                             Auth = JSON.parse($.cookie('auth'));
                             if (!_.isUndefined(Auth.user.unread_activity_id)) {
-                                Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
-                                authuser.user.unread_activity_id = (parseInt(unread_activity_id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                                Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                                authuser.user.unread_activity_id = (parseInt(unread_activity_id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
                             } else {
-                                Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
-                                authuser.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                                Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                                authuser.user.unread_activity_id = (parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
                             }
                             $.cookie('auth', JSON.stringify(Auth));
                         }
@@ -1797,15 +1798,14 @@ App.FooterView = Backbone.View.extend({
                     if ($.cookie('auth')) {
                         Auth = JSON.parse($.cookie('auth'));
                         if (!_.isUndefined(Auth.user.unread_activity_id)) {
-                            Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
-                            authuser.user.unread_activity_id = (parseInt(unread_activity_id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                            Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                            authuser.user.unread_activity_id = (parseInt(unread_activity_id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
                         } else {
-                            Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
-                            authuser.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                            Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                            authuser.user.unread_activity_id = (parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
                         }
                         $.cookie('auth', JSON.stringify(Auth));
                     }
-
                     var last_board_activity = _.min(activities.models, function(activity) {
                         return activity.id;
                     });
