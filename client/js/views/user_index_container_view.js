@@ -58,7 +58,6 @@ App.UserIndexContainerView = Backbone.View.extend({
         }
         if (is_group_app_enabled) {
             this.$el.html('<div class="r_group_app_tabs" id="js-group_app_tabs"><div class="col-xs-12 well-lg navbar-btn"><div class="navbar-btn"><ul id = "myTab" class = "nav nav-tabs"><li class = "active"><a href = "#users" data-toggle = "tab" id="js-groupuser-tab">' + i18next.t('Users') + '</a></li><li><a href = "#groups" data-toggle = "tab" id="js-group-tab">' + i18next.t('Groups') + '</a></li></ul></div></div><div id = "myGroupTabContent" class = "tab-content"><div class = "tab-pane fade in active" id = "users"></div><div class = "tab-pane fade" id = "groups"></div></div></div>');
-            console.log(this.$el.find('#users'));
             this.$el.find('#users').html(this.template({
                 filter_count: this.filter_count,
                 roles: this.roles

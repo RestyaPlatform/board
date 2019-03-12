@@ -367,7 +367,7 @@ App.ListView = Backbone.View.extend({
             authuser: this.authuser
         }).el);
         _(function() {
-            if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
+            if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
                 if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
                     $('body').trigger('listActionRendered', [self.model.id, self.model]);
                 }
@@ -383,6 +383,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     backToListActions: function(e) {
+        var self = this;
         var list_id = $(e.target).parents().find('.js-show-list-actions').attr('data-list-id');
         var list_action = $(e.target).parents().find('#js-show-list-actions-' + list_id);
         $('.js-list-actions-response').remove();
@@ -393,6 +394,13 @@ App.ListView = Backbone.View.extend({
             subscribers: subscribers,
             authuser: this.authuser
         }).el);
+        _(function() {
+            if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                    $('body').trigger('listActionRendered', [self.model.id, self.model]);
+                }
+            }
+        }).defer();
         return false;
     },
     /**

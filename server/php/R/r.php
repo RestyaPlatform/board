@@ -1211,7 +1211,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         $check_visibility = executeQuery($s_sql, $arr);
         if (!empty($check_visibility)) {
-            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organizations_listing ul WHERE id = $1 ORDER BY id DESC ) as d';
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organization_listing ul WHERE id = $1 ORDER BY id DESC ) as d';
             array_push($pg_params, $r_resource_vars['organizations']);
             if (!empty($sql)) {
                 if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {

@@ -2209,7 +2209,6 @@ App.ModalCardView = Backbone.View.extend({
         if (fileData.getAll('attachment[]').length && !_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
             var allowed_extensions = ALLOWED_FILE_EXTENSIONS.replace(/\ /g, '').split(','),
                 uploaded_files = fileData.getAll('attachment[]');
-            console.log(allowed_extensions);
             allowedfiles = uploaded_files.filter(function(uploaded_file) {
                 return (allowed_extensions.indexOf('.' + uploaded_file.name.split('.').pop()) != -1);
             });
