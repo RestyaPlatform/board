@@ -1549,6 +1549,11 @@ App.ListView = Backbone.View.extend({
                     }
                     card.board_activities.add(self.model.activities);
                     if (!_.isUndefined(response.cards_users) && response.cards_users.length > 0) {
+                        response.cards_users.forEach(function(user) {
+                            user.card_id = parseInt(user.card_id);
+                            user.id = parseInt(user.id);
+                            user.user_id = parseInt(user.user_id);
+                        });
                         card.set('cards_users', response.cards_users);
                         card.users.add(response.cards_users);
                     }
