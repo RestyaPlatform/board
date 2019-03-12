@@ -879,11 +879,11 @@ App.FooterView = Backbone.View.extend({
                         }
                         if ($.cookie('auth')) {
                             Auth = JSON.parse($.cookie('auth'));
-                            Auth.user.last_activity_id = (parseInt(Auth.user.last_activity_id) > parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id;
+                            Auth.user.last_activity_id = (parseInt(Auth.user.last_activity_id) < parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id;
                             Auth.user.notify_count = favCount;
                             $.cookie('auth', JSON.stringify(Auth));
                         }
-                        authuser.user.last_activity_id = update_last_activity.id;
+                        authuser.user.last_activity_id = (parseInt(Auth.user.last_activity_id) < parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id;
                     } else if (mode == 2) {
                         if (favCount > 0) {
                             if ($.cookie('auth')) {
@@ -892,7 +892,7 @@ App.FooterView = Backbone.View.extend({
                                 user.url = api_url + 'users/' + authuser.user.id + '.json';
                                 user.set('id', parseInt(authuser.user.id));
                                 user.save({
-                                    'last_activity_id': (parseInt(Auth.user.last_activity_id) > parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id
+                                    'last_activity_id': (parseInt(Auth.user.last_activity_id) < parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id
                                 });
                                 authuser.user.notify_count = 0;
                                 Auth.user.notify_count = 0;
@@ -1492,7 +1492,9 @@ App.FooterView = Backbone.View.extend({
                                     }
                                     if (!_.isUndefined(list)) {
                                         if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
-                                            list.set(activity.attributes.revisions.new_value);
+                                            if(!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)){
+                                                list.set(activity.attributes.revisions.new_value);
+                                            }
                                         }
                                         if (activity.attributes.type === 'delete_list') {
                                             var removed_list_cards = self.board.cards.where({
@@ -1568,7 +1570,9 @@ App.FooterView = Backbone.View.extend({
                                         }
                                     }
                                 } else if (!_.isUndefined(self.board) && !_.isUndefined(activity.attributes.board_id) && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update Board
-                                    self.board.set(activity.attributes.revisions.new_value);
+                                    if(!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)){
+                                        self.board.set(activity.attributes.revisions.new_value);
+                                    }
                                     if (activity.attributes.type === 'add_board_user') {
                                         self.board.board_users.add(activity.attributes.board_user);
                                     } else if (activity.attributes.type === 'delete_board_user') {
