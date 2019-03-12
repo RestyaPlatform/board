@@ -1560,6 +1560,9 @@ App.ListView = Backbone.View.extend({
                     if (!_.isUndefined(response.cards_labels) && response.cards_labels.length > 0) {
                         response.cards_labels.forEach(function(label) {
                             label.card_id = parseInt(label.card_id);
+                            label.board_id = parseInt(label.board_id);
+                            label.label_id = parseInt(label.label_id);
+                            label.list_id = parseInt(label.list_id);
                         });
                         self.board.labels.add(response.cards_labels, {
                             silent: true
