@@ -1305,7 +1305,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (!empty($r_resource_filters['limit'])) {
                 $limit = $r_resource_filters['limit'];
             }
-            $order = 'ORDER BY freshness_ts DESC, materialized_path ASC';
+            $order = 'ORDER BY freshness_ts DESC, depth ASC';
             if (isset($r_resource_filters['mode']) && $r_resource_filters['mode'] == '1') {
                 $order = 'ORDER BY al.id DESC';
             }
@@ -4238,9 +4238,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (!empty($r_post['labels'])) {
                     $r_post['card_labels'] = $r_post['labels'];
                 }
+                $names = '';
                 if (!empty($r_post['card_labels'])) {
                     $label_names = explode(',', $r_post['card_labels']);
                     foreach ($label_names as $label_name) {
+                        $names.= $label_name . ', ';
                         $qry_val_arr = array(
                             $label_name
                         );
@@ -4265,7 +4267,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         );
                         pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, card_id, label_id, board_id, list_id) VALUES (now(), now(), $1, $2, $3, $4) RETURNING *', $qry_val_arr);
                     }
-                    $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ##LABEL_NAME##';
+                    $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ' . $names;
                     insertActivity($userID, $comment, 'add_card_label', $foreign_ids, null, $r_post['label_id']);
                 }
                 if (!empty($r_post['cards_checklists_card_id'])) {
@@ -5061,9 +5063,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (!empty($r_post['labels'])) {
                     $r_post['card_labels'] = $r_post['labels'];
                 }
+                $names = '';
                 if (!empty($r_post['card_labels'])) {
                     $label_names = explode(',', $r_post['card_labels']);
                     foreach ($label_names as $label_name) {
+                        $names.= $label_name . ', ';
                         $qry_val_arr = array(
                             $label_name
                         );
@@ -5088,7 +5092,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         );
                         pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, card_id, label_id, board_id, list_id) VALUES (now(), now(), $1, $2, $3, $4) RETURNING *', $qry_val_arr);
                     }
-                    $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ##LABEL_NAME##';
+                    $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ' . $names;;
                     insertActivity($authUser['id'], $comment, 'add_card_label', $foreign_ids, null, $r_post['label_id']);
                 }
                 $qry_val_arr = array(
