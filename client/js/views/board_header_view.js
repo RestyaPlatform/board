@@ -953,7 +953,7 @@ App.BoardHeaderView = Backbone.View.extend({
                     id: event.id
                 });
                 if (card.get('is_archived') === 1) {
-                    element.addClass('card-archived');
+                    element.addClass('card-archived hide');
                     element.find('.fc-event-skin').addClass('card-archived');
                 }
                 if (card.get('due_date') !== null) {
