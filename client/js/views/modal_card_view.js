@@ -130,7 +130,7 @@ App.ModalCardView = Backbone.View.extend({
         }
         var self = this;
         _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock');
-        this.model.bind('change:users change:name  change:description  add:description  change:board_id  change:cards_checklists  change:cards_labels  change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
+        this.model.bind('change:name  change:description  add:description  change:board_id  change:cards_checklists  change:cards_labels  change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
         this.model.cards_subscribers.bind('add remove', this.refreshdock);
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
         this.model.checklists.bind('add', this.renderChecklistsCollection);
@@ -143,6 +143,8 @@ App.ModalCardView = Backbone.View.extend({
         self.authuser = authuser.user;
         this.model.card_voters.bind('add', this.refreshdock);
         this.model.card_voters.bind('remove', this.refreshdock);
+        this.model.users.bind('add', this.renderUsersCollection);
+        this.model.users.bind('remove', this.renderUsersCollection);
         this.model.attachments.bind('add', this.renderAttachmentsCollection);
         this.model.attachments.bind('remove', this.renderAttachmentsCollection);
         this.board = self.model.list.collection.board;
@@ -956,6 +958,7 @@ App.ModalCardView = Backbone.View.extend({
      * update dock modal view
      */
     refreshdock: function() {
+        console.log("refreshdock");
         var doc = $('#js-card-modal-' + this.model.id);
         var self = this;
         if (doc.length !== 0) {
