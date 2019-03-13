@@ -1056,7 +1056,7 @@ App.FooterView = Backbone.View.extend({
                                     if (activity.attributes.type === 'edit_card_color') {
                                         card.set('color', activity.attributes.color);
                                     }
-                                    if (activity.attributes.type === 'add_card_desc' || activity.attributes.type === 'add_card_desc' === 'edit_card_desc') {
+                                    if (activity.attributes.type === 'add_card_desc' || activity.attributes.type === 'edit_card_desc') {
                                         card.set('description', activity.attributes.revisions.new_value.description);
                                     }
                                     if (!_.isUndefined(card)) {
