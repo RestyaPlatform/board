@@ -6246,7 +6246,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
         }
         if (is_plugin_enabled('r_estimated_time')) {
-            if ((isset($present_custom_fields['hour']) && $present_custom_fields['hour'] != 'NULL' && $present_custom_fields['hour'] != '') || (isset($present_custom_fields['min']) && $present_custom_fields['min'] != 'NULL'  && $present_custom_fields['min'] != '')) {
+            if ((isset($present_custom_fields['hour']) && $present_custom_fields['hour'] != 'NULL' && $present_custom_fields['hour'] != '') || (isset($present_custom_fields['min']) && $present_custom_fields['min'] != 'NULL' && $present_custom_fields['min'] != '')) {
                 if (isset($present_custom_fields['hour']) && ($present_custom_fields['hour'] != 'null' && $present_custom_fields['hour'] != '') && isset($present_custom_fields['min']) && ($present_custom_fields['min'] != 'null' && $present_custom_fields['min'] != '')) {
                     $comment = '##USER_NAME## updated estimated time ' . $present_custom_fields['hour'] . ' hour(s) ' . $present_custom_fields['min'] . ' min(s) to this card ##CARD_LINK##';
                     $activity_type = 'edit_card_estimatedtime';
