@@ -847,8 +847,10 @@ App.FooterView = Backbone.View.extend({
         activities.fetch({
             cache: false,
             success: function() {
-                activities.setSortField('id', 'asc');
-                activities.sort();
+                if (mode == 1) {
+                    activities.setSortField('id', 'asc');
+                    activities.sort();
+                }
                 $('#js-activity-loader').remove();
                 if (!_.isEmpty(activities.models)) {
                     $('#js-load-link').removeClass('hide');
@@ -1509,12 +1511,9 @@ App.FooterView = Backbone.View.extend({
                                             card.set('checklist_item_completed_count', update_completed_count);
                                             card.set('checklist_item_count', update_total_count);
                                         } else if (activity.attributes.type === 'delete_card_users') {
-                                            console.log("before remove ", card.users);
-                                            console.log(activity.attributes.foreign_id);
                                             card.users.remove(card.users.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
                                             }));
-                                            console.log("after remove ", card.users);
                                         } else if (activity.attributes.type === 'unvote_card') {
                                             card.card_voters.remove(card.card_voters.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
