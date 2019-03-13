@@ -958,7 +958,6 @@ App.ModalCardView = Backbone.View.extend({
      * update dock modal view
      */
     refreshdock: function() {
-        console.log("refreshdock");
         var doc = $('#js-card-modal-' + this.model.id);
         var self = this;
         if (doc.length !== 0) {
