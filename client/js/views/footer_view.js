@@ -1556,6 +1556,9 @@ App.FooterView = Backbone.View.extend({
                                             });
                                             list.collection.board.lists.remove(list);
                                             self.board.lists.remove(list);
+                                        } else if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === 'add_list_agile_wip_limit' || activity.attributes.type === 'edit_list_agile_wip_limit' || activity.attributes.type === 'delete_list_agile_wip_limit' || activity.attributes.type === 'add_list_task_move_duedate' || activity.attributes.type === 'edit_list_task_move_duedate' || activity.attributes.type === 'add_list_task_move_duedate') && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
+                                            list.set('custom_fields', activity.attributes.revisions.new_value.custom_fields);
+                                            $('body').trigger('listCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.list_id), list]);
                                         } else if (activity.attributes.type === 'change_list_position') {
                                             if (parseInt(activity.attributes.list.board_id) !== parseInt(list.attributes.board_id)) {
                                                 self.board.lists.remove(list);
