@@ -6115,7 +6115,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             if (is_plugin_enabled('r_agile_wip') && isset($custom_fields['wip_limit'])) {
                 if(empty($previous_custom_fields_value['wip_limit']) && isset($custom_fields['wip_limit'])){
                     if(!empty($custom_fields['wip_limit'])){
-                        $comment = '##USER_NAME## set Agile Work In Progress Limit to list "##LIST_NAME##" as ' . $custom_fields['wip_limit'];
+                        $comment = '##USER_NAME## set Agile WIP limit to list "##LIST_NAME##" as ' . $custom_fields['wip_limit'];
                         $activity_type = 'add_list_agile_wip_limit';   
                         if(isset($custom_fields['hard_wip_limit'])){
                             if($custom_fields['hard_wip_limit'] === 'yes'){
@@ -6125,10 +6125,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     }
                 }else if (!empty($previous_custom_fields_value) && (isset($custom_fields['wip_limit']) && $custom_fields['wip_limit'] != $previous_custom_fields_value['wip_limit']) || (isset($custom_fields['hard_wip_limit']) && $custom_fields['hard_wip_limit'] != $previous_custom_fields_value['hard_wip_limit'])){
                     if (empty($custom_fields['wip_limit']) && isset($custom_fields['wip_limit'])) {
-                        $comment = '##USER_NAME## removed Agile Work In Progress Limit - ' . $previous_custom_fields_value['wip_limit'] . ' from list "##LIST_NAME##"';
+                        $comment = '##USER_NAME## removed Agile WIP limit - ' . $previous_custom_fields_value['wip_limit'] . ' from list "##LIST_NAME##"';
                         $activity_type = 'delete_list_agile_wip_limit';
                     } else {
-                        $comment = '##USER_NAME## updated Agile Work In Progress Limit - ' . $custom_fields['wip_limit'] . ' on list "##LIST_NAME##"';
+                        $comment = '##USER_NAME## updated Agile WIP limit - ' . $custom_fields['wip_limit'] . ' on list "##LIST_NAME##"';
                         $activity_type = 'edit_list_agile_wip_limit';
                     }
                     if (empty($custom_fields['hard_wip_limit']) && isset($custom_fields['hard_wip_limit'])) {
