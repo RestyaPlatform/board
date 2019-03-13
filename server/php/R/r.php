@@ -6033,17 +6033,17 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $json = true;
         $table_name = 'lists';
         $id = $r_resource_vars['lists'];
-        if (isset($r_put['position']) || isset($r_put['is_archived']) || isset($r_put['color'])) {
+        if (isset($r_put['position']) || isset($r_put['is_archived']) || isset($r_put['color']) || isset($r_put['custom_fields']) ) {
             $qry_val_arr = array(
                 $r_resource_vars['lists']
             );
-            $s_sql = 'SELECT name, board_id, position, color FROM ' . $table_name . ' WHERE id = $1';
+            $s_sql = 'SELECT name, board_id, position, color, custom_fields FROM ' . $table_name . ' WHERE id = $1';
             $s_result = pg_query_params($db_lnk, $s_sql, $qry_val_arr);
             $previous_value = pg_fetch_assoc($s_result);
         }
         $comment = '';
         $foreign_ids['board_id'] = $r_resource_vars['boards'];
-        $foreign_ids['list_id'] = $r_resource_vars['lists'];
+        $foreign_ids['list_id'] = $r_resource_vars['lists'];    
         if (isset($r_put['board_id']) && !empty($r_put['board_id'])) {
             $qry_val_arr = array(
                 $r_put['board_id'],
@@ -6076,8 +6076,30 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             if (is_plugin_enabled('r_auto_archive_expired_cards') && !empty($custom_fields['auto_archive_days'])) {
                 $comment = '##USER_NAME## set Auto archive days to ##LIST_NAME## for ' . $custom_fields['auto_archive_days'];
             }
-            if (is_plugin_enabled('r_wip_limit') && !empty($custom_fields['wip_limit'])) {
-                $comment = '##USER_NAME## set Work In Progress cards Limit to ##LIST_NAME## as ' . $custom_fields['wip_limit'];
+            if (is_plugin_enabled('r_agile_wip') && isset($custom_fields['wip_limit'])) {
+                $previous_custom_fields_value = json_decode($previous_value['custom_fields'], true);
+                if(empty($previous_custom_fields_value['wip_limit']) && isset($custom_fields['wip_limit'])){
+                    $comment = '##USER_NAME## set Agile Work In Progress Limit to list "##LIST_NAME##" as ' . $custom_fields['wip_limit'];
+                    $activity_type = 'add_list_agile_wip_limit';   
+                    if(isset($custom_fields['hard_wip_limit'])){
+                        if($custom_fields['hard_wip_limit'] == 'yes'){
+                            $comment .= " and set as hard limit";
+                        }
+                    }
+                }else if (!empty($previous_custom_fields_value) && (isset($custom_fields['wip_limit']) && $custom_fields['wip_limit'] != $previous_custom_fields_value['wip_limit']) || ( isset($custom_fields['hard_wip_limit']) && $custom_fields['hard_wip_limit'] != $previous_custom_fields_value['hard_wip_limit'])){
+                    if (empty($custom_fields['wip_limit']) && isset($custom_fields['wip_limit'])) {
+                        $comment = '##USER_NAME## removed Agile Work In Progress Limit - ' . $previous_custom_fields_value['wip_limit'] . ' from list "##LIST_NAME##"';
+                        $activity_type = 'delete_list_agile_wip_limit';
+                    } else {
+                        $comment = '##USER_NAME## updated Agile Work In Progress Limit - ' . $custom_fields['wip_limit'] . ' on list "##LIST_NAME##"';
+                        $activity_type = 'edit_list_agile_wip_limit';
+                    }
+                    if (empty($custom_fields['hard_wip_limit']) && isset($custom_fields['hard_wip_limit'])) {
+                        $comment .= " and removed hard limit";
+                    } else {
+                        $comment .= " and set as hard limit";
+                    }
+                }
             }
         } else if (isset($r_put['color'])) {
             if (empty($previous_value['color']) && isset($r_put['color'])) {
