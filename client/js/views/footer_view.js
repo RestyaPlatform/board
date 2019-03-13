@@ -1055,11 +1055,13 @@ App.FooterView = Backbone.View.extend({
                                                 activity.attributes.card.cards_users = cards_users;
                                             }
                                         }
+                                        activity.attributes.card.is_archived = parseInt(activity.attributes.card.is_archived);
                                         new_card.set(activity.attributes.card);
                                         new_card.set('id', parseInt(activity.attributes.card.id));
                                         new_card.set('board_id', parseInt(activity.attributes.card.board_id));
                                         new_card.set('list_id', parseInt(activity.attributes.card.list_id));
                                         new_card.set('user_id', parseInt(activity.attributes.card.user_id));
+                                        new_card.set('is_archived', parseInt(activity.attributes.card.is_archived));
                                         var card_list = self.board.lists.findWhere({
                                             id: parseInt(activity.attributes.list_id)
                                         });
