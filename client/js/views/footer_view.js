@@ -1110,7 +1110,7 @@ App.FooterView = Backbone.View.extend({
                                             }
                                             card.set(activity.attributes.revisions.new_value);
                                         }
-                                        if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type ===  "add_card_estimatedtime" || activity.attributes.type === "edit_card_estimatedtime" || activity.attributes.type === "add_card_spenttime" || activity.attributes.type === "edit_card_spenttime" || activity.attributes.type === "delete_card_spenttime" || activity.attributes.type === "add_card_startdate" || activity.attributes.type === "edit_card_startdate") && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
+                                        if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "add_card_estimatedtime" || activity.attributes.type === "edit_card_estimatedtime" || activity.attributes.type === "delete_card_estimatedtime" || activity.attributes.type === "add_card_spenttime" || activity.attributes.type === "edit_card_spenttime" || activity.attributes.type === "delete_card_spenttime" || activity.attributes.type === "add_card_startdate" || activity.attributes.type === "edit_card_startdate") && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
                                             $('body').trigger('cardCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.id), card]);
                                         }
                                         if (activity.attributes.type === 'add_card_checklist') {
@@ -1509,9 +1509,12 @@ App.FooterView = Backbone.View.extend({
                                             card.set('checklist_item_completed_count', update_completed_count);
                                             card.set('checklist_item_count', update_total_count);
                                         } else if (activity.attributes.type === 'delete_card_users') {
+                                            console.log("before remove ", card.users);
+                                            console.log(activity.attributes.foreign_id);
                                             card.users.remove(card.users.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
                                             }));
+                                            console.log("after remove ", card.users);
                                         } else if (activity.attributes.type === 'unvote_card') {
                                             card.card_voters.remove(card.card_voters.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
