@@ -1023,6 +1023,37 @@ App.FooterView = Backbone.View.extend({
                                         if (activity.attributes.type === 'add_card') {
                                             activity.attributes.card.cards_labels = null;
                                             activity.attributes.card.cards_users = null;
+                                        } else {
+                                            if (!_.isUndefined(activity.attributes.card.cards_labels) && activity.attributes.card.cards_labels !== null) {
+                                                var card_labels = JSON.parse(activity.attributes.card.cards_labels);
+                                                activity.attributes.card.cards_labels = card_labels;
+                                                var label_count = 1;
+                                                _.each(activity.attributes.card.cards_labels, function(label) {
+                                                    var new_label = new App.Label();
+                                                    new_label.set(label);
+                                                    new_label.set('id', parseInt(label.id));
+                                                    new_label.set('label_id', parseInt(label.label_id));
+                                                    new_label.set('card_id', parseInt(label.card_id));
+                                                    new_label.set('list_id', parseInt(label.list_id));
+                                                    new_label.set('board_id', parseInt(label.board_id));
+                                                    self.board.labels.add(new_label, {
+                                                        silent: true
+                                                    });
+                                                    var options = {
+                                                        silent: true
+                                                    };
+                                                    if (label_count === activity.attributes.card.cards_labels.length) {
+                                                        options.silent = false;
+                                                    }
+                                                    new_card.labels.add(new_label, options);
+                                                    label_count++;
+                                                });
+                                                new_card.set('cards_labels', card_labels);
+                                            }
+                                            if (!_.isUndefined(activity.attributes.card.cards_users) && activity.attributes.card.cards_users !== null) {
+                                                var cards_users = JSON.parse(activity.attributes.card.cards_users);
+                                                activity.attributes.card.cards_users = cards_users;
+                                            }
                                         }
                                         new_card.set(activity.attributes.card);
                                         new_card.set('id', parseInt(activity.attributes.card.id));
