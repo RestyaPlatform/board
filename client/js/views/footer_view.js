@@ -1099,7 +1099,19 @@ App.FooterView = Backbone.View.extend({
                                             card.set('start', activity.attributes.revisions.new_value.due_date);
                                         }
                                         if (!_.isEmpty(activity.attributes.revisions)) {
+                                            if (activity.attributes.revisions.new_value.card_id) {
+                                                activity.attributes.revisions.new_value.id = parseInt(activity.attributes.revisions.new_value.card_id);
+                                            }
+                                            if (activity.attributes.revisions.new_value.board_id) {
+                                                activity.attributes.revisions.new_value.board_id = parseInt(activity.attributes.revisions.new_value.board_id);
+                                            }
+                                            if (activity.attributes.revisions.new_value.list_id) {
+                                                activity.attributes.revisions.new_value.list_id = parseInt(activity.attributes.revisions.new_value.list_id);
+                                            }
                                             card.set(activity.attributes.revisions.new_value);
+                                        }
+                                        if ((activity.attributes.type === 'edit_card_estimatedtime' || activity.attributes.type === "add_card_spenttime" || activity.attributes.type === "edit_card_spenttime") && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
+                                            $('body').trigger('cardCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.id), card]);
                                         }
                                         if (activity.attributes.type === 'add_card_checklist') {
                                             var new_checklist = new App.CheckList();
