@@ -819,7 +819,7 @@ App.FooterView = Backbone.View.extend({
         var card_notifications_array = ['add_card_color', 'edit_card_color', 'delete_card_color', 'add_card_duedate', 'edit_card_duedate', 'delete_card_duedate', 'move_card', 'archived_card', 'unarchived_card', 'delete_card', 'add_card_desc'];
         var card_members_notifications_array = ['add_card_user', 'delete_card_users'];
         var card_labels_notifications_array = ['add_card_label', 'delete_card_label'];
-        var card_checklists_notifications_array = ['add_card_checklist', 'add_checklist_item', '	update_card_checklist', 'update_card_checklist_item', 'delete_checklist_item', 'delete_checklist'];
+        var card_checklists_notifications_array = ['add_card_checklist', 'add_checklist_item', 'update_card_checklist', 'update_card_checklist_item', 'delete_checklist_item', 'delete_checklist'];
         var card_attachments_notifications_array = ['add_card_attachment', 'delete_card_attachment'];
         if ($.cookie('auth')) {
             Auth = JSON.parse($.cookie('auth'));
@@ -1107,7 +1107,9 @@ App.FooterView = Backbone.View.extend({
                                             new_checklist.set('id', parseInt(activity.attributes.checklist.id));
                                             new_checklist.set('user_id', parseInt(activity.attributes.checklist.user_id));
                                             new_checklist.set('card_id', parseInt(activity.attributes.checklist.card_id));
-                                            self.board.checklists.add(new_checklist);
+                                            self.board.checklists.add(new_checklist, {
+                                                silent: false
+                                            });
                                             if (activity.attributes.checklist.checklists_items !== null) {
                                                 _.each(activity.attributes.checklist.checklists_items, function(checklists_item) {
                                                     var new_item = new App.CheckListItem();
@@ -1187,7 +1189,7 @@ App.FooterView = Backbone.View.extend({
                                             new_item.set('checklist_id', parseInt(activity.attributes.item.checklist_id));
                                             new_item.set('position', parseFloat(activity.attributes.item.position));
                                             self.board.checklist_items.add(new_item, {
-                                                silent: true
+                                                silent: false
                                             });
                                             var added_checklist_items = self.board.checklist_items.where({
                                                 card_id: parseInt(activity.attributes.card_id)
@@ -1201,10 +1203,10 @@ App.FooterView = Backbone.View.extend({
                                             }).length;
                                             var added_total_count = items.models.length;
                                             card.set('checklist_item_completed_count', added_completed_count, {
-                                                silent: true
+                                                silent: false
                                             });
                                             card.set('checklist_item_count', added_total_count, {
-                                                silent: true
+                                                silent: false
                                             });
                                         } else if (activity.attributes.type === 'update_card_checklist') {
                                             checklist = self.board.checklists.findWhere({
@@ -1224,7 +1226,7 @@ App.FooterView = Backbone.View.extend({
                                             });
                                             if (!_.isUndefined(checklist_item)) {
                                                 var options = {
-                                                    silent: true
+                                                    silent: false
                                                 };
                                                 checklist_item.set(activity.attributes.item, options);
                                                 $('#js-checklist-item-' + activity.attributes.item.id).html(self.converter.makeHtml(activity.attributes.item.name));
@@ -1455,12 +1457,12 @@ App.FooterView = Backbone.View.extend({
                                             self.board.checklists.remove(self.board.checklists.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
                                             }), {
-                                                silent: true
+                                                silent: false
                                             });
                                             self.board.checklist_items.remove(self.board.checklist_items.where({
                                                 checklist_id: parseInt(activity.attributes.foreign_id)
                                             }), {
-                                                silent: true
+                                                silent: false
                                             });
                                             var checklist_items = self.board.checklist_items.where({
                                                 card_id: parseInt(activity.attributes.card_id)
@@ -1479,7 +1481,7 @@ App.FooterView = Backbone.View.extend({
                                             self.board.checklist_items.remove(self.board.checklist_items.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
                                             }), {
-                                                silent: true
+                                                silent: false
                                             });
                                             var update_checklist_items = self.board.checklist_items.where({
                                                 card_id: parseInt(activity.attributes.card_id)

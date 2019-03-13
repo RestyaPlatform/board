@@ -782,7 +782,8 @@ App.ListView = Backbone.View.extend({
      */
     moveCards: function(e) {
         $('li.dropdown').removeClass('open');
-        var list_id = this.model.id;
+        var list_id = this.model.id,
+            move_list_card_count;
         var self = this;
         var move_list_id = parseInt($(e.currentTarget).data('move-list-id'));
         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
@@ -791,7 +792,7 @@ App.ListView = Backbone.View.extend({
             });
             if (!_.isUndefined(move_list.attributes.custom_fields) && !_.isEmpty(move_list.attributes.custom_fields)) {
                 var move_list_custom_fields = JSON.parse(move_list.attributes.custom_fields);
-                var move_list_card_count = isNaN(move_list.attributes.card_count) ? 0 : move_list.attributes.card_count;
+                move_list_card_count = isNaN(move_list.attributes.card_count) ? 0 : move_list.attributes.card_count;
                 var list_card_count = isNaN(self.model.attributes.card_count) ? 0 : self.model.attributes.card_count;
                 move_list_card_count = move_list_card_count + list_card_count;
                 if (!_.isUndefined(move_list_custom_fields.wip_limit) && !_.isEmpty(move_list_custom_fields.wip_limit)) {
@@ -805,9 +806,12 @@ App.ListView = Backbone.View.extend({
         var copied_cards = this.model.collection.board.cards.where({
             list_id: list_id
         });
-
-
-        this.model.cards.set(copied_cards);
+        move_list_card_count = self.model.collection.board.lists.get(move_list_id).attributes.card_count;
+        if (parseInt(move_list_card_count) === 0) {
+            $('#js-card-listing-' + move_list_id).html(function(i, h) {
+                return h.replace(/&nbsp;/g, '');
+            });
+        }
         var view_card = $('#js-card-listing-' + move_list_id);
         _.each(copied_cards, function(copied_card) {
             var options = {
@@ -833,6 +837,7 @@ App.ListView = Backbone.View.extend({
             }, options);
             j++;
         });
+        this.model.cards.set(copied_cards);
         this.model.id = list_id;
         this.model.url = api_url + 'boards/' + this.board.id + '/lists/' + list_id + '/cards.json';
         this.model.save({
@@ -840,13 +845,7 @@ App.ListView = Backbone.View.extend({
         }, {
             patch: true,
             success: function(model, response) {
-                self.model.cards.remove(copied_cards, {
-                    silent: true
-                });
                 self.model.set('cards_count', 0);
-                self.model.collection.board.cards.remove(copied_cards, {
-                    silent: true
-                });
                 var options = {
                     silent: true
                 };
@@ -856,12 +855,6 @@ App.ListView = Backbone.View.extend({
                 var current_board_new_list = App.current_board.lists.findWhere({
                     id: parseInt(move_list_id)
                 });
-                var move_list_card_count = self.model.collection.board.lists.get(move_list_id).attributes.card_count;
-                if (parseInt(move_list_card_count) === 0) {
-                    $('#js-card-listing-' + move_list_id).html(function(i, h) {
-                        return h.replace(/&nbsp;/g, '');
-                    });
-                }
                 var previous_list_card_count = self.model.collection.board.lists.get(list_id).attributes.card_count;
                 move_list_card_count = move_list_card_count ? move_list_card_count : 0;
                 previous_list_card_count = previous_list_card_count ? previous_list_card_count : 0;

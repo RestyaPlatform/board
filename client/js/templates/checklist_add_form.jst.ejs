@@ -20,23 +20,28 @@
 			var checklist_options = [];
 			if (card.board_users.board.checklists.models.length > 0) {
 				card.board_users.board.checklists.models[0].collection.each(function(checklist_list) {
-					var card_name = card.collection.findWhere({
+					var card_exists = card.collection.findWhere({
 						id: checklist_list.attributes.card_id
-					}).get('name');
-					var card_id = checklist_list.attributes.card_id
-					var i = {};
-					i.checklist_id = checklist_list.attributes.id;
-					i.checklist_name = checklist_list.attributes.name;
-					i.checklist_item_count = !isNaN(checklist_list.attributes.checklist_item_count)?checklist_list.attributes.checklist_item_count:checklist_list.checklist_items.length;
-					if (_.isUndefined(checklist_options[card_id])) {
-						var c = {};
-						c.card_id = card_id;
-						c.card_name = card_name;
-						c.checklists = [];
-						c.checklists.push(i);
-						checklist_options[card_id] = c;
-					} else {
-						checklist_options[card_id].checklists.push(i);
+					});
+					if(!_.isEmpty(card_exists) && !_.isUndefined(card_exists)){
+						var card_name = card.collection.findWhere({
+							id: checklist_list.attributes.card_id
+						}).get('name');
+						var card_id = checklist_list.attributes.card_id
+						var i = {};
+						i.checklist_id = checklist_list.attributes.id;
+						i.checklist_name = checklist_list.attributes.name;
+						i.checklist_item_count = !isNaN(checklist_list.attributes.checklist_item_count)?checklist_list.attributes.checklist_item_count:checklist_list.checklist_items.length;
+						if (_.isUndefined(checklist_options[card_id])) {
+							var c = {};
+							c.card_id = card_id;
+							c.card_name = card_name;
+							c.checklists = [];
+							c.checklists.push(i);
+							checklist_options[card_id] = c;
+						} else {
+							checklist_options[card_id].checklists.push(i);
+						}
 					}
 				});
 			}
