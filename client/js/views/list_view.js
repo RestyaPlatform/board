@@ -57,7 +57,7 @@ App.ListView = Backbone.View.extend({
             this.board_activites = this.model.collection.board.get('board_activities');
         }
         _.bindAll(this, 'render', 'renderCardsCollection', 'removeRender');
-        this.model.bind('change:name', this.render);
+        this.model.bind('change:name change:color add:color remove:color', this.render);
         if (!_.isUndefined(this.model.collection)) {
             this.model.collection.board.labels.bind('add', this.renderCardsCollection);
             this.model.collection.board.attachments.bind('add', this.renderCardsCollection);

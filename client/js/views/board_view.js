@@ -52,10 +52,6 @@ App.BoardView = Backbone.View.extend({
         this.model.bind('change:music_content', this.musical);
         this.model.labels.bind('remove', this.renderListsCollection);
         this.model.lists.bind('add', this.renderListsCollection);
-        this.model.lists.bind('change:name', this.renderListsCollection);
-        this.model.lists.bind('change:color', this.renderListsCollection);
-        this.model.lists.bind('add:color', this.renderListsCollection);
-        this.model.lists.bind('remove:color', this.renderListsCollection);
         this.model.lists.bind('change:position', this.renderListsCollection);
         this.model.lists.bind('change:is_archived', this.renderListsCollection, this);
         this.model.lists.bind('change:comment_count', this.renderListsCollection, this);
