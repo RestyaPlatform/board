@@ -1098,6 +1098,9 @@ App.FooterView = Backbone.View.extend({
                                         card.set('description', activity.attributes.revisions.new_value.description);
                                     }
                                     if (!_.isUndefined(card)) {
+                                        if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "add_card_custom_field" || activity.attributes.type === "update_card_custom_field" || activity.attributes.type === "delete_card_custom_field") && !_.isEmpty(activity.attributes.custom_fields) && !_.isUndefined(activity.attributes.custom_fields) && activity.attributes.custom_fields !== null) {
+                                            $('body').trigger('CutomFieldsRendered', [parseInt(activity.attributes.card_id), card]);
+                                        }
                                         if (activity.attributes.type === 'add_card_duedate') {
                                             card.set('start', activity.attributes.revisions.new_value.due_date);
                                         } else if (activity.attributes.type === 'delete_card_duedate') {
