@@ -1546,7 +1546,6 @@ App.BoardHeaderView = Backbone.View.extend({
         var find_card = this.model.cards.findWhere({
             id: parseInt(card_id)
         });
-        this.model.cards.get(find_card.id).set('is_archived', 0);
         var list = App.boards.get(find_card.attributes.board_id).lists.get(find_card.attributes.list_id);
         if (!_.isUndefined(list)) {
             list.set('card_count', list.attributes.card_count + 1, {

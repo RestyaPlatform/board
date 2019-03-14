@@ -1179,19 +1179,23 @@ App.ListView = Backbone.View.extend({
         if (!_.isUndefined(e) && e.storeName === 'card') {
             if (e.attributes.list_id === self.model.id) {
                 e.attributes.triggersort = true;
+                if (_.isUndefined(e.list)) {
+                    e.list = self.model;
+                }
                 var view = new App.CardView({
                     tagName: 'div',
                     model: e,
                     converter: self.converter
                 });
                 if (parseInt(e.attributes.is_archived) === 0) {
-                    if ($('#js-card-' + e.attributes.id).length) {
+                    if ($('#js-card-' + e.attributes.id).length === 1) {
                         $('#js-card-' + e.attributes.id).replaceWith(view.render().el);
                     } else {
-                        filtered_cards = self.model.cards.where({
-                            is_archived: 0
+                        filtered_cards = self.model.collection.board.cards.where({
+                            is_archived: 0,
+                            list_id: parseInt(self.model.id)
                         });
-                        if (filtered_cards.length === 1 || self.model.cards.length === 0) {
+                        if (filtered_cards.length === 1 || self.model.collection.board.cards.length === 0) {
                             $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
                         } else {
                             if (sort_by !== null && sort_by !== null) {
