@@ -816,12 +816,10 @@ App.FooterView = Backbone.View.extend({
         var view_activity = $('#js-all-activities');
         var Auth, favCount;
         var list_notifications_array = ['add_list_color', 'edit_list_color', 'delete_list_color', 'add_card', 'change_list_position', 'archive_list', 'unarchive_list', 'delete_list'];
-        var card_notifications_array = ['add_card_color', 'edit_card_color', 'delete_card_color', 'add_card_duedate', 'edit_card_duedate', 'delete_card_duedate', 'move_card', 'archived_card',
-            'unarchived_card', 'delete_card'
-        ];
+        var card_notifications_array = ['add_card_color', 'edit_card_color', 'delete_card_color', 'add_card_duedate', 'edit_card_duedate', 'delete_card_duedate', 'move_card', 'archived_card', 'unarchived_card', 'delete_card', 'add_card_desc'];
         var card_members_notifications_array = ['add_card_user', 'delete_card_users'];
         var card_labels_notifications_array = ['add_card_label', 'delete_card_label'];
-        var card_checklists_notifications_array = ['add_card_checklist', 'add_checklist_item', '	update_card_checklist', 'update_card_checklist_item', 'delete_checklist_item', 'delete_checklist'];
+        var card_checklists_notifications_array = ['add_card_checklist', 'add_checklist_item', 'update_card_checklist', 'update_card_checklist_item', 'delete_checklist_item', 'delete_checklist'];
         var card_attachments_notifications_array = ['add_card_attachment', 'delete_card_attachment'];
         if ($.cookie('auth')) {
             Auth = JSON.parse($.cookie('auth'));
@@ -849,6 +847,10 @@ App.FooterView = Backbone.View.extend({
         activities.fetch({
             cache: false,
             success: function() {
+                if (mode == 1) {
+                    activities.setSortField('id', 'asc');
+                    activities.sort();
+                }
                 $('#js-activity-loader').remove();
                 if (!_.isEmpty(activities.models)) {
                     $('#js-load-link').removeClass('hide');
@@ -877,11 +879,11 @@ App.FooterView = Backbone.View.extend({
                         }
                         if ($.cookie('auth')) {
                             Auth = JSON.parse($.cookie('auth'));
-                            Auth.user.last_activity_id = (parseInt(Auth.user.last_activity_id) > parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id;
+                            Auth.user.last_activity_id = (parseInt(Auth.user.last_activity_id) < parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id;
                             Auth.user.notify_count = favCount;
                             $.cookie('auth', JSON.stringify(Auth));
                         }
-                        authuser.user.last_activity_id = update_last_activity.id;
+                        authuser.user.last_activity_id = (parseInt(Auth.user.last_activity_id) < parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id;
                     } else if (mode == 2) {
                         if (favCount > 0) {
                             if ($.cookie('auth')) {
@@ -890,7 +892,7 @@ App.FooterView = Backbone.View.extend({
                                 user.url = api_url + 'users/' + authuser.user.id + '.json';
                                 user.set('id', parseInt(authuser.user.id));
                                 user.save({
-                                    'last_activity_id': (parseInt(Auth.user.last_activity_id) > parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id
+                                    'last_activity_id': (parseInt(Auth.user.last_activity_id) < parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id
                                 });
                                 authuser.user.notify_count = 0;
                                 Auth.user.notify_count = 0;
@@ -902,35 +904,41 @@ App.FooterView = Backbone.View.extend({
                     }
                     activities.each(function(activity) {
                         var card_id = activity.attributes.card_id;
-                        localforage.getItem('unreaded_cards', function(err, value) {
-
-                            /* if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) { */
-                            if (activity.attributes.token !== authuser.access_token) {
-                                var count;
-                                if (value) {
-                                    if (value[card_id]) {
-                                        count = value[card_id] + 1;
-                                        value[card_id] = count;
-                                        localforage.setItem("unreaded_cards", value);
+                        Auth = JSON.parse($.cookie('auth'));
+                        if (_.isUndefined(Auth.user.unread_activity_id) || (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id))) {
+                            localforage.getItem('unreaded_cards', function(err, value) {
+                                if (activity.attributes.token !== authuser.access_token) {
+                                    var count = 0;
+                                    if (!_.isUndefined(value) && value !== null) {
+                                        if (!_.isUndefined(value[card_id]) && value[card_id] !== null) {
+                                            if ((parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id)) || _.isUndefined(Auth.user.unread_activity_id)) {
+                                                count = value[card_id] + 1;
+                                            } else {
+                                                count = value[card_id];
+                                            }
+                                            value[card_id] = count;
+                                            localforage.setItem("unreaded_cards", value);
+                                        } else if (card_id !== 0) {
+                                            value[card_id] = 1;
+                                            count = 1;
+                                            localforage.setItem("unreaded_cards", value);
+                                        }
                                     } else if (card_id !== 0) {
-                                        value[card_id] = 1;
+                                        var cards = [];
+                                        cards[card_id] = 1;
                                         count = 1;
-                                        localforage.setItem("unreaded_cards", value);
+                                        localforage.setItem("unreaded_cards", cards);
                                     }
-                                } else {
-                                    var cards = [];
-                                    cards[card_id] = 1;
-                                    count = 1;
-                                    localforage.setItem("unreaded_cards", cards);
+                                    if (count) {
+                                        if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
+                                            $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
+                                        } else if ($('#js-card-' + card_id).find('.js-unread-notification').length === 1) {
+                                            $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
+                                        }
+                                    }
                                 }
-                                if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
-                                    $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
-                                } else {
-                                    $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
-                                }
-
-                            }
-                        });
+                            });
+                        }
                         activity.from_footer = true;
                         if (mode == 1 && activity.attributes.token !== authuser.access_token && Notification.permission === 'granted') {
                             var icon = window.location.pathname + 'img/logo-icon.png';
@@ -1020,11 +1028,48 @@ App.FooterView = Backbone.View.extend({
                                     });
                                     if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card') {
                                         var new_card = new App.Card();
+                                        if (activity.attributes.type === 'add_card') {
+                                            activity.attributes.card.cards_labels = null;
+                                            activity.attributes.card.cards_users = null;
+                                        } else {
+                                            if (!_.isUndefined(activity.attributes.card.cards_labels) && activity.attributes.card.cards_labels !== null) {
+                                                var card_labels = JSON.parse(activity.attributes.card.cards_labels);
+                                                activity.attributes.card.cards_labels = card_labels;
+                                                var label_count = 1;
+                                                _.each(activity.attributes.card.cards_labels, function(label) {
+                                                    var new_label = new App.Label();
+                                                    new_label.set(label);
+                                                    new_label.set('id', parseInt(label.id));
+                                                    new_label.set('label_id', parseInt(label.label_id));
+                                                    new_label.set('card_id', parseInt(label.card_id));
+                                                    new_label.set('list_id', parseInt(label.list_id));
+                                                    new_label.set('board_id', parseInt(label.board_id));
+                                                    self.board.labels.add(new_label, {
+                                                        silent: true
+                                                    });
+                                                    var options = {
+                                                        silent: true
+                                                    };
+                                                    if (label_count === activity.attributes.card.cards_labels.length) {
+                                                        options.silent = false;
+                                                    }
+                                                    new_card.labels.add(new_label, options);
+                                                    label_count++;
+                                                });
+                                                new_card.set('cards_labels', card_labels);
+                                            }
+                                            if (!_.isUndefined(activity.attributes.card.cards_users) && activity.attributes.card.cards_users !== null) {
+                                                var cards_users = JSON.parse(activity.attributes.card.cards_users);
+                                                activity.attributes.card.cards_users = cards_users;
+                                            }
+                                        }
+                                        activity.attributes.card.is_archived = parseInt(activity.attributes.card.is_archived);
                                         new_card.set(activity.attributes.card);
                                         new_card.set('id', parseInt(activity.attributes.card.id));
                                         new_card.set('board_id', parseInt(activity.attributes.card.board_id));
                                         new_card.set('list_id', parseInt(activity.attributes.card.list_id));
                                         new_card.set('user_id', parseInt(activity.attributes.card.user_id));
+                                        new_card.set('is_archived', parseInt(activity.attributes.card.is_archived));
                                         var card_list = self.board.lists.findWhere({
                                             id: parseInt(activity.attributes.list_id)
                                         });
@@ -1045,6 +1090,9 @@ App.FooterView = Backbone.View.extend({
                                                 $('body').trigger('cardAddRendered', [card_list.id, card_list]);
                                             }
                                         }
+                                        if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "copy_card") && !_.isEmpty(activity.attributes.custom_fields) && !_.isUndefined(activity.attributes.custom_fields) && activity.attributes.custom_fields !== null) {
+                                            $('body').trigger('CutomFieldsRendered', [parseInt(activity.attributes.card.id), new_card]);
+                                        }
                                     }
                                     if (activity.attributes.type === 'add_card_color') {
                                         card.set('color', activity.attributes.color);
@@ -1052,14 +1100,32 @@ App.FooterView = Backbone.View.extend({
                                     if (activity.attributes.type === 'edit_card_color') {
                                         card.set('color', activity.attributes.color);
                                     }
+                                    if (activity.attributes.type === 'add_card_desc' || activity.attributes.type === 'edit_card_desc') {
+                                        card.set('description', activity.attributes.revisions.new_value.description);
+                                    }
                                     if (!_.isUndefined(card)) {
+                                        if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "add_card_custom_field" || activity.attributes.type === "update_card_custom_field" || activity.attributes.type === "delete_card_custom_field") && !_.isEmpty(activity.attributes.custom_fields) && !_.isUndefined(activity.attributes.custom_fields) && activity.attributes.custom_fields !== null) {
+                                            $('body').trigger('CutomFieldsRendered', [parseInt(activity.attributes.card_id), card]);
+                                        }
                                         if (activity.attributes.type === 'add_card_duedate') {
                                             card.set('start', activity.attributes.revisions.new_value.due_date);
                                         } else if (activity.attributes.type === 'delete_card_duedate') {
                                             card.set('start', activity.attributes.revisions.new_value.due_date);
                                         }
                                         if (!_.isEmpty(activity.attributes.revisions)) {
+                                            if (activity.attributes.revisions.new_value.card_id) {
+                                                activity.attributes.revisions.new_value.id = parseInt(activity.attributes.revisions.new_value.card_id);
+                                            }
+                                            if (activity.attributes.revisions.new_value.board_id) {
+                                                activity.attributes.revisions.new_value.board_id = parseInt(activity.attributes.revisions.new_value.board_id);
+                                            }
+                                            if (activity.attributes.revisions.new_value.list_id) {
+                                                activity.attributes.revisions.new_value.list_id = parseInt(activity.attributes.revisions.new_value.list_id);
+                                            }
                                             card.set(activity.attributes.revisions.new_value);
+                                        }
+                                        if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "add_card_estimatedtime" || activity.attributes.type === "edit_card_estimatedtime" || activity.attributes.type === "delete_card_estimatedtime" || activity.attributes.type === "add_card_spenttime" || activity.attributes.type === "edit_card_spenttime" || activity.attributes.type === "delete_card_spenttime" || activity.attributes.type === "add_card_startdate" || activity.attributes.type === "edit_card_startdate") && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
+                                            $('body').trigger('cardCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.id), card]);
                                         }
                                         if (activity.attributes.type === 'add_card_checklist') {
                                             var new_checklist = new App.CheckList();
@@ -1067,7 +1133,9 @@ App.FooterView = Backbone.View.extend({
                                             new_checklist.set('id', parseInt(activity.attributes.checklist.id));
                                             new_checklist.set('user_id', parseInt(activity.attributes.checklist.user_id));
                                             new_checklist.set('card_id', parseInt(activity.attributes.checklist.card_id));
-                                            self.board.checklists.add(new_checklist);
+                                            self.board.checklists.add(new_checklist, {
+                                                silent: false
+                                            });
                                             if (activity.attributes.checklist.checklists_items !== null) {
                                                 _.each(activity.attributes.checklist.checklists_items, function(checklists_item) {
                                                     var new_item = new App.CheckListItem();
@@ -1147,7 +1215,7 @@ App.FooterView = Backbone.View.extend({
                                             new_item.set('checklist_id', parseInt(activity.attributes.item.checklist_id));
                                             new_item.set('position', parseFloat(activity.attributes.item.position));
                                             self.board.checklist_items.add(new_item, {
-                                                silent: true
+                                                silent: false
                                             });
                                             var added_checklist_items = self.board.checklist_items.where({
                                                 card_id: parseInt(activity.attributes.card_id)
@@ -1161,10 +1229,10 @@ App.FooterView = Backbone.View.extend({
                                             }).length;
                                             var added_total_count = items.models.length;
                                             card.set('checklist_item_completed_count', added_completed_count, {
-                                                silent: true
+                                                silent: false
                                             });
                                             card.set('checklist_item_count', added_total_count, {
-                                                silent: true
+                                                silent: false
                                             });
                                         } else if (activity.attributes.type === 'update_card_checklist') {
                                             checklist = self.board.checklists.findWhere({
@@ -1184,7 +1252,7 @@ App.FooterView = Backbone.View.extend({
                                             });
                                             if (!_.isUndefined(checklist_item)) {
                                                 var options = {
-                                                    silent: true
+                                                    silent: false
                                                 };
                                                 checklist_item.set(activity.attributes.item, options);
                                                 $('#js-checklist-item-' + activity.attributes.item.id).html(self.converter.makeHtml(activity.attributes.item.name));
@@ -1225,6 +1293,10 @@ App.FooterView = Backbone.View.extend({
                                             new_user.set('id', parseInt(activity.attributes.user.id));
                                             new_user.set('user_id', parseInt(activity.attributes.user.user_id));
                                             new_user.set('card_id', parseInt(activity.attributes.user.card_id));
+                                            new_user.set('profile_picture_path', activity.attributes.user.profile_picture_path);
+                                            new_user.set('username', activity.attributes.user.username);
+                                            new_user.set('initials', activity.attributes.user.initials);
+                                            new_user.set('full_name', activity.attributes.user.full_name);
                                             card.users.add(new_user);
                                             card.set('users', new_user);
                                         } else if (activity.attributes.type === 'add_comment') {
@@ -1411,12 +1483,12 @@ App.FooterView = Backbone.View.extend({
                                             self.board.checklists.remove(self.board.checklists.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
                                             }), {
-                                                silent: true
+                                                silent: false
                                             });
                                             self.board.checklist_items.remove(self.board.checklist_items.where({
                                                 checklist_id: parseInt(activity.attributes.foreign_id)
                                             }), {
-                                                silent: true
+                                                silent: false
                                             });
                                             var checklist_items = self.board.checklist_items.where({
                                                 card_id: parseInt(activity.attributes.card_id)
@@ -1435,7 +1507,7 @@ App.FooterView = Backbone.View.extend({
                                             self.board.checklist_items.remove(self.board.checklist_items.findWhere({
                                                 id: parseInt(activity.attributes.foreign_id)
                                             }), {
-                                                silent: true
+                                                silent: false
                                             });
                                             var update_checklist_items = self.board.checklist_items.where({
                                                 card_id: parseInt(activity.attributes.card_id)
@@ -1482,7 +1554,9 @@ App.FooterView = Backbone.View.extend({
                                     }
                                     if (!_.isUndefined(list)) {
                                         if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
-                                            list.set(activity.attributes.revisions.new_value);
+                                            if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
+                                                list.set(activity.attributes.revisions.new_value);
+                                            }
                                         }
                                         if (activity.attributes.type === 'delete_list') {
                                             var removed_list_cards = self.board.cards.where({
@@ -1493,6 +1567,9 @@ App.FooterView = Backbone.View.extend({
                                             });
                                             list.collection.board.lists.remove(list);
                                             self.board.lists.remove(list);
+                                        } else if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === 'add_list_agile_wip_limit' || activity.attributes.type === 'edit_list_agile_wip_limit' || activity.attributes.type === 'delete_list_agile_wip_limit' || activity.attributes.type === 'add_list_auto_archive_day' || activity.attributes.type === 'edit_list_auto_archive_day' || activity.attributes.type === 'delete_list_auto_archive_day' || activity.attributes.type === 'add_list_task_move_duedate' || activity.attributes.type === 'edit_list_task_move_duedate' || activity.attributes.type === 'add_list_task_move_duedate') && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
+                                            list.set('custom_fields', activity.attributes.revisions.new_value.custom_fields);
+                                            $('body').trigger('listCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.list_id), list]);
                                         } else if (activity.attributes.type === 'change_list_position') {
                                             if (parseInt(activity.attributes.list.board_id) !== parseInt(list.attributes.board_id)) {
                                                 self.board.lists.remove(list);
@@ -1558,7 +1635,9 @@ App.FooterView = Backbone.View.extend({
                                         }
                                     }
                                 } else if (!_.isUndefined(self.board) && !_.isUndefined(activity.attributes.board_id) && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update Board
-                                    self.board.set(activity.attributes.revisions.new_value);
+                                    if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
+                                        self.board.set(activity.attributes.revisions.new_value);
+                                    }
                                     if (activity.attributes.type === 'add_board_user') {
                                         self.board.board_users.add(activity.attributes.board_user);
                                     } else if (activity.attributes.type === 'delete_board_user') {
@@ -1678,7 +1757,8 @@ App.FooterView = Backbone.View.extend({
                                 }
                             }
                         }
-                        if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token) {
+                        Auth = JSON.parse($.cookie('auth'));
+                        if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id))) {
                             $('#js-card-' + activity.attributes.card_id).parent().addClass('animation');
                             $('#js-card-' + activity.attributes.card_id).addClass('tada-animation');
                             $('#js-card-' + activity.attributes.card_id).stop().animate({
@@ -1700,11 +1780,11 @@ App.FooterView = Backbone.View.extend({
                         if ($.cookie('auth')) {
                             Auth = JSON.parse($.cookie('auth'));
                             if (!_.isUndefined(Auth.user.unread_activity_id)) {
-                                Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
-                                authuser.user.unread_activity_id = (parseInt(unread_activity_id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                                Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                                authuser.user.unread_activity_id = (parseInt(unread_activity_id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
                             } else {
-                                Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
-                                authuser.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                                Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                                authuser.user.unread_activity_id = (parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
                             }
                             $.cookie('auth', JSON.stringify(Auth));
                         }
@@ -1783,15 +1863,14 @@ App.FooterView = Backbone.View.extend({
                     if ($.cookie('auth')) {
                         Auth = JSON.parse($.cookie('auth'));
                         if (!_.isUndefined(Auth.user.unread_activity_id)) {
-                            Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
-                            authuser.user.unread_activity_id = (parseInt(unread_activity_id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                            Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                            authuser.user.unread_activity_id = (parseInt(unread_activity_id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
                         } else {
-                            Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
-                            authuser.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                            Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                            authuser.user.unread_activity_id = (parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
                         }
                         $.cookie('auth', JSON.stringify(Auth));
                     }
-
                     var last_board_activity = _.min(activities.models, function(activity) {
                         return activity.id;
                     });

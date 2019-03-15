@@ -81,6 +81,17 @@ class ActivityHandler
                 $obj['foreign_id']
             );
             $obj['card'] = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
+            $obj['card']['card_attachments'] = executeQuery('SELECT * FROM card_attachments WHERE card_id = $1', $obj_val_arr);
+            if (is_plugin_enabled('r_custom_fields')) {
+                $obj['custom_fields'] = array();
+                $conditions = array(
+                    $obj['card']['board_id']
+                );
+                $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields_listing WHERE board_id IS NULL or board_id = $1 ORDER BY position ASC', $conditions);
+                while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                    $obj['custom_fields'][] = $custom_field;
+                }
+            }
         } else if ($obj_type === 'add_card_checklist') {
             $obj_val_arr = array(
                 $obj['foreign_id']
@@ -125,6 +136,21 @@ class ActivityHandler
                 $obj['card_id']
             );
             $obj['card'] = executeQuery('SELECT position FROM cards_listing WHERE id = $1', $obj_val_arr);
+        } else if ($obj_type === 'update_card_custom_field' || $obj_type === 'add_card_custom_field' || $obj_type === 'delete_card_custom_field') {
+            if (is_plugin_enabled('r_custom_fields')) {
+                $obj_val_arr = array(
+                    $obj['foreign_id']
+                );
+                $card = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
+                $obj['custom_fields'] = array();
+                $conditions = array(
+                    $card['board_id']
+                );
+                $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields_listing WHERE board_id IS NULL or board_id = $1 ORDER BY position ASC', $conditions);
+                while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                    $obj['custom_fields'][] = $custom_field;
+                }
+            }
         }
         return $obj;
     }
