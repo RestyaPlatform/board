@@ -6291,7 +6291,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $activity_type = 'delete_card_duedate';
         }
         if (is_plugin_enabled('r_gantt_view')) {
-            if (isset($present_custom_fields['start_date']) && $present_custom_fields['start_date'] != 'NULL') {
+            if (isset($present_custom_fields['start_date']) && $present_custom_fields['start_date'] != 'NULL' && $present_custom_fields['start_date'] != '') {
                 if (isset($previous_custom_fields['start_date']) && ($previous_custom_fields['start_date'] != 'null' && $previous_custom_fields['start_date'] != '')) {
                     $comment = '##USER_NAME## updated Start date - ' . $present_custom_fields['start_date'] . ' to this card ##CARD_LINK##';
                     $activity_type = 'edit_card_startdate';
