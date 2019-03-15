@@ -1222,11 +1222,13 @@ App.ListView = Backbone.View.extend({
                         }
                         _(function() {
                             localforage.getItem('unreaded_cards', function(err, value) {
-                                if (value[e.attributes.id]) {
-                                    if ($('#js-card-' + e.attributes.id).find('.js-unread-notification').length === 0) {
-                                        $('#js-card-' + e.attributes.id).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + value[e.attributes.id] + '</span></span></small>');
-                                    } else {
-                                        $('#js-card-' + e.attributes.id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + value[e.attributes.id] + '</span></span></small>');
+                                if (value) {
+                                    if (value[e.attributes.id]) {
+                                        if ($('#js-card-' + e.attributes.id).find('.js-unread-notification').length === 0) {
+                                            $('#js-card-' + e.attributes.id).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + value[e.attributes.id] + '</span></span></small>');
+                                        } else {
+                                            $('#js-card-' + e.attributes.id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + value[e.attributes.id] + '</span></span></small>');
+                                        }
                                     }
                                 }
                             });
