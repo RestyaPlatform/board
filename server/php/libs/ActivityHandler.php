@@ -139,7 +139,7 @@ class ActivityHandler
         } else if ($obj_type === 'update_card_custom_field' || $obj_type === 'add_card_custom_field' || $obj_type === 'delete_card_custom_field') {
             if (is_plugin_enabled('r_custom_fields')) {
                 $obj_val_arr = array(
-                    $obj['foreign_id']
+                    $obj['card_id']
                 );
                 $card = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
                 $obj['custom_fields'] = array();
