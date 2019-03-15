@@ -905,16 +905,15 @@ App.FooterView = Backbone.View.extend({
                     activities.each(function(activity) {
                         var card_id = activity.attributes.card_id;
                         Auth = JSON.parse($.cookie('auth'));
-                        if(_.isUndefined(Auth.user.unread_activity_id) || (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id)))
-                        {
-                            localforage.getItem('unreaded_cards', function(err, value) { 
-                                 if (activity.attributes.token !== authuser.access_token) {
+                        if (_.isUndefined(Auth.user.unread_activity_id) || (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id))) {
+                            localforage.getItem('unreaded_cards', function(err, value) {
+                                if (activity.attributes.token !== authuser.access_token) {
                                     var count = 0;
                                     if (!_.isUndefined(value) && value !== null) {
                                         if (!_.isUndefined(value[card_id]) && value[card_id] !== null) {
-                                            if((parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id)) || _.isUndefined(Auth.user.unread_activity_id)){
+                                            if ((parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id)) || _.isUndefined(Auth.user.unread_activity_id)) {
                                                 count = value[card_id] + 1;
-                                            }else{
+                                            } else {
                                                 count = value[card_id];
                                             }
                                             value[card_id] = count;
@@ -930,7 +929,7 @@ App.FooterView = Backbone.View.extend({
                                         count = 1;
                                         localforage.setItem("unreaded_cards", cards);
                                     }
-                                    if(count){
+                                    if (count) {
                                         if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
                                             $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
                                         } else if ($('#js-card-' + card_id).find('.js-unread-notification').length === 1) {
