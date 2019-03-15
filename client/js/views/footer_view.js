@@ -904,35 +904,42 @@ App.FooterView = Backbone.View.extend({
                     }
                     activities.each(function(activity) {
                         var card_id = activity.attributes.card_id;
-                        localforage.getItem('unreaded_cards', function(err, value) {
-
-                            /* if (parseInt(activity.attributes.user_id) !== parseInt(authuser.user.id)) { */
-                            if (activity.attributes.token !== authuser.access_token) {
-                                var count;
-                                if (value) {
-                                    if (value[card_id]) {
-                                        count = value[card_id] + 1;
-                                        value[card_id] = count;
-                                        localforage.setItem("unreaded_cards", value);
+                        Auth = JSON.parse($.cookie('auth'));
+                        if(_.isUndefined(Auth.user.unread_activity_id) || (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id)))
+                        {
+                            localforage.getItem('unreaded_cards', function(err, value) { 
+                                 if (activity.attributes.token !== authuser.access_token) {
+                                    var count = 0;
+                                    if (!_.isUndefined(value) && value !== null) {
+                                        if (!_.isUndefined(value[card_id]) && value[card_id] !== null) {
+                                            if((parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id)) || _.isUndefined(Auth.user.unread_activity_id)){
+                                                count = value[card_id] + 1;
+                                            }else{
+                                                count = value[card_id];
+                                            }
+                                            value[card_id] = count;
+                                            localforage.setItem("unreaded_cards", value);
+                                        } else if (card_id !== 0) {
+                                            value[card_id] = 1;
+                                            count = 1;
+                                            localforage.setItem("unreaded_cards", value);
+                                        }
                                     } else if (card_id !== 0) {
-                                        value[card_id] = 1;
+                                        var cards = [];
+                                        cards[card_id] = 1;
                                         count = 1;
-                                        localforage.setItem("unreaded_cards", value);
+                                        localforage.setItem("unreaded_cards", cards);
                                     }
-                                } else {
-                                    var cards = [];
-                                    cards[card_id] = 1;
-                                    count = 1;
-                                    localforage.setItem("unreaded_cards", cards);
+                                    if(count){
+                                        if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
+                                            $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
+                                        } else if ($('#js-card-' + card_id).find('.js-unread-notification').length === 1) {
+                                            $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
+                                        }
+                                    }
                                 }
-                                if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
-                                    $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
-                                } else {
-                                    $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
-                                }
-
-                            }
-                        });
+                            });
+                        }
                         activity.from_footer = true;
                         if (mode == 1 && activity.attributes.token !== authuser.access_token && Notification.permission === 'granted') {
                             var icon = window.location.pathname + 'img/logo-icon.png';
@@ -1748,7 +1755,8 @@ App.FooterView = Backbone.View.extend({
                                 }
                             }
                         }
-                        if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token) {
+                        Auth = JSON.parse($.cookie('auth'));
+                        if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id))) {
                             $('#js-card-' + activity.attributes.card_id).parent().addClass('animation');
                             $('#js-card-' + activity.attributes.card_id).addClass('tada-animation');
                             $('#js-card-' + activity.attributes.card_id).stop().animate({
