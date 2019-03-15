@@ -1161,7 +1161,7 @@ App.ModalCardView = Backbone.View.extend({
             if (value && value[self.model.attributes.id]) {
                 var removeItem = 'js-card-' + self.model.attributes.id;
                 $('#' + removeItem).find('.js-unread-notification').remove();
-                value.splice(self.model.attributes.id, 1);
+                delete value[self.model.attributes.id];
                 localforage.setItem("unreaded_cards", value);
             }
         });
