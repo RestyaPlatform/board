@@ -1579,6 +1579,9 @@ App.ListView = Backbone.View.extend({
                         self.board.labels.add(response.cards_labels, {
                             silent: true
                         });
+                        if (!_.isUndefined(card.list) && !_.isUndefined(card.list.labels)) {
+                            card.list.labels.add(response.cards_labels);
+                        }
                         card.labels.add(response.cards_labels);
                     }
                     if (!_.isUndefined(response.cards_checklists) && response.cards_checklists.length > 0) {
