@@ -501,11 +501,13 @@ App.ListView = Backbone.View.extend({
         this.model.url = api_url + 'boards/' + self.board.id + '/lists/' + list_id + '.json';
         this.model.destroy({
             success: function(model, response) {
-                self.board.attributes.lists.forEach(function(list, index) {
-                    if (list.id === parseInt(list_id)) {
-                        self.board.attributes.lists.splice(index, 1);
-                    }
-                });
+                if (!_.isUndefined(self.board.attributes) && !_.isUndefined(self.board.attributes.lists) && self.board.attributes.lists !== null) {
+                    self.board.attributes.lists.forEach(function(list, index) {
+                        if (list.id === parseInt(list_id)) {
+                            self.board.attributes.lists.splice(index, 1);
+                        }
+                    });
+                }
                 self.board.activities.unshift(response.activity);
             }
         });
