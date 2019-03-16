@@ -18,6 +18,6 @@ php ${path}/main.php
 ##########################################################################################################
 	rmdir "$lockdir"
  else
-     echo >&2 "cannot acquire lock, giving up on $lockdir" | mail -s "From cron (webhook.sh)" board+cron@restya.com
+     echo >&2 "cannot acquire lock, giving up on $lockdir" | php ${path}/cron_mail.php "main.sh"
      exit 0
  fi
