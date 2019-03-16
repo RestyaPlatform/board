@@ -497,15 +497,26 @@ App.ListView = Backbone.View.extend({
         });
         this.model.collection.board.lists.remove(self.model);
         App.boards.get(self.model.attributes.board_id).lists.remove(self.model);
+        if (App.boards.get(self.model.attributes.board_id).attributes && App.boards.get(self.model.attributes.board_id).attributes.lists.length > 0) {
+            var boards_attr_list = App.boards.get(self.model.attributes.board_id).attributes.lists.filter(function(list) {
+                return parseInt(list.id) === parseInt(list_id);
+            });
+            if (boards_attr_list.length > 0) {
+                var boards_attr_list_index = App.boards.get(self.model.attributes.board_id).attributes.lists.indexOf(boards_attr_list[0]);
+                App.boards.get(self.model.attributes.board_id).attributes.lists.splice(boards_attr_list_index, 1);
+            }
+        }
         this.board.lists.remove(self.model);
         this.model.url = api_url + 'boards/' + self.board.id + '/lists/' + list_id + '.json';
         this.model.destroy({
             success: function(model, response) {
-                self.board.attributes.lists.forEach(function(list, index) {
-                    if (list.id === parseInt(list_id)) {
-                        self.board.attributes.lists.splice(index, 1);
-                    }
-                });
+                if (!_.isUndefined(self.board.attributes) && !_.isUndefined(self.board.attributes.lists) && self.board.attributes.lists !== null) {
+                    self.board.attributes.lists.forEach(function(list, index) {
+                        if (list.id === parseInt(list_id)) {
+                            self.board.attributes.lists.splice(index, 1);
+                        }
+                    });
+                }
                 self.board.activities.unshift(response.activity);
             }
         });
@@ -1577,6 +1588,9 @@ App.ListView = Backbone.View.extend({
                         self.board.labels.add(response.cards_labels, {
                             silent: true
                         });
+                        if (!_.isUndefined(card.list) && !_.isUndefined(card.list.labels)) {
+                            card.list.labels.add(response.cards_labels);
+                        }
                         card.labels.add(response.cards_labels);
                     }
                     if (!_.isUndefined(response.cards_checklists) && response.cards_checklists.length > 0) {
