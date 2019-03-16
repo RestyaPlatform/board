@@ -497,6 +497,15 @@ App.ListView = Backbone.View.extend({
         });
         this.model.collection.board.lists.remove(self.model);
         App.boards.get(self.model.attributes.board_id).lists.remove(self.model);
+        if (App.boards.get(self.model.attributes.board_id).attributes && App.boards.get(self.model.attributes.board_id).attributes.lists.length > 0) {
+            var boards_attr_list = App.boards.get(self.model.attributes.board_id).attributes.lists.filter(function(list) {
+                return parseInt(list.id) === parseInt(list_id);
+            });
+            if (boards_attr_list.length > 0) {
+                var boards_attr_list_index = App.boards.get(self.model.attributes.board_id).attributes.lists.indexOf(boards_attr_list[0]);
+                App.boards.get(self.model.attributes.board_id).attributes.lists.splice(boards_attr_list_index, 1);
+            }
+        }
         this.board.lists.remove(self.model);
         this.model.url = api_url + 'boards/' + self.board.id + '/lists/' + list_id + '.json';
         this.model.destroy({
