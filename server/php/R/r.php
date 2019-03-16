@@ -4362,7 +4362,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields_listing WHERE board_id IS NULL or board_id = $1 ORDER BY position ASC', $conditions);
                     while ($custom_field = pg_fetch_assoc($custom_fields)) {
-                        $response['custom_fields'][] = $custom_field;
+                        $response['cards_custom_fields'][] = $custom_field;
                     }
                 }
             }
