@@ -4312,13 +4312,27 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     }
                 }
                 if (!empty($r_post['cards_custom_fields_card_id']) && is_plugin_enabled('r_custom_fields')) {
-                    $qry_val_arr = array(
-                        $response['id'],
-                        $r_post['list_id'],
-                        $r_post['board_id'],
-                        $r_post['cards_custom_fields_card_id']
-                    );
-                    pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value, is_active, board_id, list_id) SELECT created, modified, $1, custom_field_id, value, is_active, $2, $3 FROM cards_custom_fields WHERE card_id = $4 ORDER BY id', $qry_val_arr);
+                    $custom_fields = explode(',', $r_post['cards_custom_fields_id']);
+                    if (!empty($custom_fields) && !empty($r_post['cards_custom_fields_id'])) {
+                        foreach ($custom_fields as $key => $value) {
+                            $qry_val_arr = array(
+                                $response['id'],
+                                $r_post['list_id'],
+                                $r_post['board_id'],
+                                $r_post['cards_custom_fields_card_id'],
+                                $value
+                            );
+                            pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value, is_active, board_id, list_id) SELECT created, modified, $1, custom_field_id, value, is_active, $2, $3 FROM cards_custom_fields WHERE card_id = $4 AND custom_field_id = $5 ORDER BY id', $qry_val_arr);
+                        };
+                    } else {
+                        $qry_val_arr = array(
+                            $response['id'],
+                            $r_post['list_id'],
+                            $r_post['board_id'],
+                            $r_post['cards_custom_fields_card_id']
+                        );
+                        pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value, is_active, board_id, list_id) SELECT created, modified, $1, custom_field_id, value, is_active, $2, $3 FROM cards_custom_fields WHERE card_id = $4 ORDER BY id', $qry_val_arr);
+                    }
                 }
                 $qry_val_arr = array(
                     $response['id']
@@ -4342,14 +4356,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $response['cards_checklists'][] = $cards_checklist;
                 }
                 if (!empty($r_post['cards_custom_fields_card_id']) && is_plugin_enabled('r_custom_fields')) {
-                    $qry_val_arr = array(
-                        $response['id']
+                    $obj['custom_fields'] = array();
+                    $conditions = array(
+                        $foreign_ids['board_id']
                     );
-                    $cards_custom_fields = pg_query_params($db_lnk, 'SELECT ccf.*, cf.label, cf.color, cf.type, cf.visibility FROM cards_custom_fields as ccf LEFT JOIN custom_fields as cf ON cf.id = ccf.custom_field_id WHERE ccf.card_id = $1', $qry_val_arr);
-                    while ($cards_custom_field = pg_fetch_assoc($cards_custom_fields)) {
-                        if (!empty($cards_custom_field['value'])) {
-                            $response['cards_custom_fields'][] = $cards_custom_field;
-                        }
+                    $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields_listing WHERE board_id IS NULL or board_id = $1 ORDER BY position ASC', $conditions);
+                    while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                        $response['cards_custom_fields'][] = $custom_field;
                     }
                 }
             }

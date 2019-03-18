@@ -169,7 +169,7 @@ if (_.isEmpty(role_links.where({
 										</a>
 									</li>
 									<% } %>
-									<% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user) && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && APPS.enabled_apps.indexOf('r_wiki') !== -1 && !_.isEmpty(authuser.user) && !_.isUndefined(authuser.user) && (!_.isEmpty(role_links.where({slug: "get_wiki"})))){ %>
+									<% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user) && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && APPS.enabled_apps.indexOf('r_wiki') !== -1 && !_.isEmpty(authuser.user) && !_.isUndefined(authuser.user) && (!_.isEmpty(role_links.where({slug: "r_wiki"})))){ %>
 										<li class="hidden-xs org-btn">
 											<a title="<%- i18next.t('Wiki') %>" href="javascript:void(0);" class="btn btn-default js-view-wiki-menu">
 												<span>
