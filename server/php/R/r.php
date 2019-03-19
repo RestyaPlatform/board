@@ -4904,15 +4904,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $response['cards_labels'] = $cards_labels;
             if (count($newlabel) && !count(array_diff($previous_cards_labels, $oldlabel))) {
                 $names = implode(",", $newlabel);
+                $names =  preg_replace('/[ ,]+/', ', ', $names);
                 $comment = '##USER_NAME## added label(s) to this card ##CARD_LINK## - ' . $names;
                 $type = 'add_card_label';
             } else if (!count($newlabel) && count(array_diff($previous_cards_labels, $oldlabel))) {
                 $names = implode(",", array_diff($previous_cards_labels, $oldlabel));
+                $names =  preg_replace('/[ ,]+/', ', ', $names);
                 $comment = '##USER_NAME## removed label(s) to this card ##CARD_LINK## - ' . $names;
                 $type = 'update_card_label';
             } else if (count($newlabel) && count(array_diff($previous_cards_labels, $oldlabel))) {
                 $deletenames = implode(",", array_diff($previous_cards_labels, $oldlabel));
                 $names = implode(",", $newlabel);
+                $names =  preg_replace('/[ ,]+/', ', ', $names);
                 $comment = '##USER_NAME## removed the label(s) ' . ' - ' . $deletenames . ' and added the lables ' . '-' . $names . ' to this card ##CARD_LINK##';
                 $type = 'update_card_label';
             }
