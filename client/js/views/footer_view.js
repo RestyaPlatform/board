@@ -1758,7 +1758,7 @@ App.FooterView = Backbone.View.extend({
                             }
                         }
                         Auth = JSON.parse($.cookie('auth'));
-                        if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id))) {
+                        if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id) || _.isUndefined(Auth.user.unread_activity_id))) {
                             $('#js-card-' + activity.attributes.card_id).parent().addClass('animation');
                             $('#js-card-' + activity.attributes.card_id).addClass('tada-animation');
                             $('#js-card-' + activity.attributes.card_id).stop().animate({
