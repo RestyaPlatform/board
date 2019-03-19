@@ -1089,6 +1089,7 @@ App.ModalCardView = Backbone.View.extend({
             } else if (filter === 'activity') {
                 filter = 'activity';
             }
+            $('#js-card-modal-' + self.model.id).find('#js-loader-img').removeClass('hide');
             this.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?mode=' + filter + '&page=1';
             this.model.activities.fetch({
                 cache: false,
