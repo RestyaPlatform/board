@@ -4,7 +4,7 @@ exec('chmod -R go-rwx /tmp/pgpass');
 $relationships = json_decode(base64_decode(getenv('PLATFORM_RELATIONSHIPS')), true);
 if (!empty($relationships['database'])) {
     foreach ($relationships['database'] as $endpoint) {
-          define('R_DB_HOST', $endpoint['hostname']);
+          define('R_DB_HOST', 'database.internal');
           define('R_DB_USER', $endpoint['username']);
           define('R_DB_PASSWORD', $endpoint['password']);
           define('R_DB_NAME', $endpoint['path']);
