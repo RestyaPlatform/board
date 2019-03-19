@@ -1382,10 +1382,10 @@ App.FooterView = Backbone.View.extend({
                                             new_attachment.set('board_id', parseInt(activity.attributes.attachment.board_id));
                                             new_attachment.set('list_id', parseInt(activity.attributes.attachment.list_id));
                                             new_attachment.set('card_id', parseInt(activity.attributes.attachment.card_id));
-                                            self.board.attachments.add(new_attachment, {
+                                            self.board.attachments.unshift(new_attachment, {
                                                 silent: true
                                             });
-                                            card.attachments.add(new_attachment);
+                                            card.attachments.unshift(new_attachment);
                                         } else if (activity.attributes.type === 'move_card') {
                                             // Getting the old list of the card
                                             var card_old_list = self.board.lists.findWhere({
