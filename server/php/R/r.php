@@ -5358,7 +5358,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $qry_val_arr = array(
                     $response['id']
                 );
-                $attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1', $qry_val_arr);
+                $attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1 ORDER BY id ASC', $qry_val_arr);
                 while ($attachment = pg_fetch_assoc($attachments)) {
                     $response['cards']['attachments'][] = $attachment;
                 }
