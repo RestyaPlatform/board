@@ -88,6 +88,7 @@ App.HeaderView = Backbone.View.extend({
             load_count++;
             var nodes = Array();
             var appsFunc = Array();
+            appsurlFunc = {};
             _.each(APPS, function(app, key) {
                 var s, l, v = '';
                 if (key === 'settings') {
@@ -148,6 +149,21 @@ App.HeaderView = Backbone.View.extend({
                                 }
                                 appsFunc[targetElement].push(appFunction);
                             });
+                        });
+                    });
+                }
+                if (key === 'urlChange') {
+                    _.each(app, function(appTmp) {
+                        _.each(appTmp, function(funct_name, appsUrl) {
+                            if (_.isUndefined(appsurlFunc[appsUrl])) {
+                                appsurlFunc[appsUrl] = Array();
+                            }
+                            if (appsurlFunc[appsUrl].indexOf(funct_name) === -1) {
+                                appsurlFunc[appsUrl].push(funct_name);
+                            } else {
+                                appsurlFunc[appsUrl] = Array();
+                                appsurlFunc[appsUrl].push(funct_name);
+                            }
                         });
                     });
                 }
