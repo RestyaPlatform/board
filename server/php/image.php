@@ -67,9 +67,9 @@ if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size)) {
         $fullPath = $row['path'];
     }
     //Todo default image
-    if(explode('/',$fullPath)[0] == 'client' && explode('/',$fullPath)[1] == 'img'){
-        $fullPath =  APP_PATH. DS .$fullPath;
-    }else{
+    if (explode('/', $fullPath) [0] == 'client' && explode('/', $fullPath) [1] == 'img') {
+        $fullPath = APP_PATH . DS . $fullPath;
+    } else {
         $fullPath = MEDIA_PATH . DS . $fullPath;
     }
     $is_aspect = false;
