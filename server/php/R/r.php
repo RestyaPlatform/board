@@ -1804,6 +1804,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         if (!empty($data['mutationObservers'])) {
                             $response['apps']['mutationObservers'][] = $data['mutationObservers'];
                         }
+                        if (!empty($data['urlChange'])) {
+                            $response['apps']['urlChange'][] = $data['urlChange'];
+                        }
                     }
                 }
             }
