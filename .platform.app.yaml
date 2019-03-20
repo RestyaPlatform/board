@@ -1,0 +1,100 @@
+# This file describes an application. You can have multiple applications
+# in the same project.
+
+# The name of this app. Must be unique within a project.
+name: restyaboard
+
+# The runtime the application uses.
+type: 'php:7.2'
+
+# The relationships of the application with services or other applications.
+# The left-hand side is the name of the relationship as it will be exposed
+# to the application in the PLATFORM_RELATIONSHIPS variable. The right-hand
+# side is in the form `<service name>:<endpoint name>`.
+relationships:
+  database: 'pgsql96:postgresql'
+  # platform sql -p 52l75zyfpy2t6 --relationship database < sql/restyaboard_with_empty_data.sql
+
+variables:
+  php:
+    # Turn display errors off when you're ready to launch.
+    display_errors: On
+    upload_max_filesize: 50M
+    post_max_size: 50M
+    max_execution_time: 200
+    max_input_time: 200
+    memory_limit: 256M
+
+# The configuration of app when it is exposed to the web.
+web:
+  locations:
+    '/':
+      # The public directory of the app, relative to its root.
+      root: ''
+      # The front-controller script to send non-static requests to.
+      passthru: '/client/index.html'
+      allow: true
+      rules:
+        ^/client/img/([a-zA-Z_]*)/([a-zA-Z_]*)/([a-zA-Z0-9_\.]*)$:
+          passthru: '/server/php/image.php?size=$1&model=$2&filename=$3'
+        ^/ical/([0-9]*)/([0-9]*)/([a-zA-Z0-9]*).ics$:
+          passthru: '/server/php/ical.php?id=$1&user_id=$2&hash=$2'
+        ^/download/([0-9]*)/([a-zA-Z0-9_\.]*)$:
+          passthru: '/server/php/download.php?id=$1&hash=$2'
+        ^/oauth_callback/([a-zA-Z0-9_\.]*)/([a-zA-Z0-9_\.]*)$:
+          passthru: '/server/php/oauth_callback.php?plugin=$1&code=$2'
+        ^/oauth/authorize$:
+          passthru: '/server/php/authorize.php'
+        ^/api/(.*)$:
+          passthru: '/server/php/R/r.php?_url=$1'
+        ^/(css|js|img|font|apps|locales)/(.*)$:
+          passthru: '/client/$1/$2'
+        ^/favicon.ico$:
+          passthru: '/client/favicon.ico'
+        ^/manifest.json$:
+          passthru: '/client/manifest.json'
+        ^/apple-touch-icon(.*)$:
+          passthru: '/client/apple-touch-icon$1'
+
+runtime:
+  extensions:
+    - pgsql
+    - pdo_pgsql
+    - curl
+    - gd
+    - imap
+    - json
+    - ldap
+    - mbstring
+
+# The size of the persistent disk of the application (in MB).
+disk: 2048
+
+
+# The mounts that will be performed when the package is deployed.
+mounts:
+  '/client/img/micro_thumb': 'shared:files/client/img/micro_thumb'
+  '/client/img/small_thumb': 'shared:files/client/img/small_thumb'
+  '/client/img/normal_thumb': 'shared:files/client/img/normal_thumb'
+  '/client/img/medium_thumb': 'shared:files/client/img/medium_thumb'
+  '/client/img/large_thumb': 'shared:files/client/img/large_thumb'
+  '/client/img/extra_large_thumb': 'shared:files/client/img/extra_large_thumb'
+  '/client/img/original': 'shared:files/client/img/original'
+  '/tmp': 'shared:files/tmp'
+  '/tmp/cache': 'shared:files/tmp/cache'
+  '/media': 'shared:files/media'
+
+# Restyaboard crons
+crons:
+  main:
+    spec: '*/5 * * * *'
+    cmd: 'cd server/php/shell; ./main.sh'
+
+# Deploy hook, access to services & done once (per cluster, not per node), only mounts are writable at this point
+# Note: Http traffic is paused while this is running, so for prod code this should finish as fast as possible, < 30s
+hooks:
+  deploy: |
+    set -e
+    if [ ! -f /tmp/.sql.installed ]; then
+      php server/php/platformsh_install.php
+    fi
