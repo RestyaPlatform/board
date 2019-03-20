@@ -95,7 +95,6 @@ crons:
 hooks:
   deploy: |
     set -e
-    # Mainly relevant for eZ Platform demo usage, for own setup adapt this or remove and rely on migrations.
     if [ ! -f /tmp/.sql.installed ]; then
       php server/php/platformsh_install.php
     fi

@@ -1,4 +1,17 @@
 <?php
+/**
+ * Platform.sh installation file
+ *
+ * PHP version 5
+ *
+ * @category   PHP
+ * @package    Restyaboard
+ * @subpackage Plugin
+ * @author     Restya <info@restya.com>
+ * @copyright  2014-2018 Restya
+ * @license    http://restya.com/ Restya Licence
+ * @link       http://restya.com/
+ */
 $current_dir = dirname(__FILE__);
 exec('chmod -R 0777 ' . $current_dir . '/../../tmp ' . $current_dir . '/../../media');
 exec('echo "sql file executed" > /tmp/.sql.installed');
