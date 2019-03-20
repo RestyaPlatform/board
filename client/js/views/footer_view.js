@@ -1382,10 +1382,10 @@ App.FooterView = Backbone.View.extend({
                                             new_attachment.set('board_id', parseInt(activity.attributes.attachment.board_id));
                                             new_attachment.set('list_id', parseInt(activity.attributes.attachment.list_id));
                                             new_attachment.set('card_id', parseInt(activity.attributes.attachment.card_id));
-                                            self.board.attachments.add(new_attachment, {
+                                            self.board.attachments.unshift(new_attachment, {
                                                 silent: true
                                             });
-                                            card.attachments.add(new_attachment);
+                                            card.attachments.unshift(new_attachment);
                                         } else if (activity.attributes.type === 'move_card') {
                                             // Getting the old list of the card
                                             var card_old_list = self.board.lists.findWhere({
@@ -1758,7 +1758,7 @@ App.FooterView = Backbone.View.extend({
                             }
                         }
                         Auth = JSON.parse($.cookie('auth'));
-                        if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id))) {
+                        if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id) || _.isUndefined(Auth.user.unread_activity_id))) {
                             $('#js-card-' + activity.attributes.card_id).parent().addClass('animation');
                             $('#js-card-' + activity.attributes.card_id).addClass('tada-animation');
                             $('#js-card-' + activity.attributes.card_id).stop().animate({

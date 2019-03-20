@@ -996,9 +996,10 @@
 					  </li> 
 			<li class="col-xs-12 divider"></li>     
 			<li class="col-xs-12">
-			  <p class="text-muted"> <span class="show"><%- i18next.t('Card # %s', { postProcess: 'sprintf', sprintf: [card.attributes.id] }) %></span> <span class="show"><%- i18next.t('Link to this card') %></span> </p>
+			  <p><span class="show"><%- i18next.t('Card # %s', { postProcess: 'sprintf', sprintf: [card.attributes.id] }) %></span></p>
 			  <form role="form">
 				<div class="form-group">
+					<span class="show"><%- i18next.t('Link to this card') %></span>
 				  <input type="text" value="<%= window.location.origin %><%= window.location.pathname %>#/board/<%- card.attributes.board_id %>/card/<%- card.attributes.id %>" class="form-control input-sm js-select-card-url" readonly="readonly">
 				</div>
 				<% if(!_.isEmpty(IMAP_EMAIL)){ %>
