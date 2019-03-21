@@ -129,9 +129,8 @@ App.ModalCardView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         var self = this;
-        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection');
-
-        this.model.bind('change:name  change:description  add:description  change:board_id  change:cards_checklists  change:cards_labels change:color change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
+        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection', 'renderColorCollection');
+        this.model.bind('change:name  change:description  add:description  change:board_id  change:cards_checklists  change:cards_labels change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
 
         this.model.cards_subscribers.bind('add remove', this.refreshdock);
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
@@ -145,6 +144,7 @@ App.ModalCardView = Backbone.View.extend({
         self.authuser = authuser.user;
         this.model.card_voters.bind('add', this.renderVotersCollection);
         this.model.card_voters.bind('remove', this.renderVotersCollection);
+        this.model.bind('change:color', this.renderColorCollection);
         this.model.users.bind('add', this.renderUsersCollection);
         this.model.users.bind('remove', this.renderUsersCollection);
         this.model.attachments.bind('add', this.renderAttachmentsCollection);
@@ -235,7 +235,24 @@ App.ModalCardView = Backbone.View.extend({
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '.json';
         self.model.save(data, {
             patch: true,
-            success: function(model, response) {}
+            success: function(model, response) {
+                if (!_.isUndefined(response.activity)) {
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    var view = new App.ActivityView({
+                        model: activity,
+                        flag: '1'
+                    });
+                    self.model.activities.unshift(activity, {
+                        silent: true
+                    });
+                    if ($.cookie('filter') !== 'comment') {
+                        var view_activity = $('#js-card-activities-' + self.model.id);
+                        view_activity.prepend(view.render().el);
+                    }
+                    emojify.run();
+                }
+            }
         });
         return false;
     },
@@ -261,7 +278,25 @@ App.ModalCardView = Backbone.View.extend({
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '.json';
         self.model.save(data, {
             patch: true,
-            success: function(model, response) {}
+            success: function(model, response) {
+                if (!_.isUndefined(response.activity)) {
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    var view = new App.ActivityView({
+                        model: activity,
+                        flag: '1'
+                    });
+                    self.model.activities.unshift(activity, {
+                        silent: true
+                    });
+                    if ($.cookie('filter') !== 'comment') {
+                        var view_activity = $('#js-card-activities-' + self.model.id);
+                        view_activity.prepend(view.render().el);
+                    }
+                    emojify.run();
+                }
+
+            }
         });
         return false;
     },
@@ -824,7 +859,6 @@ App.ModalCardView = Backbone.View.extend({
                 validation = true;
             }
         }
-        console.log(data);
         if (validation) {
             this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
             this.model.save(data, {
@@ -2515,7 +2549,17 @@ App.ModalCardView = Backbone.View.extend({
         }
     },
 
-
+    renderColorCollection: function() {
+        color_label = this.model.attributes.color;
+        $('#js-card-color-demo-' + this.model.id).css("background-color", color_label);
+        $('#js-card-' + this.model.id).css("border-left-color", color_label).css("border-left-width", "8px");
+        $('#js-carousel-card-' + this.model.id).css("border-left", '5px solid ' + color_label);
+        if (!_.isUndefined(this.model.attributes.color) && !_.isEmpty(this.model.attributes.color) && this.model.attributes.color !== '') {
+            $('.js-remove-card-color').removeClass('hide');
+        } else {
+            $('.js-remove-card-color').addClass('hide');
+        }
+    },
     /**
      * showChecklistAddForm()
      * display checklist add form users
