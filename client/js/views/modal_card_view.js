@@ -114,7 +114,7 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-preview-comment': 'previewComment',
         'click .js-card-activites-load-more': 'cardActivityLoadMore',
         'mouseenter .js-close-drag': 'CloseDragDrop',
-        'click .js-app-activity-trigger': 'refreshdock'
+        // 'click .js-app-activity-trigger': 'refreshdock'
     },
     /**
      * Constructor
@@ -129,8 +129,8 @@ App.ModalCardView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         var self = this;
-        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection', 'renderColorCollection');
-        this.model.bind('change:name  change:description  add:description  change:board_id  change:cards_checklists  change:cards_labels change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
+        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection', 'renderColorCollection', 'renderNameCollection');
+        this.model.bind('add:description  change:description change:board_id  change:cards_checklists  change:cards_labels change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
 
         this.model.cards_subscribers.bind('add remove', this.refreshdock);
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
@@ -145,6 +145,7 @@ App.ModalCardView = Backbone.View.extend({
         this.model.card_voters.bind('add', this.renderVotersCollection);
         this.model.card_voters.bind('remove', this.renderVotersCollection);
         this.model.bind('change:color', this.renderColorCollection);
+        this.model.bind('change:name', this.renderNameCollection);
         this.model.users.bind('add', this.renderUsersCollection);
         this.model.users.bind('remove', this.renderUsersCollection);
         this.model.attachments.bind('add', this.renderAttachmentsCollection);
@@ -805,7 +806,6 @@ App.ModalCardView = Backbone.View.extend({
      * @return false
      */
     editCard: function(e) {
-        console.log("due date");
         e.preventDefault();
         var self = this;
         var validation = true;
@@ -860,6 +860,7 @@ App.ModalCardView = Backbone.View.extend({
             }
         }
         if (validation) {
+            $('form#cardTitleEditForm').addClass('hide');
             this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
             this.model.save(data, {
                 patch: true,
@@ -2559,6 +2560,23 @@ App.ModalCardView = Backbone.View.extend({
         } else {
             $('.js-remove-card-color').addClass('hide');
         }
+    },
+
+    renderNameCollection: function() {
+        var card_nameview = this.$('.js-show-card-title-edit-form');
+        if (card_nameview.length == 1) {
+            card_nameview.attr('title', this.model.attributes.name);
+            card_nameview.text(this.model.attributes.name);
+        }
+        console.log(this.$('#js-title-color-' + this.model.id));
+        console.log($('#js-title-color-' + this.model.id));
+        var card_name_headerview = $('#js-title-color-' + this.model.id);
+        if (card_name_headerview.length == 1) {
+            var head_card_details = card_name_headerview.text().split('in list');
+            head_card_details[0] = this.model.attributes.name;
+            card_name_headerview.text(head_card_details[0] + ' in list ' + head_card_details[1]);
+        }
+
     },
     /**
      * showChecklistAddForm()
