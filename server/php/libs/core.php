@@ -364,7 +364,7 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
     $row = pg_fetch_assoc($result);
     $id_converted = base_convert($row['id'], 10, 36);
     $materialized_path = sprintf("%08s", $id_converted);
-    $freshness_ts = date('Y-m-d h:i:s');
+    $freshness_ts = date('Y-m-d H:i:s');
     $path = 'P' . $row['id'];
     $depth = 0;
     $qry_val_arr = array(
@@ -2396,7 +2396,7 @@ function importWekanBoard($board = array())
                             $save_path = str_replace('\\', '/', $save_path);
                             $filename = curlExecute($attachment['url'], 'get', $mediadir, 'image');
                             $path = $save_path . DS . $filename['file_name'];
-                            $created = $modified = date('Y-m-d h:i:s');
+                            $created = $modified = date('Y-m-d H:i:s');
                             $qry_val_arr = array(
                                 $created,
                                 $modified,

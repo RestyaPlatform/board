@@ -1317,6 +1317,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1' . $condition;
             }
+            
             if (!empty($c_sql)) {
                 $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
                 $sql.= $paging_data['sql'];
@@ -4384,7 +4385,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
             $prev_message = executeQuery('SELECT ac.*, u,username, u.profile_picture_path, u.initials, u.full_name FROM activities ac LEFT JOIN users u ON ac.user_id = u.id WHERE ac.id = $1 order by created DESC', $qry_val_arr);
         }
-        $r_post['freshness_ts'] = date('Y-m-d h:i:s');
+        $r_post['freshness_ts'] = date('Y-m-d H:i:s');
         $r_post['type'] = 'add_comment';
         $r_post['token'] = $_GET['token'];
         if (empty($r_post['user_id'])) {
@@ -5818,7 +5819,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
     global $r_debug, $db_lnk, $authUser, $thumbsizes, $_server_domain_url;
     $fields = 'modified';
     $values = array(
-        date('Y-m-d h:i:s')
+        date('Y-m-d H:i:s')
     );
     $sfields = $table_name = $id = $activity_type = '';
     $response = $diff = $pg_params = $foreign_id = $foreign_ids = $revisions = $previous_value = $obj = array();
