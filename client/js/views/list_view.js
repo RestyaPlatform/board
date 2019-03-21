@@ -1266,7 +1266,7 @@ App.ListView = Backbone.View.extend({
             var view_card = this.$('#js-card-listing-' + this.model.id);
             view_card.html('');
             _(function() {
-                unarchived_cards = self.model.collection.board.cards.where({
+                unarchived_cards = self.model.board.cards.where({
                     list_id: parseInt(self.model.id),
                     is_archived: 0
                 });
@@ -1310,7 +1310,7 @@ App.ListView = Backbone.View.extend({
                         card.card_voters.add(card.get('card_voters'), {
                             silent: true
                         });
-                        card.cards = self.model.collection.board.cards;
+                        card.cards = self.model.board.cards;
                         card.list = self.model;
                         card.board_activities.add(self.model.activities, {
                             silent: true
