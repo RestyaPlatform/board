@@ -173,7 +173,7 @@ DO $$
         BEGIN
             ALTER TABLE "card_attachments" ADD "doc_image_path" character varying(255) NULL;
         EXCEPTION
-            WHEN duplicate_column THEN RAISE NOTICE 'column is_two_fdoc_image_pathactor_authentication_enabled already exists in card_attachments';
+            WHEN duplicate_column THEN RAISE NOTICE 'column doc_image_path already exists in card_attachments';
         END; 
   END;
 $$;

@@ -323,7 +323,7 @@ App.CardView = Backbone.View.extend({
                 }
             });
         }
-        if (!_.isUndefined(authuser.user)) {
+        if (!_.isUndefined(authuser.user) && self.model !== null && !_.isEmpty(self.model) && !_.isUndefined(self.model)) {
             var board_user_role_id;
             if (!_.isUndefined(this.model.board_users) && this.model.board_users.length > 0) {
                 board_user_role_id = this.model.board_users.findWhere({
