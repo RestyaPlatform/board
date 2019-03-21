@@ -129,8 +129,10 @@ App.ModalCardView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         var self = this;
-        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock');
+        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection');
+
         this.model.bind('change:name  change:description  add:description  change:board_id  change:cards_checklists  change:cards_labels change:color change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
+
         this.model.cards_subscribers.bind('add remove', this.refreshdock);
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
         this.model.checklists.bind('add', this.renderChecklistsCollection);
@@ -141,8 +143,8 @@ App.ModalCardView = Backbone.View.extend({
         this.model.list.collection.board.checklist_items.bind('change:is_completed', this.renderChecklistsCollection);
         this.model.list.collection.board.checklist_items.bind('remove', this.renderChecklistsCollection);
         self.authuser = authuser.user;
-        this.model.card_voters.bind('add', this.refreshdock);
-        this.model.card_voters.bind('remove', this.refreshdock);
+        this.model.card_voters.bind('add', this.renderVotersCollection);
+        this.model.card_voters.bind('remove', this.renderVotersCollection);
         this.model.users.bind('add', this.renderUsersCollection);
         this.model.users.bind('remove', this.renderUsersCollection);
         this.model.attachments.bind('add', this.renderAttachmentsCollection);
@@ -342,7 +344,7 @@ App.ModalCardView = Backbone.View.extend({
      * showEmojiList()
      * Show the emoji list
      * @param e
-     * @type Object(DOM event)
+     * @type Object(DOM event)renderVotersCollection
      * @return false
      *
      */
@@ -768,6 +770,7 @@ App.ModalCardView = Backbone.View.extend({
      * @return false
      */
     editCard: function(e) {
+        console.log("due date");
         e.preventDefault();
         var self = this;
         var validation = true;
@@ -821,6 +824,7 @@ App.ModalCardView = Backbone.View.extend({
                 validation = true;
             }
         }
+        console.log(data);
         if (validation) {
             this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
             this.model.save(data, {
@@ -1080,6 +1084,7 @@ App.ModalCardView = Backbone.View.extend({
             this.renderAttachmentsCollection();
             this.renderLabelsCollection();
             this.renderUsersCollection();
+            this.renderVotersCollection();
             this.model.activities = new App.ActivityCollection();
             var filter = $.cookie('filter');
             if (filter === undefined || filter === 'all') {
@@ -1178,6 +1183,7 @@ App.ModalCardView = Backbone.View.extend({
             this.renderAttachmentsCollection();
             this.renderLabelsCollection();
             this.renderUsersCollection();
+            this.renderVotersCollection();
             this.renderChecklistsCollection();
             var title = i18next.t('%s in list %s %s', {
                 postProcess: 'sprintf',
@@ -2470,6 +2476,46 @@ App.ModalCardView = Backbone.View.extend({
             self.$('#js-card-users-list-' + self.model.id).append(content);
         }
     },
+    /**
+     * renderVotersCollection()
+     * display card voters
+     */
+    renderVotersCollection: function() {
+        var view = this.$('#js-modal-voteshow-' + this.model.id);
+        var headervoterview = this.$('#js-header-voteshow-' + this.model.id);
+        if (!_.isUndefined(authuser) && !_.isUndefined(authuser.user)) {
+            headervoterview.html('');
+            view.html('');
+            var voted_user = this.model.card_voters.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (_.isEmpty(voted_user)) {
+                if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
+                        slug: "vote_card",
+                        board_user_role_id: parseInt(this.model.list.board_user_role_id)
+                    })))) {
+                    if (view.length == 1) {
+                        view.append('<button type="button" class="btn btn-primary js-add-card-vote no-print"  title="' + i18next.t("Vote") + '"><i class=" icon-thumbs-up"></i></button>');
+                        headervoterview.append('<a class="panel-heading show js-add-card-vote" title="' + i18next.t('Vote') + '" href="#">' + i18next.t('Vote') + '</a>');
+                    }
+                }
+            } else {
+                if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
+                        slug: "unvote_card",
+                        board_user_role_id: parseInt(this.model.list.board_user_role_id)
+                    })))) {
+                    if (view.length == 1) {
+                        view.append('<button type="button" class="btn btn-default active js-delete-card-vote" title="' + i18next.t('Unvote') + '"><i class="  icon-thumbs-up"></i></button>');
+                        headervoterview.append('<a class="panel-heading show js-delete-card-vote"" title="' + i18next.t('Unvote') + '" href="#" data-id="' + voted_user.id + '"> <span class="show" ><i class="icon-thumbs-up-alt"></i>' + i18next.t('Unvote') + '</span> </a>');
+                    }
+                }
+            }
+            $("#js-card-modal-" + this.model.id + " .js-show-card-voters-list").attr('title', i18next.t(this.model.card_voters.length + ' Vote'));
+            $("#js-card-modal-" + this.model.id + " .js-show-card-voters-list").text(i18next.t(this.model.card_voters.length + ' Vote'));
+        }
+    },
+
+
     /**
      * showChecklistAddForm()
      * display checklist add form users

@@ -103,29 +103,13 @@
 					</ul>
 				  </li>
 				  <% } %> 
-				  <% if (!_.isEmpty(card.card_voters)) { %>
+					<% if (!_.isEmpty(card.card_voters)) { %>
 					  <li class="mar-bottom">
 						<h4 class="text-muted list-group-item-heading"><%- i18next.t('Votes') %></h4>
 						<ul class="list-inline clearfix">
 						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})) || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-						<li>
-							  <% if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
-									var voted_user = card.card_voters.findWhere({
-									 user_id: parseInt(authuser.user.id)
-								}); 
-							%>
-							<% if(_.isEmpty(voted_user)){  %>
-							  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-							  <button type="button" class="btn btn-primary js-add-card-vote no-print"  title="<%- i18next.t('Vote') %>"><i class=" icon-thumbs-up"></i></button> 
-							  <% } %>  
-							  <% } else{ %>
-							  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-							  <button type="button" class="btn btn-default active js-delete-card-vote" title="<%- i18next.t('Unvote') %>"><i class="  icon-thumbs-up"></i></button>  
-							  <% } %>
-							  <% } }%>         
-					   </li>
+						<li id="js-modal-voteshow-<%- card.id %>"></li>
 		          <% } %>
-					  
 					  <li class="dropdown"><a href="#" title="<%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %>" class="btn btn-default js-show-card-voters-list dropdown-toggle" data-toggle="dropdown"><%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %></a>
 						<ul class="dropdown-menu dropdown-menu-left arrow js-show-card-voters-list-response">
 						</ul>
@@ -939,24 +923,8 @@
 			</li>
 			<% } %>
 			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})) || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-			<li>
-				<% if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
-				var voted_user = card.card_voters.findWhere({
-					user_id: parseInt(authuser.user.id)
-				}); 
-			
-		%>
-				<% if(_.isEmpty(voted_user)){  %>
-				<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-				<a class="panel-heading show js-add-card-vote" title="<%- i18next.t('Vote') %>" href="#"><%- i18next.t('Vote') %></a>
+				<li id="js-header-voteshow-<%- card.id %>"></li>
 			<% } %>
-			<% } else{ %> 
-			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-			<a class="panel-heading show js-delete-card-vote"" title="<%- i18next.t('Unvote') %>" href="#" data-id="<%- voted_user.id %>"> <span class="show" ><i class="icon-thumbs-up-alt"></i><%- i18next.t('Unvote') %></span> </a>
-			<% } %>
-			<% } }%>
-		</li>
-		<% } %>
 		<li class = "card_templete_action_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
 		<li class="col-xs-12 divider"></li>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
