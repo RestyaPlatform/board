@@ -1642,6 +1642,14 @@ App.ListView = Backbone.View.extend({
                         card.set('checklist_item_completed_count', 0);
                         card.set('checklist_item_count', total_count);
                     }
+                    var cards_count = isNaN(self.model.attributes.card_count) ? 0 : self.model.attributes.card_count;
+                    self.model.set('card_count', parseInt(cards_count) + 1);
+                    if (parseInt(self.model.attributes.card_count) === 1) {
+                        // Removing the &nbsp; in the card listing after adding card
+                        $('#js-card-listing-' + self.model.id).html(function(i, h) {
+                            return h.replace(/&nbsp;/g, '');
+                        });
+                    }
                     var list = App.boards.get(card.attributes.board_id).lists.get(card.attributes.list_id);
                     if (!_.isUndefined(list)) {
                         var list_cards_count = isNaN(list.attributes.card_count) ? 0 : list.attributes.card_count;
@@ -1654,12 +1662,6 @@ App.ListView = Backbone.View.extend({
                     } else {
                         global_uuid[data.uuid] = options.temp_id;
                         card.set('id', data.uuid);
-                    }
-                    if (parseInt(self.model.attributes.card_count) === 1) {
-                        // Removing the &nbsp; in the card listing after adding card
-                        $('#js-card-listing-' + self.model.id).html(function(i, h) {
-                            return h.replace(/&nbsp;/g, '');
-                        });
                     }
                     self.model.collection.board.cards.add(card);
                     self.model.cards.add(card);
