@@ -4,7 +4,7 @@
 #
 # Usage: ./restyaboard_uninstall.sh
 #
-# Copyright (c) 2014-2018 Restya.
+# Copyright (c) 2014-2019 Restya.
 # Dual License (OSL 3.0 & Commercial License)
 {
 
