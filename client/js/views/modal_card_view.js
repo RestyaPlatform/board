@@ -129,8 +129,8 @@ App.ModalCardView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         var self = this;
-        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection', 'renderColorCollection', 'renderNameCollection');
-        this.model.bind('add:description  change:description change:board_id  change:cards_checklists  change:cards_labels change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
+        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection', 'renderColorCollection', 'renderNameCollection', 'renderDesciptionCollection');
+        this.model.bind('change:board_id  change:cards_checklists  change:cards_labels change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
 
         this.model.cards_subscribers.bind('add remove', this.refreshdock);
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
@@ -146,6 +146,8 @@ App.ModalCardView = Backbone.View.extend({
         this.model.card_voters.bind('remove', this.renderVotersCollection);
         this.model.bind('change:color', this.renderColorCollection);
         this.model.bind('change:name', this.renderNameCollection);
+        this.model.bind('change:description', this.renderDesciptionCollection);
+        this.model.bind('add:description', this.renderDesciptionCollection);
         this.model.users.bind('add', this.renderUsersCollection);
         this.model.users.bind('remove', this.renderUsersCollection);
         this.model.attachments.bind('add', this.renderAttachmentsCollection);
@@ -845,22 +847,29 @@ App.ModalCardView = Backbone.View.extend({
         $('.js-show-side-card-title-edit-form').parents().find('.dropdown').removeClass('open');
         if (!_.isUndefined(data.name)) {
             target.prev('h4').html(_.escape(data.name)).removeClass('hide');
+            $(e.target).addClass('hide');
         }
-        if (!_.isUndefined(data.description) && !_.isEmpty(data.description)) {
-            if (!$.trim($('#inputCarddescriptions').val()).length) {
-                $('.error-msg').remove();
-                $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter('#inputCarddescriptions');
-                validation = false;
-                this.$el.find('#cardDescriptionEditForm').removeClass('hide').show();
+        if (!_.isUndefined(data.description)) {
+            if (!_.isEmpty(data.description)) {
+                if (!$.trim($('#inputCarddescriptions').val()).length) {
+                    $('.error-msg').remove();
+                    $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter('#inputCarddescriptions');
+                    validation = false;
+                    this.$el.find('#cardDescriptionEditForm').removeClass('hide').show();
+                } else {
+                    $('.error-msg').remove();
+                    $('.js-show-card-desc').show();
+                    $('#cardDescriptionEditForm').addClass('hide');
+                    validation = true;
+                }
             } else {
                 $('.error-msg').remove();
-                $('.js-show-card-desc').next().show();
-                $('#cardDescriptionEditForm').hide();
+                $('.js-show-card-desc').show();
+                $('#cardDescriptionEditForm').addClass('hide');
                 validation = true;
             }
         }
         if (validation) {
-            $('form#cardTitleEditForm').addClass('hide');
             this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
             this.model.save(data, {
                 patch: true,
@@ -2568,8 +2577,6 @@ App.ModalCardView = Backbone.View.extend({
             card_nameview.attr('title', this.model.attributes.name);
             card_nameview.text(this.model.attributes.name);
         }
-        console.log(this.$('#js-title-color-' + this.model.id));
-        console.log($('#js-title-color-' + this.model.id));
         var card_name_headerview = $('#js-title-color-' + this.model.id);
         if (card_name_headerview.length == 1) {
             var head_card_details = card_name_headerview.text().split('in list');
@@ -2577,6 +2584,16 @@ App.ModalCardView = Backbone.View.extend({
             card_name_headerview.text(head_card_details[0] + ' in list ' + head_card_details[1]);
         }
 
+    },
+
+    renderDesciptionCollection: function() {
+        var card_descview = this.$('.js-show-card-desc');
+        if (card_descview.length == 1) {
+            card_descview.html(this.converter.makeHtml(this.model.attributes.description));
+            if (this.$('form#cardDescriptionEditForm').find('#inputCarddescriptions').length == 1) {
+                this.$('form#cardDescriptionEditForm').find('#inputCarddescriptions').val(this.model.attributes.description);
+            }
+        }
     },
     /**
      * showChecklistAddForm()

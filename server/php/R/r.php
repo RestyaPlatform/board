@@ -1317,7 +1317,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1' . $condition;
             }
-            
             if (!empty($c_sql)) {
                 $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
                 $sql.= $paging_data['sql'];

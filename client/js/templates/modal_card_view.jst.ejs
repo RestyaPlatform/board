@@ -217,11 +217,13 @@
 					  </a>
 					  <% } %>
 					  </h4>
-					  <% if(!_.isEmpty(card.attributes.description)){ %>
+					  
 					  <div class="js-show-card-desc">
-							<%= converter.makeHtml((card.attributes.description)) %>
+							<% if(!_.isEmpty(card.attributes.description)){ %>
+								<%= converter.makeHtml((card.attributes.description)) %>
+							<% } %>
 						</div>
-					  <% } %>
+					  
 					   <%if(!_.isUndefined(authuser.user)) {%>
 					  <form class="hide js-card-edit-form" name="cardDescriptionEditForm" id="cardDescriptionEditForm">
 						<ul class="nav nav-tabs no-bor h3">
