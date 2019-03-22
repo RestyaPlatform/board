@@ -129,10 +129,10 @@ App.ModalCardView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         var self = this;
-        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection', 'renderColorCollection', 'renderNameCollection', 'renderDescriptionCollection', 'renderCardSubscriberCollection', 'renderArchievedCollection');
-        this.model.bind('change:board_id  change:cards_checklists  change:cards_labels change:due_date change:start_date change:list_id  change:title', this.refreshdock);
-        /* change:is_archived  */
+        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection', 'renderColorCollection', 'renderNameCollection', 'renderDescriptionCollection', 'renderCardSubscriberCollection', 'renderArchievedCollection', 'renderDueDateCollection');
+        this.model.bind('change:board_id  change:cards_checklists  change:cards_labels change:list_id  change:title', this.refreshdock);
         this.model.bind('change:is_archived', this.renderArchievedCollection);
+        this.model.bind(' change:due_date', this.renderDueDateCollection);
         this.model.cards_subscribers.bind('add remove', this.renderCardSubscriberCollection);
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
         this.model.checklists.bind('add', this.renderChecklistsCollection);
@@ -1152,6 +1152,7 @@ App.ModalCardView = Backbone.View.extend({
             this.renderAttachmentsCollection();
             this.renderLabelsCollection();
             this.renderUsersCollection();
+            this.renderDueDateCollection();
             this.renderVotersCollection();
             this.renderCardSubscriberCollection();
             this.renderArchievedCollection();
@@ -1253,6 +1254,7 @@ App.ModalCardView = Backbone.View.extend({
             this.renderAttachmentsCollection();
             this.renderLabelsCollection();
             this.renderUsersCollection();
+            this.renderDueDateCollection();
             this.renderVotersCollection();
             this.renderCardSubscriberCollection();
             this.renderArchievedCollection();
@@ -2713,6 +2715,106 @@ App.ModalCardView = Backbone.View.extend({
         }
     },
 
+    renderDueDateCollection: function() {
+        var self = this.model;
+        var currentdate = new Date();
+        var date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10) ? '0' + (currentdate.getMonth() + 1) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10) ? '0' + currentdate.getDate() : currentdate.getDate());
+        var time = currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
+        if (!_.isEmpty(self.attributes.due_date) && self.attributes.due_date !== 'NULL' && self.attributes.due_date !== 'null') {
+            var date_time = self.attributes.due_date.replace('T', ' ');
+            date_time = date_time.split(' ');
+            date = date_time[0];
+            time = date_time[1];
+            time = time.split(':');
+            time = time[0] + ':' + time[1];
+        }
+        var duedateform3 = this.$('form#cardDueDateEditForm3');
+        if (duedateform3.length === 1) {
+            this.$('form#cardDueDateEditForm3 .js-card-duedate-edit-' + self.id).val(date);
+            this.$('form#cardDueDateEditForm3 .js-card-duetime-edit-' + self.id).val(time);
+            if (this.$('form#cardDueDateEditForm3 #js-card-due-date-remove-' + self.id).length == 1) {
+                if (!_.isEmpty(self.attributes.due_date) && self.attributes.due_date !== 'NULL' && self.attributes.due_date !== 'null') {
+                    this.$('form#cardDueDateEditForm3 #js-card-due-date-remove-' + self.id).html('<div class="col-xs-6"><label for="remove" class="sr-only">' + i18next.t('Remove') + '</label><input type="reset" value="' + i18next.t('Remove') + '" class="btn btn-default js-remove-due-date"></div>');
+                } else {
+                    this.$('form#cardDueDateEditForm3 #js-card-due-date-remove-' + self.id).html('');
+                }
+            }
+        }
+        var duedateform2 = this.$('form#cardDueDateEditForm2');
+        if (duedateform2.length === 1) {
+            this.$('form#cardDueDateEditForm2 .js-card-duedate-edit-' + self.id).val(date);
+            this.$('form#cardDueDateEditForm2 .js-card-duetime-edit-' + self.id).val(time);
+            if (this.$('form#cardDueDateEditForm2 #js-card-due-date-remove-' + self.id).length == 1) {
+                if (!_.isEmpty(self.attributes.due_date) && self.attributes.due_date !== 'NULL' && self.attributes.due_date !== 'null') {
+                    this.$('form#cardDueDateEditForm2 #js-card-due-date-remove-' + self.id).html('<div class="col-xs-6"><label for="remove" class="sr-only">' + i18next.t('Remove') + '</label><input type="reset" value="' + i18next.t('Remove') + '" class="btn btn-default js-remove-due-date"></div>');
+                } else {
+                    this.$('form#cardDueDateEditForm2 #js-card-due-date-remove-' + self.id).html('');
+                }
+            }
+        }
+        var view_duedateform1 = this.$('#js-modal-duedate-show-' + self.id);
+        if (view_duedateform1.length == 1) {
+            var due_date_html = '';
+            if (!_.isEmpty(self.attributes.due_date) && self.attributes.due_date != 'NULL') {
+                due_date_html += '<li class="" id="js-modal-duedate-show-' + self.id + '"><h4 class="text-muted list-group-item-heading">' + i18next.t('Due Date') + '</h4><ul class="list-inline clearfix">';
+                var date_times = self.attributes.due_date.split('T');
+                new_date_time = date_times[0].split(' ');
+                if (_.isUndefined(date_times[1])) {
+                    var time_split = self.attributes.due_date.split(' ');
+                    date_times[1] = time_split['1'];
+                }
+                if (!_.isEmpty(date_times[1])) {
+                    hours_mins = date_times[1].split(':');
+                    var noon = '';
+                    if (hours_mins[0] <= 12) {
+                        noon = 'AM';
+                    } else {
+                        noon = 'PM';
+                        hours_mins[0] = hours_mins[0] - 12;
+                    }
+                    hours_mins = hours_mins[0] + ':' + hours_mins[1] + ' ' + noon;
+                }
+
+                due_action = (!_.isUndefined(authuser.user)) ? 'js-edit-card-due-date-form' : 'js-no-action ';
+                due_date_html += '<li class="dropdown"> <a class="btn btn-default dropdown-toggle ' + due_action + '" role="button" data-toggle="dropdown" title="' + i18next.t('Due Date') + '" href="#">' + dateFormat(new_date_time[0], 'mediumDate') + ' at ' + hours_mins + '</a>';
+            }
+            if (!_.isUndefined(authuser.user)) {
+                due_date_html += '<ul class="dropdown-menu arrow col-xs-12"><li class="col-xs-12 text-center"><div><span class="col-xs-10"><strong>' + i18next.t('Due Date') + '</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove">&nbsp;</i></a></div></li><li class="divider col-xs-12"></li><li class="js-edit-card-due-date-form-response col-xs-12"> <form id="cardDueDateEditForm1" class="form-horizontal clearfix js-card-edit-form"><div class="form-group"><div class="col-xs-6"><label>' + i18next.t('Date') + '</label><input type="text" class="form-control input-sm js-card-duedate-edit-' + self.attributes.id + '" name="due_date" data-format="yyyy-MM-dd" value="' + date + '" required></div><div class="col-xs-6"><label>' + i18next.t('Time') + '</label><input type="text" class="form-control input-sm js-card-duetime-edit-' + self.attributes.id + '" name="due_time" data-format="hh:mm" value="' + time + '" required></div></div><div class="form-group"><div class="col-xs-6"><label for="save" class="sr-only">' + i18next.t('Save') + '</label><input type="submit" value="' + i18next.t('Save') + '" id="save" class="btn btn-primary" id="submitCardDueDateEditForm"></div><div class="col-xs-6"><label for="remove" class="sr-only">' + i18next.t('Remove') + '</label><input type="reset" value="' + i18next.t('Remove') + '" class="btn btn-default js-remove-due-date"></div></div></form></li></ul>';
+            }
+            due_date_html += '</li></ul>';
+            view_duedateform1.html(due_date_html);
+        } else {
+            view_duedateform1.html('');
+        }
+        $('.js-card-duedate-edit-' + self.id).datetimepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayBtn: true,
+            pickerPosition: 'top-right',
+            todayHighlight: 1,
+            startView: 2,
+            minView: 2,
+            bootcssVer: 2,
+            pickTime: false
+        }).on('changeDate', function(ev) {
+            $(this).datetimepicker('hide');
+            $(this).blur();
+        });
+        $('.js-card-duetime-edit-' + self.id).datetimepicker({
+            format: 'hh:ii',
+            autoclose: true,
+            showMeridian: false,
+            pickerPosition: 'top-right',
+            startView: 1,
+            maxView: 1,
+            pickDate: false,
+            use24hours: true,
+            timepicker: 1,
+        }).on('changeDate', function(ev) {
+            $(this).datetimepicker('hide');
+            $(this).blur();
+        });
+    },
     /**
      * showChecklistAddForm()
      * display checklist add form users
