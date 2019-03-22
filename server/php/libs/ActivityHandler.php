@@ -111,7 +111,7 @@ class ActivityHandler
             );
             $obj['checklist'] = executeQuery('SELECT * FROM checklists_listing WHERE id = $1', $obj_val_arr);
             $obj['checklist']['checklists_items'] = json_decode($obj['checklist']['checklists_items'], true);
-        } else if ($obj_type === 'add_card_label') {
+        } else if ($obj_type === 'add_card_label' || $obj_type === 'update_card_label') {
             $obj_val_arr = array(
                 $obj['card_id']
             );
