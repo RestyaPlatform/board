@@ -114,7 +114,6 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-preview-comment': 'previewComment',
         'click .js-card-activites-load-more': 'cardActivityLoadMore',
         'mouseenter .js-close-drag': 'CloseDragDrop',
-        // 'click .js-app-activity-trigger': 'refreshdock'
     },
     /**
      * Constructor
@@ -129,9 +128,10 @@ App.ModalCardView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         var self = this;
-        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection', 'renderColorCollection', 'renderNameCollection', 'renderDescriptionCollection', 'renderCardSubscriberCollection', 'renderArchievedCollection', 'renderDueDateCollection');
-        this.model.bind('change:board_id  change:cards_checklists  change:cards_labels change:list_id  change:title', this.refreshdock);
+        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection', 'renderColorCollection', 'renderNameCollection', 'renderDescriptionCollection', 'renderCardSubscriberCollection', 'renderArchievedCollection', 'renderDueDateCollection', 'renderLabelsCollection');
+        this.model.bind('change:board_id  change:cards_checklists  change:list_id  change:title', this.refreshdock);
         this.model.bind('change:is_archived', this.renderArchievedCollection);
+        this.model.bind('change:cards_labels', this.renderLabelsCollection);
         this.model.bind(' change:due_date', this.renderDueDateCollection);
         this.model.cards_subscribers.bind('add remove', this.renderCardSubscriberCollection);
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
@@ -2414,7 +2414,10 @@ App.ModalCardView = Backbone.View.extend({
             is_edit_labels = false;
         }
         var view_label = this.$el.find('.js-card-labels-list');
-        // view_label.html('');
+        view_label.html('');
+        if ($('#js-label-add-container').length === 0) {
+            view_label.append('<li id="js-label-add-container"><div class="dropdown js-label-dropdown no-print"><a class="dropdown-toggle js-show-card-label-form btn btn-default" role="button" data-toggle="dropdown" title="' + i18next.t('Add new Labels') + '" href="#"> <i class="icon-plus"></i></a><ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 js-show-card-label-form-response"></ul></div></li>');
+        }
         var self = this;
         this.model.labels.each(function(label) {
             var slabel = self.model.labels.findWhere({

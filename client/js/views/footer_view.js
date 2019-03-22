@@ -1549,12 +1549,14 @@ App.FooterView = Backbone.View.extend({
                                                     board: self.board,
                                                     flag: '1'
                                                 });
-                                                card.activities.unshift(modal_activity, {
-                                                    silent: true
-                                                });
                                                 if ($.cookie('filter') !== 'comment') {
                                                     var new_view_activity = $('#js-card-activities-' + activity.attributes.card_id);
-                                                    new_view_activity.prepend(new_activity_view.render().el);
+                                                    if ($('#js-card-activities-' + activity.attributes.card_id + ' ' + '.js-list-activity-' + activity.attributes.id).length == 0) {
+                                                        card.activities.unshift(modal_activity, {
+                                                            silent: true
+                                                        });
+                                                        new_view_activity.prepend(new_activity_view.render().el);
+                                                    }
                                                 }
                                                 emojify.run();
                                             }
