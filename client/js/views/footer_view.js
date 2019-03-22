@@ -844,6 +844,10 @@ App.FooterView = Backbone.View.extend({
             view_activity.append('<li class="col-xs-12" id="js-activity-loader"><span class="cssloader"></span></li>');
             activities.url = api_url + 'users/' + authuser.user.id + '/activities.json?mode=' + filter;
         }
+        var tmp_unreaded_card = {};
+        localforage.getItem('unreaded_cards', function(err, value) {
+            tmp_unreaded_card = (value !== null && value !== undefined) ? value : tmp_unreaded_card;
+        });
         activities.fetch({
             cache: false,
             success: function() {
@@ -906,38 +910,28 @@ App.FooterView = Backbone.View.extend({
                         var card_id = activity.attributes.card_id;
                         Auth = JSON.parse($.cookie('auth'));
                         if (_.isUndefined(Auth.user.unread_activity_id) || (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id))) {
-                            localforage.getItem('unreaded_cards', function(err, value) {
-                                if (activity.attributes.token !== authuser.access_token) {
-                                    var count = 0;
-                                    if (!_.isUndefined(value) && value !== null) {
-                                        if (!_.isUndefined(value[card_id]) && value[card_id] !== null) {
-                                            if ((parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id)) || _.isUndefined(Auth.user.unread_activity_id)) {
-                                                count = value[card_id] + 1;
-                                            } else {
-                                                count = value[card_id];
-                                            }
-                                            value[card_id] = count;
-                                            localforage.setItem("unreaded_cards", value);
-                                        } else if (card_id !== 0) {
-                                            value[card_id] = 1;
-                                            count = 1;
-                                            localforage.setItem("unreaded_cards", value);
+                            if (activity.attributes.token !== authuser.access_token && card_id !== 0) {
+                                if (!_.isUndefined(tmp_unreaded_card) && tmp_unreaded_card !== null && !_.isEmpty(tmp_unreaded_card)) {
+                                    if (!_.isUndefined(tmp_unreaded_card[card_id]) && tmp_unreaded_card[card_id] !== null) {
+                                        if ((parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id)) || _.isUndefined(Auth.user.unread_activity_id)) {
+                                            tmp_unreaded_card[card_id] = tmp_unreaded_card[card_id] + 1;
+                                        } else {
+                                            tmp_unreaded_card[card_id] = tmp_unreaded_card[card_id];
                                         }
-                                    } else if (card_id !== 0) {
-                                        var cards = [];
-                                        cards[card_id] = 1;
-                                        count = 1;
-                                        localforage.setItem("unreaded_cards", cards);
+                                    } else {
+                                        tmp_unreaded_card[card_id] = 1;
                                     }
-                                    if (count) {
-                                        if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
-                                            $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
-                                        } else if ($('#js-card-' + card_id).find('.js-unread-notification').length === 1) {
-                                            $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
-                                        }
+                                } else {
+                                    tmp_unreaded_card[card_id] = 1;
+                                }
+                                if (tmp_unreaded_card[card_id] > 0) {
+                                    if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
+                                        $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + tmp_unreaded_card[card_id] + '</span></span></small>');
+                                    } else if ($('#js-card-' + card_id).find('.js-unread-notification').length === 1) {
+                                        $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + tmp_unreaded_card[card_id] + '</span></span></small>');
                                     }
                                 }
-                            });
+                            }
                         }
                         activity.from_footer = true;
                         if (mode == 1 && activity.attributes.token !== authuser.access_token && Notification.permission === 'granted') {
@@ -1545,7 +1539,6 @@ App.FooterView = Backbone.View.extend({
                                         new_list.set('board_id', parseInt(activity.attributes.list.board_id));
                                         new_list.set('lists_cards', []);
                                         self.board.lists.add(new_list);
-                                        self.board.set('lists', activity.attributes.list);
 
                                         if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(new_list.attributes.board_id))) {
                                             App.boards.get(new_list.attributes.board_id).lists.add(new_list);
@@ -1772,6 +1765,7 @@ App.FooterView = Backbone.View.extend({
                             });
                         }
                     });
+                    localforage.setItem("unreaded_cards", tmp_unreaded_card);
                     if (mode === 2) {
                         var unread_activity_id = _.max(activities.models, function(activity) {
                             return activity.id;

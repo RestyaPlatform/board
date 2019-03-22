@@ -323,7 +323,7 @@ App.CardView = Backbone.View.extend({
                 }
             });
         }
-        if (!_.isUndefined(authuser.user)) {
+        if (!_.isUndefined(authuser.user) && self.model !== null && !_.isEmpty(self.model) && !_.isUndefined(self.model)) {
             var board_user_role_id;
             if (!_.isUndefined(this.model.board_users) && this.model.board_users.length > 0) {
                 board_user_role_id = this.model.board_users.findWhere({
@@ -559,6 +559,17 @@ App.CardView = Backbone.View.extend({
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
                 $('body').trigger('cardRendered', self.model.id, self.model);
+                localforage.getItem('unreaded_cards', function(err, value) {
+                    if (value) {
+                        if (value[self.model.id]) {
+                            if ($('#js-card-' + self.model.id).find('.js-unread-notification').length === 0) {
+                                $('#js-card-' + self.model.id).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + value[self.model.id] + '</span></span></small>');
+                            } else {
+                                $('#js-card-' + self.model.id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + value[self.model.id] + '</span></span></small>');
+                            }
+                        }
+                    }
+                });
             }
         }).defer();
         return this;

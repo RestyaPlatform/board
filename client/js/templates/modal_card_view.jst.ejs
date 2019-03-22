@@ -21,19 +21,7 @@
 	</ul>
 	<% } %>
 	</span>
-	<%
-		if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
-			var cards_subscribers = card.cards_subscribers.where({
-				is_subscribed: 1,
-				user_id: parseInt(authuser.user.id)
-			});
-		}
-		
-		var subscribed = '';
-		if(!_.isUndefined(cards_subscribers) && !_.isEmpty(cards_subscribers)){
-	 %>
-	<span class="icon-eye-open"></span>
-	<% } %>
+	<span class="icon-eye-open hide" id="js-title-subscribe-icon-<%- card.attributes.id %>" ></span>
   </h3>
   <div class="clearfix navbar-btn row">
 	  <div class="splitter-wrap editor ui-resizable" >
@@ -103,29 +91,13 @@
 					</ul>
 				  </li>
 				  <% } %> 
-				  <% if (!_.isEmpty(card.card_voters)) { %>
+					<% if (!_.isEmpty(card.card_voters)) { %>
 					  <li class="mar-bottom">
 						<h4 class="text-muted list-group-item-heading"><%- i18next.t('Votes') %></h4>
 						<ul class="list-inline clearfix">
 						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})) || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-						<li>
-							  <% if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
-									var voted_user = card.card_voters.findWhere({
-									 user_id: parseInt(authuser.user.id)
-								}); 
-							%>
-							<% if(_.isEmpty(voted_user)){  %>
-							  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-							  <button type="button" class="btn btn-primary js-add-card-vote no-print"  title="<%- i18next.t('Vote') %>"><i class=" icon-thumbs-up"></i></button> 
-							  <% } %>  
-							  <% } else{ %>
-							  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-							  <button type="button" class="btn btn-default active js-delete-card-vote" title="<%- i18next.t('Unvote') %>"><i class="  icon-thumbs-up"></i></button>  
-							  <% } %>
-							  <% } }%>         
-					   </li>
+						<li id="js-modal-voteshow-<%- card.id %>"></li>
 		          <% } %>
-					  
 					  <li class="dropdown"><a href="#" title="<%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %>" class="btn btn-default js-show-card-voters-list dropdown-toggle" data-toggle="dropdown"><%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %></a>
 						<ul class="dropdown-menu dropdown-menu-left arrow js-show-card-voters-list-response">
 						</ul>
@@ -233,11 +205,13 @@
 					  </a>
 					  <% } %>
 					  </h4>
-					  <% if(!_.isEmpty(card.attributes.description)){ %>
+					  
 					  <div class="js-show-card-desc">
-							<%= converter.makeHtml((card.attributes.description)) %>
+							<% if(!_.isEmpty(card.attributes.description)){ %>
+								<%= converter.makeHtml((card.attributes.description)) %>
+							<% } %>
 						</div>
-					  <% } %>
+					  
 					   <%if(!_.isUndefined(authuser.user)) {%>
 					  <form class="hide js-card-edit-form" name="cardDescriptionEditForm" id="cardDescriptionEditForm">
 						<ul class="nav nav-tabs no-bor h3">
@@ -470,40 +444,8 @@
 						  </ul>
 						</li>
 					<% } %>
-					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && _.isEmpty(cards_subscribers)) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && !_.isEmpty(cards_subscribers)))  || (!_.isEmpty(role_links.where({slug: "subscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2)))) { %>
-						<%
-							var subscribe_disabled = '';
-							var subscribe_title = i18next.t('Subscribe');
-							var subscribe_class = 'js-card-subscribe';
-							var subscribed = card.list.collection.board.board_subscribers.findWhere({
-								user_id: parseInt(authuser.user.id),
-								is_subscribed: 1
-							});
-							var list_subscribed = card.list.lists_subscribers.findWhere({
-								user_id: parseInt(authuser.user.id),
-								is_subscribed: 1
-							});
-							if(!_.isEmpty(cards_subscribers)){
-								subscribe_title = i18next.t('Unsubscribe');
-								subscribe_class = 'js-card-unsubscribe';
-							} 
-							if (subscribed) {
-								subscribe_disabled = 'disabled';
-								subscribe_class = 'js-no-action';
-								subscribe_title = i18next.t('Board wise subscription already enabled');
-							} else if(list_subscribed) {
-								subscribe_disabled = 'disabled';
-								subscribe_class = 'js-no-action';
-								subscribe_title = i18next.t('List wise subscription already enabled');
-							}
-						%>
-						<li class="navbar-btn">
-							<% if(!_.isEmpty(cards_subscribers)){ %>
-								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-close"></i><%- i18next.t('Unsubsribe') %></a> 
-							<% } else { %>
-								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-open"></i><%- i18next.t('Subscribe') %></a>
-							<% } %>
-					  </li>
+					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))))  || (!_.isEmpty(role_links.where({slug: "subscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2)))) { %>
+						<li class="navbar-btn" id="js-modal-subscribe-show-<%- card.attributes.id%>"></li>
 				   <% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "card_template_add",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 					 <li class = "card_templete_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
@@ -516,23 +458,10 @@
 					</div>
 					<ul class="js-card-actions list-inline action-list navbar-btn">
 						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-						<li class="navbar-btn"> 
-							<a class="btn btn-default  <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)})))) { %> js-card-send-to-board <% } %> even-action htruncate" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><%}%>" href=""><i class="icon-cloud-download"></i><% if(parseInt(card.attributes.is_archived) === 0){ %><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><% } %></a> 
-						</li>
+							<li class="navbar-btn" id="js-modal-archieved-show-<%- card.attributes.id%>"> </li>
 					<% } %>
-					<% if(parseInt(card.attributes.is_archived) === 1 && (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_card",board_user_role_id: parseInt(list.board_user_role_id)}))))){ %>
-						<li class="navbar-btn dropdown"> <a class="btn btn-primary dropdown-toggle js-open-dropdown even-action htruncate" href="#" role="button" data-toggle="dropdown" title="<%- i18next.t('Delete') %>"><i class="icon-remove"></i><%- i18next.t('Delete') %></a>
-							<ul class="dropdown-menu dropdown-menu-left arrow">
-								<li class="js-dropdown-popup dropdown-popup">
-									<div class="clearfix text-center col-xs-12"> <span class="col-xs-10"><strong><%- i18next.t('Delete Card') %>?</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a> </div>
-									<div class="col-xs-12 divider"></div>
-									<div class="col-xs-12">
-										<p><%- i18next.t("All actions will be removed from the activity feed and you won't be able to reopen the card. There is no undo. You can archive a card to remove it from the board and preserve the activity.") %></p>
-										<a class="js-delete-card btn  btn-primary" title="<%- i18next.t('Delete') %>"><%- i18next.t('Delete') %></a> 
-									</div>
-								</li>
-							</ul>
-						</li>
+					<% if((!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_card",board_user_role_id: parseInt(list.board_user_role_id)}))))){ %>
+						<li class="navbar-btn dropdown" id="js-modal-arhive-delete-<%- card.attributes.id%>"></li>
 					<% } %>
 					</ul>
 				</div>
@@ -901,62 +830,12 @@
 				</ul>
 			</li>
 		<% } %>
-		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && _.isEmpty(cards_subscribers)) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && !_.isEmpty(cards_subscribers)))  || (!_.isEmpty(role_links.where({slug: "subscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2)))) { %>
-			<%
-				var subscribe_disabled = '';
-				var subscribe_title = i18next.t('Subscribe');
-				var subscribe_class = 'js-card-subscribe';
-				var subscribed = card.list.collection.board.board_subscribers.findWhere({
-					user_id: parseInt(authuser.user.id),
-					is_subscribed: 1
-				});
-				var list_subscribed = card.list.lists_subscribers.findWhere({
-					user_id: parseInt(authuser.user.id),
-					is_subscribed: 1
-				});
-				if(!_.isEmpty(cards_subscribers)){
-					subscribe_title = i18next.t('Unsubscribe');
-					subscribe_class = 'js-card-unsubscribe';
-				} 
-				if (subscribed) {
-					subscribe_disabled = 'disabled';
-					subscribe_class = 'js-no-action';
-					subscribe_title = i18next.t('Board wise subscription already enabled');
-				} else if(list_subscribed) {
-					subscribe_disabled = 'disabled';
-					subscribe_class = 'js-no-action';
-					subscribe_title = i18next.t('List wise subscription already enabled');
-				}
-			%>
-				<li class="<%- subscribe_disabled %>"> <a class="<%- subscribe_class %>" title="<%- subscribe_title %> " href="">
-					<% if(!_.isEmpty(cards_subscribers)){ %>
-						<%- i18next.t('Unsubscribe') %>
-						<i class="icon-ok"></i>
-				<% } else { %>
-						<%- i18next.t('Subscribe') %>
-				<% } %>
-				</a> 
-			</li>
+		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))))  || (!_.isEmpty(role_links.where({slug: "subscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2)))) { %>
+			<li id="js-header-dropdown-subscribe-<%- card.attributes.id %>"></li>
 			<% } %>
 			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})) || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-			<li>
-				<% if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
-				var voted_user = card.card_voters.findWhere({
-					user_id: parseInt(authuser.user.id)
-				}); 
-			
-		%>
-				<% if(_.isEmpty(voted_user)){  %>
-				<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-				<a class="panel-heading show js-add-card-vote" title="<%- i18next.t('Vote') %>" href="#"><%- i18next.t('Vote') %></a>
+				<li id="js-header-voteshow-<%- card.id %>"></li>
 			<% } %>
-			<% } else{ %> 
-			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-			<a class="panel-heading show js-delete-card-vote"" title="<%- i18next.t('Unvote') %>" href="#" data-id="<%- voted_user.id %>"> <span class="show" ><i class="icon-thumbs-up-alt"></i><%- i18next.t('Unvote') %></span> </a>
-			<% } %>
-			<% } }%>
-		</li>
-		<% } %>
 		<li class = "card_templete_action_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
 		<li class="col-xs-12 divider"></li>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>

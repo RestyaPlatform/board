@@ -836,6 +836,9 @@ App.BoardHeaderView = Backbone.View.extend({
         var list_length = lists.models.length;
         for (var list_i = 0; list_i < list_length; list_i++) {
             var list = lists.models[list_i];
+            list.board = self.model;
+            list.board_users = self.model.board_users;
+            list.labels = self.model.labels;
             if (_.isUndefined(list.get('is_new')) && list.get('is_archived') === 0) {
                 if (sort_by !== null && sort_by !== null) {
                     self.model.cards.sortByColumn(sort_by, sort_direction);
@@ -947,8 +950,6 @@ App.BoardHeaderView = Backbone.View.extend({
             aspectRatio: 3.35,
             eventRender: function(event, element) {
                 var content = '';
-                element.addClass('js-show-modal-card-view');
-                element.attr('id', 'js-card-' + event.id);
                 var card = self.model.cards.findWhere({
                     id: event.id
                 });
@@ -956,7 +957,9 @@ App.BoardHeaderView = Backbone.View.extend({
                     element.addClass('card-archived hide');
                     element.find('.fc-event-skin').addClass('card-archived');
                 }
-                if (card.get('due_date') !== null) {
+                if (card.get('due_date') !== null && parseInt(card.get('is_archived')) === 0) {
+                    element.addClass('js-show-modal-card-view');
+                    element.attr('id', 'js-card-' + event.id);
                     var today = new Date();
                     card_due_date = card.get('due_date').split('T');
                     var due_date = new Date(card_due_date[0]);
@@ -973,28 +976,29 @@ App.BoardHeaderView = Backbone.View.extend({
                         element.addClass('label-future');
                         element.find('.fc-event-skin').addClass('label-future');
                     }
+                    content += '<ul class="unstyled hide js-card-labels">';
+                    var filtered_labels = card.labels.where({
+                        card_id: event.id
+                    });
+                    var labels = new App.CardLabelCollection();
+                    labels.add(filtered_labels);
+                    labels.each(function(label) {
+                        if (_.escape(label.attributes.name) !== "") {
+                            content += '<li class="' + _.escape(label.attributes.name) + '">' + _.escape(label.attributes.name) + '</li>';
+                        }
+                    });
+                    content += '</ul>';
+                    content += '<ul class="unstyled js-card-users hide">';
+                    card.users.each(function(user) {
+                        content += '<li>user-filter-' + user.get('user_id') + '</li>';
+                    });
+                    content += '</ul>';
+                    content += '<ul class="unstyled js-card-due hide">';
+                    content += self.getDue(card.get('due_date'));
+                    content += '</ul>';
+                    element.append(content);
                 }
-                content += '<ul class="unstyled hide js-card-labels">';
-                var filtered_labels = card.labels.where({
-                    card_id: event.id
-                });
-                var labels = new App.CardLabelCollection();
-                labels.add(filtered_labels);
-                labels.each(function(label) {
-                    if (_.escape(label.attributes.name) !== "") {
-                        content += '<li class="' + _.escape(label.attributes.name) + '">' + _.escape(label.attributes.name) + '</li>';
-                    }
-                });
-                content += '</ul>';
-                content += '<ul class="unstyled js-card-users hide">';
-                card.users.each(function(user) {
-                    content += '<li>user-filter-' + user.get('user_id') + '</li>';
-                });
-                content += '</ul>';
-                content += '<ul class="unstyled js-card-due hide">';
-                content += self.getDue(card.get('due_date'));
-                content += '</ul>';
-                element.append(content);
+
             },
             eventMouseover: function(calEvent, jsEvent, view) {
                 var target = $(jsEvent.currentTarget);
