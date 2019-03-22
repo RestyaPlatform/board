@@ -23,6 +23,7 @@ App.ActivityReplyFormView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         this.render();
+        emojify.run();
     },
     converter: new showdown.Converter({
         extensions: ['targetblank', 'xssfilter', 'codehighlight']

@@ -1329,7 +1329,7 @@ App.FooterView = Backbone.View.extend({
                                                             profile_picture = '<i class="avatar avatar-color-194 img-rounded">' + activity.attributes.initials + '</i>';
                                                         }
                                                         if (!_.isEmpty(activity.attributes.comment)) {
-                                                            comment_details = self.converter.makeHtml(activity.attributes.comment);
+                                                            comment_details = makeLink(self.converter.makeHtml(activity.attributes.comment), activity.attributes.board_id);
                                                         }
                                                         if (activity.attributes.depth !== 0) {
                                                             depth = parseInt(activity.attributes.depth);
@@ -1339,7 +1339,7 @@ App.FooterView = Backbone.View.extend({
                                                         var comment_string = '';
                                                         comment_string += '<li class="col-xs-' + (12 - depth) + ' js-activity activity-github-styles js-list-activity-' + activity.attributes.id + ' col-lg-offset-' + depth + '"><div class="media  modal-comments modal-logged-user-activities"><a title="' + activity.attributes.full_name + '(' + activity.attributes.username + ')" data-toggle="tooltip" class="js-tooltip pull-left" href="#/user/' + activity.attributes.user_id + '">';
                                                         comment_string += '' + profile_picture + '</a>';
-                                                        comment_string += '<div class="media-body"><div class="col-xs-12 btn-block"><div class="activities-list js-activity-' + activity.attributes.id + '"><div class="panel no-mar"><div class="panel-body">' + comment_details + '</div></div>';
+                                                        comment_string += '<div class="media-body"><div class="col-xs-12 btn-block"><div class="activities-list js-activity-' + activity.attributes.id + '"><div class="panel no-mar"><div class="panel-body github-markdown no-whitespace">' + comment_details + '</div></div>';
                                                         setInterval(function() {
                                                             parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.id);
                                                         }, 10000);
@@ -1377,6 +1377,7 @@ App.FooterView = Backbone.View.extend({
                                                                 $(comment_string).insertAfter($('.js-list-activity-' + parentCommentId));
                                                             }
                                                         }
+                                                        emojify.run();
                                                     }
                                                 }
                                             }
@@ -1551,7 +1552,7 @@ App.FooterView = Backbone.View.extend({
                                                 });
                                                 if ($.cookie('filter') !== 'comment') {
                                                     var new_view_activity = $('#js-card-activities-' + activity.attributes.card_id);
-                                                    if ($('#js-card-activities-' + activity.attributes.card_id + ' ' + '.js-list-activity-' + activity.attributes.id).length == 0) {
+                                                    if ($('#js-card-activities-' + activity.attributes.card_id + ' ' + '.js-list-activity-' + activity.attributes.id).length === 0) {
                                                         card.activities.unshift(modal_activity, {
                                                             silent: true
                                                         });
