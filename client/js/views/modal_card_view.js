@@ -1003,7 +1003,7 @@ App.ModalCardView = Backbone.View.extend({
         $('#js-card-modal-' + this.model.id).removeClass('drophover');
         $('#js-card-modal-' + this.model.id).find('#js-close-drag').addClass('hide');
     },
-    ModalheaderReset: function() {
+    Modalheaderreset: function() {
         var doc = $('#js-card-modal-' + this.model.id);
         if (doc.length !== 0) {
             var cards_subscribers = this.model.cards_subscribers.where({
@@ -1012,9 +1012,7 @@ App.ModalCardView = Backbone.View.extend({
             });
             var subscribed = '';
             if (!_.isEmpty(cards_subscribers)) {
-                subscribed = ' <span class="icon-eye-open" id="js-header-subscribe-icon-' + this.model.id + '"></span>';
-            } else {
-                subscribed = ' <span class="icon-eye-open hide" id="js-header-subscribe-icon-' + this.model.id + '"></span>';
+                subscribed = ' <span class="icon-eye-open"></span>';
             }
             var class_name = '';
             var text = i18next.t('%s in list %s %s', {
@@ -1042,9 +1040,7 @@ App.ModalCardView = Backbone.View.extend({
             });
             var subscribed = '';
             if (!_.isEmpty(cards_subscribers)) {
-                subscribed = ' <span class="icon-eye-open" id="js-header-subscribe-icon-' + this.model.id + '"></span>';
-            } else {
-                subscribed = ' <span class="icon-eye-open hide" id="js-header-subscribe-icon-' + this.model.id + '"></span>';
+                subscribed = ' <span class="icon-eye-open"></span>';
             }
             var class_name = '';
             var text = i18next.t('%s in list %s %s', {
@@ -1229,9 +1225,7 @@ App.ModalCardView = Backbone.View.extend({
                 user_id: parseInt(authuser.user.id)
             });
             if (!_.isEmpty(cards_subscribers)) {
-                subscribed = ' <span class="icon-eye-open" id="js-header-subscribe-icon-' + self.model.id + '"></span>';
-            } else {
-                subscribed = ' <span class="icon-eye-open hide" id="js-header-subscribe-icon-' + self.model.id + '"></span>';
+                subscribed = ' <span class="icon-eye-open"></span>';
             }
         }
         if (this.initialState) {
@@ -2578,11 +2572,10 @@ App.ModalCardView = Backbone.View.extend({
                 view_arhieve_delete.html('<a class="btn btn-primary dropdown-toggle js-open-dropdown even-action htruncate" href="#" role="button" data-toggle="dropdown" title="' + i18next.t('Delete') + '"><i class="icon-remove"></i>' + i18next.t('Delete') + '</a><ul class="dropdown-menu dropdown-menu-left arrow"><li class="js-dropdown-popup dropdown-popup"><div class="clearfix text-center col-xs-12"> <span class="col-xs-10"><strong>' + i18next.t('Delete Card') + '?</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a> </div><div class="col-xs-12 divider"></div><div class="col-xs-12"><p>' + i18next.t("All actions will be removed from the activity feed and you won't be able to reopen the card. There is no undo. You can archive a card to remove it from the board and preserve the activity.") + '</p><a class="js-delete-card btn  btn-primary" title="' + i18next.t('Delete') + '">' + i18next.t('Delete') + '</a> </div></li></ul>');
             }
         }
-        this.ModalheaderReset();
+        this.Modalheaderreset();
     },
     renderCardSubscriberCollection: function() {
         var view_subscribe = this.$('#js-modal-subscribe-show-' + this.model.id),
-            view_headersubscribe = $('#js-header-subscribe-icon-' + this.model.id),
             view_headdropsubscribe = this.$('#js-header-dropdown-subscribe-' + this.model.id),
             view_modal_title_subscribe = this.$('#js-title-subscribe-icon-' + this.model.id),
             cards_subscribers;
@@ -2595,12 +2588,11 @@ App.ModalCardView = Backbone.View.extend({
             });
         }
         if (!_.isUndefined(cards_subscribers) && !_.isEmpty(cards_subscribers)) {
-            view_headersubscribe.removeClass('hide');
             view_modal_title_subscribe.removeClass('hide');
         } else {
-            view_headersubscribe.addClass('hide');
             view_modal_title_subscribe.addClass('hide');
         }
+        this.Modalheaderreset();
         var subscribed = '',
             subscribe_disabled = '',
             subscribe_title = i18next.t('Subscribe'),
