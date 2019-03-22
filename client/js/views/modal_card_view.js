@@ -2552,7 +2552,9 @@ App.ModalCardView = Backbone.View.extend({
     },
     renderArchievedCollection: function() {
         var view_archived = this.$('#js-modal-archieved-show-' + this.model.id),
-            view_arhieve_delete = this.$('#js-modal-arhive-delete-' + this.model.id);
+            modal_action_view_archived = this.$('#js-modal-header-archieved-show-' + this.model.id),
+            view_arhieve_delete = this.$('#js-modal-archive-delete-' + this.model.id),
+            card_delete = this.$('#js-modal-action-card-delete-' + this.model.id);
         if (view_archived.length == 1) {
             view_archived.html('');
             if (!_.isUndefined(this.model) && !_.isEmpty(this.model)) {
@@ -2569,9 +2571,30 @@ App.ModalCardView = Backbone.View.extend({
                 }
             }
         }
+        if (modal_action_view_archived.length == 1) {
+            modal_action_view_archived.html('');
+            if (!_.isUndefined(this.model) && !_.isEmpty(this.model)) {
+                if (parseInt(this.model.attributes.is_archived) === 0) {
+                    modal_action_view_archived.append('<a class="panel-heading show js-archive-card" title="' + i18next.t('Archive') + '" href="javascript:void(0);">' + i18next.t('Archive') + '</a>');
+                    if (card_delete.length == 1) {
+                        card_delete.html('');
+                    }
+                } else if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
+                        slug: 'send_back_to_archived_card',
+                        board_user_role_id: parseInt(this.model.list.board_user_role_id)
+                    })))) {
+                    modal_action_view_archived.append('<a class=class="panel-heading show  js-card-send-to-board" title="' + i18next.t('Send to board') + '" href="">' + i18next.t('Send to board') + '</a>');
+                }
+            }
+        }
         if (view_arhieve_delete.length == 1) {
             if (parseInt(this.model.attributes.is_archived) === 1) {
                 view_arhieve_delete.html('<a class="btn btn-primary dropdown-toggle js-open-dropdown even-action htruncate" href="#" role="button" data-toggle="dropdown" title="' + i18next.t('Delete') + '"><i class="icon-remove"></i>' + i18next.t('Delete') + '</a><ul class="dropdown-menu dropdown-menu-left arrow"><li class="js-dropdown-popup dropdown-popup"><div class="clearfix text-center col-xs-12"> <span class="col-xs-10"><strong>' + i18next.t('Delete Card') + '?</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a> </div><div class="col-xs-12 divider"></div><div class="col-xs-12"><p>' + i18next.t("All actions will be removed from the activity feed and you won't be able to reopen the card. There is no undo. You can archive a card to remove it from the board and preserve the activity.") + '</p><a class="js-delete-card btn  btn-primary" title="' + i18next.t('Delete') + '">' + i18next.t('Delete') + '</a> </div></li></ul>');
+            }
+        }
+        if (card_delete.length == 1) {
+            if (parseInt(this.model.attributes.is_archived) === 1) {
+                card_delete.html('<a class="panel-heading show dropdown-toggle js-open-dropdown" href="#" data-toggle="dropdown" role="button" title="' + i18next.t('Delete') + '">' + i18next.t('Delete') + '</a><ul class="dropdown-menu dropdown-menu-left arrow"><li class="js-dropdown-popup dropdown-popup"><div class="clearfix text-center col-xs-12"> <span class="col-xs-10"><strong>' + i18next.t('Delete Card') + '?</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a> </div><div class="col-xs-12 divider"></div><div class="col-xs-12"><p>' + i18next.t("All actions will be removed from the activity feed and you won't be able to reopen the card. There is no undo. You can archive a card to remove it from the board and preserve the activity.") + '</p><a class="js-delete-card btn  btn-primary" title="' + i18next.t('Delete') + '">' + i18next.t('Delete') + '</a> </div></li></ul>');
             }
         }
         this.Modalheaderreset();
