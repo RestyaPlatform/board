@@ -956,6 +956,7 @@ App.FooterView = Backbone.View.extend({
                                     activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', activity.attributes.checklist_item_parent_name);
                                 }
                             } else if (activity.attributes.type === 'add_comment') {
+                                activity.set('originial_activity_comment', activity.attributes.comment);
                                 activity.attributes.comment = _.escape(activity.attributes.full_name) + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
                                 var patt = /@\w+/g;
                                 if (patt.test(activity.attributes.comment)) {
@@ -1015,6 +1016,9 @@ App.FooterView = Backbone.View.extend({
                         }
                         if (bool) {
                             if (activity.attributes.token !== authuser.access_token) {
+                                if (!_.isUndefined(activity.attributes.originial_activity_comment) && !_.isEmpty(activity.attributes.originial_activity_comment) && activity.attributes.originial_activity_comment !== null) {
+                                    activity.set('comment', activity.attributes.originial_activity_comment);
+                                }
                                 // Update board view code starting
                                 if (!_.isUndefined(activity.attributes.card_id) && activity.attributes.card_id !== 0 && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update Card
                                     var card = self.board.cards.findWhere({
@@ -1363,7 +1367,6 @@ App.FooterView = Backbone.View.extend({
                                                             comment_string += '</ul>';
                                                         }
                                                         comment_string += '</div><span class="pull-left col-xs-12 js-activity-reply-form-response-' + activity.attributes.id + '"></span></small></div></div></div></div><hr class="clearfix col-xs-12 btn-block"></hr></li>';
-
                                                         if (activity.attributes.depth === 0) {
                                                             $("ul#js-card-activities-" + activity.attributes.card_id).prepend(comment_string);
                                                         } else {
