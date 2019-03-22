@@ -1213,11 +1213,11 @@ App.ListView = Backbone.View.extend({
                     if ($('#js-card-' + e.attributes.id).length === 1) {
                         $('#js-card-' + e.attributes.id).replaceWith(view.render().el);
                     } else {
-                        filtered_cards = self.model.collection.board.cards.where({
+                        filtered_cards = self.model.board.cards.where({
                             is_archived: 0,
                             list_id: parseInt(self.model.id)
                         });
-                        if (filtered_cards.length === 1 || self.model.collection.board.cards.length === 0) {
+                        if (filtered_cards.length === 1 || self.model.board.cards.length === 0) {
                             $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
                         } else {
                             if (sort_by !== null && sort_by !== null) {
@@ -1266,7 +1266,7 @@ App.ListView = Backbone.View.extend({
             var view_card = this.$('#js-card-listing-' + this.model.id);
             view_card.html('');
             _(function() {
-                unarchived_cards = self.model.collection.board.cards.where({
+                unarchived_cards = self.model.board.cards.where({
                     list_id: parseInt(self.model.id),
                     is_archived: 0
                 });
@@ -1310,7 +1310,7 @@ App.ListView = Backbone.View.extend({
                         card.card_voters.add(card.get('card_voters'), {
                             silent: true
                         });
-                        card.cards = self.model.collection.board.cards;
+                        card.cards = self.model.board.cards;
                         card.list = self.model;
                         card.board_activities.add(self.model.activities, {
                             silent: true
