@@ -374,7 +374,7 @@
 							<li class="navbar-btn" id="js-modal-archieved-show-<%- card.attributes.id%>"> </li>
 					<% } %>
 					<% if((!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_card",board_user_role_id: parseInt(list.board_user_role_id)}))))){ %>
-						<li class="navbar-btn dropdown" id="js-modal-arhive-delete-<%- card.attributes.id%>"></li>
+						<li class="navbar-btn dropdown" id="js-modal-archive-delete-<%- card.attributes.id%>"></li>
 					<% } %>
 					</ul>
 				</div>
@@ -746,27 +746,11 @@
 		<li class = "card_templete_action_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
 		<li class="col-xs-12 divider"></li>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-		<li> <a class="panel-heading show <% if(parseInt(card.attributes.is_archived) === 0){ %>js-archive-card<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card', board_user_role_id: parseInt(list.board_user_role_id)})))) { %> js-card-send-to-board<% } %>" title="<% if(parseInt(card.attributes.is_archived) === 0){%><%- i18next.t('Archive') %><% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %><%- i18next.t('Send to board') %><%}%>" href="">
-				<% if(parseInt(card.attributes.is_archived) === 0){ %>
-					<%- i18next.t('Archive') %>
-				<% }else if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'send_back_to_archived_card',board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-				<%- i18next.t('Send to board') %>
-				<% } %>
-			</a> 
+			<li id="js-modal-header-archieved-show-<%- card.attributes.id%>"> </li>
 		</li>
 		<% } %>
 			<% if(parseInt(card.attributes.is_archived) === 1 && (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_card",board_user_role_id: parseInt(list.board_user_role_id)}))))){ %>
-			<li class="dropdown"> <a class="panel-heading show dropdown-toggle js-open-dropdown" href="#" data-toggle="dropdown" role="button"><%- i18next.t('Delete') %></a>
-				<ul class="dropdown-menu dropdown-menu-left arrow">
-				<li class="js-dropdown-popup dropdown-popup">
-					<div class="clearfix text-center col-xs-12"> <span class="col-xs-10"><strong><%- i18next.t('Delete Card') %>?</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a> </div>
-					<div class="col-xs-12 divider"></div>
-					<div class="col-xs-12">
-					<p><%- i18next.t("All actions will be removed from the activity feed and you won't be able to reopen the card. There is no undo. You can archive a card to remove it from the board and preserve the activity.") %></p>
-					<a class="js-delete-card btn  btn-primary" title="<%- i18next.t('Delete') %>"><%- i18next.t('Delete') %></a> </div>
-				</li>
-				</ul>
-			</li>
+			<li class="dropdown" id="js-modal-action-card-delete-<%- card.attributes.id%>"></li>
 		<% } %>
 	  <% } %>
 	  <li class="dropdown dropup js-more-dropdown">
