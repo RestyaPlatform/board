@@ -1528,6 +1528,27 @@ App.FooterView = Backbone.View.extend({
                                             self.board.cards.remove(card);
                                         }
                                     }
+                                    if (!_.isUndefined(activity.attributes.card_id) && activity.attributes.card_id !== 0) {
+                                        if (activity.attributes.type !== 'add_comment' && activity.attributes.type !== 'edit_comment' && activity.attributes.type !== 'delete_card_comment') {
+                                            if ($('#js-card-modal-' + activity.attributes.card_id).length == 1) {
+                                                var modal_activity = activity;
+                                                delete modal_activity.from_footer;
+                                                var new_activity_view = new App.ActivityView({
+                                                    model: modal_activity,
+                                                    board: self.board,
+                                                    flag: '1'
+                                                });
+                                                card.activities.unshift(modal_activity, {
+                                                    silent: true
+                                                });
+                                                if ($.cookie('filter') !== 'comment') {
+                                                    var new_view_activity = $('#js-card-activities-' + activity.attributes.card_id);
+                                                    new_view_activity.prepend(new_activity_view.render().el);
+                                                }
+                                                emojify.run();
+                                            }
+                                        }
+                                    }
                                 } else if (!_.isUndefined(activity.attributes.list_id) && activity.attributes.list_id !== 0 && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update List
                                     var list = self.board.lists.findWhere({
                                         id: parseInt(activity.attributes.list_id)
