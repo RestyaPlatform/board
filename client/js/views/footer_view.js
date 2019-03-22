@@ -1153,7 +1153,7 @@ App.FooterView = Backbone.View.extend({
                                                 card.set('checklist_item_completed_count', completed_count);
                                                 card.set('checklist_item_count', total_count);
                                             }
-                                        } else if (activity.attributes.type === 'add_card_label') {
+                                        } else if (activity.attributes.type === 'add_card_label' || activity.attributes.type === 'update_card_label') {
                                             var filtered_labels = self.board.labels.where({
                                                 card_id: activity.attributes.card_id
                                             });
@@ -1185,6 +1185,17 @@ App.FooterView = Backbone.View.extend({
                                                 i++;
                                             });
                                             card.set('cards_labels', activity.attributes.labels);
+                                        } else if (activity.attributes.type === 'delete_card_label') {
+                                            var remove_labels = self.board.labels.where({
+                                                card_id: activity.attributes.card_id
+                                            });
+                                            self.board.labels.remove(remove_labels, {
+                                                silent: true
+                                            });
+                                            card.labels.remove(remove_labels, {
+                                                silent: true
+                                            });
+                                            card.set('cards_labels', null);
                                         } else if (activity.attributes.type === 'add_card_voter') {
                                             if (_.isUndefined(card.attributes.cards_voters) || card.attributes.cards_voters === null) {
                                                 card.set('cards_voters', []);
