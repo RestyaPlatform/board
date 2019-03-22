@@ -21,19 +21,7 @@
 	</ul>
 	<% } %>
 	</span>
-	<%
-		if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
-			var cards_subscribers = card.cards_subscribers.where({
-				is_subscribed: 1,
-				user_id: parseInt(authuser.user.id)
-			});
-		}
-		
-		var subscribed = '';
-		if(!_.isUndefined(cards_subscribers) && !_.isEmpty(cards_subscribers)){
-	 %>
-	<span class="icon-eye-open"></span>
-	<% } %>
+	<span class="icon-eye-open hide" id="js-title-subscribe-icon-<%- card.attributes.id %>" ></span>
   </h3>
   <div class="clearfix navbar-btn row">
 	  <div class="splitter-wrap editor ui-resizable" >
@@ -457,39 +445,7 @@
 						</li>
 					<% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && _.isEmpty(cards_subscribers)) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && !_.isEmpty(cards_subscribers)))  || (!_.isEmpty(role_links.where({slug: "subscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2)))) { %>
-						<%
-							var subscribe_disabled = '';
-							var subscribe_title = i18next.t('Subscribe');
-							var subscribe_class = 'js-card-subscribe';
-							var subscribed = card.list.collection.board.board_subscribers.findWhere({
-								user_id: parseInt(authuser.user.id),
-								is_subscribed: 1
-							});
-							var list_subscribed = card.list.lists_subscribers.findWhere({
-								user_id: parseInt(authuser.user.id),
-								is_subscribed: 1
-							});
-							if(!_.isEmpty(cards_subscribers)){
-								subscribe_title = i18next.t('Unsubscribe');
-								subscribe_class = 'js-card-unsubscribe';
-							} 
-							if (subscribed) {
-								subscribe_disabled = 'disabled';
-								subscribe_class = 'js-no-action';
-								subscribe_title = i18next.t('Board wise subscription already enabled');
-							} else if(list_subscribed) {
-								subscribe_disabled = 'disabled';
-								subscribe_class = 'js-no-action';
-								subscribe_title = i18next.t('List wise subscription already enabled');
-							}
-						%>
-						<li class="navbar-btn">
-							<% if(!_.isEmpty(cards_subscribers)){ %>
-								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-close"></i><%- i18next.t('Unsubsribe') %></a> 
-							<% } else { %>
-								<a class="btn btn-default <%- subscribe_disabled %> <%- subscribe_class %> even-action htruncate" title="<%- subscribe_title %> " href=""><i class="icon-eye-open"></i><%- i18next.t('Subscribe') %></a>
-							<% } %>
-					  </li>
+						<li class="navbar-btn" id="js-modal-subscribe-show-<%- card.attributes.id%>"></li>
 				   <% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "card_template_add",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 					 <li class = "card_templete_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
@@ -888,41 +844,7 @@
 			</li>
 		<% } %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && _.isEmpty(cards_subscribers)) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)})) && !_.isEmpty(cards_subscribers)))  || (!_.isEmpty(role_links.where({slug: "subscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2)))) { %>
-			<%
-				var subscribe_disabled = '';
-				var subscribe_title = i18next.t('Subscribe');
-				var subscribe_class = 'js-card-subscribe';
-				var subscribed = card.list.collection.board.board_subscribers.findWhere({
-					user_id: parseInt(authuser.user.id),
-					is_subscribed: 1
-				});
-				var list_subscribed = card.list.lists_subscribers.findWhere({
-					user_id: parseInt(authuser.user.id),
-					is_subscribed: 1
-				});
-				if(!_.isEmpty(cards_subscribers)){
-					subscribe_title = i18next.t('Unsubscribe');
-					subscribe_class = 'js-card-unsubscribe';
-				} 
-				if (subscribed) {
-					subscribe_disabled = 'disabled';
-					subscribe_class = 'js-no-action';
-					subscribe_title = i18next.t('Board wise subscription already enabled');
-				} else if(list_subscribed) {
-					subscribe_disabled = 'disabled';
-					subscribe_class = 'js-no-action';
-					subscribe_title = i18next.t('List wise subscription already enabled');
-				}
-			%>
-				<li class="<%- subscribe_disabled %>"> <a class="<%- subscribe_class %>" title="<%- subscribe_title %> " href="">
-					<% if(!_.isEmpty(cards_subscribers)){ %>
-						<%- i18next.t('Unsubscribe') %>
-						<i class="icon-ok"></i>
-				<% } else { %>
-						<%- i18next.t('Subscribe') %>
-				<% } %>
-				</a> 
-			</li>
+			<li id="js-header-dropdown-subscribe-<%- card.attributes.id %>"></li>
 			<% } %>
 			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})) || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 				<li id="js-header-voteshow-<%- card.id %>"></li>

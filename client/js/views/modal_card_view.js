@@ -129,10 +129,9 @@ App.ModalCardView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         var self = this;
-        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection', 'renderColorCollection', 'renderNameCollection', 'renderDesciptionCollection');
-        this.model.bind('change:board_id  change:cards_checklists  change:cards_labels change:cards_subscribers  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
-
-        this.model.cards_subscribers.bind('add remove', this.refreshdock);
+        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection', 'renderColorCollection', 'renderNameCollection', 'renderDescriptionCollection', 'renderCardSubscriberCollection');
+        this.model.bind('change:board_id  change:cards_checklists  change:cards_labels  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
+        this.model.cards_subscribers.bind('add remove', this.renderCardSubscriberCollection);
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
         this.model.checklists.bind('add', this.renderChecklistsCollection);
         this.model.checklists.bind('change:name', this.renderChecklistsCollection);
@@ -146,8 +145,8 @@ App.ModalCardView = Backbone.View.extend({
         this.model.card_voters.bind('remove', this.renderVotersCollection);
         this.model.bind('change:color', this.renderColorCollection);
         this.model.bind('change:name', this.renderNameCollection);
-        this.model.bind('change:description', this.renderDesciptionCollection);
-        this.model.bind('add:description', this.renderDesciptionCollection);
+        this.model.bind('change:description', this.renderDescriptionCollection);
+        this.model.bind('add:description', this.renderDescriptionCollection);
         this.model.users.bind('add', this.renderUsersCollection);
         this.model.users.bind('remove', this.renderUsersCollection);
         this.model.attachments.bind('add', this.renderAttachmentsCollection);
@@ -1016,7 +1015,9 @@ App.ModalCardView = Backbone.View.extend({
             });
             var subscribed = '';
             if (!_.isEmpty(cards_subscribers)) {
-                subscribed = ' <span class="icon-eye-open"></span>';
+                subscribed = ' <span class="icon-eye-open" id="js-header-subscribe-icon-' + this.model.id + '"></span>';
+            } else {
+                subscribed = ' <span class="icon-eye-open hide" id="js-header-subscribe-icon-' + this.model.id + '"></span>';
             }
             var class_name = '';
             var text = i18next.t('%s in list %s %s', {
@@ -1129,6 +1130,7 @@ App.ModalCardView = Backbone.View.extend({
             this.renderLabelsCollection();
             this.renderUsersCollection();
             this.renderVotersCollection();
+            this.renderCardSubscriberCollection();
             this.model.activities = new App.ActivityCollection();
             var filter = $.cookie('filter');
             if (filter === undefined || filter === 'all') {
@@ -1199,7 +1201,9 @@ App.ModalCardView = Backbone.View.extend({
                 user_id: parseInt(authuser.user.id)
             });
             if (!_.isEmpty(cards_subscribers)) {
-                subscribed = ' <span class="icon-eye-open"></span>';
+                subscribed = ' <span class="icon-eye-open" id="js-header-subscribe-icon-' + self.model.id + '"></span>';
+            } else {
+                subscribed = ' <span class="icon-eye-open hide" id="js-header-subscribe-icon-' + self.model.id + '"></span>';
             }
         }
         if (this.initialState) {
@@ -1228,6 +1232,7 @@ App.ModalCardView = Backbone.View.extend({
             this.renderLabelsCollection();
             this.renderUsersCollection();
             this.renderVotersCollection();
+            this.renderCardSubscriberCollection();
             this.renderChecklistsCollection();
             var title = i18next.t('%s in list %s %s', {
                 postProcess: 'sprintf',
@@ -2520,6 +2525,72 @@ App.ModalCardView = Backbone.View.extend({
             self.$('#js-card-users-list-' + self.model.id).append(content);
         }
     },
+
+    renderCardSubscriberCollection: function() {
+        var view_subscribe = this.$('#js-modal-subscribe-show-' + this.model.id),
+            view_headersubscribe = $('#js-header-subscribe-icon-' + this.model.id),
+            view_headdropsubscribe = this.$('#js-header-dropdown-subscribe-' + this.model.id),
+            view_modal_title_subscribe = this.$('#js-title-subscribe-icon-' + this.model.id),
+            cards_subscribers;
+        view_subscribe.html('');
+        view_headdropsubscribe.html('');
+        if (!_.isUndefined(authuser) && !_.isUndefined(authuser.user)) {
+            cards_subscribers = this.model.cards_subscribers.where({
+                is_subscribed: 1,
+                user_id: parseInt(authuser.user.id)
+            });
+        }
+        if (!_.isUndefined(cards_subscribers) && !_.isEmpty(cards_subscribers)) {
+            view_headersubscribe.removeClass('hide');
+            view_modal_title_subscribe.removeClass('hide');
+        } else {
+            view_headersubscribe.addClass('hide');
+            view_modal_title_subscribe.addClass('hide');
+        }
+        var subscribed = '',
+            subscribe_disabled = '',
+            subscribe_title = i18next.t('Subscribe'),
+            subscribe_class = 'js-card-subscribe';
+        subscribed = this.model.list.collection.board.board_subscribers.findWhere({
+            user_id: parseInt(authuser.user.id),
+            is_subscribed: 1
+        });
+        var list_subscribed = this.model.list.lists_subscribers.findWhere({
+            user_id: parseInt(authuser.user.id),
+            is_subscribed: 1
+        });
+        if (!_.isEmpty(cards_subscribers)) {
+            subscribe_title = i18next.t('Unsubscribe');
+            subscribe_class = 'js-card-unsubscribe';
+        }
+        if (subscribed) {
+            subscribe_disabled = 'disabled';
+            subscribe_class = 'js-no-action';
+            subscribe_title = i18next.t('Board wise subscription already enabled');
+        } else if (list_subscribed) {
+            subscribe_disabled = 'disabled';
+            subscribe_class = 'js-no-action';
+            subscribe_title = i18next.t('List wise subscription already enabled');
+        }
+        if (!_.isEmpty(cards_subscribers)) {
+            if (view_subscribe.length == 1) {
+                view_subscribe.append('	<a class="btn btn-default ' + subscribe_disabled + ' ' + subscribe_class + ' even-action htruncate" title=" ' + i18next.t(subscribe_title) + '" href=""><i class="icon-eye-close"></i> ' + i18next.t('Unsubsribe') + '</a>');
+            }
+            if (view_headdropsubscribe.length == 1) {
+                view_headdropsubscribe.append(' <a class="' + subscribe_class + '" title="' + subscribe_title + '" href=""> ' + i18next.t('Unsubsribe') + ' <i class="icon-ok"></i></a>');
+                view_headdropsubscribe.addClass(subscribe_disabled);
+
+            }
+        } else {
+            if (view_subscribe.length == 1) {
+                view_subscribe.append('	<a class="btn btn-default ' + subscribe_disabled + ' ' + subscribe_class + ' even-action htruncate" title=" ' + i18next.t(subscribe_title) + '" href=""><i class="icon-eye-close"></i> ' + i18next.t('Subscribe') + '</a>');
+            }
+            if (view_headdropsubscribe.length == 1) {
+                view_headdropsubscribe.append(' <a class="' + subscribe_class + '" title="' + subscribe_title + '" href=""> ' + i18next.t('Subscribe') + '</a>');
+                view_headdropsubscribe.addClass(subscribe_disabled);
+            }
+        }
+    },
     /**
      * renderVotersCollection()
      * display card voters
@@ -2586,7 +2657,7 @@ App.ModalCardView = Backbone.View.extend({
 
     },
 
-    renderDesciptionCollection: function() {
+    renderDescriptionCollection: function() {
         var card_descview = this.$('.js-show-card-desc');
         if (card_descview.length == 1) {
             card_descview.html(this.converter.makeHtml(this.model.attributes.description));
