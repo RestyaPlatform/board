@@ -129,8 +129,10 @@ App.ModalCardView = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         var self = this;
-        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection', 'renderColorCollection', 'renderNameCollection', 'renderDescriptionCollection', 'renderCardSubscriberCollection');
-        this.model.bind('change:board_id  change:cards_checklists  change:cards_labels  change:is_archived  change:due_date change:start_date change:list_id  change:title', this.refreshdock);
+        _.bindAll(this, 'render', 'renderChecklistsCollection', 'renderAttachmentsCollection', 'renderUsersCollection', 'refreshdock', 'renderVotersCollection', 'renderColorCollection', 'renderNameCollection', 'renderDescriptionCollection', 'renderCardSubscriberCollection', 'renderArchievedCollection');
+        this.model.bind('change:board_id  change:cards_checklists  change:cards_labels change:due_date change:start_date change:list_id  change:title', this.refreshdock);
+        /* change:is_archived  */
+        this.model.bind('change:is_archived', this.renderArchievedCollection);
         this.model.cards_subscribers.bind('add remove', this.renderCardSubscriberCollection);
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
         this.model.checklists.bind('add', this.renderChecklistsCollection);
@@ -1001,6 +1003,31 @@ App.ModalCardView = Backbone.View.extend({
         $('#js-card-modal-' + this.model.id).removeClass('drophover');
         $('#js-card-modal-' + this.model.id).find('#js-close-drag').addClass('hide');
     },
+    ModalheaderReset: function() {
+        var doc = $('#js-card-modal-' + this.model.id);
+        if (doc.length !== 0) {
+            var cards_subscribers = this.model.cards_subscribers.where({
+                is_subscribed: 1,
+                user_id: parseInt(authuser.user.id)
+            });
+            var subscribed = '';
+            if (!_.isEmpty(cards_subscribers)) {
+                subscribed = ' <span class="icon-eye-open" id="js-header-subscribe-icon-' + this.model.id + '"></span>';
+            } else {
+                subscribed = ' <span class="icon-eye-open hide" id="js-header-subscribe-icon-' + this.model.id + '"></span>';
+            }
+            var class_name = '';
+            var text = i18next.t('%s in list %s %s', {
+                postProcess: 'sprintf',
+                sprintf: [_.escape(this.model.attributes.name), _.escape(this.model.list.attributes.name), subscribed]
+            });
+            if (parseInt(this.model.attributes.is_archived) === 1) {
+                class_name = ' label label-warning';
+                text = i18next.t('This card is archived.');
+            }
+            $('.title-text', doc.parent().prev('.dockmodal-header')).html('<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + text + '</span>');
+        }
+    },
     /**
      * refreshdock()
      * update dock modal view
@@ -1131,6 +1158,7 @@ App.ModalCardView = Backbone.View.extend({
             this.renderUsersCollection();
             this.renderVotersCollection();
             this.renderCardSubscriberCollection();
+            this.renderArchievedCollection();
             this.model.activities = new App.ActivityCollection();
             var filter = $.cookie('filter');
             if (filter === undefined || filter === 'all') {
@@ -1233,6 +1261,7 @@ App.ModalCardView = Backbone.View.extend({
             this.renderUsersCollection();
             this.renderVotersCollection();
             this.renderCardSubscriberCollection();
+            this.renderArchievedCollection();
             this.renderChecklistsCollection();
             var title = i18next.t('%s in list %s %s', {
                 postProcess: 'sprintf',
@@ -2525,7 +2554,32 @@ App.ModalCardView = Backbone.View.extend({
             self.$('#js-card-users-list-' + self.model.id).append(content);
         }
     },
-
+    renderArchievedCollection: function() {
+        var view_archived = this.$('#js-modal-archieved-show-' + this.model.id),
+            view_arhieve_delete = this.$('#js-modal-arhive-delete-' + this.model.id);
+        if (view_archived.length == 1) {
+            view_archived.html('');
+            if (!_.isUndefined(this.model) && !_.isEmpty(this.model)) {
+                if (parseInt(this.model.attributes.is_archived) === 0) {
+                    view_archived.append('<a class="btn btn-default  js-archive-card even-action htruncate" title="' + i18next.t('Archive') + '" href=""><i class="icon-cloud-download"></i> ' + i18next.t('Archive') + '</a>');
+                    if (view_arhieve_delete.length == 1) {
+                        view_arhieve_delete.html('');
+                    }
+                } else if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
+                        slug: 'send_back_to_archived_card',
+                        board_user_role_id: parseInt(this.model.list.board_user_role_id)
+                    })))) {
+                    view_archived.append('<a class="btn btn-default  js-card-send-to-board even-action htruncate" title="' + i18next.t('Send to board') + '" href=""><i class="icon-cloud-download"></i> ' + i18next.t('Send to board') + '</a>');
+                }
+            }
+        }
+        if (view_arhieve_delete.length == 1) {
+            if (parseInt(this.model.attributes.is_archived) === 1) {
+                view_arhieve_delete.html('<a class="btn btn-primary dropdown-toggle js-open-dropdown even-action htruncate" href="#" role="button" data-toggle="dropdown" title="' + i18next.t('Delete') + '"><i class="icon-remove"></i>' + i18next.t('Delete') + '</a><ul class="dropdown-menu dropdown-menu-left arrow"><li class="js-dropdown-popup dropdown-popup"><div class="clearfix text-center col-xs-12"> <span class="col-xs-10"><strong>' + i18next.t('Delete Card') + '?</strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a> </div><div class="col-xs-12 divider"></div><div class="col-xs-12"><p>' + i18next.t("All actions will be removed from the activity feed and you won't be able to reopen the card. There is no undo. You can archive a card to remove it from the board and preserve the activity.") + '</p><a class="js-delete-card btn  btn-primary" title="' + i18next.t('Delete') + '">' + i18next.t('Delete') + '</a> </div></li></ul>');
+            }
+        }
+        this.ModalheaderReset();
+    },
     renderCardSubscriberCollection: function() {
         var view_subscribe = this.$('#js-modal-subscribe-show-' + this.model.id),
             view_headersubscribe = $('#js-header-subscribe-icon-' + this.model.id),
@@ -2666,6 +2720,7 @@ App.ModalCardView = Backbone.View.extend({
             }
         }
     },
+
     /**
      * showChecklistAddForm()
      * display checklist add form users
