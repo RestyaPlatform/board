@@ -3143,7 +3143,8 @@ App.ModalCardView = Backbone.View.extend({
         });
         $('.js-acticity-action-' + activity_id).addClass('hide');
         $('.js-activity-reply-form-response-' + activity_id).html(new App.ActivityReplyFormView({
-            model: activitiy
+            model: activitiy,
+            list: this.model.list
         }).el);
         $('main').trigger('wikiActionRendered');
         return false;
