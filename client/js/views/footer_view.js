@@ -1080,7 +1080,7 @@ App.FooterView = Backbone.View.extend({
                                         }
                                         self.board.cards.add(new_card);
                                         if (!_.isUndefined(card_list)) {
-                                            card_list.set('cards', activity.attributes.card);
+                                            card_list.cards.add(new_card);
                                             var card_list_card_count = isNaN(card_list.attributes.card_count) ? 0 : card_list.attributes.card_count;
                                             // Updating the list card count
                                             card_list.set('card_count', parseInt(card_list_card_count) + 1);
