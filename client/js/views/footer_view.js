@@ -1678,115 +1678,115 @@ App.FooterView = Backbone.View.extend({
                                     }
                                 }
                             }
-                            if (!_.isUndefined(self.boards)) {
-                                var board = '';
-                                var board_list = '';
-                                var organization_boards = '';
-                                if (activity.attributes.board_id) {
-                                    board = self.boards.findWhere({
-                                        id: parseInt(activity.attributes.board_id)
+                        }
+                        if (!_.isUndefined(self.boards)) {
+                            var board = '';
+                            var board_list = '';
+                            var organization_boards = '';
+                            if (activity.attributes.board_id) {
+                                board = self.boards.findWhere({
+                                    id: parseInt(activity.attributes.board_id)
+                                });
+                            }
+                            if (!_.isUndefined(board)) {
+                                if (activity.attributes.list_id) {
+                                    board_list = board.lists.findWhere({
+                                        id: parseInt(activity.attributes.list_id)
                                     });
                                 }
-                                if (!_.isUndefined(board)) {
-                                    if (activity.attributes.list_id) {
-                                        board_list = board.lists.findWhere({
-                                            id: parseInt(activity.attributes.list_id)
-                                        });
-                                    }
-                                    if (activity.attributes.type === 'edit_organization' || activity.attributes.type === 'add_organization_attachment' || activity.attributes.type === 'delete_organization_attachment') {
-                                        organization_boards = self.boards.findWhere({
-                                            organization_id: parseInt(activity.attributes.organization_id)
-                                        });
-                                    }
-                                    if (activity.attributes.type == 'edit_board') {
-                                        board.set('name', activity.attributes.revisions.new_value.name);
-                                    } else if (activity.attributes.type == 'change_visibility') {
-                                        board.set('board_visibility', activity.attributes.revisions.new_value.board_visibility);
-                                    } else if (activity.attributes.type == 'change_background') {
-                                        board.set('background_color', activity.attributes.revisions.new_value.background_color);
-                                        board.set('background_picture_url', activity.attributes.revisions.new_value.background_picture_url);
-                                        board.set('background_pattern_url', activity.attributes.revisions.new_value.background_pattern_url);
-                                    } else if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card') {
-                                        if (parseInt(activity.attributes.user_id) === parseInt(authuser.user.id) && activity.attributes.type === 'add_card') {
-                                            // While using instant add card, count duplicates for logged in user. So skipped the card count update while fetch activities.
-                                        } else {
-                                            card_count = board.attributes.card_count + 1;
-                                            board.set('card_count', card_count);
-                                            board_list.set('card_count', board_list.attributes.card_count + 1);
-                                        }
-                                    } else if (activity.attributes.type === 'delete_card') {
-                                        card_count = board.attributes.card_count - 1;
+                                if (activity.attributes.type === 'edit_organization' || activity.attributes.type === 'add_organization_attachment' || activity.attributes.type === 'delete_organization_attachment') {
+                                    organization_boards = self.boards.findWhere({
+                                        organization_id: parseInt(activity.attributes.organization_id)
+                                    });
+                                }
+                                if (activity.attributes.type == 'edit_board') {
+                                    board.set('name', activity.attributes.revisions.new_value.name);
+                                } else if (activity.attributes.type == 'change_visibility') {
+                                    board.set('board_visibility', activity.attributes.revisions.new_value.board_visibility);
+                                } else if (activity.attributes.type == 'change_background') {
+                                    board.set('background_color', activity.attributes.revisions.new_value.background_color);
+                                    board.set('background_picture_url', activity.attributes.revisions.new_value.background_picture_url);
+                                    board.set('background_pattern_url', activity.attributes.revisions.new_value.background_pattern_url);
+                                } else if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card') {
+                                    if (parseInt(activity.attributes.user_id) === parseInt(authuser.user.id) && activity.attributes.type === 'add_card') {
+                                        // While using instant add card, count duplicates for logged in user. So skipped the card count update while fetch activities.
+                                    } else {
+                                        card_count = board.attributes.card_count + 1;
                                         board.set('card_count', card_count);
-                                        board_list.set('card_count', board_list.attributes.card_count - 1);
-                                    } else if (activity.attributes.type === 'move_card' || activity.attributes.type === 'moved_list_card') {
-                                        if (!_.isEmpty(activity.attributes.revisions.new_value)) {
-                                            board.set('card_count', '');
-                                            card_count = board.attributes.card_count;
-                                            board.set('card_count', card_count);
-                                            var new_board_list = board.lists.findWhere({
-                                                id: parseInt(activity.attributes.revisions.new_value.list_id)
-                                            });
-                                            new_board_list.set('card_count', new_board_list.attributes.card_count + 1);
-                                            var old_board_list = board.lists.findWhere({
-                                                id: parseInt(activity.attributes.revisions.old_value.list_id)
-                                            });
-                                            old_board_list.set('card_count', old_board_list.attributes.card_count - 1);
-                                        }
-                                    } else if (activity.attributes.type === 'change_list_position') {
-                                        if (!_.isEmpty(activity.attributes.revisions.new_value)) {
-                                            var change_new_list = board.lists.findWhere({
-                                                id: parseInt(activity.attributes.revisions.new_value.board_id)
-                                            });
-                                            change_new_list.add(activity.attributes.list);
-                                            var new_board = self.boards.findWhere({
-                                                id: parseInt(activity.attributes.revisions.new_value.board_id)
-                                            });
-                                            new_board.set('card_count', change_new_list.attributes.card_count + 1);
-                                            var change_old_list = board.lists.findWhere({
-                                                id: parseInt(activity.attributes.revisions.old_value.board_id)
-                                            });
-                                            change_old_list.remove(activity.attributes.list);
-                                            var old_board = self.boards.findWhere({
-                                                id: parseInt(activity.attributes.revisions.old_value.board_id)
-                                            });
-                                            old_board.set('card_count', change_old_list.attributes.card_count - 1);
-                                        }
-                                    } else if (activity.attributes.type === 'edit_list') {
-                                        board_list.set('name', activity.attributes.revisions.new_value.name);
-                                    } else if (activity.attributes.type === 'delete_list') {
-                                        card_count = board.attributes.card_count;
-                                        board.set('card_count', card_count - board_list.attributes.card_count);
-                                        board_list.remove(board.attributes.list);
-                                    } else if (activity.attributes.type === 'edit_organization') {
-                                        _.each(organization_boards.collection.models, function(organization_board) {
-                                            var rename_organization_board = self.boards.findWhere({
-                                                id: parseInt(organization_board.id)
-                                            });
-                                            rename_organization_board.set('organization_name', activity.attributes.revisions.new_value.name);
-                                        });
-                                    } else if (activity.attributes.type === 'add_organization_attachment' || activity.attributes.type === 'delete_organization_attachment') {
-                                        _.each(organization_boards.collection.models, function(organization_board) {
-                                            var change_organization_board = self.boards.findWhere({
-                                                id: parseInt(organization_board.id)
-                                            });
-                                            change_organization_board.set('organization_logo_url', activity.attributes.organization_logo_url);
-                                        });
-                                    } else if (activity.attributes.type === 'add_board_user') {
-                                        board.board_users.add(activity.attributes.board_user);
+                                        board_list.set('card_count', board_list.attributes.card_count + 1);
                                     }
-                                } else if (activity.attributes.type === 'add_board') {
-                                    var _new_board = new App.Board();
-                                    _new_board.set('id', parseInt(activity.attributes.board_id));
-                                    _new_board.set('name', activity.attributes.board_name);
-                                    _new_board.set('board_visibility', activity.attributes.board_visibility);
-                                    $('.js-my-boards').append(new App.BoardSimpleView({
-                                        model: _new_board,
-                                        id: 'js-my-board-' + activity.attributes.board_id,
-                                        className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + activity.attributes.board_id
-                                    }).el);
-                                    App.boards.add(_new_board);
+                                } else if (activity.attributes.type === 'delete_card') {
+                                    card_count = board.attributes.card_count - 1;
+                                    board.set('card_count', card_count);
+                                    board_list.set('card_count', board_list.attributes.card_count - 1);
+                                } else if (activity.attributes.type === 'move_card' || activity.attributes.type === 'moved_list_card') {
+                                    if (!_.isEmpty(activity.attributes.revisions.new_value)) {
+                                        board.set('card_count', '');
+                                        card_count = board.attributes.card_count;
+                                        board.set('card_count', card_count);
+                                        var new_board_list = board.lists.findWhere({
+                                            id: parseInt(activity.attributes.revisions.new_value.list_id)
+                                        });
+                                        new_board_list.set('card_count', new_board_list.attributes.card_count + 1);
+                                        var old_board_list = board.lists.findWhere({
+                                            id: parseInt(activity.attributes.revisions.old_value.list_id)
+                                        });
+                                        old_board_list.set('card_count', old_board_list.attributes.card_count - 1);
+                                    }
+                                } else if (activity.attributes.type === 'change_list_position') {
+                                    if (!_.isEmpty(activity.attributes.revisions.new_value)) {
+                                        var change_new_list = board.lists.findWhere({
+                                            id: parseInt(activity.attributes.revisions.new_value.board_id)
+                                        });
+                                        change_new_list.add(activity.attributes.list);
+                                        var new_board = self.boards.findWhere({
+                                            id: parseInt(activity.attributes.revisions.new_value.board_id)
+                                        });
+                                        new_board.set('card_count', change_new_list.attributes.card_count + 1);
+                                        var change_old_list = board.lists.findWhere({
+                                            id: parseInt(activity.attributes.revisions.old_value.board_id)
+                                        });
+                                        change_old_list.remove(activity.attributes.list);
+                                        var old_board = self.boards.findWhere({
+                                            id: parseInt(activity.attributes.revisions.old_value.board_id)
+                                        });
+                                        old_board.set('card_count', change_old_list.attributes.card_count - 1);
+                                    }
+                                } else if (activity.attributes.type === 'edit_list') {
+                                    board_list.set('name', activity.attributes.revisions.new_value.name);
+                                } else if (activity.attributes.type === 'delete_list') {
+                                    card_count = board.attributes.card_count;
+                                    board.set('card_count', card_count - board_list.attributes.card_count);
+                                    board_list.remove(board.attributes.list);
+                                } else if (activity.attributes.type === 'edit_organization') {
+                                    _.each(organization_boards.collection.models, function(organization_board) {
+                                        var rename_organization_board = self.boards.findWhere({
+                                            id: parseInt(organization_board.id)
+                                        });
+                                        rename_organization_board.set('organization_name', activity.attributes.revisions.new_value.name);
+                                    });
+                                } else if (activity.attributes.type === 'add_organization_attachment' || activity.attributes.type === 'delete_organization_attachment') {
+                                    _.each(organization_boards.collection.models, function(organization_board) {
+                                        var change_organization_board = self.boards.findWhere({
+                                            id: parseInt(organization_board.id)
+                                        });
+                                        change_organization_board.set('organization_logo_url', activity.attributes.organization_logo_url);
+                                    });
+                                } else if (activity.attributes.type === 'add_board_user') {
+                                    board.board_users.add(activity.attributes.board_user);
                                 }
                             }
+                        } else if (activity.attributes.type === 'add_board' && !_.isUndefined(App.boards) && !_.isEmpty(App.boards) && App.boards !== null) {
+                            var _new_board = new App.Board();
+                            _new_board.set('id', parseInt(activity.attributes.board_id));
+                            _new_board.set('name', activity.attributes.board_name);
+                            _new_board.set('board_visibility', activity.attributes.board_visibility);
+                            $('.js-my-boards').append(new App.BoardSimpleView({
+                                model: _new_board,
+                                id: 'js-my-board-' + activity.attributes.board_id,
+                                className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + activity.attributes.board_id
+                            }).el);
+                            App.boards.add(_new_board);
                         }
                         Auth = JSON.parse($.cookie('auth'));
                         if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id) || _.isUndefined(Auth.user.unread_activity_id))) {
