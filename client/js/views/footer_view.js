@@ -1781,7 +1781,7 @@ App.FooterView = Backbone.View.extend({
                             _new_board.set('id', parseInt(activity.attributes.board_id));
                             _new_board.set('name', activity.attributes.board_name);
                             _new_board.set('board_visibility', activity.attributes.board_visibility);
-                            $('.js-my-boards').append(new App.BoardSimpleView({
+                            $('.js-my-boards').prepend(new App.BoardSimpleView({
                                 model: _new_board,
                                 id: 'js-my-board-' + activity.attributes.board_id,
                                 className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + activity.attributes.board_id
