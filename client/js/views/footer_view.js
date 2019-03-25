@@ -1313,11 +1313,12 @@ App.FooterView = Backbone.View.extend({
                                                 if (!_.isEmpty(card.cards)) {
                                                     activity.cards.add(card.cards);
                                                 }
-
                                                 card.list.collection.board.activities.add(activity);
-                                                card.activities.add(activity, {
-                                                    silent: true
-                                                });
+                                                if (!_.isUndefined(card.activities) && !_.isEmpty(card.activities) && card.activities !== null) {
+                                                    card.activities.add(activity, {
+                                                        silent: true
+                                                    });
+                                                }
                                                 var current_card = card.list.collection.board.cards.get(activity.attributes.card_id);
                                                 var comment_count = (!_.isUndefined(current_card)) ? (parseInt(current_card.attributes.comment_count) + 1) : 0;
                                                 comment_count = isNaN(comment_count) ? 1 : comment_count;
@@ -1489,9 +1490,17 @@ App.FooterView = Backbone.View.extend({
                                                 self.board.activities.remove(self.board.activities.findWhere({
                                                     id: parseInt(activity.attributes.foreign_id)
                                                 }));
+                                                if (!_.isUndefined(card.activities) && !_.isEmpty(card.activities) && card.activities !== null) {
+                                                    card.activities.remove(card.activities.findWhere({
+                                                        id: parseInt(activity.attributes.foreign_id)
+                                                    }));
+                                                }
                                                 if ($('.js-list-activity-' + activity.attributes.foreign_id)) {
                                                     $('.js-list-activity-' + activity.attributes.foreign_id).remove();
                                                 }
+                                                var comment_card = card.list.collection.board.cards.get(activity.attributes.card_id);
+                                                var tmp_comment_count = (!_.isUndefined(comment_card)) ? (parseInt(comment_card.attributes.comment_count) - 1) : 0;
+                                                card.set('comment_count', tmp_comment_count);
                                             } else if (activity.attributes.type === 'delete_checklist') {
                                                 self.board.checklists.remove(self.board.checklists.findWhere({
                                                     id: parseInt(activity.attributes.foreign_id)
