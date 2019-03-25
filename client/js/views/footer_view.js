@@ -239,6 +239,83 @@ App.FooterView = Backbone.View.extend({
         }
         return this;
     },
+    cardsort: function(sort_by, sort_direction, list_cards) {
+        var filtered_cards = list_cards.filter(function(card) {
+            return parseInt(card.attributes.is_archived) === 0;
+        });
+        if (!_.isEmpty(filtered_cards)) {
+            var cards = new App.CardCollection();
+            cards.sortDirection = sort_direction;
+            cards.comparator = function(item) {
+                var str = '' + item.get(sort_by);
+                if (sort_by === 'name' || sort_by === 'list_name') {
+                    str = str.toLowerCase();
+                    str = str.split('');
+                    str = _.map(str, function(letter) {
+                        if (cards.sortDirection.toLowerCase() === 'desc') {
+                            return String.fromCharCode(-(letter.charCodeAt(0)));
+                        } else {
+                            return String.fromCharCode((letter.charCodeAt(0)));
+                        }
+                    });
+                    return str;
+                } else if (sort_by === 'due_date') {
+                    if (item.get('due_date') !== null) {
+                        var date = item.get('due_date').split(' ');
+                        if (!_.isUndefined(date[1])) {
+                            _date = date[0] + 'T' + date[1];
+                        } else {
+                            _date = date[0];
+                        }
+                        sort_date = new Date(_date);
+                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
+                } else if (sort_by === 'created_date') {
+                    if (item.get('created') !== null) {
+                        var created_date = item.get('created').split(' ');
+                        if (!_.isUndefined(created_date[1])) {
+                            _date = created_date[0] + 'T' + created_date[1];
+                        } else {
+                            _date = created_date[0];
+                        }
+                        sort_date = new Date(_date);
+                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
+                } else if (sort_by === 'list_moved_date') {
+                    if (item.get('list_moved_date') !== null) {
+                        var list_moved_date = item.get('list_moved_date').split(' ');
+                        if (!_.isUndefined(list_moved_date[1])) {
+                            _date = list_moved_date[0] + 'T' + list_moved_date[1];
+                        } else {
+                            _date = list_moved_date[0];
+                        }
+                        sort_date = new Date(_date);
+                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
+                } else if (sort_by === 'start_date') {
+                    if (item.get('custom_fields') !== null) {
+                        var inputArr = item.get('custom_fields');
+                        var start_date_time = JSON.parse(inputArr);
+                        if (!_.isUndefined(start_date_time.start_date)) {
+                            _date = start_date_time.start_date + 'T' + start_date_time.start_time;
+                        } else {
+                            _date = start_date_time.start_date;
+                        }
+                        sort_date = new Date(_date);
+                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
+                } else {
+                    if (cards.sortDirection === 'desc') {
+                        return -item.get(sort_by);
+                    } else {
+                        return item.get(sort_by);
+                    }
+                }
+            };
+            cards.reset(filtered_cards);
+            return cards;
+        }
+    },
     /**
      * actionBeat()
      * show instant card add form
@@ -1060,6 +1137,8 @@ App.FooterView = Backbone.View.extend({
                                                     activity.attributes.card.cards_users = cards_users;
                                                 }
                                             }
+                                            var board_sort_by = (self.board.attributes.sort_by) ? self.board.attributes.sort_by : 'position';
+                                            var bard_sort_direction = (self.board.attributes.sort_direction) ? self.board.attributes.sort_direction : 'asc';
                                             activity.attributes.card.is_archived = parseInt(activity.attributes.card.is_archived);
                                             new_card.set(activity.attributes.card);
                                             new_card.set('id', parseInt(activity.attributes.card.id));
@@ -1071,6 +1150,16 @@ App.FooterView = Backbone.View.extend({
                                                 id: parseInt(activity.attributes.list_id)
                                             });
                                             new_card.list = card_list;
+                                            var tmp_list_cards = card_list.cards;
+                                            tmp_list_cards.add(new_card, {
+                                                silent: true
+                                            });
+                                            var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, tmp_list_cards);
+                                            $.each(sort_filter_cards.models, function(key, filter_card) {
+                                                if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(activity.attributes.card.id)) {
+                                                    new_card.set('position', key);
+                                                }
+                                            });
                                             if (!_.isUndefined(card_list) && !_.isUndefined(card_list.attributes.card_count) && card_list.attributes.card_count === 0) {
                                                 // Removing the &nbsp; in the card listing after adding card or copy card
                                                 $('#js-card-listing-' + card_list.id).html(function(i, h) {
@@ -1405,9 +1494,20 @@ App.FooterView = Backbone.View.extend({
                                                 var card_old_list = self.board.lists.findWhere({
                                                     id: parseInt(activity.attributes.list_id)
                                                 });
-                                                card.set('position', activity.attributes.card_position);
                                                 var card_new_list = self.board.lists.findWhere({
                                                     id: parseInt(activity.attributes.foreign_id)
+                                                });
+                                                var tmp_sort_by = (self.board.attributes.sort_by) ? self.board.attributes.sort_by : 'position';
+                                                var tmp_sort_direction = (self.board.attributes.sort_direction) ? self.board.attributes.sort_direction : 'asc';
+                                                var tmp_newlist_cards = card_new_list.cards;
+                                                tmp_newlist_cards.add(card, {
+                                                    silent: true
+                                                });
+                                                var new_sort_filter_cards = self.cardsort(tmp_sort_by, tmp_sort_direction, tmp_newlist_cards);
+                                                $.each(new_sort_filter_cards.models, function(key, filter_card) {
+                                                    if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(card.id)) {
+                                                        card.set('position', key);
+                                                    }
                                                 });
                                                 if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(parseInt(activity.attributes.board_id)))) {
                                                     var updated_card_list_cards = self.board.cards.where({

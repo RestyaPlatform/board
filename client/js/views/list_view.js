@@ -1233,7 +1233,10 @@ App.ListView = Backbone.View.extend({
                                     if (card.attributes.position >= e.attributes.position && parseInt(card.attributes.id) !== parseInt(e.attributes.id)) {
                                         $('#js-card-' + card.attributes.id).before(view.render().el);
                                         bool = false;
-                                    } else if (cards_length === i) {
+                                    } else if (parseInt(card.attributes.id) === parseInt(e.attributes.id) && $('#js-card-' + card.attributes.id).length === 0) {
+                                        var prev_card_id = self.model.cards.models[i - 2].id;
+                                        $('#js-card-' + prev_card_id).after(view.render().el);
+                                    } else if (cards_length === i && $('#js-card-' + card.attributes.id).length === 0) {
                                         $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
                                         bool = false;
                                     }
