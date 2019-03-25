@@ -1207,15 +1207,6 @@ App.ListView = Backbone.View.extend({
                     model: e,
                     converter: self.converter
                 });
-                var current_param_split = Backbone.history.fragment.split('/');
-                if (!_.isUndefined(current_param_split['2']) && current_param_split['2'] !== null && current_param_split['2'].indexOf('list') !== -1) {
-                    view = new App.CardView({
-                        tagName: 'tr',
-                        className: 'js-show-modal-card-view cur txt-aligns',
-                        model: e,
-                        template: 'list_view'
-                    });
-                }
                 if (parseInt(e.attributes.is_archived) === 0) {
                     if ($('#js-card-' + e.attributes.id).length === 1) {
                         $('#js-card-' + e.attributes.id).replaceWith(view.render().el);
