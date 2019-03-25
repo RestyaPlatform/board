@@ -1194,6 +1194,13 @@ App.ListView = Backbone.View.extend({
                 if (_.isUndefined(e.list)) {
                     e.list = self.model;
                 }
+                if (!_.isUndefined(e.board_users) && !_.isEmpty(e.board_users) && e.board_users !== null) {
+                    if (_.isUndefined(e.board_users.board) || _.isEmpty(e.board_users.board) || e.board_users.board === null) {
+                        e.board_users.board = self.model.board;
+                    }
+                } else {
+                    e.board_users = self.model.board_users;
+                }
                 var view;
                 view = new App.CardView({
                     tagName: 'div',
