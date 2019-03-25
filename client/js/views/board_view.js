@@ -464,6 +464,7 @@ App.BoardView = Backbone.View.extend({
     reopenBoard: function(e) {
         var data = $(e.target).serializeObject();
         this.model.url = api_url + 'boards/' + this.model.id + '.json';
+        App.boards.get(this.model.id).set('is_closed', 0);
         this.model.set('is_closed', 0);
         this.model.save({
             is_closed: 0
