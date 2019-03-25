@@ -1589,6 +1589,7 @@ App.FooterView = Backbone.View.extend({
                                             new_list.set('id', parseInt(activity.attributes.list.id));
                                             new_list.set('board_id', parseInt(activity.attributes.list.board_id));
                                             new_list.set('lists_cards', []);
+                                            new_list.set('is_archived', 0);
                                             self.board.lists.add(new_list);
 
                                             if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(new_list.attributes.board_id))) {
