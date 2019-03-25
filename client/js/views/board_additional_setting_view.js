@@ -50,15 +50,14 @@ App.BoardAdditionalSettingsView = Backbone.View.extend({
         App.boards.get(this.model.id).set('sort_direction', sort_direction);
         this.model.set('sort_by', sort_by);
         this.model.set('sort_direction', sort_direction);
+        $('.js-back-to-sidebar').trigger('click');
+        $('.js-show-board-actions').parent('.dropdown').removeClass('open');
         board.save({
             sort_by: sort_by,
             sort_direction: sort_direction,
             id: this.model.id
         }, {
-            success: function(model, response) {
-                $('.js-back-to-sidebar').trigger('click');
-                $('.js-show-board-actions').parent('.dropdown').removeClass('open');
-            }
+            success: function(model, response) {}
         });
         return false;
     },

@@ -73,6 +73,7 @@ App.ShowCopyBoardView = Backbone.View.extend({
             data.user_id = authuser.user.id;
             var board = new App.Board();
             board.url = api_url + 'boards/' + this.model.id + '/copy.json';
+            $('.js-back-to-sidebar').trigger('click');
             board.save(data, {
                 success: function(model, response) {
                     if (!_.isUndefined(board.get('id'))) {
