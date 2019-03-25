@@ -1361,7 +1361,7 @@ function importTrelloBoard($board = array())
                     $comment = __l('##USER_NAME## created board');
                 } else if ($action['type'] == 'updateBoard') {
                     if (!empty($action['data']['board']['closed']) && isset($action['data']['board']['closed'])) {
-                        $type = 'reopen_board';
+                        $type = 'close_board';
                         $comment = __l('##USER_NAME## closed ##BOARD_NAME## board.');
                     } else if (!empty($action['data']['board']['closed'])) {
                         $type = 'reopen_board';
@@ -2678,7 +2678,7 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
         }
         if (!empty($comment)) {
             $revision = '';
-            if ($activity_type != 'reopen_board' && $activity_type != 'moved_list_card' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'delete_organization_attachment' && $activity_type != 'move_card') {
+            if ($activity_type != 'reopen_board' && $activity_type != 'close_board' && $activity_type != 'moved_list_card' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'delete_organization_attachment' && $activity_type != 'move_card') {
                 $qry_va_arr = array(
                     $id
                 );

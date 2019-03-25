@@ -1680,6 +1680,12 @@ App.FooterView = Backbone.View.extend({
                                         self.board.board_users.remove(self.board.board_users.findWhere({
                                             id: activity.attributes.foreign_id
                                         }));
+                                    } else if (activity.attributes.type === 'close_board') {
+                                        App.boards.get(activity.attributes.board_id).set('is_closed', 1);
+                                        self.board.set('is_closed', 1);
+                                    } else if (activity.attributes.type === 'reopen_board') {
+                                        App.boards.get(activity.attributes.board_id).set('is_closed', 0);
+                                        self.board.set('is_closed', 0);
                                     }
                                 }
                             }

@@ -5988,7 +5988,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $activity_type = 'change_visibility';
         } else if (!empty($r_put['is_closed'])) {
             $comment = '##USER_NAME## closed ##BOARD_NAME## board.';
-            $activity_type = 'reopen_board';
+            $activity_type = 'close_board';
         } else if (isset($r_put['is_closed'])) {
             $comment = '##USER_NAME## reopened ##BOARD_NAME## board.';
             $activity_type = 'reopen_board';
