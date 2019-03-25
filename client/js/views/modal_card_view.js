@@ -237,6 +237,7 @@ App.ModalCardView = Backbone.View.extend({
         $('#js-carousel-card-' + card_id).css("border-left", '5px solid ' + color_label);
         $('.js-remove-card-color').addClass('hide');
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '.json';
+        $('.js-close-popover').click();
         self.model.save(data, {
             patch: true,
             success: function(model, response) {
@@ -280,6 +281,7 @@ App.ModalCardView = Backbone.View.extend({
         $('#js-carousel-card-' + card_id).css("border-left", '5px solid ' + color_label);
         $('.js-remove-card-color').removeClass('hide');
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '.json';
+        $('.js-close-popover').click();
         self.model.save(data, {
             patch: true,
             success: function(model, response) {
@@ -872,6 +874,7 @@ App.ModalCardView = Backbone.View.extend({
         }
         if (validation) {
             this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
+            $('.js-close-popover').click();
             this.model.save(data, {
                 patch: true,
                 success: function(model, response, options) {
@@ -1953,6 +1956,7 @@ App.ModalCardView = Backbone.View.extend({
         }
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
         var self = this;
+        $('.js-close-popover').click();
         this.model.save(data, {
             patch: true,
             success: function(model, response) {
@@ -2874,6 +2878,7 @@ App.ModalCardView = Backbone.View.extend({
             return (!_.isUndefined(checklist)) ? checklist.attributes.position : 1;
         });
         data.position = (!_.isUndefined(postion) && !_.isEmpty(postion)) ? postion.get('position') + 1 : 1;
+        $('.js-close-popover').click();
         var card_checklist = new App.CheckList();
         card_checklist.set('is_offline', true);
         card_checklist.url = api_url + 'checklists.json';
@@ -3512,6 +3517,7 @@ App.ModalCardView = Backbone.View.extend({
         if (!_.isEmpty(this.model.attributes.due_date) && this.model.attributes.due_date !== '') {
             this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
             this.model.set('due_date', null);
+            $('.js-close-popover').click();
             this.model.save({
                 due_date: 'NULL'
             }, {
@@ -3787,6 +3793,7 @@ App.ModalCardView = Backbone.View.extend({
         var current_card = this.model.attributes;
         data.board_id = parseInt(data.board_id);
         card.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/copy.json';
+        $('.js-close-popover').click();
         card.save(data, {
             patch: true,
             success: function(model, response, options) {
