@@ -847,194 +847,327 @@ App.FooterView = Backbone.View.extend({
         var tmp_unreaded_card = {};
         localforage.getItem('unreaded_cards', function(err, value) {
             tmp_unreaded_card = (value !== null && value !== undefined) ? value : tmp_unreaded_card;
-        });
-        activities.fetch({
-            cache: false,
-            success: function() {
-                if (mode == 1) {
-                    activities.setSortField('id', 'asc');
-                    activities.sort();
-                }
-                $('#js-activity-loader').remove();
-                if (!_.isEmpty(activities.models)) {
-                    $('#js-load-link').removeClass('hide');
-                    var last_activity = _.min(activities.models, function(activity) {
-                        return activity.id;
-                    });
-                    last_user_activity_id = last_activity.id;
-                    $('.notification-list').removeClass('notification-empty');
-                    $('#js-notification-load-more').removeClass('hide');
-                    var count = 0;
-                    activities.each(function(activity) {
-                        if (activity.attributes.token !== authuser.access_token) {
-                            count += 1;
-                        }
-                    });
-                    var update_last_activity = _.max(activities.models, function(activity) {
-                        return activity.id;
-                    });
+            activities.fetch({
+                cache: false,
+                success: function() {
                     if (mode == 1) {
-                        favCount += parseInt(count);
-                        favicon.badge(favCount);
-                        if (parseInt(favCount) > 0) {
-                            $('.js-notification-count').removeClass('hide').html(favCount);
-                        } else {
-                            $('.js-notification-count').addClass('hide');
-                        }
-                        if ($.cookie('auth')) {
-                            Auth = JSON.parse($.cookie('auth'));
-                            Auth.user.last_activity_id = (parseInt(Auth.user.last_activity_id) < parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id;
-                            Auth.user.notify_count = favCount;
-                            $.cookie('auth', JSON.stringify(Auth));
-                        }
-                        authuser.user.last_activity_id = (parseInt(Auth.user.last_activity_id) < parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id;
-                    } else if (mode == 2) {
-                        if (favCount > 0) {
+                        activities.setSortField('id', 'asc');
+                        activities.sort();
+                    }
+                    $('#js-activity-loader').remove();
+                    if (!_.isEmpty(activities.models)) {
+                        $('#js-load-link').removeClass('hide');
+                        var last_activity = _.min(activities.models, function(activity) {
+                            return activity.id;
+                        });
+                        last_user_activity_id = last_activity.id;
+                        $('.notification-list').removeClass('notification-empty');
+                        $('#js-notification-load-more').removeClass('hide');
+                        var count = 0;
+                        activities.each(function(activity) {
+                            if (activity.attributes.token !== authuser.access_token) {
+                                count += 1;
+                            }
+                        });
+                        var update_last_activity = _.max(activities.models, function(activity) {
+                            return activity.id;
+                        });
+                        if (mode == 1) {
+                            favCount += parseInt(count);
+                            favicon.badge(favCount);
+                            if (parseInt(favCount) > 0) {
+                                $('.js-notification-count').removeClass('hide').html(favCount);
+                            } else {
+                                $('.js-notification-count').addClass('hide');
+                            }
                             if ($.cookie('auth')) {
                                 Auth = JSON.parse($.cookie('auth'));
-                                var user = new App.User();
-                                user.url = api_url + 'users/' + authuser.user.id + '.json';
-                                user.set('id', parseInt(authuser.user.id));
-                                user.save({
-                                    'last_activity_id': (parseInt(Auth.user.last_activity_id) < parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id
-                                });
-                                authuser.user.notify_count = 0;
-                                Auth.user.notify_count = 0;
-                                favicon.badge(0);
-                                $('.js-notification-count').addClass('hide');
+                                Auth.user.last_activity_id = (parseInt(Auth.user.last_activity_id) < parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id;
+                                Auth.user.notify_count = favCount;
                                 $.cookie('auth', JSON.stringify(Auth));
                             }
+                            authuser.user.last_activity_id = (parseInt(Auth.user.last_activity_id) < parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id;
+                        } else if (mode == 2) {
+                            if (favCount > 0) {
+                                if ($.cookie('auth')) {
+                                    Auth = JSON.parse($.cookie('auth'));
+                                    var user = new App.User();
+                                    user.url = api_url + 'users/' + authuser.user.id + '.json';
+                                    user.set('id', parseInt(authuser.user.id));
+                                    user.save({
+                                        'last_activity_id': (parseInt(Auth.user.last_activity_id) < parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id
+                                    });
+                                    authuser.user.notify_count = 0;
+                                    Auth.user.notify_count = 0;
+                                    favicon.badge(0);
+                                    $('.js-notification-count').addClass('hide');
+                                    $.cookie('auth', JSON.stringify(Auth));
+                                }
+                            }
                         }
-                    }
-                    activities.each(function(activity) {
-                        var card_id = activity.attributes.card_id;
-                        Auth = JSON.parse($.cookie('auth'));
-                        if (_.isUndefined(Auth.user.unread_activity_id) || (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id))) {
-                            if (activity.attributes.token !== authuser.access_token && card_id !== 0) {
-                                if (!_.isUndefined(tmp_unreaded_card) && tmp_unreaded_card !== null && !_.isEmpty(tmp_unreaded_card)) {
-                                    if (!_.isUndefined(tmp_unreaded_card[card_id]) && tmp_unreaded_card[card_id] !== null) {
-                                        if ((parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id)) || _.isUndefined(Auth.user.unread_activity_id)) {
-                                            tmp_unreaded_card[card_id] = tmp_unreaded_card[card_id] + 1;
+                        activities.each(function(activity) {
+                            var card_id = activity.attributes.card_id;
+                            Auth = JSON.parse($.cookie('auth'));
+                            if (_.isUndefined(Auth.user.unread_activity_id) || (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id))) {
+                                if (activity.attributes.token !== authuser.access_token && card_id !== 0) {
+                                    if (!_.isUndefined(tmp_unreaded_card) && tmp_unreaded_card !== null && !_.isEmpty(tmp_unreaded_card)) {
+                                        if (!_.isUndefined(tmp_unreaded_card[card_id]) && tmp_unreaded_card[card_id] !== null) {
+                                            if ((parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id)) || _.isUndefined(Auth.user.unread_activity_id)) {
+                                                tmp_unreaded_card[card_id] = tmp_unreaded_card[card_id] + 1;
+                                            } else {
+                                                tmp_unreaded_card[card_id] = tmp_unreaded_card[card_id];
+                                            }
                                         } else {
-                                            tmp_unreaded_card[card_id] = tmp_unreaded_card[card_id];
+                                            tmp_unreaded_card[card_id] = 1;
                                         }
                                     } else {
                                         tmp_unreaded_card[card_id] = 1;
                                     }
-                                } else {
-                                    tmp_unreaded_card[card_id] = 1;
-                                }
-                                if (tmp_unreaded_card[card_id] > 0) {
-                                    if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
-                                        $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + tmp_unreaded_card[card_id] + '</span></span></small>');
-                                    } else if ($('#js-card-' + card_id).find('.js-unread-notification').length === 1) {
-                                        $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + tmp_unreaded_card[card_id] + '</span></span></small>');
+                                    if (tmp_unreaded_card[card_id] > 0) {
+                                        if ($('#js-card-' + card_id).find('.js-unread-notification').length === 0) {
+                                            $('#js-card-' + card_id).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + tmp_unreaded_card[card_id] + '</span></span></small>');
+                                        } else if ($('#js-card-' + card_id).find('.js-unread-notification').length === 1) {
+                                            $('#js-card-' + card_id).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + tmp_unreaded_card[card_id] + '</span></span></small>');
+                                        }
                                     }
                                 }
                             }
-                        }
-                        activity.from_footer = true;
-                        if (mode == 1 && activity.attributes.token !== authuser.access_token && Notification.permission === 'granted') {
-                            var icon = window.location.pathname + 'img/logo-icon.png';
-                            if (activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
-                                var cardLink = activity.attributes.card_name;
-                                activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', _.escape(activity.attributes.organization_name));
-                                activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', _.escape(activity.attributes.full_name));
-                                activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
-                                activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', activity.attributes.label_name);
-                                activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', activity.attributes.card_name);
-                                activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', activity.attributes.card_description);
-                                activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', activity.attributes.list_name);
-                                activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', activity.attributes.board_name);
-                                if (!_.isUndefined(activity.attributes.checklist_name)) {
-                                    activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', activity.attributes.checklist_name);
+                            activity.from_footer = true;
+                            if (mode == 1 && activity.attributes.token !== authuser.access_token && Notification.permission === 'granted') {
+                                var icon = window.location.pathname + 'img/logo-icon.png';
+                                if (activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
+                                    var cardLink = activity.attributes.card_name;
+                                    activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', _.escape(activity.attributes.organization_name));
+                                    activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', _.escape(activity.attributes.full_name));
+                                    activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
+                                    activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', activity.attributes.label_name);
+                                    activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', activity.attributes.card_name);
+                                    activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', activity.attributes.card_description);
+                                    activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', activity.attributes.list_name);
+                                    activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', activity.attributes.board_name);
+                                    if (!_.isUndefined(activity.attributes.checklist_name)) {
+                                        activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', activity.attributes.checklist_name);
+                                    }
+                                    if (!_.isUndefined(activity.attributes.checklist_item_name)) {
+                                        activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', activity.attributes.checklist_item_name);
+                                    }
+                                    if (!_.isUndefined(activity.attributes.checklist_item_parent_name)) {
+                                        activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', activity.attributes.checklist_item_parent_name);
+                                    }
+                                } else if (activity.attributes.type === 'add_comment') {
+                                    activity.set('originial_activity_comment', activity.attributes.comment);
+                                    activity.attributes.comment = _.escape(activity.attributes.full_name) + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                    var patt = /@\w+/g;
+                                    if (patt.test(activity.attributes.comment)) {
+                                        activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned you in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                    }
                                 }
-                                if (!_.isUndefined(activity.attributes.checklist_item_name)) {
-                                    activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', activity.attributes.checklist_item_name);
-                                }
-                                if (!_.isUndefined(activity.attributes.checklist_item_parent_name)) {
-                                    activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', activity.attributes.checklist_item_parent_name);
-                                }
-                            } else if (activity.attributes.type === 'add_comment') {
-                                activity.set('originial_activity_comment', activity.attributes.comment);
-                                activity.attributes.comment = _.escape(activity.attributes.full_name) + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
-                                var patt = /@\w+/g;
-                                if (patt.test(activity.attributes.comment)) {
-                                    activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned you in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                if (authuser.user.default_desktop_notification === true || authuser.user.default_desktop_notification === 'true' || authuser.user.default_desktop_notification === 't') {
+                                    var patt_match = activity.attributes.comment.match(/@\w+/g);
+                                    if ((authuser.user.is_list_notifications_enabled === true || authuser.user.is_list_notifications_enabled === 'true' || authuser.user.is_list_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, list_notifications_array) !== -1)) {
+                                        new Notification(activity.attributes.comment, {
+                                            icon: icon
+                                        });
+                                    } else if ((authuser.user.is_card_notifications_enabled === true || authuser.user.is_card_notifications_enabled === 'true' || authuser.user.is_card_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_notifications_array) !== -1)) {
+                                        new Notification(activity.attributes.comment, {
+                                            icon: icon
+                                        });
+                                    } else if ((authuser.user.is_card_members_notifications_enabled === true || authuser.user.is_card_members_notifications_enabled === 'true' || authuser.user.is_card_members_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_members_notifications_array) !== -1)) {
+                                        new Notification(activity.attributes.comment, {
+                                            icon: icon
+                                        });
+                                    } else if ((authuser.user.is_card_labels_notifications_enabled === true || authuser.user.is_card_labels_notifications_enabled === 'true' || authuser.user.is_card_labels_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_labels_notifications_array) !== -1)) {
+                                        new Notification(activity.attributes.comment, {
+                                            icon: icon
+                                        });
+                                    } else if ((authuser.user.is_card_checklists_notifications_enabled === true || authuser.user.is_card_checklists_notifications_enabled === 'true' || authuser.user.is_card_checklists_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_checklists_notifications_array) !== -1)) {
+                                        new Notification(activity.attributes.comment, {
+                                            icon: icon
+                                        });
+                                    } else if ((authuser.user.is_card_attachments_notifications_enabled === true || authuser.user.is_card_attachments_notifications_enabled === 'true' || authuser.user.is_card_attachments_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_attachments_notifications_array) !== -1)) {
+                                        new Notification(activity.attributes.comment, {
+                                            icon: icon
+                                        });
+                                    } else if (patt_match.length > 0) {
+                                        $.each(patt_match, function(index, user) {
+                                            if (user === '@' + authuser.user.username) {
+                                                new Notification(activity.attributes.comment, {
+                                                    icon: icon
+                                                });
+                                            }
+                                        });
+                                    }
                                 }
                             }
-                            if (authuser.user.default_desktop_notification === true || authuser.user.default_desktop_notification === 'true' || authuser.user.default_desktop_notification === 't') {
-                                var patt_match = activity.attributes.comment.match(/@\w+/g);
-                                if ((authuser.user.is_list_notifications_enabled === true || authuser.user.is_list_notifications_enabled === 'true' || authuser.user.is_list_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, list_notifications_array) !== -1)) {
-                                    new Notification(activity.attributes.comment, {
-                                        icon: icon
-                                    });
-                                } else if ((authuser.user.is_card_notifications_enabled === true || authuser.user.is_card_notifications_enabled === 'true' || authuser.user.is_card_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_notifications_array) !== -1)) {
-                                    new Notification(activity.attributes.comment, {
-                                        icon: icon
-                                    });
-                                } else if ((authuser.user.is_card_members_notifications_enabled === true || authuser.user.is_card_members_notifications_enabled === 'true' || authuser.user.is_card_members_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_members_notifications_array) !== -1)) {
-                                    new Notification(activity.attributes.comment, {
-                                        icon: icon
-                                    });
-                                } else if ((authuser.user.is_card_labels_notifications_enabled === true || authuser.user.is_card_labels_notifications_enabled === 'true' || authuser.user.is_card_labels_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_labels_notifications_array) !== -1)) {
-                                    new Notification(activity.attributes.comment, {
-                                        icon: icon
-                                    });
-                                } else if ((authuser.user.is_card_checklists_notifications_enabled === true || authuser.user.is_card_checklists_notifications_enabled === 'true' || authuser.user.is_card_checklists_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_checklists_notifications_array) !== -1)) {
-                                    new Notification(activity.attributes.comment, {
-                                        icon: icon
-                                    });
-                                } else if ((authuser.user.is_card_attachments_notifications_enabled === true || authuser.user.is_card_attachments_notifications_enabled === 'true' || authuser.user.is_card_attachments_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, card_attachments_notifications_array) !== -1)) {
-                                    new Notification(activity.attributes.comment, {
-                                        icon: icon
-                                    });
-                                } else if (patt_match.length > 0) {
-                                    $.each(patt_match, function(index, user) {
-                                        if (user === '@' + authuser.user.username) {
-                                            new Notification(activity.attributes.comment, {
-                                                icon: icon
+                            var view = new App.ActivityView({
+                                model: activity,
+                                type: 'all',
+                                board: self.board,
+                                flag: '2'
+                            });
+                            $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
+                            if (mode == 1) {
+                                view_activity.prepend(view.render().el);
+                            } else {
+                                if ($('.js-list-activity-' + activity.id, view_activity).length === 0) {
+                                    view_activity.append(view.render().el);
+                                }
+                            }
+                            if (bool) {
+                                if (activity.attributes.token !== authuser.access_token) {
+                                    if (!_.isUndefined(activity.attributes.originial_activity_comment) && !_.isEmpty(activity.attributes.originial_activity_comment) && activity.attributes.originial_activity_comment !== null) {
+                                        activity.set('comment', activity.attributes.originial_activity_comment);
+                                    }
+                                    // Update board view code starting
+                                    if (!_.isUndefined(activity.attributes.card_id) && activity.attributes.card_id !== 0 && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update Card
+                                        var card = self.board.cards.findWhere({
+                                            id: parseInt(activity.attributes.card_id)
+                                        });
+                                        if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card') {
+                                            var new_card = new App.Card();
+                                            if (activity.attributes.type === 'add_card') {
+                                                activity.attributes.card.cards_labels = null;
+                                                activity.attributes.card.cards_users = null;
+                                            } else {
+                                                if (!_.isUndefined(activity.attributes.card.cards_labels) && activity.attributes.card.cards_labels !== null) {
+                                                    var card_labels = JSON.parse(activity.attributes.card.cards_labels);
+                                                    activity.attributes.card.cards_labels = card_labels;
+                                                    var label_count = 1;
+                                                    _.each(activity.attributes.card.cards_labels, function(label) {
+                                                        var new_label = new App.Label();
+                                                        new_label.set(label);
+                                                        new_label.set('id', parseInt(label.id));
+                                                        new_label.set('label_id', parseInt(label.label_id));
+                                                        new_label.set('card_id', parseInt(label.card_id));
+                                                        new_label.set('list_id', parseInt(label.list_id));
+                                                        new_label.set('board_id', parseInt(label.board_id));
+                                                        self.board.labels.add(new_label, {
+                                                            silent: true
+                                                        });
+                                                        var options = {
+                                                            silent: true
+                                                        };
+                                                        if (label_count === activity.attributes.card.cards_labels.length) {
+                                                            options.silent = false;
+                                                        }
+                                                        new_card.labels.add(new_label, options);
+                                                        label_count++;
+                                                    });
+                                                    new_card.set('cards_labels', card_labels);
+                                                }
+                                                if (!_.isUndefined(activity.attributes.card.cards_users) && activity.attributes.card.cards_users !== null) {
+                                                    var cards_users = JSON.parse(activity.attributes.card.cards_users);
+                                                    activity.attributes.card.cards_users = cards_users;
+                                                }
+                                            }
+                                            activity.attributes.card.is_archived = parseInt(activity.attributes.card.is_archived);
+                                            new_card.set(activity.attributes.card);
+                                            new_card.set('id', parseInt(activity.attributes.card.id));
+                                            new_card.set('board_id', parseInt(activity.attributes.card.board_id));
+                                            new_card.set('list_id', parseInt(activity.attributes.card.list_id));
+                                            new_card.set('user_id', parseInt(activity.attributes.card.user_id));
+                                            new_card.set('is_archived', parseInt(activity.attributes.card.is_archived));
+                                            var card_list = self.board.lists.findWhere({
+                                                id: parseInt(activity.attributes.list_id)
                                             });
+                                            new_card.list = card_list;
+                                            if (!_.isUndefined(card_list) && !_.isUndefined(card_list.attributes.card_count) && card_list.attributes.card_count === 0) {
+                                                // Removing the &nbsp; in the card listing after adding card or copy card
+                                                $('#js-card-listing-' + card_list.id).html(function(i, h) {
+                                                    return h.replace(/&nbsp;/g, '');
+                                                });
+                                            }
+                                            self.board.cards.add(new_card);
+                                            if (!_.isUndefined(card_list)) {
+                                                card_list.cards.add(new_card);
+                                                var card_list_card_count = isNaN(card_list.attributes.card_count) ? 0 : card_list.attributes.card_count;
+                                                // Updating the list card count
+                                                card_list.set('card_count', parseInt(card_list_card_count) + 1);
+                                                if (card_list !== null && !_.isEmpty(card_list) && wip_enabled) {
+                                                    $('body').trigger('cardAddRendered', [card_list.id, card_list]);
+                                                }
+                                            }
+                                            if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "copy_card") && !_.isEmpty(activity.attributes.custom_fields) && !_.isUndefined(activity.attributes.custom_fields) && activity.attributes.custom_fields !== null) {
+                                                $('body').trigger('CutomFieldsRendered', [parseInt(activity.attributes.card.id), new_card]);
+                                            }
                                         }
-                                    });
-                                }
-                            }
-                        }
-                        var view = new App.ActivityView({
-                            model: activity,
-                            type: 'all',
-                            board: self.board,
-                            flag: '2'
-                        });
-                        $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
-                        if (mode == 1) {
-                            view_activity.prepend(view.render().el);
-                        } else {
-                            if ($('.js-list-activity-' + activity.id, view_activity).length === 0) {
-                                view_activity.append(view.render().el);
-                            }
-                        }
-                        if (bool) {
-                            if (activity.attributes.token !== authuser.access_token) {
-                                if (!_.isUndefined(activity.attributes.originial_activity_comment) && !_.isEmpty(activity.attributes.originial_activity_comment) && activity.attributes.originial_activity_comment !== null) {
-                                    activity.set('comment', activity.attributes.originial_activity_comment);
-                                }
-                                // Update board view code starting
-                                if (!_.isUndefined(activity.attributes.card_id) && activity.attributes.card_id !== 0 && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update Card
-                                    var card = self.board.cards.findWhere({
-                                        id: parseInt(activity.attributes.card_id)
-                                    });
-                                    if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card') {
-                                        var new_card = new App.Card();
-                                        if (activity.attributes.type === 'add_card') {
-                                            activity.attributes.card.cards_labels = null;
-                                            activity.attributes.card.cards_users = null;
-                                        } else {
-                                            if (!_.isUndefined(activity.attributes.card.cards_labels) && activity.attributes.card.cards_labels !== null) {
-                                                var card_labels = JSON.parse(activity.attributes.card.cards_labels);
-                                                activity.attributes.card.cards_labels = card_labels;
-                                                var label_count = 1;
-                                                _.each(activity.attributes.card.cards_labels, function(label) {
+                                        if (activity.attributes.type === 'add_card_color') {
+                                            card.set('color', activity.attributes.color);
+                                        }
+                                        if (activity.attributes.type === 'edit_card_color') {
+                                            card.set('color', activity.attributes.color);
+                                        }
+                                        if (activity.attributes.type === 'add_card_desc' || activity.attributes.type === 'edit_card_desc') {
+                                            card.set('description', activity.attributes.revisions.new_value.description);
+                                        }
+                                        if (!_.isUndefined(card)) {
+                                            if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "add_card_custom_field" || activity.attributes.type === "update_card_custom_field" || activity.attributes.type === "delete_card_custom_field") && !_.isEmpty(activity.attributes.custom_fields) && !_.isUndefined(activity.attributes.custom_fields) && activity.attributes.custom_fields !== null) {
+                                                $('body').trigger('CutomFieldsRendered', [parseInt(activity.attributes.card_id), card]);
+                                            }
+                                            if (activity.attributes.type === 'add_card_duedate') {
+                                                card.set('start', activity.attributes.revisions.new_value.due_date);
+                                            } else if (activity.attributes.type === 'delete_card_duedate') {
+                                                card.set('start', activity.attributes.revisions.new_value.due_date);
+                                            }
+                                            if (!_.isEmpty(activity.attributes.revisions)) {
+                                                if (activity.attributes.revisions.new_value.card_id) {
+                                                    activity.attributes.revisions.new_value.id = parseInt(activity.attributes.revisions.new_value.card_id);
+                                                }
+                                                if (activity.attributes.revisions.new_value.board_id) {
+                                                    activity.attributes.revisions.new_value.board_id = parseInt(activity.attributes.revisions.new_value.board_id);
+                                                }
+                                                if (activity.attributes.revisions.new_value.list_id) {
+                                                    activity.attributes.revisions.new_value.list_id = parseInt(activity.attributes.revisions.new_value.list_id);
+                                                }
+                                                card.set(activity.attributes.revisions.new_value);
+                                            }
+                                            if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "add_card_estimatedtime" || activity.attributes.type === "edit_card_estimatedtime" || activity.attributes.type === "delete_card_estimatedtime" || activity.attributes.type === "add_card_spenttime" || activity.attributes.type === "edit_card_spenttime" || activity.attributes.type === "delete_card_spenttime" || activity.attributes.type === "add_card_startdate" || activity.attributes.type === "edit_card_startdate" || activity.attributes.type === "delete_card_startdate") && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
+                                                $('body').trigger('cardCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.id), card]);
+                                            }
+                                            if (activity.attributes.type === 'add_card_checklist') {
+                                                var new_checklist = new App.CheckList();
+                                                new_checklist.set(activity.attributes.checklist);
+                                                new_checklist.set('id', parseInt(activity.attributes.checklist.id));
+                                                new_checklist.set('user_id', parseInt(activity.attributes.checklist.user_id));
+                                                new_checklist.set('card_id', parseInt(activity.attributes.checklist.card_id));
+                                                self.board.checklists.add(new_checklist, {
+                                                    silent: false
+                                                });
+                                                if (activity.attributes.checklist.checklists_items !== null) {
+                                                    _.each(activity.attributes.checklist.checklists_items, function(checklists_item) {
+                                                        var new_item = new App.CheckListItem();
+                                                        new_item.set(checklists_item);
+                                                        new_item.set('id', parseInt(checklists_item.id));
+                                                        new_item.set('user_id', parseInt(checklists_item.user_id));
+                                                        new_item.set('card_id', parseInt(checklists_item.card_id));
+                                                        new_item.set('checklist_id', parseInt(checklists_item.checklist_id));
+                                                        new_item.set('position', parseFloat(checklists_item.position));
+                                                        self.board.checklist_items.add(new_item);
+                                                    });
+                                                    checklist_items = self.board.checklist_items.where({
+                                                        card_id: parseInt(activity.attributes.checklist.card_id)
+                                                    });
+                                                    items = new App.CheckListItemCollection();
+                                                    items.add(checklist_items);
+                                                    completed_count = items.filter(function(checklist_item) {
+                                                        return parseInt(checklist_item.get('is_completed')) === 1;
+                                                    }).length;
+                                                    total_count = items.models.length;
+                                                    card.set('checklist_item_completed_count', completed_count);
+                                                    card.set('checklist_item_count', total_count);
+                                                }
+                                            } else if (activity.attributes.type === 'add_card_label' || activity.attributes.type === 'update_card_label') {
+                                                var filtered_labels = self.board.labels.where({
+                                                    card_id: activity.attributes.card_id
+                                                });
+                                                self.board.labels.remove(filtered_labels, {
+                                                    silent: true
+                                                });
+                                                card.labels.remove(filtered_labels, {
+                                                    silent: true
+                                                });
+                                                var i = 1;
+                                                _.each(activity.attributes.labels, function(label) {
                                                     var new_label = new App.Label();
                                                     new_label.set(label);
                                                     new_label.set('id', parseInt(label.id));
@@ -1048,807 +1181,674 @@ App.FooterView = Backbone.View.extend({
                                                     var options = {
                                                         silent: true
                                                     };
-                                                    if (label_count === activity.attributes.card.cards_labels.length) {
+                                                    if (i === activity.attributes.labels.length) {
                                                         options.silent = false;
                                                     }
-                                                    new_card.labels.add(new_label, options);
-                                                    label_count++;
+                                                    card.labels.add(new_label, options);
+                                                    i++;
                                                 });
-                                                new_card.set('cards_labels', card_labels);
-                                            }
-                                            if (!_.isUndefined(activity.attributes.card.cards_users) && activity.attributes.card.cards_users !== null) {
-                                                var cards_users = JSON.parse(activity.attributes.card.cards_users);
-                                                activity.attributes.card.cards_users = cards_users;
-                                            }
-                                        }
-                                        activity.attributes.card.is_archived = parseInt(activity.attributes.card.is_archived);
-                                        new_card.set(activity.attributes.card);
-                                        new_card.set('id', parseInt(activity.attributes.card.id));
-                                        new_card.set('board_id', parseInt(activity.attributes.card.board_id));
-                                        new_card.set('list_id', parseInt(activity.attributes.card.list_id));
-                                        new_card.set('user_id', parseInt(activity.attributes.card.user_id));
-                                        new_card.set('is_archived', parseInt(activity.attributes.card.is_archived));
-                                        var card_list = self.board.lists.findWhere({
-                                            id: parseInt(activity.attributes.list_id)
-                                        });
-                                        new_card.list = card_list;
-                                        if (!_.isUndefined(card_list) && !_.isUndefined(card_list.attributes.card_count) && card_list.attributes.card_count === 0) {
-                                            // Removing the &nbsp; in the card listing after adding card or copy card
-                                            $('#js-card-listing-' + card_list.id).html(function(i, h) {
-                                                return h.replace(/&nbsp;/g, '');
-                                            });
-                                        }
-                                        self.board.cards.add(new_card);
-                                        if (!_.isUndefined(card_list)) {
-                                            card_list.cards.add(new_card);
-                                            var card_list_card_count = isNaN(card_list.attributes.card_count) ? 0 : card_list.attributes.card_count;
-                                            // Updating the list card count
-                                            card_list.set('card_count', parseInt(card_list_card_count) + 1);
-                                            if (card_list !== null && !_.isEmpty(card_list) && wip_enabled) {
-                                                $('body').trigger('cardAddRendered', [card_list.id, card_list]);
-                                            }
-                                        }
-                                        if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "copy_card") && !_.isEmpty(activity.attributes.custom_fields) && !_.isUndefined(activity.attributes.custom_fields) && activity.attributes.custom_fields !== null) {
-                                            $('body').trigger('CutomFieldsRendered', [parseInt(activity.attributes.card.id), new_card]);
-                                        }
-                                    }
-                                    if (activity.attributes.type === 'add_card_color') {
-                                        card.set('color', activity.attributes.color);
-                                    }
-                                    if (activity.attributes.type === 'edit_card_color') {
-                                        card.set('color', activity.attributes.color);
-                                    }
-                                    if (activity.attributes.type === 'add_card_desc' || activity.attributes.type === 'edit_card_desc') {
-                                        card.set('description', activity.attributes.revisions.new_value.description);
-                                    }
-                                    if (!_.isUndefined(card)) {
-                                        if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "add_card_custom_field" || activity.attributes.type === "update_card_custom_field" || activity.attributes.type === "delete_card_custom_field") && !_.isEmpty(activity.attributes.custom_fields) && !_.isUndefined(activity.attributes.custom_fields) && activity.attributes.custom_fields !== null) {
-                                            $('body').trigger('CutomFieldsRendered', [parseInt(activity.attributes.card_id), card]);
-                                        }
-                                        if (activity.attributes.type === 'add_card_duedate') {
-                                            card.set('start', activity.attributes.revisions.new_value.due_date);
-                                        } else if (activity.attributes.type === 'delete_card_duedate') {
-                                            card.set('start', activity.attributes.revisions.new_value.due_date);
-                                        }
-                                        if (!_.isEmpty(activity.attributes.revisions)) {
-                                            if (activity.attributes.revisions.new_value.card_id) {
-                                                activity.attributes.revisions.new_value.id = parseInt(activity.attributes.revisions.new_value.card_id);
-                                            }
-                                            if (activity.attributes.revisions.new_value.board_id) {
-                                                activity.attributes.revisions.new_value.board_id = parseInt(activity.attributes.revisions.new_value.board_id);
-                                            }
-                                            if (activity.attributes.revisions.new_value.list_id) {
-                                                activity.attributes.revisions.new_value.list_id = parseInt(activity.attributes.revisions.new_value.list_id);
-                                            }
-                                            card.set(activity.attributes.revisions.new_value);
-                                        }
-                                        if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "add_card_estimatedtime" || activity.attributes.type === "edit_card_estimatedtime" || activity.attributes.type === "delete_card_estimatedtime" || activity.attributes.type === "add_card_spenttime" || activity.attributes.type === "edit_card_spenttime" || activity.attributes.type === "delete_card_spenttime" || activity.attributes.type === "add_card_startdate" || activity.attributes.type === "edit_card_startdate" || activity.attributes.type === "delete_card_startdate") && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
-                                            $('body').trigger('cardCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.id), card]);
-                                        }
-                                        if (activity.attributes.type === 'add_card_checklist') {
-                                            var new_checklist = new App.CheckList();
-                                            new_checklist.set(activity.attributes.checklist);
-                                            new_checklist.set('id', parseInt(activity.attributes.checklist.id));
-                                            new_checklist.set('user_id', parseInt(activity.attributes.checklist.user_id));
-                                            new_checklist.set('card_id', parseInt(activity.attributes.checklist.card_id));
-                                            self.board.checklists.add(new_checklist, {
-                                                silent: false
-                                            });
-                                            if (activity.attributes.checklist.checklists_items !== null) {
-                                                _.each(activity.attributes.checklist.checklists_items, function(checklists_item) {
-                                                    var new_item = new App.CheckListItem();
-                                                    new_item.set(checklists_item);
-                                                    new_item.set('id', parseInt(checklists_item.id));
-                                                    new_item.set('user_id', parseInt(checklists_item.user_id));
-                                                    new_item.set('card_id', parseInt(checklists_item.card_id));
-                                                    new_item.set('checklist_id', parseInt(checklists_item.checklist_id));
-                                                    new_item.set('position', parseFloat(checklists_item.position));
-                                                    self.board.checklist_items.add(new_item);
+                                                card.set('cards_labels', activity.attributes.labels);
+                                            } else if (activity.attributes.type === 'delete_card_label') {
+                                                var remove_labels = self.board.labels.where({
+                                                    card_id: activity.attributes.card_id
                                                 });
-                                                checklist_items = self.board.checklist_items.where({
-                                                    card_id: parseInt(activity.attributes.checklist.card_id)
-                                                });
-                                                items = new App.CheckListItemCollection();
-                                                items.add(checklist_items);
-                                                completed_count = items.filter(function(checklist_item) {
-                                                    return parseInt(checklist_item.get('is_completed')) === 1;
-                                                }).length;
-                                                total_count = items.models.length;
-                                                card.set('checklist_item_completed_count', completed_count);
-                                                card.set('checklist_item_count', total_count);
-                                            }
-                                        } else if (activity.attributes.type === 'add_card_label' || activity.attributes.type === 'update_card_label') {
-                                            var filtered_labels = self.board.labels.where({
-                                                card_id: activity.attributes.card_id
-                                            });
-                                            self.board.labels.remove(filtered_labels, {
-                                                silent: true
-                                            });
-                                            card.labels.remove(filtered_labels, {
-                                                silent: true
-                                            });
-                                            var i = 1;
-                                            _.each(activity.attributes.labels, function(label) {
-                                                var new_label = new App.Label();
-                                                new_label.set(label);
-                                                new_label.set('id', parseInt(label.id));
-                                                new_label.set('label_id', parseInt(label.label_id));
-                                                new_label.set('card_id', parseInt(label.card_id));
-                                                new_label.set('list_id', parseInt(label.list_id));
-                                                new_label.set('board_id', parseInt(label.board_id));
-                                                self.board.labels.add(new_label, {
+                                                self.board.labels.remove(remove_labels, {
                                                     silent: true
                                                 });
-                                                var options = {
+                                                card.labels.remove(remove_labels, {
                                                     silent: true
-                                                };
-                                                if (i === activity.attributes.labels.length) {
-                                                    options.silent = false;
+                                                });
+                                                card.set('cards_labels', null);
+                                            } else if (activity.attributes.type === 'add_card_voter') {
+                                                if (_.isUndefined(card.attributes.cards_voters) || card.attributes.cards_voters === null) {
+                                                    card.set('cards_voters', []);
                                                 }
-                                                card.labels.add(new_label, options);
-                                                i++;
-                                            });
-                                            card.set('cards_labels', activity.attributes.labels);
-                                        } else if (activity.attributes.type === 'delete_card_label') {
-                                            var remove_labels = self.board.labels.where({
-                                                card_id: activity.attributes.card_id
-                                            });
-                                            self.board.labels.remove(remove_labels, {
-                                                silent: true
-                                            });
-                                            card.labels.remove(remove_labels, {
-                                                silent: true
-                                            });
-                                            card.set('cards_labels', null);
-                                        } else if (activity.attributes.type === 'add_card_voter') {
-                                            if (_.isUndefined(card.attributes.cards_voters) || card.attributes.cards_voters === null) {
-                                                card.set('cards_voters', []);
-                                            }
-                                            if (activity.attributes.voter !== false) {
-                                                card.attributes.cards_voters.push(activity.attributes.voter);
-                                                var new_voter = new App.CardVoter();
-                                                new_voter.set(activity.attributes.voter);
-                                                new_voter.set('id', parseInt(activity.attributes.voter.id));
-                                                new_voter.set('user_id', parseInt(activity.attributes.voter.user_id));
-                                                new_voter.set('card_id', parseInt(activity.attributes.voter.card_id));
-                                                card.card_voters.add(new_voter);
-                                            }
-                                        } else if (activity.attributes.type === 'add_card_voter') {
-                                            card.set('cards_users', activity.attributes.user);
-                                        } else if (activity.attributes.type === 'add_checklist_item') {
-                                            var new_item = new App.CheckListItem();
-                                            new_item.set(activity.attributes.item, {
-                                                silent: true
-                                            });
-                                            new_item.set('id', parseInt(activity.attributes.item.id));
-                                            new_item.set('user_id', parseInt(activity.attributes.item.user_id));
-                                            new_item.set('card_id', parseInt(activity.attributes.item.card_id));
-                                            new_item.set('checklist_id', parseInt(activity.attributes.item.checklist_id));
-                                            new_item.set('position', parseFloat(activity.attributes.item.position));
-                                            self.board.checklist_items.add(new_item, {
-                                                silent: false
-                                            });
-                                            var added_checklist_items = self.board.checklist_items.where({
-                                                card_id: parseInt(activity.attributes.card_id)
-                                            });
-                                            items = new App.CheckListItemCollection();
-                                            items.add(added_checklist_items, {
-                                                silent: true
-                                            });
-                                            var added_completed_count = items.filter(function(checklist_item) {
-                                                return parseInt(checklist_item.get('is_completed')) === 1;
-                                            }).length;
-                                            var added_total_count = items.models.length;
-                                            card.set('checklist_item_completed_count', added_completed_count, {
-                                                silent: false
-                                            });
-                                            card.set('checklist_item_count', added_total_count, {
-                                                silent: false
-                                            });
-                                        } else if (activity.attributes.type === 'update_card_checklist') {
-                                            checklist = self.board.checklists.findWhere({
-                                                id: parseInt(activity.attributes.checklist.id)
-                                            });
-                                            if (!_.isUndefined(checklist)) {
-                                                checklist.set(activity.attributes.checklist);
-                                                checklist.set('id', parseInt(activity.attributes.checklist.id));
-                                                checklist.set('user_id', parseInt(activity.attributes.checklist.user_id));
-                                                checklist.set('card_id', parseInt(activity.attributes.checklist.card_id));
-                                                checklist.set('position', parseFloat(activity.attributes.checklist.position));
-                                                card.checklists.set(activity.attributes.checklist);
-                                            }
-                                        } else if (activity.attributes.type === 'update_card_checklist_item' || activity.attributes.type === 'moved_card_checklist_item') {
-                                            var checklist_item = self.board.checklist_items.findWhere({
-                                                id: parseInt(activity.attributes.item.id)
-                                            });
-                                            if (!_.isUndefined(checklist_item)) {
-                                                var options = {
+                                                if (activity.attributes.voter !== false) {
+                                                    card.attributes.cards_voters.push(activity.attributes.voter);
+                                                    var new_voter = new App.CardVoter();
+                                                    new_voter.set(activity.attributes.voter);
+                                                    new_voter.set('id', parseInt(activity.attributes.voter.id));
+                                                    new_voter.set('user_id', parseInt(activity.attributes.voter.user_id));
+                                                    new_voter.set('card_id', parseInt(activity.attributes.voter.card_id));
+                                                    card.card_voters.add(new_voter);
+                                                }
+                                            } else if (activity.attributes.type === 'add_card_voter') {
+                                                card.set('cards_users', activity.attributes.user);
+                                            } else if (activity.attributes.type === 'add_checklist_item') {
+                                                var new_item = new App.CheckListItem();
+                                                new_item.set(activity.attributes.item, {
+                                                    silent: true
+                                                });
+                                                new_item.set('id', parseInt(activity.attributes.item.id));
+                                                new_item.set('user_id', parseInt(activity.attributes.item.user_id));
+                                                new_item.set('card_id', parseInt(activity.attributes.item.card_id));
+                                                new_item.set('checklist_id', parseInt(activity.attributes.item.checklist_id));
+                                                new_item.set('position', parseFloat(activity.attributes.item.position));
+                                                self.board.checklist_items.add(new_item, {
                                                     silent: false
-                                                };
-                                                checklist_item.set(activity.attributes.item, options);
-                                                $('#js-checklist-item-' + activity.attributes.item.id).html(self.converter.makeHtml(activity.attributes.item.name));
-                                                checklist_item.set('id', parseInt(activity.attributes.item.id));
-                                                checklist_item.set('user_id', parseInt(activity.attributes.item.user_id));
-                                                checklist_item.set('card_id', parseInt(activity.attributes.item.card_id));
-                                                checklist_item.set('checklist_id', parseInt(activity.attributes.item.checklist_id));
-                                                checklist_item.set('position', parseFloat(activity.attributes.item.position));
-                                                var is_completed = (activity.attributes.item.is_completed === 't') ? 1 : 0;
-                                                checklist_item.set('is_completed', is_completed, options);
-                                                checklist_items = self.board.checklist_items.where({
+                                                });
+                                                var added_checklist_items = self.board.checklist_items.where({
                                                     card_id: parseInt(activity.attributes.card_id)
                                                 });
                                                 items = new App.CheckListItemCollection();
-                                                items.add(checklist_items, options);
-                                                completed_count = items.filter(function(checklist_item) {
-                                                    return ((parseInt(checklist_item.get('is_completed')) === 1) || ((checklist_item.get('is_completed')) === 't'));
+                                                items.add(added_checklist_items, {
+                                                    silent: true
+                                                });
+                                                var added_completed_count = items.filter(function(checklist_item) {
+                                                    return parseInt(checklist_item.get('is_completed')) === 1;
                                                 }).length;
-                                                total_count = items.models.length;
+                                                var added_total_count = items.models.length;
+                                                card.set('checklist_item_completed_count', added_completed_count, {
+                                                    silent: false
+                                                });
+                                                card.set('checklist_item_count', added_total_count, {
+                                                    silent: false
+                                                });
+                                            } else if (activity.attributes.type === 'update_card_checklist') {
+                                                checklist = self.board.checklists.findWhere({
+                                                    id: parseInt(activity.attributes.checklist.id)
+                                                });
+                                                if (!_.isUndefined(checklist)) {
+                                                    checklist.set(activity.attributes.checklist);
+                                                    checklist.set('id', parseInt(activity.attributes.checklist.id));
+                                                    checklist.set('user_id', parseInt(activity.attributes.checklist.user_id));
+                                                    checklist.set('card_id', parseInt(activity.attributes.checklist.card_id));
+                                                    checklist.set('position', parseFloat(activity.attributes.checklist.position));
+                                                    card.checklists.set(activity.attributes.checklist);
+                                                }
+                                            } else if (activity.attributes.type === 'update_card_checklist_item' || activity.attributes.type === 'moved_card_checklist_item') {
+                                                var checklist_item = self.board.checklist_items.findWhere({
+                                                    id: parseInt(activity.attributes.item.id)
+                                                });
+                                                if (!_.isUndefined(checklist_item)) {
+                                                    var options = {
+                                                        silent: false
+                                                    };
+                                                    checklist_item.set(activity.attributes.item, options);
+                                                    $('#js-checklist-item-' + activity.attributes.item.id).html(self.converter.makeHtml(activity.attributes.item.name));
+                                                    checklist_item.set('id', parseInt(activity.attributes.item.id));
+                                                    checklist_item.set('user_id', parseInt(activity.attributes.item.user_id));
+                                                    checklist_item.set('card_id', parseInt(activity.attributes.item.card_id));
+                                                    checklist_item.set('checklist_id', parseInt(activity.attributes.item.checklist_id));
+                                                    checklist_item.set('position', parseFloat(activity.attributes.item.position));
+                                                    var is_completed = (activity.attributes.item.is_completed === 't') ? 1 : 0;
+                                                    checklist_item.set('is_completed', is_completed, options);
+                                                    checklist_items = self.board.checklist_items.where({
+                                                        card_id: parseInt(activity.attributes.card_id)
+                                                    });
+                                                    items = new App.CheckListItemCollection();
+                                                    items.add(checklist_items, options);
+                                                    completed_count = items.filter(function(checklist_item) {
+                                                        return ((parseInt(checklist_item.get('is_completed')) === 1) || ((checklist_item.get('is_completed')) === 't'));
+                                                    }).length;
+                                                    total_count = items.models.length;
+                                                    card.set('checklist_item_completed_count', completed_count);
+                                                    card.set('checklist_item_count', total_count);
+                                                }
+                                            } else if (activity.attributes.type === 'edit_comment') {
+                                                comment = self.board.activities.findWhere({
+                                                    id: parseInt(activity.attributes.foreign_id)
+                                                });
+                                                if (!_.isUndefined(comment)) {
+                                                    var comment_value = self.converter.makeHtml(activity.attributes.revisions.new_value.comment);
+                                                    comment.set(activity);
+                                                    comment.set('id', parseInt(activity.attributes.foreign_id));
+                                                    comment.set('user_id', parseInt(activity.attributes.user_id));
+                                                    comment.set('card_id', parseInt(activity.attributes.card_id));
+                                                    $('.js-activity-' + activity.attributes.foreign_id).find('.github-markdown').html(comment_value);
+                                                }
+                                            } else if (activity.attributes.type === 'add_card_user') {
+                                                var new_user = new App.CardUser();
+                                                new_user.set(activity.attributes.user);
+                                                new_user.set('id', parseInt(activity.attributes.user.id));
+                                                new_user.set('user_id', parseInt(activity.attributes.user.user_id));
+                                                new_user.set('card_id', parseInt(activity.attributes.user.card_id));
+                                                new_user.set('profile_picture_path', activity.attributes.user.profile_picture_path);
+                                                new_user.set('username', activity.attributes.user.username);
+                                                new_user.set('initials', activity.attributes.user.initials);
+                                                new_user.set('full_name', activity.attributes.user.full_name);
+                                                card.users.add(new_user);
+                                                card.set('users', new_user);
+                                            } else if (activity.attributes.type === 'add_comment') {
+                                                if (!_.isEmpty(card.cards)) {
+                                                    activity.cards.add(card.cards);
+                                                }
+
+                                                card.list.collection.board.activities.add(activity);
+                                                card.activities.add(activity, {
+                                                    silent: true
+                                                });
+                                                var current_card = card.list.collection.board.cards.get(activity.attributes.card_id);
+                                                var comment_count = (!_.isUndefined(current_card)) ? (parseInt(current_card.attributes.comment_count) + 1) : 0;
+                                                comment_count = isNaN(comment_count) ? 1 : comment_count;
+                                                card.set('comment_count', comment_count);
+                                                card.attributes.comment_count = comment_count;
+                                                if ($('#js-card-modal-' + activity.attributes.card_id).length === 1) {
+                                                    if ($('#js-card-activities-' + activity.attributes.card_id).length === 1) {
+                                                        if ($('#js-list-activity-' + activity.attributes.id).length === 0) {
+                                                            var profile_picture_path;
+                                                            var comment_details;
+                                                            var profile_picture;
+                                                            var depth;
+                                                            if (!_.isEmpty(activity.attributes.profile_picture_path)) {
+                                                                profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'small_thumb');
+                                                                profile_picture = '<img src="' + profile_picture_path + '" alt="[Image: ' + activity.attributes.full_name + ']" title="' + activity.attributes.full_name + ' (' + activity.attributes.username + ')" class="img-rounded img-responsive">';
+                                                            } else {
+                                                                profile_picture = '<i class="avatar avatar-color-194 img-rounded">' + activity.attributes.initials + '</i>';
+                                                            }
+                                                            if (!_.isEmpty(activity.attributes.comment)) {
+                                                                comment_details = makeLink(self.converter.makeHtml(activity.attributes.comment), activity.attributes.board_id);
+                                                            }
+                                                            if (activity.attributes.depth !== 0) {
+                                                                depth = parseInt(activity.attributes.depth);
+                                                            } else {
+                                                                depth = '';
+                                                            }
+                                                            var comment_string = '';
+                                                            comment_string += '<li class="col-xs-' + (12 - depth) + ' js-activity activity-github-styles js-list-activity-' + activity.attributes.id + ' col-lg-offset-' + depth + '"><div class="media  modal-comments modal-logged-user-activities"><a title="' + activity.attributes.full_name + '(' + activity.attributes.username + ')" data-toggle="tooltip" class="js-tooltip pull-left" href="#/user/' + activity.attributes.user_id + '">';
+                                                            comment_string += '' + profile_picture + '</a>';
+                                                            comment_string += '<div class="media-body"><div class="col-xs-12 btn-block"><div class="activities-list js-activity-' + activity.attributes.id + '"><div class="panel no-mar"><div class="panel-body github-markdown no-whitespace">' + comment_details + '</div></div>';
+                                                            setInterval(function() {
+                                                                parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.id);
+                                                            }, 10000);
+                                                            comment_string += '<small><span class="js-timeago-' + activity.attributes.id + '"></span>';
+                                                            parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.id);
+                                                            if (!_.isUndefined(authuser.user)) {
+                                                                comment_string += '<div class="js-acticity-action-' + activity.attributes.id + ' pull-left navbar-btn col-md-10 col-xs-12"><ul class="list-inline"><li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-' + activity.attributes.id + '" href="#" data-activity-id="' + activity.attributes.id + '"><i class="icon-repeat"></i>' + i18next.t('Reply') + '</a></li>';
+                                                                if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({
+                                                                        slug: "delete_comment",
+                                                                        board_user_role_id: parseInt(activity.attributes.user_role_id)
+                                                                    })))) {
+                                                                    comment_string += '<li class="dropdown pull-right"><a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete text-danger" data-toggle="dropdown" href="#" data-activity-id="' + activity.attributes.id + '" role="button"><i class="icon-remove"></i>' + i18next.t('Delete') + '</a>';
+                                                                    comment_string += '<ul class="dropdown-menu arrow arrow-right"><li id="js-acticity-actions-response-' + activity.attributes.id + '" class="js-dropdown-popup dropdown-popup"></li></ul></li>';
+                                                                }
+                                                                if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({
+                                                                        slug: "edit_comment",
+                                                                        board_user_role_id: parseInt(activity.attributes.user_role_id)
+                                                                    })))) {
+                                                                    comment_string += '<li class="pull-right"><a title="Edit" class="js-show-edit-activity js-edit-activity-link-' + activity.attributes.id + '" href="#" data-activity-id="' + activity.attributes.id + '" data-activity-temp-id="' + activity.attributes.temp_id + '"><i class="icon-edit"></i>' + i18next.t('Edit') + '</a></li>';
+                                                                }
+                                                                comment_string += '</ul>';
+                                                            }
+                                                            comment_string += '</div><span class="pull-left col-xs-12 js-activity-reply-form-response-' + activity.attributes.id + '"></span></small></div></div></div></div><hr class="clearfix col-xs-12 btn-block"></hr></li>';
+                                                            if (activity.attributes.depth === 0) {
+                                                                $("ul#js-card-activities-" + activity.attributes.card_id).prepend(comment_string);
+                                                            } else {
+                                                                if (activity.attributes.depth == 1) {
+                                                                    $(comment_string).insertAfter($('.js-list-activity-' + activity.attributes.root));
+                                                                } else {
+                                                                    var path = activity.attributes.path;
+                                                                    var pathSplit = path.split('.');
+                                                                    --depth;
+                                                                    var parentCommentId = pathSplit[depth].replace('P', '');
+                                                                    $(comment_string).insertAfter($('.js-list-activity-' + parentCommentId));
+                                                                }
+                                                            }
+                                                            emojify.run();
+                                                        }
+                                                    }
+                                                }
+                                            } else if (activity.attributes.type === 'add_card_attachment') {
+                                                var new_attachment = new App.CardAttachment();
+                                                new_attachment.set(activity.attributes.attachment);
+                                                new_attachment.set('id', parseInt(activity.attributes.attachment.id));
+                                                new_attachment.set('board_id', parseInt(activity.attributes.attachment.board_id));
+                                                new_attachment.set('list_id', parseInt(activity.attributes.attachment.list_id));
+                                                new_attachment.set('card_id', parseInt(activity.attributes.attachment.card_id));
+                                                self.board.attachments.unshift(new_attachment, {
+                                                    silent: true
+                                                });
+                                                card.attachments.unshift(new_attachment);
+                                            } else if (activity.attributes.type === 'move_card') {
+                                                // Getting the old list of the card
+                                                var card_old_list = self.board.lists.findWhere({
+                                                    id: parseInt(activity.attributes.list_id)
+                                                });
+                                                card.set('position', activity.attributes.card_position);
+                                                var card_new_list = self.board.lists.findWhere({
+                                                    id: parseInt(activity.attributes.foreign_id)
+                                                });
+                                                if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(parseInt(activity.attributes.board_id)))) {
+                                                    var updated_card_list_cards = self.board.cards.where({
+                                                        list_id: parseInt(activity.attributes.list_id)
+                                                    });
+                                                    card.list.collection.board.lists.get(parseInt(activity.attributes.list_id)).cards.remove(card);
+                                                    App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.list_id)).set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
+                                                }
+                                                // Reducing the card count of the old list
+                                                card_old_list.set('card_count', card_old_list.attributes.card_count - 1);
+                                                if (parseInt(card_old_list.attributes.card_count) === 0) {
+                                                    // Adding the &nbsp; for the list with no card
+                                                    $('#js-card-listing-' + card_old_list.id).html('&nbsp;');
+                                                }
+                                                // Updating the new list card count
+                                                var card_new_list_card_count = isNaN(card_new_list.attributes.card_count) ? 0 : card_new_list.attributes.card_count;
+                                                card_new_list.set('card_count', parseInt(card_new_list_card_count) + 1);
+                                                if (parseInt(card_new_list.attributes.card_count) === 1) {
+                                                    // Removing the &nbsp; fom new lsit card listing 
+                                                    $('#js-card-listing-' + card_new_list.id).html(function(i, h) {
+                                                        return h.replace(/&nbsp;/g, '');
+                                                    });
+                                                }
+                                                if (!_.isUndefined(card_old_list) && !_.isUndefined(card_new_list) && wip_enabled) {
+                                                    $('body').trigger('cardSortRendered', [card_old_list, card_new_list]);
+                                                }
+                                                card.list = card_new_list;
+                                                card.set('list_id', parseInt(activity.attributes.foreign_id));
+                                                card.list.collection.board.lists.get(activity.attributes.foreign_id).cards.add(card);
+                                                var cards_attachments = self.board.attachments.where({
+                                                    card_id: parseInt(activity.attributes.card_id)
+                                                });
+                                                var k = 1;
+                                                if (!_.isUndefined(cards_attachments) && cards_attachments.length > 0) {
+                                                    _.each(cards_attachments, function(cards_attachment) {
+                                                        var options = {
+                                                            silent: true
+                                                        };
+                                                        if (k === cards_attachments.length) {
+                                                            options.silent = false;
+                                                        }
+                                                        self.board.attachments.findWhere({
+                                                            id: parseInt(cards_attachment.attributes.id)
+                                                        }).set({
+                                                            list_id: parseInt(activity.attributes.foreign_id)
+                                                        }, options);
+                                                        k++;
+                                                    });
+                                                }
+                                            } else if (activity.attributes.type === 'archived_card') {
+                                                var Cardlist = self.board.lists.findWhere({
+                                                    id: parseInt(activity.attributes.list_id)
+                                                });
+                                                if (Cardlist !== null && !_.isUndefined(Cardlist) && !_.isEmpty(Cardlist) && wip_enabled) {
+                                                    Cardlist.set('card_count', parseInt(Cardlist.attributes.card_count) - 1);
+                                                    $('body').trigger('cardAddRendered', [Cardlist.id, Cardlist]);
+                                                }
+                                                if (parseInt(Cardlist.attributes.card_count) === 0) {
+                                                    $('#js-card-listing-' + Cardlist.id).html('&nbsp;');
+                                                }
+                                            } else if (activity.attributes.type === 'unarchived_card') {
+                                                var cardList = self.board.lists.get(activity.attributes.list_id);
+                                                if (cardList !== null && !_.isUndefined(cardList) && !_.isEmpty(cardList) && wip_enabled) {
+                                                    cardList.set('card_count', parseInt(cardList.attributes.card_count) + 1);
+                                                    $('body').trigger('cardAddRendered', [cardList.id, cardList]);
+                                                }
+                                                if (parseInt(cardList.attributes.card_count) === 1) {
+                                                    $('#js-card-listing-' + cardList.id).html($('#js-card-listing-' + cardList.id).html().replace(/^\s*&nbsp;/m, ''));
+                                                }
+                                            } else if (activity.attributes.type === 'change_card_position') {
+                                                card.set('position', activity.attributes.card_position);
+                                            } else if (activity.attributes.type === 'delete_card_attachment') {
+                                                self.board.attachments.remove(self.board.attachments.findWhere({
+                                                    id: parseInt(activity.attributes.foreign_id)
+                                                }));
+                                                card.attachments.remove(card.attachments.findWhere({
+                                                    id: parseInt(activity.attributes.foreign_id)
+                                                }));
+                                            } else if (activity.attributes.type === 'delete_card_comment') {
+                                                self.board.activities.remove(self.board.activities.findWhere({
+                                                    id: parseInt(activity.attributes.foreign_id)
+                                                }));
+                                                if ($('.js-list-activity-' + activity.attributes.foreign_id)) {
+                                                    $('.js-list-activity-' + activity.attributes.foreign_id).remove();
+                                                }
+                                            } else if (activity.attributes.type === 'delete_checklist') {
+                                                self.board.checklists.remove(self.board.checklists.findWhere({
+                                                    id: parseInt(activity.attributes.foreign_id)
+                                                }), {
+                                                    silent: false
+                                                });
+                                                self.board.checklist_items.remove(self.board.checklist_items.where({
+                                                    checklist_id: parseInt(activity.attributes.foreign_id)
+                                                }), {
+                                                    silent: false
+                                                });
+                                                var checklist_items = self.board.checklist_items.where({
+                                                    card_id: parseInt(activity.attributes.card_id)
+                                                });
+                                                items = new App.CheckListItemCollection();
+                                                items.add(checklist_items, {
+                                                    silent: true
+                                                });
+                                                var completed_count = items.filter(function(checklist_item) {
+                                                    return parseInt(checklist_item.get('is_completed')) === 1;
+                                                }).length;
+                                                var total_count = items.models.length;
                                                 card.set('checklist_item_completed_count', completed_count);
                                                 card.set('checklist_item_count', total_count);
+                                            } else if (activity.attributes.type === 'delete_checklist_item') {
+                                                self.board.checklist_items.remove(self.board.checklist_items.findWhere({
+                                                    id: parseInt(activity.attributes.foreign_id)
+                                                }), {
+                                                    silent: false
+                                                });
+                                                var update_checklist_items = self.board.checklist_items.where({
+                                                    card_id: parseInt(activity.attributes.card_id)
+                                                });
+                                                items = new App.CheckListItemCollection();
+                                                items.add(update_checklist_items, {
+                                                    silent: true
+                                                });
+                                                var update_completed_count = items.filter(function(checklist_item) {
+                                                    return parseInt(checklist_item.get('is_completed')) === 1;
+                                                }).length;
+                                                var update_total_count = items.models.length;
+                                                card.set('checklist_item_completed_count', update_completed_count);
+                                                card.set('checklist_item_count', update_total_count);
+                                            } else if (activity.attributes.type === 'delete_card_users') {
+                                                card.users.remove(card.users.findWhere({
+                                                    id: parseInt(activity.attributes.foreign_id)
+                                                }));
+                                            } else if (activity.attributes.type === 'unvote_card') {
+                                                card.card_voters.remove(card.card_voters.findWhere({
+                                                    id: parseInt(activity.attributes.foreign_id)
+                                                }));
+                                            } else if (activity.attributes.type === 'delete_card') {
+                                                self.board.cards.remove(card);
                                             }
-                                        } else if (activity.attributes.type === 'edit_comment') {
-                                            comment = self.board.activities.findWhere({
-                                                id: parseInt(activity.attributes.foreign_id)
-                                            });
-                                            if (!_.isUndefined(comment)) {
-                                                var comment_value = self.converter.makeHtml(activity.attributes.revisions.new_value.comment);
-                                                comment.set(activity);
-                                                comment.set('id', parseInt(activity.attributes.foreign_id));
-                                                comment.set('user_id', parseInt(activity.attributes.user_id));
-                                                comment.set('card_id', parseInt(activity.attributes.card_id));
-                                                $('.js-activity-' + activity.attributes.foreign_id).find('.github-markdown').html(comment_value);
-                                            }
-                                        } else if (activity.attributes.type === 'add_card_user') {
-                                            var new_user = new App.CardUser();
-                                            new_user.set(activity.attributes.user);
-                                            new_user.set('id', parseInt(activity.attributes.user.id));
-                                            new_user.set('user_id', parseInt(activity.attributes.user.user_id));
-                                            new_user.set('card_id', parseInt(activity.attributes.user.card_id));
-                                            new_user.set('profile_picture_path', activity.attributes.user.profile_picture_path);
-                                            new_user.set('username', activity.attributes.user.username);
-                                            new_user.set('initials', activity.attributes.user.initials);
-                                            new_user.set('full_name', activity.attributes.user.full_name);
-                                            card.users.add(new_user);
-                                            card.set('users', new_user);
-                                        } else if (activity.attributes.type === 'add_comment') {
-                                            if (!_.isEmpty(card.cards)) {
-                                                activity.cards.add(card.cards);
-                                            }
-
-                                            card.list.collection.board.activities.add(activity);
-                                            card.activities.add(activity, {
-                                                silent: true
-                                            });
-                                            var current_card = card.list.collection.board.cards.get(activity.attributes.card_id);
-                                            var comment_count = (!_.isUndefined(current_card)) ? (parseInt(current_card.attributes.comment_count) + 1) : 0;
-                                            comment_count = isNaN(comment_count) ? 1 : comment_count;
-                                            card.set('comment_count', comment_count);
-                                            card.attributes.comment_count = comment_count;
-                                            if ($('#js-card-modal-' + activity.attributes.card_id).length === 1) {
-                                                if ($('#js-card-activities-' + activity.attributes.card_id).length === 1) {
-                                                    if ($('#js-list-activity-' + activity.attributes.id).length === 0) {
-                                                        var profile_picture_path;
-                                                        var comment_details;
-                                                        var profile_picture;
-                                                        var depth;
-                                                        if (!_.isEmpty(activity.attributes.profile_picture_path)) {
-                                                            profile_picture_path = activity.showImage('User', activity.attributes.user_id, 'small_thumb');
-                                                            profile_picture = '<img src="' + profile_picture_path + '" alt="[Image: ' + activity.attributes.full_name + ']" title="' + activity.attributes.full_name + ' (' + activity.attributes.username + ')" class="img-rounded img-responsive">';
-                                                        } else {
-                                                            profile_picture = '<i class="avatar avatar-color-194 img-rounded">' + activity.attributes.initials + '</i>';
+                                        }
+                                        if (!_.isUndefined(activity.attributes.card_id) && activity.attributes.card_id !== 0) {
+                                            if (activity.attributes.type !== 'add_comment' && activity.attributes.type !== 'edit_comment' && activity.attributes.type !== 'delete_card_comment') {
+                                                if ($('#js-card-modal-' + activity.attributes.card_id).length == 1) {
+                                                    var modal_activity = activity;
+                                                    delete modal_activity.from_footer;
+                                                    var new_activity_view = new App.ActivityView({
+                                                        model: modal_activity,
+                                                        board: self.board,
+                                                        flag: '1'
+                                                    });
+                                                    if ($.cookie('filter') !== 'comment') {
+                                                        var new_view_activity = $('#js-card-activities-' + activity.attributes.card_id);
+                                                        if ($('#js-card-activities-' + activity.attributes.card_id + ' ' + '.js-list-activity-' + activity.attributes.id).length === 0) {
+                                                            card.activities.unshift(modal_activity, {
+                                                                silent: true
+                                                            });
+                                                            new_view_activity.prepend(new_activity_view.render().el);
                                                         }
-                                                        if (!_.isEmpty(activity.attributes.comment)) {
-                                                            comment_details = makeLink(self.converter.makeHtml(activity.attributes.comment), activity.attributes.board_id);
-                                                        }
-                                                        if (activity.attributes.depth !== 0) {
-                                                            depth = parseInt(activity.attributes.depth);
-                                                        } else {
-                                                            depth = '';
-                                                        }
-                                                        var comment_string = '';
-                                                        comment_string += '<li class="col-xs-' + (12 - depth) + ' js-activity activity-github-styles js-list-activity-' + activity.attributes.id + ' col-lg-offset-' + depth + '"><div class="media  modal-comments modal-logged-user-activities"><a title="' + activity.attributes.full_name + '(' + activity.attributes.username + ')" data-toggle="tooltip" class="js-tooltip pull-left" href="#/user/' + activity.attributes.user_id + '">';
-                                                        comment_string += '' + profile_picture + '</a>';
-                                                        comment_string += '<div class="media-body"><div class="col-xs-12 btn-block"><div class="activities-list js-activity-' + activity.attributes.id + '"><div class="panel no-mar"><div class="panel-body github-markdown no-whitespace">' + comment_details + '</div></div>';
-                                                        setInterval(function() {
-                                                            parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.id);
-                                                        }, 10000);
-                                                        comment_string += '<small><span class="js-timeago-' + activity.attributes.id + '"></span>';
-                                                        parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.id);
-                                                        if (!_.isUndefined(authuser.user)) {
-                                                            comment_string += '<div class="js-acticity-action-' + activity.attributes.id + ' pull-left navbar-btn col-md-10 col-xs-12"><ul class="list-inline"><li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-' + activity.attributes.id + '" href="#" data-activity-id="' + activity.attributes.id + '"><i class="icon-repeat"></i>' + i18next.t('Reply') + '</a></li>';
-                                                            if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({
-                                                                    slug: "delete_comment",
-                                                                    board_user_role_id: parseInt(activity.attributes.user_role_id)
-                                                                })))) {
-                                                                comment_string += '<li class="dropdown pull-right"><a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete text-danger" data-toggle="dropdown" href="#" data-activity-id="' + activity.attributes.id + '" role="button"><i class="icon-remove"></i>' + i18next.t('Delete') + '</a>';
-                                                                comment_string += '<ul class="dropdown-menu arrow arrow-right"><li id="js-acticity-actions-response-' + activity.attributes.id + '" class="js-dropdown-popup dropdown-popup"></li></ul></li>';
-                                                            }
-                                                            if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({
-                                                                    slug: "edit_comment",
-                                                                    board_user_role_id: parseInt(activity.attributes.user_role_id)
-                                                                })))) {
-                                                                comment_string += '<li class="pull-right"><a title="Edit" class="js-show-edit-activity js-edit-activity-link-' + activity.attributes.id + '" href="#" data-activity-id="' + activity.attributes.id + '" data-activity-temp-id="' + activity.attributes.temp_id + '"><i class="icon-edit"></i>' + i18next.t('Edit') + '</a></li>';
-                                                            }
-                                                            comment_string += '</ul>';
-                                                        }
-                                                        comment_string += '</div><span class="pull-left col-xs-12 js-activity-reply-form-response-' + activity.attributes.id + '"></span></small></div></div></div></div><hr class="clearfix col-xs-12 btn-block"></hr></li>';
-                                                        if (activity.attributes.depth === 0) {
-                                                            $("ul#js-card-activities-" + activity.attributes.card_id).prepend(comment_string);
-                                                        } else {
-                                                            if (activity.attributes.depth == 1) {
-                                                                $(comment_string).insertAfter($('.js-list-activity-' + activity.attributes.root));
-                                                            } else {
-                                                                var path = activity.attributes.path;
-                                                                var pathSplit = path.split('.');
-                                                                --depth;
-                                                                var parentCommentId = pathSplit[depth].replace('P', '');
-                                                                $(comment_string).insertAfter($('.js-list-activity-' + parentCommentId));
-                                                            }
-                                                        }
-                                                        emojify.run();
                                                     }
+                                                    emojify.run();
                                                 }
                                             }
-                                        } else if (activity.attributes.type === 'add_card_attachment') {
-                                            var new_attachment = new App.CardAttachment();
-                                            new_attachment.set(activity.attributes.attachment);
-                                            new_attachment.set('id', parseInt(activity.attributes.attachment.id));
-                                            new_attachment.set('board_id', parseInt(activity.attributes.attachment.board_id));
-                                            new_attachment.set('list_id', parseInt(activity.attributes.attachment.list_id));
-                                            new_attachment.set('card_id', parseInt(activity.attributes.attachment.card_id));
-                                            self.board.attachments.unshift(new_attachment, {
-                                                silent: true
-                                            });
-                                            card.attachments.unshift(new_attachment);
-                                        } else if (activity.attributes.type === 'move_card') {
-                                            // Getting the old list of the card
-                                            var card_old_list = self.board.lists.findWhere({
-                                                id: parseInt(activity.attributes.list_id)
-                                            });
-                                            card.set('position', activity.attributes.card_position);
-                                            var card_new_list = self.board.lists.findWhere({
-                                                id: parseInt(activity.attributes.foreign_id)
-                                            });
-                                            if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(parseInt(activity.attributes.board_id)))) {
-                                                var updated_card_list_cards = self.board.cards.where({
+                                        }
+                                    } else if (!_.isUndefined(activity.attributes.list_id) && activity.attributes.list_id !== 0 && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update List
+                                        var list = self.board.lists.findWhere({
+                                            id: parseInt(activity.attributes.list_id)
+                                        });
+                                        if (activity.attributes.type === 'add_list') {
+                                            var new_list = new App.List();
+                                            new_list.set(activity.attributes.list);
+                                            new_list.set('id', parseInt(activity.attributes.list.id));
+                                            new_list.set('board_id', parseInt(activity.attributes.list.board_id));
+                                            new_list.set('lists_cards', []);
+                                            self.board.lists.add(new_list);
+
+                                            if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(new_list.attributes.board_id))) {
+                                                App.boards.get(new_list.attributes.board_id).lists.add(new_list);
+                                            }
+
+                                        }
+                                        if (!_.isUndefined(list)) {
+                                            if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
+                                                if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
+                                                    list.set(activity.attributes.revisions.new_value);
+                                                }
+                                            }
+                                            if (activity.attributes.type === 'delete_list') {
+                                                var removed_list_cards = self.board.cards.where({
+                                                    list_id: parseInt(list.attributes.id)
+                                                });
+                                                self.board.cards.remove(removed_list_cards, {
+                                                    silent: true
+                                                });
+                                                list.collection.board.lists.remove(list);
+                                                self.board.lists.remove(list);
+                                            } else if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === 'add_list_agile_wip_limit' || activity.attributes.type === 'edit_list_agile_wip_limit' || activity.attributes.type === 'delete_list_agile_wip_limit' || activity.attributes.type === 'add_list_auto_archive_day' || activity.attributes.type === 'edit_list_auto_archive_day' || activity.attributes.type === 'delete_list_auto_archive_day' || activity.attributes.type === 'add_list_task_move_duedate' || activity.attributes.type === 'edit_list_task_move_duedate' || activity.attributes.type === 'add_list_task_move_duedate') && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
+                                                list.set('custom_fields', activity.attributes.revisions.new_value.custom_fields);
+                                                $('body').trigger('listCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.list_id), list]);
+                                            } else if (activity.attributes.type === 'change_list_position') {
+                                                if (parseInt(activity.attributes.list.board_id) !== parseInt(list.attributes.board_id)) {
+                                                    self.board.lists.remove(list);
+                                                } else {
+                                                    list.set('position', parseFloat(activity.attributes.list.position));
+                                                }
+                                            } else if (activity.attributes.type === 'moved_list_card') {
+                                                var cards = self.board.cards.where({
                                                     list_id: parseInt(activity.attributes.list_id)
                                                 });
-                                                card.list.collection.board.lists.get(parseInt(activity.attributes.list_id)).cards.remove(card);
-                                                App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.list_id)).set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
-                                            }
-                                            // Reducing the card count of the old list
-                                            card_old_list.set('card_count', card_old_list.attributes.card_count - 1);
-                                            if (parseInt(card_old_list.attributes.card_count) === 0) {
-                                                // Adding the &nbsp; for the list with no card
-                                                $('#js-card-listing-' + card_old_list.id).html('&nbsp;');
-                                            }
-                                            // Updating the new list card count
-                                            var card_new_list_card_count = isNaN(card_new_list.attributes.card_count) ? 0 : card_new_list.attributes.card_count;
-                                            card_new_list.set('card_count', parseInt(card_new_list_card_count) + 1);
-                                            if (parseInt(card_new_list.attributes.card_count) === 1) {
-                                                // Removing the &nbsp; fom new lsit card listing 
-                                                $('#js-card-listing-' + card_new_list.id).html(function(i, h) {
-                                                    return h.replace(/&nbsp;/g, '');
+                                                var newList = self.board.lists.findWhere({
+                                                    id: parseInt(activity.attributes.foreign_id)
                                                 });
-                                            }
-                                            if (!_.isUndefined(card_old_list) && !_.isUndefined(card_new_list) && wip_enabled) {
-                                                $('body').trigger('cardSortRendered', [card_old_list, card_new_list]);
-                                            }
-                                            card.list = card_new_list;
-                                            card.set('list_id', parseInt(activity.attributes.foreign_id));
-                                            card.list.collection.board.lists.get(activity.attributes.foreign_id).cards.add(card);
-                                            var cards_attachments = self.board.attachments.where({
-                                                card_id: parseInt(activity.attributes.card_id)
-                                            });
-                                            var k = 1;
-                                            if (!_.isUndefined(cards_attachments) && cards_attachments.length > 0) {
-                                                _.each(cards_attachments, function(cards_attachment) {
-                                                    var options = {
-                                                        silent: true
-                                                    };
-                                                    if (k === cards_attachments.length) {
-                                                        options.silent = false;
+                                                var new_list_card_count = self.board.lists.get(activity.attributes.foreign_id).attributes.card_count;
+                                                var previous_list_card_count = self.board.lists.get(list.id).attributes.card_count;
+                                                new_list_card_count = new_list_card_count ? new_list_card_count : 0;
+                                                previous_list_card_count = previous_list_card_count ? previous_list_card_count : 0;
+                                                new_list_card_count = new_list_card_count + previous_list_card_count;
+                                                if (!_.isUndefined(cards) && cards.length > 0) {
+                                                    // Removing the &nbsp; from the new list card listing
+                                                    $('#js-card-listing-' + activity.attributes.foreign_id).html(function(i, h) {
+                                                        return h.replace(/&nbsp;/g, '');
+                                                    });
+                                                    _.each(cards, function(card) {
+                                                        var options = {
+                                                            silent: false
+                                                        };
+                                                        self.board.cards.findWhere({
+                                                            id: parseInt(card.attributes.id)
+                                                        }).set({
+                                                            list_id: parseInt(activity.attributes.foreign_id)
+                                                        }, options);
+                                                    });
+                                                    newList.set('card_count', new_list_card_count);
+                                                    list.set('card_count', 0);
+                                                    if (!_.isUndefined(list) && !_.isUndefined(newList) && wip_enabled) {
+                                                        $('body').trigger('listmoveActionRendered', [list.id, newList.id, new_list_card_count]);
                                                     }
-                                                    self.board.attachments.findWhere({
-                                                        id: parseInt(cards_attachment.attributes.id)
-                                                    }).set({
-                                                        list_id: parseInt(activity.attributes.foreign_id)
-                                                    }, options);
-                                                    k++;
+                                                    // Adding the &nbsp; for the old list with no card
+                                                    $('#js-card-listing-' + list.id).html('&nbsp;');
+                                                }
+                                            } else if (activity.attributes.type === 'archived_card') {
+                                                var list_cards = self.board.cards.where({
+                                                    list_id: parseInt(activity.attributes.list_id)
                                                 });
-                                            }
-                                        } else if (activity.attributes.type === 'archived_card') {
-                                            var Cardlist = self.board.lists.findWhere({
-                                                id: parseInt(activity.attributes.list_id)
-                                            });
-                                            if (Cardlist !== null && !_.isUndefined(Cardlist) && !_.isEmpty(Cardlist) && wip_enabled) {
-                                                Cardlist.set('card_count', parseInt(Cardlist.attributes.card_count) - 1);
-                                                $('body').trigger('cardAddRendered', [Cardlist.id, Cardlist]);
-                                            }
-                                            if (parseInt(Cardlist.attributes.card_count) === 0) {
-                                                $('#js-card-listing-' + Cardlist.id).html('&nbsp;');
-                                            }
-                                        } else if (activity.attributes.type === 'unarchived_card') {
-                                            var cardList = self.board.lists.get(activity.attributes.list_id);
-                                            if (cardList !== null && !_.isUndefined(cardList) && !_.isEmpty(cardList) && wip_enabled) {
-                                                cardList.set('card_count', parseInt(cardList.attributes.card_count) + 1);
-                                                $('body').trigger('cardAddRendered', [cardList.id, cardList]);
-                                            }
-                                            if (parseInt(cardList.attributes.card_count) === 1) {
-                                                $('#js-card-listing-' + cardList.id).html($('#js-card-listing-' + cardList.id).html().replace(/^\s*&nbsp;/m, ''));
-                                            }
-                                        } else if (activity.attributes.type === 'change_card_position') {
-                                            card.set('position', activity.attributes.card_position);
-                                        } else if (activity.attributes.type === 'delete_card_attachment') {
-                                            self.board.attachments.remove(self.board.attachments.findWhere({
-                                                id: parseInt(activity.attributes.foreign_id)
-                                            }));
-                                            card.attachments.remove(card.attachments.findWhere({
-                                                id: parseInt(activity.attributes.foreign_id)
-                                            }));
-                                        } else if (activity.attributes.type === 'delete_card_comment') {
-                                            self.board.activities.remove(self.board.activities.findWhere({
-                                                id: parseInt(activity.attributes.foreign_id)
-                                            }));
-                                            if ($('.js-list-activity-' + activity.attributes.foreign_id)) {
-                                                $('.js-list-activity-' + activity.attributes.foreign_id).remove();
-                                            }
-                                        } else if (activity.attributes.type === 'delete_checklist') {
-                                            self.board.checklists.remove(self.board.checklists.findWhere({
-                                                id: parseInt(activity.attributes.foreign_id)
-                                            }), {
-                                                silent: false
-                                            });
-                                            self.board.checklist_items.remove(self.board.checklist_items.where({
-                                                checklist_id: parseInt(activity.attributes.foreign_id)
-                                            }), {
-                                                silent: false
-                                            });
-                                            var checklist_items = self.board.checklist_items.where({
-                                                card_id: parseInt(activity.attributes.card_id)
-                                            });
-                                            items = new App.CheckListItemCollection();
-                                            items.add(checklist_items, {
-                                                silent: true
-                                            });
-                                            var completed_count = items.filter(function(checklist_item) {
-                                                return parseInt(checklist_item.get('is_completed')) === 1;
-                                            }).length;
-                                            var total_count = items.models.length;
-                                            card.set('checklist_item_completed_count', completed_count);
-                                            card.set('checklist_item_count', total_count);
-                                        } else if (activity.attributes.type === 'delete_checklist_item') {
-                                            self.board.checklist_items.remove(self.board.checklist_items.findWhere({
-                                                id: parseInt(activity.attributes.foreign_id)
-                                            }), {
-                                                silent: false
-                                            });
-                                            var update_checklist_items = self.board.checklist_items.where({
-                                                card_id: parseInt(activity.attributes.card_id)
-                                            });
-                                            items = new App.CheckListItemCollection();
-                                            items.add(update_checklist_items, {
-                                                silent: true
-                                            });
-                                            var update_completed_count = items.filter(function(checklist_item) {
-                                                return parseInt(checklist_item.get('is_completed')) === 1;
-                                            }).length;
-                                            var update_total_count = items.models.length;
-                                            card.set('checklist_item_completed_count', update_completed_count);
-                                            card.set('checklist_item_count', update_total_count);
-                                        } else if (activity.attributes.type === 'delete_card_users') {
-                                            card.users.remove(card.users.findWhere({
-                                                id: parseInt(activity.attributes.foreign_id)
-                                            }));
-                                        } else if (activity.attributes.type === 'unvote_card') {
-                                            card.card_voters.remove(card.card_voters.findWhere({
-                                                id: parseInt(activity.attributes.foreign_id)
-                                            }));
-                                        } else if (activity.attributes.type === 'delete_card') {
-                                            self.board.cards.remove(card);
-                                        }
-                                    }
-                                    if (!_.isUndefined(activity.attributes.card_id) && activity.attributes.card_id !== 0) {
-                                        if (activity.attributes.type !== 'add_comment' && activity.attributes.type !== 'edit_comment' && activity.attributes.type !== 'delete_card_comment') {
-                                            if ($('#js-card-modal-' + activity.attributes.card_id).length == 1) {
-                                                var modal_activity = activity;
-                                                delete modal_activity.from_footer;
-                                                var new_activity_view = new App.ActivityView({
-                                                    model: modal_activity,
-                                                    board: self.board,
-                                                    flag: '1'
-                                                });
-                                                if ($.cookie('filter') !== 'comment') {
-                                                    var new_view_activity = $('#js-card-activities-' + activity.attributes.card_id);
-                                                    if ($('#js-card-activities-' + activity.attributes.card_id + ' ' + '.js-list-activity-' + activity.attributes.id).length === 0) {
-                                                        card.activities.unshift(modal_activity, {
-                                                            silent: true
-                                                        });
-                                                        new_view_activity.prepend(new_activity_view.render().el);
+                                                if (!_.isUndefined(list_cards) && list_cards.length > 0) {
+                                                    _.each(list_cards, function(card) {
+                                                        var options = {
+                                                            silent: false
+                                                        };
+                                                        self.board.cards.findWhere({
+                                                            id: parseInt(card.attributes.id)
+                                                        }).set({
+                                                            is_archived: 1
+                                                        }, options);
+                                                    });
+                                                    list.set('card_count', 0);
+                                                    if (!_.isUndefined(list) && wip_enabled) {
+                                                        $('body').trigger('cardAddRendered', [list.id, list]);
                                                     }
+                                                    $('#js-card-listing-' + list.id).html('&nbsp;');
                                                 }
-                                                emojify.run();
                                             }
                                         }
-                                    }
-                                } else if (!_.isUndefined(activity.attributes.list_id) && activity.attributes.list_id !== 0 && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update List
-                                    var list = self.board.lists.findWhere({
-                                        id: parseInt(activity.attributes.list_id)
-                                    });
-                                    if (activity.attributes.type === 'add_list') {
-                                        var new_list = new App.List();
-                                        new_list.set(activity.attributes.list);
-                                        new_list.set('id', parseInt(activity.attributes.list.id));
-                                        new_list.set('board_id', parseInt(activity.attributes.list.board_id));
-                                        new_list.set('lists_cards', []);
-                                        self.board.lists.add(new_list);
-
-                                        if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(new_list.attributes.board_id))) {
-                                            App.boards.get(new_list.attributes.board_id).lists.add(new_list);
+                                    } else if (!_.isUndefined(self.board) && !_.isUndefined(activity.attributes.board_id) && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update Board
+                                        if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
+                                            self.board.set(activity.attributes.revisions.new_value);
                                         }
-
-                                    }
-                                    if (!_.isUndefined(list)) {
-                                        if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
-                                            if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
-                                                list.set(activity.attributes.revisions.new_value);
-                                            }
+                                        if (activity.attributes.type === 'add_board_user') {
+                                            self.board.board_users.add(activity.attributes.board_user);
+                                        } else if (activity.attributes.type === 'delete_board_user') {
+                                            self.board.board_users.remove(self.board.board_users.findWhere({
+                                                id: activity.attributes.foreign_id
+                                            }));
+                                        } else if (activity.attributes.type === 'close_board') {
+                                            App.boards.get(activity.attributes.board_id).set('is_closed', 1);
+                                            self.board.set('is_closed', 1);
+                                        } else if (activity.attributes.type === 'reopen_board') {
+                                            App.boards.get(activity.attributes.board_id).set('is_closed', 0);
+                                            self.board.set('is_closed', 0);
                                         }
-                                        if (activity.attributes.type === 'delete_list') {
-                                            var removed_list_cards = self.board.cards.where({
-                                                list_id: parseInt(list.attributes.id)
-                                            });
-                                            self.board.cards.remove(removed_list_cards, {
-                                                silent: true
-                                            });
-                                            list.collection.board.lists.remove(list);
-                                            self.board.lists.remove(list);
-                                        } else if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === 'add_list_agile_wip_limit' || activity.attributes.type === 'edit_list_agile_wip_limit' || activity.attributes.type === 'delete_list_agile_wip_limit' || activity.attributes.type === 'add_list_auto_archive_day' || activity.attributes.type === 'edit_list_auto_archive_day' || activity.attributes.type === 'delete_list_auto_archive_day' || activity.attributes.type === 'add_list_task_move_duedate' || activity.attributes.type === 'edit_list_task_move_duedate' || activity.attributes.type === 'add_list_task_move_duedate') && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
-                                            list.set('custom_fields', activity.attributes.revisions.new_value.custom_fields);
-                                            $('body').trigger('listCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.list_id), list]);
-                                        } else if (activity.attributes.type === 'change_list_position') {
-                                            if (parseInt(activity.attributes.list.board_id) !== parseInt(list.attributes.board_id)) {
-                                                self.board.lists.remove(list);
-                                            } else {
-                                                list.set('position', parseFloat(activity.attributes.list.position));
-                                            }
-                                        } else if (activity.attributes.type === 'moved_list_card') {
-                                            var cards = self.board.cards.where({
-                                                list_id: parseInt(activity.attributes.list_id)
-                                            });
-                                            var newList = self.board.lists.findWhere({
-                                                id: parseInt(activity.attributes.foreign_id)
-                                            });
-                                            var new_list_card_count = self.board.lists.get(activity.attributes.foreign_id).attributes.card_count;
-                                            var previous_list_card_count = self.board.lists.get(list.id).attributes.card_count;
-                                            new_list_card_count = new_list_card_count ? new_list_card_count : 0;
-                                            previous_list_card_count = previous_list_card_count ? previous_list_card_count : 0;
-                                            new_list_card_count = new_list_card_count + previous_list_card_count;
-                                            if (!_.isUndefined(cards) && cards.length > 0) {
-                                                // Removing the &nbsp; from the new list card listing
-                                                $('#js-card-listing-' + activity.attributes.foreign_id).html(function(i, h) {
-                                                    return h.replace(/&nbsp;/g, '');
-                                                });
-                                                _.each(cards, function(card) {
-                                                    var options = {
-                                                        silent: false
-                                                    };
-                                                    self.board.cards.findWhere({
-                                                        id: parseInt(card.attributes.id)
-                                                    }).set({
-                                                        list_id: parseInt(activity.attributes.foreign_id)
-                                                    }, options);
-                                                });
-                                                newList.set('card_count', new_list_card_count);
-                                                list.set('card_count', 0);
-                                                if (!_.isUndefined(list) && !_.isUndefined(newList) && wip_enabled) {
-                                                    $('body').trigger('listmoveActionRendered', [list.id, newList.id, new_list_card_count]);
-                                                }
-                                                // Adding the &nbsp; for the old list with no card
-                                                $('#js-card-listing-' + list.id).html('&nbsp;');
-                                            }
-                                        } else if (activity.attributes.type === 'archived_card') {
-                                            var list_cards = self.board.cards.where({
-                                                list_id: parseInt(activity.attributes.list_id)
-                                            });
-                                            if (!_.isUndefined(list_cards) && list_cards.length > 0) {
-                                                _.each(list_cards, function(card) {
-                                                    var options = {
-                                                        silent: false
-                                                    };
-                                                    self.board.cards.findWhere({
-                                                        id: parseInt(card.attributes.id)
-                                                    }).set({
-                                                        is_archived: 1
-                                                    }, options);
-                                                });
-                                                list.set('card_count', 0);
-                                                if (!_.isUndefined(list) && wip_enabled) {
-                                                    $('body').trigger('cardAddRendered', [list.id, list]);
-                                                }
-                                                $('#js-card-listing-' + list.id).html('&nbsp;');
-                                            }
-                                        }
-                                    }
-                                } else if (!_.isUndefined(self.board) && !_.isUndefined(activity.attributes.board_id) && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update Board
-                                    if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
-                                        self.board.set(activity.attributes.revisions.new_value);
-                                    }
-                                    if (activity.attributes.type === 'add_board_user') {
-                                        self.board.board_users.add(activity.attributes.board_user);
-                                    } else if (activity.attributes.type === 'delete_board_user') {
-                                        self.board.board_users.remove(self.board.board_users.findWhere({
-                                            id: activity.attributes.foreign_id
-                                        }));
-                                    } else if (activity.attributes.type === 'close_board') {
-                                        App.boards.get(activity.attributes.board_id).set('is_closed', 1);
-                                        self.board.set('is_closed', 1);
-                                    } else if (activity.attributes.type === 'reopen_board') {
-                                        App.boards.get(activity.attributes.board_id).set('is_closed', 0);
-                                        self.board.set('is_closed', 0);
                                     }
                                 }
                             }
-                        }
-                        if (!_.isUndefined(self.boards)) {
-                            var board = '';
-                            var board_list = '';
-                            var organization_boards = '';
-                            if (activity.attributes.board_id) {
-                                board = self.boards.findWhere({
-                                    id: parseInt(activity.attributes.board_id)
+                            if (!_.isUndefined(self.boards)) {
+                                var board = '';
+                                var board_list = '';
+                                var organization_boards = '';
+                                if (activity.attributes.board_id) {
+                                    board = self.boards.findWhere({
+                                        id: parseInt(activity.attributes.board_id)
+                                    });
+                                }
+                                if (!_.isUndefined(board)) {
+                                    if (activity.attributes.list_id) {
+                                        board_list = board.lists.findWhere({
+                                            id: parseInt(activity.attributes.list_id)
+                                        });
+                                    }
+                                    if (activity.attributes.type === 'edit_organization' || activity.attributes.type === 'add_organization_attachment' || activity.attributes.type === 'delete_organization_attachment') {
+                                        organization_boards = self.boards.findWhere({
+                                            organization_id: parseInt(activity.attributes.organization_id)
+                                        });
+                                    }
+                                    if (activity.attributes.type == 'edit_board') {
+                                        board.set('name', activity.attributes.revisions.new_value.name);
+                                    } else if (activity.attributes.type == 'change_visibility') {
+                                        board.set('board_visibility', activity.attributes.revisions.new_value.board_visibility);
+                                    } else if (activity.attributes.type == 'change_background') {
+                                        board.set('background_color', activity.attributes.revisions.new_value.background_color);
+                                        board.set('background_picture_url', activity.attributes.revisions.new_value.background_picture_url);
+                                        board.set('background_pattern_url', activity.attributes.revisions.new_value.background_pattern_url);
+                                    } else if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card') {
+                                        if (parseInt(activity.attributes.user_id) === parseInt(authuser.user.id) && activity.attributes.type === 'add_card') {
+                                            // While using instant add card, count duplicates for logged in user. So skipped the card count update while fetch activities.
+                                        } else {
+                                            card_count = board.attributes.card_count + 1;
+                                            board.set('card_count', card_count);
+                                            board_list.set('card_count', board_list.attributes.card_count + 1);
+                                        }
+                                    } else if (activity.attributes.type === 'delete_card') {
+                                        card_count = board.attributes.card_count - 1;
+                                        board.set('card_count', card_count);
+                                        board_list.set('card_count', board_list.attributes.card_count - 1);
+                                    } else if (activity.attributes.type === 'move_card' || activity.attributes.type === 'moved_list_card') {
+                                        if (!_.isEmpty(activity.attributes.revisions.new_value)) {
+                                            board.set('card_count', '');
+                                            card_count = board.attributes.card_count;
+                                            board.set('card_count', card_count);
+                                            var new_board_list = board.lists.findWhere({
+                                                id: parseInt(activity.attributes.revisions.new_value.list_id)
+                                            });
+                                            new_board_list.set('card_count', new_board_list.attributes.card_count + 1);
+                                            var old_board_list = board.lists.findWhere({
+                                                id: parseInt(activity.attributes.revisions.old_value.list_id)
+                                            });
+                                            old_board_list.set('card_count', old_board_list.attributes.card_count - 1);
+                                        }
+                                    } else if (activity.attributes.type === 'change_list_position') {
+                                        if (!_.isEmpty(activity.attributes.revisions.new_value)) {
+                                            var change_new_list = board.lists.findWhere({
+                                                id: parseInt(activity.attributes.revisions.new_value.board_id)
+                                            });
+                                            change_new_list.add(activity.attributes.list);
+                                            var new_board = self.boards.findWhere({
+                                                id: parseInt(activity.attributes.revisions.new_value.board_id)
+                                            });
+                                            new_board.set('card_count', change_new_list.attributes.card_count + 1);
+                                            var change_old_list = board.lists.findWhere({
+                                                id: parseInt(activity.attributes.revisions.old_value.board_id)
+                                            });
+                                            change_old_list.remove(activity.attributes.list);
+                                            var old_board = self.boards.findWhere({
+                                                id: parseInt(activity.attributes.revisions.old_value.board_id)
+                                            });
+                                            old_board.set('card_count', change_old_list.attributes.card_count - 1);
+                                        }
+                                    } else if (activity.attributes.type === 'edit_list') {
+                                        board_list.set('name', activity.attributes.revisions.new_value.name);
+                                    } else if (activity.attributes.type === 'delete_list') {
+                                        card_count = board.attributes.card_count;
+                                        board.set('card_count', card_count - board_list.attributes.card_count);
+                                        board_list.remove(board.attributes.list);
+                                    } else if (activity.attributes.type === 'edit_organization') {
+                                        _.each(organization_boards.collection.models, function(organization_board) {
+                                            var rename_organization_board = self.boards.findWhere({
+                                                id: parseInt(organization_board.id)
+                                            });
+                                            rename_organization_board.set('organization_name', activity.attributes.revisions.new_value.name);
+                                        });
+                                    } else if (activity.attributes.type === 'add_organization_attachment' || activity.attributes.type === 'delete_organization_attachment') {
+                                        _.each(organization_boards.collection.models, function(organization_board) {
+                                            var change_organization_board = self.boards.findWhere({
+                                                id: parseInt(organization_board.id)
+                                            });
+                                            change_organization_board.set('organization_logo_url', activity.attributes.organization_logo_url);
+                                        });
+                                    } else if (activity.attributes.type === 'add_board_user') {
+                                        board.board_users.add(activity.attributes.board_user);
+                                    }
+                                }
+                            } else if (activity.attributes.type === 'add_board' && !_.isUndefined(App.boards) && !_.isEmpty(App.boards) && App.boards !== null) {
+                                var _new_board = new App.Board();
+                                _new_board.set('id', parseInt(activity.attributes.board_id));
+                                _new_board.set('name', activity.attributes.board_name);
+                                _new_board.set('board_visibility', activity.attributes.board_visibility);
+                                $('.js-my-boards').prepend(new App.BoardSimpleView({
+                                    model: _new_board,
+                                    id: 'js-my-board-' + activity.attributes.board_id,
+                                    className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + activity.attributes.board_id
+                                }).el);
+                                App.boards.add(_new_board);
+                            }
+                            Auth = JSON.parse($.cookie('auth'));
+                            if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id) || _.isUndefined(Auth.user.unread_activity_id))) {
+                                $('#js-card-' + activity.attributes.card_id).parent().addClass('animation');
+                                $('#js-card-' + activity.attributes.card_id).addClass('tada-animation');
+                                $('#js-card-' + activity.attributes.card_id).stop().animate({
+                                    backgroundColor: '#FCEA88'
+                                }, 800, function() {
+                                    $('#js-card-' + activity.attributes.card_id).parent().removeClass('animation');
+                                    $('#js-card-' + activity.attributes.card_id).removeClass('tada-animation');
+                                    $('#js-card-' + activity.attributes.card_id).animate({
+                                        backgroundColor: '#FFFFFF'
+                                    }, 800);
                                 });
                             }
-                            if (!_.isUndefined(board)) {
-                                if (activity.attributes.list_id) {
-                                    board_list = board.lists.findWhere({
-                                        id: parseInt(activity.attributes.list_id)
-                                    });
-                                }
-                                if (activity.attributes.type === 'edit_organization' || activity.attributes.type === 'add_organization_attachment' || activity.attributes.type === 'delete_organization_attachment') {
-                                    organization_boards = self.boards.findWhere({
-                                        organization_id: parseInt(activity.attributes.organization_id)
-                                    });
-                                }
-                                if (activity.attributes.type == 'edit_board') {
-                                    board.set('name', activity.attributes.revisions.new_value.name);
-                                } else if (activity.attributes.type == 'change_visibility') {
-                                    board.set('board_visibility', activity.attributes.revisions.new_value.board_visibility);
-                                } else if (activity.attributes.type == 'change_background') {
-                                    board.set('background_color', activity.attributes.revisions.new_value.background_color);
-                                    board.set('background_picture_url', activity.attributes.revisions.new_value.background_picture_url);
-                                    board.set('background_pattern_url', activity.attributes.revisions.new_value.background_pattern_url);
-                                } else if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card') {
-                                    if (parseInt(activity.attributes.user_id) === parseInt(authuser.user.id) && activity.attributes.type === 'add_card') {
-                                        // While using instant add card, count duplicates for logged in user. So skipped the card count update while fetch activities.
-                                    } else {
-                                        card_count = board.attributes.card_count + 1;
-                                        board.set('card_count', card_count);
-                                        board_list.set('card_count', board_list.attributes.card_count + 1);
-                                    }
-                                } else if (activity.attributes.type === 'delete_card') {
-                                    card_count = board.attributes.card_count - 1;
-                                    board.set('card_count', card_count);
-                                    board_list.set('card_count', board_list.attributes.card_count - 1);
-                                } else if (activity.attributes.type === 'move_card' || activity.attributes.type === 'moved_list_card') {
-                                    if (!_.isEmpty(activity.attributes.revisions.new_value)) {
-                                        board.set('card_count', '');
-                                        card_count = board.attributes.card_count;
-                                        board.set('card_count', card_count);
-                                        var new_board_list = board.lists.findWhere({
-                                            id: parseInt(activity.attributes.revisions.new_value.list_id)
-                                        });
-                                        new_board_list.set('card_count', new_board_list.attributes.card_count + 1);
-                                        var old_board_list = board.lists.findWhere({
-                                            id: parseInt(activity.attributes.revisions.old_value.list_id)
-                                        });
-                                        old_board_list.set('card_count', old_board_list.attributes.card_count - 1);
-                                    }
-                                } else if (activity.attributes.type === 'change_list_position') {
-                                    if (!_.isEmpty(activity.attributes.revisions.new_value)) {
-                                        var change_new_list = board.lists.findWhere({
-                                            id: parseInt(activity.attributes.revisions.new_value.board_id)
-                                        });
-                                        change_new_list.add(activity.attributes.list);
-                                        var new_board = self.boards.findWhere({
-                                            id: parseInt(activity.attributes.revisions.new_value.board_id)
-                                        });
-                                        new_board.set('card_count', change_new_list.attributes.card_count + 1);
-                                        var change_old_list = board.lists.findWhere({
-                                            id: parseInt(activity.attributes.revisions.old_value.board_id)
-                                        });
-                                        change_old_list.remove(activity.attributes.list);
-                                        var old_board = self.boards.findWhere({
-                                            id: parseInt(activity.attributes.revisions.old_value.board_id)
-                                        });
-                                        old_board.set('card_count', change_old_list.attributes.card_count - 1);
-                                    }
-                                } else if (activity.attributes.type === 'edit_list') {
-                                    board_list.set('name', activity.attributes.revisions.new_value.name);
-                                } else if (activity.attributes.type === 'delete_list') {
-                                    card_count = board.attributes.card_count;
-                                    board.set('card_count', card_count - board_list.attributes.card_count);
-                                    board_list.remove(board.attributes.list);
-                                } else if (activity.attributes.type === 'edit_organization') {
-                                    _.each(organization_boards.collection.models, function(organization_board) {
-                                        var rename_organization_board = self.boards.findWhere({
-                                            id: parseInt(organization_board.id)
-                                        });
-                                        rename_organization_board.set('organization_name', activity.attributes.revisions.new_value.name);
-                                    });
-                                } else if (activity.attributes.type === 'add_organization_attachment' || activity.attributes.type === 'delete_organization_attachment') {
-                                    _.each(organization_boards.collection.models, function(organization_board) {
-                                        var change_organization_board = self.boards.findWhere({
-                                            id: parseInt(organization_board.id)
-                                        });
-                                        change_organization_board.set('organization_logo_url', activity.attributes.organization_logo_url);
-                                    });
-                                } else if (activity.attributes.type === 'add_board_user') {
-                                    board.board_users.add(activity.attributes.board_user);
-                                }
-                            }
-                        } else if (activity.attributes.type === 'add_board' && !_.isUndefined(App.boards) && !_.isEmpty(App.boards) && App.boards !== null) {
-                            var _new_board = new App.Board();
-                            _new_board.set('id', parseInt(activity.attributes.board_id));
-                            _new_board.set('name', activity.attributes.board_name);
-                            _new_board.set('board_visibility', activity.attributes.board_visibility);
-                            $('.js-my-boards').prepend(new App.BoardSimpleView({
-                                model: _new_board,
-                                id: 'js-my-board-' + activity.attributes.board_id,
-                                className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + activity.attributes.board_id
-                            }).el);
-                            App.boards.add(_new_board);
-                        }
-                        Auth = JSON.parse($.cookie('auth'));
-                        if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id) || _.isUndefined(Auth.user.unread_activity_id))) {
-                            $('#js-card-' + activity.attributes.card_id).parent().addClass('animation');
-                            $('#js-card-' + activity.attributes.card_id).addClass('tada-animation');
-                            $('#js-card-' + activity.attributes.card_id).stop().animate({
-                                backgroundColor: '#FCEA88'
-                            }, 800, function() {
-                                $('#js-card-' + activity.attributes.card_id).parent().removeClass('animation');
-                                $('#js-card-' + activity.attributes.card_id).removeClass('tada-animation');
-                                $('#js-card-' + activity.attributes.card_id).animate({
-                                    backgroundColor: '#FFFFFF'
-                                }, 800);
-                            });
-                        }
-                    });
-                    localforage.setItem("unreaded_cards", tmp_unreaded_card);
-                    if (mode === 2) {
-                        var unread_activity_id = _.max(activities.models, function(activity) {
-                            return activity.id;
                         });
+                        localforage.setItem("unreaded_cards", tmp_unreaded_card);
+                        if (mode === 2) {
+                            var unread_activity_id = _.max(activities.models, function(activity) {
+                                return activity.id;
+                            });
 
-                        if ($.cookie('auth')) {
-                            Auth = JSON.parse($.cookie('auth'));
-                            if (!_.isUndefined(Auth.user.unread_activity_id)) {
-                                Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
-                                authuser.user.unread_activity_id = (parseInt(unread_activity_id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
-                            } else {
-                                Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
-                                authuser.user.unread_activity_id = (parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                            if ($.cookie('auth')) {
+                                Auth = JSON.parse($.cookie('auth'));
+                                if (!_.isUndefined(Auth.user.unread_activity_id)) {
+                                    Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                                    authuser.user.unread_activity_id = (parseInt(unread_activity_id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
+                                } else {
+                                    Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                                    authuser.user.unread_activity_id = (parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.last_activity_id;
+                                }
+                                $.cookie('auth', JSON.stringify(Auth));
                             }
-                            $.cookie('auth', JSON.stringify(Auth));
+                        }
+                    } else {
+                        if (parseInt(authuser.user.last_activity_id) === 0 || authuser.user.last_activity_id === null) {
+                            $('#js-all-activities').parent('div').addClass('notification-empty');
+                            $('#js-all-activities').html('<li><div>No activities available.</div></li>');
+                            $('#js-notification-load-more-all').hide();
                         }
                     }
-                } else {
-                    if (parseInt(authuser.user.last_activity_id) === 0 || authuser.user.last_activity_id === null) {
-                        $('#js-all-activities').parent('div').addClass('notification-empty');
-                        $('#js-all-activities').html('<li><div>No activities available.</div></li>');
-                        $('#js-notification-load-more-all').hide();
-                    }
+                    var headerH = $('header').height();
+                    var windowH = $(window).height();
+                    var footerH = $('footer').height();
+                    var notificationH = windowH - footerH;
+                    var boardH = windowH - headerH - footerH - 14;
+                    $('.notification-list').css({
+                        'height': notificationH - 100,
+                        'overflow-y': 'scroll'
+                    });
                 }
-                var headerH = $('header').height();
-                var windowH = $(window).height();
-                var footerH = $('footer').height();
-                var notificationH = windowH - footerH;
-                var boardH = windowH - headerH - footerH - 14;
-                $('.notification-list').css({
-                    'height': notificationH - 100,
-                    'overflow-y': 'scroll'
-                });
-            }
+            });
         });
     },
     /**
