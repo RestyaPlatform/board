@@ -1204,13 +1204,15 @@ App.FooterView = Backbone.View.extend({
                                             if (_.isUndefined(card.attributes.cards_voters) || card.attributes.cards_voters === null) {
                                                 card.set('cards_voters', []);
                                             }
-                                            card.attributes.cards_voters.push(activity.attributes.voter);
-                                            var new_voter = new App.CardVoter();
-                                            new_voter.set(activity.attributes.voter);
-                                            new_voter.set('id', parseInt(activity.attributes.voter.id));
-                                            new_voter.set('user_id', parseInt(activity.attributes.voter.user_id));
-                                            new_voter.set('card_id', parseInt(activity.attributes.voter.card_id));
-                                            card.card_voters.add(new_voter);
+                                            if (activity.attributes.voter !== false) {
+                                                card.attributes.cards_voters.push(activity.attributes.voter);
+                                                var new_voter = new App.CardVoter();
+                                                new_voter.set(activity.attributes.voter);
+                                                new_voter.set('id', parseInt(activity.attributes.voter.id));
+                                                new_voter.set('user_id', parseInt(activity.attributes.voter.user_id));
+                                                new_voter.set('card_id', parseInt(activity.attributes.voter.card_id));
+                                                card.card_voters.add(new_voter);
+                                            }
                                         } else if (activity.attributes.type === 'add_card_voter') {
                                             card.set('cards_users', activity.attributes.user);
                                         } else if (activity.attributes.type === 'add_checklist_item') {
