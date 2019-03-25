@@ -1743,6 +1743,7 @@ App.BoardHeaderView = Backbone.View.extend({
         e.preventDefault();
         var el = this.$el;
         var data = el.find('form#BoardRenameForm').serializeObject();
+        $('.js-close-popover').click();
         var board = new App.Board();
         this.model.set(data);
         App.boards.get(this.model.attributes.id).set(data, {
