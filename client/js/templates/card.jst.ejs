@@ -64,14 +64,10 @@
 	</li>
 	<% } %>  
 	<%  var hide_card_informations = false;
-		if (!_.isUndefined(APPS) && APPS !== null ) {
-			if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-				if ($.inArray('r_hide_card_additional_informations',APPS.enabled_apps) !== -1) {
-					hide_card_informations = true;
-				}
-			}
+		if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_hide_card_additional_informations',APPS.enabled_apps) !== -1) {
+			hide_card_informations = true;
 		}
-		if(!_.isUndefined(card.id) && (_.isUndefined(card.attributes.is_offline) || card.attributes.is_offline == false)){ %>
+		if(!_.isUndefined(card.id) && (_.isUndefined(card.attributes.is_offline) || card.attributes.is_offline === false)){ %>
 	<li class="pull-right card-id" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><strong>#<%- card.id %></strong></li>
 	<%}%>
 	<li id="js-card-customfields-list-<%- card.attributes.id %>"></li>
