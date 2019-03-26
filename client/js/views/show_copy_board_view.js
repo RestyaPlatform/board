@@ -77,6 +77,7 @@ App.ShowCopyBoardView = Backbone.View.extend({
             board.save(data, {
                 success: function(model, response) {
                     if (!_.isUndefined(board.get('id'))) {
+                        $('.js-switch-grid-view').trigger('click');
                         app.navigate('#/board/' + board.get('id'), {
                             trigger: true,
                             replace: true,
