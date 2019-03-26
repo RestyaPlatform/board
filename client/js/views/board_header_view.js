@@ -535,6 +535,7 @@ App.BoardHeaderView = Backbone.View.extend({
                                 self.start_filter++;
                                 card.acl_links = self.model.acl_links;
                                 card.board_users = self.model.board_users;
+                                card.board = self.model;
                                 var view = new App.ArchivedCardView({
                                     model: card
                                 });
@@ -569,6 +570,7 @@ App.BoardHeaderView = Backbone.View.extend({
                                 self.start++;
                                 card.acl_links = self.model.acl_links;
                                 card.board_users = self.model.board_users;
+                                card.board = self.model;
                                 var view = new App.ArchivedCardView({
                                     model: card
                                 });
