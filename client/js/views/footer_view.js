@@ -1387,17 +1387,19 @@ App.FooterView = Backbone.View.extend({
                                                     $('.js-activity-' + activity.attributes.foreign_id).find('.github-markdown').html(comment_value);
                                                 }
                                             } else if (activity.attributes.type === 'add_card_user') {
-                                                var new_user = new App.CardUser();
-                                                new_user.set(activity.attributes.user);
-                                                new_user.set('id', parseInt(activity.attributes.user.id));
-                                                new_user.set('user_id', parseInt(activity.attributes.user.user_id));
-                                                new_user.set('card_id', parseInt(activity.attributes.user.card_id));
-                                                new_user.set('profile_picture_path', activity.attributes.user.profile_picture_path);
-                                                new_user.set('username', activity.attributes.user.username);
-                                                new_user.set('initials', activity.attributes.user.initials);
-                                                new_user.set('full_name', activity.attributes.user.full_name);
-                                                card.users.add(new_user);
-                                                card.set('users', new_user);
+                                                if (activity.attributes.user !== false) {
+                                                    var new_user = new App.CardUser();
+                                                    new_user.set(activity.attributes.user);
+                                                    new_user.set('id', parseInt(activity.attributes.user.id));
+                                                    new_user.set('user_id', parseInt(activity.attributes.user.user_id));
+                                                    new_user.set('card_id', parseInt(activity.attributes.user.card_id));
+                                                    new_user.set('profile_picture_path', activity.attributes.user.profile_picture_path);
+                                                    new_user.set('username', activity.attributes.user.username);
+                                                    new_user.set('initials', activity.attributes.user.initials);
+                                                    new_user.set('full_name', activity.attributes.user.full_name);
+                                                    card.users.add(new_user);
+                                                    card.set('users', new_user);
+                                                }
                                             } else if (activity.attributes.type === 'add_comment') {
                                                 if (!_.isEmpty(card.cards)) {
                                                     activity.cards.add(card.cards);
