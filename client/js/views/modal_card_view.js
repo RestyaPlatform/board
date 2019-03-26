@@ -2919,35 +2919,36 @@ App.ModalCardView = Backbone.View.extend({
                 view_duedateform1.html('');
             }
         }
-
-        this.$('.js-card-duedate-edit-' + self.id).datetimepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            todayBtn: true,
-            pickerPosition: 'top-right',
-            todayHighlight: 1,
-            startView: 2,
-            minView: 2,
-            bootcssVer: 2,
-            pickTime: false
-        }).on('changeDate', function(ev) {
-            $(this).datetimepicker('hide');
-            $(this).blur();
-        });
-        this.$('.js-card-duetime-edit-' + self.id).datetimepicker({
-            format: 'hh:ii',
-            autoclose: true,
-            showMeridian: false,
-            pickerPosition: 'top-right',
-            startView: 1,
-            maxView: 1,
-            pickDate: false,
-            use24hours: true,
-            timepicker: 1,
-        }).on('changeDate', function(ev) {
-            $(this).datetimepicker('hide');
-            $(this).blur();
-        });
+        _(function() {
+            $('.js-card-duedate-edit-' + self.id).datetimepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayBtn: true,
+                pickerPosition: 'top-right',
+                todayHighlight: 1,
+                startView: 2,
+                minView: 2,
+                bootcssVer: 2,
+                pickTime: false
+            }).on('changeDate', function(ev) {
+                $(this).datetimepicker('hide');
+                $(this).blur();
+            });
+            $('.js-card-duetime-edit-' + self.id).datetimepicker({
+                format: 'hh:ii',
+                autoclose: true,
+                showMeridian: false,
+                pickerPosition: 'top-right',
+                startView: 1,
+                maxView: 1,
+                pickDate: false,
+                use24hours: true,
+                timepicker: 1,
+            }).on('changeDate', function(ev) {
+                $(this).datetimepicker('hide');
+                $(this).blur();
+            });
+        }).defer();
     },
     /**
      * showChecklistAddForm()
