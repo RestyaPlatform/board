@@ -1568,7 +1568,9 @@ App.FooterView = Backbone.View.extend({
                                                     $('body').trigger('cardAddRendered', [Cardlist.id, Cardlist]);
                                                 }
                                                 if (parseInt(Cardlist.attributes.card_count) === 0) {
-                                                    $('#js-card-listing-' + Cardlist.id).html('&nbsp;');
+                                                    if ($('#js-card-listing-' + Cardlist.id).length > 0) {
+                                                        $('#js-card-listing-' + Cardlist.id).html('&nbsp;');
+                                                    }
                                                 }
                                             } else if (activity.attributes.type === 'unarchived_card') {
                                                 var cardList = self.board.lists.get(activity.attributes.list_id);
@@ -1577,7 +1579,9 @@ App.FooterView = Backbone.View.extend({
                                                     $('body').trigger('cardAddRendered', [cardList.id, cardList]);
                                                 }
                                                 if (parseInt(cardList.attributes.card_count) === 1) {
-                                                    $('#js-card-listing-' + cardList.id).html($('#js-card-listing-' + cardList.id).html().replace(/^\s*&nbsp;/m, ''));
+                                                    if ($('#js-card-listing-' + cardList.id).length > 0) {
+                                                        $('#js-card-listing-' + cardList.id).html($('#js-card-listing-' + cardList.id).html().replace(/^\s*&nbsp;/m, ''));
+                                                    }
                                                 }
                                             } else if (activity.attributes.type === 'change_card_position') {
                                                 card.set('position', activity.attributes.card_position);

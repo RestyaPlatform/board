@@ -44,6 +44,8 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.cards.bind('add', this.cardFilter, this);
         this.model.cards.bind('add', this.updateListView);
         this.model.cards.bind('remove', this.updateListView);
+        this.model.cards.bind('change:is_archived', this.updateListView);
+        this.model.cards.bind('change:comment_count', this.updateListView);
         this.model.lists.bind('remove', this.updateListView);
         this.model.bind('change:organization_id', this.render, this);
         this.model.bind('change:background_picture_url', this.showChangeBackground, this);
@@ -936,7 +938,6 @@ App.BoardHeaderView = Backbone.View.extend({
                 } else {
                     e.board_users = self.model.board_users;
                 }
-                console.log(e.attributes);
                 view = new App.CardView({
                     tagName: 'tr',
                     className: 'js-show-modal-card-view cur txt-aligns js-listview-list-id-' + e.attributes.list_id,
