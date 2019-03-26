@@ -3133,7 +3133,6 @@ App.ModalCardView = Backbone.View.extend({
             content_img = '<img src="' + profile_picture_path + '" alt="' + user_name + '" title="' + full_name + ' (' + user_name + ')" class="img-rounded img-responsive avatar">';
         }
         var view_user = $('#js-card-users-list-' + self.model.id).prepend('<li class="js-added-card-user-' + user_id + '">' + content_img + '</li>');
-        $('#js-card-user-add-container .js-member-dropdown').removeClass('open');
         var card_user = new App.CardUser();
         card_user.set('uuid', uuid);
         card_user.set('is_offline', true);
