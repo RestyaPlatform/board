@@ -497,13 +497,15 @@ App.ListView = Backbone.View.extend({
         });
         this.model.collection.board.lists.remove(self.model);
         App.boards.get(self.model.attributes.board_id).lists.remove(self.model);
-        if (App.boards.get(self.model.attributes.board_id).attributes && App.boards.get(self.model.attributes.board_id).attributes.lists.length > 0) {
-            var boards_attr_list = App.boards.get(self.model.attributes.board_id).attributes.lists.filter(function(list) {
-                return parseInt(list.id) === parseInt(list_id);
-            });
-            if (boards_attr_list.length > 0) {
-                var boards_attr_list_index = App.boards.get(self.model.attributes.board_id).attributes.lists.indexOf(boards_attr_list[0]);
-                App.boards.get(self.model.attributes.board_id).attributes.lists.splice(boards_attr_list_index, 1);
+        if (App.boards.get(self.model.attributes.board_id).attributes && !_.isUndefined(App.boards.get(self.model.attributes.board_id).attributes.lists) && App.boards.get(self.model.attributes.board_id).attributes.lists !== null) {
+            if (App.boards.get(self.model.attributes.board_id).attributes.lists.length > 0) {
+                var boards_attr_list = App.boards.get(self.model.attributes.board_id).attributes.lists.filter(function(list) {
+                    return parseInt(list.id) === parseInt(list_id);
+                });
+                if (boards_attr_list.length > 0) {
+                    var boards_attr_list_index = App.boards.get(self.model.attributes.board_id).attributes.lists.indexOf(boards_attr_list[0]);
+                    App.boards.get(self.model.attributes.board_id).attributes.lists.splice(boards_attr_list_index, 1);
+                }
             }
         }
         this.board.lists.remove(self.model);
@@ -1194,21 +1196,19 @@ App.ListView = Backbone.View.extend({
                 if (_.isUndefined(e.list)) {
                     e.list = self.model;
                 }
+                if (!_.isUndefined(e.board_users) && !_.isEmpty(e.board_users) && e.board_users !== null) {
+                    if (_.isUndefined(e.board_users.board) || _.isEmpty(e.board_users.board) || e.board_users.board === null) {
+                        e.board_users.board = self.model.board;
+                    }
+                } else {
+                    e.board_users = self.model.board_users;
+                }
                 var view;
                 view = new App.CardView({
                     tagName: 'div',
                     model: e,
                     converter: self.converter
                 });
-                var current_param_split = Backbone.history.fragment.split('/');
-                if (!_.isUndefined(current_param_split['2']) && current_param_split['2'] !== null && current_param_split['2'].indexOf('list') !== -1) {
-                    view = new App.CardView({
-                        tagName: 'tr',
-                        className: 'js-show-modal-card-view cur txt-aligns',
-                        model: e,
-                        template: 'list_view'
-                    });
-                }
                 if (parseInt(e.attributes.is_archived) === 0) {
                     if ($('#js-card-' + e.attributes.id).length === 1) {
                         $('#js-card-' + e.attributes.id).replaceWith(view.render().el);
@@ -1232,10 +1232,13 @@ App.ListView = Backbone.View.extend({
                             self.model.cards.each(function(card) {
                                 i++;
                                 if (bool) {
-                                    if (card.attributes.position >= e.attributes.position && parseInt(card.attributes.id) !== parseInt(e.attributes.id)) {
+                                    if (parseInt(card.attributes.position) >= parseInt(e.attributes.position) && parseInt(card.attributes.id) !== parseInt(e.attributes.id)) {
                                         $('#js-card-' + card.attributes.id).before(view.render().el);
                                         bool = false;
-                                    } else if (cards_length === i) {
+                                    } else if (parseInt(card.attributes.id) === parseInt(e.attributes.id) && $('#js-card-' + card.attributes.id).length === 0 && !_.isUndefined(self.model.cards.models[i - 2])) {
+                                        var prev_card_id = self.model.cards.models[i - 2].id;
+                                        $('#js-card-' + prev_card_id).after(view.render().el);
+                                    } else if (cards_length === i && $('#js-card-' + card.attributes.id).length === 0) {
                                         $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
                                         bool = false;
                                     }

@@ -171,7 +171,7 @@ App.SwitchToListView = Backbone.View.extend({
                     });
                     view = new App.CardView({
                         tagName: 'tr',
-                        className: 'js-show-modal-card-view cur txt-aligns',
+                        className: 'js-show-modal-card-view cur txt-aligns js-listview-list-id-' + card.attributes.list_id,
                         model: card,
                         template: 'list_view'
                     });

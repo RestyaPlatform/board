@@ -90,6 +90,7 @@ App.OrganizationHeaderView = Backbone.View.extend({
             this.closePopup(e);
             this.model.set(data);
             this.model.url = api_url + 'organizations/' + this.model.organization_id + '.json';
+            $('.js-close-popover').click();
             this.model.save(data, {
                 patch: true,
                 success: function(model, response) {
