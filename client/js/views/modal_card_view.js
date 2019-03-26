@@ -203,6 +203,83 @@ App.ModalCardView = Backbone.View.extend({
         $(target).parents('#card_activities').find('.js-card-comment-preview-panel').removeClass('hide').addClass('show');
         emojify.run();
     },
+    cardsort: function(sort_by, sort_direction, list_cards) {
+        var filtered_cards = list_cards.filter(function(card) {
+            return parseInt(card.attributes.is_archived) === 0;
+        });
+        if (!_.isEmpty(filtered_cards)) {
+            var cards = new App.CardCollection();
+            cards.sortDirection = sort_direction;
+            cards.comparator = function(item) {
+                var str = '' + item.get(sort_by);
+                if (sort_by === 'name' || sort_by === 'list_name') {
+                    str = str.toLowerCase();
+                    str = str.split('');
+                    str = _.map(str, function(letter) {
+                        if (cards.sortDirection.toLowerCase() === 'desc') {
+                            return String.fromCharCode(-(letter.charCodeAt(0)));
+                        } else {
+                            return String.fromCharCode((letter.charCodeAt(0)));
+                        }
+                    });
+                    return str;
+                } else if (sort_by === 'due_date') {
+                    if (item.get('due_date') !== null) {
+                        var date = item.get('due_date').split(' ');
+                        if (!_.isUndefined(date[1])) {
+                            _date = date[0] + 'T' + date[1];
+                        } else {
+                            _date = date[0];
+                        }
+                        sort_date = new Date(_date);
+                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
+                } else if (sort_by === 'created_date') {
+                    if (item.get('created') !== null) {
+                        var created_date = item.get('created').split(' ');
+                        if (!_.isUndefined(created_date[1])) {
+                            _date = created_date[0] + 'T' + created_date[1];
+                        } else {
+                            _date = created_date[0];
+                        }
+                        sort_date = new Date(_date);
+                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
+                } else if (sort_by === 'list_moved_date') {
+                    if (item.get('list_moved_date') !== null) {
+                        var list_moved_date = item.get('list_moved_date').split(' ');
+                        if (!_.isUndefined(list_moved_date[1])) {
+                            _date = list_moved_date[0] + 'T' + list_moved_date[1];
+                        } else {
+                            _date = list_moved_date[0];
+                        }
+                        sort_date = new Date(_date);
+                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
+                } else if (sort_by === 'start_date') {
+                    if (item.get('custom_fields') !== null) {
+                        var inputArr = item.get('custom_fields');
+                        var start_date_time = JSON.parse(inputArr);
+                        if (!_.isUndefined(start_date_time.start_date)) {
+                            _date = start_date_time.start_date + 'T' + start_date_time.start_time;
+                        } else {
+                            _date = start_date_time.start_date;
+                        }
+                        sort_date = new Date(_date);
+                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
+                } else {
+                    if (cards.sortDirection === 'desc') {
+                        return -item.get(sort_by);
+                    } else {
+                        return item.get(sort_by);
+                    }
+                }
+            };
+            cards.reset(filtered_cards);
+            return cards;
+        }
+    },
     /**
      * showColorPicker()
      * show color picker
@@ -1893,6 +1970,7 @@ App.ModalCardView = Backbone.View.extend({
      */
     moveCard: function(e) {
         e.preventDefault();
+        var self = this;
         var current_list_id = this.model.attributes.list_id;
         var current_board_id = this.model.attributes.board_id;
         var data = {};
@@ -1910,7 +1988,7 @@ App.ModalCardView = Backbone.View.extend({
         var current_board = self.boards.findWhere({
             id: parseInt(current_board_id)
         });
-        if ((!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by === 'position') || (_.isUndefined(current_board.attributes.sort_by) || board.attributes.sort_by === null)) {
+        if ((!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by === 'position') || (_.isUndefined(current_board.attributes.sort_by) || current_board.attributes.sort_by === null)) {
             var change_list_cards = this.model.list.collection.board.cards.where({
                 list_id: data.list_id
             });
@@ -1957,9 +2035,28 @@ App.ModalCardView = Backbone.View.extend({
                     });
                 }
             }
+        } else if (!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by !== 'position') {
+            var board_sort_by = (current_board.attributes.sort_by) ? current_board.attributes.sort_by : 'position';
+            var bard_sort_direction = (current_board.attributes.sort_direction) ? current_board.attributes.sort_direction : 'asc';
+            if (data.list_id !== current_list_id) {
+                if (data.board_id === current_board_id) {
+                    this.model.list.collection.board.lists.get(data.list_id).cards.add(this.model, {
+                        silent: true
+                    });
+                    var new_list_cards = this.model.list.collection.board.lists.get(data.list_id).cards;
+                    var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, new_list_cards);
+                    $.each(sort_filter_cards.models, function(key, filter_card) {
+                        if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(self.model.id)) {
+                            self.model.set('position', key);
+                            data.position = key;
+                        }
+                    });
+                }
+            } else {
+                data.position = this.model.attributes.position;
+            }
         }
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
-        var self = this;
         $('.js-close-popover').click();
         this.model.save(data, {
             patch: true,
@@ -3793,8 +3890,31 @@ App.ModalCardView = Backbone.View.extend({
         data.uuid = new Date().getTime();
         var card = new App.Card();
         card.set('is_offline', true);
+        card.set('name', data.name);
+        card.set('id', new Date().getTime());
+        card.set('list_id', data.list_id);
+        card.set('board_id', data.board_id);
+        card.set('is_archived', 0);
         this.closePopup(e);
         var current_card = this.model.attributes;
+        var current_board = self.boards.findWhere({
+            id: parseInt(current_card.board_id)
+        });
+        if (!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by !== 'position' && parseInt(data.board_id) === parseInt(current_card.board_id)) {
+            var board_sort_by = (current_board.attributes.sort_by) ? current_board.attributes.sort_by : 'position';
+            var bard_sort_direction = (current_board.attributes.sort_direction) ? current_board.attributes.sort_direction : 'asc';
+            this.model.list.collection.board.lists.get(data.list_id).cards.add(card, {
+                silent: true
+            });
+            var new_list_cards = this.model.list.collection.board.lists.get(data.list_id).cards;
+            var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, new_list_cards);
+            $.each(sort_filter_cards.models, function(key, filter_card) {
+                if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(card.id)) {
+                    card.set('position', key);
+                    data.position = key;
+                }
+            });
+        }
         data.board_id = parseInt(data.board_id);
         card.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/copy.json';
         $('.js-close-popover').click();
@@ -3806,6 +3926,7 @@ App.ModalCardView = Backbone.View.extend({
                 }
                 if (data.board_id === current_card.board_id) {
                     card.set(response.cards);
+                    card.set("position", data.position);
                     if (parseInt(response.cards.is_archived) === 0) {
                         card.set('is_archived', 0);
                     } else {
