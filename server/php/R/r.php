@@ -3943,6 +3943,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $s_result = pg_query_params($db_lnk, 'SELECT * FROM lists_listing WHERE id = $1', $qry_val_arr);
                 $list = pg_fetch_assoc($s_result);
                 $response['list'] = $list;
+                if (!empty($response['list'])) {
+                    if (is_plugin_enabled('r_custom_fields')) {
+                        $response['custom_fields'] = array();
+                        $conditions = array(
+                            $response['list']['board_id']
+                        );
+                        $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields_listing WHERE board_id IS NULL or board_id = $1 ORDER BY position ASC', $conditions);
+                        while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                            $response['custom_fields'][] = $custom_field;
+                        }
+                    }
+                }
                 $qry_val_arr = array(
                     $foreign_ids['list_id']
                 );
