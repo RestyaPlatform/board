@@ -2218,9 +2218,7 @@ App.ModalCardView = Backbone.View.extend({
             patch: true,
             success: function(model, response, options) {
                 if (_.isUndefined(options.temp_id)) {
-                    self.model.set('is_offline', false, {
-                        silent: true
-                    });
+                    self.model.set('is_offline', false);
                 }
                 if (!_.isUndefined(self.model.id) && _.isUndefined(options.temp_id)) {
                     self.model.set({
