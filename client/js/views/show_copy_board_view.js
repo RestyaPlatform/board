@@ -80,7 +80,7 @@ App.ShowCopyBoardView = Backbone.View.extend({
                         app.navigate('#/board/' + board.get('id'), {
                             trigger: true,
                             replace: true,
-                        });                        
+                        });
                         self.flash('success', i18next.t('Board copied successfully.'));
                     } else {
                         self.flash('danger', i18next.t('Unable to copy the board.'));
