@@ -996,7 +996,7 @@ App.ModalCardView = Backbone.View.extend({
                             }
                         });
                         self.model.set('due_date', data.start);
-                        self.model.set('title', response.activity.card_name,{
+                        self.model.set('title', response.activity.card_name, {
                             silent: true
                         });
                     }
@@ -1012,7 +1012,7 @@ App.ModalCardView = Backbone.View.extend({
                             }
                         });
                         self.model.set('start_date', data.start);
-                        self.model.set('title', response.activity.card_name,{
+                        self.model.set('title', response.activity.card_name, {
                             silent: true
                         });
                     }
@@ -2915,7 +2915,7 @@ App.ModalCardView = Backbone.View.extend({
                 }
                 due_date_html += '</li></ul>';
                 view_duedateform1.html(due_date_html);
-            } else{
+            } else {
                 view_duedateform1.html('');
             }
         }
@@ -3219,9 +3219,27 @@ App.ModalCardView = Backbone.View.extend({
             card_user.set('id', user_id);
             card_user.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/users/' + user_id + '.json';
         }
-        card_user.destroy();
-        this.model.users.remove(card_user);
-        this.renderUsersCollection();
+        var self = this;
+        card_user.destroy({
+            success: function(model, response, options) {
+                if (!_.isUndefined(response.activity)) {
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    var view = new App.ActivityView({
+                        model: activity,
+                        board: self.model.list.collection.board,
+                        flag: '1'
+                    });
+                    self.model.activities.unshift(activity);
+                    if ($.cookie('filter') !== 'comment') {
+                        var view_activity = $('#js-card-activities-' + self.model.id);
+                        view_activity.prepend(view.render().el);
+                    }
+                }
+                self.model.users.remove(card_user);
+                self.renderUsersCollection();
+            }
+        });
         return false;
     },
     /**
