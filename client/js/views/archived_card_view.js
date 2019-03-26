@@ -52,10 +52,19 @@ App.ArchivedCardView = Backbone.View.extend({
     showCardModal: function(e) {
         e.preventDefault();
         var self = this;
-        app.navigate('#/board/' + this.model.attributes.board_id + '/card/' + this.model.attributes.id, {
-            trigger: true,
-            replace: true
+        trigger_dockmodal = true;
+        var card = self.model.board.cards.findWhere({
+            id: parseInt(self.model.id)
         });
+        if (!_.isUndefined(card)) {
+            card.list = self.model.board.lists.findWhere({
+                id: card.attributes.list_id
+            });
+            new App.CardView({
+                model: card
+            }).showCardModal();
+        }
+        trigger_dockmodal = false;
     },
     /**
      * render()
