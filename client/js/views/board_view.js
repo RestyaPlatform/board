@@ -772,6 +772,7 @@ App.BoardView = Backbone.View.extend({
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
                 $(window).trigger('resize');
+                $('body').trigger('editListRendered');
             }
         }).defer();
         return this;
