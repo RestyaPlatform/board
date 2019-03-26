@@ -4161,7 +4161,6 @@ App.ModalCardView = Backbone.View.extend({
                 }
             });
         }
-        $(".js-comment").removeClass("current-comment-box");
         this.autoMentionSelectionStart = 0;
         this.$el.find('.js-search-member').val('').trigger('keyup');
     },
@@ -4217,6 +4216,9 @@ App.ModalCardView = Backbone.View.extend({
         $(e.target).select();
     },
     showActions: function(e) {
+        e.preventDefault();
+        $(".js-comment").removeClass("current-comment-box");
+        $(e.target).addClass("current-comment-box");
         this.$el.find('.js-new-comment').removeClass('hide');
     },
     noAction: function(e) {
