@@ -996,7 +996,9 @@ App.ModalCardView = Backbone.View.extend({
                             }
                         });
                         self.model.set('due_date', data.start);
-                        self.model.set('title', response.activity.card_name);
+                        self.model.set('title', response.activity.card_name,{
+                            silent: true
+                        });
                     }
                     if (!_.isEmpty(data.start_date)) {
                         self.model.list.collection.board.lists.each(function(list) {
@@ -1010,7 +1012,9 @@ App.ModalCardView = Backbone.View.extend({
                             }
                         });
                         self.model.set('start_date', data.start);
-                        self.model.set('title', response.activity.card_name);
+                        self.model.set('title', response.activity.card_name,{
+                            silent: true
+                        });
                     }
                 }
             });
@@ -2917,7 +2921,7 @@ App.ModalCardView = Backbone.View.extend({
         } else {
             view_duedateform1.html('');
         }
-        $('.js-card-duedate-edit-' + self.id).datetimepicker({
+        this.$('.js-card-duedate-edit-' + self.id).datetimepicker({
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayBtn: true,
@@ -2931,7 +2935,7 @@ App.ModalCardView = Backbone.View.extend({
             $(this).datetimepicker('hide');
             $(this).blur();
         });
-        $('.js-card-duetime-edit-' + self.id).datetimepicker({
+        this.$('.js-card-duetime-edit-' + self.id).datetimepicker({
             format: 'hh:ii',
             autoclose: true,
             showMeridian: false,
