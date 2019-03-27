@@ -71,7 +71,6 @@ class ActivityHandler
             while ($list = pg_fetch_assoc($lists)) {
                 $obj['lists'][] = $list;
             }
-            
         } else if ($obj_type === 'add_list') {
             $obj_val_arr = array(
                 $obj['list_id']

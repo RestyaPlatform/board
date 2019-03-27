@@ -2206,7 +2206,9 @@ App.ModalCardView = Backbone.View.extend({
         var self = this;
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
         this.model.set('is_offline', true);
-        this.model.set('is_archived', 0);
+        this.model.set('is_archived', 0, {
+            silent: false
+        });
         if (parseInt(this.model.list.attributes.card_count) === 0) {
             $('#js-card-listing-' + this.model.list.id).html(function(i, h) {
                 return h.replace(/&nbsp;/g, '');
@@ -2219,6 +2221,7 @@ App.ModalCardView = Backbone.View.extend({
             success: function(model, response, options) {
                 if (_.isUndefined(options.temp_id)) {
                     self.model.set('is_offline', false);
+                    self.model.set('is_archived', 0);
                 }
                 if (!_.isUndefined(self.model.id) && _.isUndefined(options.temp_id)) {
                     self.model.set({
