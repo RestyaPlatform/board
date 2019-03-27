@@ -532,7 +532,13 @@
 					if [[ ${PSQL_VERSION} == "" ]]; then
 						PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
 					fi
-					if [[ $PSQL_VERSION < 9.3 ]]; then
+					if [[ ${PSQL_VERSION} =~ ^10\.[0-9]{1,}$ ]]; then
+						PSQL_VERSION=10
+					fi
+					if [[ ${PSQL_VERSION} =~ ^11\.[0-9]{1,}$ ]]; then
+						PSQL_VERSION=11
+					fi
+					if [[ 1 -eq "$(echo "${PSQL_VERSION} < 9.3" | bc)" ]]; then
 						set +x
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
 						sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
@@ -561,6 +567,9 @@
 				fi
 				if [[ ${PSQL_VERSION} =~ ^10\.[0-9]{1,}$ ]]; then
 					PSQL_VERSION=10
+				fi
+				if [[ ${PSQL_VERSION} =~ ^11\.[0-9]{1,}$ ]]; then
+					PSQL_VERSION=11
 				fi
 				sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf > /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf.1
 				cd /etc/postgresql/${PSQL_VERSION}/main || exit
