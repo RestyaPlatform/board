@@ -148,6 +148,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     listSort: function(ev, ui) {
+        var self = this;
         var target = $(ev.target);
         var previous_list_id = target.prev('.js-board-list').data('list_id');
         var next_list_id = target.next('.js-board-list').data('list_id');
@@ -173,11 +174,13 @@ App.ListView = Backbone.View.extend({
         }, {
             patch: true,
             success: function(model, response) {
-                self.model.attributes.lists.forEach(function(list) {
-                    if (list.id === parseInt(list_id)) {
-                        list.position = list_position;
-                    }
-                });
+                if (!_.isUndefined(self.board.attributes) && !_.isUndefined(self.board.attributes.lists) && self.board.attributes.lists !== null) {
+                    self.board.attributes.lists.forEach(function(list) {
+                        if (list.id === parseInt(list_id)) {
+                            list.position = list_position;
+                        }
+                    });
+                }
             }
         });
     },
@@ -663,11 +666,15 @@ App.ListView = Backbone.View.extend({
         this.model.save(data, {
             patch: true,
             success: function(model, response) {
-                self.model.attributes.lists.forEach(function(list) {
-                    if (list.id === parseInt(list_id)) {
-                        list.position = data.position;
+                if (parseInt(board_id) !== parseInt(self.model.attributes.board_id)) {
+                    if (!_.isUndefined(self.board.attributes) && !_.isUndefined(self.board.attributes.lists) && self.board.attributes.lists !== null) {
+                        self.board.attributes.lists.forEach(function(list) {
+                            if (list.id === parseInt(list_id)) {
+                                list.position = data.position;
+                            }
+                        });
                     }
-                });
+                }
             }
         });
         this.closePopup(e);
@@ -1209,6 +1216,10 @@ App.ListView = Backbone.View.extend({
                     model: e,
                     converter: self.converter
                 });
+                var current_param_split = Backbone.history.fragment.split('/');
+                if (!_.isUndefined(current_param_split['2']) && current_param_split['2'] !== null && current_param_split['2'].indexOf('list') !== -1) {
+                    return true;
+                }
                 if (parseInt(e.attributes.is_archived) === 0) {
                     if ($('#js-card-' + e.attributes.id).length === 1) {
                         $('#js-card-' + e.attributes.id).replaceWith(view.render().el);

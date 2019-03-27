@@ -77,8 +77,8 @@
 	}
 	if(!_.isUndefined(cards_subscribers) && cards_subscribers > 0){ %>
 	<td data-title="<%- i18next.t('Subscribed') %>" title="<%- i18next.t('Subscribed') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"><span class="icon-eye-open"></span></td><% } %>
-	<% if(card.attributes.card_voter_count > 0) { %>
-	<td data-title="Voters" title="<%- i18next.t('{{count}}', {count: card.attributes.card_voter_count}) %>" data-placement="bottom" data-toggle="tooltip" data-container="body"><small><%- card.attributes.card_voter_count %></small></td><% } else { %><td data-title="Voters"> <small>0</small></td><% } %>
+	<% if(card.card_voters.length > 0) { %>
+	<td data-title="Voters" title="<%- i18next.t('{{count}}', {count: card.card_voters.length}) %>" data-placement="bottom" data-toggle="tooltip" data-container="body"><small><%- card.card_voters.length %></small></td><% } else { %><td data-title="Voters"> <small>0</small></td><% } %>
 	<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0){ %>
 	<td data-title="Attachments" title="<%- i18next.t('{{count}}', {count: card.attachments.length}) %> " data-placement="bottom" data-toggle="tooltip" data-container="body"><small><%- card.attachments.length %></small></td>
 	<% } else { %>

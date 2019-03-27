@@ -61,6 +61,16 @@ class ActivityHandler
                 $obj['foreign_id']
             );
             $obj['board_user'] = executeQuery('SELECT * FROM boards_users_listing WHERE id = $1', $obj_val_arr);
+        } else if ($obj_type === 'add_board') {
+            $obj_val_arr = array(
+                $obj['board_id']
+            );
+            $obj['board'] = executeQuery('SELECT background_picture_url, background_pattern_url, music_content, music_name, board_visibility, organization_name, organization_id FROM simple_board_listing WHERE id = $1', $obj_val_arr);
+            $obj['lists'] = array();
+            $lists = pg_query_params($db_lnk, 'SELECT * FROM lists_listing WHERE board_id = $1', $obj_val_arr);
+            while ($list = pg_fetch_assoc($lists)) {
+                $obj['lists'][] = $list;
+            }
         } else if ($obj_type === 'add_list') {
             $obj_val_arr = array(
                 $obj['list_id']

@@ -44,6 +44,8 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.cards.bind('add', this.cardFilter, this);
         this.model.cards.bind('add', this.updateListView);
         this.model.cards.bind('remove', this.updateListView);
+        this.model.cards.bind('change:is_archived', this.updateListView);
+        this.model.cards.bind('change:comment_count', this.updateListView);
         this.model.lists.bind('remove', this.updateListView);
         this.model.bind('change:organization_id', this.render, this);
         this.model.bind('change:background_picture_url', this.showChangeBackground, this);
@@ -352,7 +354,12 @@ App.BoardHeaderView = Backbone.View.extend({
             is_closed: 1
         }, {
             patch: true,
-            success: function(model, response) {}
+            success: function(model, response) {
+                app.navigate('#/board/' + board_id, {
+                    trigger: true,
+                    replace: true,
+                });
+            }
         });
         return false;
     },
@@ -528,6 +535,7 @@ App.BoardHeaderView = Backbone.View.extend({
                                 self.start_filter++;
                                 card.acl_links = self.model.acl_links;
                                 card.board_users = self.model.board_users;
+                                card.board = self.model;
                                 var view = new App.ArchivedCardView({
                                     model: card
                                 });
@@ -562,6 +570,7 @@ App.BoardHeaderView = Backbone.View.extend({
                                 self.start++;
                                 card.acl_links = self.model.acl_links;
                                 card.board_users = self.model.board_users;
+                                card.board = self.model;
                                 var view = new App.ArchivedCardView({
                                     model: card
                                 });
@@ -929,7 +938,6 @@ App.BoardHeaderView = Backbone.View.extend({
                 } else {
                     e.board_users = self.model.board_users;
                 }
-                console.log(e.attributes);
                 view = new App.CardView({
                     tagName: 'tr',
                     className: 'js-show-modal-card-view cur txt-aligns js-listview-list-id-' + e.attributes.list_id,
@@ -1723,8 +1731,8 @@ App.BoardHeaderView = Backbone.View.extend({
         $('body').addClass('modal-open');
         e.preventDefault();
         app.navigate('#/board/' + this.model.id, {
-            trigger: false,
-            trigger_function: false,
+            trigger: true,
+            trigger_function: true,
         });
         $('#content').html(new App.BoardView({
             model: this.model

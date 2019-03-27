@@ -359,7 +359,7 @@ App.ApplicationView = Backbone.View.extend({
                                 $('#content').html('<section id="boards-view-' + view_type + '" class="clearfix js-boards-view"></section>');
                             }).defer();
                         } else if (view_type === null || view_type === '') {
-                            $('.js-switch-grid-view').trigger('click');
+                            // $('.js-switch-grid-view').trigger('click');
                             view_type = null;
                         }
                         App.current_board = Board;
@@ -421,7 +421,7 @@ App.ApplicationView = Backbone.View.extend({
                 $('.js-show-board-modal').trigger('click');
                 view_type = null;
             } else if (_.isUndefined(view_type) || view_type === null || view_type === '') {
-                $('.js-switch-grid-view').trigger('click');
+                // $('.js-switch-grid-view').trigger('click');
                 view_type = null;
             }
         }

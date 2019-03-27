@@ -351,7 +351,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $condition.= (!empty($r_resource_filters['last_activity_id'])) ? 'al.id > $' . $i : '';
                 $i++;
             }
-            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
+            $direction = 'DESC';
+            if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction'])) {
+                $direction = $r_resource_filters['direction'];
+            }
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         } else {
             if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users']) {
@@ -412,7 +416,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($r_resource_filters['last_activity_id'])) {
                     $condition = ' AND al.id > $3';
                 }
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
+                $direction = 'DESC';
+                if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction'])) {
+                    $direction = $r_resource_filters['direction'];
+                }
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition . ' ORDER BY id '. $direction .' LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition;
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
             } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id'] && $r_resource_filters['type'] == 'board_user_activity') {
@@ -3943,6 +3951,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $s_result = pg_query_params($db_lnk, 'SELECT * FROM lists_listing WHERE id = $1', $qry_val_arr);
                 $list = pg_fetch_assoc($s_result);
                 $response['list'] = $list;
+                if (!empty($response['list'])) {
+                    if (is_plugin_enabled('r_custom_fields')) {
+                        $response['custom_fields'] = array();
+                        $conditions = array(
+                            $response['list']['board_id']
+                        );
+                        $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields_listing WHERE board_id IS NULL or board_id = $1 ORDER BY position ASC', $conditions);
+                        while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                            $response['custom_fields'][] = $custom_field;
+                        }
+                    }
+                }
                 $qry_val_arr = array(
                     $foreign_ids['list_id']
                 );
