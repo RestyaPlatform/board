@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2018 Restya
+ * @copyright  2014-2019 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -364,7 +364,7 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
     $row = pg_fetch_assoc($result);
     $id_converted = base_convert($row['id'], 10, 36);
     $materialized_path = sprintf("%08s", $id_converted);
-    $freshness_ts = date('Y-m-d h:i:s');
+    $freshness_ts = date('Y-m-d H:i:s');
     $path = 'P' . $row['id'];
     $depth = 0;
     $qry_val_arr = array(
@@ -1361,7 +1361,7 @@ function importTrelloBoard($board = array())
                     $comment = __l('##USER_NAME## created board');
                 } else if ($action['type'] == 'updateBoard') {
                     if (!empty($action['data']['board']['closed']) && isset($action['data']['board']['closed'])) {
-                        $type = 'reopen_board';
+                        $type = 'close_board';
                         $comment = __l('##USER_NAME## closed ##BOARD_NAME## board.');
                     } else if (!empty($action['data']['board']['closed'])) {
                         $type = 'reopen_board';
@@ -2396,7 +2396,7 @@ function importWekanBoard($board = array())
                             $save_path = str_replace('\\', '/', $save_path);
                             $filename = curlExecute($attachment['url'], 'get', $mediadir, 'image');
                             $path = $save_path . DS . $filename['file_name'];
-                            $created = $modified = date('Y-m-d h:i:s');
+                            $created = $modified = date('Y-m-d H:i:s');
                             $qry_val_arr = array(
                                 $created,
                                 $modified,
@@ -2678,7 +2678,7 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
         }
         if (!empty($comment)) {
             $revision = '';
-            if ($activity_type != 'reopen_board' && $activity_type != 'moved_list_card' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'delete_organization_attachment' && $activity_type != 'move_card') {
+            if ($activity_type != 'reopen_board' && $activity_type != 'close_board' && $activity_type != 'moved_list_card' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'delete_organization_attachment' && $activity_type != 'move_card') {
                 $qry_va_arr = array(
                     $id
                 );

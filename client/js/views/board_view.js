@@ -27,7 +27,7 @@ if (typeof App === 'undefined') {
  */
 App.BoardView = Backbone.View.extend({
     tagName: 'section',
-    className: 'clearfix',
+    className: 'clearfix js-boards-view',
     id: 'boards-view',
     /**
      * Constructor
@@ -52,7 +52,6 @@ App.BoardView = Backbone.View.extend({
         this.model.bind('change:music_content', this.musical);
         this.model.labels.bind('remove', this.renderListsCollection);
         this.model.lists.bind('add', this.renderListsCollection);
-        this.model.lists.bind('change:name', this.renderListsCollection);
         this.model.lists.bind('change:position', this.renderListsCollection);
         this.model.lists.bind('change:is_archived', this.renderListsCollection, this);
         this.model.lists.bind('change:comment_count', this.renderListsCollection, this);
@@ -465,6 +464,7 @@ App.BoardView = Backbone.View.extend({
     reopenBoard: function(e) {
         var data = $(e.target).serializeObject();
         this.model.url = api_url + 'boards/' + this.model.id + '.json';
+        App.boards.get(this.model.id).set('is_closed', 0);
         this.model.set('is_closed', 0);
         this.model.save({
             is_closed: 0
@@ -849,20 +849,26 @@ App.BoardView = Backbone.View.extend({
                     list.attachments = self.model.attachments;
                     list.board_user_role_id = self.model.board_user_role_id;
                     list.board = self.model;
-                    view = new App.ListView({
-                        model: list,
-                        attributes: {
-                            'data-list_id': list.attributes.id
+                    var current_param_split = Backbone.history.fragment.split('/');
+                    if (_.isUndefined(current_param_split['2']) || current_param_split['2'] === null || current_param_split['2'].indexOf('list') === -1) {
+                        view = new App.ListView({
+                            model: list,
+                            attributes: {
+                                'data-list_id': list.attributes.id
+                            }
+                        });
+                        if (view_list.length > 0) {
+                            view_list.before(view.render().el);
+                        } else {
+                            self.$('#js-board-lists').append(view.render().el);
                         }
-                    });
-                    if (view_list.length > 0) {
-                        view_list.before(view.render().el);
-                    } else {
-                        self.$('#js-board-lists').append(view.render().el);
                     }
                 }
             }
         });
+        _(function() {
+            $('body').trigger('editListRendered');
+        }).defer();
         _.defer(function(view) {
             if (!_.isUndefined(card_ids) && card_ids !== null && card_ids !== '') {
                 trigger_dockmodal = true;
@@ -1209,6 +1215,9 @@ App.BoardView = Backbone.View.extend({
                     });
                     $(view.render().el).insertBefore($('#js-add-list-block'));
                 }
+                _(function() {
+                    $('body').trigger('editListRendered');
+                }).defer();
                 App.current_board.lists.add(list);
             }
         });

@@ -25,10 +25,6 @@ if (typeof App === 'undefined') {
  * @extends Backbone.View
  */
 App.BoardHeaderView = Backbone.View.extend({
-    className: 'navbar navbar-default',
-    attributes: {
-        role: 'navigation'
-    },
     template: JST['templates/board_header'],
     id: "board_view_header",
     /**
@@ -46,6 +42,11 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.cards.bind('change:is_archived', this.showArchivedCardsList, this);
         this.model.cards.bind('remove', this.showArchivedCardsList, this);
         this.model.cards.bind('add', this.cardFilter, this);
+        this.model.cards.bind('add', this.updateListView);
+        this.model.cards.bind('remove', this.updateListView);
+        this.model.cards.bind('change:is_archived', this.updateListView);
+        this.model.cards.bind('change:comment_count', this.updateListView);
+        this.model.lists.bind('remove', this.updateListView);
         this.model.bind('change:organization_id', this.render, this);
         this.model.bind('change:background_picture_url', this.showChangeBackground, this);
         this.model.bind('change:background_pattern_url', this.showChangeBackground, this);
@@ -353,7 +354,12 @@ App.BoardHeaderView = Backbone.View.extend({
             is_closed: 1
         }, {
             patch: true,
-            success: function(model, response) {}
+            success: function(model, response) {
+                app.navigate('#/board/' + board_id, {
+                    trigger: true,
+                    replace: true,
+                });
+            }
         });
         return false;
     },
@@ -529,6 +535,7 @@ App.BoardHeaderView = Backbone.View.extend({
                                 self.start_filter++;
                                 card.acl_links = self.model.acl_links;
                                 card.board_users = self.model.board_users;
+                                card.board = self.model;
                                 var view = new App.ArchivedCardView({
                                     model: card
                                 });
@@ -563,6 +570,7 @@ App.BoardHeaderView = Backbone.View.extend({
                                 self.start++;
                                 card.acl_links = self.model.acl_links;
                                 card.board_users = self.model.board_users;
+                                card.board = self.model;
                                 var view = new App.ArchivedCardView({
                                     model: card
                                 });
@@ -814,6 +822,7 @@ App.BoardHeaderView = Backbone.View.extend({
      */
     switchListView: function() {
         $('body').removeClass('modal-open');
+        $('.js-boards-view').attr('id', 'boards-view');
         $('#boards-view').removeClass('col-xs-12');
         $('#switch-board-view').removeClass('calendar-view');
         $('#switch-board-view').addClass('col-xs-12');
@@ -839,6 +848,9 @@ App.BoardHeaderView = Backbone.View.extend({
         var list_length = lists.models.length;
         for (var list_i = 0; list_i < list_length; list_i++) {
             var list = lists.models[list_i];
+            list.board = self.model;
+            list.board_users = self.model.board_users;
+            list.labels = self.model.labels;
             if (_.isUndefined(list.get('is_new')) && list.get('is_archived') === 0) {
                 if (sort_by !== null && sort_by !== null) {
                     self.model.cards.sortByColumn(sort_by, sort_direction);
@@ -878,7 +890,7 @@ App.BoardHeaderView = Backbone.View.extend({
                     card.users.sort();
                     var view = new App.CardView({
                         tagName: 'tr',
-                        className: 'card-list-view js-show-modal-card-view cur txt-aligns',
+                        className: 'card-list-view js-show-modal-card-view cur txt-aligns js-listview-list-id-' + card.attributes.list_id,
                         id: 'js-card-' + card.attributes.id,
                         model: card,
                         template: 'list_view'
@@ -912,6 +924,89 @@ App.BoardHeaderView = Backbone.View.extend({
         }
         return false;
     },
+    updateListView: function(e) {
+        var current_param_split = Backbone.history.fragment.split('/');
+        if (!_.isUndefined(current_param_split['2']) && current_param_split['2'] !== null && current_param_split['2'].indexOf('list') !== -1) {
+            if (!_.isUndefined(e) && e.storeName === 'card') {
+                if (_.isUndefined(e.list_name) || _.isEmpty(e.list_name)) {
+                    e.list_name = _.escape(e.list.attributes.name);
+                }
+                if (!_.isUndefined(e.board_users) && !_.isEmpty(e.board_users) && e.board_users !== null) {
+                    if (_.isUndefined(e.board_users.board) || _.isEmpty(e.board_users.board) || e.board_users.board === null) {
+                        e.board_users.board = self.model;
+                    }
+                } else {
+                    e.board_users = self.model.board_users;
+                }
+                view = new App.CardView({
+                    tagName: 'tr',
+                    className: 'js-show-modal-card-view cur txt-aligns js-listview-list-id-' + e.attributes.list_id,
+                    id: 'js-card-' + e.attributes.id,
+                    model: e,
+                    template: 'list_view'
+                });
+                if (parseInt(e.attributes.is_archived) === 0) {
+                    if ($('#js-card-' + e.attributes.id).length === 1) {
+                        $('#js-card-' + e.attributes.id).replaceWith(view.render().el);
+                    } else {
+                        var filtered_cards = self.model.cards.where({
+                            is_archived: 0
+                        });
+                        if (filtered_cards.length === 1 || self.model.cards.length === 0) {
+                            $('.js-card-list-view-' + self.model.attributes.id).html('');
+                            $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
+                        } else {
+                            if (sort_by !== null && sort_by !== null) {
+                                self.model.cards.sortByColumn(sort_by, sort_direction);
+                            } else {
+                                self.model.cards.sortByColumn('position');
+                            }
+                            self.model.cards.reset(filtered_cards);
+                            var bool = true;
+                            i = 0;
+                            var cards_length = self.model.cards.length;
+                            self.model.cards.each(function(card) {
+                                i++;
+                                if (bool) {
+                                    if (card.attributes.position >= e.attributes.position && parseInt(card.attributes.id) !== parseInt(e.attributes.id)) {
+                                        $('#js-card-' + card.attributes.id).before(view.render().el);
+                                        bool = false;
+                                    } else if (cards_length === i) {
+                                        $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
+                                        bool = false;
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } else {
+                    $('#js-card-' + e.attributes.id).remove();
+                }
+            } else {
+                if (!_.isUndefined(e.attributes.id)) {
+                    if ($('.js-card-list-view-' + e.attributes.board_id).length === 1) {
+                        if ($('.js-card-list-view-' + e.attributes.board_id + ' .js-listview-list-id-' + e.attributes.id).length > 0) {
+                            $('.js-card-list-view-' + e.attributes.board_id + ' .js-listview-list-id-' + e.attributes.id).each(function(index) {
+                                $(this).remove();
+                            });
+                        }
+                    }
+                }
+            }
+            var arhived_cards = self.model.cards.where({
+                is_archived: 0
+            });
+            if (arhived_cards.length === 0) {
+                view = new App.CardView({
+                    tagName: 'tr',
+                    className: 'js-show-modal-card-view cur txt-aligns',
+                    model: null,
+                    template: 'list_view'
+                });
+                view.render();
+            }
+        }
+    },
     /**
      * switchCalendarView()
      * swith to the calendar view
@@ -922,6 +1017,7 @@ App.BoardHeaderView = Backbone.View.extend({
     switchCalendarView: function() {
         var self = this;
         $('body').removeClass('modal-open');
+        $('.js-boards-view').attr('id', 'boards-view');
         $('#boards-view').addClass('col-xs-12');
         $('#switch-board-view').addClass('calendar-view');
         $('#switch-board-view').removeClass('board-viewlist col-xs-12');
@@ -949,16 +1045,16 @@ App.BoardHeaderView = Backbone.View.extend({
             aspectRatio: 3.35,
             eventRender: function(event, element) {
                 var content = '';
-                element.addClass('js-show-modal-card-view');
-                element.attr('id', 'js-card-' + event.id);
                 var card = self.model.cards.findWhere({
                     id: event.id
                 });
                 if (card.get('is_archived') === 1) {
-                    element.addClass('card-archived');
+                    element.addClass('card-archived hide');
                     element.find('.fc-event-skin').addClass('card-archived');
                 }
-                if (card.get('due_date') !== null) {
+                if (card.get('due_date') !== null && parseInt(card.get('is_archived')) === 0) {
+                    element.addClass('js-show-modal-card-view');
+                    element.attr('id', 'js-card-' + event.id);
                     var today = new Date();
                     card_due_date = card.get('due_date').split('T');
                     var due_date = new Date(card_due_date[0]);
@@ -975,28 +1071,29 @@ App.BoardHeaderView = Backbone.View.extend({
                         element.addClass('label-future');
                         element.find('.fc-event-skin').addClass('label-future');
                     }
+                    content += '<ul class="unstyled hide js-card-labels">';
+                    var filtered_labels = card.labels.where({
+                        card_id: event.id
+                    });
+                    var labels = new App.CardLabelCollection();
+                    labels.add(filtered_labels);
+                    labels.each(function(label) {
+                        if (_.escape(label.attributes.name) !== "") {
+                            content += '<li class="' + _.escape(label.attributes.name) + '">' + _.escape(label.attributes.name) + '</li>';
+                        }
+                    });
+                    content += '</ul>';
+                    content += '<ul class="unstyled js-card-users hide">';
+                    card.users.each(function(user) {
+                        content += '<li>user-filter-' + user.get('user_id') + '</li>';
+                    });
+                    content += '</ul>';
+                    content += '<ul class="unstyled js-card-due hide">';
+                    content += self.getDue(card.get('due_date'));
+                    content += '</ul>';
+                    element.append(content);
                 }
-                content += '<ul class="unstyled hide js-card-labels">';
-                var filtered_labels = card.labels.where({
-                    card_id: event.id
-                });
-                var labels = new App.CardLabelCollection();
-                labels.add(filtered_labels);
-                labels.each(function(label) {
-                    if (_.escape(label.attributes.name) !== "") {
-                        content += '<li class="' + _.escape(label.attributes.name) + '">' + _.escape(label.attributes.name) + '</li>';
-                    }
-                });
-                content += '</ul>';
-                content += '<ul class="unstyled js-card-users hide">';
-                card.users.each(function(user) {
-                    content += '<li>user-filter-' + user.get('user_id') + '</li>';
-                });
-                content += '</ul>';
-                content += '<ul class="unstyled js-card-due hide">';
-                content += self.getDue(card.get('due_date'));
-                content += '</ul>';
-                element.append(content);
+
             },
             eventMouseover: function(calEvent, jsEvent, view) {
                 var target = $(jsEvent.currentTarget);
@@ -1548,7 +1645,6 @@ App.BoardHeaderView = Backbone.View.extend({
         var find_card = this.model.cards.findWhere({
             id: parseInt(card_id)
         });
-        this.model.cards.get(find_card.id).set('is_archived', 0);
         var list = App.boards.get(find_card.attributes.board_id).lists.get(find_card.attributes.list_id);
         if (!_.isUndefined(list)) {
             list.set('card_count', list.attributes.card_count + 1, {
@@ -1635,8 +1731,8 @@ App.BoardHeaderView = Backbone.View.extend({
         $('body').addClass('modal-open');
         e.preventDefault();
         app.navigate('#/board/' + this.model.id, {
-            trigger: false,
-            trigger_function: false,
+            trigger: true,
+            trigger_function: true,
         });
         $('#content').html(new App.BoardView({
             model: this.model
@@ -1655,6 +1751,7 @@ App.BoardHeaderView = Backbone.View.extend({
         e.preventDefault();
         var el = this.$el;
         var data = el.find('form#BoardRenameForm').serializeObject();
+        $('.js-close-popover').click();
         var board = new App.Board();
         this.model.set(data);
         App.boards.get(this.model.attributes.id).set(data, {

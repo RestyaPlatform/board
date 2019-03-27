@@ -1193,6 +1193,7 @@ g path:hover {
 	i {
 		color: #000;
 	}
+
 }
 .dockmodal-header {
 	background-color: #eeeeee !important;
@@ -1200,7 +1201,13 @@ g path:hover {
 	i {
 		color: #000;
 	}
+	.dropup >.dropdown-menu {
+		bottom: 100% !important;
+		margin-bottom: 1px;
+		top: auto !important;	
+	}	
 }
+
 .title-text {
 	color: #000 !important;
 	.card-id {
@@ -1429,7 +1436,7 @@ div.popped-out + div + div.datetimepicker {
 .animation {
 	.tada-animation {
 		.animated();
-		.animation-name(tada);
+		.animation-name(bounce);
 		.animation-duration(infinite);
 		.animation-timing-function(infinite);
 		.animation-delay(ease);

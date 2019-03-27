@@ -18,11 +18,13 @@ App.ActivityReplyFormView = Backbone.View.extend({
      * Constructor
      * initialize default values and actions
      */
-    initialize: function() {
+    initialize: function(options) {
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
+        this.list = options.list;
         this.render();
+        emojify.run();
     },
     converter: new showdown.Converter({
         extensions: ['targetblank', 'xssfilter', 'codehighlight']
@@ -54,7 +56,8 @@ App.ActivityReplyFormView = Backbone.View.extend({
         });
         this.$el.html(this.template({
             activity: this.model,
-            card: card
+            card: card,
+            list: this.list
         }));
         this.showTooltip();
         return this;

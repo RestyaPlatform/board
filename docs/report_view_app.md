@@ -2,6 +2,8 @@
 
 ## Report View Plugin Installation
 
+[![How to configure Report View plugin](report_view.png)](https://www.youtube.com/watch?v=anvfjJYM0yw)
+
 1.  Goto your Restyaboard installation root directory. e.g., directory: `/usr/share/nginx/html/restyaboard/`
 2.  Extract/unzip the purchased plugin zip into the restyaboard installation path. e.g., `/usr/share/nginx/html/restyaboard/`
 3.  Give file permission to extracted files. e.g., `chmod -R 0777 client/apps/r_report_view/`

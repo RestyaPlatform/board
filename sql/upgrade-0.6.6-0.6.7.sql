@@ -259,3 +259,339 @@ UPDATE card_attachments SET path = REPLACE(path, 'media/', '');
 UPDATE card_attachments SET doc_image_path = REPLACE(doc_image_path, '/img/', '');
 UPDATE boards SET background_picture_path = REPLACE(background_picture_path, 'media/', '');
 UPDATE organizations SET logo_url = REPLACE(logo_url, 'media/', '');
+
+
+ CREATE OR REPLACE VIEW organization_listing AS
+ SELECT organizations.id,
+    to_char(organizations.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(organizations.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    organizations.user_id,
+    organizations.name,
+    organizations.website_url,
+    organizations.description,
+    organizations.logo_url,
+    organizations.organization_visibility,
+    organizations.organizations_user_count,
+    organizations.board_count,
+    ( SELECT array_to_json(array_agg(row_to_json(b.*))) AS array_to_json
+           FROM ( SELECT boards_listing.id,
+                    boards_listing.name,
+                    boards_listing.user_id,
+                    boards_listing.organization_id,
+                    boards_listing.board_visibility,
+                    boards_listing.background_color,
+                    boards_listing.background_picture_url,
+                    boards_listing.commenting_permissions,
+                    boards_listing.voting_permissions,
+                    ((boards_listing.is_closed)::boolean)::integer AS is_closed,
+                    ((boards_listing.is_allow_organization_members_to_join)::boolean)::integer AS is_allow_organization_members_to_join,
+                    boards_listing.boards_user_count,
+                    boards_listing.list_count,
+                    boards_listing.card_count,
+                    boards_listing.boards_subscriber_count,
+                    boards_listing.background_pattern_url,
+                    ((boards_listing.is_show_image_front_of_card)::boolean)::integer AS is_show_image_front_of_card,
+                    boards_listing.organization_name,
+                    boards_listing.organization_website_url,
+                    boards_listing.organization_description,
+                    boards_listing.organization_logo_url,
+                    boards_listing.organization_visibility,
+                    boards_listing.activities,
+                    boards_listing.boards_subscribers,
+                    boards_listing.boards_stars,
+                    boards_listing.attachments,
+                    boards_listing.lists,
+                    boards_listing.boards_users
+                   FROM boards_listing boards_listing
+                  WHERE (boards_listing.organization_id = organizations.id)
+                  ORDER BY boards_listing.id) b) AS boards_listing,
+    ( SELECT array_to_json(array_agg(row_to_json(c.*))) AS array_to_json
+           FROM ( SELECT organizations_users_listing.id,
+                    organizations_users_listing.created,
+                    organizations_users_listing.modified,
+                    organizations_users_listing.user_id,
+                    organizations_users_listing.organization_id,
+                    organizations_users_listing.organization_user_role_id,
+                    organizations_users_listing.role_id,
+                    organizations_users_listing.username,
+                    organizations_users_listing.email,
+                    organizations_users_listing.full_name,
+                    organizations_users_listing.initials,
+                    organizations_users_listing.about_me,
+                    organizations_users_listing.created_organization_count,
+                    organizations_users_listing.created_board_count,
+                    organizations_users_listing.joined_organization_count,
+                    organizations_users_listing.list_count,
+                    organizations_users_listing.joined_card_count,
+                    organizations_users_listing.created_card_count,
+                    organizations_users_listing.joined_board_count,
+                    organizations_users_listing.checklist_count,
+                    organizations_users_listing.checklist_item_completed_count,
+                    organizations_users_listing.checklist_item_count,
+                    organizations_users_listing.activity_count,
+                    organizations_users_listing.card_voter_count,
+                    organizations_users_listing.name,
+                    organizations_users_listing.website_url,
+                    organizations_users_listing.description,
+                    organizations_users_listing.logo_url,
+                    organizations_users_listing.organization_visibility,
+                    organizations_users_listing.profile_picture_path,
+                    organizations_users_listing.boards_users,
+                    organizations_users_listing.user_board_count
+                   FROM organizations_users_listing organizations_users_listing
+                  WHERE (organizations_users_listing.organization_id = organizations.id)
+                  ORDER BY organizations_users_listing.id) c) AS organizations_users,
+    u.username,
+    u.full_name,
+    u.initials,
+    u.profile_picture_path
+   FROM (organizations organizations
+     LEFT JOIN users u ON ((u.id = organizations.user_id)));
+
+CREATE OR REPLACE VIEW "organizations_listing" AS
+ SELECT organizations.id,
+    to_char(organizations.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(organizations.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    organizations.user_id,
+    organizations.name,
+    organizations.website_url,
+    organizations.description,
+    organizations.logo_url,
+    organizations.organization_visibility,
+    organizations.organizations_user_count,
+    organizations.board_count,
+    ( SELECT array_to_json(array_agg(row_to_json(b.*))) AS array_to_json
+           FROM ( SELECT boards_listing.id,
+                    boards_listing.name,
+                    boards_listing.user_id,
+                    boards_listing.organization_id,
+                    boards_listing.board_visibility,
+                    boards_listing.background_color,
+                    boards_listing.background_picture_url,
+                    boards_listing.commenting_permissions,
+                    boards_listing.voting_permissions,
+                    ((boards_listing.is_closed)::boolean)::integer AS is_closed,
+                    ((boards_listing.is_allow_organization_members_to_join)::boolean)::integer AS is_allow_organization_members_to_join,
+                    boards_listing.boards_user_count,
+                    boards_listing.list_count,
+                    boards_listing.card_count,
+                    boards_listing.boards_subscriber_count,
+                    boards_listing.background_pattern_url,
+                    ((boards_listing.is_show_image_front_of_card)::boolean)::integer AS is_show_image_front_of_card,
+                    boards_listing.organization_name,
+                    boards_listing.organization_website_url,
+                    boards_listing.organization_description,
+                    boards_listing.organization_logo_url,
+                    boards_listing.organization_visibility,
+                    boards_listing.attachments,
+                    boards_listing.boards_users
+                   FROM boards_listing boards_listing
+                  WHERE (boards_listing.organization_id = organizations.id)
+                  ORDER BY boards_listing.id) b) AS boards_listing,
+    ( SELECT array_to_json(array_agg(row_to_json(c.*))) AS array_to_json
+           FROM ( SELECT organizations_users_listing.id,
+                    organizations_users_listing.created,
+                    organizations_users_listing.modified,
+                    organizations_users_listing.user_id,
+                    organizations_users_listing.organization_id,
+                    organizations_users_listing.organization_user_role_id,
+                    organizations_users_listing.role_id,
+                    organizations_users_listing.username,
+                    organizations_users_listing.email,
+                    organizations_users_listing.full_name,
+                    organizations_users_listing.initials,
+                    organizations_users_listing.about_me,
+                    organizations_users_listing.created_organization_count,
+                    organizations_users_listing.created_board_count,
+                    organizations_users_listing.joined_organization_count,
+                    organizations_users_listing.list_count,
+                    organizations_users_listing.joined_card_count,
+                    organizations_users_listing.created_card_count,
+                    organizations_users_listing.joined_board_count,
+                    organizations_users_listing.checklist_count,
+                    organizations_users_listing.checklist_item_completed_count,
+                    organizations_users_listing.checklist_item_count,
+                    organizations_users_listing.activity_count,
+                    organizations_users_listing.card_voter_count,
+                    organizations_users_listing.name,
+                    organizations_users_listing.website_url,
+                    organizations_users_listing.description,
+                    organizations_users_listing.logo_url,
+                    organizations_users_listing.organization_visibility,
+                    organizations_users_listing.profile_picture_path,
+                    organizations_users_listing.boards_users,
+                    organizations_users_listing.user_board_count
+                   FROM organizations_users_listing organizations_users_listing
+                  WHERE (organizations_users_listing.organization_id = organizations.id)
+                  ORDER BY organizations_users_listing.id) c) AS organizations_users,
+    u.username,
+    u.full_name,
+    u.initials,
+    u.profile_picture_path
+   FROM (organizations organizations
+     LEFT JOIN users u ON ((u.id = organizations.user_id)));
+
+CREATE OR REPLACE VIEW "cards_listing" AS
+SELECT cards.id,
+    to_char(cards.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(cards.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    cards.board_id,
+    cards.list_id,
+    cards.name,
+    cards.description,
+    to_char(cards.due_date, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS due_date,
+    to_date(to_char(cards.due_date, 'YYYY/MM/DD'::text), 'YYYY/MM/DD'::text) AS to_date,
+    cards."position",
+    (cards.is_archived)::integer AS is_archived,
+    cards.attachment_count,
+    cards.checklist_count,
+    cards.checklist_item_count,
+    cards.checklist_item_completed_count,
+    cards.label_count,
+    cards.cards_user_count,
+    cards.cards_subscriber_count,
+    cards.card_voter_count,
+    cards.activity_count,
+    cards.user_id,
+    cards.name AS title,
+    cards.due_date AS start,
+    cards.due_date AS "end",
+    ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
+           FROM ( SELECT checklists_listing.id,
+                    checklists_listing.created,
+                    checklists_listing.modified,
+                    checklists_listing.user_id,
+                    checklists_listing.card_id,
+                    checklists_listing.name,
+                    checklists_listing.checklist_item_count,
+                    checklists_listing.checklist_item_completed_count,
+                    checklists_listing."position",
+                    checklists_listing.checklists_items
+                   FROM checklists_listing checklists_listing
+                  WHERE (checklists_listing.card_id = cards.id)
+                  ORDER BY checklists_listing.id) cc) AS cards_checklists,
+    ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
+           FROM ( SELECT cards_users_listing.username,
+                    cards_users_listing.profile_picture_path,
+                    cards_users_listing.id,
+                    cards_users_listing.created,
+                    cards_users_listing.modified,
+                    cards_users_listing.card_id,
+                    cards_users_listing.user_id,
+                    cards_users_listing.initials,
+                    cards_users_listing.full_name,
+                    cards_users_listing.email
+                   FROM cards_users_listing cards_users_listing
+                  WHERE (cards_users_listing.card_id = cards.id)
+                  ORDER BY cards_users_listing.id) cc) AS cards_users,
+    ( SELECT array_to_json(array_agg(row_to_json(cv.*))) AS array_to_json
+           FROM ( SELECT card_voters_listing.id,
+                    card_voters_listing.created,
+                    card_voters_listing.modified,
+                    card_voters_listing.user_id,
+                    card_voters_listing.card_id,
+                    card_voters_listing.username,
+                    card_voters_listing.role_id,
+                    card_voters_listing.profile_picture_path,
+                    card_voters_listing.initials,
+                    card_voters_listing.full_name
+                   FROM card_voters_listing card_voters_listing
+                  WHERE (card_voters_listing.card_id = cards.id)
+                  ORDER BY card_voters_listing.id) cv) AS cards_voters,
+    ( SELECT array_to_json(array_agg(row_to_json(cs.*))) AS array_to_json
+           FROM ( SELECT cards_subscribers.id,
+                    to_char(cards_subscribers.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(cards_subscribers.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+                    cards_subscribers.card_id,
+                    cards_subscribers.user_id,
+                    (cards_subscribers.is_subscribed)::integer AS is_subscribed
+                   FROM card_subscribers cards_subscribers
+                  WHERE (cards_subscribers.card_id = cards.id)
+                  ORDER BY cards_subscribers.id) cs) AS cards_subscribers,
+    ( SELECT array_to_json(array_agg(row_to_json(cl.*))) AS array_to_json
+           FROM ( SELECT cards_labels.label_id,
+                    cards_labels.id,
+                    cards_labels.card_id,
+                    cards_labels.list_id,
+                    cards_labels.board_id,
+                    cards_labels.name,
+                    cards_labels.color
+                   FROM cards_labels_listing cards_labels
+                  WHERE (cards_labels.card_id = cards.id)
+                  ORDER BY cards_labels.name) cl) AS cards_labels,
+    cards.comment_count,
+    u.username,
+    b.name AS board_name,
+    l.name AS list_name,
+    cards.custom_fields,
+    cards.color,
+    cards.due_date AS notification_due_date,
+    cards.is_due_date_notification_sent,
+    cards.archived_date,
+    to_char(( SELECT activities.created
+           FROM activities
+          WHERE ((activities.card_id = cards.id) AND ((activities.type)::text = 'move_card'::text))
+          ORDER BY activities.id DESC
+         LIMIT 1), 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS list_moved_date,
+    u.full_name AS card_created_user
+   FROM (((cards cards
+     LEFT JOIN users u ON ((u.id = cards.user_id)))
+     LEFT JOIN boards b ON ((b.id = cards.board_id)))
+     LEFT JOIN lists l ON ((l.id = cards.list_id)));
+
+CREATE OR REPLACE VIEW "simple_board_listing" AS 
+SELECT board.id,
+    board.name,
+    board.user_id,
+    board.organization_id,
+    board.board_visibility,
+    board.background_color,
+    board.background_picture_url,
+    board.commenting_permissions,
+    board.voting_permissions,
+    (board.is_closed)::integer AS is_closed,
+    (board.is_allow_organization_members_to_join)::integer AS is_allow_organization_members_to_join,
+    board.boards_user_count,
+    board.list_count,
+    board.card_count,
+    board.boards_subscriber_count,
+    board.background_pattern_url,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT lists.id,
+                    to_char(lists.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(lists.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+                    lists.board_id,
+                    lists.user_id,
+                    lists.name,
+                    lists."position",
+                    (lists.is_archived)::integer AS is_archived,
+                    lists.card_count,
+                    lists.lists_subscriber_count,
+                    lists.color,
+                    (lists.is_deleted)::integer AS is_deleted,
+                    lists.custom_fields
+                   FROM lists lists
+                  WHERE (lists.board_id = board.id)
+                  ORDER BY lists."position") l) AS lists,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT cll.label_id,
+                    cll.name
+                   FROM cards_labels_listing cll
+                  WHERE (cll.board_id = board.id)
+                  ORDER BY cll.name) l) AS labels,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT bs.id,
+                    bs.board_id,
+                    bs.user_id,
+                    (bs.is_starred)::integer AS is_starred
+                   FROM board_stars bs
+                  WHERE (bs.board_id = board.id)
+                  ORDER BY bs.id) l) AS stars,
+    org.name AS organization_name,
+    org.logo_url AS organization_logo_url,
+    board.music_content,
+    board.music_name,
+    board.sort_by
+   FROM (boards board
+     LEFT JOIN organizations org ON ((org.id = board.organization_id)))
+  ORDER BY board.name;

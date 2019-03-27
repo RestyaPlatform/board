@@ -61,6 +61,16 @@ class ActivityHandler
                 $obj['foreign_id']
             );
             $obj['board_user'] = executeQuery('SELECT * FROM boards_users_listing WHERE id = $1', $obj_val_arr);
+        } else if ($obj_type === 'add_board') {
+            $obj_val_arr = array(
+                $obj['board_id']
+            );
+            $obj['board'] = executeQuery('SELECT background_picture_url, background_pattern_url, music_content, music_name, board_visibility, organization_name, organization_id FROM simple_board_listing WHERE id = $1', $obj_val_arr);
+            $obj['lists'] = array();
+            $lists = pg_query_params($db_lnk, 'SELECT * FROM lists_listing WHERE board_id = $1', $obj_val_arr);
+            while ($list = pg_fetch_assoc($lists)) {
+                $obj['lists'][] = $list;
+            }
         } else if ($obj_type === 'add_list') {
             $obj_val_arr = array(
                 $obj['list_id']
@@ -76,18 +86,42 @@ class ActivityHandler
                 $obj['card_id']
             );
             $obj['card'] = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
+            if (is_plugin_enabled('r_custom_fields')) {
+                $obj['custom_fields'] = array();
+                $conditions = array(
+                    $obj['card']['board_id']
+                );
+                $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields_listing WHERE board_id IS NULL or board_id = $1 ORDER BY position ASC', $conditions);
+                while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                    $obj['custom_fields'][] = $custom_field;
+                }
+            }
         } else if ($obj_type === 'copy_card') {
             $obj_val_arr = array(
                 $obj['foreign_id']
             );
             $obj['card'] = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
+            $card_attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1 ORDER BY id DESC', $obj_val_arr);
+            while ($card_attachment = pg_fetch_assoc($card_attachments)) {
+                $obj['card']['card_attachments'][] = $card_attachment;
+            }
+            if (is_plugin_enabled('r_custom_fields')) {
+                $obj['custom_fields'] = array();
+                $conditions = array(
+                    $obj['card']['board_id']
+                );
+                $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields_listing WHERE board_id IS NULL or board_id = $1 ORDER BY position ASC', $conditions);
+                while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                    $obj['custom_fields'][] = $custom_field;
+                }
+            }
         } else if ($obj_type === 'add_card_checklist') {
             $obj_val_arr = array(
                 $obj['foreign_id']
             );
             $obj['checklist'] = executeQuery('SELECT * FROM checklists_listing WHERE id = $1', $obj_val_arr);
             $obj['checklist']['checklists_items'] = json_decode($obj['checklist']['checklists_items'], true);
-        } else if ($obj_type === 'add_card_label') {
+        } else if ($obj_type === 'add_card_label' || $obj_type === 'update_card_label') {
             $obj_val_arr = array(
                 $obj['card_id']
             );
@@ -125,6 +159,21 @@ class ActivityHandler
                 $obj['card_id']
             );
             $obj['card'] = executeQuery('SELECT position FROM cards_listing WHERE id = $1', $obj_val_arr);
+        } else if ($obj_type === 'update_card_custom_field' || $obj_type === 'add_card_custom_field' || $obj_type === 'delete_card_custom_field') {
+            if (is_plugin_enabled('r_custom_fields')) {
+                $obj_val_arr = array(
+                    $obj['card_id']
+                );
+                $card = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
+                $obj['custom_fields'] = array();
+                $conditions = array(
+                    $card['board_id']
+                );
+                $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields_listing WHERE board_id IS NULL or board_id = $1 ORDER BY position ASC', $conditions);
+                while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                    $obj['custom_fields'][] = $custom_field;
+                }
+            }
         }
         return $obj;
     }

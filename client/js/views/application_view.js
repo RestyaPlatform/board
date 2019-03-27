@@ -352,20 +352,14 @@ App.ApplicationView = Backbone.View.extend({
                         } else if (view_type === 'calendar') {
                             $('.js-switch-calendar-view').trigger('click');
                             view_type = null;
-                        } else if (view_type === 'gantt') {
-                            $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">' + i18next.t('Loading ....') + '</h4></div></div></div>');
+                        } else if (!_.isEmpty(view_type) && !_.isEmpty(view_type)) {
+                            $('#content .js-boards-view').addClass('hide');
                             _(function() {
-                                $('.js-switch-timeline-view').trigger('click');
+                                $('#content .js-boards-view').remove('');
+                                $('#content').html('<section id="boards-view-' + view_type + '" class="clearfix js-boards-view"></section>');
                             }).defer();
-                            view_type = null;
-                        } else if (view_type === 'report') {
-                            $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">' + i18next.t('Loading ....') + '</h4></div></div></div>');
-                            view_type = null;
-                        } else if (view_type === 'attachments') {
-                            $('.js-show-board-modal').trigger('click');
-                            view_type = null;
                         } else if (view_type === null || view_type === '') {
-                            $('.js-switch-grid-view').trigger('click');
+                            // $('.js-switch-grid-view').trigger('click');
                             view_type = null;
                         }
                         App.current_board = Board;
@@ -427,7 +421,7 @@ App.ApplicationView = Backbone.View.extend({
                 $('.js-show-board-modal').trigger('click');
                 view_type = null;
             } else if (_.isUndefined(view_type) || view_type === null || view_type === '') {
-                $('.js-switch-grid-view').trigger('click');
+                // $('.js-switch-grid-view').trigger('click');
                 view_type = null;
             }
         }
