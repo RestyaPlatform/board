@@ -914,7 +914,7 @@ App.FooterView = Backbone.View.extend({
             filter = 'activity';
         }
         if (mode == 1) {
-            query_string = '&last_activity_id=' + authuser.user.last_activity_id + '&mode=' + filter;
+            query_string = '&last_activity_id=' + authuser.user.last_activity_id + '&mode=' + filter + '&direction=desc';
             activities.url = api_url + 'users/' + authuser.user.id + '/activities.json?type=all' + query_string;
         } else {
             $('#js-activity-loader').remove();
@@ -927,10 +927,10 @@ App.FooterView = Backbone.View.extend({
             activities.fetch({
                 cache: false,
                 success: function() {
-                    if (mode == 1) {
+                    /* if (mode == 1) {
                         activities.setSortField('id', 'asc');
                         activities.sort();
-                    }
+                    } */
                     $('#js-activity-loader').remove();
                     if (!_.isEmpty(activities.models)) {
                         $('#js-load-link').removeClass('hide');
