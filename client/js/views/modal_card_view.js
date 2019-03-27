@@ -3915,7 +3915,6 @@ App.ModalCardView = Backbone.View.extend({
         var card = new App.Card();
         card.set('is_offline', true);
         card.set('name', data.name);
-        card.set('id', new Date().getTime());
         card.set('list_id', data.list_id);
         card.set('board_id', data.board_id);
         card.set('is_archived', 0);
@@ -3925,6 +3924,7 @@ App.ModalCardView = Backbone.View.extend({
             id: parseInt(current_card.board_id)
         });
         if (!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by !== 'position' && parseInt(data.board_id) === parseInt(current_card.board_id)) {
+            card.set('id', new Date().getTime());
             var board_sort_by = (current_board.attributes.sort_by) ? current_board.attributes.sort_by : 'position';
             var bard_sort_direction = (current_board.attributes.sort_direction) ? current_board.attributes.sort_direction : 'asc';
             this.model.list.collection.board.lists.get(data.list_id).cards.add(card, {
@@ -3939,6 +3939,7 @@ App.ModalCardView = Backbone.View.extend({
                 }
             });
         }
+        card.set('id', null);
         data.board_id = parseInt(data.board_id);
         card.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/copy.json';
         $('.js-close-popover').click();
