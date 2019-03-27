@@ -1563,8 +1563,8 @@ App.FooterView = Backbone.View.extend({
                                                 var Cardlist = self.board.lists.findWhere({
                                                     id: parseInt(activity.attributes.list_id)
                                                 });
+                                                Cardlist.set('card_count', parseInt(Cardlist.attributes.card_count) - 1);
                                                 if (Cardlist !== null && !_.isUndefined(Cardlist) && !_.isEmpty(Cardlist) && wip_enabled) {
-                                                    Cardlist.set('card_count', parseInt(Cardlist.attributes.card_count) - 1);
                                                     $('body').trigger('cardAddRendered', [Cardlist.id, Cardlist]);
                                                 }
                                                 if (parseInt(Cardlist.attributes.card_count) === 0) {
