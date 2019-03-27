@@ -1731,8 +1731,8 @@ App.BoardHeaderView = Backbone.View.extend({
         $('body').addClass('modal-open');
         e.preventDefault();
         app.navigate('#/board/' + this.model.id, {
-            trigger: false,
-            trigger_function: false,
+            trigger: true,
+            trigger_function: true,
         });
         $('#content').html(new App.BoardView({
             model: this.model

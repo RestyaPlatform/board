@@ -1218,7 +1218,7 @@ App.ListView = Backbone.View.extend({
                 });
                 var current_param_split = Backbone.history.fragment.split('/');
                 if (!_.isUndefined(current_param_split['2']) && current_param_split['2'] !== null && current_param_split['2'].indexOf('list') !== -1) {
-                        return true;            
+                    return true;
                 }
                 if (parseInt(e.attributes.is_archived) === 0) {
                     if ($('#js-card-' + e.attributes.id).length === 1) {
