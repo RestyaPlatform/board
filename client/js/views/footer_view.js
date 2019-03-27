@@ -914,7 +914,7 @@ App.FooterView = Backbone.View.extend({
             filter = 'activity';
         }
         if (mode == 1) {
-            query_string = '&last_activity_id=' + authuser.user.last_activity_id + '&mode=' + filter + '&direction=desc';
+            query_string = '&last_activity_id=' + authuser.user.last_activity_id + '&direction=ASC';
             activities.url = api_url + 'users/' + authuser.user.id + '/activities.json?type=all' + query_string;
         } else {
             $('#js-activity-loader').remove();

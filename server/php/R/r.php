@@ -351,7 +351,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $condition.= (!empty($r_resource_filters['last_activity_id'])) ? 'al.id > $' . $i : '';
                 $i++;
             }
-            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
+            $direction = 'DESC';
+            if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction'])) {
+                $direction = $r_resource_filters['direction'];
+            }
+            $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         } else {
             if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users']) {
