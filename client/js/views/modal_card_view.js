@@ -2022,12 +2022,12 @@ App.ModalCardView = Backbone.View.extend({
                     this.model.set({
                         position: data.position
                     });
-                } else if (_.isUndefined(change_next_card) && !_.isUndefined(change_next_card)) {
+                } else if (_.isUndefined(change_next_card) && !_.isUndefined(change_prev_card)) {
                     data.position = (change_prev_card.attributes.position) + 1;
                     this.model.set({
                         position: data.position
                     });
-                } else if (!_.isUndefined(change_prev_card)) {
+                } else if (!_.isUndefined(change_prev_card) && !_.isUndefined(change_next_card)) {
                     data.position = (change_prev_card.attributes.position + change_next_card.attributes.position) / 2;
                     this.model.set({
                         position: data.position
