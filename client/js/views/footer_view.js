@@ -1905,8 +1905,39 @@ App.FooterView = Backbone.View.extend({
                             } else if (activity.attributes.type === 'add_board' && !_.isUndefined(App.boards) && !_.isEmpty(App.boards) && App.boards !== null) {
                                 var _new_board = new App.Board();
                                 _new_board.set('id', parseInt(activity.attributes.board_id));
-                                _new_board.set('name', activity.attributes.board_name);
-                                _new_board.set('board_visibility', activity.attributes.board_visibility);
+                                _new_board.set('name', filterXSS(activity.attributes.board_name));
+                                if (!_.isUndefined(activity.attributes.board) && !_.isEmpty(activity.attributes.board) && activity.attributes.board !== null) {
+                                    var tmp_new_board = activity.attributes.board;
+                                    _new_board.set('board_visibility', parseInt(tmp_new_board.board_visibility));
+                                    if (!_.isUndefined(tmp_new_board.background_pattern_url) && !_.isEmpty(tmp_new_board.background_pattern_url) && tmp_new_board.background_pattern_url !== null) {
+                                        _new_board.set('background_pattern_url', tmp_new_board.background_pattern_url);
+                                    }
+                                    if (!_.isUndefined(tmp_new_board.background_picture_url) && !_.isEmpty(tmp_new_board.background_picture_url) && tmp_new_board.background_picture_url !== null) {
+                                        _new_board.set('background_picture_url', tmp_new_board.background_picture_url);
+                                    }
+                                    if (!_.isUndefined(tmp_new_board.music_content) && !_.isEmpty(tmp_new_board.music_content) && tmp_new_board.music_content !== null) {
+                                        _new_board.set('music_content', tmp_new_board.music_content);
+                                    }
+                                    if (!_.isUndefined(tmp_new_board.music_name) && !_.isEmpty(tmp_new_board.music_name) && tmp_new_board.music_name !== null) {
+                                        _new_board.set('music_name', tmp_new_board.music_name);
+                                    }
+                                }
+                                if (!_.isUndefined(activity.attributes.lists) && !_.isEmpty(activity.attributes.lists) && activity.attributes.lists !== null) {
+                                    var _tmp_list_collection = activity.attributes.lists;
+                                    var _new_board_lists = new App.ListCollection();
+                                    _new_board_lists.board = _new_board;
+                                    _.each(_tmp_list_collection, function(list) {
+                                        var _tmp_list = new App.List();
+                                        _tmp_list.set('id', parseInt(list.id));
+                                        _tmp_list.set('name', filterXSS(list.name));
+                                        _tmp_list.set('uuid', new Date().getTime());
+                                        _tmp_list.set('is_archived', 0);
+                                        _tmp_list.set('position', parseInt(list.position));
+                                        _tmp_list.set('board_id', parseInt(_new_board.attributes.id));
+                                        _new_board_lists.add(_tmp_list);
+                                        _new_board.lists.add(_tmp_list);
+                                    });
+                                }
                                 $('.js-my-boards').prepend(new App.BoardSimpleView({
                                     model: _new_board,
                                     id: 'js-my-board-' + activity.attributes.board_id,

@@ -772,7 +772,6 @@ App.BoardView = Backbone.View.extend({
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
                 $(window).trigger('resize');
-                $('body').trigger('editListRendered');
             }
         }).defer();
         return this;
@@ -867,6 +866,9 @@ App.BoardView = Backbone.View.extend({
                 }
             }
         });
+        _(function() {
+            $('body').trigger('editListRendered');
+        }).defer();
         _.defer(function(view) {
             if (!_.isUndefined(card_ids) && card_ids !== null && card_ids !== '') {
                 trigger_dockmodal = true;
@@ -1213,6 +1215,9 @@ App.BoardView = Backbone.View.extend({
                     });
                     $(view.render().el).insertBefore($('#js-add-list-block'));
                 }
+                _(function() {
+                    $('body').trigger('editListRendered');
+                }).defer();
                 App.current_board.lists.add(list);
             }
         });
