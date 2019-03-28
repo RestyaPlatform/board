@@ -1529,18 +1529,21 @@ App.FooterView = Backbone.View.extend({
                                                     $('#js-card-listing-' + card_old_list.id).html('&nbsp;');
                                                 }
                                                 // Updating the new list card count
-                                                var card_new_list_card_count = isNaN(card_new_list.attributes.card_count) ? 0 : card_new_list.attributes.card_count;
-                                                card_new_list.set('card_count', parseInt(card_new_list_card_count) + 1);
-                                                if (parseInt(card_new_list.attributes.card_count) === 1) {
-                                                    // Removing the &nbsp; fom new lsit card listing 
-                                                    $('#js-card-listing-' + card_new_list.id).html(function(i, h) {
-                                                        return h.replace(/&nbsp;/g, '');
-                                                    });
+                                                if (!_.isEmpty(card_new_list) && !_.isUndefined(card_new_list) && card_new_list !== null && !_.isEmpty(card_new_list.cards) && !_.isUndefined(card_new_list.cards) && card_new_list.cards !== null) {
+
+                                                    var card_new_list_card_count = isNaN(card_new_list.attributes.card_count) ? 0 : card_new_list.attributes.card_count;
+                                                    card_new_list.set('card_count', parseInt(card_new_list_card_count) + 1);
+                                                    if (parseInt(card_new_list.attributes.card_count) === 1) {
+                                                        // Removing the &nbsp; fom new lsit card listing 
+                                                        $('#js-card-listing-' + card_new_list.id).html(function(i, h) {
+                                                            return h.replace(/&nbsp;/g, '');
+                                                        });
+                                                    }
+                                                    if (!_.isUndefined(card_old_list) && !_.isUndefined(card_new_list) && wip_enabled) {
+                                                        $('body').trigger('cardSortRendered', [card_old_list, card_new_list]);
+                                                    }
+                                                    card.list = card_new_list;
                                                 }
-                                                if (!_.isUndefined(card_old_list) && !_.isUndefined(card_new_list) && wip_enabled) {
-                                                    $('body').trigger('cardSortRendered', [card_old_list, card_new_list]);
-                                                }
-                                                card.list = card_new_list;
                                                 card.set('list_id', parseInt(activity.attributes.foreign_id));
                                                 card.list.collection.board.lists.get(activity.attributes.foreign_id).cards.add(card);
                                                 var cards_attachments = self.board.attachments.where({
