@@ -1523,7 +1523,8 @@ App.FooterView = Backbone.View.extend({
                                                     App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.list_id)).set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
                                                 }
                                                 // Reducing the card count of the old list
-                                                card_old_list.set('card_count', card_old_list.attributes.card_count - 1);
+                                                var old_list_card_count = ((card_old_list.attributes.card_count - 1) >= 0) ? (card_old_list.attributes.card_count - 1) : 0;
+                                                card_old_list.set('card_count', old_list_card_count);
                                                 if (parseInt(card_old_list.attributes.card_count) === 0) {
                                                     // Adding the &nbsp; for the list with no card
                                                     $('#js-card-listing-' + card_old_list.id).html('&nbsp;');
