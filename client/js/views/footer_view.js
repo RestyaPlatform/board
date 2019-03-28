@@ -1150,16 +1150,18 @@ App.FooterView = Backbone.View.extend({
                                                 id: parseInt(activity.attributes.list_id)
                                             });
                                             new_card.list = card_list;
-                                            var tmp_list_cards = card_list.cards;
-                                            tmp_list_cards.add(new_card, {
-                                                silent: true
-                                            });
-                                            var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, tmp_list_cards);
-                                            $.each(sort_filter_cards.models, function(key, filter_card) {
-                                                if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(activity.attributes.card.id)) {
-                                                    new_card.set('position', key);
-                                                }
-                                            });
+                                            if (!_.isEmpty(card_list) && !_.isUndefined(card_list) && card_list !== null && !_.isEmpty(card_list.cards) && !_.isUndefined(card_list.cards) && card_list.cards !== null) {
+                                                var tmp_list_cards = card_list.cards;
+                                                tmp_list_cards.add(new_card, {
+                                                    silent: true
+                                                });
+                                                var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, tmp_list_cards);
+                                                $.each(sort_filter_cards.models, function(key, filter_card) {
+                                                    if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(activity.attributes.card.id)) {
+                                                        new_card.set('position', key);
+                                                    }
+                                                });
+                                            }
                                             if (!_.isUndefined(card_list) && !_.isUndefined(card_list.attributes.card_count) && card_list.attributes.card_count === 0) {
                                                 // Removing the &nbsp; in the card listing after adding card or copy card
                                                 $('#js-card-listing-' + card_list.id).html(function(i, h) {
@@ -1167,7 +1169,7 @@ App.FooterView = Backbone.View.extend({
                                                 });
                                             }
                                             self.board.cards.add(new_card);
-                                            if (!_.isUndefined(card_list)) {
+                                            if (!_.isUndefined(card_list) && !_.isUndefined(card_list.cards)) {
                                                 card_list.cards.add(new_card);
                                                 var card_list_card_count = isNaN(card_list.attributes.card_count) ? 0 : card_list.attributes.card_count;
                                                 // Updating the list card count
@@ -1501,16 +1503,18 @@ App.FooterView = Backbone.View.extend({
                                                 });
                                                 var tmp_sort_by = (self.board.attributes.sort_by) ? self.board.attributes.sort_by : 'position';
                                                 var tmp_sort_direction = (self.board.attributes.sort_direction) ? self.board.attributes.sort_direction : 'asc';
-                                                var tmp_newlist_cards = card_new_list.cards;
-                                                tmp_newlist_cards.add(card, {
-                                                    silent: true
-                                                });
-                                                var new_sort_filter_cards = self.cardsort(tmp_sort_by, tmp_sort_direction, tmp_newlist_cards);
-                                                $.each(new_sort_filter_cards.models, function(key, filter_card) {
-                                                    if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(card.id)) {
-                                                        card.set('position', key);
-                                                    }
-                                                });
+                                                if (!_.isEmpty(card_new_list) && !_.isUndefined(card_new_list) && card_new_list !== null && !_.isEmpty(card_new_list.cards) && !_.isUndefined(card_new_list.cards) && card_new_list.cards !== null) {
+                                                    var tmp_newlist_cards = card_new_list.cards;
+                                                    tmp_newlist_cards.add(card, {
+                                                        silent: true
+                                                    });
+                                                    var new_sort_filter_cards = self.cardsort(tmp_sort_by, tmp_sort_direction, tmp_newlist_cards);
+                                                    $.each(new_sort_filter_cards.models, function(key, filter_card) {
+                                                        if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(card.id)) {
+                                                            card.set('position', key);
+                                                        }
+                                                    });
+                                                }
                                                 if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(parseInt(activity.attributes.board_id)))) {
                                                     var updated_card_list_cards = self.board.cards.where({
                                                         list_id: parseInt(activity.attributes.list_id)
