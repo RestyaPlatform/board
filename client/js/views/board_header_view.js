@@ -1639,28 +1639,32 @@ App.BoardHeaderView = Backbone.View.extend({
     sendCardTobard: function(e) {
         e.preventDefault();
         var card_id = $(e.currentTarget).data('card_id');
-        this.model.cards.findWhere({
-            id: parseInt(card_id)
-        }).set('is_archived', 0);
         var find_card = this.model.cards.findWhere({
             id: parseInt(card_id)
         });
+        var currentBoardList = App.current_board.lists.get(find_card.attributes.list_id);
+        if (!_.isUndefined(currentBoardList)) {
+            if (parseInt(currentBoardList.attributes.card_count) === 0) {
+                $('#js-card-listing-' + find_card.attributes.list_id).html(function(i, h) {
+                    return h.replace(/&nbsp;/g, '');
+                });
+            }
+        }
+        this.model.cards.findWhere({
+            id: parseInt(card_id)
+        }).set('is_archived', 0);
+
         var list = App.boards.get(find_card.attributes.board_id).lists.get(find_card.attributes.list_id);
         if (!_.isUndefined(list)) {
             list.set('card_count', list.attributes.card_count + 1, {
                 silent: true
             });
         }
-        var currentBoardList = App.current_board.lists.get(find_card.attributes.list_id);
+        currentBoardList = App.current_board.lists.get(find_card.attributes.list_id);
         if (!_.isUndefined(currentBoardList)) {
             currentBoardList.set('card_count', currentBoardList.attributes.card_count + 1, {
                 silent: true
             });
-            if (parseInt(currentBoardList.attributes.card_count) === 1) {
-                $('#js-card-listing-' + find_card.attributes.list_id).html(function(i, h) {
-                    return h.replace(/&nbsp;/g, '');
-                });
-            }
         }
         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
             if (list !== null && !_.isUndefined(list) && !_.isEmpty(list)) {

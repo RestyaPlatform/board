@@ -2204,16 +2204,16 @@ App.ModalCardView = Backbone.View.extend({
     cardSendToBoard: function(e) {
         var uuid = new Date().getTime();
         var self = this;
-        this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
-        this.model.set('is_offline', true);
-        this.model.set('is_archived', 0, {
-            silent: false
-        });
         if (parseInt(this.model.list.attributes.card_count) === 0) {
             $('#js-card-listing-' + this.model.list.id).html(function(i, h) {
                 return h.replace(/&nbsp;/g, '');
             });
         }
+        this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
+        this.model.set('is_offline', true);
+        this.model.set('is_archived', 0, {
+            silent: false
+        });
         this.model.save({
             is_archived: 0
         }, {

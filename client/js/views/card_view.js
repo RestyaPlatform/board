@@ -173,6 +173,19 @@ App.CardView = Backbone.View.extend({
         var previous_list_id = self.model.attributes.list_id;
         var previous_card_id = target.prev('.js-board-list-card').data('card_id');
         var next_card_id = target.next('.js-board-list-card').data('card_id');
+        var current_board = App.boards.where({
+            id: parseInt(self.model.attributes.board_id)
+        });
+        current_board = current_board['0'];
+        var current_list = current_board.lists.findWhere({
+            id: parseInt(list_id)
+        });
+        if (parseInt(current_list.attributes.card_count) === 0 || parseInt(current_list.attributes.card_count) === 1 || _.isUndefined(current_list.attributes.card_count)) {
+            $('#js-card-listing-' + list_id).html(function(i, h) {
+                return h.replace(/&nbsp;/g, '');
+            });
+        }
+
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.attributes.id + '.json';
         if ((typeof previous_card_id == 'undefined' && typeof next_card_id == 'undefined') || list_id != self.model.attributes.list_id) {
             data.list_id = list_id;
@@ -206,16 +219,11 @@ App.CardView = Backbone.View.extend({
                 }).defer();
             }
         });
-        var current_board = App.boards.where({
-            id: parseInt(self.model.attributes.board_id)
-        });
-        current_board = current_board['0'];
+
         var prev_list = current_board.lists.findWhere({
             id: parseInt(previous_list_id)
         });
-        var current_list = current_board.lists.findWhere({
-            id: parseInt(list_id)
-        });
+
         var current_board_prev_list = App.current_board.lists.findWhere({
             id: parseInt(previous_list_id)
         });
@@ -237,12 +245,6 @@ App.CardView = Backbone.View.extend({
             self.model.list.collection.board.lists.get(list_id).set('card_count', current_list_card_count + 1);
             current_board_new_list.set('card_count', current_list_card_count + 1);
             current_list.set('card_count', current_list_card_count + 1);
-            if (parseInt(current_list.attributes.card_count) === 1) {
-                $('#js-card-listing-' + list_id).html(function(i, h) {
-                    return h.replace(/&nbsp;/g, '');
-                });
-            }
-
             _(function() {
                 if ((current_list !== null && !_.isUndefined(current_list) && !_.isEmpty(current_list)) && (prev_list !== null && !_.isUndefined(prev_list) && !_.isEmpty(prev_list))) {
                     if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
