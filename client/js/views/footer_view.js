@@ -132,10 +132,6 @@ App.FooterView = Backbone.View.extend({
     gotoBoards: function(e) {
         e.preventDefault();
         var self = this;
-        app.navigate('#/boards', {
-            trigger: true,
-            replace: true
-        });
     },
     /**
      * render()
