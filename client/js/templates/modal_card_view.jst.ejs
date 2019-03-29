@@ -394,7 +394,7 @@
 							<form method="post" class="form-horizontal js-add-comment no-print">
 								<ul class="media-list">
 									<li class="media">
-									<a title="<%-authuser.user.full_name %> (<%- authuser.user.username %>)" data-toggle="tooltip" class="pull-left" href="#/user/<%- authuser.id %>">
+									<a title="<%-authuser.user.full_name %> (<%- authuser.user.username %>)" data-toggle="tooltip" class="pull-left" href="#/user/<%- authuser.user.id %>">
 									<% if(!_.isEmpty(authuser.user.profile_picture_path)) { 
 									var profile_picture_path = card.showImage('User', authuser.user.id, 'small_thumb' );
 									%>
