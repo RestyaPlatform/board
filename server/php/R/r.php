@@ -5353,7 +5353,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $foreign_ids['board_id'] = $r_post['board_id'];
                 $foreign_ids['list_id'] = $r_post['list_id'];
                 $foreign_ids['card_id'] = $response['id'];
-                $comment = '##USER_NAME## copied this card "' . $srow['name'] . '" to ##CARD_NAME##';
+                $comment = '##USER_NAME## copied this card ##CARD_NAME## from '. $srow['name'];
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'copy_card', $foreign_ids, null, $response['id']);
                 $qry_val_arr = array(
                     $response['id']

@@ -4046,19 +4046,6 @@ App.ModalCardView = Backbone.View.extend({
                     }
                     self.model.list.collection.board.labels.add(response.cards.cards_labels);
                 }
-                var activity = new App.Activity();
-                activity.set(response.activity);
-                activity.board_users = self.model.board_users;
-                var view = new App.ActivityView({
-                    model: activity,
-                    board: self.model.list.collection.board,
-                    flag: '1'
-                });
-                self.model.activities.unshift(activity);
-                if ($.cookie('filter') !== 'comment') {
-                    var view_activity = $('#js-card-activities-' + self.model.id);
-                    view_activity.prepend(view.render().el);
-                }
             }
         });
 
