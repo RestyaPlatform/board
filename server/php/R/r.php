@@ -420,7 +420,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction'])) {
                     $direction = $r_resource_filters['direction'];
                 }
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition . ' ORDER BY id '. $direction .' LIMIT ' . PAGING_COUNT . ') as d';
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition;
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
             } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id'] && $r_resource_filters['type'] == 'board_user_activity') {
@@ -5353,7 +5353,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $foreign_ids['board_id'] = $r_post['board_id'];
                 $foreign_ids['list_id'] = $r_post['list_id'];
                 $foreign_ids['card_id'] = $response['id'];
-                $comment = '##USER_NAME## copied this card "' . $srow['name'] . '" to ##CARD_NAME##';
+                $comment = '##USER_NAME## copied this card ##CARD_NAME## from '. $srow['name'];
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'copy_card', $foreign_ids, null, $response['id']);
                 $qry_val_arr = array(
                     $response['id']
