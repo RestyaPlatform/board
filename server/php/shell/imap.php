@@ -48,9 +48,9 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                         $fetch_head = array();
                         foreach ($fetch_header as $line) {
                             // is line with additional header?
-                            if (eregi("^X-", $line)) {
+                            if (preg_match('/^X-/i', $line)) {
                                 // separate name and value
-                                eregi("^([^:]*): (.*)", $line, $arg);
+                                preg_match('/^([^:]*): (.*)/i', $line,$arg);
                                 $fetch_head[$arg[1]] = $arg[2];
                             }
                         }
