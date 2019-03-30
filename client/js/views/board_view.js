@@ -683,75 +683,80 @@ App.BoardView = Backbone.View.extend({
         this.renderListsCollection();
         this.setBoardBackground();
         if (!_.isUndefined(authuser.user)) {
-            var setintervalid = '',
-                is_moving_right = '',
-                previous_offset = 0,
-                previous_move = '',
-                is_create_setinterval = true;
-            $('#js-board-lists', this.$el).sortable({
-                containment: 'window',
-                axis: 'x',
-                items: 'div.js-board-list',
-                placeholder: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 board-list-placeholder board-list-height ',
-                forcePlaceholderSize: true,
-                cursor: 'grab',
-                scrollSensitivity: 100,
-                scrollSpeed: 50,
-                handle: '.js-list-head',
-                tolerance: 'pointer',
-                update: function(ev, ui) {
-                    ui.item.trigger('listSort', ev, ui);
-                },
-                start: function(ev, ui) {
-                    ui.placeholder.height(ui.item.outerHeight());
-                    $(ev.target).find('.js-list-head').removeClass('cur-grab');
-                    $(ev.target).find('.js-list-head').children('div.dropdown').removeClass('open');
-                },
-                stop: function(ev, ui) {
-                    clearInterval(setintervalid);
+            if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
+                    slug: 'edit_list',
+                    board_user_role_id: parseInt(this.model.board_user_role_id)
+                })))) {
+                var setintervalid = '',
+                    is_moving_right = '',
+                    previous_offset = 0,
+                    previous_move = '',
                     is_create_setinterval = true;
-                    previous_offset = 0;
-                    $(ev.target).find('.js-list-head').addClass('cur-grab');
-                },
-                over: function(ev, ui) {
-                    var scrollLeft = 0;
-                    var list_per_page = Math.floor($(window).width() / 270);
-                    if (previous_offset !== 0 && previous_offset != ui.offset.left) {
-                        if (previous_offset > ui.offset.left) {
-                            is_moving_right = false;
-                        } else {
-                            is_moving_right = true;
-                        }
-                    }
-                    if (previous_move !== is_moving_right) {
+                $('#js-board-lists', this.$el).sortable({
+                    containment: 'window',
+                    axis: 'x',
+                    items: 'div.js-board-list',
+                    placeholder: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 board-list-placeholder board-list-height ',
+                    forcePlaceholderSize: true,
+                    cursor: 'grab',
+                    scrollSensitivity: 100,
+                    scrollSpeed: 50,
+                    handle: '.js-list-head',
+                    tolerance: 'pointer',
+                    update: function(ev, ui) {
+                        ui.item.trigger('listSort', ev, ui);
+                    },
+                    start: function(ev, ui) {
+                        ui.placeholder.height(ui.item.outerHeight());
+                        $(ev.target).find('.js-list-head').removeClass('cur-grab');
+                        $(ev.target).find('.js-list-head').children('div.dropdown').removeClass('open');
+                    },
+                    stop: function(ev, ui) {
                         clearInterval(setintervalid);
                         is_create_setinterval = true;
-                    }
-                    if (is_moving_right === true && ui.offset.left > (list_per_page - 1) * 270) {
-                        if (is_create_setinterval) {
-                            setintervalid = setInterval(function() {
-                                scrollLeft = parseInt($('#js-board-lists').scrollLeft()) + 50;
-                                $('#js-board-lists').animate({
-                                    scrollLeft: scrollLeft
-                                }, 10);
-                            }, 100);
-                            is_create_setinterval = false;
+                        previous_offset = 0;
+                        $(ev.target).find('.js-list-head').addClass('cur-grab');
+                    },
+                    over: function(ev, ui) {
+                        var scrollLeft = 0;
+                        var list_per_page = Math.floor($(window).width() / 270);
+                        if (previous_offset !== 0 && previous_offset != ui.offset.left) {
+                            if (previous_offset > ui.offset.left) {
+                                is_moving_right = false;
+                            } else {
+                                is_moving_right = true;
+                            }
                         }
-                    } else if (is_moving_right === false && ui.offset.left < 50) {
-                        if (is_create_setinterval) {
-                            setintervalid = setInterval(function() {
-                                scrollLeft = parseInt($('#js-board-lists').scrollLeft()) - 50;
-                                $('#js-board-lists').animate({
-                                    scrollLeft: scrollLeft
-                                }, 10);
-                            }, 100);
-                            is_create_setinterval = false;
+                        if (previous_move !== is_moving_right) {
+                            clearInterval(setintervalid);
+                            is_create_setinterval = true;
                         }
+                        if (is_moving_right === true && ui.offset.left > (list_per_page - 1) * 270) {
+                            if (is_create_setinterval) {
+                                setintervalid = setInterval(function() {
+                                    scrollLeft = parseInt($('#js-board-lists').scrollLeft()) + 50;
+                                    $('#js-board-lists').animate({
+                                        scrollLeft: scrollLeft
+                                    }, 10);
+                                }, 100);
+                                is_create_setinterval = false;
+                            }
+                        } else if (is_moving_right === false && ui.offset.left < 50) {
+                            if (is_create_setinterval) {
+                                setintervalid = setInterval(function() {
+                                    scrollLeft = parseInt($('#js-board-lists').scrollLeft()) - 50;
+                                    $('#js-board-lists').animate({
+                                        scrollLeft: scrollLeft
+                                    }, 10);
+                                }, 100);
+                                is_create_setinterval = false;
+                            }
+                        }
+                        previous_offset = ui.offset.left;
+                        previous_move = is_moving_right;
                     }
-                    previous_offset = ui.offset.left;
-                    previous_move = is_moving_right;
-                }
-            });
+                });
+            }
         }
         $('a.js-switch-grid-view').parent().addClass('active');
         if (!_.isUndefined(authuser.user)) {
