@@ -2892,7 +2892,7 @@ App.ModalCardView = Backbone.View.extend({
         if (view_duedateform1.length == 1) {
             var due_date_html = '';
             if (!_.isEmpty(self.attributes.due_date) && self.attributes.due_date != 'NULL') {
-                due_date_html += '<li class="" id="js-modal-duedate-show-' + self.id + '"><h4 class="text-muted list-group-item-heading">' + i18next.t('Due Date') + '</h4><ul class="list-inline clearfix">';
+                due_date_html += '<h4 class="text-muted list-group-item-heading">' + i18next.t('Due Date') + '</h4><ul class="list-inline clearfix">';
                 var date_times = self.attributes.due_date.split('T');
                 new_date_time = date_times[0].split(' ');
                 if (_.isUndefined(date_times[1])) {
