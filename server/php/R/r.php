@@ -891,6 +891,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                         }
                     }
+                    if (!empty($obj['organization_id']) && $obj['organization_id'] !== 0) {
+                        $obj['organization_users'] = array();
+                        $organization_user_sql = 'SELECT id, organization_id, user_id  FROM organizations_users WHERE organization_id = ' . $obj['organization_id'] . 'ORDER BY id ASC';
+                        $organization_user_result = pg_query_params($db_lnk, $organization_user_sql, array());
+                        while ($row = pg_fetch_assoc($organization_user_result)) {
+                            $obj['organization_users'][] = $row;
+                        }
+                    }
                     if (!empty($_metadata)) {
                         $data['data'][] = $obj;
                     } else {
@@ -1061,6 +1069,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             $obj['board_user_roles'] = array();
                             while ($row = pg_fetch_assoc($board_user_roles_result)) {
                                 $obj['board_user_roles'][] = json_decode($row['row_to_json'], true);
+                            }
+                            if (!empty($obj['organization_id']) && $obj['organization_id'] !== 0) {
+                                $obj['organization_users'] = array();
+                                $organization_user_sql = 'SELECT id, organization_id, user_id  FROM organizations_users WHERE organization_id = ' . $obj['organization_id'] . 'ORDER BY id ASC';
+                                $organization_user_result = pg_query_params($db_lnk, $organization_user_sql, array());
+                                while ($row = pg_fetch_assoc($organization_user_result)) {
+                                    $obj['organization_users'][] = $row;
+                                }
                             }
                             $data = $obj;
                         }
@@ -5353,7 +5369,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $foreign_ids['board_id'] = $r_post['board_id'];
                 $foreign_ids['list_id'] = $r_post['list_id'];
                 $foreign_ids['card_id'] = $response['id'];
-                $comment = '##USER_NAME## copied this card ##CARD_NAME## from '. $srow['name'];
+                $comment = '##USER_NAME## copied this card ##CARD_NAME## from ' . $srow['name'];
                 $response['activity'] = insertActivity($authUser['id'], $comment, 'copy_card', $foreign_ids, null, $response['id']);
                 $qry_val_arr = array(
                     $response['id']
