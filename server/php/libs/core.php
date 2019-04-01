@@ -1408,10 +1408,10 @@ function importTrelloBoard($board = array())
                         $comment = sprintf(__l('##USER_NAME## moved cards FROM %s to  %s') , $listBeforeName, $listAfterName);
                     } else if (!empty($action['data']['card']['due'])) {
                         $type = 'add_card_duedate';
-                        $comment = __l('##USER_NAME## SET due date to this card ##CARD_LINK##');
+                        $comment = __l('##USER_NAME## SET due date to the card ##CARD_LINK##');
                     } else if (!empty($action['data']['card']['desc'])) {
                         $type = 'add_card_desc';
-                        $comment = __l('##USER_NAME## added card description in ##CARD_LINK## - ##DESCRIPTION##');
+                        $comment = __l('##USER_NAME## added card description in the card ##CARD_LINK## - ##DESCRIPTION##');
                     } else if (!empty($action['data']['card']['name'])) {
                         $type = 'edit_card';
                         $comment = sprintf(__l('##USER_NAME## edited %s card in this board.') , utf8_decode($action['data']['card']['name']));

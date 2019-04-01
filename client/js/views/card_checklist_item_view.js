@@ -199,7 +199,20 @@ App.CardCheckListItemView = Backbone.View.extend({
         this.model.set(data);
         this.render();
         this.model.save(data, {
-            patch: true
+            patch: true,
+            success: function(model, response) {
+                if (!_.isUndefined(response.activity)) {
+                    response.activity = activityCommentReplace(response.activity);
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    var view_act = new App.ActivityView({
+                        model: activity
+                    });
+                    self.model.activities.unshift(activity);
+                    var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
+                    view_activity.prepend(view_act.render().el);
+                }
+            }
         });
         emojify.run();
         return false;
@@ -251,7 +264,21 @@ App.CardCheckListItemView = Backbone.View.extend({
         });
         this.render();
         this.renderProgress();
-        this.model.destroy();
+        this.model.destroy({
+            success: function(model, response) {
+                if (!_.isUndefined(response.activity)) {
+                    response.activity = activityCommentReplace(response.activity);
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    var view_act = new App.ActivityView({
+                        model: activity
+                    });
+                    self.model.activities.unshift(activity);
+                    var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
+                    view_activity.prepend(view_act.render().el);
+                }
+            }
+        });
         return false;
     },
     /**
@@ -278,6 +305,7 @@ App.CardCheckListItemView = Backbone.View.extend({
             patch: true,
             success: function(model, response) {
                 var activity = new App.Activity();
+                response.activity = activityCommentReplace(response.activity);
                 activity.set(response.activity);
                 var view = new App.ActivityView({
                     model: activity
@@ -314,6 +342,7 @@ App.CardCheckListItemView = Backbone.View.extend({
             patch: true,
             success: function(model, response) {
                 var activity = new App.Activity();
+                response.activity = activityCommentReplace(response.activity);
                 activity.set(response.activity);
                 var view = new App.ActivityView({
                     model: activity

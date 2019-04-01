@@ -319,6 +319,7 @@ App.ModalCardView = Backbone.View.extend({
             patch: true,
             success: function(model, response) {
                 if (!_.isUndefined(response.activity)) {
+                    response.activity = activityCommentReplace(response.activity);
                     var activity = new App.Activity();
                     activity.set(response.activity);
                     var view = new App.ActivityView({
@@ -363,6 +364,7 @@ App.ModalCardView = Backbone.View.extend({
             patch: true,
             success: function(model, response) {
                 if (!_.isUndefined(response.activity)) {
+                    response.activity = activityCommentReplace(response.activity);
                     var activity = new App.Activity();
                     activity.set(response.activity);
                     var view = new App.ActivityView({
@@ -563,7 +565,7 @@ App.ModalCardView = Backbone.View.extend({
         var view_activity = $('#js-card-activities-' + this.model.id);
         view_activity.html('');
         self.model.activities = new App.ActivityCollection();
-        self.model.activities.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/activities.json?mode=' + mode + '&page=1';
+        self.model.activities.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/activities.json?view=modal_card&mode=' + mode + '&page=1';
         self.model.activities.fetch({
             cache: false,
             success: function(model, response) {
@@ -667,6 +669,7 @@ App.ModalCardView = Backbone.View.extend({
                     $('.js-card-label-section-' + self.model.id).html("");
                 }
                 if (!_.isUndefined(response.activity) && response.activity !== false) {
+                    response.activity = activityCommentReplace(response.activity);
                     var activity = new App.Activity();
                     activity.set(response.activity);
                     activity.board_users = self.model.board_users;
@@ -962,6 +965,7 @@ App.ModalCardView = Backbone.View.extend({
                     }
                     if (!_.isEmpty(response)) {
                         if (!_.isUndefined(response.activity)) {
+                            response.activity = activityCommentReplace(response.activity);
                             var activity = new App.Activity();
                             activity.set(response.activity);
                             activity.board_users = self.model.board_users;
@@ -1066,7 +1070,7 @@ App.ModalCardView = Backbone.View.extend({
             filter = 'activity';
         }
         $('#js-card-modal-' + this.model.id).find('#js-loader-img').removeClass('hide');
-        self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?mode=' + filter + '&page=1';
+        self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?view=modal_card&mode=' + filter + '&page=1';
         self.model.activities.fetch({
             cache: false,
             success: function(model, response) {
@@ -1249,7 +1253,7 @@ App.ModalCardView = Backbone.View.extend({
                 filter = 'activity';
             }
             $('#js-card-modal-' + self.model.id).find('#js-loader-img').removeClass('hide');
-            this.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?mode=' + filter + '&page=1';
+            this.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?view=modal_card&mode=' + filter + '&page=1';
             this.model.activities.fetch({
                 cache: false,
                 success: function(model, response) {
@@ -1752,6 +1756,7 @@ App.ModalCardView = Backbone.View.extend({
                     }
                     //self.model.list.collection.board.cards.get(self.model.id).card_voters.add(card_voter);
                     if (!_.isUndefined(response.activity)) {
+                        response.activity = activityCommentReplace(response.activity);
                         var activity = new App.Activity();
                         activity.set(response.activity);
                         activity.board_users = self.model.board_users;
@@ -1809,6 +1814,7 @@ App.ModalCardView = Backbone.View.extend({
         card_voter.destroy({
             success: function(model, response) {
                 if (!_.isUndefined(response.activity)) {
+                    response.activity = activityCommentReplace(response.activity);
                     var activity = new App.Activity();
                     activity.set(response.activity);
                     activity.board_users = self.model.board_users;
@@ -2453,6 +2459,7 @@ App.ModalCardView = Backbone.View.extend({
                             i++;
                         });
                         var view_attachment = this.$('#js-card-attachments-list');
+                        response.activity = activityCommentReplace(response.activity);
                         var activity = new App.Activity();
                         activity.set(response.activity);
                         activity.board_users = self.model.board_users;
@@ -3073,6 +3080,7 @@ App.ModalCardView = Backbone.View.extend({
                 self.model.set('checklist_item_count', total_count);
 
                 if (!_.isUndefined(response.activity)) {
+                    response.activity = activityCommentReplace(response.activity);
                     var activity = new App.Activity();
                     activity.set(response.activity);
                     activity.board_users = self.model.board_users;
@@ -3177,6 +3185,7 @@ App.ModalCardView = Backbone.View.extend({
                     card_user.set('id', uuid);
                 }
                 if (!_.isUndefined(response.activity)) {
+                    response.activity = activityCommentReplace(response.activity);
                     var activity = new App.Activity();
                     activity.set(response.activity);
                     activity.board_users = self.model.board_users;
@@ -3227,6 +3236,7 @@ App.ModalCardView = Backbone.View.extend({
         card_user.destroy({
             success: function(model, response, options) {
                 if (!_.isUndefined(response.activity)) {
+                    response.activity = activityCommentReplace(response.activity);
                     var activity = new App.Activity();
                     activity.set(response.activity);
                     var view = new App.ActivityView({
@@ -3649,6 +3659,7 @@ App.ModalCardView = Backbone.View.extend({
                 patch: true,
                 success: function(model, response) {
                     var activity = new App.Activity();
+                    response.activity = activityCommentReplace(response.activity);
                     activity.set(response.activity);
                     activity.board_users = self.model.board_users;
                     var view = new App.ActivityView({
@@ -4301,7 +4312,7 @@ App.ModalCardView = Backbone.View.extend({
         } else if (filter === 'activity') {
             filter = 'activity';
         }
-        self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?mode=' + filter + '&page=' + page_no;
+        self.model.activities.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/activities.json?view=modal_card&mode=' + filter + '&page=' + page_no;
         self.model.activities.fetch({
             cache: false,
             success: function(model, response) {
