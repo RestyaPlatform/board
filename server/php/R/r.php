@@ -6332,7 +6332,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $childCardResponse = updateDependencyCards($r_put, array());
             }
         } else if (isset($r_put['due_date'])) {
-            $comment = 'Due date - ' . $previous_value['due_date'] . ' was removed to the card ##CARD_LINK##';
+            $comment = '##USER_NAME##  removed Due date - ' . $previous_value['due_date'] . ' was removed to the card ##CARD_LINK##';
             $activity_type = 'delete_card_duedate';
         }
         if (is_plugin_enabled('r_gantt_view')) {
@@ -6345,7 +6345,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     $activity_type = 'add_card_startdate';
                 }
             } else if (isset($present_custom_fields['start_date'])) {
-                $comment = 'Start date - ' . $previous_custom_fields['start_date'] . ' was removed to the card ##CARD_LINK##';
+                $comment = '##USER_NAME## removed Start date - ' . $previous_custom_fields['start_date'] . ' to the card ##CARD_LINK##';
                 $activity_type = 'delete_card_startdate';
             }
         }
