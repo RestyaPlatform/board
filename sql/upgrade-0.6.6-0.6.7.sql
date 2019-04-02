@@ -595,3 +595,62 @@ SELECT board.id,
    FROM (boards board
      LEFT JOIN organizations org ON ((org.id = board.organization_id)))
   ORDER BY board.name;
+
+DROP VIEW "simple_board_listing";
+CREATE VIEW "simple_board_listing" AS
+SELECT board.id,
+    board.name,
+    board.user_id,
+    board.organization_id,
+    board.board_visibility,
+    board.background_color,
+    board.background_picture_url,
+    board.commenting_permissions,
+    board.voting_permissions,
+    (board.is_closed)::integer AS is_closed,
+    (board.is_allow_organization_members_to_join)::integer AS is_allow_organization_members_to_join,
+    board.boards_user_count,
+    board.list_count,
+    board.card_count,
+    board.boards_subscriber_count,
+    board.background_pattern_url,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT lists.id,
+                    to_char(lists.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(lists.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+                    lists.board_id,
+                    lists.user_id,
+                    lists.name,
+                    lists."position",
+                    (lists.is_archived)::integer AS is_archived,
+                    lists.card_count,
+                    lists.lists_subscriber_count,
+                    lists.color,
+                    (lists.is_deleted)::integer AS is_deleted,
+                    lists.custom_fields
+                   FROM lists lists
+                  WHERE (lists.board_id = board.id)
+                  ORDER BY lists."position") l) AS lists,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT cll.label_id,
+                    cll.name
+                   FROM cards_labels_listing cll
+                  WHERE (cll.board_id = board.id)
+                  ORDER BY cll.name) l) AS labels,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT bs.id,
+                    bs.board_id,
+                    bs.user_id,
+                    (bs.is_starred)::integer AS is_starred
+                   FROM board_stars bs
+                  WHERE (bs.board_id = board.id)
+                  ORDER BY bs.id) l) AS stars,
+    org.name AS organization_name,
+    org.organization_visibility AS organization_visibility,
+    org.logo_url AS organization_logo_url,
+    board.music_content,
+    board.music_name,
+    board.sort_by
+   FROM (boards board
+     LEFT JOIN organizations org ON ((org.id = board.organization_id)))
+  ORDER BY board.name;
