@@ -94,13 +94,13 @@
 					</ul>
 				  </li>
 				  <% } %>
-					<li class="after-start-date-<%- card.id %>">
+					<li class="after-start-date-<%- card.id %> mar-bottom">
 					</li>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "get_custom_fields",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 						<li id="js-custom-fields-listing-<%- card.attributes.id %>"></li>
 					<% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
-						<li class="" id="js-modal-duedate-show-<%- card.attributes.id %>"></li>
+						<li class="mar-bottom" id="js-modal-duedate-show-<%- card.attributes.id %>"></li>
 					<% } %>
 				</ul>
 					<div class="list-group-item-text clearfix github-markdown">
@@ -394,7 +394,7 @@
 							<form method="post" class="form-horizontal js-add-comment no-print">
 								<ul class="media-list">
 									<li class="media">
-									<a title="<%-authuser.user.full_name %> (<%- authuser.user.username %>)" data-toggle="tooltip" class="pull-left" href="#/user/<%- authuser.id %>">
+									<a title="<%-authuser.user.full_name %> (<%- authuser.user.username %>)" data-toggle="tooltip" class="pull-left" href="#/user/<%- authuser.user.id %>">
 									<% if(!_.isEmpty(authuser.user.profile_picture_path)) { 
 									var profile_picture_path = card.showImage('User', authuser.user.id, 'small_thumb' );
 									%>

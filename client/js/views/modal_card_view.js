@@ -2204,16 +2204,16 @@ App.ModalCardView = Backbone.View.extend({
     cardSendToBoard: function(e) {
         var uuid = new Date().getTime();
         var self = this;
-        this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
-        this.model.set('is_offline', true);
-        this.model.set('is_archived', 0, {
-            silent: false
-        });
         if (parseInt(this.model.list.attributes.card_count) === 0) {
             $('#js-card-listing-' + this.model.list.id).html(function(i, h) {
                 return h.replace(/&nbsp;/g, '');
             });
         }
+        this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
+        this.model.set('is_offline', true);
+        this.model.set('is_archived', 0, {
+            silent: false
+        });
         this.model.save({
             is_archived: 0
         }, {
@@ -2892,7 +2892,7 @@ App.ModalCardView = Backbone.View.extend({
         if (view_duedateform1.length == 1) {
             var due_date_html = '';
             if (!_.isEmpty(self.attributes.due_date) && self.attributes.due_date != 'NULL') {
-                due_date_html += '<li class="" id="js-modal-duedate-show-' + self.id + '"><h4 class="text-muted list-group-item-heading">' + i18next.t('Due Date') + '</h4><ul class="list-inline clearfix">';
+                due_date_html += '<h4 class="text-muted list-group-item-heading">' + i18next.t('Due Date') + '</h4><ul class="list-inline clearfix">';
                 var date_times = self.attributes.due_date.split('T');
                 new_date_time = date_times[0].split(' ');
                 if (_.isUndefined(date_times[1])) {
@@ -3915,7 +3915,6 @@ App.ModalCardView = Backbone.View.extend({
         var card = new App.Card();
         card.set('is_offline', true);
         card.set('name', data.name);
-        card.set('id', new Date().getTime());
         card.set('list_id', data.list_id);
         card.set('board_id', data.board_id);
         card.set('is_archived', 0);
@@ -3925,6 +3924,7 @@ App.ModalCardView = Backbone.View.extend({
             id: parseInt(current_card.board_id)
         });
         if (!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by !== 'position' && parseInt(data.board_id) === parseInt(current_card.board_id)) {
+            card.set('id', new Date().getTime());
             var board_sort_by = (current_board.attributes.sort_by) ? current_board.attributes.sort_by : 'position';
             var bard_sort_direction = (current_board.attributes.sort_direction) ? current_board.attributes.sort_direction : 'asc';
             this.model.list.collection.board.lists.get(data.list_id).cards.add(card, {
@@ -3939,6 +3939,7 @@ App.ModalCardView = Backbone.View.extend({
                 }
             });
         }
+        card.set('id', null);
         data.board_id = parseInt(data.board_id);
         card.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '/copy.json';
         $('.js-close-popover').click();

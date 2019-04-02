@@ -4,18 +4,28 @@
 			<div class="header_innr_a navbar-left navbar-btn mob-no-mar col-sm-11 col-xs-10 nav <% if(board.attributes.organization_id == 0) { %> col-lg-6 col-md-5 <% } else { %> col-lg-5 col-md-4<% } %>">
 				<div class="clearfix row-flex">
 					<ul class="nav nav-pills pull-left col-flex col-flex1 <% if(board.attributes.organization_id == 0) { %> hide <% } %>">
-						<% if(board.attributes.organization_id != 0) { %>
+						<% if(board.attributes.organization_id != 0) { console.log(board.attributes.organization_visibility);
+							var is_orgnaization_member = [];
+							if (!_.isUndefined(board.attributes.organization_users) && !_.isEmpty(board.attributes.organization_users) && board.attributes.organization_users !== null && !_.isUndefined(authuser) && !_.isEmpty(authuser) && authuser !== null) { 
+								is_orgnaization_member = board.attributes.organization_users.filter(function(org_user) {
+									return parseInt(org_user.user_id) === parseInt(authuser.user.id);
+								}).length;
+							} %>
 						<li>
-						<a href="#/organization/<%= board.attributes.organization_id %>" class="hdrorganization text-muted btn btn-link pull-left htruncate col-lg-10 col-sm-10 col-md-9 col-xs-9 nav" title="<%- board.attributes.organization_name %>">
-							<%
-								var logo_path = "img/default-organization.png"; 
-								if (!_.isUndefined(board.attributes.organization_logo_url) && board.attributes.organization_logo_url != null && board.attributes.organization_logo_url != '') {
-									logo_path = board.showImage('Organization', board.attributes.organization_id, 'small_thumb' );
-								}
-							%>
-							<span><img src="<%= logo_path %>" height="16" width="16" alt="[Image: <%= board.attributes.organization_name%>]" title="<%= board.attributes.organization_name%>"></span> 
-							<strong><%- board.attributes.organization_name %></strong>
-						</a>
+							<% if(is_orgnaization_member !== 0 || parseInt(board.attributes.organization_visibility) === 1 || (!_.isUndefined(authuser) && !_.isEmpty(authuser) && authuser !== null && parseInt(authuser.user.role_id) === 1)) { %>
+							<a href="#/organization/<%= board.attributes.organization_id %>" class="hdrorganization text-muted btn btn-link pull-left htruncate col-lg-10 col-sm-10 col-md-9 col-xs-9 nav" title="<%- board.attributes.organization_name %>">
+								<%
+									var logo_path = "img/default-organization.png"; 
+									if (!_.isUndefined(board.attributes.organization_logo_url) && board.attributes.organization_logo_url != null && board.attributes.organization_logo_url != '') {
+										logo_path = board.showImage('Organization', board.attributes.organization_id, 'small_thumb' );
+									}
+								%>
+								<span><img src="<%= logo_path %>" height="16" width="16" alt="[Image: <%= board.attributes.organization_name%>]" title="<%= board.attributes.organization_name%>"></span> 
+								<strong><%- board.attributes.organization_name %></strong>
+							</a>
+							<% } else if (parseInt(board.attributes.organization_visibility) === 2) { %>
+								<a href="javascript:void(0);" class="hdrorganization text-muted btn btn-link pull-left htruncate col-lg-10 col-sm-10 col-md-9 col-xs-9 nav" title="<%- i18next.t('Private Organization') %>"><strong><%- i18next.t('Private Organization') %></strong></a>
+							<% } %>
 						<span class="navbar-btn mob-no-mar pull-left icon"><span class="orgseperator navbar-btn pull-left">|</span></span>
 						</li>
 						<% } %>
