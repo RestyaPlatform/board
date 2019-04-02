@@ -909,11 +909,25 @@ App.ApplicationView = Backbone.View.extend({
                                         if (!_.isEmpty(organization_boards)) {
                                             _.each(organization_boards, function(board) {
                                                 if ($('.js-organization-' + board.attributes.organization_id).length === 0) {
+                                                    var is_orgnaization_member = [];
+                                                    if (!_.isUndefined(board.attributes.organization_users) && !_.isEmpty(board.attributes.organization_users) && board.attributes.organization_users !== null && !_.isUndefined(authuser) && !_.isEmpty(authuser) && authuser !== null) {
+                                                        is_orgnaization_member = board.attributes.organization_users.filter(function(org_user) {
+                                                            return parseInt(org_user.user_id) === parseInt(authuser.user.id);
+                                                        }).length;
+                                                    }
                                                     var organization_name = filterXSS(board.attributes.organization_name);
-                                                    $('.js-my-boards').parent().append('<div class="col-xs-12 js-organization_boards js-organization-' + board.attributes.organization_id + '" data-organization_id ="' + board.attributes.organization_id + '" ><h4><a href="#/organization/' + board.attributes.organization_id + '" class="cur">' + i18next.t('%s', {
-                                                        postProcess: 'sprintf',
-                                                        sprintf: [organization_name]
-                                                    }) + '</a></h4></div>');
+                                                    var organization_name_content = '';
+                                                    organization_name_content += '<div class="col-xs-12 js-organization_boards js-organization-' + board.attributes.organization_id + '" data-organization_id ="' + board.attributes.organization_id + '" ><h4>';
+                                                    if (is_orgnaization_member !== 0 || parseInt(board.attributes.organization_visibility) === 1 || (authuser.user.role_id) === 1) {
+                                                        organization_name_content += '<a href="#/organization/' + board.attributes.organization_id + '" class="cur">' + i18next.t('%s', {
+                                                            postProcess: 'sprintf',
+                                                            sprintf: [organization_name]
+                                                        }) + '</a>';
+                                                    } else if (parseInt(board.attributes.organization_visibility) === 2) {
+                                                        organization_name_content += '<a href="javascript:void(0);" class="cur">' + i18next.t('Private Organization') + '</a>';
+                                                    }
+                                                    organization_name_content += '</h4></div>';
+                                                    $('.js-my-boards').parent().append(organization_name_content);
                                                 }
                                                 var board_filter = _.matches({
                                                     is_archived: 0
