@@ -1230,6 +1230,22 @@ App.ModalCardView = Backbone.View.extend({
                         });
                         i++;
                     });
+                    if (response.activity) {
+                        response.activity = activityCommentReplace(response.activity);
+                        var activity = new App.Activity();
+                        activity.set(response.activity);
+                        activity.board_users = self.model.board_users;
+                        var view_act = new App.ActivityView({
+                            model: activity,
+                            board: self.model.list.collection.board,
+                            flag: '1'
+                        });
+                        self.model.activities.unshift(activity);
+                        if ($.cookie('filter') !== 'comment') {
+                            var view_activity = $('#js-card-activities-' + self.model.id);
+                            view_activity.prepend(view_act.render().el);
+                        }
+                    }
                 });
                 $('body').trigger('modalCardRendered', self.model.id, self.model);
             }).defer();
@@ -1611,6 +1627,22 @@ App.ModalCardView = Backbone.View.extend({
                     });
                     i++;
                 });
+                if (response.activity) {
+                    response.activity = activityCommentReplace(response.activity);
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    activity.board_users = self.model.board_users;
+                    var view_act = new App.ActivityView({
+                        model: activity,
+                        board: self.model.list.collection.board,
+                        flag: '1'
+                    });
+                    self.model.activities.unshift(activity);
+                    if ($.cookie('filter') !== 'comment') {
+                        var view_activity = $('#js-card-activities-' + self.model.id);
+                        view_activity.prepend(view_act.render().el);
+                    }
+                }
             });
             $('body').trigger('modalCardRendered', [self.model.id, self.model]);
         }).defer();
