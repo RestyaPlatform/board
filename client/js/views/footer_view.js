@@ -1956,14 +1956,16 @@ App.FooterView = Backbone.View.extend({
                             if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id) || _.isUndefined(Auth.user.unread_activity_id))) {
                                 $('#js-card-' + activity.attributes.card_id).parent().addClass('animation');
                                 $('#js-card-' + activity.attributes.card_id).addClass('tada-animation');
+                                $('#js-card-' + activity.attributes.card_id).addClass('active');
                                 $('#js-card-' + activity.attributes.card_id).stop().animate({
-                                    backgroundColor: '#FCEA88'
-                                }, 800, function() {
+                                    backgroundColor: '#FFFFFF'
+                                }, 2000, function() {
                                     $('#js-card-' + activity.attributes.card_id).parent().removeClass('animation');
                                     $('#js-card-' + activity.attributes.card_id).removeClass('tada-animation');
+                                    $('#js-card-' + activity.attributes.card_id).removeClass('active');
                                     $('#js-card-' + activity.attributes.card_id).animate({
                                         backgroundColor: '#FFFFFF'
-                                    }, 800);
+                                    }, 2000);
                                 });
                             }
                         });
