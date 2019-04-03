@@ -332,13 +332,13 @@ App.FooterView = Backbone.View.extend({
             volume = true;
             set_type = 'on';
             set_icon = 'icon-volume-up';
-            set_animation = 'tada-animation';
+            set_animation = 'audio-animation';
             remove_icon = 'icon-volume-off text-muted';
         } else {
             set_type = 'off';
             set_icon = 'icon-volume-off text-muted';
             remove_icon = 'icon-volume-up';
-            remove_animation = 'tada-animation';
+            remove_animation = 'audio-animation';
         }
         var music_content = '';
         if (!_.isUndefined(authuser.user) && !_.isUndefined(authuser.user.is_productivity_beats)) {
