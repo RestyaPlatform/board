@@ -149,6 +149,18 @@ App.ApplicationView = Backbone.View.extend({
                                 ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
                                 R_LDAP_LOGIN_HANDLE = settings_response.R_LDAP_LOGIN_HANDLE;
                                 APPS = settings_response.apps;
+                                if (!_.isUndefined(APPS) && APPS !== null && !_.isEmpty(APPS.enabled_apps) && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                                    APPS.permission_checked_apps = [];
+                                    _.each(APPS.enabled_apps, function(app) {
+                                        if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user)) {
+                                            if ((!_.isEmpty(role_links.where({
+                                                    slug: app
+                                                })) || parseInt(authuser.user.role_id) === 1) && $.inArray(app, APPS.permission_checked_apps) === -1) {
+                                                APPS.permission_checked_apps.push(app);
+                                            }
+                                        }
+                                    });
+                                }
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
                                 var current_language = DEFAULT_LANGUAGE;

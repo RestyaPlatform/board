@@ -101,8 +101,8 @@
 	<td data-title="Checklist"><small>-</small></td>
 	<% } %>
 	<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields',APPS.enabled_apps) !== -1) { 
-		if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && !_.isUndefined(App.current_board.attributes.custom_fields) && App.current_board.attributes.custom_fields !== null) {
-			_.each(App.current_board.attributes.custom_fields, function(customfield){ %>
+		if (!_.isUndefined(card.board) && !_.isEmpty(card.board) && !_.isUndefined(card.board.attributes.custom_fields) && card.board.attributes.custom_fields !== null) {
+			_.each(card.board.attributes.custom_fields, function(customfield){ %>
 				<td class="js-list-view-card-<%- card.attributes.id %>-customfield-<%- customfield.id %> card-listing-truncate" data-title="<%- customfield.label %>"><small>-</small></td>
 			<% });
 		} else { %>
