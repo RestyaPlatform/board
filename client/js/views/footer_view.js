@@ -332,13 +332,13 @@ App.FooterView = Backbone.View.extend({
             volume = true;
             set_type = 'on';
             set_icon = 'icon-volume-up';
-            set_animation = 'tada-animation';
+            set_animation = 'audio-animation';
             remove_icon = 'icon-volume-off text-muted';
         } else {
             set_type = 'off';
             set_icon = 'icon-volume-off text-muted';
             remove_icon = 'icon-volume-up';
-            remove_animation = 'tada-animation';
+            remove_animation = 'audio-animation';
         }
         var music_content = '';
         if (!_.isUndefined(authuser.user) && !_.isUndefined(authuser.user.is_productivity_beats)) {
@@ -1956,14 +1956,16 @@ App.FooterView = Backbone.View.extend({
                             if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id) || _.isUndefined(Auth.user.unread_activity_id))) {
                                 $('#js-card-' + activity.attributes.card_id).parent().addClass('animation');
                                 $('#js-card-' + activity.attributes.card_id).addClass('tada-animation');
+                                $('#js-card-' + activity.attributes.card_id).addClass('active');
                                 $('#js-card-' + activity.attributes.card_id).stop().animate({
-                                    backgroundColor: '#FCEA88'
-                                }, 800, function() {
+                                    backgroundColor: '#FFFFFF'
+                                }, 2000, function() {
                                     $('#js-card-' + activity.attributes.card_id).parent().removeClass('animation');
                                     $('#js-card-' + activity.attributes.card_id).removeClass('tada-animation');
+                                    $('#js-card-' + activity.attributes.card_id).removeClass('active');
                                     $('#js-card-' + activity.attributes.card_id).animate({
                                         backgroundColor: '#FFFFFF'
-                                    }, 800);
+                                    }, 2000);
                                 });
                             }
                         });
