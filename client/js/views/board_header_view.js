@@ -827,7 +827,6 @@ App.BoardHeaderView = Backbone.View.extend({
         $('#switch-board-view').removeClass('calendar-view');
         $('#switch-board-view').addClass('col-xs-12');
         $('#switch-board-view').addClass('board-listview');
-        console.log($('#switch-board-view'));
         $('#switch-board-view').attr("id", "listview_table");
         $('li.js-switch-view').removeClass('active');
         $('a.js-switch-list-view').parent().addClass('active');
