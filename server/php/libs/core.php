@@ -741,7 +741,7 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                     $attachment->card_id = $new_card_id;
                     $attachment_result = pg_execute_insert('card_attachments', $attachment);
                     $attachment_result = pg_fetch_assoc($attachment_result);
-                    $comment = __l('##USER_NAME## added attachment to this card ##CARD_LINK##');
+                    $comment = __l('##USER_NAME## added attachment to the card ##CARD_LINK##');
                     insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $attachment_result['id']);
                 }
             }
@@ -774,7 +774,7 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                     if ($checklist_result) {
                         $checklist_result = pg_fetch_assoc($checklist_result);
                         $new_checklist_id = $checklist_result['id'];
-                        $comment = __l('##USER_NAME## added checklist to this card ##CARD_LINK##');
+                        $comment = __l('##USER_NAME## added checklist to the card ##CARD_LINK##');
                         insertActivity($authUser['id'], $comment, 'add_card_checklist', $foreign_ids, '', $new_checklist_id);
                         $checklist_item_fields = 'card_id, checklist_id, user_id, name, position';
                         $qry_val_arr = array(
@@ -787,7 +787,7 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                                 $checklist_item->checklist_id = $new_checklist_id;
                                 $checklist_item_result = pg_execute_insert('checklist_items', $checklist_item);
                                 $checklist_item_result = pg_fetch_assoc($checklist_item_result);
-                                $comment = __l('##USER_NAME## added checklist item to this card ##CARD_LINK##');
+                                $comment = __l('##USER_NAME## added checklist item to the card ##CARD_LINK##');
                                 insertActivity($authUser['id'], $comment, 'add_checklist_item', $foreign_ids, '', $checklist_item_result['id']);
                             }
                         }
@@ -811,7 +811,7 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                         $cards_label->card_id = $new_card_id;
                     }
                     pg_execute_insert('cards_labels', $cards_label);
-                    $comment = __l('##USER_NAME## added label(s) to this card ##CARD_LINK## - ##LABEL_NAME##');
+                    $comment = __l('##USER_NAME## added label(s) to the card ##CARD_LINK## - ##LABEL_NAME##');
                     insertActivity($authUser['id'], $comment, 'add_card_label', $foreign_ids);
                 }
             }
@@ -830,7 +830,7 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                         $cards_user->user_id
                     );
                     $_user = executeQuery('SELECT username FROM users WHERE id = $1', $qry_val_arr);
-                    $comment = sprintf(__l('##USER_NAME## added %s as member to this card ##CARD_LINK##') , $_user['username']);
+                    $comment = sprintf(__l('##USER_NAME## added %s as member to the card ##CARD_LINK##') , $_user['username']);
                     $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_user', $foreign_ids, '', $cards_user_result['id']);
                 }
             }
@@ -851,7 +851,7 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                         $cards_field->card_id = $new_card_id;
                     }
                     pg_execute_insert('cards_custom_fields', $cards_field);
-                    $comment = __l('##USER_NAME## added card custom field(s) to this card ##CARD_LINK## ');
+                    $comment = __l('##USER_NAME## added card custom field(s) to the card ##CARD_LINK## ');
                     insertActivity($authUser['id'], $comment, 'add_card_custom_field', $foreign_ids);
                 }
             }
@@ -1341,7 +1341,7 @@ function importTrelloBoard($board = array())
                     if (!empty($action['member'])) {
                         $memberName = $action['member']['fullName'];
                     }
-                    $comment = sprintf(__l('##USER_NAME## added %s as member to this card ##CARD_LINK##') , $memberName);
+                    $comment = sprintf(__l('##USER_NAME## added %s as member to the card ##CARD_LINK##') , $memberName);
                 } else if ($action['type'] == 'createCard') {
                     $type = 'add_card';
                     $listName = '';
@@ -1408,23 +1408,23 @@ function importTrelloBoard($board = array())
                         $comment = sprintf(__l('##USER_NAME## moved cards FROM %s to  %s') , $listBeforeName, $listAfterName);
                     } else if (!empty($action['data']['card']['due'])) {
                         $type = 'add_card_duedate';
-                        $comment = __l('##USER_NAME## SET due date to this card ##CARD_LINK##');
+                        $comment = __l('##USER_NAME## SET due date to the card ##CARD_LINK##');
                     } else if (!empty($action['data']['card']['desc'])) {
                         $type = 'add_card_desc';
-                        $comment = __l('##USER_NAME## added card description in ##CARD_LINK## - ##DESCRIPTION##');
+                        $comment = __l('##USER_NAME## added card description in the card ##CARD_LINK## - ##DESCRIPTION##');
                     } else if (!empty($action['data']['card']['name'])) {
                         $type = 'edit_card';
                         $comment = sprintf(__l('##USER_NAME## edited %s card in this board.') , utf8_decode($action['data']['card']['name']));
                     }
                 } else if ($action['type'] == 'addChecklistToCard') {
                     $type = 'add_card_checklist';
-                    $comment = __l('##USER_NAME## added checklist ##CHECKLIST_NAME## to this card ##CARD_LINK##');
+                    $comment = __l('##USER_NAME## added checklist ##CHECKLIST_NAME## to the card ##CARD_LINK##');
                 } else if ($action['type'] == 'deleteAttachmentFromCard') {
                     $type = 'delete_card_attachment';
                     $comment = __l('##USER_NAME## deleted attachment from card ##CARD_LINK##');
                 } else if ($action['type'] == 'addAttachmentToCard') {
                     $type = 'add_card_attachment';
-                    $comment = __l('##USER_NAME## added attachment to this card ##CARD_LINK##');
+                    $comment = __l('##USER_NAME## added attachment to the card ##CARD_LINK##');
                 } else if ($action['type'] == 'addMemberToBoard') {
                     $type = 'add_board_user';
                     $comment = __l('##USER_NAME## added member to board');
@@ -1800,15 +1800,15 @@ function importKantreeBoard($jsonArr = array())
                                     $comment = __l('##USER_NAME## deleted member from card ##CARD_LINK##');
                                 } else {
                                     $type = 'add_card_user';
-                                    $comment = sprintf(__l('##USER_NAME## added %s as member to this card ##CARD_LINK##') , $memberName);
+                                    $comment = sprintf(__l('##USER_NAME## added %s as member to the card ##CARD_LINK##') , $memberName);
                                 }
                             } elseif ($action['object']['value'] == 'Due Date') {
                                 if ($action['message'] == '{actor} cleared {object} on {target}') {
                                     $type = 'delete_card_duedate';
-                                    $comment = __l('Due date was removed to this card ##CARD_LINK##');
+                                    $comment = __l('Due date was removed to the card ##CARD_LINK##');
                                 } else {
                                     $type = 'add_card_duedate';
-                                    $comment = __l('##USER_NAME## SET due date to this card ##CARD_LINK##');
+                                    $comment = __l('##USER_NAME## SET due date to the card ##CARD_LINK##');
                                 }
                             } elseif ($action['object']['value'] == 'Attachments') {
                                 if ($action['message'] == '{actor} removed all files from {object} in {target}') {
@@ -1816,7 +1816,7 @@ function importKantreeBoard($jsonArr = array())
                                     $comment = __l('##USER_NAME## deleted attachment from card ##CARD_LINK##');
                                 } else {
                                     $type = 'add_card_attachment';
-                                    $comment = __l('##USER_NAME## added attachment to this card ##CARD_LINK##');
+                                    $comment = __l('##USER_NAME## added attachment to the card ##CARD_LINK##');
                                 }
                             } elseif (!empty($action['origin'])) {
                                 $type = 'edit_card';
@@ -1833,10 +1833,10 @@ function importKantreeBoard($jsonArr = array())
                             if (!empty($labels[$action['target']['id']])) {
                                 if ($action['message'] == '{actor} removed {object} from {target}') {
                                     $type = 'delete_card_label';
-                                    $comment = sprintf(__l('##USER_NAME## removed label in this card ##CARD_LINK## - %s') , $action['target']['value']);
+                                    $comment = sprintf(__l('##USER_NAME## removed label in the card ##CARD_LINK## - %s') , $action['target']['value']);
                                 } else {
                                     $type = 'add_card_label';
-                                    $comment = __l('##USER_NAME## added label to this card ##CARD_LINK## - ##LABEL_NAME##');
+                                    $comment = __l('##USER_NAME## added label to the card ##CARD_LINK## - ##LABEL_NAME##');
                                 }
                             } else {
                                 $type = 'moved_list_card';
@@ -2087,7 +2087,7 @@ function importTaigaBoard($board = array())
                             $comment = __l('##USER_NAME## deleted attachment from card ##CARD_LINK##');
                         } elseif ($action['data']['values_diff']['attachments']['new']) {
                             $type = 'add_card_attachment';
-                            $comment = __l('##USER_NAME## added attachment to this card ##CARD_LINK##');
+                            $comment = __l('##USER_NAME## added attachment to the card ##CARD_LINK##');
                         }
                     } elseif (isset($action['data']['values_diff']['assigned_users']) && !empty($action['data']['values_diff']['assigned_users'])) {
                         if ($action['data']['values_diff']['assigned_users'][0]) {
@@ -2095,19 +2095,19 @@ function importTaigaBoard($board = array())
                             $comment = __l('##USER_NAME## deleted member from card ##CARD_LINK##');
                         } else {
                             $type = 'add_card_user';
-                            $comment = sprintf(__l('##USER_NAME## added %s as member to this card ##CARD_LINK##') , $action['data']['values_diff']['assigned_users'][1]);
+                            $comment = sprintf(__l('##USER_NAME## added %s as member to the card ##CARD_LINK##') , $action['data']['values_diff']['assigned_users'][1]);
                         }
                     } elseif (isset($action['data']['values_diff']['tags']) && !empty($action['data']['values_diff']['tags'])) {
                         if ($action['data']['values_diff']['tags'][0][0]) {
                             $type = 'add_card_label';
-                            $comment = sprintf(__l('##USER_NAME## added label to this card ##CARD_LINK## - %s') , $action['data']['values_diff']['tags'][0][0]);
+                            $comment = sprintf(__l('##USER_NAME## added label to the card ##CARD_LINK## - %s') , $action['data']['values_diff']['tags'][0][0]);
                         } else {
                             $type = 'delete_card_label';
-                            $comment = sprintf(__l('##USER_NAME## removed label in this card ##CARD_LINK## - %s') , $action['data']['values_diff']['tags'][1][0]);
+                            $comment = sprintf(__l('##USER_NAME## removed label in the card ##CARD_LINK## - %s') , $action['data']['values_diff']['tags'][1][0]);
                         }
                     } elseif (isset($action['data']['values_diff']['description_diff']) && !empty($action['data']['values_diff']['description_diff'])) {
                         $type = 'edit_card_desc';
-                        $comment = __l('##USER_NAME## updated card description in ##CARD_LINK##');
+                        $comment = __l('##USER_NAME## updated description on the card ##CARD_LINK##');
                     } elseif (isset($action['data']['values_diff']['subject']) && !empty($action['data']['values_diff']['subject'])) {
                         $type = 'edit_card';
                         $comment = sprintf(__l('##USER_NAME## edited %s card in this board.') , utf8_decode($action['data']['values_diff']['subject'][1]));
@@ -2117,10 +2117,10 @@ function importTaigaBoard($board = array())
                     } elseif (isset($action['data']['values_diff']['due_date']) && !empty($action['data']['values_diff']['due_date'])) {
                         if ($action['data']['values_diff']['due_date'][0]) {
                             $type = 'delete_card_duedate';
-                            $comment = __l('Due date was removed to this card ##CARD_LINK##');
+                            $comment = __l('Due date was removed to the card ##CARD_LINK##');
                         } else {
                             $type = 'add_card_duedate';
-                            $comment = __l('##USER_NAME## SET due date to this card ##CARD_LINK##');
+                            $comment = __l('##USER_NAME## SET due date to the card ##CARD_LINK##');
                         }
                     }
                 }
@@ -2438,7 +2438,7 @@ function importWekanBoard($board = array())
                     $comment = $comments_data[$action['commentId']];
                 } else if ($action['activityType'] == 'joinMember') {
                     $type = 'add_card_user';
-                    $comment = sprintf(__l('##USER_NAME## added %s as member to this card ##CARD_LINK##') , utf8_decode($user_data[$action['memberId']]));
+                    $comment = sprintf(__l('##USER_NAME## added %s as member to the card ##CARD_LINK##') , utf8_decode($user_data[$action['memberId']]));
                 } else if ($action['activityType'] == 'createCard') {
                     $type = 'add_card';
                     $comment = sprintf(__l('##USER_NAME## added card ##CARD_LINK## to list %s."') , utf8_decode($lists_data[$action['listId']]));
@@ -2456,7 +2456,7 @@ function importWekanBoard($board = array())
                     $comment = sprintf(__l('##USER_NAME## moved cards FROM %s to %s') , utf8_decode($lists_data[$action['listId']]) , utf8_decode($lists_data[$action['listId']]));
                 } else if ($action['activityType'] == 'addAttachment') {
                     $type = 'add_card_attachment';
-                    $comment = __l('##USER_NAME## added attachment to this card ##CARD_LINK##');
+                    $comment = __l('##USER_NAME## added attachment to the card ##CARD_LINK##');
                 } else if ($action['activityType'] == 'addBoardMember') {
                     $type = 'add_board_user';
                     $comment = __l('##USER_NAME## added member to board');

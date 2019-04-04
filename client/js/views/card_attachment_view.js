@@ -63,7 +63,21 @@ App.CardAttachmentView = Backbone.View.extend({
     deleteAttachment: function() {
         this.$el.remove();
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.attributes.card_id + '/attachments/' + this.model.id + '.json';
-        this.model.destroy();
+        this.model.destroy({
+            success: function(model, response, options) {
+                if (!_.isUndefined(response.activity)) {
+                    response.activity = activityCommentReplace(response.activity);
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    var view_act = new App.ActivityView({
+                        model: activity
+                    });
+                    self.model.activities.unshift(activity);
+                    var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
+                    view_activity.prepend(view_act.render().el);
+                }
+            }
+        });
         return false;
     },
     /**

@@ -184,6 +184,7 @@ App.CardCheckListView = Backbone.View.extend({
         this.model.destroy({
             success: function(model, response, options) {
                 if (!_.isUndefined(response.activity)) {
+                    response.activity = activityCommentReplace(response.activity);
                     var activity = new App.Activity();
                     activity.set(response.activity);
                     var view_act = new App.ActivityView({
@@ -419,6 +420,7 @@ App.CardCheckListView = Backbone.View.extend({
                             self.renderItemsCollection(false);
                             if (!_.isUndefined(response.activities)) {
                                 _.each(response.activities, function(_activity) {
+                                    _activity = activityCommentReplace(_activity);
                                     var activity = new App.Activity();
                                     activity.set(_activity);
                                     var view = new App.ActivityView({

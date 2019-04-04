@@ -1006,13 +1006,14 @@ App.FooterView = Backbone.View.extend({
                                 }
                             }
                             activity.from_footer = true;
+                            activity.attributes.original_comment = activity.attributes.comment;
                             if (mode == 1 && activity.attributes.token !== authuser.access_token && Notification.permission === 'granted') {
                                 var icon = window.location.pathname + 'img/logo-icon.png';
                                 if (activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
                                     var cardLink = activity.attributes.card_name;
+                                    activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
                                     activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', _.escape(activity.attributes.organization_name));
                                     activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', _.escape(activity.attributes.full_name));
-                                    activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
                                     activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', activity.attributes.label_name);
                                     activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', activity.attributes.card_name);
                                     activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', activity.attributes.card_description);
@@ -1670,6 +1671,8 @@ App.FooterView = Backbone.View.extend({
                                             if (activity.attributes.type !== 'add_comment' && activity.attributes.type !== 'edit_comment' && activity.attributes.type !== 'delete_card_comment') {
                                                 if ($('#js-card-modal-' + activity.attributes.card_id).length == 1) {
                                                     var modal_activity = activity;
+                                                    modal_activity.attributes.comment = modal_activity.attributes.original_comment;
+                                                    modal_activity.attributes = activityCommentReplace(modal_activity.attributes);
                                                     delete modal_activity.from_footer;
                                                     var new_activity_view = new App.ActivityView({
                                                         model: modal_activity,

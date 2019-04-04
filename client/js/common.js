@@ -161,6 +161,12 @@ function makeLink(text, board_id) {
     return text;
 }
 
+function activityCommentReplace(activity) {
+    if (!_.isUndefined(activity.comment) && !_.isEmpty(activity.comment)) {
+        activity.comment = activity.comment.replace("the card ##CARD_LINK##", "this card");
+    }
+    return activity;
+}
 var favicon = new Favico({
     animation: 'popFade'
 });
