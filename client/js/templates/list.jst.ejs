@@ -21,7 +21,7 @@
 		</form>
 		<% } %>
 		<%if(!_.isUndefined(authuser.user)) {%>
-		<div class="pull-right col-xs-4 clearfix js-list-header-<%- list.id %>">
+		<div class="pull-right col-xs-4 clearfix js-list-header-<%- list.id %> js-list-header-section">
 			<div class="dropdown">
 			<a href="#" class="dropdown-toggle pull-right js-show-list-actions" id="js-show-list-actions-<%- list.attributes.id %>" data-toggle="dropdown" title="<%- i18next.t('List Actions') %>" data-list-id="<%- list.attributes.id %>"><i class="icon-cog text-primary"></i></a>
 			</div>

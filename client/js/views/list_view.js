@@ -1052,6 +1052,26 @@ App.ListView = Backbone.View.extend({
                         $('.js-show-modal-card-view ').removeClass('cur');
                     },
                     stop: function(ev, ui) {
+                        var list_id = parseInt($(ui.item).parents('.js-board-list:first').data('list_id'));
+                        var current_list = App.current_board.lists.get(parseInt(list_id));
+                        $('.js-list-header-section').removeClass('animation');
+                        $('.js-open-wipLimit-form').removeClass('tada-animation');
+                        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1 && !_.isUndefined(current_list) && !_.isEmpty(current_list) && current_list !== null) {
+                            var list_custom_fields = current_list.attributes.custom_fields;
+                            if (!_.isUndefined(list_custom_fields) && !_.isEmpty(list_custom_fields) && list_custom_fields !== null) {
+                                var card_count = isNaN(current_list.attributes.card_count) ? 0 : current_list.attributes.card_count;
+                                card_count = parseInt(card_count);
+                                card_count = card_count + 1;
+                                list_custom_fields = JSON.parse(list_custom_fields);
+                                if (!_.isUndefined(list_custom_fields.wip_limit) && !_.isEmpty(list_custom_fields.wip_limit) && list_custom_fields.wip_limit !== null) {
+                                    if (!_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit) && parseInt(card_count) > parseInt(list_custom_fields.wip_limit)) {
+                                        $(this).sortable("cancel");
+                                        $('.js-list-header-' + list_id).removeClass('animation');
+                                        $('.js-wip-limit-count-' + list_id).removeClass('tada-animation');
+                                    }
+                                }
+                            }
+                        }
                         $('.js-show-modal-card-view ').addClass('cur');
                         $('.board-list-outer > div.js-list-sort').removeClass('active');
                         clearInterval(App.sortable.setintervalid_horizontal);
@@ -1074,6 +1094,8 @@ App.ListView = Backbone.View.extend({
                         list_id = list_id['1'];
                         var current_list = App.current_board.lists.get(parseInt(list_id));
                         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
+                            $('.js-list-header-section').removeClass('animation');
+                            $('.js-open-wipLimit-form').removeClass('tada-animation');
                             $('.board-list-outer > div.js-list-sort').removeClass('active');
                             var list_custom_fields = current_list.attributes.custom_fields;
                             if (!_.isUndefined(list_custom_fields) && !_.isEmpty(list_custom_fields)) {
@@ -1081,8 +1103,13 @@ App.ListView = Backbone.View.extend({
                                 card_count = parseInt(card_count);
                                 card_count = card_count + 1;
                                 list_custom_fields = JSON.parse(list_custom_fields);
-                                if (!_.isUndefined(list_custom_fields.wip_limit) && !_.isEmpty(list_custom_fields.wip_limit) && card_count > parseInt(list_custom_fields.wip_limit) && (_.isUndefined(list_custom_fields.hard_wip_limit) || _.isEmpty(list_custom_fields.hard_wip_limit))) {
-                                    $('#' + list).parents('.js-list-' + list_id).addClass('active');
+                                if (!_.isUndefined(list_custom_fields.wip_limit) && !_.isEmpty(list_custom_fields.wip_limit)) {
+                                    if (card_count > parseInt(list_custom_fields.wip_limit) && (_.isUndefined(list_custom_fields.hard_wip_limit) || _.isEmpty(list_custom_fields.hard_wip_limit))) {
+                                        $('#' + list).parents('.js-list-' + list_id).addClass('active');
+                                    } else if (!_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit) && parseInt(card_count) > parseInt(list_custom_fields.wip_limit)) {
+                                        $('.js-list-header-' + list_id).addClass('animation');
+                                        $('.js-wip-limit-count-' + list_id).addClass('tada-animation');
+                                    }
                                 }
                             }
                         }
