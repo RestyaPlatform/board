@@ -138,6 +138,27 @@ App.ApplicationView = Backbone.View.extend({
                         success: function(collection, settings_response) {
                             SITE_NAME = settings_response.SITE_NAME;
                             localforage.setItem('apps', settings_response.apps_data).then(function() {
+                                if (role_links.length === 0) {
+                                    localforage.getItem('links', function(err, value) {
+                                        if (value) {
+                                            if (role_links.length === 0 && value !== undefined && value !== null) {
+                                                role_links.add(JSON.parse(value));
+                                            }
+                                            if (!_.isUndefined(APPS) && APPS !== null && !_.isEmpty(APPS.enabled_apps) && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                                                APPS.permission_checked_apps = [];
+                                                _.each(APPS.enabled_apps, function(app) {
+                                                    if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user)) {
+                                                        if ((!_.isEmpty(role_links.where({
+                                                                slug: app
+                                                            })) || parseInt(authuser.user.role_id) === 1) && $.inArray(app, APPS.permission_checked_apps) === -1) {
+                                                            APPS.permission_checked_apps.push(app);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
                                 page.set_page_title();
                                 FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
                                 DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
