@@ -56,8 +56,9 @@ App.ListView = Backbone.View.extend({
         if (this.model.has('board_activities')) {
             this.board_activites = this.model.collection.board.get('board_activities');
         }
-        _.bindAll(this, 'render', 'renderCardsCollection', 'removeRender');
-        this.model.bind('change:name change:color add:color remove:color', this.render);
+        _.bindAll(this, 'render', 'renderCardsCollection', 'removeRender', 'colorListviewcollection');
+        this.model.bind('change:name', this.render);
+        this.model.bind('change:color add:color remove:color', this.colorListviewcollection);
         if (!_.isUndefined(this.model.collection)) {
             this.model.collection.board.labels.bind('add', this.renderCardsCollection);
             this.model.collection.board.attachments.bind('add', this.renderCardsCollection);
@@ -956,6 +957,26 @@ App.ListView = Backbone.View.extend({
             }
         }).defer();
         return false;
+    },
+    /**
+     * colorListviewcollection()
+     * Bidding the color for list
+     * @param NULL
+     * @return object
+     *
+     */
+    colorListviewcollection: function() {
+        var self = this;
+        var list_id = self.model.id,
+            color = self.model.attributes.color;
+        $('#js-list-color-' + list_id).attr('style', 'background-color: ' + color + ' !important');
+        $('#js-list-demo-' + list_id).attr('style', 'border-bottom: 2px solid' + color + ' !important');
+        if (!_.isUndefined(color) && !_.isEmpty(color) && color !== null) {
+            $('#js-remove-list-color-' + list_id).removeClass('hide');
+        } else {
+            $('#js-list-demo-' + list_id).attr('style', 'border-bottom: ' + color);
+            $('#js-remove-list-color-' + list_id).addClass('hide');
+        }
     },
     /**
      * render()
