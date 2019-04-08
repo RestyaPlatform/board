@@ -1108,6 +1108,7 @@ App.BoardView = Backbone.View.extend({
         list.save(data, {
             success: function(model, response, options) {
                 if (self.model.attributes.lists !== null) {
+                    list.set('custom_fields', null);
                     self.model.attributes.lists.push(list);
                 }
                 if (!_.isUndefined(data.clone_list_id)) {
@@ -1128,6 +1129,7 @@ App.BoardView = Backbone.View.extend({
                         });
                     }
                     list.set(response.list);
+                    list.set('custom_fields', null);
                     list.set('cards', response.list.cards);
                     self.model.cards.add(response.list.cards, {
                         silent: true

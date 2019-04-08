@@ -1012,7 +1012,30 @@ App.ListView = Backbone.View.extend({
                     scrollSpeed: 50,
                     update: function(ev, ui) {
                         if (this === ui.item.parent()[0]) {
-                            ui.item.trigger('cardSort', ev, ui);
+                            var list_id = parseInt($(ev.target).parents('.js-board-list:first').data('list_id'));
+                            var current_list = App.current_board.lists.get(parseInt(list_id));
+                            if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
+                                var list_custom_fields = current_list.attributes.custom_fields;
+                                if (!_.isUndefined(list_custom_fields) && !_.isEmpty(list_custom_fields) && list_custom_fields !== null) {
+                                    var card_count = isNaN(current_list.attributes.card_count) ? 0 : current_list.attributes.card_count;
+                                    card_count = parseInt(card_count);
+                                    card_count = card_count + 1;
+                                    list_custom_fields = JSON.parse(list_custom_fields);
+                                    if (!_.isUndefined(list_custom_fields.wip_limit) && !_.isEmpty(list_custom_fields.wip_limit) && list_custom_fields.wip_limit !== null) {
+                                        if (!_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit) && parseInt(card_count) > parseInt(list_custom_fields.wip_limit)) {
+                                            $(this).sortable("cancel");
+                                        } else {
+                                            ui.item.trigger('cardSort', ev, ui);
+                                        }
+                                    } else {
+                                        ui.item.trigger('cardSort', ev, ui);
+                                    }
+                                } else {
+                                    ui.item.trigger('cardSort', ev, ui);
+                                }
+                            } else {
+                                ui.item.trigger('cardSort', ev, ui);
+                            }
                         }
                     },
                     start: function(ev, ui) {
