@@ -867,6 +867,7 @@ App.BoardView = Backbone.View.extend({
                         } else {
                             self.$('#js-board-lists').append(view.render().el);
                         }
+                        $('#js-board-lists').sortable("refresh");
                     }
                 }
             }
@@ -1101,6 +1102,7 @@ App.BoardView = Backbone.View.extend({
                 },
             });
             $(view.render().el).insertAfter($(e.target).parents('.js-board-list'));
+            $('#js-board-lists').sortable("refresh");
         }
         list.url = api_url + 'boards/' + self.model.id + '/lists.json';
         list.save(data, {
