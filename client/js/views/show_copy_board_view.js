@@ -81,6 +81,7 @@ App.ShowCopyBoardView = Backbone.View.extend({
                             trigger: true,
                             replace: true,
                         });
+                        location.reload();
                         self.flash('success', i18next.t('Board copied successfully.'));
                     } else {
                         self.flash('danger', i18next.t('Unable to copy the board.'));
