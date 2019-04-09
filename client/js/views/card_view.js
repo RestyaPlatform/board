@@ -33,6 +33,7 @@ App.CardView = Backbone.View.extend({
     initialize: function(opts) {
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
+            this.model.documentLink = this.documentLink;
         }
         opts = opts || {};
         this.tmp = opts.template;
