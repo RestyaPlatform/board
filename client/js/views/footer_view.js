@@ -99,7 +99,6 @@ App.FooterView = Backbone.View.extend({
         'click #modal-comments': 'showActivity',
         'click .js-show-shortcuts-modal': 'showShortcutModal',
         'keyup[shift+/] body': 'keyboardShowShortcutModal',
-        'click .js-footer-board-link': 'gotoBoards',
     },
     /** 
      * Constructor
@@ -122,17 +121,7 @@ App.FooterView = Backbone.View.extend({
         this.boards = options.boards;
         _.bindAll(this, 'renderClosedBoards', 'renderStarredBoards');
     },
-    /**
-     * gotoBoards()
-     * To go to board
-     * @param e
-     * @type Object(DOM event)
-     *
-     */
-    gotoBoards: function(e) {
-        e.preventDefault();
-        var self = this;
-    },
+
     /**
      * render()
      * populate the html to the dom
