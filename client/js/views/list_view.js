@@ -1575,13 +1575,37 @@ App.ListView = Backbone.View.extend({
             });
             var list_cards = new App.CardCollection();
             list_cards.add(cards);
+            var currentdate = new Date();
+            var tmp_created_date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10) ? '0' + (currentdate.getMonth() + 1) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10) ? '0' + currentdate.getDate() : currentdate.getDate()) + 'T' + currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes() + ':' + (currentdate.getSeconds() < 10 ? '0' : '') + currentdate.getSeconds();
+            var tmp_card = new App.Card();
+            tmp_card.set('is_offline', true);
+            tmp_card.set({
+                name: data.name,
+                is_archived: 0,
+                id: data.uuid,
+                list_id: parseInt(data.list_id),
+                board_id: parseInt(data.board_id),
+                created: tmp_created_date
+            }, {
+                silent: true
+            });
+            list_cards.add(tmp_card);
             if (sort_by !== null && sort_by !== null) {
                 list_cards.sortByColumn(sort_by, sort_direction);
             } else {
                 list_cards.sortByColumn('position');
             }
+            var newpostionIndex;
+            if (list_cards.models.length > 0) {
+                for (i = 0; i < list_cards.models.length; i++) {
+                    if (list_cards.models[i].id === data.uuid) {
+                        newpostionIndex = i;
+                        break;
+                    }
+                }
+            }
             if (data.position === undefined || data.position === '') {
-                data.position = list_cards.length + 1;
+                data.position = newpostionIndex + 1;
             }
             $(e.target).find('textarea').val('').focus();
             var view_card = $('#js-card-listing-' + data.list_id);
@@ -1767,8 +1791,6 @@ App.ListView = Backbone.View.extend({
                             }
                         }
                     }).defer();
-                    self.renderCardsCollection();
-                    $('.js-list-' + self.model.id + ' .js-show-add-card-form').trigger('click');
                 }
             });
         }

@@ -13,11 +13,12 @@ App.CardCollection = Backbone.Collection.extend({
     comparator: function(item) {
         if (!_.isUndefined(this.sortKey)) {
             if (this.sortKey === 'name' || this.sortKey === 'list_name' || sort_by === 'sort_group_label' || sort_by === 'sort_group_user') {
-                var str = '' + item.get(this.sortKey);
+                var str = '' + item.get(this.sortKey),
+                    direction = this.sortDirection;
                 str = str.toLowerCase();
                 str = str.split('');
                 str = _.map(str, function(letter) {
-                    if (this.sortDirection === 'desc') {
+                    if (direction === 'desc') {
                         return String.fromCharCode(-(letter.charCodeAt(0)));
                     } else {
                         return String.fromCharCode((letter.charCodeAt(0)));
