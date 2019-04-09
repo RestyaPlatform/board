@@ -1942,7 +1942,7 @@ App.FooterView = Backbone.View.extend({
                                         _new_board.lists.add(_tmp_list);
                                     });
                                 }
-                                $('.js-my-boards').prepend(new App.BoardSimpleView({
+                                $('#boards-index').find('.js-my-boards').prepend(new App.BoardSimpleView({
                                     model: _new_board,
                                     id: 'js-my-board-' + activity.attributes.board_id,
                                     className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + activity.attributes.board_id
