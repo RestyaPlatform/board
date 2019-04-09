@@ -1193,6 +1193,7 @@ App.BoardView = Backbone.View.extend({
                         j++;
                     });
                 } else {
+                    list.set('custom_fields', null);
                     list.set('lists_cards', []);
                 }
                 if (_.isUndefined(options.temp_id)) {
