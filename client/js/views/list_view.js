@@ -1771,8 +1771,7 @@ App.ListView = Backbone.View.extend({
                     }
                     var list = App.boards.get(card.attributes.board_id).lists.get(card.attributes.list_id);
                     if (!_.isUndefined(list)) {
-                        var list_cards_count = isNaN(list.attributes.card_count) ? 0 : list.attributes.card_count;
-                        list.set('card_count', parseInt(list_cards_count) + 1);
+                        list.set('card_count', parseInt(cards_count) + 1);
                     }
                     if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
                         card.set({

@@ -1740,9 +1740,9 @@ App.FooterView = Backbone.View.extend({
                                                 });
                                                 var new_list_card_count = self.board.lists.get(activity.attributes.foreign_id).attributes.card_count;
                                                 var previous_list_card_count = self.board.lists.get(list.id).attributes.card_count;
-                                                new_list_card_count = new_list_card_count ? new_list_card_count : 0;
-                                                previous_list_card_count = previous_list_card_count ? previous_list_card_count : 0;
-                                                new_list_card_count = new_list_card_count + previous_list_card_count;
+                                                new_list_card_count = new_list_card_count ? parseInt(new_list_card_count) : 0;
+                                                previous_list_card_count = previous_list_card_count ? parseInt(previous_list_card_count) : 0;
+                                                new_list_card_count = parseInt(new_list_card_count) + parseInt(previous_list_card_count);
                                                 if (!_.isUndefined(cards) && cards.length > 0) {
                                                     // Removing the &nbsp; from the new list card listing
                                                     $('#js-card-listing-' + activity.attributes.foreign_id).html(function(i, h) {
