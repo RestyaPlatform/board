@@ -815,7 +815,7 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                         $cards_label->label_id
                     );
                     $_label = executeQuery('SELECT * FROM labels WHERE id = $1', $qry_val_arr);
-                    $comment = __l('##USER_NAME## added label(s) to the card ##CARD_LINK## - '. $_label['name']);
+                    $comment = __l('##USER_NAME## added label(s) to the card ##CARD_LINK## - ' . $_label['name']);
                     insertActivity($authUser['id'], $comment, 'add_card_label', $foreign_ids);
                 }
             }
