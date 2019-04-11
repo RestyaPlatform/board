@@ -6402,7 +6402,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         if (isset($previous_value['name']) && isset($r_put['name']) && $r_put['name'] != $previous_value['name']) {
             $comment = '##USER_NAME## renamed ##CARD_LINK##';
         }
-        if (!isset($previous_value['description']) && isset($r_put['description'])) {
+        if (empty($previous_value['description']) && isset($r_put['description'])) {
             $comment = '##USER_NAME## added card description in the card ##CARD_LINK## - ##DESCRIPTION##';
             $activity_type = 'add_card_desc';
         } else if (isset($previous_value) && isset($r_put['description']) && $r_put['description'] != $previous_value['description']) {
