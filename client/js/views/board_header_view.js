@@ -354,12 +354,7 @@ App.BoardHeaderView = Backbone.View.extend({
             is_closed: 1
         }, {
             patch: true,
-            success: function(model, response) {
-                app.navigate('#/board/' + board_id, {
-                    trigger: true,
-                    replace: true,
-                });
-            }
+            success: function(model, response) {}
         });
         return false;
     },
