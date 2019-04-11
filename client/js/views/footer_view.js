@@ -1502,6 +1502,7 @@ App.FooterView = Backbone.View.extend({
                                                 if (!_.isEmpty(card_new_list) && !_.isUndefined(card_new_list) && card_new_list !== null && !_.isEmpty(card_new_list.cards) && !_.isUndefined(card_new_list.cards) && card_new_list.cards !== null) {
                                                     var tmp_newlist_cards = card_new_list.cards;
                                                     card.set('created', card.get('created'));
+                                                    card.set('list_moved_date', activity.attributes.created);
                                                     if (tmp_sort_by !== null && tmp_sort_direction !== null && tmp_sort_by === 'position') {
                                                         card.set('position', tmp_newlist_cards.length + 1);
                                                     }
