@@ -2127,7 +2127,8 @@ App.ModalCardView = Backbone.View.extend({
             current_list.set('card_count', prev_list_card_count - 1);
             if (parseInt(current_list.attributes.card_count) === 0) {
                 // Adding the &nbsp; to the current list if it has no card
-                $('#js-card-listing-' + current_list.id).html('&nbsp;');
+                $('#js-card-listing-' + current_list.id).html('<span class="js-list-placeholder-' + current_list.id + '">&nbsp;</span>');
+                // $('#js-card-listing-' + current_list.id).html('&nbsp;');
             }
             var change_list_card_count = parseInt(this.boards.get(data.board_id).lists.get(data.list_id).get('card_count'));
             change_list_card_count = isNaN(change_list_card_count) ? 0 : change_list_card_count;
@@ -2147,9 +2148,10 @@ App.ModalCardView = Backbone.View.extend({
                 change_list.set('card_count', change_list_card_count + 1);
                 if (parseInt(change_list.attributes.card_count) === 1) {
                     // Removing the &nbsp; from the new list in the same board
-                    $('#js-card-listing-' + change_list.id).html(function(i, h) {
+                    $('#js-card-listing-' + change_list.id).find('.js-list-placeholder-' + change_list.id).remove();
+                    /* $('#js-card-listing-' + change_list.id).html(function(i, h) {
                         return h.replace(/&nbsp;/g, '');
-                    });
+                    }); */
                 }
             }
         }
@@ -2214,7 +2216,8 @@ App.ModalCardView = Backbone.View.extend({
                 }
                 if (parseInt(currentBoardList.attributes.card_count) === 0) {
                     // Adding the &nbsp; to the list if there is no card
-                    $('#js-card-listing-' + self.model.attributes.list_id).html('&nbsp;');
+                    $('#js-card-listing-' + self.model.attributes.list_id).html('<span class="js-list-placeholder-' + self.model.attributes.list_id + '">&nbsp;</span>');
+                    // $('#js-card-listing-' + self.model.attributes.list_id).html('&nbsp;');
                 }
                 var view = new App.ActivityView({
                     model: activity,
@@ -2243,9 +2246,10 @@ App.ModalCardView = Backbone.View.extend({
         var uuid = new Date().getTime();
         var self = this;
         if (parseInt(this.model.list.attributes.card_count) === 0) {
-            $('#js-card-listing-' + this.model.list.id).html(function(i, h) {
+            $('#js-card-listing-' + this.model.list.id).find('.js-list-placeholder-' + this.model.list.id).remove();
+            /* $('#js-card-listing-' + this.model.list.id).html(function(i, h) {
                 return h.replace(/&nbsp;/g, '');
-            });
+            }); */
         }
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
         this.model.set('is_offline', true);
@@ -4060,9 +4064,10 @@ App.ModalCardView = Backbone.View.extend({
                     var change_list_card_count = parseInt(self.boards.get(data.board_id).lists.get(data.list_id).get('card_count'));
                     if (parseInt(change_list_card_count) === 1) {
                         // Removing the &nbsp; from the new list
-                        $('#js-card-listing-' + data.list_id).html(function(i, h) {
+                        $('#js-card-listing-' + data.list_id).find('.js-list-placeholder-' + data.list_id).remove();
+                        /* $('#js-card-listing-' + data.list_id).html(function(i, h) {
                             return h.replace(/&nbsp;/g, '');
-                        });
+                        }); */
                     }
                     if (!_.isUndefined(response.cards.cards_checklists) && !_.isEmpty(response.cards.cards_checklists)) {
                         if (response.cards.cards_checklists.length > 0) {
