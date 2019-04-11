@@ -1096,6 +1096,7 @@ App.FooterView = Backbone.View.extend({
                                             if (activity.attributes.type === 'add_card') {
                                                 activity.attributes.card.cards_labels = null;
                                                 activity.attributes.card.cards_users = null;
+                                                activity.attributes.card.cards_voters = null;
                                             } else {
                                                 if (!_.isUndefined(activity.attributes.card.cards_labels) && activity.attributes.card.cards_labels !== null) {
                                                     var card_labels = JSON.parse(activity.attributes.card.cards_labels);
