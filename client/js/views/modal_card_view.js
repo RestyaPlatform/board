@@ -2671,6 +2671,7 @@ App.ModalCardView = Backbone.View.extend({
                 checklist.checklist_items.reset(checklist_items);
                 checklist.card = self.model;
                 checklist.board_users = self.model.board_users;
+                checklist.board_user_role_id = self.model.board_user_role_id;
                 var view = new App.CardCheckListView({
                     model: checklist,
                     attributes: {
