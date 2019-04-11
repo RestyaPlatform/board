@@ -90,7 +90,7 @@ App.CardView = Backbone.View.extend({
             this.model.users.bind('add:id', this.render);
             this.model.users.bind('change:id', this.render);
             this.model.users.bind('remove', this.render);
-            if (!_.isUndefined(this.model.list)) {
+            if (!_.isUndefined(this.model.list) && !_.isUndefined(this.model.list.collection)) {
                 this.model.list.collection.board.labels.bind('add', this.render);
                 this.model.list.collection.board.labels.bind('remove', this.render);
             }

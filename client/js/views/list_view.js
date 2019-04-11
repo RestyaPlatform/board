@@ -1288,7 +1288,7 @@ App.ListView = Backbone.View.extend({
                     converter: self.converter
                 });
                 var current_param_split = Backbone.history.fragment.split('/');
-                if (!_.isUndefined(current_param_split['2']) && current_param_split['2'] !== null && current_param_split['2'].indexOf('list') !== -1) {
+                if (!_.isUndefined(current_param_split['2']) && current_param_split['2'] !== null && (current_param_split['2'].indexOf('list') !== -1 || current_param_split['2'].indexOf('gantt') !== -1 || current_param_split['2'].indexOf('report') !== -1 || current_param_split['2'].indexOf('calendar') !== -1)) {
                     return true;
                 }
                 if (parseInt(e.attributes.is_archived) === 0) {

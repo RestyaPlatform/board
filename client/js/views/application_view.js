@@ -316,7 +316,7 @@ App.ApplicationView = Backbone.View.extend({
      */
     board_view: function() {
         var self = this;
-        if (viewed_board.id !== parseInt(self.id)) {
+        if (parseInt(viewed_board.id) !== parseInt(self.id)) {
             var Board = new App.Board({
                 id: self.id
             });
