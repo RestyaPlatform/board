@@ -2030,6 +2030,9 @@ App.ModalCardView = Backbone.View.extend({
         var current_board = self.boards.findWhere({
             id: parseInt(current_board_id)
         });
+        var currentdate = new Date();
+        var tmp_move_date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10) ? '0' + (currentdate.getMonth() + 1) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10) ? '0' + currentdate.getDate() : currentdate.getDate()) + 'T' + currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes() + ':' + (currentdate.getSeconds() < 10 ? '0' : '') + currentdate.getSeconds();
+        this.model.set('list_moved_date', tmp_move_date);
         if ((!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by === 'position') || (_.isUndefined(current_board.attributes.sort_by) || current_board.attributes.sort_by === null)) {
             var change_list_cards = this.model.list.collection.board.cards.where({
                 list_id: data.list_id
@@ -3965,6 +3968,9 @@ App.ModalCardView = Backbone.View.extend({
         card.set('list_id', data.list_id);
         card.set('board_id', data.board_id);
         card.set('is_archived', 0);
+        var currentdate = new Date();
+        var tmp_created_date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10) ? '0' + (currentdate.getMonth() + 1) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10) ? '0' + currentdate.getDate() : currentdate.getDate()) + 'T' + currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes() + ':' + (currentdate.getSeconds() < 10 ? '0' : '') + currentdate.getSeconds();
+        card.set('created', tmp_created_date);
         this.closePopup(e);
         var current_card = this.model.attributes;
         var current_board = self.boards.findWhere({
@@ -3974,10 +3980,13 @@ App.ModalCardView = Backbone.View.extend({
             card.set('id', new Date().getTime());
             var board_sort_by = (current_board.attributes.sort_by) ? current_board.attributes.sort_by : 'position';
             var bard_sort_direction = (current_board.attributes.sort_direction) ? current_board.attributes.sort_direction : 'asc';
+            var new_list_cards = this.model.list.collection.board.lists.get(data.list_id).cards;
+            if (sort_by !== null && sort_direction !== null && sort_by === 'position') {
+                card.set('position', new_list_cards.length + 1);
+            }
             this.model.list.collection.board.lists.get(data.list_id).cards.add(card, {
                 silent: true
             });
-            var new_list_cards = this.model.list.collection.board.lists.get(data.list_id).cards;
             var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, new_list_cards);
             $.each(sort_filter_cards.models, function(key, filter_card) {
                 if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(card.id)) {

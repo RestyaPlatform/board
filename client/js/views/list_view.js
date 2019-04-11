@@ -1584,6 +1584,9 @@ App.ListView = Backbone.View.extend({
             var tmp_created_date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10) ? '0' + (currentdate.getMonth() + 1) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10) ? '0' + currentdate.getDate() : currentdate.getDate()) + 'T' + currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes() + ':' + (currentdate.getSeconds() < 10 ? '0' : '') + currentdate.getSeconds();
             var tmp_card = new App.Card();
             tmp_card.set('is_offline', true);
+            if (sort_by !== null && sort_direction !== null && sort_by === 'position') {
+                tmp_card.set('position', list_cards.length + 1);
+            }
             tmp_card.set({
                 name: data.name,
                 is_archived: 0,
