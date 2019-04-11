@@ -1143,6 +1143,10 @@ App.FooterView = Backbone.View.extend({
                                             new_card.list = card_list;
                                             if (!_.isEmpty(card_list) && !_.isUndefined(card_list) && card_list !== null && !_.isEmpty(card_list.cards) && !_.isUndefined(card_list.cards) && card_list.cards !== null) {
                                                 var tmp_list_cards = card_list.cards;
+                                                new_card.set('created', activity.attributes.card.created);
+                                                if (board_sort_by !== null && bard_sort_direction !== null && board_sort_by === 'position') {
+                                                    new_card.set('position', tmp_list_cards.length + 1);
+                                                }
                                                 tmp_list_cards.add(new_card, {
                                                     silent: true
                                                 });
@@ -1497,6 +1501,10 @@ App.FooterView = Backbone.View.extend({
                                                 var tmp_sort_direction = (self.board.attributes.sort_direction) ? self.board.attributes.sort_direction : 'asc';
                                                 if (!_.isEmpty(card_new_list) && !_.isUndefined(card_new_list) && card_new_list !== null && !_.isEmpty(card_new_list.cards) && !_.isUndefined(card_new_list.cards) && card_new_list.cards !== null) {
                                                     var tmp_newlist_cards = card_new_list.cards;
+                                                    card.set('created', card.get('created'));
+                                                    if (tmp_sort_by !== null && tmp_sort_direction !== null && tmp_sort_by === 'position') {
+                                                        card.set('position', tmp_newlist_cards.length + 1);
+                                                    }
                                                     tmp_newlist_cards.add(card, {
                                                         silent: true
                                                     });
