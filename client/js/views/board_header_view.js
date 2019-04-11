@@ -354,12 +354,7 @@ App.BoardHeaderView = Backbone.View.extend({
             is_closed: 1
         }, {
             patch: true,
-            success: function(model, response) {
-                app.navigate('#/board/' + board_id, {
-                    trigger: true,
-                    replace: true,
-                });
-            }
+            success: function(model, response) {}
         });
         return false;
     },
@@ -1661,9 +1656,10 @@ App.BoardHeaderView = Backbone.View.extend({
         var currentBoardList = App.current_board.lists.get(find_card.attributes.list_id);
         if (!_.isUndefined(currentBoardList)) {
             if (parseInt(currentBoardList.attributes.card_count) === 0) {
-                $('#js-card-listing-' + find_card.attributes.list_id).html(function(i, h) {
+                $('#js-card-listing-' + find_card.attributes.list_id).find('.js-list-placeholder-' + find_card.attributes.list_id).remove();
+                /* $('#js-card-listing-' + find_card.attributes.list_id).html(function(i, h) {
                     return h.replace(/&nbsp;/g, '');
-                });
+                }); */
             }
         }
         this.model.cards.findWhere({

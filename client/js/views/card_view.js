@@ -182,9 +182,10 @@ App.CardView = Backbone.View.extend({
             id: parseInt(list_id)
         });
         if (parseInt(current_list.attributes.card_count) === 0 || parseInt(current_list.attributes.card_count) === 1 || _.isUndefined(current_list.attributes.card_count)) {
-            $('#js-card-listing-' + list_id).html(function(i, h) {
+            $('#js-card-listing-' + list_id).find('.js-list-placeholder-' + list_id).remove();
+            /* $('#js-card-listing-' + list_id).html(function(i, h) {
                 return h.replace(/&nbsp;/g, '');
-            });
+            }); */
         }
 
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.attributes.id + '.json';
@@ -239,7 +240,9 @@ App.CardView = Backbone.View.extend({
             current_board_prev_list.set('card_count', prev_list_card_count - 1);
             prev_list.set('card_count', prev_list_card_count - 1);
             if (parseInt(prev_list.attributes.card_count) === 0) {
-                $('#js-card-listing-' + previous_list_id).html('&nbsp;');
+                $('#js-card-listing-' + previous_list_id).find('.js-list-placeholder-' + previous_list_id).remove();
+                $('#js-card-listing-' + previous_list_id).html('<span class="js-list-placeholder-' + previous_list_id + '">&nbsp;</span>');
+                // $('#js-card-listing-' + previous_list_id).html('&nbsp;');
             }
             current_list_card_count = isNaN(current_list_card_count) ? 0 : current_list_card_count;
             self.model.list.collection.board.lists.get(list_id).cards.add(self.model);
@@ -723,7 +726,7 @@ App.CardView = Backbone.View.extend({
                 initialState: initialState
             });
             var view_card = this.$('#js-card-listing-' + this.model.id);
-            view_card.html('&nbsp;');
+            view_card.html('<span class="js-list-placeholder-' + this.model.id + '">&nbsp;</span>');
             modalView.show();
             return false;
         }

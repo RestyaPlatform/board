@@ -15,7 +15,7 @@
     "\"v\" will add (or remove) your vote on a card.": "\"v\" sẽ thêm (hoặc xóa) phiếu bầu của bạn trên thẻ.",
     "\"w\" will collapse or expand the board menu, the sidebar on the right.": "\"w\" sẽ sụp đổ hoặc mở rộng menu bảng, sidebar bên phải.",
     "%s checklist completed out of %s": "%s danh sách kiểm tra hoàn thành ra của %s",
-    "%s in list %s %s": "%s trong danh sách% s %s",
+    "%s in list %s %s": "%s trong danh sách %s %s",
     "%s's Restyaboard | %s": "%s Restyaboard | %s",
     "(current)": "(hiện hành)",
     "(none)": "(không ai)",
