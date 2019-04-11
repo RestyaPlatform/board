@@ -197,6 +197,12 @@ App.CardView = Backbone.View.extend({
         } else if (typeof next_card_id != 'undefined') {
             self.model.moveBefore(next_card_id);
         }
+        var change_list = self.model.list.collection.board.lists.findWhere({
+            id: list_id
+        });
+        if (!_.isUndefined(change_list)) {
+            self.model.list = change_list;
+        }
         self.model.set({
             list_id: list_id
         });
