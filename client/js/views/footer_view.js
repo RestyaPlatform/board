@@ -1462,20 +1462,22 @@ App.FooterView = Backbone.View.extend({
                                                                 comment_string += '</ul>';
                                                             }
                                                             comment_string += '</div><span class="pull-left col-xs-12 js-activity-reply-form-response-' + activity.attributes.id + '"></span></small></div></div></div></div><hr class="clearfix col-xs-12 btn-block"></hr></li>';
-                                                            if (activity.attributes.depth === 0) {
-                                                                $("ul#js-card-activities-" + activity.attributes.card_id).prepend(comment_string);
-                                                            } else {
-                                                                if (activity.attributes.depth == 1) {
-                                                                    $(comment_string).insertAfter($('.js-list-activity-' + activity.attributes.root));
+                                                            if($('#js-card-activities-' + activity.attributes.card_id + ' ' + '.js-list-activity-' + activity.attributes.id).length === 0){
+                                                                if (activity.attributes.depth === 0) {
+                                                                    $("ul#js-card-activities-" + activity.attributes.card_id).prepend(comment_string);
                                                                 } else {
-                                                                    var path = activity.attributes.path;
-                                                                    var pathSplit = path.split('.');
-                                                                    --depth;
-                                                                    var parentCommentId = pathSplit[depth].replace('P', '');
-                                                                    $(comment_string).insertAfter($('.js-list-activity-' + parentCommentId));
+                                                                    if (activity.attributes.depth == 1) {
+                                                                    $(comment_string).insertAfter($('.js-list-activity-' + activity.attributes.root));
+                                                                    } else {
+                                                                        var path = activity.attributes.path;
+                                                                        var pathSplit = path.split('.');
+                                                                        --depth;
+                                                                        var parentCommentId = pathSplit[depth].replace('P', '');
+                                                                        $(comment_string).insertAfter($('.js-list-activity-' + parentCommentId));
+                                                                    }
                                                                 }
+                                                                emojify.run();
                                                             }
-                                                            emojify.run();
                                                         }
                                                     }
                                                 }
