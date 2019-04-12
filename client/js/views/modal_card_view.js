@@ -3932,6 +3932,9 @@ App.ModalCardView = Backbone.View.extend({
      */
     showCopyCardForm: function(e) {
         e.preventDefault();
+        if($('.js-copy-card').length){
+            $('.js-copy-card #card-title').val(this.model.attributes.name);
+        }
         $('.js-show-copy-card-form-response').html(new App.CopyCardView({
             model: this.model,
             boards: this.boards
