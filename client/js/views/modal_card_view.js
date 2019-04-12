@@ -1845,7 +1845,7 @@ App.ModalCardView = Backbone.View.extend({
         self.model.set('card_voter_count', parseInt(vote_count) - 1);
         card_voter.destroy({
             success: function(model, response) {
-                if(!_.isUndefined(response)){
+                if (!_.isUndefined(response)) {
                     if (!_.isUndefined(response.activity)) {
                         response.activity = activityCommentReplace(response.activity);
                         var activity = new App.Activity();
@@ -3934,7 +3934,7 @@ App.ModalCardView = Backbone.View.extend({
      */
     showCopyCardForm: function(e) {
         e.preventDefault();
-        if($('.js-copy-card').length){
+        if ($('.js-copy-card').length) {
             $('.js-copy-card #card-title').val(this.model.attributes.name);
         }
         $('.js-show-copy-card-form-response').html(new App.CopyCardView({
