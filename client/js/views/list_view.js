@@ -1042,16 +1042,6 @@ App.ListView = Backbone.View.extend({
                         }
                     },
                     start: function(ev, ui) {
-                        var list = $(ui.placeholder).parents('.js-board-list-cards').attr('id');
-                        var list_id = list.split('js-card-listing-');
-                        list_id = list_id['1'];
-                        var current_list = App.current_board.lists.get(parseInt(list_id));
-                        var current_list_card_count = isNaN(current_list.attributes.card_count) ? 0 : current_list.attributes.card_count;
-                        if (parseInt(current_list_card_count) === 1) {
-                            $('#js-card-listing-' + list_id).find('.js-list-placeholder-' + list_id).remove();
-                            $('#js-card-listing-' + list_id).html('<span class="js-list-placeholder-' + list_id + '">&nbsp;</span>');
-                            // $('#' + list).append('&nbsp;');
-                        }
                         ui.helper.height(ui.item.outerHeight() + 10);
                         ui.placeholder.height(ui.item.outerHeight());
                         $('.js-show-modal-card-view ').removeClass('cur');
