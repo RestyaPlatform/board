@@ -1046,8 +1046,8 @@ App.ListView = Backbone.View.extend({
                         ui.placeholder.height(ui.item.outerHeight());
                         $('.js-show-modal-card-view ').removeClass('cur');
                     },
-                    stop: function(ev, ui) {
-                        var list_id = parseInt($(ui.item).parents('.js-board-list:first').data('list_id'));
+                    receive: function(ev, ui){
+                       var list_id = parseInt($(ui.item).parents('.js-board-list:first').data('list_id'));
                         var current_list = App.current_board.lists.get(parseInt(list_id));
                         $('.js-list-header-section').removeClass('animation');
                         $('.js-open-wipLimit-form').removeClass('tada-animation');
@@ -1060,13 +1060,15 @@ App.ListView = Backbone.View.extend({
                                 list_custom_fields = JSON.parse(list_custom_fields);
                                 if (!_.isUndefined(list_custom_fields.wip_limit) && !_.isEmpty(list_custom_fields.wip_limit) && list_custom_fields.wip_limit !== null) {
                                     if (!_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit) && parseInt(card_count) > parseInt(list_custom_fields.wip_limit)) {
-                                        $(this).sortable("cancel");
+                                        ui.sender.sortable("cancel");
                                         $('.js-list-header-' + list_id).removeClass('animation');
                                         $('.js-wip-limit-count-' + list_id).removeClass('tada-animation');
                                     }
                                 }
                             }
                         }
+                    },
+                    stop: function(ev, ui) {
                         $('.js-show-modal-card-view ').addClass('cur');
                         $('.board-list-outer > div.js-list-sort').removeClass('active');
                         clearInterval(App.sortable.setintervalid_horizontal);
