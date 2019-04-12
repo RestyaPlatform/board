@@ -1142,6 +1142,7 @@ App.FooterView = Backbone.View.extend({
                                                 id: parseInt(activity.attributes.list_id)
                                             });
                                             new_card.list = card_list;
+                                            new_card.board = self.board;
                                             if (!_.isEmpty(card_list) && !_.isUndefined(card_list) && card_list !== null && !_.isEmpty(card_list.cards) && !_.isUndefined(card_list.cards) && card_list.cards !== null) {
                                                 var tmp_list_cards = card_list.cards;
                                                 new_card.set('created', activity.attributes.card.created);
