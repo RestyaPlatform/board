@@ -1821,7 +1821,7 @@ App.ModalCardView = Backbone.View.extend({
      * @type Object(DOM event)
      * @return false
      */
-    deleteCardVote: function(e, ui) {
+    deleteCardVote: function(e) {
         var self = this;
         var card_id = this.model.id;
         var list_id = this.model.attributes.list_id;
@@ -1845,22 +1845,24 @@ App.ModalCardView = Backbone.View.extend({
         self.model.set('card_voter_count', parseInt(vote_count) - 1);
         card_voter.destroy({
             success: function(model, response) {
-                if (!_.isUndefined(response.activity)) {
-                    response.activity = activityCommentReplace(response.activity);
-                    var activity = new App.Activity();
-                    activity.set(response.activity);
-                    activity.board_users = self.model.board_users;
-                    var view = new App.ActivityView({
-                        model: activity,
-                        board: self.model.list.collection.board,
-                        flag: '1'
-                    });
-                    self.model.activities.unshift(activity);
-                    if ($.cookie('filter') !== 'comment') {
-                        var view_activity = $('#js-card-activities-' + self.model.id);
-                        view_activity.prepend(view.render().el);
+                if(!_.isUndefined(response)){
+                    if (!_.isUndefined(response.activity)) {
+                        response.activity = activityCommentReplace(response.activity);
+                        var activity = new App.Activity();
+                        activity.set(response.activity);
+                        activity.board_users = self.model.board_users;
+                        var view = new App.ActivityView({
+                            model: activity,
+                            board: self.model.list.collection.board,
+                            flag: '1'
+                        });
+                        self.model.activities.unshift(activity);
+                        if ($.cookie('filter') !== 'comment') {
+                            var view_activity = $('#js-card-activities-' + self.model.id);
+                            view_activity.prepend(view.render().el);
+                        }
+                        emojify.run();
                     }
-                    emojify.run();
                 }
             }
         });
