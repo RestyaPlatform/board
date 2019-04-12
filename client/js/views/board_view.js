@@ -1039,6 +1039,7 @@ App.BoardView = Backbone.View.extend({
     hideAddListForm: function(e) {
         e.preventDefault();
         var toggle = $(e.target);
+        $(e.target).parents('.js-add-list').find('#inputListName').val('');
         toggle.parents('form').addClass('hide').prev('.js-show-add-list-form').removeClass('hide');
         return false;
     },
