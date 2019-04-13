@@ -1819,6 +1819,11 @@ App.FooterView = Backbone.View.extend({
                                             self.board.set(activity.attributes.revisions.new_value);
                                         }
                                         if (activity.attributes.type === 'add_board_user') {
+                                            activity.attributes.board_user.board_id = parseInt(activity.attributes.board_user.board_id);
+                                            activity.attributes.board_user.board_user_role_id = parseInt(activity.attributes.board_user.board_user_role_id);
+                                            activity.attributes.board_user.default_email_list_id = parseInt(activity.attributes.board_user.default_email_list_id);
+                                            activity.attributes.board_user.id = parseInt(activity.attributes.board_user.id);
+                                            activity.attributes.board_user.user_id = parseInt(activity.attributes.board_user.user_id);
                                             self.board.board_users.add(activity.attributes.board_user);
                                         } else if (activity.attributes.type === 'delete_board_user') {
                                             self.board.board_users.remove(self.board.board_users.findWhere({
@@ -1928,6 +1933,11 @@ App.FooterView = Backbone.View.extend({
                                             change_organization_board.set('organization_logo_url', activity.attributes.organization_logo_url);
                                         });
                                     } else if (activity.attributes.type === 'add_board_user') {
+                                        activity.attributes.board_user.board_id = parseInt(activity.attributes.board_user.board_id);
+                                        activity.attributes.board_user.board_user_role_id = parseInt(activity.attributes.board_user.board_user_role_id);
+                                        activity.attributes.board_user.default_email_list_id = parseInt(activity.attributes.board_user.default_email_list_id);
+                                        activity.attributes.board_user.id = parseInt(activity.attributes.board_user.id);
+                                        activity.attributes.board_user.user_id = parseInt(activity.attributes.board_user.user_id);
                                         board.board_users.add(activity.attributes.board_user);
                                     }
                                 }
