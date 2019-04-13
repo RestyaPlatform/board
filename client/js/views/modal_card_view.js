@@ -114,6 +114,7 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-preview-comment': 'previewComment',
         'click .js-card-activites-load-more': 'cardActivityLoadMore',
         'mouseenter .js-close-drag': 'CloseDragDrop',
+        'click .js-show-members': 'clearMemberComment',
     },
     /**
      * Constructor
@@ -778,6 +779,18 @@ App.ModalCardView = Backbone.View.extend({
             }
         }
         this.deletedKey = deleted;
+    },
+    /**
+     * clearMemberComment()
+     * clear member search form and search members
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     */
+    clearMemberComment:function(e){
+        if($(e.target).parents('.js-new-comment').length > 0){
+            $(e.target).parents('.js-new-comment').find('.js-comment-member-search-response').nextAll().remove();
+        }
     },
     /**
      * showMemberSearch()
