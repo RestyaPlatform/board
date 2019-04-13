@@ -2703,7 +2703,6 @@ App.ModalCardView = Backbone.View.extend({
      */
     renderUsersCollection: function() {
         var view_user = this.$('#js-card-user-add-container');
-        this.$el.find('.js-organization-member-search-response').html('');
         view_user.prevAll().remove();
         var content = '';
         var self = this;
