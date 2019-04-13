@@ -61,14 +61,16 @@ App.BoardMemberAddSearchResultView = Backbone.View.extend({
         }, {
             success: function(model, response) {
                 $.removeCookie('chat_initialize');
-                if (!_.isUndefined(response.board_user_role_id) && !_.isEmpty(response.board_user_role_id) && response.board_user_role_id !== null) {
-                    response.boards_users.board_user_role_id = parseInt(response.board_user_role_id);
-                } else {
-                    response.boards_users.board_user_role_id = 2;
+                if (!_.isUndefined(response) && !_.isEmpty(response) && response !== null) {
+                    if (!_.isUndefined(response.board_user_role_id) && !_.isEmpty(response.board_user_role_id) && response.board_user_role_id !== null) {
+                        response.boards_users.board_user_role_id = parseInt(response.board_user_role_id);
+                    } else {
+                        response.boards_users.board_user_role_id = 2;
+                    }
+                    response.boards_users.user_id = parseInt(response.boards_users.user_id);
+                    board_user.set(response.boards_users);
+                    self.board.board_users.add(board_user);
                 }
-                response.boards_users.user_id = parseInt(response.boards_users.user_id);
-                board_user.set(response.boards_users);
-                self.board.board_users.add(board_user);
             }
         });
         return false;
