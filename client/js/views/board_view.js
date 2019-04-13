@@ -66,17 +66,9 @@ App.BoardView = Backbone.View.extend({
             App.music.music_content = this.model.attributes.music_content;
             App.music.music_name = this.model.attributes.music_name;
         }
-        this.populateLists();
-        this.populateCards();
         this.populateChecklists();
         this.populateChecklistItems();
         this.populateLabels();
-        this.populateActivities();
-        this.populateUsers();
-        this.populateCustomAttachments();
-        this.populateAttachments();
-        this.populateSubscribers();
-        this.populateStars();
         this.populateAclLinks();
         if (!_.isUndefined(authuser.user)) {
             var board_user_role_id = this.model.board_users.findWhere({
@@ -93,67 +85,6 @@ App.BoardView = Backbone.View.extend({
         var acl_links = this.model.get('acl_links') || [];
         this.model.acl_links.reset(acl_links, {
             silent: true
-        });
-    },
-    // Resets this boards lists collection
-    populateLists: function() {
-        var lists = this.model.get('lists') || [];
-        this.model.lists.reset(lists, {
-            silent: true
-        });
-    },
-    // Resets this boards activities collection
-    populateActivities: function() {
-        var activities = this.model.get('activities') || [];
-        this.model.activities.reset(activities, {
-            silent: true
-        });
-    },
-    // Resets this boards users collection
-    populateUsers: function() {
-        var board_users = this.model.get('boards_users') || [];
-        this.model.board_users.reset(board_users, {
-            silent: true
-        });
-    },
-    // Resets this boards custom attachments collection
-    populateCustomAttachments: function() {
-        var custom_attachments = this.model.get('custom_backgrounds') || [];
-        this.model.custom_attachments.reset(custom_attachments, {
-            silent: true
-        });
-    },
-    // Resets this boards attachments collection
-    populateAttachments: function() {
-        var attachments = this.model.get('attachments') || [];
-        this.model.attachments.reset(attachments, {
-            silent: true
-        });
-    },
-    // Resets this boards subscribers collection
-    populateSubscribers: function() {
-        var boards_subscribers = this.model.get('boards_subscribers') || [];
-        this.model.board_subscribers.add(boards_subscribers, {
-            silent: true
-        });
-    },
-    // Resets this boards stars collection
-    populateStars: function() {
-        var boards_stars = this.model.get('boards_stars') || [];
-        this.model.board_stars.add(boards_stars, {
-            silent: true
-        });
-    },
-    // Resets this boards cards collection
-    populateCards: function() {
-        var self = this;
-        self.model.lists.each(function(list) {
-            var cards = list.get('cards') || [];
-            if (!_.isEmpty(cards)) {
-                self.model.cards.add(cards, {
-                    silent: true
-                });
-            }
         });
     },
     // Resets this checklists collection
@@ -1107,10 +1038,6 @@ App.BoardView = Backbone.View.extend({
         list.url = api_url + 'boards/' + self.model.id + '/lists.json';
         list.save(data, {
             success: function(model, response, options) {
-                if (self.model.attributes.lists !== null) {
-                    list.set('custom_fields', null);
-                    self.model.attributes.lists.push(list);
-                }
                 if (!_.isUndefined(data.clone_list_id)) {
                     if (!_.isUndefined(response.list.labels) && response.list.labels.length > 0) {
                         self.model.labels.add(response.list.labels, {
@@ -1211,6 +1138,13 @@ App.BoardView = Backbone.View.extend({
                     uuid: data.uuid
                 });
                 App.boards.get(list.attributes.board_id).lists.add(list);
+                if (self.model.attributes.lists === null) {
+                    self.model.attributes.lists = [];
+                }
+                if (self.model.attributes.lists !== null) {
+                    list.set('custom_fields', null);
+                    self.model.attributes.lists.push(list);
+                }
                 list.board_users = self.model.board_users;
                 list.board_user_role_id = self.model.board_user_role_id;
                 if (!_.isUndefined(data.clone_list_id)) {

@@ -1719,6 +1719,9 @@ App.FooterView = Backbone.View.extend({
                                             new_list.set('is_archived', 0);
                                             new_list.set('position', parseInt(activity.attributes.list.position));
                                             self.board.lists.add(new_list);
+                                            if (self.board.attributes.lists === null) {
+                                                self.board.attributes.lists = [];
+                                            }
                                             if (self.board.attributes.lists !== null) {
                                                 self.board.attributes.lists.push(new_list);
                                             }

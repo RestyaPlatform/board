@@ -70,7 +70,7 @@ $dc.ready(function() {
     }).on('click', '.js-switch-board-view', function(e) {
         if (!_.isEmpty($(this).data('board-viewtype')) && !_.isUndefined($(this).data('board-viewtype'))) {
             if ($('#content #boards-view-' + $(this).data('board-viewtype')).length === 0) {
-                if (!_.isUndefined(App.current_board) && !_.isEmpty(current_board) && current_board !== null && !App.current_board.attributes.is_closed) {
+                if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && App.current_board !== null && !App.current_board.attributes.is_closed) {
                     $('#content .js-boards-view').remove('');
                     $('#content').html('<section id="boards-view-' + $(this).data('board-viewtype') + '" class="clearfix js-boards-view"></section>');
                 }
