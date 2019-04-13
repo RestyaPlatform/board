@@ -787,8 +787,8 @@ App.ModalCardView = Backbone.View.extend({
      * @type Object(DOM event)
      * @return false
      */
-    clearMemberComment:function(e){
-        if($(e.target).parents('.js-new-comment').length > 0){
+    clearMemberComment: function(e) {
+        if ($(e.target).parents('.js-new-comment').length > 0) {
             $(e.target).parents('.js-new-comment').find('.js-comment-member-search-response').nextAll().remove();
         }
     },

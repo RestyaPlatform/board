@@ -1046,8 +1046,8 @@ App.ListView = Backbone.View.extend({
                         ui.placeholder.height(ui.item.outerHeight());
                         $('.js-show-modal-card-view ').removeClass('cur');
                     },
-                    receive: function(ev, ui){
-                       var list_id = parseInt($(ui.item).parents('.js-board-list:first').data('list_id'));
+                    receive: function(ev, ui) {
+                        var list_id = parseInt($(ui.item).parents('.js-board-list:first').data('list_id'));
                         var current_list = App.current_board.lists.get(parseInt(list_id));
                         $('.js-list-header-section').removeClass('animation');
                         $('.js-open-wipLimit-form').removeClass('tada-animation');
