@@ -2646,6 +2646,7 @@ App.ModalCardView = Backbone.View.extend({
                         activity.cards.add(self.model.collection.models);
                     }
                     activity.board_users = self.model.board_users;
+                    activity.board_user_role_id = self.model.board_user_role_id;
                     var view = new App.ActivityView({
                         model: activity,
                         board: self.model.list.collection.board,
