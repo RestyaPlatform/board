@@ -940,6 +940,11 @@ App.BoardHeaderView = Backbone.View.extend({
         var current_param_split = Backbone.history.fragment.split('/');
         if (!_.isUndefined(current_param_split['2']) && current_param_split['2'] !== null && current_param_split['2'].indexOf('list') !== -1) {
             if (!_.isUndefined(e) && e.storeName === 'card') {
+                if (_.isUndefined(e.list) && self.model.lists.length) {
+                    e.list = self.model.lists.findWhere({
+                        id: parseInt(e.attributes.list_id)
+                    });
+                }
                 if (_.isUndefined(e.list_name) || _.isEmpty(e.list_name)) {
                     e.list_name = _.escape(e.list.attributes.name);
                 }
@@ -973,22 +978,8 @@ App.BoardHeaderView = Backbone.View.extend({
                             } else {
                                 self.model.cards.sortByColumn('position');
                             }
-                            self.model.cards.reset(filtered_cards);
-                            var bool = true;
-                            i = 0;
-                            var cards_length = self.model.cards.length;
-                            self.model.cards.each(function(card) {
-                                i++;
-                                if (bool) {
-                                    if (card.attributes.position >= e.attributes.position && parseInt(card.attributes.id) !== parseInt(e.attributes.id)) {
-                                        $('#js-card-' + card.attributes.id).before(view.render().el);
-                                        bool = false;
-                                    } else if (cards_length === i) {
-                                        $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
-                                        bool = false;
-                                    }
-                                }
-                            });
+                            e.list.cards.reset(filtered_cards);
+                            $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
                         }
                     }
                 } else {
