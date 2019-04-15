@@ -926,7 +926,7 @@ App.ModalCardView = Backbone.View.extend({
             var start_form_data = $('.js-card-dock-modal-' + card_id).find('form#cardStartDateEditForm1').serializeArray();
             if (start_form_data.length) {
                 if (new Date(data.due_date).getTime() <= new Date(start_form_data[0].value + ' ' + start_form_data[1].value).getTime()) {
-                    self.flash('danger', i18next.t('Due Date should be greater than Start Date.'));
+                    self.flash('danger', i18next.t('Due date and time should be greater than start date.'));
                     return true;
                 }
             }
