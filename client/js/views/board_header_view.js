@@ -281,6 +281,7 @@ App.BoardHeaderView = Backbone.View.extend({
     },
 
     showBoardActions: function(e) {
+        $('.js-back-to-sidebar').trigger('click');
         var self = this;
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
