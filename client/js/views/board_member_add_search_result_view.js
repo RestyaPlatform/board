@@ -69,7 +69,7 @@ App.BoardMemberAddSearchResultView = Backbone.View.extend({
                     }
                     response.boards_users.user_id = parseInt(response.boards_users.user_id);
                     board_user.set(response.boards_users);
-                    if(response.activity){
+                    if (response.activity) {
                         board_user.set('board_name', response.activity.board_name);
                     }
                     self.board.board_users.add(board_user);

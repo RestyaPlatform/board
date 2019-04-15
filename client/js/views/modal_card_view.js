@@ -1298,7 +1298,7 @@ App.ModalCardView = Backbone.View.extend({
             this.renderDueDateCollection();
             $('.js-card-duedate-edit-' + self.model.id).datetimepicker({
                 format: 'yyyy-mm-dd',
-                container: '.js-edit-card-due-date-form',
+                container: '.js-show-card-due-date-form',
                 autoclose: true,
                 todayBtn: true,
                 pickerPosition: 'bottom-left',
@@ -1313,7 +1313,7 @@ App.ModalCardView = Backbone.View.extend({
             });
             $('.js-card-duetime-edit-' + self.model.id).datetimepicker({
                 format: 'hh:ii',
-                container: '.js-edit-card-due-date-form',
+                container: '.js-show-card-due-date-form',
                 autoclose: true,
                 showMeridian: false,
                 pickerPosition: 'bottom-left',
@@ -1534,7 +1534,7 @@ App.ModalCardView = Backbone.View.extend({
             });
             $('.js-card-duedate-edit-' + self.model.id).datetimepicker({
                 format: 'yyyy-mm-dd',
-                container: '.js-edit-card-due-date-form',
+                container: '.js-show-card-due-date-form',
                 autoclose: true,
                 todayBtn: true,
                 pickerPosition: 'bottom-left',
@@ -1549,7 +1549,7 @@ App.ModalCardView = Backbone.View.extend({
             });
             $('.js-card-duetime-edit-' + self.model.id).datetimepicker({
                 format: 'hh:ii',
-                container: '.js-edit-card-due-date-form',
+                container: '.js-show-card-due-date-form',
                 autoclose: true,
                 showMeridian: false,
                 pickerPosition: 'bottom-left',
@@ -2990,7 +2990,7 @@ App.ModalCardView = Backbone.View.extend({
         _(function() {
             $('.js-card-duedate-edit-' + self.id).datetimepicker({
                 format: 'yyyy-mm-dd',
-                container: '.js-edit-card-due-date-form',
+                container: '.js-show-card-due-date-form',
                 autoclose: true,
                 todayBtn: true,
                 pickerPosition: 'bottom-left',
@@ -3005,7 +3005,7 @@ App.ModalCardView = Backbone.View.extend({
             });
             $('.js-card-duetime-edit-' + self.id).datetimepicker({
                 format: 'hh:ii',
-                container: '.js-edit-card-due-date-form',
+                container: '.js-show-card-due-date-form',
                 autoclose: true,
                 showMeridian: false,
                 pickerPosition: 'bottom-left',
