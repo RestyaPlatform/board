@@ -1585,7 +1585,9 @@ App.ListView = Backbone.View.extend({
                 id: data.uuid,
                 list_id: parseInt(data.list_id),
                 board_id: parseInt(data.board_id),
-                created: tmp_created_date
+                created: tmp_created_date,
+                card_voter_count: 0,
+                attachment_count: 0,
             }, {
                 silent: true
             });
