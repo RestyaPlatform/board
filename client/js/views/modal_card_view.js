@@ -1523,6 +1523,7 @@ App.ModalCardView = Backbone.View.extend({
                                 current_param = 'board/' + board_id['2'];
                                 changeTitle('Board - ' + _.escape(App.current_board.attributes.name));
                             }
+                            current_param = current_param.replace("//", '');
                             app.navigate('#/' + current_param, {
                                 trigger: false,
                                 trigger_function: false,
