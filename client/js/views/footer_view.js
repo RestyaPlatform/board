@@ -1146,19 +1146,20 @@ App.FooterView = Backbone.View.extend({
                                             if (!_.isEmpty(card_list) && !_.isUndefined(card_list) && card_list !== null && !_.isEmpty(card_list.cards) && !_.isUndefined(card_list.cards) && card_list.cards !== null) {
                                                 var tmp_list_cards = card_list.cards;
                                                 new_card.set('created', activity.attributes.card.created);
-                                                if (board_sort_by !== null && bard_sort_direction !== null && board_sort_by === 'position') {
-                                                    new_card.set('position', tmp_list_cards.length + 1);
-                                                }
+                                                new_card.set('position', parseFloat(activity.attributes.card_position));
                                                 tmp_list_cards.add(new_card, {
                                                     silent: true
                                                 });
-                                                var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, tmp_list_cards);
-                                                $.each(sort_filter_cards.models, function(key, filter_card) {
-                                                    if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(activity.attributes.card.id)) {
-                                                        new_card.set('position', key);
-                                                    }
-                                                });
+                                                if (board_sort_by !== 'position') {
+                                                    var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, tmp_list_cards);
+                                                    $.each(sort_filter_cards.models, function(key, filter_card) {
+                                                        if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(activity.attributes.card.id)) {
+                                                            new_card.set('position', key + 1);
+                                                        }
+                                                    });
+                                                }   
                                             }
+                                           
                                             if (!_.isUndefined(card_list) && !_.isUndefined(card_list.attributes.card_count) && card_list.attributes.card_count === 0) {
                                                 // Removing the &nbsp; in the card listing after adding card or copy card
                                                 $('#js-card-listing-' + card_list.id).find('.js-list-placeholder-' + card_list.id).remove();
@@ -1507,18 +1508,18 @@ App.FooterView = Backbone.View.extend({
                                                     var tmp_newlist_cards = card_new_list.cards;
                                                     card.set('created', card.get('created'));
                                                     card.set('list_moved_date', activity.attributes.created);
-                                                    if (tmp_sort_by !== null && tmp_sort_direction !== null && tmp_sort_by === 'position') {
-                                                        card.set('position', tmp_newlist_cards.length + 1);
-                                                    }
+                                                    card.set('position', parseFloat(activity.attributes.card_position));
                                                     tmp_newlist_cards.add(card, {
                                                         silent: true
                                                     });
-                                                    var new_sort_filter_cards = self.cardsort(tmp_sort_by, tmp_sort_direction, tmp_newlist_cards);
-                                                    $.each(new_sort_filter_cards.models, function(key, filter_card) {
-                                                        if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(card.id)) {
-                                                            card.set('position', key);
-                                                        }
-                                                    });
+                                                    if(tmp_sort_by !== 'position'){
+                                                        var new_sort_filter_cards = self.cardsort(tmp_sort_by, tmp_sort_direction, tmp_newlist_cards);
+                                                        $.each(new_sort_filter_cards.models, function(key, filter_card) {
+                                                            if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(card.id)) {
+                                                                card.set('position', key);
+                                                            }
+                                                        });
+                                                    }
                                                 }
                                                 if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(parseInt(activity.attributes.board_id)))) {
                                                     var updated_card_list_cards = self.board.cards.where({
@@ -1528,8 +1529,6 @@ App.FooterView = Backbone.View.extend({
                                                     App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.list_id)).set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
                                                 }
                                                 // Reducing the card count of the old list
-                                                var old_list_card_count = ((card_old_list.attributes.card_count - 1) >= 0) ? (card_old_list.attributes.card_count - 1) : 0;
-                                                card_old_list.set('card_count', old_list_card_count);
                                                 if (parseInt(card_old_list.attributes.card_count) === 0) {
                                                     // Adding the &nbsp; for the list with no card
                                                     $('#js-card-listing-' + card_old_list.id).find('.js-list-placeholder-' + card_old_list.id).remove();

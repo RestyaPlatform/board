@@ -1299,28 +1299,28 @@ App.ListView = Backbone.View.extend({
                         if (filtered_cards.length === 1 || self.model.board.cards.length === 0) {
                             $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
                         } else {
+                            self.model.cards.reset(filtered_cards);
                             if (sort_by !== null && sort_by !== null) {
                                 self.model.cards.sortByColumn(sort_by, sort_direction);
                             } else {
                                 self.model.cards.sortByColumn('position');
                             }
-                            self.model.cards.reset(filtered_cards);
                             var bool = true;
                             i = 0;
                             var cards_length = self.model.cards.length;
                             self.model.cards.each(function(card) {
-                                i++;
                                 if (bool) {
-                                    if (parseInt(card.attributes.position) >= parseInt(e.attributes.position) && parseInt(card.attributes.id) !== parseInt(e.attributes.id)) {
-                                        $('#js-card-' + card.attributes.id).before(view.render().el);
-                                        bool = false;
-                                    } else if (parseInt(card.attributes.id) === parseInt(e.attributes.id) && $('#js-card-' + card.attributes.id).length === 0 && !_.isUndefined(self.model.cards.models[i - 2])) {
-                                        var prev_card_id = self.model.cards.models[i - 2].id;
-                                        $('#js-card-' + prev_card_id).after(view.render().el);
-                                    } else if (cards_length === i && $('#js-card-' + card.attributes.id).length === 0) {
-                                        $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
-                                        bool = false;
+                                    if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
+                                        if (!_.isUndefined(self.model.cards.models[i - 1])) {
+                                            var prev_card_id = self.model.cards.models[i - 1].id;
+                                            $('#js-card-' + prev_card_id).after(view.render().el);
+                                            bool = false;
+                                        } else {
+                                            $('#js-card-listing-' + e.attributes.list_id).prepend(view.render().el);
+                                            bool = false;
+                                        }
                                     }
+                                    i++;
                                 }
                             });
                         }
@@ -1576,9 +1576,7 @@ App.ListView = Backbone.View.extend({
             var tmp_created_date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10) ? '0' + (currentdate.getMonth() + 1) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10) ? '0' + currentdate.getDate() : currentdate.getDate()) + 'T' + currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes() + ':' + (currentdate.getSeconds() < 10 ? '0' : '') + currentdate.getSeconds();
             var tmp_card = new App.Card();
             tmp_card.set('is_offline', true);
-            if (sort_by !== null && sort_direction !== null && sort_by === 'position') {
                 tmp_card.set('position', list_cards.length + 1);
-            }
             tmp_card.set({
                 name: data.name,
                 is_archived: 0,
