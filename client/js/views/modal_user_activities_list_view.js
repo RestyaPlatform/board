@@ -140,7 +140,6 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
     renderActivitiesCollection: function(activities) {
         var self = this;
         var view_user_activities = this.$('#js-list-user-activities-list');
-        view_user_activities.html('');
         if (!_.isEmpty(activities)) {
             if (self.model.attributes.activity_count != PAGING_COUNT && activities.models.length >= PAGING_COUNT) {
                 self.$('#js-admin-activites-load-more').removeClass('hide');
