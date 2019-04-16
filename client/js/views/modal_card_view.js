@@ -490,9 +490,9 @@ App.ModalCardView = Backbone.View.extend({
         e.preventDefault();
         var target = $(e.currentTarget);
         if ($(target).parents('.js-add-comment').length > 0) {
-            $(target).parents('.js-add-comment').find('.js-comment').val($(target).parents('.js-add-comment').find('.js-comment').val() + ':' + target.text() + ': ');
+            $(target).parents('.js-add-comment').find('.js-comment').val($(target).parents('.js-add-comment').find('.js-comment').val() + ' :' + target.text() + ': ');
         } else {
-            $(target).parents('.js-edit-comment').find('.js-comment').val($(target).parents('.js-edit-comment').find('.js-comment').val() + ':' + target.text() + ': ');
+            $(target).parents('.js-edit-comment').find('.js-comment').val($(target).parents('.js-edit-comment').find('.js-comment').val() + ' :' + target.text() + ': ');
         }
     },
     /**
