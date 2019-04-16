@@ -569,6 +569,7 @@ App.ListView = Backbone.View.extend({
      */
     moveList: function(e) {
         e.preventDefault();
+        var self = this;
         var list_id = this.model.id;
         var current_list = this.model.attributes;
         var data = $(e.target).serializeObject();
@@ -631,7 +632,7 @@ App.ListView = Backbone.View.extend({
         } else {
             var previous_position = position - 1;
             var current_index = this.$el.index() + 1;
-            if (position !== current_index) {
+            if (parseFloat(position) !== parseFloat(current_index)) {
                 if ($('.js-board-list').length === position || current_index < position) {
                     this.$el.insertAfter('.js-board-list:nth-child(' + position + ')');
                 } else {
