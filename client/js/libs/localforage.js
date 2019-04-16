@@ -620,7 +620,7 @@ function _getConnection(dbInfo, upgradeNeeded) {
         }
 
         var openreq = idb.open.apply(idb, dbArgs);
-        console.log(openreq.error);
+        // console.log(openreq.error);
 
         if (upgradeNeeded) {
             openreq.onupgradeneeded = function (e) {

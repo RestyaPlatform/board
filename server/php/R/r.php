@@ -1723,8 +1723,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/boards/?/cards/search':
         $user_id = (!empty($authUser['id'])) ? $authUser['id'] : 0;
-        $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT c.id, c.name, bu.board_id FROM boards_users bu join cards c on c.board_id = bu.board_id WHERE bu.board_id IN (SELECT board_id FROM boards_users WHERE user_id = $1) AND c.name  LIKE $2 ORDER BY id ASC) as d';
-        array_push($pg_params, $user_id, '%' . $r_resource_filters['q'] . '%');
+        $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT c.id, c.name, bu.board_id, c.list_id FROM boards_users bu join cards c on c.board_id = bu.board_id WHERE bu.board_id IN (SELECT board_id FROM boards_users WHERE user_id = $1 ) AND c.name  LIKE $2 AND  c.board_id = $3 ORDER BY id ASC) as d';
+        array_push($pg_params, $user_id, '%' . $r_resource_filters['q'] . '%', $r_resource_vars['boards']);
         if (empty($r_resource_filters['q'])) {
             $sql = false;
             $response = array();
@@ -1735,7 +1735,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
-                    $data[] = $obj;
+                    $obj_val_arr = array(
+                        $obj['list_id']
+                    );
+                    $list_exist = executeQuery('SELECT * FROM lists WHERE id = $1', $obj_val_arr);
+                    if (!empty($list_exist)) {
+                        $data[] = $obj;
+                    }
                 }
                 echo json_encode($data);
             } else {
@@ -6023,7 +6029,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 }
             }
         }
-        if (isset($r_put['default_email_list_id']) || isset($r_put['sort_by']) || isset($r_put['is_default_email_position_as_bottom'])) {
+        if (isset($r_put['default_email_list_id']) || isset($r_put['is_default_email_position_as_bottom'])) {
             $comment = '';
         } else if (isset($r_put['board_visibility'])) {
             $comment = '##USER_NAME## changed visibility to ' . $board_visibility[$r_put['board_visibility']];
@@ -6061,6 +6067,9 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
         } else if (isset($r_put['music_name']) && !empty($r_put['music_content'])) {
             $comment = '##USER_NAME## updated the beats on ##BOARD_NAME## board.';
+        }else if (isset($r_put['sort_by']) && !empty($r_put['sort_by'])) {
+            $comment = '##USER_NAME## updated the sort of cards on ##BOARD_NAME## board.';
+            $activity_type = 'update_sort_card';
         }
         if (!empty($r_put['organization_id'])) {
             $qry_val_arr = array(
@@ -6348,20 +6357,20 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $childCardResponse = updateDependencyCards($r_put, array());
             }
         } else if (isset($r_put['due_date'])) {
-            $comment = '##USER_NAME##  removed Due date - ' . $previous_value['due_date'] . ' was removed to the card ##CARD_LINK##';
+            $comment = '##USER_NAME##  removed Due date - ' . $previous_value['due_date'] . ' to the card ##CARD_LINK##';
             $activity_type = 'delete_card_duedate';
         }
         if (is_plugin_enabled('r_gantt_view')) {
             if (isset($present_custom_fields['start_date']) && $present_custom_fields['start_date'] != 'NULL' && $present_custom_fields['start_date'] != '') {
                 if (isset($previous_custom_fields['start_date']) && ($previous_custom_fields['start_date'] != 'null' && $previous_custom_fields['start_date'] != '')) {
-                    $comment = '##USER_NAME## updated Start date - ' . $present_custom_fields['start_date'] . ' to the card ##CARD_LINK##';
+                    $comment = '##USER_NAME## updated Start date - ' . $present_custom_fields['start_date'] . ' ' . $present_custom_fields['start_time'] . ' to the card ##CARD_LINK##';
                     $activity_type = 'edit_card_startdate';
                 } else {
-                    $comment = '##USER_NAME## set start date - ' . $present_custom_fields['start_date'] . ' to the card ##CARD_LINK##';
+                    $comment = '##USER_NAME## set start date - ' . $present_custom_fields['start_date'] . ' ' . $present_custom_fields['start_time'] . ' to the card ##CARD_LINK##';
                     $activity_type = 'add_card_startdate';
                 }
             } else if (isset($present_custom_fields['start_date'])) {
-                $comment = '##USER_NAME## removed Start date - ' . $previous_custom_fields['start_date'] . ' to the card ##CARD_LINK##';
+                $comment = '##USER_NAME## removed Start date - ' . $previous_custom_fields['start_date'] . ' ' . $previous_custom_fields['start_time'] . ' to the card ##CARD_LINK##';
                 $activity_type = 'delete_card_startdate';
             }
         }
@@ -6402,7 +6411,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         if (isset($previous_value['name']) && isset($r_put['name']) && $r_put['name'] != $previous_value['name']) {
             $comment = '##USER_NAME## renamed ##CARD_LINK##';
         }
-        if (!isset($previous_value['description']) && isset($r_put['description'])) {
+        if (empty($previous_value['description']) && isset($r_put['description'])) {
             $comment = '##USER_NAME## added card description in the card ##CARD_LINK## - ##DESCRIPTION##';
             $activity_type = 'add_card_desc';
         } else if (isset($previous_value) && isset($r_put['description']) && $r_put['description'] != $previous_value['description']) {

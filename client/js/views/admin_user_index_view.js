@@ -47,6 +47,7 @@ App.AdminUserIndexView = Backbone.View.extend({
             });
         }
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
+        _this.pagination = (!_.isUndefined(_this.pagination)) ? _this.pagination : 1;
         _this.users = new App.UserCollection();
         var colspan = "15";
         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
@@ -54,10 +55,12 @@ App.AdminUserIndexView = Backbone.View.extend({
         }
         $('.js-user-list').html('<tr class="js-loader"><td colspan="' + colspan + '"><span class="cssloader"></span></td></tr>');
         _this.users.url = api_url + 'users.json?page=' + _this.current_page;
-        app.navigate('#/' + 'users?page=' + _this.current_page, {
-            trigger: false,
-            trigger_function: false,
-        });
+        if (_this.current_page !== 1 || _this.pagination == 2) {
+            app.navigate('#/' + 'users?page=' + _this.current_page, {
+                trigger: false,
+                trigger_function: false,
+            });
+        }
         _this.users.fetch({
             cache: false,
             abortPending: true,
@@ -89,6 +92,7 @@ App.AdminUserIndexView = Backbone.View.extend({
                         callback: function(event, page) {
                             event.preventDefault();
                             if (page) {
+                                _this.pagination = 2;
                                 _this.current_page = page;
                                 _this.updateCollection();
                             }

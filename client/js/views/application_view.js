@@ -138,6 +138,27 @@ App.ApplicationView = Backbone.View.extend({
                         success: function(collection, settings_response) {
                             SITE_NAME = settings_response.SITE_NAME;
                             localforage.setItem('apps', settings_response.apps_data).then(function() {
+                                if (role_links.length === 0) {
+                                    localforage.getItem('links', function(err, value) {
+                                        if (value) {
+                                            if (role_links.length === 0 && value !== undefined && value !== null) {
+                                                role_links.add(JSON.parse(value));
+                                            }
+                                            if (!_.isUndefined(APPS) && APPS !== null && !_.isEmpty(APPS.enabled_apps) && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                                                APPS.permission_checked_apps = [];
+                                                _.each(APPS.enabled_apps, function(app) {
+                                                    if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user)) {
+                                                        if ((!_.isEmpty(role_links.where({
+                                                                slug: app
+                                                            })) || parseInt(authuser.user.role_id) === 1) && $.inArray(app, APPS.permission_checked_apps) === -1) {
+                                                            APPS.permission_checked_apps.push(app);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
                                 page.set_page_title();
                                 FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
                                 DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
@@ -295,7 +316,7 @@ App.ApplicationView = Backbone.View.extend({
      */
     board_view: function() {
         var self = this;
-        if (viewed_board.id !== parseInt(self.id)) {
+        if (parseInt(viewed_board.id) !== parseInt(self.id)) {
             var Board = new App.Board({
                 id: self.id
             });
@@ -326,6 +347,10 @@ App.ApplicationView = Backbone.View.extend({
                                         $.each(list.cards, function(card_key, card) {
                                             if (card) {
                                                 cards[card.id] = card.custom_fields;
+                                                // Resets this boards cards collection
+                                                Board.cards.add(card, {
+                                                    silent: true
+                                                });
                                             }
                                         });
                                     }
@@ -333,6 +358,8 @@ App.ApplicationView = Backbone.View.extend({
                                         custom_fields: list.custom_fields,
                                         cards: cards
                                     };
+                                    // Resets this boards lists collection
+                                    Board.lists.add(list);
                                 }
                             });
                         }
@@ -344,6 +371,52 @@ App.ApplicationView = Backbone.View.extend({
                         Board.authuser = self.authuser;
                         viewed_board = Board;
                         Board.board_user_roles = response.board_user_roles;
+                        // Resets this boards users collection
+                        if (!_.isUndefined(response.boards_users) && !_.isEmpty(response.boards_users)) {
+                            $.each(response.boards_users, function(key, board_user) {
+                                Board.board_users.add(board_user);
+                            });
+                        }
+                        // Resets this boards activities collection
+                        if (!_.isUndefined(response.activities) && !_.isEmpty(response.activities)) {
+                            $.each(response.activities, function(key, activity) {
+                                Board.activities.add(activity, {
+                                    silent: true
+                                });
+                            });
+                        }
+                        // Resets this boards custom attachments collection
+                        if (!_.isUndefined(response.custom_backgrounds) && !_.isEmpty(response.custom_backgrounds)) {
+                            $.each(response.custom_backgrounds, function(key, custom_background) {
+                                Board.custom_attachments.add(custom_background, {
+                                    silent: true
+                                });
+                            });
+                        }
+                        // Resets this boards attachments collection
+                        if (!_.isUndefined(response.attachments) && !_.isEmpty(response.attachments)) {
+                            $.each(response.attachments, function(key, attachment) {
+                                Board.attachments.add(attachment, {
+                                    silent: true
+                                });
+                            });
+                        }
+                        // Resets this boards subscribers collection
+                        if (!_.isUndefined(response.boards_subscribers) && !_.isEmpty(response.boards_subscribers)) {
+                            $.each(response.boards_subscribers, function(key, boards_subscriber) {
+                                Board.board_subscribers.add(boards_subscriber, {
+                                    silent: true
+                                });
+                            });
+                        }
+                        // Resets this boards stars collection
+                        if (!_.isUndefined(response.boards_stars) && !_.isEmpty(response.boards_stars)) {
+                            $.each(response.boards_stars, function(key, boards_star) {
+                                Board.board_stars.add(boards_star, {
+                                    silent: true
+                                });
+                            });
+                        }
                         $('#content').html(new App.BoardView({
                             model: Board
                         }).el);

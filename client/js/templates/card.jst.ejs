@@ -20,7 +20,10 @@
 		%>
 		<img class="img-responsive center-block" src="<%= img_src %>"/>
 	  </div>
-	<% } %> 
+	<% } else if (!_.isEmpty(card.attachments) && card.attachments.length > 0 && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(pdf)$/) && !_.isUndefined(card.attachments.at(0).attributes.doc_image_path) && !_.isEmpty(card.attachments.at(0).attributes.doc_image_path) && card.attachments.at(0).attributes.doc_image_path !== null) { 
+			var document_path = card.documentLink('Card', card.attachments.at(0).attributes); %>
+				<img src="/img/<%= card.attachments.at(0).attributes.doc_image_path %>" class="img-responsive center-block">
+		<% }%> 
   <a href="#/board/<%- card.attributes.board_id %>/card/<%- card.attributes.id %>" title="<%- card.attributes.name %>"><%- card.attributes.name %></a>
   </div>
   <div class="pull-left navbar-btn">

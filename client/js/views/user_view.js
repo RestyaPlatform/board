@@ -464,6 +464,8 @@ App.UserView = Backbone.View.extend({
      */
     userCards: function(e, param) {
         var self = this;
+        self.$('#cards').html('');
+        self.$('#created-cards').html('');
         if (self.$('.js-membered-cards-tab').hasClass('active')) {
             self.$('.js-userCreated-cards-tab').removeClass('active');
             self.$('.js-membered-cards-tabContent').addClass('active');
@@ -479,13 +481,12 @@ App.UserView = Backbone.View.extend({
         self.model.cards.fetch({
             cache: false,
             success: function(card, response) {
-                self.$('#cards').html('');
                 if (!_.isUndefined(param) && !_.isEmpty(param)) {
                     self.$('#cards').html('<div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-hide-closedBoards-cards" title="' + i18next.t('Hide Closed Boards Cards') + '">' + i18next.t('Hide Closed Boards Cards') + '</a></div>');
                 } else {
                     self.$('#cards').html('<div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-show-closedBoards-cards" title="' + i18next.t('Show Closed Boards Cards') + '">' + i18next.t('Show Closed Boards Cards') + '</a></div>');
                 }
-                self.$('#created-cards').html('');
+                $('body').trigger('IcalfeedRendered');
                 if (response.length === 0) {
                     self.$('#cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
                         postProcess: 'sprintf',
@@ -539,14 +540,14 @@ App.UserView = Backbone.View.extend({
     },
     userCreatedCards: function() {
         var self = this;
+        self.$('#cards').html('');
+        self.$('#created-cards').html('');
         self.$('.js-userCreated-cards-tab').addClass('active');
         self.$('.js-membered-cards-tab').removeClass('active');
         self.model.cards.url = api_url + 'users/' + self.model.id + '/cards.json?type=created';
         self.model.cards.fetch({
             cache: false,
             success: function(card, response) {
-                self.$('#cards').html('');
-                self.$('#created-cards').html('');
                 self.$('.js-userCreated-cards-tabContent').addClass('active');
                 self.$('.js-membered-cards-tabContent').removeClass('active');
                 var card_users = new App.CardUserCollection();
@@ -560,6 +561,7 @@ App.UserView = Backbone.View.extend({
                             model: card_user
                         }).el);
                     });
+                    $('body').trigger('IcalfeedRendered');
                 } else {
                     self.$('#created-cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
                         postProcess: 'sprintf',

@@ -281,6 +281,7 @@ App.BoardHeaderView = Backbone.View.extend({
     },
 
     showBoardActions: function(e) {
+        $('.js-back-to-sidebar').trigger('click');
         var self = this;
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
@@ -354,12 +355,7 @@ App.BoardHeaderView = Backbone.View.extend({
             is_closed: 1
         }, {
             patch: true,
-            success: function(model, response) {
-                app.navigate('#/board/' + board_id, {
-                    trigger: true,
-                    replace: true,
-                });
-            }
+            success: function(model, response) {}
         });
         return false;
     },
@@ -944,6 +940,11 @@ App.BoardHeaderView = Backbone.View.extend({
         var current_param_split = Backbone.history.fragment.split('/');
         if (!_.isUndefined(current_param_split['2']) && current_param_split['2'] !== null && current_param_split['2'].indexOf('list') !== -1) {
             if (!_.isUndefined(e) && e.storeName === 'card') {
+                if (_.isUndefined(e.list) && self.model.lists.length) {
+                    e.list = self.model.lists.findWhere({
+                        id: parseInt(e.attributes.list_id)
+                    });
+                }
                 if (_.isUndefined(e.list_name) || _.isEmpty(e.list_name)) {
                     e.list_name = _.escape(e.list.attributes.name);
                 }
@@ -977,22 +978,8 @@ App.BoardHeaderView = Backbone.View.extend({
                             } else {
                                 self.model.cards.sortByColumn('position');
                             }
-                            self.model.cards.reset(filtered_cards);
-                            var bool = true;
-                            i = 0;
-                            var cards_length = self.model.cards.length;
-                            self.model.cards.each(function(card) {
-                                i++;
-                                if (bool) {
-                                    if (card.attributes.position >= e.attributes.position && parseInt(card.attributes.id) !== parseInt(e.attributes.id)) {
-                                        $('#js-card-' + card.attributes.id).before(view.render().el);
-                                        bool = false;
-                                    } else if (cards_length === i) {
-                                        $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
-                                        bool = false;
-                                    }
-                                }
-                            });
+                            e.list.cards.reset(filtered_cards);
+                            $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
                         }
                     }
                 } else {
@@ -1036,6 +1023,7 @@ App.BoardHeaderView = Backbone.View.extend({
         $('.js-boards-view').attr('id', 'boards-view');
         $('#boards-view').addClass('col-xs-12');
         $('#switch-board-view').addClass('calendar-view');
+        $('#listview_table').attr("id", "switch-board-view");
         $('#switch-board-view').removeClass('board-viewlist col-xs-12');
         $('li.js-switch-view').removeClass('active');
         $('a.js-switch-calendar-view').parent().addClass('active');
@@ -1661,9 +1649,10 @@ App.BoardHeaderView = Backbone.View.extend({
         var currentBoardList = App.current_board.lists.get(find_card.attributes.list_id);
         if (!_.isUndefined(currentBoardList)) {
             if (parseInt(currentBoardList.attributes.card_count) === 0) {
-                $('#js-card-listing-' + find_card.attributes.list_id).html(function(i, h) {
+                $('#js-card-listing-' + find_card.attributes.list_id).find('.js-list-placeholder-' + find_card.attributes.list_id).remove();
+                /* $('#js-card-listing-' + find_card.attributes.list_id).html(function(i, h) {
                     return h.replace(/&nbsp;/g, '');
-                });
+                }); */
             }
         }
         this.model.cards.findWhere({
