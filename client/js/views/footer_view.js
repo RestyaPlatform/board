@@ -1157,9 +1157,9 @@ App.FooterView = Backbone.View.extend({
                                                             new_card.set('position', key + 1);
                                                         }
                                                     });
-                                                }   
+                                                }
                                             }
-                                           
+
                                             if (!_.isUndefined(card_list) && !_.isUndefined(card_list.attributes.card_count) && card_list.attributes.card_count === 0) {
                                                 // Removing the &nbsp; in the card listing after adding card or copy card
                                                 $('#js-card-listing-' + card_list.id).find('.js-list-placeholder-' + card_list.id).remove();
@@ -1512,7 +1512,7 @@ App.FooterView = Backbone.View.extend({
                                                     tmp_newlist_cards.add(card, {
                                                         silent: true
                                                     });
-                                                    if(tmp_sort_by !== 'position'){
+                                                    if (tmp_sort_by !== 'position') {
                                                         var new_sort_filter_cards = self.cardsort(tmp_sort_by, tmp_sort_direction, tmp_newlist_cards);
                                                         $.each(new_sort_filter_cards.models, function(key, filter_card) {
                                                             if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(card.id)) {

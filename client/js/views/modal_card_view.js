@@ -4014,7 +4014,7 @@ App.ModalCardView = Backbone.View.extend({
             this.model.list.collection.board.lists.get(data.list_id).cards.add(card, {
                 silent: true
             });
-            if(sort_by !== 'position'){
+            if (sort_by !== 'position') {
                 var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, new_list_cards);
                 $.each(sort_filter_cards.models, function(key, filter_card) {
                     if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(card.id)) {

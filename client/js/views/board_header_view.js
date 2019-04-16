@@ -980,7 +980,7 @@ App.BoardHeaderView = Backbone.View.extend({
                             }
                             var list_filtered_cards = self.model.cards.where({
                                 is_archived: 0,
-                                list_id:parseInt(e.attributes.list_id),
+                                list_id: parseInt(e.attributes.list_id),
                             });
                             e.list.cards.reset(list_filtered_cards);
                             $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
