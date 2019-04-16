@@ -115,6 +115,7 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-card-activites-load-more': 'cardActivityLoadMore',
         'mouseenter .js-close-drag': 'CloseDragDrop',
         'click .js-show-members': 'clearMemberComment',
+        'click .js-open-card-view': 'triggerOpenModal',
     },
     /**
      * Constructor
@@ -791,6 +792,23 @@ App.ModalCardView = Backbone.View.extend({
         if ($(e.target).parents('.js-new-comment').length > 0) {
             $(e.target).parents('.js-new-comment').find('.js-comment-member-search-response').nextAll().remove();
         }
+    },
+    /**
+     * triggerOpenModal()
+     * trigger the commented cards modal 
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     */
+    triggerOpenModal: function(e) {
+        var target = $(e.target);
+        var card_id = target.data('card_id');
+        if (card_id !== undefined && card_id !== null && ($('#js-card-' + card_id).length !== 0)) {
+            $('#js-card-' + card_id).trigger('click');
+        } else {
+            return true;
+        }
+        return false;
     },
     /**
      * showMemberSearch()
