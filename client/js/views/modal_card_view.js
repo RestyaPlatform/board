@@ -490,9 +490,9 @@ App.ModalCardView = Backbone.View.extend({
         e.preventDefault();
         var target = $(e.currentTarget);
         if ($(target).parents('.js-add-comment').length > 0) {
-            $(target).parents('.js-add-comment').find('.js-comment').val($(target).parents('.js-add-comment').find('.js-comment').val() + ':' + target.text() + ': ');
+            $(target).parents('.js-add-comment').find('.js-comment').val($(target).parents('.js-add-comment').find('.js-comment').val() + ' :' + target.text() + ': ');
         } else {
-            $(target).parents('.js-edit-comment').find('.js-comment').val($(target).parents('.js-edit-comment').find('.js-comment').val() + ':' + target.text() + ': ');
+            $(target).parents('.js-edit-comment').find('.js-comment').val($(target).parents('.js-edit-comment').find('.js-comment').val() + ' :' + target.text() + ': ');
         }
     },
     /**
@@ -1487,6 +1487,7 @@ App.ModalCardView = Backbone.View.extend({
                     self.$el.find('.js-modal-settings').removeClass('hide');
                 },
                 beforeClose: function(event, dialog) {
+                    $('.js-modal-settings').removeClass('open');
                     var description;
                     var comment = $('#js-card-modal-' + self.model.id).find('#inputAddComment').val();
                     if ($('#js-card-modal-' + self.model.id).find('#cardDescriptionEditForm').hasClass('hide')) {
@@ -1522,6 +1523,7 @@ App.ModalCardView = Backbone.View.extend({
                                 current_param = 'board/' + board_id['2'];
                                 changeTitle('Board - ' + _.escape(App.current_board.attributes.name));
                             }
+                            current_param = current_param.replace("//", '');
                             app.navigate('#/' + current_param, {
                                 trigger: false,
                                 trigger_function: false,

@@ -1742,10 +1742,11 @@ App.BoardHeaderView = Backbone.View.extend({
      */
     switchGridView: function(e) {
         $('body').addClass('modal-open');
+        $('#listview_table').attr("id", "switch-board-view");
         e.preventDefault();
         app.navigate('#/board/' + this.model.id, {
-            trigger: true,
-            trigger_function: true,
+            trigger: false,
+            trigger_function: false,
         });
         $('#content').html(new App.BoardView({
             model: this.model
