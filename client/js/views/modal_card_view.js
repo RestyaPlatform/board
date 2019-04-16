@@ -1487,6 +1487,7 @@ App.ModalCardView = Backbone.View.extend({
                     self.$el.find('.js-modal-settings').removeClass('hide');
                 },
                 beforeClose: function(event, dialog) {
+                    $('.js-modal-settings').removeClass('open');
                     var description;
                     var comment = $('#js-card-modal-' + self.model.id).find('#inputAddComment').val();
                     if ($('#js-card-modal-' + self.model.id).find('#cardDescriptionEditForm').hasClass('hide')) {
