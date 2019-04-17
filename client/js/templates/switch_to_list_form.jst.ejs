@@ -1,3 +1,6 @@
+<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_export_csv',APPS.enabled_apps) !== -1) { %>
+	<div class="export-csv-block" style="height: 34px;"></div>
+<% } %>
 <div class="row">
 <div class="pull-right dropdown js-list-response">
 	<a data-toggle="dropdown" class="btn btn-primary dropdown-toggle col-sm-offset-1 show" type="button"><i class="icon-sort h3 cur"></i></a>
