@@ -123,6 +123,18 @@ App.LoginView = Backbone.View.extend({
                                 if (!_.isEmpty(links)) {
                                     role_links.add(links);
                                 }
+                                if (!_.isUndefined(APPS) && APPS !== null && !_.isEmpty(APPS.enabled_apps) && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                                    APPS.permission_checked_apps = [];
+                                    _.each(APPS.enabled_apps, function(app) {
+                                        if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user)) {
+                                            if ((!_.isEmpty(role_links.where({
+                                                    slug: app
+                                                })) || parseInt(authuser.user.role_id) === 1) && $.inArray(app, APPS.permission_checked_apps) === -1) {
+                                                APPS.permission_checked_apps.push(app);
+                                            }
+                                        }
+                                    });
+                                }
                                 auth_user_organizations.add(authuser.user.organizations);
                                 self.changeFavicon(response.user.notify_count);
                                 this.headerView = new App.HeaderView({
