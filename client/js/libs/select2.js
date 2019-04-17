@@ -1063,7 +1063,7 @@ the specific language governing permissions and limitations under the Apache Lic
                     }
                 }
             }
-            if (typeof(opts.query) !== "function") {
+            if (typeof(opts.query) !== "function" && opts.query !== undefined) {
                 throw "query function not defined for Select2 " + opts.element.attr("id");
             }
 
