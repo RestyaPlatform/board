@@ -1482,12 +1482,12 @@ App.BoardHeaderView = Backbone.View.extend({
      * @return false
      *
      */
-    showArchivedListLists: function() {
-        if (this.start !== 0) {
-            this.start = 0;
+    showArchivedListLists: function(e) {
+        if (this.liststart !== 0) {
+            this.liststart = 0;
         }
-        if (this.page !== 1) {
-            this.page = 1;
+        if (this.listpage !== 1) {
+            this.listpage = 1;
         }
         var self = this;
         if (this.$el.find('.js-load-more-archived-cards').hasClass('show')) {
