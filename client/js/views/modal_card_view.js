@@ -4010,19 +4010,19 @@ App.ModalCardView = Backbone.View.extend({
             var board_sort_by = (current_board.attributes.sort_by) ? current_board.attributes.sort_by : 'position';
             var bard_sort_direction = (current_board.attributes.sort_direction) ? current_board.attributes.sort_direction : 'asc';
             var new_list_cards = this.model.list.collection.board.lists.get(data.list_id).cards;
-            if (sort_by !== null && sort_direction !== null && sort_by === 'position') {
-                card.set('position', new_list_cards.length + 1);
-            }
+            card.set('position', new_list_cards.length + 1);
             this.model.list.collection.board.lists.get(data.list_id).cards.add(card, {
                 silent: true
             });
-            var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, new_list_cards);
-            $.each(sort_filter_cards.models, function(key, filter_card) {
-                if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(card.id)) {
-                    card.set('position', key);
-                    data.position = key;
-                }
-            });
+            if (sort_by !== 'position') {
+                var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, new_list_cards);
+                $.each(sort_filter_cards.models, function(key, filter_card) {
+                    if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(card.id)) {
+                        card.set('position', key);
+                        data.position = key;
+                    }
+                });
+            }
         }
         card.set('id', null);
         data.board_id = parseInt(data.board_id);
@@ -4036,7 +4036,6 @@ App.ModalCardView = Backbone.View.extend({
                 }
                 if (data.board_id === current_card.board_id) {
                     card.set(response.cards);
-                    card.set("position", data.position);
                     if (parseInt(response.cards.is_archived) === 0) {
                         card.set('is_archived', 0);
                     } else {
