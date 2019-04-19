@@ -50,6 +50,7 @@ To upgrade, overwrite application files and apply respective DB script:
 *  v0.6.2 to v0.6.3 - [`/sql/upgrade-0.6.2-0.6.3.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.2-0.6.3.sql)
 *  v0.6.3 to v0.6.4 - [`/sql/upgrade-0.6.3-0.6.4.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.3-0.6.4.sql)
 *  v0.6.5 to v0.6.6 - [`/sql/upgrade-0.6.5-0.6.6.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.5-0.6.6.sql)
+*  v0.6.6 to v0.6.7 - [`/sql/upgrade-0.6.6-0.6.7.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.6-0.6.7.sql)
 
 ### Configuring Restyaboard
 

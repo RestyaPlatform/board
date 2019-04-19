@@ -38,7 +38,7 @@ if (!empty($argv) && !empty($argv[1])) {
             }
             $headers.= "MIME-Version: 1.0" . PHP_EOL;
             $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-            $headers.= "X-Mailer: Restyaboard (0.6.6; +http://restya.com/board)" . PHP_EOL;
+            $headers.= "X-Mailer: Restyaboard (0.6.7; +http://restya.com/board)" . PHP_EOL;
             $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
             $result = mail($to_email, $subject, $message, $headers, '-f' . $from_email);
             if (R_DEBUG) {
