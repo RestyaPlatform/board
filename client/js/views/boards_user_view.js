@@ -50,7 +50,7 @@ App.BoardUsersView = Backbone.View.extend({
         return this;
     },
     showBoardUserActions: function(e) {
-        if ($(e.currentTarget).parent('.js-board-user-avatar-click').length) {
+        if ($(e.currentTarget).parent('.js-board-user-avatar-click').length > 0) {
             $(e.currentTarget).parent('.js-board-user-avatar-click').addClass('open');
             $(e.currentTarget).parent('.js-board-user-avatar-click').siblings('.dropdown').removeClass('open');
         }
