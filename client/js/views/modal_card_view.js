@@ -3838,9 +3838,15 @@ App.ModalCardView = Backbone.View.extend({
                         }).el).insertAfter(self.$el.find('.js_activity_card_search_response'));
                     });
                 } else {
-                    $(new App.ActivityCardSearchView({
-                        model: null
-                    }).el).insertAfter(self.$el.find('.js_activity_card_search_response'));
+                    if (_.isEmpty(q)) {
+                        $(new App.ActivityCardSearchView({
+                            model: 'empty'
+                        }).el).insertAfter(self.$el.find('.js_activity_card_search_response'));
+                    } else {
+                        $(new App.ActivityCardSearchView({
+                            model: null
+                        }).el).insertAfter(self.$el.find('.js_activity_card_search_response'));
+                    }
                 }
             }
         });
