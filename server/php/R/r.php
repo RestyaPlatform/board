@@ -1383,6 +1383,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                                 'the card ##CARD_LINK##' => 'this card',
                             );
                             $obj['comment'] = strtr($obj['comment'], $replaceContent);
+                            if ($obj['type'] === 'add_card') {
+                                $obj['comment'] = '##USER_NAME## added this card';
+                            }
                         }
                         $obj = ActivityHandler::getActivitiesObj($obj);
                         if (!empty($_metadata)) {
