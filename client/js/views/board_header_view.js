@@ -1336,8 +1336,6 @@ App.BoardHeaderView = Backbone.View.extend({
      */
     boardUserAvatarDropdown: function(e) {
         e.preventDefault();
-        $(e.currentTarget).addClass('open');
-        $(e.currentTarget).siblings('.dropdown').removeClass('open');
         return false;
     },
     /**

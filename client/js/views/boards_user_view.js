@@ -49,7 +49,11 @@ App.BoardUsersView = Backbone.View.extend({
         this.showTooltip();
         return this;
     },
-    showBoardUserActions: function() {
+    showBoardUserActions: function(e) {
+        if ($(e.currentTarget).parent('.js-board-user-avatar-click').length > 0) {
+            $(e.currentTarget).parent('.js-board-user-avatar-click').addClass('open');
+            $(e.currentTarget).parent('.js-board-user-avatar-click').siblings('.dropdown').removeClass('open');
+        }
         this.$el.find('.js-show-board-user-action-response').html(new App.BoardUserActionsView({
             model: this.model,
         }).el);
