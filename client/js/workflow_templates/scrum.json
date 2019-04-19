@@ -1,13 +1,9 @@
 {
     "name": "Scrum",
     "lists": [
-	"Vision",
-	"Release Planning",
-	"Sprint planning",
-	"Sprint backlog",
-	"Sprint execution",
-	"Sprint review",
-	"Sprint retrospective",
-	"Release"
+	"Product Backlog",
+	"Sprint Backlog",
+	"Doing",
+	"Done"
     ]
 }
