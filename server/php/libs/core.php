@@ -608,7 +608,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.6.6; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.6.7; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         $result = mail($to, $subject, $message, $headers, '-f' . DEFAULT_FROM_EMAIL_ADDRESS);
         if (R_DEBUG) {
