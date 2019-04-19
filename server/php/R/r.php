@@ -6067,7 +6067,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
         } else if (isset($r_put['music_name']) && !empty($r_put['music_content'])) {
             $comment = '##USER_NAME## updated the beats on ##BOARD_NAME## board.';
-        }else if (isset($r_put['sort_by']) && !empty($r_put['sort_by'])) {
+        } else if (isset($r_put['sort_by']) && !empty($r_put['sort_by'])) {
             $comment = '##USER_NAME## updated the sort of cards on ##BOARD_NAME## board.';
             $activity_type = 'update_sort_card';
         }
