@@ -43,7 +43,7 @@ App.BoardView = Backbone.View.extend({
             $.cookie('music_play', "1");
         }
         this.model.attachments.add(this.model.get('attachments'));
-        _.bindAll(this, 'render', 'renderListsCollection', 'renderActivitiesCollection', 'setBoardBackground');
+        _.bindAll(this, 'render', 'renderListsCollection', 'renderActivitiesCollection', 'setBoardBackground', 'renderBoarduserCollection');
         this.model.bind('change:name change:is_closed', this.render);
         this.model.bind('change:board_visibility', this.render);
         this.model.bind('change:background_color change:background_picture_url change:background_pattern_url', this.setBoardBackground);
@@ -56,9 +56,9 @@ App.BoardView = Backbone.View.extend({
         this.model.lists.bind('change:is_archived', this.renderListsCollection, this);
         this.model.lists.bind('change:comment_count', this.renderListsCollection, this);
         this.model.activities.bind('add', this.renderActivitiesCollection);
-        this.model.board_users.bind('add', this.render);
-        this.model.board_users.bind('remove', this.render);
-        this.model.board_users.bind('change', this.render);
+        this.model.board_users.bind('add', this.renderBoarduserCollection);
+        this.model.board_users.bind('remove', this.renderBoarduserCollection);
+        this.model.board_users.bind('change', this.renderBoarduserCollection);
         if (!_.isUndefined(App.music)) {
             App.music.inst = new Instrument();
         }
@@ -578,7 +578,19 @@ App.BoardView = Backbone.View.extend({
         var temp = new App.MusicRepeatView();
         temp.continueMusic();
     },
-
+    /**
+     * renderBoarduserCollection()
+     * populate the boarduser to the current board
+     * @param NULL
+     * @return object
+     *
+     */
+    renderBoarduserCollection: function() {
+        var self = this;
+        $('#header').html(new App.BoardHeaderView({
+            model: self.model,
+        }).el);
+    },
     /**
      * render()
      * populate the html to the dom
@@ -1137,6 +1149,9 @@ App.BoardView = Backbone.View.extend({
                 list = self.model.lists.findWhere({
                     uuid: data.uuid
                 });
+                if (_.isUndefined(App.boards.get(list.attributes.board_id))) {
+                    App.boards.add(self.model);
+                }
                 App.boards.get(list.attributes.board_id).lists.add(list);
                 if (self.model.attributes.lists === null) {
                     self.model.attributes.lists = [];
