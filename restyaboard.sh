@@ -142,6 +142,20 @@
 		}
 		
 		upgrade-0.6.6-0.6.7(){
+			if [ -d "$dir/client/apps" ]; then
+				chmod -R go+w "$dir/client/apps"
+				curl -v -L -G -o /tmp/r_card_counter-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_card_counter-v0.1.1.zip
+				unzip /tmp/r_card_counter-v0.1.1.zip -d "$dir/client/apps"
+				curl -v -L -G -o /tmp/r_codenames-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.2.zip
+				unzip /tmp/r_codenames-v0.1.2.zip -d "$dir/client/apps"
+			else 
+				mkdir "$dir/client/apps"
+				chmod -R go+w "$dir/client/apps"
+				curl -v -L -G -o /tmp/r_card_counter-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_card_counter-v0.1.1.zip
+				unzip /tmp/r_card_counter-v0.1.1.zip -d "$dir/client/apps"
+				curl -v -L -G -o /tmp/r_codenames-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.2.zip
+				unzip /tmp/r_codenames-v0.1.2.zip -d "$dir/client/apps"
+			fi
 			: > /var/spool/cron/crontabs/root
 			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/main.sh//" /var/spool/cron/crontabs/root
 		}
@@ -232,6 +246,10 @@
 				if [[ $version < "v0.6.6" ]];
 				then
 					upgrade+=("upgrade-0.6.5-0.6.6")
+				fi
+				if [[ $version < "v0.6.7" ]];
+				then
+					upgrade+=("upgrade-0.6.6-0.6.7")
 				fi			
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
