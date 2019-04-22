@@ -344,14 +344,14 @@
 							echo "nginx installation failed with error code ${error_code} (nginx installation failed with error code 2)"
 							return 2
 						fi
-						if [ -f "/etc/nginx/conf.d/default.conf" ]; then
-							rm -rf /etc/nginx/conf.d/default.conf
+						if [ -f "/etc/nginx/conf.d/default" ]; then
+							rm -rf /etc/nginx/conf.d/default
 						fi
-						if [ -f "/etc/nginx/sites-available/default.conf" ]; then
-							rm -rf /etc/nginx/sites-available/default.conf
+						if [ -f "/etc/nginx/sites-available/default" ]; then
+							rm -rf /etc/nginx/sites-available/default
 						fi
-						if [ -f "/etc/nginx/sites-enabled/default.conf" ]; then
-							rm -rf /etc/nginx/sites-enabled/default.conf
+						if [ -f "/etc/nginx/sites-enabled/default" ]; then
+							rm -rf /etc/nginx/sites-enabled/default
 						fi
 						service nginx start
 					esac
