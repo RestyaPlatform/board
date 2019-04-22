@@ -156,7 +156,6 @@
 				curl -v -L -G -o /tmp/r_codenames-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.2.zip
 				unzip /tmp/r_codenames-v0.1.2.zip -d "$dir/client/apps"
 			fi
-
 			: > /var/spool/cron/crontabs/root
 			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/main.sh//" /var/spool/cron/crontabs/root
 		}
