@@ -144,18 +144,28 @@
 		upgrade-0.6.6-0.6.7(){
 			if [ -d "$dir/client/apps" ]; then
 				chmod -R go+w "$dir/client/apps"
-				curl -v -L -G -o /tmp/r_card_counter-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_card_counter-v0.1.1.zip
-				unzip /tmp/r_card_counter-v0.1.1.zip -d "$dir/client/apps"
-				curl -v -L -G -o /tmp/r_codenames-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.2.zip
-				unzip /tmp/r_codenames-v0.1.2.zip -d "$dir/client/apps"
 			else 
 				mkdir "$dir/client/apps"
 				chmod -R go+w "$dir/client/apps"
-				curl -v -L -G -o /tmp/r_card_counter-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_card_counter-v0.1.1.zip
-				unzip /tmp/r_card_counter-v0.1.1.zip -d "$dir/client/apps"
-				curl -v -L -G -o /tmp/r_codenames-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.2.zip
-				unzip /tmp/r_codenames-v0.1.2.zip -d "$dir/client/apps"
 			fi
+			curl -v -L -G -o /tmp/r_card_counter-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_card_counter-v0.1.1.zip
+			unzip /tmp/r_card_counter-v0.1.1.zip -d "$dir/client/apps"
+
+			curl -v -L -G -o /tmp/r_codenames-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.2.zip
+			unzip /tmp/r_codenames-v0.1.2.zip -d "$dir/client/apps"
+
+			curl -v -L -G -o /tmp/r_eu_gdpr-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_eu_gdpr-v0.1.2.zip
+			unzip /tmp/r_eu_gdpr-v0.1.2.zip -d "$dir/client/apps"
+
+			curl -v -L -G -o /tmp/r_gmail_addon-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_gmail_addon-v0.1.1.zip
+			unzip /tmp/r_gmail_addon-v0.1.1.zip -d "$dir/client/apps"			
+			
+			curl -v -L -G -o /tmp/r_hide_card_additional_informations-v0.1.3.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_hide_card_additional_informations-v0.1.3.zip
+			unzip /tmp/r_hide_card_additional_informations-v0.1.3.zip -d "$dir/client/apps"
+
+            find "$dir/client/apps" -type d -exec chmod 755 {} \;
+            find "$dir/client/apps" -type f -exec chmod 644 {} \;
+            chmod 0777 $dir/client/apps/**/*.json
 			: > /var/spool/cron/crontabs/root
 			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/main.sh//" /var/spool/cron/crontabs/root
 		}
@@ -777,6 +787,9 @@
 							unzip /tmp/$app_name.zip -d "$dir/client/apps"
 						fi
 					done
+                    find "$dir/client/apps" -type d -exec chmod 755 {} \;
+                    find "$dir/client/apps" -type f -exec chmod 644 {} \;
+                    chmod 0777 $dir/client/apps/**/*.json
 				esac
 				
 				echo "Starting services..."
@@ -1232,6 +1245,9 @@
 							unzip /tmp/$app_name.zip -d "$dir/client/apps"
 						fi
 					done
+                    find "$dir/client/apps" -type d -exec chmod 755 {} \;
+                    find "$dir/client/apps" -type f -exec chmod 644 {} \;
+                    chmod 0777 $dir/client/apps/**/*.json
 				esac
 
 				if [ -f "/bin/systemctl" ]; then
