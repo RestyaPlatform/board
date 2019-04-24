@@ -165,7 +165,7 @@
 
             find "$dir/client/apps" -type d -exec chmod 755 {} \;
             find "$dir/client/apps" -type f -exec chmod 644 {} \;
-            chmod 0777 "$dir/client/apps/**/*.json"
+            chmod 0777 $dir/client/apps/**/*.json
 			: > /var/spool/cron/crontabs/root
 			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/main.sh//" /var/spool/cron/crontabs/root
 		}
@@ -789,7 +789,7 @@
 					done
                     find "$dir/client/apps" -type d -exec chmod 755 {} \;
                     find "$dir/client/apps" -type f -exec chmod 644 {} \;
-                    chmod 0777 "$dir/client/apps/**/*.json"
+                    chmod 0777 $dir/client/apps/**/*.json
 				esac
 				
 				echo "Starting services..."
@@ -1247,7 +1247,7 @@
 					done
                     find "$dir/client/apps" -type d -exec chmod 755 {} \;
                     find "$dir/client/apps" -type f -exec chmod 644 {} \;
-                    chmod 0777 "$dir/client/apps/**/*.json"
+                    chmod 0777 $dir/client/apps/**/*.json
 				esac
 
 				if [ -f "/bin/systemctl" ]; then
