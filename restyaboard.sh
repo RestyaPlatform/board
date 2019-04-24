@@ -159,7 +159,9 @@
 
 			curl -v -L -G -o /tmp/r_gmail_addon-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_gmail_addon-v0.1.1.zip
 			unzip /tmp/r_gmail_addon-v0.1.1.zip -d "$dir/client/apps"
-			
+            find "$dir/client/apps" -type d -exec chmod 755 {} \;
+            find "$dir/client/apps" -type f -exec chmod 644 {} \;
+            chmod 0777 "$dir/client/apps/**/*.json"
 			: > /var/spool/cron/crontabs/root
 			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/main.sh//" /var/spool/cron/crontabs/root
 		}
@@ -781,6 +783,9 @@
 							unzip /tmp/$app_name.zip -d "$dir/client/apps"
 						fi
 					done
+                    find "$dir/client/apps" -type d -exec chmod 755 {} \;
+                    find "$dir/client/apps" -type f -exec chmod 644 {} \;
+                    chmod 0777 "$dir/client/apps/**/*.json"
 				esac
 				
 				echo "Starting services..."
@@ -1236,6 +1241,9 @@
 							unzip /tmp/$app_name.zip -d "$dir/client/apps"
 						fi
 					done
+                    find "$dir/client/apps" -type d -exec chmod 755 {} \;
+                    find "$dir/client/apps" -type f -exec chmod 644 {} \;
+                    chmod 0777 "$dir/client/apps/**/*.json"
 				esac
 
 				if [ -f "/bin/systemctl" ]; then
