@@ -18,11 +18,13 @@ App.ActivityReplyFormView = Backbone.View.extend({
      * Constructor
      * initialize default values and actions
      */
-    initialize: function() {
+    initialize: function(options) {
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
+        this.list = options.list;
         this.render();
+        emojify.run();
     },
     converter: new showdown.Converter({
         extensions: ['targetblank', 'xssfilter', 'codehighlight']
@@ -47,9 +49,15 @@ App.ActivityReplyFormView = Backbone.View.extend({
      *
      */
     render: function() {
+        var self = this;
         this.converter.setFlavor('github');
+        var card = self.model.cards.findWhere({
+            id: parseInt(self.model.attributes.card_id)
+        });
         this.$el.html(this.template({
-            activity: this.model
+            activity: this.model,
+            card: card,
+            list: this.list
         }));
         this.showTooltip();
         return this;
@@ -97,5 +105,6 @@ App.ActivityReplyFormView = Backbone.View.extend({
             $(target).parents('.js-reply-form').find('.js-card-replyComment-preview').html("<p>Nothing to preview</p>");
         }
         $(target).parents('.js-reply-form').find('.js-card-replyComment-preview-panel').removeClass('hide').addClass('show');
+        emojify.run();
     }
 });

@@ -34,13 +34,16 @@ App.AdminBoardsListView = Backbone.View.extend({
     updateCollection: function() {
         var _this = this;
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
+        _this.pagination = (!_.isUndefined(_this.pagination)) ? _this.pagination : 1;
         _this.boards = new App.BoardCollection();
         $('.js-my-boards').html('<tr class="js-loader"><td colspan="12"><span class="cssloader"></span></td></tr>');
         _this.boards.url = api_url + 'boards.json?page=' + _this.current_page;
-        app.navigate('#/' + 'boards/list?page=' + _this.current_page, {
-            trigger: false,
-            trigger_function: false,
-        });
+        if (_this.current_page !== 1 || _this.pagination == 2) {
+            app.navigate('#/' + 'boards/list?page=' + _this.current_page, {
+                trigger: false,
+                trigger_function: false,
+            });
+        }
         _this.boards.fetch({
             cache: false,
             abortPending: true,
@@ -61,18 +64,22 @@ App.AdminBoardsListView = Backbone.View.extend({
                     }).el);
                 });
                 $('.pagination-boxes').unbind();
-                $('.pagination-boxes').pagination({
-                    total_pages: response._metadata.noOfPages,
-                    current_page: _this.current_page,
-                    display_max: 4,
-                    callback: function(event, page) {
-                        event.preventDefault();
-                        if (page) {
-                            _this.current_page = page;
-                            _this.updateCollection();
+                $('.pagination-boxes').html('');
+                if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
+                    $('.pagination-boxes').pagination({
+                        total_pages: response._metadata.noOfPages,
+                        current_page: _this.current_page,
+                        display_max: 4,
+                        callback: function(event, page) {
+                            event.preventDefault();
+                            if (page) {
+                                _this.pagination = 2;
+                                _this.current_page = page;
+                                _this.updateCollection();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
     }

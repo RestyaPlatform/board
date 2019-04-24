@@ -1,3 +1,40 @@
+FROM php:7-cli as builder
+
+RUN apt-get update
+RUN apt-get install -y gnupg2
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install -y nodejs
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install
+RUN npm install -g grunt-cli
+
+COPY .sandstorm/ .sandstorm/
+COPY .tx/ .tx/
+COPY docs/ docs/
+COPY Jelastic/ Jelastic/
+COPY build/ build/
+COPY client/ client/
+COPY restyaboard.conf .
+COPY sql/ sql/
+COPY api_explorer/ api_explorer/
+COPY server/ server/
+COPY media/ media/
+COPY .codeclimate.yml .
+COPY .htaccess .
+COPY diagnose.php .
+COPY ejabberd.yml .
+COPY restyaboard.sh .
+COPY restyaboard-ssl.conf .
+COPY restyaboard_uninstall.sh .
+COPY Gruntfile.js .
+
+RUN npm run docker:prebuild
+
+# Result image
 FROM debian:stretch
 
 # update & install package
@@ -11,20 +48,29 @@ RUN apt-get update && \
     jq \
     libpq5 \
     nginx \
-    php7.0 \
-    php7.0-cli \
-    php7.0-common \
-    php7.0-curl \
-    php7.0-fpm \
-    php7.0-imagick \
-    php7.0-imap \
-    php7.0-ldap \
-    php7.0-mbstring \
-    php7.0-pgsql \
-    php7.0-xml \
     postfix \
     postgresql-client \
-    unzip
+    unzip \
+    wget
+
+# Necessary steps for php7.2
+RUN apt install -y apt-transport-https lsb-release ca-certificates && \
+    wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg && \
+    sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
+    apt update
+
+RUN apt-get install -y \
+    php7.2 \
+    php7.2-cli \
+    php7.2-common \
+    php7.2-curl \
+    php7.2-fpm \
+    php7.2-imagick \
+    php7.2-imap \
+    php7.2-ldap \
+    php7.2-mbstring \
+    php7.2-pgsql \
+    php7.2-xml
 
 # after initial setup of deps to improve rebuilding speed
 ENV ROOT_DIR=/usr/share/nginx/html \
@@ -37,7 +83,8 @@ ENV ROOT_DIR=/usr/share/nginx/html \
     TZ=Etc/UTC
 
 # deploy app
-ADD restyaboard-docker.zip /tmp/restyaboard.zip
+COPY --from=builder /app/restyaboard-docker.zip /tmp/restyaboard.zip
+
 RUN unzip /tmp/restyaboard.zip -d ${ROOT_DIR} && \
     rm /tmp/restyaboard.zip && \
     chown -R www-data:www-data ${ROOT_DIR}
@@ -59,6 +106,13 @@ RUN rm /etc/nginx/sites-enabled/default && \
 # cleanup
 RUN apt-get autoremove -y --purge && \
     apt-get clean
+
+# Default values. Can be changed during container start.
+ENV POSTGRES_HOST=postgres \
+    POSTGRES_PORT=5432 \
+    POSTGRES_USER=admin \
+    POSTGRES_PASSWORD=admin \
+    POSTGRES_DB=restyaboard
 
 # entrypoint
 COPY docker-scripts/docker-entrypoint.sh /

@@ -4,7 +4,7 @@
 #
 # Usage: ./restyaboard.sh
 #
-# Copyright (c) 2014-2018 Restya.
+# Copyright (c) 2014-2019 Restya.
 # Dual License (OSL 3.0 & Commercial License)
 {
 	main() {
@@ -140,6 +140,42 @@
 				unzip /tmp/r_codenames-v0.1.1.zip -d "$dir/client/apps"
 			fi
 		}
+		
+		upgrade-0.6.6-0.6.7(){
+			if [ -d "$dir/client/apps" ]; then
+				chmod -R go+w "$dir/client/apps"
+			else 
+				mkdir "$dir/client/apps"
+				chmod -R go+w "$dir/client/apps"
+			fi
+			curl -v -L -G -o /tmp/r_card_counter-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_card_counter-v0.1.1.zip
+			unzip /tmp/r_card_counter-v0.1.1.zip -d "$dir/client/apps"
+
+			curl -v -L -G -o /tmp/r_codenames-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.2.zip
+			unzip /tmp/r_codenames-v0.1.2.zip -d "$dir/client/apps"
+
+			curl -v -L -G -o /tmp/r_eu_gdpr-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_eu_gdpr-v0.1.2.zip
+			unzip /tmp/r_eu_gdpr-v0.1.2.zip -d "$dir/client/apps"
+
+			curl -v -L -G -o /tmp/r_gmail_addon-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_gmail_addon-v0.1.1.zip
+			unzip /tmp/r_gmail_addon-v0.1.1.zip -d "$dir/client/apps"			
+			
+			curl -v -L -G -o /tmp/r_hide_card_additional_informations-v0.1.3.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_hide_card_additional_informations-v0.1.3.zip
+			unzip /tmp/r_hide_card_additional_informations-v0.1.3.zip -d "$dir/client/apps"
+
+            find "$dir/client/apps" -type d -exec chmod 755 {} \;
+            find "$dir/client/apps" -type f -exec chmod 644 {} \;
+            chmod 0777 $dir/client/apps/**/*.json
+
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				: > /var/spool/cron/crontabs/root
+				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
+			else
+				: > /var/spool/cron/root
+				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
+			fi
+		}
 
 		update_version()
 		{
@@ -227,6 +263,10 @@
 				if [[ $version < "v0.6.6" ]];
 				then
 					upgrade+=("upgrade-0.6.5-0.6.6")
+				fi
+				if [[ $version < "v0.6.7" ]];
+				then
+					upgrade+=("upgrade-0.6.6-0.6.7")
 				fi			
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
@@ -339,14 +379,14 @@
 							echo "nginx installation failed with error code ${error_code} (nginx installation failed with error code 2)"
 							return 2
 						fi
-						if [ -f "/etc/nginx/conf.d/default.conf" ]; then
-							rm -rf /etc/nginx/conf.d/default.conf
+						if [ -f "/etc/nginx/conf.d/default" ]; then
+							rm -rf /etc/nginx/conf.d/default
 						fi
-						if [ -f "/etc/nginx/sites-available/default.conf" ]; then
-							rm -rf /etc/nginx/sites-available/default.conf
+						if [ -f "/etc/nginx/sites-available/default" ]; then
+							rm -rf /etc/nginx/sites-available/default
 						fi
-						if [ -f "/etc/nginx/sites-enabled/default.conf" ]; then
-							rm -rf /etc/nginx/sites-enabled/default.conf
+						if [ -f "/etc/nginx/sites-enabled/default" ]; then
+							rm -rf /etc/nginx/sites-enabled/default
 						fi
 						service nginx start
 					esac
@@ -527,7 +567,13 @@
 					if [[ ${PSQL_VERSION} == "" ]]; then
 						PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
 					fi
-					if [[ $PSQL_VERSION < 9.3 ]]; then
+					if [[ ${PSQL_VERSION} =~ ^10\.[0-9]{1,}$ ]]; then
+						PSQL_VERSION=10
+					fi
+					if [[ ${PSQL_VERSION} =~ ^11\.[0-9]{1,}$ ]]; then
+						PSQL_VERSION=11
+					fi
+					if [[ 1 -eq "$(echo "${PSQL_VERSION} < 9.3" | bc)" ]]; then
 						set +x
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
 						sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
@@ -556,6 +602,9 @@
 				fi
 				if [[ ${PSQL_VERSION} =~ ^10\.[0-9]{1,}$ ]]; then
 					PSQL_VERSION=10
+				fi
+				if [[ ${PSQL_VERSION} =~ ^11\.[0-9]{1,}$ ]]; then
+					PSQL_VERSION=11
 				fi
 				sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf > /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf.1
 				cd /etc/postgresql/${PSQL_VERSION}/main || exit
@@ -700,20 +749,8 @@
 				sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 				sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 				
-				echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
-				echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-				
-				echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
-				echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-				
-				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
-				echo "*/30 * * * * $dir/server/php/shell/imap.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-				
-				echo "Setting up cron for every 5 minutes to send activities to webhook..."
-				echo "*/5 * * * * $dir/server/php/shell/webhook.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-				
-				echo "Setting up cron for every 5 minutes to send email notification to past due..."
-				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
+				echo "Setting up cron for every 5 minutes.."
+				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
 
 				set +x
 				echo "Do you want to install Restyaboard apps (y/n)?"
@@ -745,6 +782,9 @@
 							unzip /tmp/$app_name.zip -d "$dir/client/apps"
 						fi
 					done
+                    find "$dir/client/apps" -type d -exec chmod 755 {} \;
+                    find "$dir/client/apps" -type f -exec chmod 644 {} \;
+                    chmod 0777 $dir/client/apps/**/*.json
 				esac
 				
 				echo "Starting services..."
@@ -895,6 +935,7 @@
 
 					yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
 					yum install -y php72w-pear
+					yum install -y php72w-gd
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -1146,20 +1187,8 @@
 				sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 				sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 				
-				echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
-				echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
-				
-				echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
-				echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
-				
-				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
-				echo "*/30 * * * * $dir/server/php/shell/imap.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
-				
-				echo "Setting up cron for every 5 minutes to send activities to webhook..."
-				echo "*/5 * * * * $dir/server/php/shell/webhook.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
-				
-				echo "Setting up cron for every 5 minutes to send email notification to past due..."
-				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
+				echo "Setting up cron for every 5 minutes..."
+				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
 				
 				echo "Reset php-fpm (use unix socket mode)..."
 				if [ -f "/run/php/php7.2-fpm.sock" ]; then
@@ -1199,6 +1228,9 @@
 							unzip /tmp/$app_name.zip -d "$dir/client/apps"
 						fi
 					done
+                    find "$dir/client/apps" -type d -exec chmod 755 {} \;
+                    find "$dir/client/apps" -type f -exec chmod 644 {} \;
+                    chmod 0777 $dir/client/apps/**/*.json
 				esac
 
 				if [ -f "/bin/systemctl" ]; then

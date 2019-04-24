@@ -8,14 +8,14 @@
  * @package    Restyaboard
  * @subpackage Plugin
  * @author     Restya <info@restya.com>
- * @copyright  2014-2018 Restya
+ * @copyright  2014-2019 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
 require_once 'config.inc.php';
 require_once 'libs/core.php';
 if (!empty($_GET['plugin'])) {
-    $content = file_get_contents(APP_PATH . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'apps' . DIRECTORY_SEPARATOR . $_GET['plugin'] . DIRECTORY_SEPARATOR . 'app.json');
+    $content = file_get_contents(APP_PATH . DS . 'client' . DS . 'apps' . DS . $_GET['plugin'] . DS . 'app.json');
     $data = json_decode($content, true);
     $post_data = array(
         'client_id' => $data['settings'][$_GET['plugin'] . '_client_id']['value'],

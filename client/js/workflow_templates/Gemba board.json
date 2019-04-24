@@ -1,0 +1,9 @@
+{
+    "name": "Gemba board",
+    "lists": [
+	"Todo",
+	"Todo - This Week",
+	"Doing - Today",
+	"Done"
+    ]
+}

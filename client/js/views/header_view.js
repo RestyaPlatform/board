@@ -78,10 +78,17 @@ App.HeaderView = Backbone.View.extend({
         if (typeof Notification != 'undefined') {
             this.model.is_show_enable_notification = (Notification.permission == 'default') ? true : false;
         }
+        current_param = this.model.current_param;
+        if (typeof(authuser) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'user_logins' || current_param === 'roles' || current_param === 'apps' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list' || current_param === 'oauth_clients' || current_param === 'board_user_roles' || current_param === 'organization_user_roles')) {
+            this.$el.attr('id', 'admin-panel');
+        }
         this.$el.html(this.template(this.model));
         this.showTooltip();
         if (load_count === 1) {
             load_count++;
+            var nodes = Array();
+            var appsFunc = Array();
+            appsurlFunc = {};
             _.each(APPS, function(app, key) {
                 var s, l, v = '';
                 if (key === 'settings') {
@@ -114,20 +121,77 @@ App.HeaderView = Backbone.View.extend({
                 }
                 if (key === 'html') {
                     _.each(app, function(html, key) {
+                        /* create app template element */
+                        app_tmpl = document.createElement(html.split('/')[1] + '-template');
+                        document.head.appendChild(app_tmpl);
+                        /* create link for template element */
                         l = document.createElement('link');
-                        l.rel = 'import';
+                        l.setAttribute('crossorigin', 'anonymous');
+                        l.rel = 'preload';
+                        l.as = "fetch";
+                        l.id = html.split('/')[1] + '-template';
                         l.href = html;
-                        l.onload = function(e) {
-                            var content = e.target.import;
-                            var get_script = content.querySelectorAll("script");
-                            _.each(get_script, function(html, key) {
-                                document.body.appendChild(html.cloneNode(true));
-                            });
-                        };
                         document.head.appendChild(l);
                     });
                 }
+                if (key === 'mutationObservers') {
+                    _.each(app, function(appTmp) {
+                        _.each(appTmp, function(mutation, node) {
+                            if (_.isUndefined(nodes[node])) {
+                                nodes[node] = Array();
+                            }
+                            _.each(mutation, function(appFunction, targetElement) {
+                                if (nodes[node].indexOf(targetElement) === -1) {
+                                    nodes[node].push(targetElement);
+                                }
+                                if (_.isUndefined(appsFunc[targetElement])) {
+                                    appsFunc[targetElement] = Array();
+                                }
+                                appsFunc[targetElement].push(appFunction);
+                            });
+                        });
+                    });
+                }
+                if (key === 'urlChange') {
+                    _.each(app, function(appTmp) {
+                        _.each(appTmp, function(funct_name, appsUrl) {
+                            if (_.isUndefined(appsurlFunc[appsUrl])) {
+                                appsurlFunc[appsUrl] = Array();
+                            }
+                            if (appsurlFunc[appsUrl].indexOf(funct_name) === -1) {
+                                appsurlFunc[appsUrl].push(funct_name);
+                            } else {
+                                appsurlFunc[appsUrl] = Array();
+                                appsurlFunc[appsUrl].push(funct_name);
+                            }
+                        });
+                    });
+                }
             });
+            var whatToObserve = {
+                childList: true
+            };
+            var mutationObserver = new MutationObserver(function(mutationRecords) {
+                _.each(mutationRecords, function(mutationRecord) {
+                    if (mutationRecord.addedNodes.length > 0 && nodes[mutationRecord.target.id].indexOf(mutationRecord.addedNodes[0].id) !== -1) {
+                        setTimeout(function() {
+                            _(function() {
+                                _.each(appsFunc[mutationRecord.addedNodes[0].id], function(
+                                    functionName
+                                ) {
+                                    if (typeof AppsFunction[functionName] === 'function') {
+                                        AppsFunction[functionName]();
+                                    }
+                                });
+                            }).defer();
+                        }, 100);
+                    }
+                });
+            });
+            for (var node in nodes) {
+                var targetNode = document.getElementById(node);
+                mutationObserver.observe(targetNode, whatToObserve);
+            }
         }
         return this;
     },

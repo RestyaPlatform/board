@@ -33,17 +33,18 @@
 	</form> 
 	<% if(!_.isUndefined(subscriber) && parseInt(subscriber.attributes.is_subscribed)) { %>
 	<% if(authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "board_subscriber",board_user_role_id: parseInt(board.board_user_role_id)}))) { %>
-	<a href="#" class="js-show-unsubscribe-form navbar-btn h4 list-group-item-text" name="unsubscribe" title="<%- i18next.t('Subscribed') %>"><i class="icon-eye-close"></i><span class="hidden-xs"><%- i18next.t('Subscribed') %> <i class="icon-ok js-filter-icon cur"></i></span></a>
+	<a href="#" class="js-show-unsubscribe-form navbar-btn h4 list-group-item-text" name="unsubscribe" title="<%- i18next.t('Subscribed') %>"><i class="icon-eye-close"></i><span><%- i18next.t('Subscribed') %> <i class="icon-ok js-filter-icon cur"></i></span></a>
 	<% } %>
 	<% } else {%> 
 	<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || ((!_.isEmpty(board.acl_links.where({slug: "subscribe_board",board_user_role_id: parseInt(board.board_user_role_id)})))  || (!_.isEmpty(role_links.where({slug: "subscribe_board"})) && board.attributes.board_visibility == 2)))){ %>
-	<a href="#" class="js-show-subscribe-form navbar-btn h4" name="subscribe" title="<%- i18next.t('Subscribe') %>"><i class="icon-eye-open"></i><span class="hidden-xs"><%- i18next.t('Subscribe') %></span></a>
+	<a href="#" class="js-show-subscribe-form navbar-btn h4" name="subscribe" title="<%- i18next.t('Subscribe') %>"><i class="icon-eye-open"></i><span><%- i18next.t('Subscribe') %></span></a>
 	<% } %>
 	<% } %>
-  </li>
+	</li>
+	<li class="js-background-change"></li>
 <% } %>  
 <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
-<li class="js-background-change"><a href="#" class="nav-list-item nav-list-sub-item js-change-background"><%- i18next.t('Change Background') %></a></li>
+<li><a href="#" class="nav-list-item nav-list-sub-item js-change-background"><%- i18next.t('Change Background') %></a></li>
 <% if(!_.isEmpty(IMAP_EMAIL)){ %>
 <li><a href="#" class="nav-list-item nav-list-sub-item js-email-to-board-settings"> <%- i18next.t('Email to board settings') %></a></li>
 <% } %>
@@ -56,6 +57,7 @@
 <li class="js-chat-history-enable"><a href="#" class="js-show-board-modal" data-toggle="modal" data-target="#modalListView"><%- i18next.t('Show Attachments') %></a></li>
 <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
 <li><a href="#" class="js-additional-settings"><%- i18next.t('Additional Settings') %></a></li>
+<% if(!board.attributes.is_closed) {%>
 <li class="divider"></li>
 <li class="dropdown js-open-dropdown inner-dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-sm icon-warning-sign icon-type text-primary"></i><%- i18next.t('Close Board') %></a>
   <ul class="dropdown-menu arrow pull-right">
@@ -76,4 +78,5 @@
 	</li>
   </ul>
 </li>
+<% } %>
 <% } %>

@@ -8,13 +8,15 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2018 Restya
+ * @copyright  2014-2019 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
-$app_path = dirname(dirname(__FILE__));
-require_once $app_path . '/config.inc.php';
-require_once $app_path . '/libs/core.php';
+if (!defined('APP_PATH')) {
+    $app_path = dirname(dirname(__FILE__));
+    require_once $app_path . '/config.inc.php';
+    require_once $app_path . '/libs/core.php';
+}
 global $_server_domain_url;
 if ($db_lnk) {
     $qry_val_arr = array(
@@ -33,7 +35,7 @@ if ($db_lnk) {
             while ($activity = pg_fetch_assoc($activities)) {
                 $qry_val_arr = array(
                     true
-                ); 
+                );
                 $result = pg_query_params($db_lnk, "SELECT * FROM webhooks WHERE is_active = $1", $qry_val_arr);
                 $count = pg_num_rows($result);
                 if ($count) {
@@ -48,13 +50,13 @@ if ($db_lnk) {
                         }
                         if (empty($activities_enabled) || (!empty($activities_enabled) && in_array($activity['type'], $activities_enabled))) {
                             if ($row['type'] != 'Default') {
-                                require_once $app_path . '/plugins/' . $row['type'] . '/functions.php';
+                                require_once $app_path . DS . 'plugins' . DS . $row['type'] . DS . 'functions.php';
                                 $function_name = 'postIn' . $row['type'];
                                 $activity_json = $function_name($row, $activity, $_server_domain_url);
                             } else {
                                 $activity_json = json_encode($activity);
                             }
-                        }                        
+                        }
                         if (empty($activity_json)) {
                             $status = 0;
                             continue;

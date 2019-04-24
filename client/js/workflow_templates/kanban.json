@@ -1,0 +1,10 @@
+{
+    "name": "Kanban",
+    "lists": [
+	"Backlog",
+	"Priority 1",
+	"Priority 2",
+    "WIP",
+    "Done"
+    ]
+}

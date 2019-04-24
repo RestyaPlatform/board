@@ -20,7 +20,10 @@
 		%>
 		<img class="img-responsive center-block" src="<%= img_src %>"/>
 	  </div>
-	<% } %> 
+	<% } else if (!_.isEmpty(card.attachments) && card.attachments.length > 0 && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(pdf)$/) && !_.isUndefined(card.attachments.at(0).attributes.doc_image_path) && !_.isEmpty(card.attachments.at(0).attributes.doc_image_path) && card.attachments.at(0).attributes.doc_image_path !== null) { 
+			var document_path = card.documentLink('Card', card.attachments.at(0).attributes); %>
+				<img src="/img/<%= card.attachments.at(0).attributes.doc_image_path %>" class="img-responsive center-block">
+		<% }%> 
   <a href="#/board/<%- card.attributes.board_id %>/card/<%- card.attributes.id %>" title="<%- card.attributes.name %>"><%- card.attributes.name %></a>
   </div>
   <div class="pull-left navbar-btn">
@@ -64,17 +67,13 @@
 	</li>
 	<% } %>  
 	<%  var hide_card_informations = false;
-		if (!_.isUndefined(APPS) && APPS !== null ) {
-			if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-				if ($.inArray('r_hide_card_additional_informations',APPS.enabled_apps) !== -1) {
-					hide_card_informations = true;
-				}
-			}
+		if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_hide_card_additional_informations',APPS.enabled_apps) !== -1) {
+			hide_card_informations = true;
 		}
-		if(!_.isUndefined(card.id) && (_.isUndefined(card.attributes.is_offline) || card.attributes.is_offline == false)){ %>
+		if(!_.isUndefined(card.id) && (_.isUndefined(card.attributes.is_offline) || card.attributes.is_offline === false)){ %>
 	<li class="pull-right card-id" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><strong>#<%- card.id %></strong></li>
 	<%}%>
-	<li id="js-card-customfields-list-<%- card.attributes.id %>"></li>
+	<li id="js-card-customfields-list-<%- card.attributes.id %>" class="hide"></li>
 	<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){
 		var date_time = card.attributes.due_date.split('T');
 		date_time = date_time[0].split(' ');

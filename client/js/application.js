@@ -42,6 +42,8 @@ var from_url = '';
 var custom_fields = {};
 var sort_by = '';
 var sort_direction = '';
+var AppsFunction = [];
+var appsurlFunc = {};
 
 Backbone.View.prototype.flash = function(type, message, delay, position) {
     if (!delay) {
@@ -463,9 +465,7 @@ var AppRouter = Backbone.Router.extend({
                 custom_fields = {};
                 $.removeCookie('chat_initialize');
                 $.removeCookie('filter');
-                localforage.removeItem('r_zapier_access_token');
-                localforage.removeItem('board_filter');
-                localforage.removeItem('unreaded_cards');
+                localforage.clear();
                 api_token = '';
                 authuser = new App.User();
                 app.navigate('#/users/login', {
@@ -712,6 +712,17 @@ var AppRouter = Backbone.Router.extend({
 });
 var app = new AppRouter();
 app.on('route', function(route, params) {
+    if (!_.isUndefined(appsurlFunc)) {
+        _.each(appsurlFunc, function(funct_names, url) {
+            if (location.hash.match('/' + url)) {
+                _.each(funct_names, function(functionName) {
+                    if (typeof AppsFunction[functionName] === 'function') {
+                        AppsFunction[functionName]();
+                    }
+                });
+            }
+        });
+    }
     $('div.doughnutTip').remove();
     if (route !== 'boards_view' && route !== 'card_view' && route !== 'board_card_view_type' && route !== 'boards_view_type') {
         $('body').removeAttr('style class');

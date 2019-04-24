@@ -15,11 +15,7 @@ if (typeof App === 'undefined') {
  */
 App.OrganizationHeaderView = Backbone.View.extend({
     template: JST['templates/organization_header'],
-    className: 'navbar navbar-default',
     id: 'js-navbar-default',
-    attributes: {
-        role: 'navigation'
-    },
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
@@ -40,7 +36,7 @@ App.OrganizationHeaderView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
-        this.model.bind('change:name change:organization_visibility', this.render, this);
+        this.model.bind('change:name change:description change:organization_visibility', this.render, this);
         this.render();
     },
     /**
@@ -69,6 +65,7 @@ App.OrganizationHeaderView = Backbone.View.extend({
     closePopup: function(e) {
         var target = $(e.target);
         target.parents('li.dropdown').removeClass('open');
+        this.render();
         return false;
     },
     /**
@@ -77,18 +74,23 @@ App.OrganizationHeaderView = Backbone.View.extend({
      * @return false
      */
     editOrganization: function(e) {
+        var data = $('form#OrganizationEditForm').serializeObject();
+        $('.error-msg').remove();
+        $('.error-msg-description').remove();
         if (!$.trim($('#inputOrganizationName').val()).length) {
-            $('.error-msg').remove();
             $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputOrganizationName');
-            return false;
-        } else {
+        }
+        if ($.trim(data.description) === '') {
+            $('<div class="error-msg-description text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputOrganizationDescription');
+        }
+        if ($.trim(data.description) !== '' && $.trim(data.name) !== '') {
             $('.error-msg').remove();
             e.preventDefault();
             var self = this.model;
-            var data = $('form#OrganizationEditForm').serializeObject();
             this.closePopup(e);
             this.model.set(data);
             this.model.url = api_url + 'organizations/' + this.model.organization_id + '.json';
+            $('.js-close-popover').click();
             this.model.save(data, {
                 patch: true,
                 success: function(model, response) {
@@ -97,6 +99,7 @@ App.OrganizationHeaderView = Backbone.View.extend({
                     });
                     if (!_.isEmpty(organization)) {
                         organization.set("name", data.name);
+                        organization.set("description", data.description);
                     }
                 }
             });

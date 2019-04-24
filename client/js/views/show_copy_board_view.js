@@ -57,6 +57,7 @@ App.ShowCopyBoardView = Backbone.View.extend({
      *
      */
     copyNewBoard: function(e) {
+        $('#submitBoardCopy').attr('disabled', 'disabled');
         if (!$.trim($('#inputCopyBoardName').val()).length) {
             $('.error-msg').remove();
             $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputCopyBoardName');
@@ -72,6 +73,7 @@ App.ShowCopyBoardView = Backbone.View.extend({
             data.user_id = authuser.user.id;
             var board = new App.Board();
             board.url = api_url + 'boards/' + this.model.id + '/copy.json';
+            $('.js-back-to-sidebar').trigger('click');
             board.save(data, {
                 success: function(model, response) {
                     if (!_.isUndefined(board.get('id'))) {
@@ -79,10 +81,12 @@ App.ShowCopyBoardView = Backbone.View.extend({
                             trigger: true,
                             replace: true,
                         });
+                        location.reload();
                         self.flash('success', i18next.t('Board copied successfully.'));
                     } else {
                         self.flash('danger', i18next.t('Unable to copy the board.'));
                     }
+                    $('#submitBoardCopy').removeAttr("disabled");
                 }
             });
         }

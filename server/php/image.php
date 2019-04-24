@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2018 Restya
+ * @copyright  2014-2019 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -66,12 +66,17 @@ if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size)) {
         $row = pg_fetch_assoc($s_result);
         $fullPath = $row['path'];
     }
-    $fullPath = APP_PATH . '/' . $fullPath;
+    //Todo default image
+    if (explode('/', $fullPath) [0] == 'client' && explode('/', $fullPath) [1] == 'img') {
+        $fullPath = APP_PATH . DS . $fullPath;
+    } else {
+        $fullPath = MEDIA_PATH . DS . $fullPath;
+    }
     $is_aspect = false;
     if (!empty($aspect[$model][$size])) {
         $is_aspect = true;
     }
-    $mediadir = APP_PATH . '/client/img/' . $size . '/' . $model . '/';
+    $mediadir = IMG_PATH . DS . $size . DS . $model . DS;
     if (!file_exists($mediadir)) {
         mkdir($mediadir, 0777, true);
     }
@@ -92,8 +97,6 @@ if ($hash == md5(SECURITYSALT . $model . $id . $ext . $size)) {
         if (class_exists('imagick')) {
             $new_image_obj = new imagick($fullPath);
             $new_image = $new_image_obj->clone();
-            $new_image->setImageColorspace(Imagick::COLORSPACE_RGB);
-            $new_image->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
             if (!$is_aspect) {
                 $new_image->cropThumbnailImage($width, $height);
             } else {

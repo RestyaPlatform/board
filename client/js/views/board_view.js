@@ -27,7 +27,7 @@ if (typeof App === 'undefined') {
  */
 App.BoardView = Backbone.View.extend({
     tagName: 'section',
-    className: 'clearfix',
+    className: 'clearfix js-boards-view',
     id: 'boards-view',
     /**
      * Constructor
@@ -43,7 +43,7 @@ App.BoardView = Backbone.View.extend({
             $.cookie('music_play', "1");
         }
         this.model.attachments.add(this.model.get('attachments'));
-        _.bindAll(this, 'render', 'renderListsCollection', 'renderActivitiesCollection', 'setBoardBackground');
+        _.bindAll(this, 'render', 'renderListsCollection', 'renderActivitiesCollection', 'setBoardBackground', 'renderBoarduserCollection');
         this.model.bind('change:name change:is_closed', this.render);
         this.model.bind('change:board_visibility', this.render);
         this.model.bind('change:background_color change:background_picture_url change:background_pattern_url', this.setBoardBackground);
@@ -52,14 +52,13 @@ App.BoardView = Backbone.View.extend({
         this.model.bind('change:music_content', this.musical);
         this.model.labels.bind('remove', this.renderListsCollection);
         this.model.lists.bind('add', this.renderListsCollection);
-        this.model.lists.bind('change:name', this.renderListsCollection);
         this.model.lists.bind('change:position', this.renderListsCollection);
         this.model.lists.bind('change:is_archived', this.renderListsCollection, this);
         this.model.lists.bind('change:comment_count', this.renderListsCollection, this);
         this.model.activities.bind('add', this.renderActivitiesCollection);
-        this.model.board_users.bind('add', this.render);
-        this.model.board_users.bind('remove', this.render);
-        this.model.board_users.bind('change', this.render);
+        this.model.board_users.bind('add', this.renderBoarduserCollection);
+        this.model.board_users.bind('remove', this.renderBoarduserCollection);
+        this.model.board_users.bind('change', this.renderBoarduserCollection);
         if (!_.isUndefined(App.music)) {
             App.music.inst = new Instrument();
         }
@@ -67,17 +66,9 @@ App.BoardView = Backbone.View.extend({
             App.music.music_content = this.model.attributes.music_content;
             App.music.music_name = this.model.attributes.music_name;
         }
-        this.populateLists();
-        this.populateCards();
         this.populateChecklists();
         this.populateChecklistItems();
         this.populateLabels();
-        this.populateActivities();
-        this.populateUsers();
-        this.populateCustomAttachments();
-        this.populateAttachments();
-        this.populateSubscribers();
-        this.populateStars();
         this.populateAclLinks();
         if (!_.isUndefined(authuser.user)) {
             var board_user_role_id = this.model.board_users.findWhere({
@@ -94,67 +85,6 @@ App.BoardView = Backbone.View.extend({
         var acl_links = this.model.get('acl_links') || [];
         this.model.acl_links.reset(acl_links, {
             silent: true
-        });
-    },
-    // Resets this boards lists collection
-    populateLists: function() {
-        var lists = this.model.get('lists') || [];
-        this.model.lists.reset(lists, {
-            silent: true
-        });
-    },
-    // Resets this boards activities collection
-    populateActivities: function() {
-        var activities = this.model.get('activities') || [];
-        this.model.activities.reset(activities, {
-            silent: true
-        });
-    },
-    // Resets this boards users collection
-    populateUsers: function() {
-        var board_users = this.model.get('boards_users') || [];
-        this.model.board_users.reset(board_users, {
-            silent: true
-        });
-    },
-    // Resets this boards custom attachments collection
-    populateCustomAttachments: function() {
-        var custom_attachments = this.model.get('custom_backgrounds') || [];
-        this.model.custom_attachments.reset(custom_attachments, {
-            silent: true
-        });
-    },
-    // Resets this boards attachments collection
-    populateAttachments: function() {
-        var attachments = this.model.get('attachments') || [];
-        this.model.attachments.reset(attachments, {
-            silent: true
-        });
-    },
-    // Resets this boards subscribers collection
-    populateSubscribers: function() {
-        var boards_subscribers = this.model.get('boards_subscribers') || [];
-        this.model.board_subscribers.add(boards_subscribers, {
-            silent: true
-        });
-    },
-    // Resets this boards stars collection
-    populateStars: function() {
-        var boards_stars = this.model.get('boards_stars') || [];
-        this.model.board_stars.add(boards_stars, {
-            silent: true
-        });
-    },
-    // Resets this boards cards collection
-    populateCards: function() {
-        var self = this;
-        self.model.lists.each(function(list) {
-            var cards = list.get('cards') || [];
-            if (!_.isEmpty(cards)) {
-                self.model.cards.add(cards, {
-                    silent: true
-                });
-            }
         });
     },
     // Resets this checklists collection
@@ -294,6 +224,7 @@ App.BoardView = Backbone.View.extend({
     closeSubPopup: function(e) {
         var el = this.$el;
         var target = el.find(e.target);
+        target.parents('.js-list-response.dropdown').removeClass('open');
         target.parents('li.dropdown').removeClass('open');
         return false;
     },
@@ -464,6 +395,7 @@ App.BoardView = Backbone.View.extend({
     reopenBoard: function(e) {
         var data = $(e.target).serializeObject();
         this.model.url = api_url + 'boards/' + this.model.id + '.json';
+        App.boards.get(this.model.id).set('is_closed', 0);
         this.model.set('is_closed', 0);
         this.model.save({
             is_closed: 0
@@ -646,7 +578,19 @@ App.BoardView = Backbone.View.extend({
         var temp = new App.MusicRepeatView();
         temp.continueMusic();
     },
-
+    /**
+     * renderBoarduserCollection()
+     * populate the boarduser to the current board
+     * @param NULL
+     * @return object
+     *
+     */
+    renderBoarduserCollection: function() {
+        var self = this;
+        $('#header').html(new App.BoardHeaderView({
+            model: self.model,
+        }).el);
+    },
     /**
      * render()
      * populate the html to the dom
@@ -682,75 +626,80 @@ App.BoardView = Backbone.View.extend({
         this.renderListsCollection();
         this.setBoardBackground();
         if (!_.isUndefined(authuser.user)) {
-            var setintervalid = '',
-                is_moving_right = '',
-                previous_offset = 0,
-                previous_move = '',
-                is_create_setinterval = true;
-            $('#js-board-lists', this.$el).sortable({
-                containment: 'window',
-                axis: 'x',
-                items: 'div.js-board-list',
-                placeholder: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 board-list-placeholder board-list-height ',
-                forcePlaceholderSize: true,
-                cursor: 'grab',
-                scrollSensitivity: 100,
-                scrollSpeed: 50,
-                handle: '.js-list-head',
-                tolerance: 'pointer',
-                update: function(ev, ui) {
-                    ui.item.trigger('listSort', ev, ui);
-                },
-                start: function(ev, ui) {
-                    ui.placeholder.height(ui.item.outerHeight());
-                    $(ev.target).find('.js-list-head').removeClass('cur-grab');
-                    $(ev.target).find('.js-list-head').children('div.dropdown').removeClass('open');
-                },
-                stop: function(ev, ui) {
-                    clearInterval(setintervalid);
+            if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
+                    slug: 'edit_list',
+                    board_user_role_id: parseInt(this.model.board_user_role_id)
+                })))) {
+                var setintervalid = '',
+                    is_moving_right = '',
+                    previous_offset = 0,
+                    previous_move = '',
                     is_create_setinterval = true;
-                    previous_offset = 0;
-                    $(ev.target).find('.js-list-head').addClass('cur-grab');
-                },
-                over: function(ev, ui) {
-                    var scrollLeft = 0;
-                    var list_per_page = Math.floor($(window).width() / 270);
-                    if (previous_offset !== 0 && previous_offset != ui.offset.left) {
-                        if (previous_offset > ui.offset.left) {
-                            is_moving_right = false;
-                        } else {
-                            is_moving_right = true;
-                        }
-                    }
-                    if (previous_move !== is_moving_right) {
+                $('#js-board-lists', this.$el).sortable({
+                    containment: 'window',
+                    axis: 'x',
+                    items: 'div.js-board-list',
+                    placeholder: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 board-list-placeholder board-list-height ',
+                    forcePlaceholderSize: true,
+                    cursor: 'grab',
+                    scrollSensitivity: 100,
+                    scrollSpeed: 50,
+                    handle: '.js-list-head',
+                    tolerance: 'pointer',
+                    update: function(ev, ui) {
+                        ui.item.trigger('listSort', ev, ui);
+                    },
+                    start: function(ev, ui) {
+                        ui.placeholder.height(ui.item.outerHeight());
+                        $(ev.target).find('.js-list-head').removeClass('cur-grab');
+                        $(ev.target).find('.js-list-head').children('div.dropdown').removeClass('open');
+                    },
+                    stop: function(ev, ui) {
                         clearInterval(setintervalid);
                         is_create_setinterval = true;
-                    }
-                    if (is_moving_right === true && ui.offset.left > (list_per_page - 1) * 270) {
-                        if (is_create_setinterval) {
-                            setintervalid = setInterval(function() {
-                                scrollLeft = parseInt($('#js-board-lists').scrollLeft()) + 50;
-                                $('#js-board-lists').animate({
-                                    scrollLeft: scrollLeft
-                                }, 10);
-                            }, 100);
-                            is_create_setinterval = false;
+                        previous_offset = 0;
+                        $(ev.target).find('.js-list-head').addClass('cur-grab');
+                    },
+                    over: function(ev, ui) {
+                        var scrollLeft = 0;
+                        var list_per_page = Math.floor($(window).width() / 270);
+                        if (previous_offset !== 0 && previous_offset != ui.offset.left) {
+                            if (previous_offset > ui.offset.left) {
+                                is_moving_right = false;
+                            } else {
+                                is_moving_right = true;
+                            }
                         }
-                    } else if (is_moving_right === false && ui.offset.left < 50) {
-                        if (is_create_setinterval) {
-                            setintervalid = setInterval(function() {
-                                scrollLeft = parseInt($('#js-board-lists').scrollLeft()) - 50;
-                                $('#js-board-lists').animate({
-                                    scrollLeft: scrollLeft
-                                }, 10);
-                            }, 100);
-                            is_create_setinterval = false;
+                        if (previous_move !== is_moving_right) {
+                            clearInterval(setintervalid);
+                            is_create_setinterval = true;
                         }
+                        if (is_moving_right === true && ui.offset.left > (list_per_page - 1) * 270) {
+                            if (is_create_setinterval) {
+                                setintervalid = setInterval(function() {
+                                    scrollLeft = parseInt($('#js-board-lists').scrollLeft()) + 50;
+                                    $('#js-board-lists').animate({
+                                        scrollLeft: scrollLeft
+                                    }, 10);
+                                }, 100);
+                                is_create_setinterval = false;
+                            }
+                        } else if (is_moving_right === false && ui.offset.left < 50) {
+                            if (is_create_setinterval) {
+                                setintervalid = setInterval(function() {
+                                    scrollLeft = parseInt($('#js-board-lists').scrollLeft()) - 50;
+                                    $('#js-board-lists').animate({
+                                        scrollLeft: scrollLeft
+                                    }, 10);
+                                }, 100);
+                                is_create_setinterval = false;
+                            }
+                        }
+                        previous_offset = ui.offset.left;
+                        previous_move = is_moving_right;
                     }
-                    previous_offset = ui.offset.left;
-                    previous_move = is_moving_right;
-                }
-            });
+                });
+            }
         }
         $('a.js-switch-grid-view').parent().addClass('active');
         if (!_.isUndefined(authuser.user)) {
@@ -848,20 +797,26 @@ App.BoardView = Backbone.View.extend({
                     list.attachments = self.model.attachments;
                     list.board_user_role_id = self.model.board_user_role_id;
                     list.board = self.model;
-                    view = new App.ListView({
-                        model: list,
-                        attributes: {
-                            'data-list_id': list.attributes.id
+                    if ($('#listview_table').length === 0) {
+                        view = new App.ListView({
+                            model: list,
+                            attributes: {
+                                'data-list_id': list.attributes.id
+                            }
+                        });
+                        if (view_list.length > 0) {
+                            view_list.before(view.render().el);
+                        } else {
+                            self.$('#js-board-lists').append(view.render().el);
                         }
-                    });
-                    if (view_list.length > 0) {
-                        view_list.before(view.render().el);
-                    } else {
-                        self.$('#js-board-lists').append(view.render().el);
+                        $('#js-board-lists').sortable("refresh");
                     }
                 }
             }
         });
+        _(function() {
+            $('body').trigger('editListRendered');
+        }).defer();
         _.defer(function(view) {
             if (!_.isUndefined(card_ids) && card_ids !== null && card_ids !== '') {
                 trigger_dockmodal = true;
@@ -1026,6 +981,7 @@ App.BoardView = Backbone.View.extend({
     hideAddListForm: function(e) {
         e.preventDefault();
         var toggle = $(e.target);
+        $(e.target).parents('.js-add-list').find('#inputListName').val('');
         toggle.parents('form').addClass('hide').prev('.js-show-add-list-form').removeClass('hide');
         return false;
     },
@@ -1089,13 +1045,11 @@ App.BoardView = Backbone.View.extend({
                 },
             });
             $(view.render().el).insertAfter($(e.target).parents('.js-board-list'));
+            $('#js-board-lists').sortable("refresh");
         }
         list.url = api_url + 'boards/' + self.model.id + '/lists.json';
         list.save(data, {
             success: function(model, response, options) {
-                if (self.model.attributes.lists !== null) {
-                    self.model.attributes.lists.push(list);
-                }
                 if (!_.isUndefined(data.clone_list_id)) {
                     if (!_.isUndefined(response.list.labels) && response.list.labels.length > 0) {
                         self.model.labels.add(response.list.labels, {
@@ -1114,6 +1068,7 @@ App.BoardView = Backbone.View.extend({
                         });
                     }
                     list.set(response.list);
+                    list.set('custom_fields', null);
                     list.set('cards', response.list.cards);
                     self.model.cards.add(response.list.cards, {
                         silent: true
@@ -1177,6 +1132,7 @@ App.BoardView = Backbone.View.extend({
                         j++;
                     });
                 } else {
+                    list.set('custom_fields', null);
                     list.set('lists_cards', []);
                 }
                 if (_.isUndefined(options.temp_id)) {
@@ -1193,7 +1149,17 @@ App.BoardView = Backbone.View.extend({
                 list = self.model.lists.findWhere({
                     uuid: data.uuid
                 });
+                if (_.isUndefined(App.boards.get(list.attributes.board_id))) {
+                    App.boards.add(self.model);
+                }
                 App.boards.get(list.attributes.board_id).lists.add(list);
+                if (self.model.attributes.lists === null) {
+                    self.model.attributes.lists = [];
+                }
+                if (self.model.attributes.lists !== null) {
+                    list.set('custom_fields', null);
+                    self.model.attributes.lists.push(list);
+                }
                 list.board_users = self.model.board_users;
                 list.board_user_role_id = self.model.board_user_role_id;
                 if (!_.isUndefined(data.clone_list_id)) {
@@ -1208,6 +1174,9 @@ App.BoardView = Backbone.View.extend({
                     });
                     $(view.render().el).insertBefore($('#js-add-list-block'));
                 }
+                _(function() {
+                    $('body').trigger('editListRendered');
+                }).defer();
                 App.current_board.lists.add(list);
             }
         });

@@ -1,11 +1,12 @@
 {
     "name": "CRM",
     "lists": [
-	"Initial engagement",
-	"Potential sale",
-	"Qualification",
-	"Probable sale",
-	"Pending sale",
-	"Completed sale"
+	"Leads",
+	"Engagement 1",
+	"Engagement 2",
+	"Engagement 3",
+	"Lost",
+	"Won",
+	"Closed"
     ]
 }

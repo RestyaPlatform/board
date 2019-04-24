@@ -1,6 +1,7 @@
 /* common style */
 body {
 	-ms-overflow-style: scrollbar;
+	-webkit-overflow-scrolling: touch;
 }
 .cur {
 	cursor: pointer;
@@ -791,6 +792,20 @@ table.acl-link-list > tbody> tr {
 		width: 110px;
 	}
 }
+.board-listview {
+	.card-list-view {
+		.box-shadow(0 1px 1px rgba(0,0,0,0.15));
+		border: 1px solid #fff;
+		&.active {
+			.box-shadow(5px 5px 15px @brand-primary);
+			.card-id {
+				background: @brand-primary;
+				color: #ffffff;
+			}
+		}
+	}
+}
+
 /* Boards list style */
 .board-list-view {
 	-ms-flex-align: start;
@@ -912,8 +927,10 @@ table.acl-link-list > tbody> tr {
 				}
 			}
 		}
+	}
+	.board-list-outer{
 		&:first-child {
-			margin-left: 15px;
+			margin-left: 15px;	
 			margin-left: 20px \9;
 		}
 	}
@@ -1131,7 +1148,6 @@ g path:hover {
 			margin-right: 0;
 		}
 		.duedate {
-			margin-top: 20px;
 			width: 100%;
 			.form-group {
 				.input-group {
@@ -1192,6 +1208,7 @@ g path:hover {
 	i {
 		color: #000;
 	}
+
 }
 .dockmodal-header {
 	background-color: #eeeeee !important;
@@ -1199,7 +1216,13 @@ g path:hover {
 	i {
 		color: #000;
 	}
+	.dropup >.dropdown-menu {
+		bottom: 100% !important;
+		margin-bottom: 1px;
+		top: auto !important;	
+	}	
 }
+
 .title-text {
 	color: #000 !important;
 	.card-id {
@@ -1350,7 +1373,7 @@ div.popped-out + div + div.datetimepicker {
 	font-weight: bold;
 	text-align: center;
 	vertical-align: middle;
-	.size(202px,151px);
+	.size(202px,162px);
 	color: lighten(@gray-light,20%);
 	.img-responsive {
 		max-height: 100%;
@@ -1427,6 +1450,14 @@ div.popped-out + div + div.datetimepicker {
 }
 .animation {
 	.tada-animation {
+		.animated();
+		.animation-name(bounce);
+		.animation-duration(infinite);
+		.animation-timing-function(infinite);
+		.animation-delay(ease);
+		.animation-iteration-count(infinite);
+	}
+	.audio-animation {
 		.animated();
 		.animation-name(tada);
 		.animation-duration(infinite);
@@ -2009,7 +2040,7 @@ footer, header, .dashboard-header {
 	border: 0;
 	display: block;
 	width: auto;
-	height:8px;
+	height:6px;
 	border-radius: 5px;
 }
 .list-card-group-addon.panel-body {
@@ -2209,6 +2240,9 @@ footer, header, .dashboard-header {
 	.btn {
 		text-align: left;
 	}
+	input[type="submit"] {
+		text-align: center;
+	}
 }
 .card-checklist {
 	.checkbox {
@@ -2296,6 +2330,7 @@ footer, header, .dashboard-header {
 }
 ul.card_activitiesnew{
 	li.activity-github-styles{
+		padding-left: 25px;
 		> .media{
 			display: flex;
 			overflow: visible;
@@ -2347,7 +2382,7 @@ ul.card_activitiesnew{
 	width:83.4%;
 }
 .txt-aligns{
-	li.card-listing-truncate{
+	.card-listing-truncate{
 		small span{	
 			overflow: hidden;
 			text-overflow: ellipsis;
@@ -2525,4 +2560,35 @@ header{
 	font-size: 11px;
     line-height: 18px;
     color: white;
+}
+.no-whitespace ins,del,code{
+	white-space: normal;
+}
+.pl0 {
+	padding-left: 0px !important;
+}
+.icallfeed-dropdown {
+    min-width: 450px;
+}
+#card_activities{
+	.list-group-item-heading{
+		margin-top: -15px;
+	}
+	.activity-mod-comments{
+		margin-top: -10px;
+	}
+}
+.custom-datepicker-position {
+	.datetimepicker-dropdown-bottom-left:before {
+		top: -7px;
+    	right: 241px;
+	}
+	.datetimepicker-dropdown-bottom-left:after {
+		top: -6px;
+		right: 241px;
+	}
+}
+.header-logo {
+	margin-bottom: 0px;
+	margin-top: 6px;
 }

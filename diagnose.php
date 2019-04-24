@@ -78,7 +78,13 @@ $imap_version = $imap_connection = '';
 if (function_exists('imap_open')) {
     $imap_class = true;
     if ($imap_setting_class) {
-        $connection = imap_open('{' . IMAP_HOST . ':' . IMAP_PORT . '/imap/ssl/novalidate-cert/notls}INBOX', IMAP_EMAIL, str_rot13(base64_decode(IMAP_EMAIL_PASSWORD)));
+        $is_ssl = (IMAP_PORT === '993') ? 'ssl/' : '';
+        $imap_email_password = IMAP_EMAIL_PASSWORD;
+        $imap_email_password_decode = base64_decode($imap_email_password);
+        $imap_email_password = str_rot13($imap_email_password_decode);
+        $connection = imap_open('{' . IMAP_HOST . ':' . IMAP_PORT . '/imap/' . $is_ssl . 'novalidate-cert}INBOX', IMAP_EMAIL, $imap_email_password, NULL, 1, array(
+            'DISABLE_AUTHENTICATOR' => 'PLAIN'
+        ));
         if ($connection) {
             $imap_connection = 'Success';
             $imap_connection_class = true;
@@ -112,32 +118,35 @@ if (file_exists(APP_PATH . '/client/apps/r_ldap_login/app.json')) {
     $g_ldap_bind_dn = R_LDAP_LOGIN_BIND_DN;
     $g_ldap_bind_passwd = R_LDAP_LOGIN_BIND_PASSWORD;
     $t_ldap_server = ($g_enable_ssl_connectivity == 'true') ? 'ldaps://' . $g_ldap_server : 'ldap://' . $g_ldap_server;
-    $t_ds = ldap_connect($t_ldap_server, $g_ldap_port);
     $ldap_connection_class = false;
-    if ($t_ds > 0) {
-        if ($g_ldap_protocol_version > 0) {
-            ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, $g_ldap_protocol_version);
-        }
-        if (!empty($g_ldap_bind_dn) && !empty($g_ldap_bind_passwd)) {
-            $t_br = ldap_bind($t_ds, $g_ldap_bind_dn, str_rot13(base64_decode($g_ldap_bind_passwd)));
+    $ldap_connection = '';
+    if (function_exists('ldap_connect')) {
+        $t_ds = ldap_connect($t_ldap_server, $g_ldap_port);
+        if ($t_ds > 0) {
+            if ($g_ldap_protocol_version > 0) {
+                ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, $g_ldap_protocol_version);
+            }
+            if (!empty($g_ldap_bind_dn) && !empty($g_ldap_bind_passwd)) {
+                $t_br = ldap_bind($t_ds, $g_ldap_bind_dn, str_rot13(base64_decode($g_ldap_bind_passwd)));
+            } else {
+                $t_br = ldap_bind($t_ds);
+            }
+            if ($t_br) {
+                $ldap_connection = 'Success';
+                $ldap_connection_class = true;
+            } else {
+                $ldap_connection = 'ERROR_LDAP_AUTH_FAILED';
+            }
         } else {
-            $t_br = ldap_bind($t_ds);
+            $ldap_connection = 'ERROR_LDAP_SERVER_CONNECT_FAILED';
         }
-        if ($t_br) {
-            $ldap_connection = 'Success';
-            $ldap_connection_class = true;
-        } else {
-            $ldap_connection = 'ERROR_LDAP_AUTH_FAILED';
-        }
-    } else {
-        $ldap_connection = 'ERROR_LDAP_SERVER_CONNECT_FAILED';
     }
 }
 if (file_exists(APP_PATH . '/client/apps/r_elasticsearch/app.json')) {
     $is_having_elasticsearch_plugin = true;
     $elasticsearch_server_class = $elasticsearch_port_class = $elasticsearch_index_class = $elasticsearch_class = false;
     $elasticsearch_version = $elasticsearch_connection = '';
-    $elasticsearch_json = file_get_contents(APP_PATH . '/client/apps/r_elasticsearch/app.json');
+    $elasticsearch_json = file_get_contents(APP_PATH . DS .'client' . DS . 'apps' . DS . 'r_elasticsearch' . DS . 'app.json');
     $elasticsearch_data = json_decode($elasticsearch_json, true);
     if ($elasticsearch_data['settings']['r_elasticsearch_server_host']['value'] != 'REPLACE_ELASTIC_SEARCH_SERVER_HOST') {
         $elasticsearch_server_class = $elasticsearch_data['settings']['r_elasticsearch_server_host']['value'];
@@ -167,9 +176,9 @@ if (file_exists(APP_PATH . '/client/apps/r_elasticsearch/app.json')) {
     }
 }
 $_writable_folders = array(
-    APP_PATH . '/tmp',
-    APP_PATH . '/media',
-    APP_PATH . '/client/img'
+    TMP_PATH,
+    MEDIA_PATH,
+    IMG_PATH
 );
 $writable = '';
 foreach($_writable_folders as $folder) {

@@ -67,6 +67,16 @@ $dc.ready(function() {
             }
         });
         return false;
+    }).on('click', '.js-switch-board-view', function(e) {
+        if (!_.isEmpty($(this).data('board-viewtype')) && !_.isUndefined($(this).data('board-viewtype'))) {
+            if ($('#content #boards-view-' + $(this).data('board-viewtype')).length === 0) {
+                if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && App.current_board !== null && !App.current_board.attributes.is_closed) {
+                    $('#content .js-boards-view').remove('');
+                    $('#content').html('<section id="boards-view-' + $(this).data('board-viewtype') + '" class="clearfix js-boards-view"></section>');
+                }
+            }
+        }
+        return false;
     });
     if ((navigator.userAgent.toLowerCase().indexOf('android') > -1) && (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)) {
         $('body').append('<div class="modal fade" id="add_home_modal" tabindex="-1" role="dialog" aria-hidden="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" id="js-cssilize-close">x</span><span class="sr-only">Close</span></button><div class="media list-group-item-heading"><div class="media-body"><h4 class="modal-title" id="exampleModalLabel">Install this webapp to your phone</h4></div></div></div><div class="modal-body import-block"><ul><li>Add Restyaboard to homescreen.</li><li>Tap <i class="icon-ellipsis-vertical"></i>to bring up your browser menu and select \'Add to homescreen\' to pin the Restyaboard web app.</li></ul></div></div></div></div>');
@@ -153,6 +163,12 @@ function makeLink(text, board_id) {
     return text;
 }
 
+function activityCommentReplace(activity) {
+    if (!_.isUndefined(activity.comment) && !_.isEmpty(activity.comment)) {
+        activity.comment = activity.comment.replace("the card ##CARD_LINK##", "this card");
+    }
+    return activity;
+}
 var favicon = new Favico({
     animation: 'popFade'
 });
@@ -166,7 +182,7 @@ function parse_date(dateTime, logged_user, classname) {
         tz = moment.tz(s, logged_user.user.timezone);
     }
     _(function() {
-        $('.' + classname).html('<abbr title="' + tz.format() + '">' + tz.fromNow() + '<abbr>');
+        $('.' + classname).html('<abbr title="' + tz.format() + '">' + tz.fromNow() + '</abbr>');
     }).defer();
     return true;
 }

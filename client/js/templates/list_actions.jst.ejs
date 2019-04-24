@@ -60,17 +60,18 @@
     <li class="list-inline js-change-color js-list-color-pick navbar-btn cur" data-color="#ccdc87"><span class="btn btn-default show well-sm" style="background-color:#ccdc87"></span></li>
     <li class="list-inline js-change-color js-list-color-pick navbar-btn cur" data-color="#f1eabf"><span class="btn btn-default show well-sm" style="background-color:#f1eabf"></span></li>
     <% if(!_.isEmpty(list.attributes.color)){ %>
-        <button type="button" class="btn btn-primary js-remove-list-color">Remove color</button>
+        <button type="button" class="btn btn-primary js-remove-list-color"  id="js-remove-list-color-<%- list.id %>">Remove color</button>
     <% }else{ %>
-        <button type="button" class="hide btn btn-primary js-remove-list-color">Remove color</button>
+        <button type="button" class="hide btn btn-primary js-remove-list-color"  id="js-remove-list-color-<%- list.id %>">Remove color</button>
     <% } %>
-  </ul><div class="well-sm"></div></div></li></ul></li>
+  </ul><div class="well-sm"></div></div></li>
+
+</ul></li>
 <li class="panel-settings" id="js-list-setting-<%- list.attributes.id %>">
 </li>
 <% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "add_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 	<li><a href="#" title="<%- i18next.t('Add Card') %>" class="js-show-add-card-form"><%- i18next.t("Add Card") %></a></li>
 <% } %>	
-<li class="divider"></li>
 <% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "add_list",board_user_role_id: parseInt(list.board_user_role_id)}))) && !is_offline_data){ %>
 	<li class="js-hide-on-offline"><a href="#" title="<%- i18next.t('Copy List') %>" class="js-show-copy-list-form"><%- i18next.t("Copy List") %></a></li>
 <% } %>	
@@ -93,6 +94,8 @@
 	%>
 	<li class="<%= subscribe_disabled %>"><a href="javascript:void(0);" title="<%- subscribe_title %>" class="highlight-icon <%= subscribe_class %>" data-list-id="<%- list.id %>" data-subscribe-id="<%- subscribe_id %>"><span class="js-subscribe-text"><%if (!_.isEmpty(subscribe) && parseInt(subscribe.attributes.is_subscribed) === 1) {%><%- i18next.t("Subscribed") %><%}else{%><%- i18next.t("Subscribe") %><% } %></span> <%= is_subscribed %></a></li>
 <% } %>	
+<li class="divider"></li>
+
 <li><a href="#" title="<%- i18next.t('Show Attachments') %>" class="js-show-list-modal"><%- i18next.t("Show Attachments") %></a></li>
 <li class="divider"></li>
 <% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
