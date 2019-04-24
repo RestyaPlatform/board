@@ -172,8 +172,8 @@
 				: > /var/spool/cron/crontabs/root
 				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
 			else
-				: > /var/spool/cron/crontabs/root
-				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
+				: > /var/spool/cron/root
+				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
 			fi
 		}
 
