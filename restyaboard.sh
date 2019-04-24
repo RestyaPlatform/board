@@ -166,8 +166,13 @@
             find "$dir/client/apps" -type d -exec chmod 755 {} \;
             find "$dir/client/apps" -type f -exec chmod 644 {} \;
             chmod 0777 $dir/client/apps/**/*.json
-			: > /var/spool/cron/crontabs/root
-			sed -i "s/*\/5 * * * * $dir\/server\/php\/shell\/main.sh//" /var/spool/cron/crontabs/root
+
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
+			else
+				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
+			fi
 		}
 
 		update_version()
@@ -742,20 +747,8 @@
 				sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 				sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 				
-				echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
-				echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-				
-				echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
-				echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-				
-				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
-				echo "*/30 * * * * $dir/server/php/shell/imap.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-				
-				echo "Setting up cron for every 5 minutes to send activities to webhook..."
-				echo "*/5 * * * * $dir/server/php/shell/webhook.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-				
-				echo "Setting up cron for every 5 minutes to send email notification to past due..."
-				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
+				echo "Setting up cron for every 5 minutes.."
+				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
 
 				set +x
 				echo "Do you want to install Restyaboard apps (y/n)?"
@@ -1192,20 +1185,8 @@
 				sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "$dir/server/php/config.inc.php"
 				sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 				
-				echo "Setting up cron for every 5 minutes to send email notification to user, if the user chosen notification type as instant..."
-				echo "*/5 * * * * $dir/server/php/shell/instant_email_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
-				
-				echo "Setting up cron for every 1 hour to send email notification to user, if the user chosen notification type as periodic..."
-				echo "0 * * * * $dir/server/php/shell/periodic_email_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
-				
-				echo "Setting up cron for every 30 minutes to fetch IMAP email..."
-				echo "*/30 * * * * $dir/server/php/shell/imap.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
-				
-				echo "Setting up cron for every 5 minutes to send activities to webhook..."
-				echo "*/5 * * * * $dir/server/php/shell/webhook.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
-				
-				echo "Setting up cron for every 5 minutes to send email notification to past due..."
-				echo "*/5 * * * * $dir/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
+				echo "Setting up cron for every 5 minutes..."
+				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
 				
 				echo "Reset php-fpm (use unix socket mode)..."
 				if [ -f "/run/php/php7.2-fpm.sock" ]; then
