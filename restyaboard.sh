@@ -160,7 +160,7 @@
 			curl -v -L -G -o /tmp/r_gmail_addon-v0.1.1.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_gmail_addon-v0.1.1.zip
 			unzip /tmp/r_gmail_addon-v0.1.1.zip -d "$dir/client/apps"			
 			
-			curl -v -L -G -o /tmp/r_hide_card_additional_informations-v0.1.3.zip https://restya.com/Restyboard_apps/r_hide_card_additional_informations-v0.1.3.zip
+			curl -v -L -G -o /tmp/r_hide_card_additional_informations-v0.1.3.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_hide_card_additional_informations-v0.1.3.zip
 			unzip /tmp/r_hide_card_additional_informations-v0.1.3.zip -d "$dir/client/apps"
 
             find "$dir/client/apps" -type d -exec chmod 755 {} \;
