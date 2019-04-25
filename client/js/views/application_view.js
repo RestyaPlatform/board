@@ -1003,7 +1003,7 @@ App.ApplicationView = Backbone.View.extend({
                                                     var organization_name = filterXSS(board.attributes.organization_name);
                                                     var organization_name_content = '';
                                                     organization_name_content += '<div class="col-xs-12 js-organization_boards js-organization-' + board.attributes.organization_id + '" data-organization_id ="' + board.attributes.organization_id + '" ><h4>';
-                                                    if (is_orgnaization_member !== 0 || parseInt(board.attributes.organization_visibility) === 1 || (authuser.user.role_id) === 1) {
+                                                    if (is_orgnaization_member !== 0 || parseInt(board.attributes.organization_visibility) === 1 || parseInt(authuser.user.role_id) === 1) {
                                                         organization_name_content += '<a href="#/organization/' + board.attributes.organization_id + '" class="cur">' + i18next.t('%s', {
                                                             postProcess: 'sprintf',
                                                             sprintf: [organization_name]
