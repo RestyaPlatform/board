@@ -23,7 +23,8 @@ App.CardCheckListItemView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
-        _.bindAll(this, 'render');
+        _.bindAll(this, 'render', 'renderChecklistitemsCollection');
+        this.model.bind('change:is_completed', this.renderChecklistitemsCollection);
         var board_user_role_id = this.model.board_users.findWhere({
             user_id: parseInt(authuser.user.id)
         });
@@ -115,7 +116,16 @@ App.CardCheckListItemView = Backbone.View.extend({
         emojify.run();
         return this;
     },
-
+    /**
+     * renderChecklistitemsCollection()
+     * display checklist item completed progress bar
+     * return object
+     *
+     */
+    renderChecklistitemsCollection: function() {
+        this.render();
+        this.renderProgress();
+    },
     /**
      * renderProgress()
      * display checklist item completed progress bar
