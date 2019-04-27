@@ -443,6 +443,7 @@ App.ApplicationView = Backbone.View.extend({
                                 $('#content .js-boards-view').remove('');
                                 $('#content').html('<section id="boards-view-' + view_type + '" class="clearfix js-boards-view"></section>');
                             }).defer();
+                            view_type = null;
                         } else if (view_type === null || view_type === '') {
                             $('.js-switch-grid-view').trigger('click');
                             view_type = null;
