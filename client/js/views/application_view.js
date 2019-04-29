@@ -417,6 +417,27 @@ App.ApplicationView = Backbone.View.extend({
                                 });
                             });
                         }
+                        // Resets this boards stars collection
+                        if (!_.isUndefined(response.acl_links) && !_.isEmpty(response.acl_links)) {
+                            $.each(response.acl_links, function(key, acl_link) {
+                                Board.acl_links.add(acl_link, {
+                                    silent: true
+                                });
+                            });
+                        }
+
+                        if (!_.isUndefined(authuser.user)) {
+                            var board_user_role_id = Board.board_users.findWhere({
+                                user_id: parseInt(authuser.user.id)
+                            });
+                            if (!_.isEmpty(board_user_role_id)) {
+                                Board.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+                            }
+                        }
+
+                        $('#header').html(new App.BoardHeaderView({
+                            model: Board,
+                        }).el);
                         $('#content').html(new App.BoardView({
                             model: Board
                         }).el);
