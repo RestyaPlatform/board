@@ -441,7 +441,7 @@ App.ApplicationView = Backbone.View.extend({
                             $('#content .js-boards-view').addClass('hide');
                             _(function() {
                                 $('#content .js-boards-view').remove('');
-                                $('#content').html('<section id="boards-view-' + view_type + '" class="clearfix js-boards-view"></section>');
+                                $('#content').html('<section id="boards-view-' + view_type + '" class="clearfix js-boards-view col-xs-12"></section>');
                             }).defer();
                         } else if (view_type === null || view_type === '') {
                             $('.js-switch-grid-view').trigger('click');
