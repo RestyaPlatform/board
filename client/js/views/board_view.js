@@ -69,7 +69,7 @@ App.BoardView = Backbone.View.extend({
         this.populateChecklists();
         this.populateChecklistItems();
         this.populateLabels();
-        this.populateAclLinks();
+        // this.populateAclLinks();
         if (!_.isUndefined(authuser.user)) {
             var board_user_role_id = this.model.board_users.findWhere({
                 user_id: parseInt(authuser.user.id)
@@ -80,13 +80,7 @@ App.BoardView = Backbone.View.extend({
         }
         this.render();
     },
-    // Resets this boards acl_links collection
-    populateAclLinks: function() {
-        var acl_links = this.model.get('acl_links') || [];
-        this.model.acl_links.reset(acl_links, {
-            silent: true
-        });
-    },
+    
     // Resets this checklists collection
     populateChecklists: function() {
         var self = this;
@@ -604,9 +598,6 @@ App.BoardView = Backbone.View.extend({
         sort_by = this.model.attributes.sort_by;
         sort_direction = (this.model.attributes.sort_direction) ? this.model.attributes.sort_direction : 'asc';
         $('body').addClass('modal-open');
-        $('#header').html(new App.BoardHeaderView({
-            model: this.model,
-        }).el);
         this.musical();
         changeTitle('Board - ' + _.escape(this.model.attributes.name));
         if (!_.isUndefined(this.authuser)) {

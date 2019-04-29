@@ -52,6 +52,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.bind('change:background_pattern_url', this.showChangeBackground, this);
         this.model.bind('change:music_name', this.showChangeBackground, this);
         this.model.bind('change:music_content', this.showChangeBackground, this);
+        this.model.bind('change:name', this.renderBoardName, this);
         this.model.board_users.bind('add', this.showFilters, this);
         this.model.board_users.bind('remove', this.showFilters, this);
         this.model.labels.bind('add', this.showFilters, this);
@@ -451,6 +452,16 @@ App.BoardHeaderView = Backbone.View.extend({
      * @return false
      *
      */
+    renderBoardName: function(e){
+        var self = this;
+        if(!_.isUndefined(self.model.attributes) && (!_.isEmpty(self.model.attributes))){
+            var el = this.$el;
+            if(el.find('.js-rename-board').length > 0){
+                el.find('.js-rename-board').html('');
+                el.find('.js-rename-board').html('<strong>'+ self.model.attributes.name +'</strong>');
+            }
+        }
+    },
     showArchivedItems: function(e) {
         this.page = 1;
         this.start = 0;
