@@ -425,7 +425,7 @@ App.ApplicationView = Backbone.View.extend({
                                 });
                             });
                         }
-                        
+
                         if (!_.isUndefined(authuser.user)) {
                             var board_user_role_id = Board.board_users.findWhere({
                                 user_id: parseInt(authuser.user.id)
@@ -434,7 +434,7 @@ App.ApplicationView = Backbone.View.extend({
                                 Board.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
                             }
                         }
-                        
+
                         $('#header').html(new App.BoardHeaderView({
                             model: Board,
                         }).el);

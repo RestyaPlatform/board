@@ -69,7 +69,6 @@ App.BoardView = Backbone.View.extend({
         this.populateChecklists();
         this.populateChecklistItems();
         this.populateLabels();
-        // this.populateAclLinks();
         if (!_.isUndefined(authuser.user)) {
             var board_user_role_id = this.model.board_users.findWhere({
                 user_id: parseInt(authuser.user.id)
@@ -80,7 +79,7 @@ App.BoardView = Backbone.View.extend({
         }
         this.render();
     },
-    
+
     // Resets this checklists collection
     populateChecklists: function() {
         var self = this;

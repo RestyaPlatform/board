@@ -452,13 +452,13 @@ App.BoardHeaderView = Backbone.View.extend({
      * @return false
      *
      */
-    renderBoardName: function(e){
+    renderBoardName: function(e) {
         var self = this;
-        if(!_.isUndefined(self.model.attributes) && (!_.isEmpty(self.model.attributes))){
+        if (!_.isUndefined(self.model.attributes) && (!_.isEmpty(self.model.attributes))) {
             var el = this.$el;
-            if(el.find('.js-rename-board').length > 0){
+            if (el.find('.js-rename-board').length > 0) {
                 el.find('.js-rename-board').html('');
-                el.find('.js-rename-board').html('<strong>'+ self.model.attributes.name +'</strong>');
+                el.find('.js-rename-board').html('<strong>' + self.model.attributes.name + '</strong>');
             }
         }
     },
