@@ -849,6 +849,7 @@ App.BoardHeaderView = Backbone.View.extend({
         $('div.js-board-view-' + self.model.id).html(new App.SwitchToListView({
             model: self.model
         }).el);
+        changeTitle('Board - ' + _.escape(self.model.attributes.name) + '- List');
         $('main').trigger('listViewRendered');
         var is_card_empty = true;
         var board_view = $('.js-card-list-view-' + self.model.attributes.id);
@@ -1050,6 +1051,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 trigger_function: false,
             });
         }
+        changeTitle('Board - ' + _.escape(self.model.attributes.name) + '- Calendar');
         $('div.js-board-view-' + this.model.id).html('');
         $('div.js-board-view-' + this.model.id).fullCalendar({
             header: {
@@ -1751,6 +1753,7 @@ App.BoardHeaderView = Backbone.View.extend({
      */
     switchGridView: function(e) {
         $('body').addClass('modal-open');
+        $('li.js-switch-view').removeClass('active');
         $('#listview_table').attr("id", "switch-board-view");
         e.preventDefault();
         app.navigate('#/board/' + this.model.id, {

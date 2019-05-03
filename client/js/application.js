@@ -42,6 +42,7 @@ var from_url = '';
 var custom_fields = {};
 var sort_by = '';
 var sort_direction = '';
+var view_type_tab = '';
 var AppsFunction = [];
 var appsurlFunc = {};
 
@@ -354,6 +355,7 @@ var AppRouter = Backbone.Router.extend({
         'board/:id/card/:card_id': 'card_view',
         'board/:id/:type': 'boards_view_type',
         'board/:id/:type/card/:card_id': 'board_card_view_type',
+        'board/:id/:type/:tab': 'boards_view_type_tab',
         'organizations': 'organizations_index',
         'organization/:id': 'organizations_view',
         'organization/:id/:type': 'organizations_view_type',
@@ -545,6 +547,15 @@ var AppRouter = Backbone.Router.extend({
             'id': id
         });
     },
+    boards_view_type_tab: function(id, type, tab) {
+        view_type = type;
+        view_type_tab = tab;
+        view_type_ref = type;
+        new App.ApplicationView({
+            model: 'boards_view',
+            'id': id
+        });
+    },
     organizations_view: function(id) {
         new App.ApplicationView({
             model: 'organizations_view',
@@ -724,7 +735,7 @@ app.on('route', function(route, params) {
         });
     }
     $('div.doughnutTip').remove();
-    if (route !== 'boards_view' && route !== 'card_view' && route !== 'board_card_view_type' && route !== 'boards_view_type') {
+    if (route !== 'boards_view' && route !== 'card_view' && route !== 'board_card_view_type' && route !== 'boards_view_type' && route !== 'boards_view_type_tab') {
         $('body').removeAttr('style class');
     }
 });
