@@ -438,6 +438,7 @@ App.ApplicationView = Backbone.View.extend({
                         $('#header').html(new App.BoardHeaderView({
                             model: Board,
                         }).el);
+                        changeTitle('Board - ' + _.escape(Board.attributes.name));
                         $('#content').html(new App.BoardView({
                             model: Board
                         }).el);
@@ -463,8 +464,8 @@ App.ApplicationView = Backbone.View.extend({
                             _(function() {
                                 $('#content .js-boards-view').remove('');
                                 $('#content').html('<section id="boards-view-' + view_type + '" class="clearfix js-boards-view col-xs-12"></section>');
+                                view_type = null;
                             }).defer();
-                            view_type = null;
                         } else if (view_type === null || view_type === '') {
                             $('.js-switch-grid-view').trigger('click');
                             view_type = null;

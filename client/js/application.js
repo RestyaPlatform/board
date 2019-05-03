@@ -42,6 +42,7 @@ var from_url = '';
 var custom_fields = {};
 var sort_by = '';
 var sort_direction = '';
+var view_type_tab = '';
 var AppsFunction = [];
 var appsurlFunc = {};
 
@@ -734,7 +735,7 @@ app.on('route', function(route, params) {
         });
     }
     $('div.doughnutTip').remove();
-    if (route !== 'boards_view' && route !== 'card_view' && route !== 'board_card_view_type' && route !== 'boards_view_type') {
+    if (route !== 'boards_view' && route !== 'card_view' && route !== 'board_card_view_type' && route !== 'boards_view_type' && route !== 'boards_view_type_tab') {
         $('body').removeAttr('style class');
     }
 });
