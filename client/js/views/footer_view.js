@@ -348,6 +348,11 @@ App.FooterView = Backbone.View.extend({
                 authuser.user.is_productivity_beats = 0;
             }
             var Auth = JSON.parse($.cookie('auth'));
+            if (volume === true) {
+                volume = 1;
+            } else {
+                volume = 0;
+            }
             Auth.user.is_productivity_beats = volume;
             $.cookie('auth', JSON.stringify(Auth));
         } else {
