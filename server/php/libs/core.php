@@ -1752,7 +1752,7 @@ function importKantreeBoard($jsonArr = array())
                                     'avatarUrl' => $cardMember['avatar'],
                                     'initials' => strtoupper(substr($cardMember['display_name'], 0, 1))
                                 );
-                                $users = importMember($member, $new_board, 'Kantree');
+                                $users = importMember($member, $new_board, 'kantree');
                                 $userNames[$cardMember['id']] = $cardMember['display_name'];
                             }
                             $qry_val_arr = array(
@@ -1994,7 +1994,7 @@ function importTaigaBoard($board = array())
                     'fullName' => email2name($membership['email']) ,
                     'initials' => strtoupper(substr($membership['email'], 0, 1))
                 );
-                $users = importMember($member, $new_board, 'Taiga');
+                $users = importMember($member, $new_board, 'taiga');
                 //$userNames[$membership['id']] = $member['fullName'];
                 $userNames[$membership['email']] = $users[$membership['email']];
             }
