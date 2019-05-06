@@ -990,9 +990,10 @@ function createTrelloMember($member = array() , $admin_user_id = array() , $new_
             $member['is_card_members_notifications_enabled'],
             $member['is_card_labels_notifications_enabled'],
             $member['is_card_checklists_notifications_enabled'],
-            $member['is_card_attachments_notifications_enabled']
+            $member['is_card_attachments_notifications_enabled'],
+            'trello-' . utf8_decode($member['username']) . '@mailinator.com',
         );
-        $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
+        $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, $13, $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
         $user_id = $user['id'];
     } else {
         $user_id = $userExist['id'];
@@ -1134,9 +1135,10 @@ function importTrelloBoard($board = array())
                         $member['is_card_members_notifications_enabled'],
                         $member['is_card_labels_notifications_enabled'],
                         $member['is_card_checklists_notifications_enabled'],
-                        $member['is_card_attachments_notifications_enabled']
+                        $member['is_card_attachments_notifications_enabled'],
+                        'trello-' . utf8_decode($member['username']) . '@mailinator.com',
                     );
-                    $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
+                    $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, $13, $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
                     $users[$member['id']] = $user['id'];
                     if ($member['avatarUrl']) {
                         $mediadir = MEDIA_PATH . DS . 'User' . DS . $user['id'];
@@ -1750,7 +1752,7 @@ function importKantreeBoard($jsonArr = array())
                                     'avatarUrl' => $cardMember['avatar'],
                                     'initials' => strtoupper(substr($cardMember['display_name'], 0, 1))
                                 );
-                                $users = importMember($member, $new_board);
+                                $users = importMember($member, $new_board, 'kantree');
                                 $userNames[$cardMember['id']] = $cardMember['display_name'];
                             }
                             $qry_val_arr = array(
@@ -1992,7 +1994,7 @@ function importTaigaBoard($board = array())
                     'fullName' => email2name($membership['email']) ,
                     'initials' => strtoupper(substr($membership['email'], 0, 1))
                 );
-                $users = importMember($member, $new_board);
+                $users = importMember($member, $new_board, 'taiga');
                 //$userNames[$membership['id']] = $member['fullName'];
                 $userNames[$membership['email']] = $users[$membership['email']];
             }
@@ -2284,9 +2286,10 @@ function importWekanBoard($board = array())
                         $member['is_card_members_notifications_enabled'],
                         $member['is_card_labels_notifications_enabled'],
                         $member['is_card_checklists_notifications_enabled'],
-                        $member['is_card_attachments_notifications_enabled']
+                        $member['is_card_attachments_notifications_enabled'],
+                        'wekan-' . utf8_decode($member['username']) . '@mailinator.com',
                     );
-                    $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
+                    $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, $13, $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
                     $users[$wekan_user_id] = $user['id'];
                     $user_data[$wekan_user_id] = $username;
                 } else {
@@ -2828,7 +2831,7 @@ function is_plugin_enabled($plugin_name)
     }
     return false;
 }
-function importMember($member, $new_board)
+function importMember($member, $new_board, $import_type)
 {
     $qry_val_arr = array(
         utf8_decode($member['username'])
@@ -2862,9 +2865,10 @@ function importMember($member, $new_board)
             $member['is_card_members_notifications_enabled'],
             $member['is_card_labels_notifications_enabled'],
             $member['is_card_checklists_notifications_enabled'],
-            $member['is_card_attachments_notifications_enabled']
+            $member['is_card_attachments_notifications_enabled'],
+            $import_type . '-' . utf8_decode($member['username']) . '@mailinator.com',
         );
-        $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
+        $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, $13, $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
         $users[$member['id']] = $user['id'];
         if (isset($member['avatarUrl']) && !empty($member['avatarUrl'])) {
             $mediadir = MEDIA_PATH . DS . 'User' . DS . $user['id'];
