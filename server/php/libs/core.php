@@ -1134,9 +1134,10 @@ function importTrelloBoard($board = array())
                         $member['is_card_members_notifications_enabled'],
                         $member['is_card_labels_notifications_enabled'],
                         $member['is_card_checklists_notifications_enabled'],
-                        $member['is_card_attachments_notifications_enabled']
+                        $member['is_card_attachments_notifications_enabled'],
+                        'trello-' . utf8_decode($member['username']) . '@mailinator.com',
                     );
-                    $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, \'\', $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
+                    $user = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO users (created, modified, role_id, username, email, password, is_active, is_email_confirmed, initials, full_name, is_send_newsletter, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled) VALUES (now(), now(), 2, $1, $13, $2, true, true, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id', $qry_val_arr));
                     $users[$member['id']] = $user['id'];
                     if ($member['avatarUrl']) {
                         $mediadir = MEDIA_PATH . DS . 'User' . DS . $user['id'];
