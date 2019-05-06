@@ -96,9 +96,14 @@ App.ApplicationView = Backbone.View.extend({
                                     APPS = settings_response.apps;
                                     IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                     DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-                                    var current_language = DEFAULT_LANGUAGE;
+                                    var current_language;
                                     if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
                                         current_language = authuser.user.language;
+                                    } else if (navigator.language || navigator.userLanguage) {
+                                        current_language = navigator.language || navigator.userLanguage;
+                                        current_language = current_language.replace("-", "_");
+                                    } else {
+                                        current_language = DEFAULT_LANGUAGE;
                                     }
                                     i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
                                         lng: current_language,
@@ -184,9 +189,14 @@ App.ApplicationView = Backbone.View.extend({
                                 }
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-                                var current_language = DEFAULT_LANGUAGE;
+                                var current_language;
                                 if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
                                     current_language = authuser.user.language;
+                                } else if (navigator.language || navigator.userLanguage) {
+                                    current_language = navigator.language || navigator.userLanguage;
+                                    current_language = current_language.replace("-", "_");
+                                } else {
+                                    current_language = DEFAULT_LANGUAGE;
                                 }
                                 i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
                                     lng: current_language,
