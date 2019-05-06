@@ -2085,9 +2085,9 @@ App.ListView = Backbone.View.extend({
         });
         var is_card_empty = true;
         var view = '';
-        $('#js-card-listing-' + self.model.attributes.id).html('<span class="js-list-placeholder-' + self.model.attributes.id + '">&nbsp;</span>');
         // $('#js-card-listing-' + self.model.attributes.id).html('&nbsp;');
         if (!_.isEmpty(filtered_cards)) {
+            $('#js-card-listing-' + self.model.attributes.id).html('<span class="js-list-placeholder-' + self.model.attributes.id + '">&nbsp;</span>');
             _.each(filtered_cards, function(card) {
                 card.set('list_name', _.escape(self.model.attributes.name));
             });
@@ -2202,7 +2202,11 @@ App.ListView = Backbone.View.extend({
                     converter: self.converter
                 });
                 $('#js-card-listing-' + self.model.attributes.id).append(view.render().el);
+                if (key + 1 === filtered_cards.length) {
+                    $('#js-card-listing-' + self.model.attributes.id).find('.js-list-placeholder-' + self.model.attributes.id).remove();
+                }
             });
+            $('#js-card-listing-' + self.model.attributes.id).find('.js-list-placeholder-' + self.model.attributes.id);
         }
         if (is_card_empty) {
             view = new App.CardView({
