@@ -75,13 +75,11 @@ To give you some idea about of our plans:
 
 #### Under release
 
-* Card Counter app
-* Enhancing Custom fields app
-* Enhancing Support Desk app
-* Enhancing Agile WIP app
-* Enhancing Broadcasts app
-* Enhancing Wiki app
-* Enhancing Attachment Downloader app
+* Sandstorm support for Installation
+* Import from Asana
+* Import Taskwarrior Tasks
+* SparkPost Plugin for easy email sending
+* In notification emails, Gmail Action Button "View on Restyaboard"
 * GitHub issues & enhancements etc.,
 
 #### Next
@@ -140,6 +138,6 @@ Required sofware: nginx, php-fpm (with mbstring), PostgreSQL, ElasticSearch, Gru
 
 ### License
 
-Copyright (c) 2014-2018 [Restya](http://restya.com/).
+Copyright (c) 2014-2019 [Restya](http://restya.com/).
 
 Dual License ([OSL 3.0](LICENSE.txt) & [Commercial License](http://restya.com/contact))
