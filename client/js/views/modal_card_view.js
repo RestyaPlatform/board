@@ -58,6 +58,7 @@ App.ModalCardView = Backbone.View.extend({
         'click a.js-attachment-computer-open': 'computerOpen',
         'change .js-card-attachment': 'addCardAttachment',
         'click .js-show-checklist-add-form': 'showChecklistAddForm',
+        'click .js-checklist-add-form-response': 'preventDefault',
         'submit form.js-add-checklist': 'addChecklist',
         'click .js-show-add-member-form': 'showAddMemberForm',
         'click .js-add-card-member': 'addCardMember',
@@ -3055,6 +3056,13 @@ App.ModalCardView = Backbone.View.extend({
         $('li.dropdown').removeClass('open');
         target.parents('li.dropdown').addClass('open');
         return false;
+    },
+    preventDefault: function(e) {
+        var target_class = $(e.target).attr('class');
+        if (!_.isUndefined(target_class) && target_class.indexOf('js-checklist-add-submit') === -1) {
+            e.preventDefault();
+            return false;
+        }
     },
     /**
      * addChecklist()
