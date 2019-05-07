@@ -130,7 +130,7 @@ App.AdminUserAddView = Backbone.View.extend({
                     var split = repo.text.split(',');
                     return split[0];
                 },
-            }).select2('val', is_send_newsletter_val);
+            }).select2('val', '');
         }).defer();
         return this;
     }
