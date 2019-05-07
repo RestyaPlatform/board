@@ -2568,11 +2568,12 @@ function splitAsanatasks($board, $task)
     if (!empty($task['resource_subtype'])) {
         if ($task['resource_subtype'] == 'default_task') {
             $board['lists'] = (empty($board['lists'])) ? [] : $board['lists'];
-            $board['list_card_count'] = (empty($board['list_card_count'])) ? [] : $board['list_card_count'];
+            $board['card_count'] = (empty($board['card_count'])) ? [] : $board['card_count'];
             if (!empty($task['memberships'])) {
                 if (!empty($task['memberships'][0]['section'])) {
                     $tmp_list = $task['memberships'][0]['section'];
                 } else {
+                    $board['todo_template'] = true;
                     if (!empty($task['completed']) && $task['completed'] == true) {
                         $tmp_list = $board['lists'][2];
                     } else if (!empty($task['assignee']) || !empty($task['due_on'])) {
@@ -2580,14 +2581,14 @@ function splitAsanatasks($board, $task)
                     } else {
                         $tmp_list = $board['lists'][0];
                     }
-                    $board['list_card_count'][$tmp_list['gid']] = 1;
+                    $board['card_count'][$tmp_list['gid']] = 1;
                 }
                 $task['idList'] = $tmp_list['gid'];
                 if ($tmp_list['resource_type'] === 'section' && !in_array($tmp_list, $board['lists'])) {
-                    $board['list_card_count'][$task['idList']] = 1;
+                    $board['card_count'][$task['idList']] = 1;
                     $board['lists'][] = $tmp_list;
                 } else {
-                    $board['list_card_count'][$task['idList']] = $board['list_card_count'][$task['idList']] + 1;
+                    $board['card_count'][$task['idList']] = $board['card_count'][$task['idList']] + 1;
                 }
             }
             $board['cards'][] = $task;
@@ -2719,7 +2720,7 @@ function importAsanaBoard($jsonArr = array())
             if (!empty($board['lists'])) {
                 $i = 0;
                 foreach ($board['lists'] as $list) {
-                    if (!empty($board['list_card_count'][$list['gid']]) && $board['list_card_count'][$list['gid']] > 0) {
+                    if ((!empty($board['card_count'][$list['gid']]) && $board['card_count'][$list['gid']] > 0) || (!empty($board['todo_template']) && $list['gid'] <= 3)) {
                         $i+= 1;
                         $qry_val_arr = array(
                             utf8_decode($list['name']) ,
