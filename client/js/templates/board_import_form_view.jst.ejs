@@ -51,6 +51,18 @@
 </li>
 <li class="col-xs-12 navbar-btn divider js-import-boards-back"></li>
 <li class="col-xs-12 btn-block js-import-boards-back">
+	<a href="#" class="js-show-board-import-taskwarrior-form col-xs-12 navbar-btn h6">
+		<span class="show clearfix text-primary navbar-btn h5">
+			<span class="pull-left"><%- i18next.t('Import Board from Taskwarrior') %></span> <span class="cssloader pull-right hide" id="js-board-import-taskwarrior-loader"></span>
+		</span>
+		<span class="show"><%- i18next.t('Upload json file exported from Taskwarrior.') %></span>
+	</a>
+	<form class="hide" id="js-board-import-taskwarrior" enctype="multipart/form-data">
+		<input type="file" name="board_import_taskwarrior" class="js-board-import-taskwarrior-file"/>
+	</form>
+</li>
+<li class="col-xs-12 navbar-btn divider js-import-boards-back"></li>
+<li class="col-xs-12 btn-block js-import-boards-back">
 	<a href="#" class="js-show-board-import-wekan-form col-xs-12 navbar-btn h6">
 		<span class="show clearfix text-primary navbar-btn h5">
 			<span class="pull-left"><%- i18next.t('Import Board from Wekan') %></span> <span class="cssloader pull-right hide" id="js-board-import-loader"></span>
@@ -61,5 +73,4 @@
 		<input type="file" name="board_import_wekan" class="js-board-import-wekan-file"/>
 	</form>
 </li>
-
 <% } %>
