@@ -2170,7 +2170,7 @@ App.ListView = Backbone.View.extend({
                 }
             };
             cards.reset(filtered_cards);
-            cards.each(function(card) {
+            cards.each(function(card, key) {
                 is_card_empty = false;
                 card.list_name = _.escape(self.model.attributes.name);
                 card.list_id = self.model.attributes.id;
