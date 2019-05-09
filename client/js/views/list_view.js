@@ -2202,11 +2202,8 @@ App.ListView = Backbone.View.extend({
                     converter: self.converter
                 });
                 $('#js-card-listing-' + self.model.attributes.id).append(view.render().el);
-                if (key + 1 === filtered_cards.length) {
-                    $('#js-card-listing-' + self.model.attributes.id).find('.js-list-placeholder-' + self.model.attributes.id).remove();
-                }
             });
-            $('#js-card-listing-' + self.model.attributes.id).find('.js-list-placeholder-' + self.model.attributes.id);
+            $('#js-card-listing-' + self.model.attributes.id).find('.js-list-placeholder-' + self.model.attributes.id).remove();
         }
         if (is_card_empty) {
             view = new App.CardView({

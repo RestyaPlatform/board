@@ -189,14 +189,7 @@ foreach($_writable_folders as $folder) {
     }
 }
 $_writable_files = array(
-    APP_PATH . '/server/php/shell/card_due_notification.sh',
-    APP_PATH . '/server/php/shell/imap.sh',
-    APP_PATH . '/server/php/shell/instant_email_notification.sh',
-    APP_PATH . '/server/php/shell/periodic_email_notification.sh',
-    APP_PATH . '/server/php/shell/webhook.sh',
-    APP_PATH . '/server/php/plugins/Chat/shell/chat_activities.sh',
-    APP_PATH . '/server/php/plugins/Chat/shell/periodic_chat_email_notification.sh',
-    APP_PATH . '/server/php/plugins/ElasticSearch/shell/indexing_to_elasticsearch.sh',
+    APP_PATH . '/server/php/shell/main.sh'
 );
 foreach($_writable_files as $file) {
     if (file_exists($file)) {
