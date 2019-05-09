@@ -613,7 +613,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         if (is_plugin_enabled('r_sparkpost')) {
             require_once PLUGIN_PATH . DS . 'SparkPost' . DS . 'functions.php';
             $result = SparkPostMail($to, $subject, $message, $headers, DEFAULT_FROM_EMAIL_ADDRESS);
-        }else{
+        } else {
             $result = mail($to, $subject, $message, $headers, '-f' . DEFAULT_FROM_EMAIL_ADDRESS);
         }
         if (R_DEBUG) {
