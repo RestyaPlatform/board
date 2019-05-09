@@ -1998,7 +1998,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             '/search'
         );
         $plugin_url['SparkPost'] = array(
-            '/sparkpost/?/mail'
+            'users/?/sparkpost_test_mail'
         );
         $plugin_url['CardTemplate'] = array(
             '/boards/?/card_template',
