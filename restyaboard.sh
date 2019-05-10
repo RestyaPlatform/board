@@ -15,14 +15,63 @@
 		fi
 		set -x
 		whoami
-		echo $(cat /etc/issue)
-		OS_REQUIREMENT=$(lsb_release -i -s)
-		if ([ "$OS_REQUIREMENT" = "" ])
-		then
-			echo "lsb_release is not enabled, please install \"yum install -y redhat-lsb-core\" command before running install script"
-			exit 1
-		fi
-		OS_VERSION=$(lsb_release -rs | cut -f1 -d.)
+		#
+		# Checking the OS name and OS version
+		#
+		find_release ()
+		{
+			# Checking the Ubuntu OS
+			if [ -f /etc/lsb-release ]; then
+				OS_REQUIREMENT="`grep DISTRIB_ID /etc/lsb-release`"
+				DISTRIB_ID='DISTRIB_ID='
+				OS_NAME=$OS_REQUIREMENT$DISTRIB_ID
+				array=();
+				if ([ "$OS_REQUIREMENT" != "$DISTRIB_ID" ])
+				then
+					while [[ $OS_NAME ]]; do
+					array+=( "${OS_NAME%%"$DISTRIB_ID"*}" );
+					OS_NAME=${OS_NAME#*"$DISTRIB_ID"};
+					done;
+					OS_REQUIREMENT=${array[1]}
+				fi
+				OS_VERSION="`grep DISTRIB_RELEASE /etc/lsb-release`"
+				DISTRIB_RELEASE='DISTRIB_RELEASE='
+				OS_Ver=$OS_VERSION$DISTRIB_RELEASE
+				version=();
+				if ([ "$OS_VERSION" != "$DISTRIB_RELEASE" ])
+				then
+					while [[ $OS_Ver ]]; do
+					version+=( "${OS_Ver%%"$DISTRIB_RELEASE"*}" );
+					OS_Ver=${OS_Ver#*"$DISTRIB_RELEASE"};
+					done;
+					OS_VERSION=${version[1]}
+				fi
+				return
+			fi
+
+			# Checking the Redhat, Fedora, and Centos
+			if [ -f /etc/redhat-release ]; then
+				OS_REQUIREMENT="`cat /etc/redhat-release | cut -d ' ' -f 1`"
+				OS_VERSION="`cat /etc/redhat-release | cut -d ' ' -f 4`"
+				return
+			fi
+
+			# Checking the Debian OS
+			if [ -f /etc/issue ]; then
+				OS_REQUIREMENT="`cat /etc/issue | cut -d ' ' -f 1`"
+				OS_VERSION="`cat /etc/issue | cut -d ' ' -f 3`"
+				return
+			fi
+
+			# Checking the OpenBSD 
+			if [ -f /etc/motd ]; then
+				OS_REQUIREMENT="`cat /etc/motd | head -1 | cut -d ' ' -f 1`"
+				OS_VERSION="`cat /etc/motd | head -1 | cut -d ' ' -f 2`"
+				return
+			fi
+
+		}
+		find_release
 		if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 		then
 			apt update
@@ -350,7 +399,7 @@
 			if [[ $version < $RESTYABOARD_VERSION ]];
 			then
 				update_version
-				exit
+				exit;
 			else
 				echo "No new version available"
 				exit;
@@ -363,7 +412,7 @@
 			case "${answer}" in
 				[Yy])
 				update_version
-				exit
+				exit;
 			esac
 		fi
 		if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
