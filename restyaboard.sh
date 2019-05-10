@@ -1319,6 +1319,7 @@
 						sed -i "s|RewriteBase /.*$|RewriteBase /$Restyaboardpath|" $dir/.htaccess
 						sed -i "s/AllowOverride.*$/AllowOverride All/" /etc/httpd/conf/httpd.conf
     					sed -i "s/Require all denied.*$/Require all granted/" /etc/httpd/conf/httpd.conf
+						rm -rf ${DOWNLOAD_DIR}/.htaccess
 					fi
 				else
 					set +x
