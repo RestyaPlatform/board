@@ -1285,7 +1285,7 @@
 				then 
 					echo "Changing server_name in nginx configuration..."
 					cp ${DOWNLOAD_DIR}/restyaboard.conf /etc/nginx/conf.d
-					sed -i "s/server_name.*$/server_name $webdir;/" /etc/nginx/conf.d/restyaboard.conf
+					sed -i "s/server_name.*$/server_name \"$webdir\";/" /etc/nginx/conf.d/restyaboard.conf
 					sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
 					else 
 					curl -v -L -G -o ${DOWNLOAD_DIR}/.htaccess https://raw.githubusercontent.com/RestyaPlatform/board/master/.htaccess
@@ -1448,16 +1448,19 @@
                     find "$dir/client/apps" -type f -exec chmod 644 {} \;
                     chmod 0777 $dir/client/apps/**/*.json
 				esac
-
+				if ([ "$OS_REQUIREMENT" = "CentOS" ])
+				then
+					setsebool -P httpd_can_network_connect_db=1
+				fi
 				if [ -f "/bin/systemctl" ]; then
 					echo "Starting services with systemd..."
 					if [ ${APACHE_ENABLED} -eq 1 ] 
 					then
-						systemctl start httpd.service
+						systemctl restart httpd.service
 					else
-						systemctl start nginx
+						systemctl restart nginx
 					fi
-					systemctl start php-fpm
+					systemctl restart php-fpm
 				else
 					echo "Starting services..."
 					/etc/init.d/php-fpm restart
@@ -1505,10 +1508,6 @@
 				fi
 			fi
 			esac
-		fi
-		if ([ "$OS_REQUIREMENT" = "CentOS" ])
-		then
-			setsebool -P httpd_can_network_connect_db=1
 		fi
 		set +x
 		curl -v -L -G -d "app=board&os=${os}&version=${version}" "http://restya.com/success_installation.php"
