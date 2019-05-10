@@ -1997,6 +1997,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $plugin_url['ElasticSearch'] = array(
             '/search'
         );
+        $plugin_url['SparkPost'] = array(
+            '/users/?/sparkpost_test_mail'
+        );
         $plugin_url['CardTemplate'] = array(
             '/boards/?/card_template',
             '/card_templates/?',
