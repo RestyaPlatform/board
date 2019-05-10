@@ -184,7 +184,12 @@
 			then
 				APACHE_DISABLED=$(service apache2 status | grep 'dead' | wc -l)
 			else
-				APACHE_DISABLED=$(service httpd status | grep 'dead' | wc -l)
+				if which httpd > /dev/null 2>&1 
+				then
+					APACHE_DISABLED=$(service httpd status | grep 'dead' | wc -l)
+				else
+					APACHE_DISABLED=1
+				fi
 			fi
 			echo -e "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available.\n\nImportant: Please note that upgrading will remove any commercial apps that were free in previous version.\nFor more details about commercial apps, please visit http://restya.com/board/pricing\n\nDo you want to get it now y/n?"
 			read -r answer
@@ -919,42 +924,9 @@
 			set -x
 			case "${answer}" in
 				[Yy])
-				APACHE_DISABLED=$(service httpd status | grep 'dead' | wc -l)
-				if [ ${APACHE_DISABLED} -eq 1 ]
+				APACHE_ENABLED=$(service httpd status | grep 'active' | wc -l)
+				if [ ${APACHE_ENABLED} -eq 1 ]
 				then  
-					echo "Checking nginx..."
-					if ! which nginx > /dev/null 2>&1;
-					then
-						echo "nginx not installed!"
-						set +x
-						echo "Do you want to install nginx (y/n)?"
-						read -r answer
-						set -x
-						case "${answer}" in
-							[Yy])
-							echo "Installing nginx..."
-							rpm -Uvh "http://nginx.org/packages/centos/${OS_VERSION}/noarch/RPMS/nginx-release-centos-${OS_VERSION}-0.el${OS_VERSION}.ngx.noarch.rpm"
-							yum install -y zip cronie nginx
-							error_code=$?
-							if [ ${error_code} != 0 ]
-							then
-								echo "cron nginx installation failed with error code ${error_code} cron nginx installation failed with error code 18"
-								return 18
-							fi
-							if [ -f "/etc/nginx/conf.d/default.conf" ]; then
-								rm -rf /etc/nginx/conf.d/default.conf
-							fi
-							if [ -f "/etc/nginx/sites-enabled/default.conf" ]; then
-								rm -rf /etc/nginx/sites-enabled/default.conf
-							fi
-							if [ -f "/etc/nginx/sites-available/default.conf" ]; then
-								rm -rf /etc/nginx/sites-available/default.conf
-							fi
-							service nginx start
-							chkconfig --levels 35 nginx on
-						esac
-					fi
-				else
 					set +x
 					echo "It looks like Apache is running in your server. If you've configured and using any other application in Apache then continue in Apache. Otherwise Restyaboard is recommending to use nginx. So script will stop the apache and install nginx in your server. Do you want to continue as Apache provide "y" or to continue with nginx provide "n" (Y/n)?"
 					read -r answer
@@ -963,7 +935,7 @@
 						[Nn])
 						echo "Stopping apache..."
 						service httpd stop
-						APACHE_DISABLED=$(service httpd status | grep 'dead' | wc -l) 
+						APACHE_ENABLED=$(service httpd status | grep 'active' | wc -l) 
 						echo "Checking nginx..."
 						if ! which nginx > /dev/null 2>&1; then
 							echo "nginx not installed!"
@@ -996,6 +968,38 @@
                             esac
 						fi
 					esac
+				else
+					echo "Checking nginx..."
+					if ! which nginx > /dev/null 2>&1; then
+						echo "nginx not installed!"
+						set +x
+						echo "Do you want to install nginx (y/n)?"
+						read -r answer
+						set -x
+						case "${answer}" in
+							[Yy])
+							echo "Installing nginx..."
+							rpm -Uvh "http://nginx.org/packages/centos/${OS_VERSION}/noarch/RPMS/nginx-release-centos-${OS_VERSION}-0.el${OS_VERSION}.ngx.noarch.rpm"
+							yum install -y zip cronie nginx
+							error_code=$?
+							if [ ${error_code} != 0 ]
+							then
+								echo "cron nginx installation failed with error code ${error_code} cron nginx installation failed with error code 18"
+								return 18
+							fi
+							if [ -f "/etc/nginx/conf.d/default.conf" ]; then
+								rm -rf /etc/nginx/conf.d/default.conf
+							fi
+							if [ -f "/etc/nginx/sites-enabled/default.conf" ]; then
+								rm -rf /etc/nginx/sites-enabled/default.conf
+							fi
+							if [ -f "/etc/nginx/sites-available/default.conf" ]; then
+								rm -rf /etc/nginx/sites-available/default.conf
+							fi
+							service nginx start
+							chkconfig --levels 35 nginx on
+						esac
+					fi
 				fi
 				echo "Checking PHP..."
 				if ! hash php 2>&-;
@@ -1153,9 +1157,7 @@
 				echo "Installed PHP version: '$PHP_VERSION'"
 
 				echo "Checking PostgreSQL..."
-				id -a postgres
-				error_code=$?
-				if [ ${error_code} != 0 ];
+				if ! which psql > /dev/null 2>&1;
 				then
 					echo "PostgreSQL not installed!"
 					set +x
@@ -1259,40 +1261,37 @@
 				curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
 				unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
 				rm /tmp/restyaboard.zip
-
-				set +x
-				echo "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
-				read -r webdir
-				while [[ -z "$webdir" ]]
-				do
-					read -r -p "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
-				done
+				if [ ${APACHE_ENABLED} -eq 0 ]
+				then
+					set +x
+					echo "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
+					read -r webdir
+					while [[ -z "$webdir" ]]
+					do
+						read -r -p "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+					done
+				else 
+					set +x
+					echo "To configure apache, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
+					read -r webdir
+					while [[ -z "$webdir" ]]
+					do
+						read -r -p "To configure apache, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+					done
+				fi	
 				set -x
 				echo "$webdir"
-				if [ ${APACHE_DISABLED} -eq 1 ]
+				if [ ${APACHE_ENABLED} -eq 0 ]
 				then 
 					echo "Changing server_name in nginx configuration..."
 					cp ${DOWNLOAD_DIR}/restyaboard.conf /etc/nginx/conf.d
-					sed -i "s/server_name.*$/server_name \"$webdir\";/" /etc/nginx/conf.d/restyaboard.conf
+					sed -i "s/server_name.*$/server_name $webdir;/" /etc/nginx/conf.d/restyaboard.conf
 					sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
 					else 
 					curl -v -L -G -o ${DOWNLOAD_DIR}/.htaccess https://raw.githubusercontent.com/RestyaPlatform/board/master/.htaccess
 				fi
-				if [ ${APACHE_DISABLED} -eq 1 ] 
+				if [ ${APACHE_ENABLED} -eq 1 ] 
 				then
-					set +x
-					echo "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):"
-					read -r dir
-					while [[ -z "$dir" ]]
-					do
-						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):" dir
-					done
-					set -x
-					echo "$dir"
-					mkdir -p "$dir"
-					echo "Changing root directory in nginx configuration..."
-					sed -i "s|root.*html|root $dir|" /etc/nginx/conf.d/restyaboard.conf
-				else
 					set +x
 					echo "Enter your document root (where your Restyaboard to be installed. e.g., /var/www/html/restyaboard):"
 					read -r dir
@@ -1321,6 +1320,19 @@
 						sed -i "s/AllowOverride.*$/AllowOverride All/" /etc/httpd/conf/httpd.conf
     					sed -i "s/Require all denied.*$/Require all granted/" /etc/httpd/conf/httpd.conf
 					fi
+				else
+					set +x
+					echo "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):"
+					read -r dir
+					while [[ -z "$dir" ]]
+					do
+						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):" dir
+					done
+					set -x
+					echo "$dir"
+					mkdir -p "$dir"
+					echo "Changing root directory in nginx configuration..."
+					sed -i "s|root.*html|root $dir|" /etc/nginx/conf.d/restyaboard.conf
 				fi
 				echo "Copying Restyaboard script to root directory..."
 				cp -r "$DOWNLOAD_DIR"/* "$dir"
@@ -1332,9 +1344,11 @@
 				chmod -R go+w "$dir/client/img"
 				chmod -R go+w "$dir/tmp/cache"
 				chmod -R 0755 $dir/server/php/shell/*.sh
-				chcon -R -t httpd_sys_rw_content_t $dir/media/ $dir/tmp/cache/ $dir/client/img/
-				chcon -Rv --type=httpd_t $dir/
-
+				if ([ "$OS_REQUIREMENT" = "CentOS" ])
+				then
+					chcon -R -t httpd_sys_rw_content_t $dir/media/ $dir/tmp/cache/ $dir/client/img/
+					chcon -Rv --type=httpd_t $dir/
+				fi
 				psql -U postgres -c "\q"
 				error_code=$?
 				if [ ${error_code} != 0 ]
@@ -1378,9 +1392,10 @@
 						return 45
 					fi	
 				fi
-				setsebool -P httpd_can_network_connect_db=1
-				setsebool -P allow_postfix_local_write_mail_spool 1
-
+				if ([ "$OS_REQUIREMENT" = "CentOS" ])
+				then
+					setsebool -P allow_postfix_local_write_mail_spool 1
+				fi
 				echo "Changing PostgreSQL database name, user and password..."
 				sed -i "s/^.*'R_DB_NAME'.*$/define('R_DB_NAME', '${POSTGRES_DBNAME}');/g" "$dir/server/php/config.inc.php"
 				sed -i "s/^.*'R_DB_USER'.*$/define('R_DB_USER', '${POSTGRES_DBUSER}');/g" "$dir/server/php/config.inc.php"
@@ -1436,21 +1451,21 @@
 
 				if [ -f "/bin/systemctl" ]; then
 					echo "Starting services with systemd..."
-					if [ ${APACHE_DISABLED} -eq 1 ] 
+					if [ ${APACHE_ENABLED} -eq 1 ] 
 					then
-						systemctl start nginx
-					else
 						systemctl start httpd.service
+					else
+						systemctl start nginx
 					fi
 					systemctl start php-fpm
 				else
 					echo "Starting services..."
 					/etc/init.d/php-fpm restart
-					if [ ${APACHE_DISABLED} -eq 1 ] 
+					if [ ${APACHE_ENABLED} -eq 1 ] 
 					then
-						/etc/init.d/nginx restart
-					else
 						/etc/init.d/httpd restart
+					else
+						/etc/init.d/nginx restart
 					fi
 				fi
 				yum install -y python-pip
@@ -1459,7 +1474,7 @@
 			esac
 		fi
 		/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
-		if [ ${APACHE_DISABLED} -eq 1 ]; then
+		if [ ${APACHE_ENABLED} -eq 0 ]; then
 			set +x
 			echo "Do you want to setup SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance (y/n)?"
 			read -r answer
@@ -1490,6 +1505,10 @@
 				fi
 			fi
 			esac
+		fi
+		if ([ "$OS_REQUIREMENT" = "CentOS" ])
+		then
+			setsebool -P httpd_can_network_connect_db=1
 		fi
 		set +x
 		curl -v -L -G -d "app=board&os=${os}&version=${version}" "http://restya.com/success_installation.php"
