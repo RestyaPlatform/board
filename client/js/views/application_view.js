@@ -1077,7 +1077,9 @@ App.ApplicationView = Backbone.View.extend({
                 new App.AdminUserIndexView();
             } else if (page.model == 'user_logins_index') {
                 changeTitle(i18next.t('Users Logins'));
-                new App.AdminUserLoginView();
+                new App.AdminUserLoginView({
+                    page: page.options.page
+                });
             } else if (page.model == 'admin_boards_index') {
                 changeTitle(i18next.t('Boards'));
                 new App.AdminBoardsListView();

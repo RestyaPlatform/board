@@ -343,6 +343,7 @@ var AppRouter = Backbone.Router.extend({
         'users/activation/:id/:hash': 'user_activation',
         'users/:id/changepassword': 'changepassword',
         'users': 'users_index',
+        'user_logins?page=:page': 'user_logins_index',
         'user_logins': 'user_logins_index',
         'boards/list': 'admin_boards_index',
         'user/:id': 'user_view',
@@ -581,9 +582,10 @@ var AppRouter = Backbone.Router.extend({
             model: 'users_index'
         });
     },
-    user_logins_index: function() {
+    user_logins_index: function(page) {
         new App.ApplicationView({
-            model: 'user_logins_index'
+            model: 'user_logins_index',
+            page: page
         });
     },
     admin_boards_index: function() {
