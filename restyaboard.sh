@@ -1560,6 +1560,12 @@
 			esac
 		fi
 		set +x
+		echo "Checking Hosting..."
+		response=$(curl -H Metadata:true http://169.254.169.254/metadata/instance?api-version=2017-04-02 --write-out %{http_code} --connect-timeout 10 --max-time 10 --silent --output /dev/null)
+		if [ ${response} -eq 200 ];then
+			echo "Note: PHP Mailer will not work in Azure. Kindly use external SMTP mail server."
+		fi
+		set +x
 		curl -v -L -G -d "app=board&os=${os}&version=${version}" "http://restya.com/success_installation.php"
 		echo "Restyaboard URL : $webdir"
 
