@@ -21,6 +21,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
     initialize: function(options) {
         this.sortField = options.sortField;
         this.filter_count = options.filter_count;
+        this.current_param = options.current_param;
         this.sortDirection = options.sortDirection;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
@@ -74,7 +75,8 @@ App.AdminBoardsIndexView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             'board': this.model,
-            filter_count: this.filter_count
+            filter_count: this.filter_count,
+            'current_param': this.current_param
         }));
         if (!_.isUndefined(this.sortField)) {
             this.renderBoardCollection();
@@ -144,14 +146,24 @@ App.AdminBoardsIndexView = Backbone.View.extend({
                 $('.pagination-boxes').html('');
                 if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
                     $('.pagination-boxes').pagination({
-                        total_pages: response._metadata.noOfPages,
-                        current_page: _this.current_page,
+                        total_pages: parseInt(response._metadata.noOfPages),
+                        current_page: parseInt(_this.current_page),
                         display_max: 4,
                         callback: function(event, page) {
                             event.preventDefault();
                             if (page) {
-                                _this.current_page = page;
-                                _this.filterBoard();
+                                if (!_.isUndefined(_this.filterField) && _this.filterField !== null && _this.filterField !== 'all') {
+                                    app.navigate('#/' + 'boards/list?page=' + page + '&filter=' + _this.filterField, {
+                                        trigger: true,
+                                        trigger_function: true,
+                                    });
+                                } else {
+                                    _this.current_page = page;
+                                    app.navigate('#/' + 'boards/list?page=' + page, {
+                                        trigger: true,
+                                        trigger_function: true,
+                                    });
+                                }
                             }
                         }
                     });

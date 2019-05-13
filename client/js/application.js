@@ -342,9 +342,11 @@ var AppRouter = Backbone.Router.extend({
         'users/forgotpassword': 'forgotpassword',
         'users/activation/:id/:hash': 'user_activation',
         'users/:id/changepassword': 'changepassword',
+        'users?query_param': 'users_index',
         'users': 'users_index',
         'user_logins?page=:page': 'user_logins_index',
         'user_logins': 'user_logins_index',
+        'boards/list?query_param': 'admin_boards_index',
         'boards/list': 'admin_boards_index',
         'user/:id': 'user_view',
         'user/:id/two-step-verification': 'user_verification',
@@ -577,9 +579,10 @@ var AppRouter = Backbone.Router.extend({
             'id': id
         });
     },
-    users_index: function() {
+    users_index: function(page) {
         new App.ApplicationView({
-            model: 'users_index'
+            model: 'users_index',
+            page: page
         });
     },
     user_logins_index: function(page) {
@@ -588,9 +591,10 @@ var AppRouter = Backbone.Router.extend({
             page: page
         });
     },
-    admin_boards_index: function() {
+    admin_boards_index: function(page) {
         new App.ApplicationView({
-            model: 'admin_boards_index'
+            model: 'admin_boards_index',
+            page: page
         });
     },
     user_view: function(id) {

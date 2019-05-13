@@ -4,13 +4,13 @@
 	<section class="clearfix">
 		 <div class="col-xs-12">
 			<ul class="nav nav-pills text-center thumbnail js-filter-list">
-				<li><a class="js-filter cur" data-filter="open" title="<%- i18next.t('Open') %>"><span class="show"><strong><%- filter_count.open %></strong></span><%- i18next.t('Open') %></a></li>
-				<li><a class="js-filter cur" data-filter="closed" title="<%- i18next.t('Closed') %>"><span class="show"><strong><%- filter_count.closed %></strong></span><%- i18next.t('Closed') %></a></li>
-				<li><a class="js-filter cur" data-filter="public" title="<%- i18next.t('Public') %>"><span class="show"><strong><%- filter_count.public %></strong></span><%- i18next.t('Public') %></a></li>
-				<li><a class="js-filter cur" data-filter="private" title="<%- i18next.t('Private') %>"><span class="show"><strong><%- filter_count.private %></strong></span><%- i18next.t('Private') %></a></li>
-				<li><a class="js-filter cur" data-filter="organization" title="<%- i18next.t('Organization') %>"><span class="show"><strong><%- filter_count.organization %></strong></span><%- i18next.t('Organization') %></a></li>
+				<li class="<% if(current_param === 'open') { %>active<% } %>"><a class="js-filter cur" data-filter="open" title="<%- i18next.t('Open') %>"><span class="show"><strong><%- filter_count.open %></strong></span><%- i18next.t('Open') %></a></li>
+				<li class="<% if(current_param === 'closed') { %>active<% } %>"><a class="js-filter cur" data-filter="closed" title="<%- i18next.t('Closed') %>"><span class="show"><strong><%- filter_count.closed %></strong></span><%- i18next.t('Closed') %></a></li>
+				<li class="<% if(current_param === 'public') { %>active<% } %>"><a class="js-filter cur" data-filter="public" title="<%- i18next.t('Public') %>"><span class="show"><strong><%- filter_count.public %></strong></span><%- i18next.t('Public') %></a></li>
+				<li class="<% if(current_param === 'private') { %>active<% } %>"><a class="js-filter cur" data-filter="private" title="<%- i18next.t('Private') %>"><span class="show"><strong><%- filter_count.private %></strong></span><%- i18next.t('Private') %></a></li>
+				<li class="<% if(current_param === 'organization') { %>active<% } %>"><a class="js-filter cur" data-filter="organization" title="<%- i18next.t('Organization') %>"><span class="show"><strong><%- filter_count.organization %></strong></span><%- i18next.t('Organization') %></a></li>
 				<% var all = parseInt(filter_count.open) + parseInt(filter_count.closed); %>
-				<li class="active"><a href="#/boards/list" title="<%- i18next.t('All') %>"><span class="show"><strong><%-  all %></strong></span><%- i18next.t('All') %></a></li>
+				<li class="<% if(current_param === 'all') { %>active<% } %>"><a href="#/boards/list" title="<%- i18next.t('All') %>"><span class="show"><strong><%-  all %></strong></span><%- i18next.t('All') %></a></li>
 				<li class="pull-right h4"><form id="BoardSearch" name="BoardSearch" class="form-horizontal col-xs-12"><input type="text" placeholder="Search" name="board_search" id="board_search" class="form-control" /></form></li>
 				
 			</ul>

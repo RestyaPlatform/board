@@ -60,21 +60,21 @@ App.AdminUserLoginView = Backbone.View.extend({
                 $('.pagination-boxes').unbind();
                 $('.pagination-boxes').html('');
                 if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
-                $('.pagination-boxes').pagination({
-                    total_pages: parseInt(response._metadata.noOfPages),
-                    current_page: parseInt(_this.current_page),
-                    display_max: 4,
-                    callback: function(event, page) {
-                        event.preventDefault();
-                        if (page) {
-                            _this.current_page = page;
-                            app.navigate('#/' + 'user_logins?page=' + page, {
-                                trigger: true,
-                                trigger_function: true,
-                            });
+                    $('.pagination-boxes').pagination({
+                        total_pages: parseInt(response._metadata.noOfPages),
+                        current_page: parseInt(_this.current_page),
+                        display_max: 4,
+                        callback: function(event, page) {
+                            event.preventDefault();
+                            if (page) {
+                                _this.current_page = page;
+                                app.navigate('#/' + 'user_logins?page=' + page, {
+                                    trigger: true,
+                                    trigger_function: true,
+                                });
+                            }
                         }
-                    }
-                });
+                    });
                 }
             }
         });
