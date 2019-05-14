@@ -175,7 +175,7 @@ if (_.isEmpty(role_links.where({
 									<% } %>
 									<% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user) && !_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && APPS.enabled_apps.indexOf('r_wiki') !== -1 && !_.isEmpty(authuser.user) && !_.isUndefined(authuser.user) && (!_.isEmpty(role_links.where({slug: "get_pages"})))){ %>
 										<li class="hidden-xs org-btn">
-											<a title="<%- i18next.t('Wiki') %>" href="javascript:void(0);" class="btn btn-default js-view-wiki-menu">
+											<a title="<%- i18next.t('Wiki') %>" href="#/apps/r_wiki/pages" class="btn btn-default js-view-wiki-menu">
 												<span>
 													<%- i18next.t("Wiki") %>
 												</span>
