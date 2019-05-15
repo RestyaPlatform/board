@@ -1091,6 +1091,33 @@ function importTrelloBoard($board = array())
                 }
             }
         }
+        if (is_plugin_enabled('r_custom_fields') && !empty($board['customFields'])) {
+            foreach ($board['customFields'] as $customField) {
+                $options = array();
+                if ($customField['type'] === 'date') {
+                    $customField['type'] = 'datetime';
+                }
+                if ($customField['type'] === 'list') {
+                    foreach ($customField['options'] as $option) {
+                        $options[] = $option['value']['text'];
+                        $customFieldOptions[$option['id']] = $option['value']['text'];
+                    }
+                    $customField['type'] = 'dropdown';
+                }
+                $qry_val_arr = array(
+                    $user_id,
+                    $customField['type'],
+                    $customField['name'],
+                    implode(',', $options) ,
+                    $customField['name'],
+                    $customField['pos'],
+                    $customField['display']['cardFront'],
+                    $new_board['id']
+                );
+                $customFieldId = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO custom_fields (created, modified, user_id, type, name, description, options, label, position, visibility, color, board_id) VALUES (now(), now(), $1, $2, $3, NULL, $4, $5, $6, $7, NULL, $8) RETURNING id', $qry_val_arr));
+                $customFields[$customField['id']] = $customFieldId['id'];
+            }
+        }
         if (!empty($board['labelNames'])) {
             foreach ($board['labelNames'] as $label) {
                 if (!empty($label['name'])) {
@@ -1305,6 +1332,31 @@ function importTrelloBoard($board = array())
                             $users[$cardMemberId]
                         );
                         pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards_users (created, modified, card_id, user_id) VALUES (now(), now(), $1, $2) RETURNING id', $qry_val_arr));
+                    }
+                }
+                if (is_plugin_enabled('r_custom_fields') && !empty($card['customFieldItems'])) {
+                    foreach ($card['customFieldItems'] as $customFieldItem) {
+                        if (!empty($customFieldItem['idValue'])) {
+                            $value = $customFieldOptions[$customFieldItem['idValue']];
+                        } else if (!empty($customFieldItem['value']['text'])) {
+                            $value = $customFieldItem['value']['text'];
+                        } else if (!empty($customFieldItem['value']['checked'])) {
+                            $value = $customFieldItem['value']['checked'];
+                        } else if (!empty($customFieldItem['value']['number'])) {
+                            $value = $customFieldItem['value']['number'];
+                        } else if (!empty($customFieldItem['value']['date'])) {
+                            $date_arr = explode('T', $customFieldItem['value']['date']);
+                            $time_arr = explode('.', $date_arr[1]);
+                            $value = $date_arr[0] . 'T' . $time_arr[0];
+                        }
+                        $qry_val_arr = array(
+                            $_card['id'],
+                            $customFields[$customFieldItem['idCustomField']],
+                            $value,
+                            $new_board['id'],
+                            $lists[$card['idList']]
+                        );
+                        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value, board_id, list_id) VALUES (now(), now(), $1, $2, $3, $4, $5) RETURNING id', $qry_val_arr));
                     }
                 }
             }
