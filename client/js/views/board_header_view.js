@@ -2103,6 +2103,11 @@ App.BoardHeaderView = Backbone.View.extend({
                 var filter = !_.isEmpty(filter_query) && unfilteredIds.indexOf(card.get('id')) === -1;
                 card.set('is_filtered', filter);
             });
+            _.each(this.model.lists.models, function(list) {
+                if (!$('#js-card-listing-' + list.id).find('.panel').is(':visible') && (!_.isUndefined(list.attributes.card_count) && list.attributes.card_count !== 0 && list.attributes.card_count !== null && !isNaN(list.attributes.card_count))) {
+                    $('#js-card-listing-' + list.id).prepend('<span class="js-list-placeholder-' + list.id + '">&nbsp;</span>');
+                }
+            });
             if (!_.isUndefined(unfilteredIds) && !_.isEmpty(unfilteredIds)) {
                 $('#js-empty-filter-cards').removeClass('hide');
             } else if (!$('#js-empty-filter-cards').hasClass('hide')) {
@@ -2293,6 +2298,9 @@ App.BoardHeaderView = Backbone.View.extend({
             _.each(cards, function(card, key) {
                 card.set('is_filtered', false);
             });
+            if (list.attributes.card_count !== 0 && $('#js-card-listing-' + list.id).find('.js-list-placeholder-' + list.id).length > 0) {
+                $('#js-card-listing-' + list.id).find('.js-list-placeholder-' + list.id).remove();
+            }
         });
         app.navigate('#/board/' + this.model.attributes.id + filter, {
             trigger: false,

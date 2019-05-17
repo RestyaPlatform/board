@@ -181,6 +181,7 @@ App.CardView = Backbone.View.extend({
         var current_list = current_board.lists.findWhere({
             id: parseInt(list_id)
         });
+        $('#js-card-listing-' + list_id).find('.js-list-placeholder-' + list_id).remove();
         if (parseInt(current_list.attributes.card_count) === 0 || parseInt(current_list.attributes.card_count) === 1 || _.isUndefined(current_list.attributes.card_count)) {
             $('#js-card-listing-' + list_id).find('.js-list-placeholder-' + list_id).remove();
             /* $('#js-card-listing-' + list_id).html(function(i, h) {

@@ -2120,7 +2120,7 @@ App.ModalCardView = Backbone.View.extend({
                     });
                 }
             }
-        } else if (!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by !== 'position') {
+        } else if (!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by !== 'position' && parseInt(data.board_id) === parseInt(current_board_id)) {
             var board_sort_by = (current_board.attributes.sort_by) ? current_board.attributes.sort_by : 'position';
             var bard_sort_direction = (current_board.attributes.sort_direction) ? current_board.attributes.sort_direction : 'asc';
             if (data.list_id !== current_list_id) {
@@ -2140,6 +2140,11 @@ App.ModalCardView = Backbone.View.extend({
             } else {
                 data.position = this.model.attributes.position;
             }
+        } else {
+            data.position = 1;
+            this.model.set({
+                position: data.position
+            });
         }
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
         $('.js-close-popover').click();
@@ -2160,13 +2165,16 @@ App.ModalCardView = Backbone.View.extend({
             this.model.list.collection.board.lists.get(current_list_id).cards.remove(this.model);
             if (data.board_id === current_board_id) {
                 this.model.list.collection.board.lists.get(data.list_id).cards.add(this.model);
+                this.model.list = this.model.list.collection.get(data.list_id);
             }
-            this.model.list = this.model.list.collection.get(data.list_id);
             var prev_list_card_count = parseInt(this.boards.get(current_board_id).lists.get(current_list_id).get('card_count'));
             this.boards.get(current_board_id).lists.get(current_list_id).set('card_count', prev_list_card_count - 1);
             var current_list = this.board.lists.findWhere({
                 id: current_list_id
             });
+            if (current_list !== null && !_.isUndefined(current_list) && !_.isEmpty(current_list)) {
+                this.model.list = current_list;
+            }
             current_list.set('card_count', prev_list_card_count - 1);
             if (parseInt(current_list.attributes.card_count) === 0) {
                 // Adding the &nbsp; to the current list if it has no card
