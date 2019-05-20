@@ -4481,6 +4481,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         if (empty($r_post['user_id'])) {
             $r_post['user_id'] = $authUser['id'];
         }
+        if (empty($r_post['card_id'])) {
+            $r_post['card_id'] = $r_resource_vars['cards'];
+        }
+        if (empty($r_post['list_id'])) {
+            $r_post['list_id'] = $r_resource_vars['lists'];
+        }
+        if (empty($r_post['board_id'])) {
+            $r_post['board_id'] = $r_resource_vars['boards'];
+        }
         if (!empty($sql)) {
             $post = getbindValues($table_name, $r_post);
             $result = pg_execute_insert($table_name, $post);
