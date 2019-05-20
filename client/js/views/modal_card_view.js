@@ -4077,7 +4077,12 @@ App.ModalCardView = Backbone.View.extend({
                     card.set('board_id', parseInt(response.cards.board_id));
                     card.set('id', parseInt(response.id));
                     card.board_users = self.model.list.board_users;
-                    card.list = self.model.list;
+                    var new_list = App.boards.get(parseInt(response.cards.board_id)).lists.get(parseInt(response.cards.list_id));
+                    if (!_.isEmpty(new_list) && !_.isUndefined(new_list)) {
+                        card.list = new_list;
+                    } else {
+                        card.list = self.model.list;
+                    }
                     if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
                         card.set({
                             id: parseInt(response.id)
