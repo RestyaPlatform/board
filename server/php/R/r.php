@@ -6513,7 +6513,6 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $foreign_ids['board_id'] = $r_resource_vars['boards'];
         $foreign_ids['list_id'] = $r_resource_vars['lists'];
         $foreign_ids['card_id'] = $r_resource_vars['cards'];
-        print_r($r_resource_vars);
         $comment = '##USER_NAME## updated comment to this card ##CARD_LINK##';
         $activity_type = 'edit_comment';
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
