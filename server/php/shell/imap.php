@@ -18,7 +18,7 @@ if (!defined('APP_PATH')) {
     require_once $app_path . '/libs/core.php';
 }
 define('IMAP_TEMP_FILE', CACHE_PATH . DS . 'imap.php');
-if (!defined('STDIN') && !file_exists(IMAP_TEMP_FILE)) {
+if (!file_exists(IMAP_TEMP_FILE)) {
     $fh = fopen(IMAP_TEMP_FILE, "a");
     fwrite($fh, '<?php' . "\n" . '$_imap_time_trace = \'' . strtotime('now') . '\';');
     fclose($fh);

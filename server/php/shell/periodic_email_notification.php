@@ -24,7 +24,7 @@ global $_server_domain_url;
 if (file_exists(SITE_URL_FOR_SHELL)) {
     include_once SITE_URL_FOR_SHELL;
 }
-if (!defined('STDIN') && !file_exists(PERIODIC_TEMP_FILE)) {
+if (!file_exists(PERIODIC_TEMP_FILE)) {
     $fh = fopen(PERIODIC_TEMP_FILE, "a");
     fwrite($fh, '<?php' . "\n" . '$_periodic_email_notification_time_trace = \'' . strtotime('now') . '\';');
     fclose($fh);
