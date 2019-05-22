@@ -77,27 +77,62 @@ App.CardCheckListItemView = Backbone.View.extend({
      */
     itemSort: function(ev, ui) {
         var target = $(ev.target);
-        var data = {};
+        var data = {},
+            before, after, difference, newPosition;
         var checklist_id = parseInt(target.parents('.js-checklist-items-sorting:first').data('checklist_id'));
-
         var previous_item_id = target.prev('.js-checklist-item').data('item_id');
         var next_item_id = target.next('.js-checklist-item').data('item_id');
-
+        var checklistItems = this.model.card.list.collection.board.checklist_items.where({
+            card_id: parseInt(this.model.card.id)
+        });
+        var checklist_items = new App.CheckListItemCollection();
+        checklist_items.add(checklistItems);
         this.model.url = api_url + 'boards/' + this.model.card.get('board_id') + '/lists/' + this.model.card.get('list_id') + '/cards/' + this.model.card.id + '/checklists/' + this.model.attributes.checklist_id + '/items/' + this.model.id + '.json';
         if ((typeof previous_item_id == 'undefined' && typeof next_item_id == 'undefined') || checklist_id != this.model.attributes.checklist_id) {
+            this.model.card.list.collection.board.checklists.get(this.model.attributes.checklist_id).checklist_items.remove(this.model, {
+                silent: true
+            });
             data.checklist_id = checklist_id;
         }
         if (typeof previous_item_id != 'undefined') {
-            this.model.moveAfter(previous_item_id);
+            before = checklist_items.get(previous_item_id);
+            after = checklist_items.next(before);
+            if (typeof after == 'undefined') {
+                afterPosition = before.position() + 2;
+            } else {
+                afterPosition = after.position();
+            }
+            difference = (afterPosition - before.position()) / 2;
+            newPosition = difference + before.position();
+            this.model.set({
+                position: newPosition
+            });
         } else if (typeof next_item_id != 'undefined') {
-            this.model.moveBefore(next_item_id);
+            after = checklist_items.get(next_item_id);
+            before = checklist_items.previous(after);
+            if (typeof before == 'undefined') {
+                beforePosition = 0.0;
+            } else {
+                beforePosition = before.position();
+            }
+            difference = (after.position() - beforePosition) / 2;
+            newPosition = difference + beforePosition;
+            this.model.set({
+                position: newPosition
+            });
+            this.model.collection.sort({
+                silent: true
+            });
         }
         this.model.set('checklist_id', checklist_id);
         data.position = this.model.attributes.position;
-
+        this.model.card.list.collection.board.checklists.get(checklist_id).checklist_items.add(this.model, {
+            silent: true
+        });
         this.model.save(data, {
             patch: true
         });
+        this.renderProgress();
     },
     /**
      * render()

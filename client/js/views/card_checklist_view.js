@@ -356,7 +356,7 @@ App.CardCheckListView = Backbone.View.extend({
         $(e.target).removeClass('js-show-checklist-item-add-form').addClass('hide').next('.js-checklist-item-add-form-view').html(new App.ChecklistItemAddFormView({
             model: this.model
         }).el);
-        $('.js-add-item').find('textarea').focus();
+        $('.js-new-checklist-item-' + this.model.attributes.id).focus();
     },
     /**
      * hideChecklistItemAddForm()
@@ -378,9 +378,9 @@ App.CardCheckListView = Backbone.View.extend({
      *
      */
     addChecklistItem: function(e) {
-        if (!$.trim($('#ChecklistItem').val()).length) {
+        if (!$.trim($(e.target).find('#ChecklistItem').val()).length) {
             $('.error-msg').remove();
-            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#ChecklistItem');
+            $('<div class="error-msg text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter($(e.target).find('#ChecklistItem'));
             return false;
         } else {
             $('.error-msg').remove();
