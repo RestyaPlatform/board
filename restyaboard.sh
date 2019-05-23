@@ -52,7 +52,7 @@
 			# Checking the Redhat, Fedora, and Centos
 			if [ -f /etc/redhat-release ]; then
 				OS_REQUIREMENT="`cat /etc/redhat-release | cut -d ' ' -f 1`"
-				OS_VERSION="`cat /etc/redhat-release | cut -d ' ' -f 4`"
+				OS_VERSION="`cat /etc/redhat-release | cut -d ' ' -f 4 | cut -d '.' -f 1`"
 				return
 			fi
 

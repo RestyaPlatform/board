@@ -1266,7 +1266,6 @@ App.ListView = Backbone.View.extend({
         var filtered_cards = '';
         var self = this;
         this.renderCardNumbers();
-        
         if (!_.isUndefined(e) && e.storeName === 'card') {
             if (e.attributes.list_id === self.model.id) {
                 e.attributes.triggersort = true;
