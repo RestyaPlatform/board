@@ -62,6 +62,11 @@ App.RoleSettingsView = Backbone.View.extend({
         this.board_user_roles = options.board_user_roles;
         this.acl_organization_links = options.acl_organization_links;
         this.organization_user_roles = options.organization_user_roles;
+        this.role_setting_title = {
+            'users': i18next.t('Users Role Settings'),
+            'boards': i18next.t('Boards Role Settings'),
+            'organizations': i18next.t('Organizations Role Settings')
+        };
         this.render();
     },
     /**
@@ -73,7 +78,7 @@ App.RoleSettingsView = Backbone.View.extend({
      */
     roleSettingTigger: function(e) {
         e.preventDefault();
-        changeTitle(i18next.t($(e.currentTarget).attr('title') + ' Role Settings'));
+        changeTitle(this.role_setting_title[$(e.currentTarget).data('toggle_id')]);
         app.navigate('#/' + 'roles?tab=' + $(e.currentTarget).data('toggle_id'), {
             trigger: false,
             trigger_function: false,
@@ -121,6 +126,7 @@ App.RoleSettingsView = Backbone.View.extend({
                 tab_choosen: self.tab
             }));
         });
+        changeTitle(self.role_setting_title[self.tab]);
         $('.js-admin-role-menu').addClass('active');
         $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-email-menu, .js-admin-setting-menu, .js-admin-board-menu').removeClass('active');
         _(function() {
