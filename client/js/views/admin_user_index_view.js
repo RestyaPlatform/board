@@ -111,9 +111,10 @@ App.AdminUserIndexView = Backbone.View.extend({
                                     _this.current_page = page;
                                 }
                                 app.navigate('#/' + 'users?page=' + page, {
-                                    trigger: true,
-                                    trigger_function: true,
+                                    trigger: false,
+                                    trigger_function: false,
                                 });
+                                _this.updateCollection();
                             }
                         }
                     });

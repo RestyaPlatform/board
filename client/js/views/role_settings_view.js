@@ -40,7 +40,8 @@ App.RoleSettingsView = Backbone.View.extend({
         'click .js-delete-board-role': 'DeleteBoardRoleDropdown',
         'click .js-back-to-board-roleEdit': 'BackToBoardRoleEdit',
         'click .js-delete-org-role': 'DeleteOrganizationRoleDropdown',
-        'click .js-back-to-org-roleEdit': 'BackToOrganizationRoleEdit'
+        'click .js-back-to-org-roleEdit': 'BackToOrganizationRoleEdit',
+        'click #js-rolesetting-tab': 'roleSettingTigger',
     },
     /**
      * Constructor
@@ -50,12 +51,33 @@ App.RoleSettingsView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
+
+        this.tab = 'users';
+        if (!_.isUndefined(options.option.tab) && options.option.tab !== null) {
+            tab_choosen = options.option.tab.split('tab=');
+            this.tab = tab_choosen[1];
+        }
         this.roles = options.roles;
         this.acl_board_links = options.acl_board_links;
         this.board_user_roles = options.board_user_roles;
         this.acl_organization_links = options.acl_organization_links;
         this.organization_user_roles = options.organization_user_roles;
         this.render();
+    },
+    /**
+     * roleSettingTigger()
+     * tigger the tab URL via 
+     * @param NULL
+     * @return object
+     *
+     */
+    roleSettingTigger: function(e) {
+        e.preventDefault();
+        changeTitle(i18next.t($(e.currentTarget).attr('title') + ' Role Settings'));
+        app.navigate('#/' + 'roles?tab=' + $(e.currentTarget).data('toggle_id'), {
+            trigger: false,
+            trigger_function: false,
+        });
     },
     /**
      * render()
@@ -95,7 +117,8 @@ App.RoleSettingsView = Backbone.View.extend({
                 acl_board_links: self.acl_board_links,
                 board_user_roles: self.board_user_roles,
                 acl_organization_links: self.acl_organization_links,
-                organization_user_roles: self.organization_user_roles
+                organization_user_roles: self.organization_user_roles,
+                tab_choosen: self.tab
             }));
         });
         $('.js-admin-role-menu').addClass('active');

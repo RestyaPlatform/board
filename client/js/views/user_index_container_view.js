@@ -126,6 +126,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
             colspan = "16";
         }
+        changeTitle(i18next.t('Users') + ' - ' + $(e.currentTarget).attr('title'));
         $('.js-user-list').html('<tr class="js-loader"><td colspan="' + colspan + '"><span class="cssloader"></span></td></tr>');
         users.url = api_url + 'users.json?page=' + _this.current_page + '&filter=' + _this.filterField;
         app.navigate('#/' + 'users?page=' + _this.current_page + '&filter=' + _this.filterField, {

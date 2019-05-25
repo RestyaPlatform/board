@@ -10,6 +10,7 @@ if (typeof App === 'undefined') {
 var loginExceptionUrl = ['register', 'login', 'forgotpassword', 'user_activation', 'aboutus'];
 var adminUrl = ['roles', 'activities', 'users', 'boards/list', 'oauth_clients', 'apps', 'user_logins', 'settings', 'email_templates', 'user_logins'];
 var adminUrlModels = ['role_settings', 'activity_index', 'users_index', 'admin_boards_index', 'oauth_clients', 'apps', 'user_logins_index', 'settings', 'email_template_type', 'user_logins_index'];
+var exceptionAppPage = ['r_wikipages'];
 /**
  * Application View
  * @class ApplicationView
@@ -536,6 +537,12 @@ App.ApplicationView = Backbone.View.extend({
             } else if (view_type === 'report') {
                 $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">' + i18next.t('Loading ....') + '</h4></div></div></div>');
                 view_type = null;
+            } else if (view_type === 'wiki' || view_type === 'manage_wiki') {
+                if ($('#boards-view-' + view_type).length === 0) {
+                    $('#content .js-boards-view').remove('');
+                    $('#content').html('<section id="boards-view-' + view_type + '" class="clearfix js-boards-view col-xs-12"></section>');
+                }
+                view_type = null;
             } else if (view_type === 'attachments') {
                 $('.js-show-board-modal').trigger('click');
                 view_type = null;
@@ -643,7 +650,16 @@ App.ApplicationView = Backbone.View.extend({
             }
         }
         if (page.model !== 'boards_view' && page.model !== 'users_index' && page.model !== 'user_logins_index' && page.model !== 'admin_boards_index') {
-            $('#header').html(this.headerView.el);
+            if (page.model == 'app_page') {
+                if (!_.isEmpty(page.options.name) && !_.isUndefined(page.options.name)) {
+                    var page_name = page.options.name + '' + page.options.page;
+                    if (exceptionAppPage.indexOf(page_name) === -1) {
+                        $('#header').html(this.headerView.el);
+                    }
+                }
+            } else {
+                $('#header').html(this.headerView.el);
+            }
         }
         $.cookie('previous_url', Backbone.history.getFragment());
     },
@@ -1140,7 +1156,8 @@ App.ApplicationView = Backbone.View.extend({
                             acl_board_links: acl_board_links,
                             board_user_roles: board_user_roles,
                             acl_organization_links: acl_organization_links,
-                            organization_user_roles: organization_user_roles
+                            organization_user_roles: organization_user_roles,
+                            option: page.options
                         }).el);
                     }
                 });
