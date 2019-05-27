@@ -26,6 +26,7 @@ App.EmailTemplateView = Backbone.View.extend({
      */
     events: {
         'submit form#js-email-templates-form': 'updateTemplate',
+        'click #js-email_template_trigger': 'TriggerSettingtab',
     },
     /**
      * updateTemplate()
@@ -48,6 +49,20 @@ App.EmailTemplateView = Backbone.View.extend({
             }
         });
         return false;
+    },
+    /** 
+     * TriggerSettingtab()
+     * trigger email templates
+     * @return false
+     */
+    TriggerSettingtab: function(e){
+        e.preventDefault();
+        app.navigate('#/' + 'email_templates/' + $(e.currentTarget).data('email_template_id'), {
+            trigger: false,
+            trigger_function: false,
+        });
+        this.id =$(e.currentTarget).data('email_template_id');
+        this.getListing();
     },
     /** 
      * getListing()

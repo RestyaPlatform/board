@@ -26,6 +26,7 @@ App.SettingView = Backbone.View.extend({
      */
     events: {
         'submit form#js-setting-list-form': 'updateSetting',
+        'click #js-setting_trigger': 'TriggerSettingtab',
     },
 
     /**
@@ -83,6 +84,20 @@ App.SettingView = Backbone.View.extend({
             }
         });
         return false;
+    },
+     /** 
+     * TriggerSettingtab()
+     * trigger email templates
+     * @return false
+     */
+    TriggerSettingtab: function(e){
+        e.preventDefault();
+        app.navigate('#/' + 'settings/' + $(e.currentTarget).data('setting_category_id'), {
+            trigger: false,
+            trigger_function: false,
+        });
+        this.id =$(e.currentTarget).data('setting_category_id');
+        this.getListing();
     },
     /** 
      * getListing()
