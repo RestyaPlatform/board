@@ -17,7 +17,7 @@ App.RoleSettingsView = Backbone.View.extend({
     template: JST['templates/role_settings'],
     tagName: 'section',
     id: 'role_settings',
-    className: 'clearfix row',
+    className: 'clearfix',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
@@ -93,39 +93,16 @@ App.RoleSettingsView = Backbone.View.extend({
      */
     render: function() {
         var self = this;
-        var getting_new_array = [];
-        localforage.getItem('apps', function(err, value) {
-            if (!_.isEmpty(value)) {
-                var local_storage_apps = JSON.parse(value);
-                apps_data = local_storage_apps;
-                var getss = apps_data;
-                var get_names = [];
-                _.each(apps_data, function(data) {
-                    get_names.push(data.name);
-                });
-                get_names.sort();
-                _.each(get_names, function(data) {
-                    _.each(getss, function(datas) {
-                        if (data === datas.name) {
-                            var role = role_links.findWhere({
-                                slug: datas.id
-                            });
-                            getting_new_array.push(datas);
-                        }
-                    });
-                });
-            }
-            self.$el.html(self.template({
-                apps: getting_new_array,
-                acl_links: self.model,
-                roles: self.roles,
-                acl_board_links: self.acl_board_links,
-                board_user_roles: self.board_user_roles,
-                acl_organization_links: self.acl_organization_links,
-                organization_user_roles: self.organization_user_roles,
-                tab_choosen: self.tab
-            }));
-        });
+        self.$el.html(self.template({
+            apps: overallApps,
+            acl_links: self.model,
+            roles: self.roles,
+            acl_board_links: self.acl_board_links,
+            board_user_roles: self.board_user_roles,
+            acl_organization_links: self.acl_organization_links,
+            organization_user_roles: self.organization_user_roles,
+            tab_choosen: self.tab
+        }));
         changeTitle(self.role_setting_title[self.tab]);
         $('.js-admin-role-menu').addClass('active');
         $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-email-menu, .js-admin-setting-menu, .js-admin-board-menu').removeClass('active');

@@ -26,6 +26,14 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
+        this.admin_boards_title = {
+            'open': i18next.t('Boards -  Open'),
+            'closed': i18next.t('Boards - Closed'),
+            'public': i18next.t('Boards - Public'),
+            'private': i18next.t('Boards - Private'),
+            'organization': i18next.t('Boards - Organization'),
+            'all': i18next.t('Boards')
+        };
         this.render();
     },
     template: JST['templates/admin_board_index'],
@@ -78,6 +86,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
             filter_count: this.filter_count,
             'current_param': this.current_param
         }));
+        changeTitle(this.admin_boards_title[this.current_param]);
         if (!_.isUndefined(this.sortField)) {
             this.renderBoardCollection();
         }
@@ -119,6 +128,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         if (!_.isUndefined(e)) {
             _this.current_page = 1;
         }
+        changeTitle(this.admin_boards_title[_this.filterField]);
         $('.js-my-boards').html('<tr class="js-loader"><td colspan="12"><span class="cssloader"></span></td></tr>');
         boards.url = api_url + 'boards.json?page=' + _this.current_page + '&filter=' + _this.filterField;
         app.navigate('#/' + 'boards/list?page=' + _this.current_page + '&filter=' + _this.filterField, {

@@ -116,6 +116,18 @@ App.SettingView = Backbone.View.extend({
             list: collections,
             id: this.id
         }));
+        //Changing the Title dynamically
+        var self = this;
+        if (!_.isEmpty(collections) && !_.isUndefined(self.id)) {
+            var setting_category = collections.filter(function(model) {
+                if (parseInt(model.get('id')) === parseInt(self.id)) {
+                    return model;
+                }
+            });
+            if (setting_category.length > 0) {
+                changeTitle(i18next.t('Settings') + ' - ' + setting_category[0].get('name'));
+            }
+        }
         $('.js-admin-setting-menu').addClass('active');
         $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-email-menu, .js-admin-role-menu, .js-admin-board-menu').removeClass('active');
         return this;

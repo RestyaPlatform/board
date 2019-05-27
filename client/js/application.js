@@ -45,6 +45,7 @@ var sort_direction = '';
 var view_type_tab = '';
 var AppsFunction = [];
 var appsurlFunc = {};
+var overallApps = [];
 
 Backbone.View.prototype.flash = function(type, message, delay, position) {
     if (!delay) {

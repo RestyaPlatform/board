@@ -81,6 +81,18 @@ App.EmailTemplateView = Backbone.View.extend({
             list: collections,
             id: this.id
         }));
+        //Changing the Title dynamically
+        var self = this;
+        if (!_.isEmpty(collections) && !_.isUndefined(self.id)) {
+            var email_template = collections.filter(function(model) {
+                if (parseInt(model.get('id')) === parseInt(self.id)) {
+                    return model;
+                }
+            });
+            if (email_template.length > 0) {
+                changeTitle(i18next.t('Email Templates') + ' - ' + email_template[0].get('display_name'));
+            }
+        }
         $('.js-admin-email-menu').addClass('active');
         $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-role-menu, .js-admin-setting-menu, .js-admin-board-menu').removeClass('active');
         return this;
