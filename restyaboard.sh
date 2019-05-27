@@ -240,7 +240,7 @@
 					APACHE_DISABLED=1
 				fi
 			fi
-			echo -e "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available.\n\nImportant: Please note that upgrading will remove any commercial apps that were free in previous version.\nFor more details about commercial apps, please visit http://restya.com/board/pricing\n\nDo you want to get it now y/n?"
+			echo -e "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available.\n\nImportant: Please note that upgrading will remove any commercial apps that were free in previous version.\nFor more details about commercial apps, please visit https://restya.com/board/pricing\n\nDo you want to get it now y/n?"
 			read -r answer
 			set -x
 			case "${answer}" in
@@ -265,7 +265,7 @@
 				set -x
 				
 				echo "Downloading files..."
-				curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
+				curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip https://restya.com/download.php
 				unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
 				
 				echo "Updating files..."
@@ -774,7 +774,7 @@
 				echo "Downloading Restyaboard script..."
 				apt install -y curl
 				mkdir ${DOWNLOAD_DIR}
-				curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
+				curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip https://restya.com/download.php
 				unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
 				rm /tmp/restyaboard.zip
 
@@ -1307,7 +1307,7 @@
 
 				echo "Downloading Restyaboard script..."
 				mkdir ${DOWNLOAD_DIR}
-				curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
+				curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip https://restya.com/download.php
 				unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
 				rm /tmp/restyaboard.zip
 				if [ ${APACHE_ENABLED} -eq 0 ]
@@ -1566,7 +1566,7 @@
 			echo "Note: PHP Mailer will not work in Azure. Kindly use external SMTP mail server."
 		fi
 		set +x
-		curl -v -L -G -d "app=board&os=${os}&version=${version}" "http://restya.com/success_installation.php"
+		curl -v -L -G -d "app=board&os=${os}&version=${version}" "https://restya.com/success_installation.php"
 		echo "Restyaboard URL : $webdir"
 
 		echo "Login with username admin and password restya"
@@ -1575,7 +1575,7 @@
 	main
 	error=$?
 	os=$(lsb_release -i -s)
-	curl -v -L -G -d "app=board&os=${os}&error=${error}" "http://restya.com/error_installation.php"
-	echo "If you're finding it difficult to install Restyaboard from your end, we do also offer free installation support that you may consider http://restya.com/contact?category=free-installation"
+	curl -v -L -G -d "app=board&os=${os}&error=${error}" "https://restya.com/error_installation.php"
+	echo "If you're finding it difficult to install Restyaboard from your end, we do also offer free installation support that you may consider https://restya.com/contact?category=free-installation"
 	exit 1
 } 2>&1 | tee -a restyaboard_install.log
