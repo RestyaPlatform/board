@@ -1532,7 +1532,7 @@
 				echo "SSL connectivity cannot be set for IP address"
 			else
 				set +x
-				echo "Do you want to setup SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance (y/n)?"
+				echo "Do you want to set up SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance, Note: If you're trying to set SSL  for Non-publicly accessible instance, then your Restyaboard will not work (y/n)?"
 				read -r answer
 				set -x
 				case "${answer}" in
