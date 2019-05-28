@@ -747,6 +747,17 @@ $(window).on('hashchange', function() {
                         AppsFunction[functionName]();
                     }
                 });
+            } else {
+                // Board view Page Navigation triggering
+                if (location.hash.match('/board/([0-9])*/list')) {
+                    if ($('#listview_table').length === 0) {
+                        $('.js-switch-list-view').trigger('click');
+                    }
+                } else if (location.hash.match('/board/([0-9])*/calendar')) {
+                    if ($('.calendar-view').length === 0) {
+                        $('.js-switch-calendar-view').trigger('click');
+                    }
+                }
             }
         });
     }

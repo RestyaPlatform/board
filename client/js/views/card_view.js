@@ -547,8 +547,10 @@ App.CardView = Backbone.View.extend({
                 converter: this.converter
             }));
             if (filter_count < total_filter && (query_params)) {
-                this.model.set('is_filtered', true);
-                this.$el.css('display', 'none');
+                if (_.isUndefined(ops) && ops !== null) {
+                    this.model.set('is_filtered', true);
+                    this.$el.css('display', 'none');
+                }
             }
         } else if (self.model === null) {
             $('.js-card-list-view-' + this.board_id).html(this.$el.append(self.template({
