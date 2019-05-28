@@ -4,7 +4,7 @@
   <section class="clearfix">
     <div class="col-xs-12">
       <ul class="nav nav-pills text-center thumbnail js-filter-list">
-        <li>
+        <li class="<% if(current_param === 'active') { %>active<% } %>">
           <a class="js-filter cur" data-filter="active" title="<%- i18next.t('Active') %>">
             <span class="show">
               <strong>
@@ -14,7 +14,7 @@
             <%- i18next.t('Active') %>
           </a>
         </li>
-        <li>
+        <li class="<% if(current_param === 'inactive') { %>active<% } %>">
           <a class="js-filter cur" data-filter="inactive" title="<%- i18next.t('Inactive') %>">
             <span class="show">
               <strong>
@@ -27,7 +27,7 @@
         <% if (!_.isUndefined(APPS) && APPS !== null ) {
               if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
                 if ($.inArray('r_ldap_login',APPS.enabled_apps) !== -1) { %>
-        <li>
+        <li class="<% if(current_param === 'ldap') { %>active<% } %>">
           <a class="js-filter cur ldap_login_check" data-filter="ldap" title="<%- i18next.t('LDAP') %>">
             <span class="show">
               <strong>
@@ -43,7 +43,7 @@
         <% if(!_.isEmpty(roles)){ 
             _.each(roles, function(role) {
           %>
-        <li>
+        <li class="<% if(current_param == role.id) { %>active<% } %>">
           <a class="js-filter cur" data-filter="<%- role.id %>" title="<%- role.name %>">
             <span class="show">
               <strong>
@@ -56,7 +56,7 @@
         <% });
           } %>
         <% var all = parseInt(filter_count.active) + parseInt(filter_count.inactive); %>
-        <li class="active">
+        <li class="<% if(current_param === 'all') { %>active<% } %>">
           <a href="#/users" title="<%- i18next.t('All') %>">
             <span class="show">
               <strong>

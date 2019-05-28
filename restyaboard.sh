@@ -812,7 +812,6 @@
 				then
 					echo "GeoIP folder creation failed with error code ${error_code} (GeoIP folder creation failed with error code 52)"
 				fi
-
 				get_geoip_data
 			else
 				if ! hash pecl/geoip 2>&-;
@@ -1160,36 +1159,40 @@
 		}
 		ssl_connectivity()
 		{
-			set +x
-			echo "Do you want to setup SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance (y/n)?"
-			read -r answer
-			set -x
-			case "${answer}" in
-				[Yy])
-			cd /opt/
-			wget https://github.com/certbot/certbot/archive/master.zip -O certbot-master.zip
-			unzip certbot-master.zip
-			cd /opt/certbot-master/
-			sudo -H ./certbot-auto certonly --webroot --no-bootstrap -d $webdir -w "$dir/client"
-			sed -i "s/restya\.com/$webdir/g" ${DOWNLOAD_DIR}/restyaboard-ssl.conf
-
-			sed -i "/client_max_body_size 300M;/r ${DOWNLOAD_DIR}/restyaboard-ssl.conf"  /etc/nginx/conf.d/restyaboard.conf
-			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
-			then
-				service nginx restart
-				service php7.2-fpm restart
+			if [[ $webdir =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+				echo "SSL connectivity cannot be set for IP address"
 			else
-				if [ -f "/bin/systemctl" ]; then
-					echo "Starting services with systemd..."
-					systemctl restart nginx
-					systemctl restart php-fpm
-				else
-					echo "Starting services..."
-					/etc/init.d/php-fpm restart
-					/etc/init.d/nginx restart
-				fi
+				set +x
+				echo "Do you want to set up SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance, Note: If you're trying to set SSL  for Non-publicly accessible instance, then your Restyaboard will not work (y/n)?"
+				read -r answer
+				set -x
+				case "${answer}" in
+					[Yy])
+					cd /opt/
+					wget https://github.com/certbot/certbot/archive/master.zip -O certbot-master.zip
+					unzip certbot-master.zip
+					cd /opt/certbot-master/
+					sudo -H ./certbot-auto certonly --webroot --no-bootstrap -d $webdir -w "$dir/client"
+					sed -i "s/restya\.com/$webdir/g" ${DOWNLOAD_DIR}/restyaboard-ssl.conf
+
+					sed -i "/client_max_body_size 300M;/r ${DOWNLOAD_DIR}/restyaboard-ssl.conf"  /etc/nginx/conf.d/restyaboard.conf
+					if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+					then
+						service nginx restart
+						service php7.2-fpm restart
+					else
+						if [ -f "/bin/systemctl" ]; then
+							echo "Starting services with systemd..."
+							systemctl restart nginx
+							systemctl restart php-fpm
+						else
+							echo "Starting services..."
+							/etc/init.d/php-fpm restart
+							/etc/init.d/nginx restart
+						fi
+					fi
+				esac
 			fi
-			esac
 		}
 		find_release
 		checkdeps
@@ -1364,7 +1367,7 @@
 					APACHE_DISABLED=1
 				fi
 			fi
-			echo -e "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available.\n\nImportant: Please note that upgrading will remove any commercial apps that were free in previous version.\nFor more details about commercial apps, please visit http://restya.com/board/pricing\n\nDo you want to get it now y/n?"
+			echo -e "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available.\n\nImportant: Please note that upgrading will remove any commercial apps that were free in previous version.\nFor more details about commercial apps, please visit https://restya.com/board/pricing\n\nDo you want to get it now y/n?"
 			read -r answer
 			set -x
 			case "${answer}" in
@@ -1389,7 +1392,7 @@
 				set -x
 				
 				echo "Downloading files..."
-				curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
+				curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip https://restya.com/download.php
 				unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
 				
 				echo "Updating files..."
@@ -1590,7 +1593,7 @@
 				apt install -y curl
 			fi
 			mkdir ${DOWNLOAD_DIR}
-			curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip http://restya.com/download.php
+			curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip https://restya.com/download.php
 			unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
 			rm /tmp/restyaboard.zip
 
@@ -1682,6 +1685,6 @@
 	error=$?
 	os=$(lsb_release -i -s)
 	curl -v -L -G -d "app=board&os=${os}&error=${error}" "https://restya.com/error_installation.php"
-	echo "If you're finding it difficult to install Restyaboard from your end, we do also offer free installation support that you may consider http://restya.com/contact?category=free-installation"
+	echo "If you're finding it difficult to install Restyaboard from your end, we do also offer free installation support that you may consider https://restya.com/contact?category=free-installation"
 	exit 1
 } 2>&1 | tee -a restyaboard_install.log

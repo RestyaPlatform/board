@@ -46,7 +46,7 @@
 			read -r -p "Enter the reason for uninstalling the Restyaboard:" reason
 		done
 
-		curl -v -L -G -d "app=board&ver=${version}&reason=${reason}&os=${OS_REQUIREMENT}" "http://restya.com/uninstall.php"
+		curl -v -L -G -d "app=board&ver=${version}&reason=${reason}&os=${OS_REQUIREMENT}" "https://restya.com/uninstall.php"
 
 		set +x
 		echo "Enter your document root (where your Restyaboard was installed. e.g., /usr/share/nginx/html/restyaboard):"

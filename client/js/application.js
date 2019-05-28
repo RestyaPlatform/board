@@ -45,6 +45,7 @@ var sort_direction = '';
 var view_type_tab = '';
 var AppsFunction = [];
 var appsurlFunc = {};
+var overallApps = [];
 
 Backbone.View.prototype.flash = function(type, message, delay, position) {
     if (!delay) {
@@ -342,8 +343,11 @@ var AppRouter = Backbone.Router.extend({
         'users/forgotpassword': 'forgotpassword',
         'users/activation/:id/:hash': 'user_activation',
         'users/:id/changepassword': 'changepassword',
+        'users?query_param': 'users_index',
         'users': 'users_index',
+        'user_logins?page=:page': 'user_logins_index',
         'user_logins': 'user_logins_index',
+        'boards/list?query_param': 'admin_boards_index',
         'boards/list': 'admin_boards_index',
         'user/:id': 'user_view',
         'user/:id/two-step-verification': 'user_verification',
@@ -356,11 +360,13 @@ var AppRouter = Backbone.Router.extend({
         'board/:id/:type': 'boards_view_type',
         'board/:id/:type/card/:card_id': 'board_card_view_type',
         'board/:id/:type/:tab': 'boards_view_type_tab',
+        'board/:id/:type?query_param': 'boards_view_type',
         'organizations': 'organizations_index',
         'organization/:id': 'organizations_view',
         'organization/:id/:type': 'organizations_view_type',
         'organizations_user/:id': 'organizations_user_view',
         'roles': 'role_settings',
+        'roles?tab=:tab': 'role_settings',
         'roles/add': 'add_role',
         'board_user_roles/add': 'add_board_user_role',
         'organization_user_roles/add': 'add_organization_user_role',
@@ -576,19 +582,22 @@ var AppRouter = Backbone.Router.extend({
             'id': id
         });
     },
-    users_index: function() {
+    users_index: function(page) {
         new App.ApplicationView({
-            model: 'users_index'
+            model: 'users_index',
+            page: page
         });
     },
-    user_logins_index: function() {
+    user_logins_index: function(page) {
         new App.ApplicationView({
-            model: 'user_logins_index'
+            model: 'user_logins_index',
+            page: page
         });
     },
-    admin_boards_index: function() {
+    admin_boards_index: function(page) {
         new App.ApplicationView({
-            model: 'admin_boards_index'
+            model: 'admin_boards_index',
+            page: page
         });
     },
     user_view: function(id) {
@@ -633,9 +642,10 @@ var AppRouter = Backbone.Router.extend({
             });
         }
     },
-    role_settings: function() {
+    role_settings: function(tab) {
         new App.ApplicationView({
             model: 'role_settings',
+            tab: tab
         });
     },
     add_role: function() {
@@ -723,6 +733,12 @@ var AppRouter = Backbone.Router.extend({
 });
 var app = new AppRouter();
 app.on('route', function(route, params) {
+    $('div.doughnutTip').remove();
+    if (route !== 'boards_view' && route !== 'card_view' && route !== 'board_card_view_type' && route !== 'boards_view_type' && route !== 'boards_view_type_tab') {
+        $('body').removeAttr('style class');
+    }
+});
+$(window).on('hashchange', function() {
     if (!_.isUndefined(appsurlFunc)) {
         _.each(appsurlFunc, function(funct_names, url) {
             if (location.hash.match('/' + url)) {
@@ -731,12 +747,19 @@ app.on('route', function(route, params) {
                         AppsFunction[functionName]();
                     }
                 });
+            } else {
+                // Board view Page Navigation triggering
+                if (location.hash.match('/board/([0-9])*/list')) {
+                    if ($('#listview_table').length === 0) {
+                        $('.js-switch-list-view').trigger('click');
+                    }
+                } else if (location.hash.match('/board/([0-9])*/calendar')) {
+                    if ($('.calendar-view').length === 0) {
+                        $('.js-switch-calendar-view').trigger('click');
+                    }
+                }
             }
         });
-    }
-    $('div.doughnutTip').remove();
-    if (route !== 'boards_view' && route !== 'card_view' && route !== 'board_card_view_type' && route !== 'boards_view_type' && route !== 'boards_view_type_tab') {
-        $('body').removeAttr('style class');
     }
 });
 Backbone.history.start({

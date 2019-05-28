@@ -181,6 +181,7 @@ App.CardView = Backbone.View.extend({
         var current_list = current_board.lists.findWhere({
             id: parseInt(list_id)
         });
+        $('#js-card-listing-' + list_id).find('.js-list-placeholder-' + list_id).remove();
         if (parseInt(current_list.attributes.card_count) === 0 || parseInt(current_list.attributes.card_count) === 1 || _.isUndefined(current_list.attributes.card_count)) {
             $('#js-card-listing-' + list_id).find('.js-list-placeholder-' + list_id).remove();
             /* $('#js-card-listing-' + list_id).html(function(i, h) {
@@ -546,8 +547,10 @@ App.CardView = Backbone.View.extend({
                 converter: this.converter
             }));
             if (filter_count < total_filter && (query_params)) {
-                this.model.set('is_filtered', true);
-                this.$el.css('display', 'none');
+                if (_.isUndefined(ops) && ops !== null) {
+                    this.model.set('is_filtered', true);
+                    this.$el.css('display', 'none');
+                }
             }
         } else if (self.model === null) {
             $('.js-card-list-view-' + this.board_id).html(this.$el.append(self.template({

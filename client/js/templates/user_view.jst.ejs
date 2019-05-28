@@ -4,16 +4,16 @@
 		<div class="clearfix">
 			<ul class="nav nav-tabs no-bor h3">
 				<% if((authuser.user.id === page.id || authuser.user.role_id == 1) || (!_.isEmpty(role_links.where({slug: "view_user_activities"})))){ %>
-					<li <% if (_.isUndefined(type) || type == 'profile') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/profile"  ><%- i18next.t("Profile") %></a></li>
+					<li <% if (_.isUndefined(type) || type == 'profile') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/profile"   id="js-profile_tab_trigger" data-profile_tab_id="profile"><%- i18next.t("Profile") %></a></li>
 				<% } %>
 				<% if(!_.isEmpty(role_links.where({slug: "view_user_cards"}))){ %>
-					<li  <% if (!_.isUndefined(type) && type == 'cards') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/cards" ><%- i18next.t("Cards") %></a></li>
+					<li  <% if (!_.isUndefined(type) && type == 'cards') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/cards" id="js-profile_tab_trigger" data-profile_tab_id="cards"><%- i18next.t("Cards") %></a></li>
 				<% } %>
 				<% if(authuser.user.id === page.id || authuser.user.role_id == 1) { if(!_.isEmpty(role_links.where({slug: "edit_user_details"}))){ %>
-					<li <% if (!_.isUndefined(type) && type == 'settings') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/settings" ><%- i18next.t("Settings") %></a></li>
+					<li <% if (!_.isUndefined(type) && type == 'settings') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/settings"  id="js-profile_tab_trigger" data-profile_tab_id="settings"><%- i18next.t("Settings") %></a></li>
 				<% } %>
 				<% if(!_.isEmpty(role_links.where({slug: "view_connected_applications"}))){ %>
-					<li <% if (!_.isUndefined(type) && type == 'oauth_applications') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/oauth_applications" ><%- i18next.t("Authorized OAuth Applications") %></a></li>
+					<li <% if (!_.isUndefined(type) && type == 'oauth_applications') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/oauth_applications" id="js-profile_tab_trigger" data-profile_tab_id="oauth_applications"><%- i18next.t("Authorized OAuth Applications") %></a></li>
 				<% } } %>  
 			</ul>
 		</div>
