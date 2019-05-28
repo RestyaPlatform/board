@@ -158,39 +158,9 @@
 		{
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
-				APACHE_DISABLED=$(service apache2 status | grep 'dead' | wc -l) 
-				if [ ${APACHE_DISABLED} -eq 1 ]
-					then
-					echo "Checking nginx..."
-					if ! which nginx > /dev/null 2>&1; then
-						echo "nginx not installed!"
-						set +x
-						echo "Do you want to install nginx (y/n)?"
-						read -r answer
-						set -x
-						case "${answer}" in
-							[Yy])
-							echo "Installing nginx..."
-							apt install -y cron nginx
-							error_code=$?
-							if [ ${error_code} != 0 ]
-							then
-								echo "nginx installation failed with error code ${error_code} (nginx installation failed with error code 2)"
-								return 2
-							fi
-							if [ -f "/etc/nginx/conf.d/default" ]; then
-								rm -rf /etc/nginx/conf.d/default
-							fi
-							if [ -f "/etc/nginx/sites-enabled/default" ]; then
-								rm -rf /etc/nginx/sites-enabled/default
-							fi
-							if [ -f "/etc/nginx/sites-available/default" ]; then
-								rm -rf /etc/nginx/sites-available/default
-							fi
-							service nginx start
-						esac
-					fi
-				else
+				APACHE_ENABLED=$(service apache2 status | grep 'running' | wc -l) 
+				if [ ${APACHE_ENABLED} -eq 1 ]
+				then
 					set +x
 					echo "It looks like Apache is running in your server. If you've configured and using any other application in Apache then continue in Apache. Otherwise Restyaboard is recommending to use nginx. So script will stop the apache and install nginx in your server. Do you want to continue as Apache provide "y" or to continue with nginx provide "n" (Y/n)?"
 					read -r answer
@@ -199,7 +169,7 @@
 						[Nn])
 						echo "Stopping apache..."
 						service apache2 stop
-						APACHE_DISABLED=$(service apache2 status | grep 'dead' | wc -l) 
+						APACHE_ENABLED=$(service apache2 status | grep 'running' | wc -l) 
 						echo "Checking nginx..."
 						if ! which nginx > /dev/null 2>&1; then
 							echo "nginx not installed!"
@@ -230,6 +200,36 @@
 							esac
 						fi
 					esac
+				else
+				    echo "Checking nginx..."
+					if ! which nginx > /dev/null 2>&1; then
+						echo "nginx not installed!"
+						set +x
+						echo "Do you want to install nginx (y/n)?"
+						read -r answer
+						set -x
+						case "${answer}" in
+							[Yy])
+							echo "Installing nginx..."
+							apt install -y cron nginx
+							error_code=$?
+							if [ ${error_code} != 0 ]
+							then
+								echo "nginx installation failed with error code ${error_code} (nginx installation failed with error code 2)"
+								return 2
+							fi
+							if [ -f "/etc/nginx/conf.d/default" ]; then
+								rm -rf /etc/nginx/conf.d/default
+							fi
+							if [ -f "/etc/nginx/sites-enabled/default" ]; then
+								rm -rf /etc/nginx/sites-enabled/default
+							fi
+							if [ -f "/etc/nginx/sites-available/default" ]; then
+								rm -rf /etc/nginx/sites-available/default
+							fi
+							service nginx start
+						esac
+					fi
 				fi
 			else
 				APACHE_ENABLED=$(service httpd status | grep 'active' | wc -l)
@@ -975,11 +975,11 @@
 				echo "Starting services..."
 				service cron restart
 				service php7.2-fpm restart
-				if [ ${APACHE_DISABLED} -eq 1 ] 
+				if [ ${APACHE_ENABLED} -eq 1 ] 
 				then
-					service nginx restart
+				    service apache2 restart
 				else
-					service apache2 restart
+					service nginx restart
 				fi
 				service postfix restart
 				apt install -y python-pip
@@ -1017,34 +1017,8 @@
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
 				set +x
-				if [ ${APACHE_DISABLED} -eq 1 ] 
+				if [ ${APACHE_ENABLED} -eq 1 ] 
 				then
-					echo "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
-					read -r webdir
-					while [[ -z "$webdir" ]]
-					do
-						read -r -p "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
-					done
-					set -x
-					echo "$webdir"
-					set -x
-					cp ${DOWNLOAD_DIR}/restyaboard.conf /etc/nginx/conf.d
-					echo "Changing server_name in nginx configuration..."
-					sed -i "s/server_name.*$/server_name \"$webdir\";/" /etc/nginx/conf.d/restyaboard.conf
-					sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
-					set +x
-					echo "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):"
-					read -r dir
-					while [[ -z "$dir" ]]
-					do
-						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):" dir
-					done
-					set -x
-					echo "$dir"
-					mkdir -p "$dir"
-					echo "Changing root directory in nginx configuration..."
-					sed -i "s|root.*html|root $dir|" /etc/nginx/conf.d/restyaboard.conf
-				else 
 					set +x
 					echo "To configure apache, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
 					read -r webdir
@@ -1084,6 +1058,32 @@
 						sed -i "s/Require all denied.*$/Require all granted/" /etc/apache2/apache2.conf
 						rm -rf ${DOWNLOAD_DIR}/.htaccess
 					fi
+				else
+				    echo "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
+					read -r webdir
+					while [[ -z "$webdir" ]]
+					do
+						read -r -p "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+					done
+					set -x
+					echo "$webdir"
+					set -x
+					cp ${DOWNLOAD_DIR}/restyaboard.conf /etc/nginx/conf.d
+					echo "Changing server_name in nginx configuration..."
+					sed -i "s/server_name.*$/server_name \"$webdir\";/" /etc/nginx/conf.d/restyaboard.conf
+					sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
+					set +x
+					echo "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):"
+					read -r dir
+					while [[ -z "$dir" ]]
+					do
+						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):" dir
+					done
+					set -x
+					echo "$dir"
+					mkdir -p "$dir"
+					echo "Changing root directory in nginx configuration..."
+					sed -i "s|root.*html|root $dir|" /etc/nginx/conf.d/restyaboard.conf 
 				fi
 			else
 				if [ ${APACHE_ENABLED} -eq 0 ]
@@ -1358,14 +1358,9 @@
 			set +x
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
-				APACHE_DISABLED=$(service apache2 status | grep 'dead' | wc -l)
+				APACHE_ENABLED=$(service apache2 status | grep 'running' | wc -l)
 			else
-				if which httpd > /dev/null 2>&1 
-				then
-					APACHE_DISABLED=$(service httpd status | grep 'dead' | wc -l)
-				else
-					APACHE_DISABLED=1
-				fi
+				APACHE_ENABLED=$(service httpd status | grep 'active' | wc -l)
 			fi
 			echo -e "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available.\n\nImportant: Please note that upgrading will remove any commercial apps that were free in previous version.\nFor more details about commercial apps, please visit https://restya.com/board/pricing\n\nDo you want to get it now y/n?"
 			read -r answer
@@ -1373,20 +1368,20 @@
 			case "${answer}" in
 				[Yy])
 				set +x
-				if [ ${APACHE_DISABLED} -eq 1 ] 
+				if [ ${APACHE_ENABLED} -eq 1 ] 
 				then
-					echo "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):"
-					read -r dir
-					while [[ -z "$dir" ]]
-					do
-						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):" dir
-					done
-				else
 					echo "Enter your document root (where your Restyaboard to be installed. e.g., /var/www/html/restyaboard):"
 					read -r dir
 					while [[ -z "$dir" ]]
 					do
 						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /var/www/html/restyaboard):" dir
+					done
+				else
+				    echo "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):"
+					read -r dir
+					while [[ -z "$dir" ]]
+					do
+						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):" dir
 					done
 				fi
 				set -x
@@ -1488,31 +1483,31 @@
 
 				if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 				then
-				if [ ${APACHE_DISABLED} -eq 1 ]
-				then
-					service nginx restart
-					else
-					service apache2 restart
-				fi
+				    if [ ${APACHE_ENABLED} -eq 1 ]
+				    then
+					    service apache2 restart
+    			    else
+                        service nginx restart
+				    fi
 					service php${PHP_VERSION}-fpm restart
 				else
 					if [ -f "/bin/systemctl" ]; then
 						echo "Starting services with systemd..."
-						if [ ${APACHE_DISABLED} -eq 1 ]
+						if [ ${APACHE_ENABLED} -eq 1 ]
 				 		then
+                            systemctl restart httpd.service
+						else
 							systemctl restart nginx
-							else
-							systemctl restart httpd.service
 						fi
 						systemctl restart php-fpm
 					else
 						echo "Starting services..."
 						/etc/init.d/php-fpm restart
-						if [ ${APACHE_DISABLED} -eq 1 ]
+						if [ ${APACHE_ENABLED} -eq 1 ]
 				 		then
-							/etc/init.d/nginx restart
-							else
-							/etc/init.d/httpd restart
+                            /etc/init.d/httpd restart
+						else
+							/etc/init.d/nginx restart							
 						fi
 					fi
 				fi
@@ -1660,7 +1655,7 @@
 		/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
 		if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 		then
-			if [ ${APACHE_DISABLED} -eq 1 ]; then
+			if [ ${APACHE_ENABLED} -eq 0 ]; then
 				ssl_connectivity
 			fi
 		else
