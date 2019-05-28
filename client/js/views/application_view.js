@@ -25,7 +25,7 @@ App.ApplicationView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function(options) {
-        if(adminUrlModels.indexOf(options.model) === -1){
+        if (adminUrlModels.indexOf(options.model) === -1) {
             $('#content').html('');
         }
         $('#footer').removeClass('action-open');
@@ -79,8 +79,8 @@ App.ApplicationView = Backbone.View.extend({
                             localforage.setItem("links", response.links);
                         }
                         $.cookie('languages', response.languages);
-                         //Collection of overall active apps
-                         if(!_.isEmpty(response.apps) && !_.isUndefined(response.apps)){
+                        //Collection of overall active apps
+                        if (!_.isEmpty(response.apps) && !_.isUndefined(response.apps)) {
                             var local_storage_apps = JSON.parse(response.apps);
                             var get_names = [];
                             _.each(local_storage_apps, function(data) {
@@ -166,7 +166,7 @@ App.ApplicationView = Backbone.View.extend({
                         success: function(collection, settings_response) {
                             SITE_NAME = settings_response.SITE_NAME;
                             //Collection of overall active apps
-                            if(!_.isEmpty(settings_response.apps_data) && !_.isUndefined(settings_response.apps_data)){
+                            if (!_.isEmpty(settings_response.apps_data) && !_.isUndefined(settings_response.apps_data)) {
                                 var local_storage_apps = JSON.parse(settings_response.apps_data);
                                 var get_names = [];
                                 _.each(local_storage_apps, function(data) {
@@ -689,7 +689,7 @@ App.ApplicationView = Backbone.View.extend({
                 });
             }
         }
-        if (page.model !== 'boards_view' && page.model !== 'users_index' && page.model !== 'user_logins_index' && page.model !== 'admin_boards_index' ) {
+        if (page.model !== 'boards_view' && page.model !== 'users_index' && page.model !== 'user_logins_index' && page.model !== 'admin_boards_index') {
             if (page.model == 'app_page') {
                 if (!_.isEmpty(page.options.name) && !_.isUndefined(page.options.name)) {
                     var page_name = page.options.name + '' + page.options.page;

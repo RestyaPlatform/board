@@ -55,13 +55,13 @@ App.EmailTemplateView = Backbone.View.extend({
      * trigger email templates
      * @return false
      */
-    TriggerSettingtab: function(e){
+    TriggerSettingtab: function(e) {
         e.preventDefault();
         app.navigate('#/' + 'email_templates/' + $(e.currentTarget).data('email_template_id'), {
             trigger: false,
             trigger_function: false,
         });
-        this.id =$(e.currentTarget).data('email_template_id');
+        this.id = $(e.currentTarget).data('email_template_id');
         this.getListing();
     },
     /** 
