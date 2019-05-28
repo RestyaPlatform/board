@@ -26,6 +26,7 @@ App.SettingView = Backbone.View.extend({
      */
     events: {
         'submit form#js-setting-list-form': 'updateSetting',
+        'click #js-setting_trigger': 'TriggerSettingtab',
     },
 
     /**
@@ -85,6 +86,20 @@ App.SettingView = Backbone.View.extend({
         return false;
     },
     /** 
+     * TriggerSettingtab()
+     * trigger setting tab view
+     * @return false
+     */
+    TriggerSettingtab: function(e) {
+        e.preventDefault();
+        app.navigate('#/' + 'settings/' + $(e.currentTarget).data('setting_category_id'), {
+            trigger: false,
+            trigger_function: false,
+        });
+        this.id = $(e.currentTarget).data('setting_category_id');
+        this.getListing();
+    },
+    /** 
      * getListing()
      * get settings
      * @return false
@@ -116,6 +131,18 @@ App.SettingView = Backbone.View.extend({
             list: collections,
             id: this.id
         }));
+        //Changing the Title dynamically
+        var self = this;
+        if (!_.isEmpty(collections) && !_.isUndefined(self.id)) {
+            var setting_category = collections.filter(function(model) {
+                if (parseInt(model.get('id')) === parseInt(self.id)) {
+                    return model;
+                }
+            });
+            if (setting_category.length > 0) {
+                changeTitle(i18next.t('Settings') + ' - ' + setting_category[0].get('name'));
+            }
+        }
         $('.js-admin-setting-menu').addClass('active');
         $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-email-menu, .js-admin-role-menu, .js-admin-board-menu').removeClass('active');
         return this;

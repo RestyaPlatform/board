@@ -13,7 +13,7 @@
 						timezones = settingCategory.get('timezones');
 					}
 		%>
-				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>"><%- i18next.t(settingCategory.get('name')) %></a></li>
+				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>" data-setting_category_id="<%-settingCategory.get('id')%>" id="js-setting_trigger"><%- i18next.t(settingCategory.get('name')) %></a></li>
 		<% 
 					i++;
 				});

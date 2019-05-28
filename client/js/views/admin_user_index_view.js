@@ -19,6 +19,22 @@ App.AdminUserIndexView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function(options) {
+        if (!_.isUndefined(options.page) && options.page !== null) {
+            var page_no;
+            if (options.page.indexOf('filter') !== -1) {
+                var query_param = options.page.split('&filter=');
+                page_no = query_param[0].replace('page=', '');
+                this.current_page = page_no + '&filter=' + query_param[1];
+                this.current_param = query_param[1];
+            } else {
+                page_no = options.page.split('page=');
+                this.current_page = page_no[1];
+                this.current_param = 'all';
+            }
+        } else {
+            this.current_page = 1;
+            this.current_param = 'all';
+        }
         this.render();
     },
     /**
@@ -55,12 +71,6 @@ App.AdminUserIndexView = Backbone.View.extend({
         }
         $('.js-user-list').html('<tr class="js-loader"><td colspan="' + colspan + '"><span class="cssloader"></span></td></tr>');
         _this.users.url = api_url + 'users.json?page=' + _this.current_page;
-        if (_this.current_page !== 1 || _this.pagination == 2) {
-            app.navigate('#/' + 'users?page=' + _this.current_page, {
-                trigger: false,
-                trigger_function: false,
-            });
-        }
         _this.users.fetch({
             cache: false,
             abortPending: true,
@@ -73,7 +83,8 @@ App.AdminUserIndexView = Backbone.View.extend({
                 $('#js-navbar-default').remove();
                 var view = $('#content').html(new App.UserIndexContainerView({
                     filter_count: response.filter_count,
-                    roles: response.roles
+                    roles: response.roles,
+                    'current_param': _this.current_param
                 }).el);
                 users.each(function(user) {
                     user.roles = response.roles;
@@ -86,14 +97,23 @@ App.AdminUserIndexView = Backbone.View.extend({
                 $('.pagination-boxes').html('');
                 if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
                     $('.pagination-boxes').pagination({
-                        total_pages: response._metadata.noOfPages,
-                        current_page: _this.current_page,
+                        total_pages: parseInt(response._metadata.noOfPages),
+                        current_page: parseInt(_this.current_page),
                         display_max: 4,
                         callback: function(event, page) {
                             event.preventDefault();
                             if (page) {
                                 _this.pagination = 2;
-                                _this.current_page = page;
+                                if (!_.isUndefined(_this.current_param) && _this.current_param !== null && _this.current_param !== 'all') {
+                                    _this.current_page = page + '&filter=' + _this.current_param;
+                                    page = _this.current_page;
+                                } else {
+                                    _this.current_page = page;
+                                }
+                                app.navigate('#/' + 'users?page=' + page, {
+                                    trigger: false,
+                                    trigger_function: false,
+                                });
                                 _this.updateCollection();
                             }
                         }

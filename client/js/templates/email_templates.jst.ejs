@@ -10,7 +10,7 @@
 				_.each(list.models, function(email_tempalte) {				
 					var settings = email_tempalte.get('template');
 		%>
-				<li <% if (!_.isUndefined(id) && id == email_tempalte.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && email_tempalte.get('id') == 1) { %>class="active" <%}%> ><a href="#/email_templates/<%-email_tempalte.get('id')%>"><%- i18next.t(email_tempalte.get('display_name')) %></a></li>
+				<li <% if (!_.isUndefined(id) && id == email_tempalte.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && email_tempalte.get('id') == 1) { %>class="active" <%}%> ><a href="#/email_templates/<%-email_tempalte.get('id')%>" data-email_template_id="<%-email_tempalte.get('id')%>" id="js-email_template_trigger"><%- i18next.t(email_tempalte.get('display_name')) %></a></li>
 		<% 
 					i++;
 				});

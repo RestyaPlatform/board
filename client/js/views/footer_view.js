@@ -170,44 +170,20 @@ App.FooterView = Backbone.View.extend({
                 }
             });
         }
-        var getting_new_array = [];
-        localforage.getItem('apps', function(err, value) {
-            if (!_.isEmpty(value)) {
-                var local_storage_apps = JSON.parse(value);
-                apps_data = local_storage_apps;
-                var getss = apps_data;
-                var get_names = [];
-                _.each(apps_data, function(data) {
-                    get_names.push(data.name);
-                });
-                get_names.sort();
-                _.each(get_names, function(data) {
-                    _.each(getss, function(datas) {
-                        if (data === datas.name) {
-                            if (!_.isEmpty(datas.large_description) && !_.isUndefined(datas.large_description)) {
-                                datas.large_description = datas.large_description.join('\n');
-                            }
-                            getting_new_array.push(datas);
-                        }
-                    });
-                });
-            }
-            var in_boards_page = false;
-            var url = window.location.hash.split('/');
-            if (url.length === 2 && url['1'] === 'boards') {
-                in_boards_page = true;
-            }
-            self.$el.html(self.template({
-                model: self.model,
-                board_id: self.board_id,
-                board: self.board,
-                languages: ($.cookie('languages')) ? $.cookie('languages').split(',') : null,
-                apps: getting_new_array,
-                'in_boards_page': in_boards_page,
-                converter: self.converter,
-            }));
-        });
-
+        var in_boards_page = false;
+        var url = window.location.hash.split('/');
+        if (url.length === 2 && url['1'] === 'boards') {
+            in_boards_page = true;
+        }
+        self.$el.html(self.template({
+            model: self.model,
+            board_id: self.board_id,
+            board: self.board,
+            languages: ($.cookie('languages')) ? $.cookie('languages').split(',') : null,
+            apps: overallApps,
+            'in_boards_page': in_boards_page,
+            converter: self.converter,
+        }));
         if (_.isEmpty(this.board_id)) {
             if (!_.isUndefined(authuser.user)) {
                 var board_activities = new App.FooterView({
