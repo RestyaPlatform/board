@@ -232,7 +232,7 @@
 					fi
 				fi
 			else
-				APACHE_ENABLED=$(service httpd status | grep 'active' | wc -l)
+				APACHE_ENABLED=$(service httpd status | grep 'running' | wc -l)
 				if [ ${APACHE_ENABLED} -eq 1 ]
 				then  
 					set +x
@@ -243,7 +243,7 @@
 						[Nn])
 						echo "Stopping apache..."
 						service httpd stop
-						APACHE_ENABLED=$(service httpd status | grep 'active' | wc -l) 
+						APACHE_ENABLED=$(service httpd status | grep 'running' | wc -l) 
 						echo "Checking nginx..."
 						if ! which nginx > /dev/null 2>&1; then
 							echo "nginx not installed!"
@@ -828,6 +828,151 @@
 				yum install -y php72w-xml
 			fi
 		}
+		configure_restyaboard()
+		{
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				set +x
+				if [ ${APACHE_ENABLED} -eq 1 ] 
+				then
+					set +x
+					echo "To configure apache, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
+					read -r webdir
+					while [[ -z "$webdir" ]]
+					do
+						read -r -p "To configure apache, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+					done
+					set -x
+					echo "$webdir"
+					curl -v -L -G -o ${DOWNLOAD_DIR}/.htaccess https://raw.githubusercontent.com/RestyaPlatform/board/master/.htaccess
+					set +x
+					echo "Enter your document root (where your Restyaboard to be installed. e.g., /var/www/html/restyaboard):"
+					read -r dir
+					while [[ -z "$dir" ]]
+					do
+						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /var/www/html/restyaboard):" dir
+					done
+					set -x
+					echo "$dir"
+					mkdir -p "$dir"
+					echo "Changing root directory in apache configuration..."
+					cp ${DOWNLOAD_DIR}/.htaccess $dir
+					APACHE_ROOT_DIRECTORY=/var/www/html/
+					delimiter=${APACHE_ROOT_DIRECTORY}
+					s=$dir$delimiter
+					array=();
+					if ([ "$dir" != "$delimiter" ])
+					then
+						while [[ $s ]]; do
+						array+=( "${s%%"$delimiter"*}" );
+						s=${s#*"$delimiter"};
+						done;
+						Restyaboardpath=${array[1]}
+						webdir=$webdir'/'$Restyaboardpath
+						sed -i "s|RewriteBase /.*$|RewriteBase /$Restyaboardpath|" $dir/.htaccess
+						sed -i "s/AllowOverride.*$/AllowOverride All/" /etc/apache2/apache2.conf
+						sed -i "s/Require all denied.*$/Require all granted/" /etc/apache2/apache2.conf
+						rm -rf ${DOWNLOAD_DIR}/.htaccess
+					fi
+				else
+				    echo "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
+					read -r webdir
+					while [[ -z "$webdir" ]]
+					do
+						read -r -p "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+					done
+					set -x
+					echo "$webdir"
+					set -x
+					cp ${DOWNLOAD_DIR}/restyaboard.conf /etc/nginx/conf.d
+					echo "Changing server_name in nginx configuration..."
+					sed -i "s/server_name.*$/server_name \"$webdir\";/" /etc/nginx/conf.d/restyaboard.conf
+					sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
+					set +x
+					echo "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):"
+					read -r dir
+					while [[ -z "$dir" ]]
+					do
+						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):" dir
+					done
+					set -x
+					echo "$dir"
+					mkdir -p "$dir"
+					echo "Changing root directory in nginx configuration..."
+					sed -i "s|root.*html|root $dir|" /etc/nginx/conf.d/restyaboard.conf 
+				fi
+			else
+				if [ ${APACHE_ENABLED} -eq 1 ]
+				then
+					set +x
+					echo "To configure apache, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
+					read -r webdir
+					while [[ -z "$webdir" ]]
+					do
+						read -r -p "To configure apache, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+					done
+                    set -x
+				    echo "$webdir"
+                    curl -v -L -G -o ${DOWNLOAD_DIR}/.htaccess https://raw.githubusercontent.com/RestyaPlatform/board/master/.htaccess
+					set +x
+					echo "Enter your document root (where your Restyaboard to be installed. e.g., /var/www/html/restyaboard):"
+					read -r dir
+					while [[ -z "$dir" ]]
+					do
+						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /var/www/html/restyaboard):" dir
+					done
+					set -x
+					echo "$dir"
+					mkdir -p "$dir"
+					echo "Changing root directory in apache configuration..."
+					cp ${DOWNLOAD_DIR}/.htaccess $dir
+					APACHE_ROOT_DIRECTORY=/var/www/html/
+					delimiter=${APACHE_ROOT_DIRECTORY}
+					s=$dir$delimiter
+					array=();
+					if ([ "$dir" != "$delimiter" ])
+					then
+						while [[ $s ]]; do
+						array+=( "${s%%"$delimiter"*}" );
+						s=${s#*"$delimiter"};
+						done;
+						Restyaboardpath=${array[1]}
+						webdir=$webdir'/'$Restyaboardpath
+						sed -i "s|RewriteBase /.*$|RewriteBase /$Restyaboardpath|" $dir/.htaccess
+						sed -i "s/AllowOverride.*$/AllowOverride All/" /etc/httpd/conf/httpd.conf
+    					sed -i "s/Require all denied.*$/Require all granted/" /etc/httpd/conf/httpd.conf
+						rm -rf ${DOWNLOAD_DIR}/.htaccess
+					fi
+				else
+					set +x
+					echo "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
+					read -r webdir
+					while [[ -z "$webdir" ]]
+					do
+						read -r -p "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
+					done
+                    set -x
+				    echo "$webdir"
+                    echo "Changing server_name in nginx configuration..."
+					cp ${DOWNLOAD_DIR}/restyaboard.conf /etc/nginx/conf.d
+					sed -i "s/server_name.*$/server_name \"$webdir\";/" /etc/nginx/conf.d/restyaboard.conf
+					sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
+					set +x
+					echo "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):"
+					read -r dir
+					while [[ -z "$dir" ]]
+					do
+						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):" dir
+
+					done
+					set -x
+					echo "$dir"
+					mkdir -p "$dir"
+					echo "Changing root directory in nginx configuration..."
+					sed -i "s|root.*html|root $dir|" /etc/nginx/conf.d/restyaboard.conf 
+				fi
+			fi
+		}
 		install_postfix()
 		{
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
@@ -948,6 +1093,20 @@
 				fi
 			fi
 		}
+		php_fpm_reset()
+		{
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				echo "........."
+			else
+				echo "Reset php-fpm (use unix socket mode)..."
+				if [ -f "/run/php/php7.2-fpm.sock" ]; then
+					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.2-fpm.sock/g" /etc/php-fpm.d/www.conf
+				else
+					sed -i "s/unix:\/run\/php\/php7.2-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
+				fi
+			fi
+		}
 		install_jq()
 		{
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
@@ -1009,151 +1168,6 @@
 				if ([ "$OS_REQUIREMENT" = "CentOS" ])
 				then
 					setsebool -P httpd_can_network_connect_db=1
-				fi
-			fi
-		}
-		configure_restyaboard()
-		{
-			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
-			then
-				set +x
-				if [ ${APACHE_ENABLED} -eq 1 ] 
-				then
-					set +x
-					echo "To configure apache, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
-					read -r webdir
-					while [[ -z "$webdir" ]]
-					do
-						read -r -p "To configure apache, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
-					done
-					set -x
-					echo "$webdir"
-					curl -v -L -G -o ${DOWNLOAD_DIR}/.htaccess https://raw.githubusercontent.com/RestyaPlatform/board/master/.htaccess
-					set +x
-					echo "Enter your document root (where your Restyaboard to be installed. e.g., /var/www/html/restyaboard):"
-					read -r dir
-					while [[ -z "$dir" ]]
-					do
-						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /var/www/html/restyaboard):" dir
-					done
-					set -x
-					echo "$dir"
-					mkdir -p "$dir"
-					echo "Changing root directory in apache configuration..."
-					cp ${DOWNLOAD_DIR}/.htaccess $dir
-					APACHE_ROOT_DIRECTORY=/var/www/html/
-					delimiter=${APACHE_ROOT_DIRECTORY}
-					s=$dir$delimiter
-					array=();
-					if ([ "$dir" != "$delimiter" ])
-					then
-						while [[ $s ]]; do
-						array+=( "${s%%"$delimiter"*}" );
-						s=${s#*"$delimiter"};
-						done;
-						Restyaboardpath=${array[1]}
-						webdir=$webdir'/'$Restyaboardpath
-						sed -i "s|RewriteBase /.*$|RewriteBase /$Restyaboardpath|" $dir/.htaccess
-						sed -i "s/AllowOverride.*$/AllowOverride All/" /etc/apache2/apache2.conf
-						sed -i "s/Require all denied.*$/Require all granted/" /etc/apache2/apache2.conf
-						rm -rf ${DOWNLOAD_DIR}/.htaccess
-					fi
-				else
-				    echo "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
-					read -r webdir
-					while [[ -z "$webdir" ]]
-					do
-						read -r -p "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
-					done
-					set -x
-					echo "$webdir"
-					set -x
-					cp ${DOWNLOAD_DIR}/restyaboard.conf /etc/nginx/conf.d
-					echo "Changing server_name in nginx configuration..."
-					sed -i "s/server_name.*$/server_name \"$webdir\";/" /etc/nginx/conf.d/restyaboard.conf
-					sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
-					set +x
-					echo "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):"
-					read -r dir
-					while [[ -z "$dir" ]]
-					do
-						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):" dir
-					done
-					set -x
-					echo "$dir"
-					mkdir -p "$dir"
-					echo "Changing root directory in nginx configuration..."
-					sed -i "s|root.*html|root $dir|" /etc/nginx/conf.d/restyaboard.conf 
-				fi
-			else
-				if [ ${APACHE_ENABLED} -eq 0 ]
-				then
-					set +x
-					echo "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
-					read -r webdir
-					while [[ -z "$webdir" ]]
-					do
-						read -r -p "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
-					done
-                    set -x
-				    echo "$webdir"
-                    echo "Changing server_name in nginx configuration..."
-					cp ${DOWNLOAD_DIR}/restyaboard.conf /etc/nginx/conf.d
-					sed -i "s/server_name.*$/server_name \"$webdir\";/" /etc/nginx/conf.d/restyaboard.conf
-					sed -i "s|listen 80.*$|listen 80;|" /etc/nginx/conf.d/restyaboard.conf
-					set +x
-					echo "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):"
-					read -r dir
-					while [[ -z "$dir" ]]
-					do
-						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /usr/share/nginx/html/restyaboard):" dir
-
-					done
-					set -x
-					echo "$dir"
-					mkdir -p "$dir"
-					echo "Changing root directory in nginx configuration..."
-					sed -i "s|root.*html|root $dir|" /etc/nginx/conf.d/restyaboard.conf
-				else 
-					set +x
-					echo "To configure apache, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
-					read -r webdir
-					while [[ -z "$webdir" ]]
-					do
-						read -r -p "To configure apache, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):" webdir
-					done
-                    set -x
-				    echo "$webdir"
-                    curl -v -L -G -o ${DOWNLOAD_DIR}/.htaccess https://raw.githubusercontent.com/RestyaPlatform/board/master/.htaccess
-					set +x
-					echo "Enter your document root (where your Restyaboard to be installed. e.g., /var/www/html/restyaboard):"
-					read -r dir
-					while [[ -z "$dir" ]]
-					do
-						read -r -p "Enter your document root (where your Restyaboard to be installed. e.g., /var/www/html/restyaboard):" dir
-					done
-					set -x
-					echo "$dir"
-					mkdir -p "$dir"
-					echo "Changing root directory in apache configuration..."
-					cp ${DOWNLOAD_DIR}/.htaccess $dir
-					APACHE_ROOT_DIRECTORY=/var/www/html/
-					delimiter=${APACHE_ROOT_DIRECTORY}
-					s=$dir$delimiter
-					array=();
-					if ([ "$dir" != "$delimiter" ])
-					then
-						while [[ $s ]]; do
-						array+=( "${s%%"$delimiter"*}" );
-						s=${s#*"$delimiter"};
-						done;
-						Restyaboardpath=${array[1]}
-						webdir=$webdir'/'$Restyaboardpath
-						sed -i "s|RewriteBase /.*$|RewriteBase /$Restyaboardpath|" $dir/.htaccess
-						sed -i "s/AllowOverride.*$/AllowOverride All/" /etc/httpd/conf/httpd.conf
-    					sed -i "s/Require all denied.*$/Require all granted/" /etc/httpd/conf/httpd.conf
-						rm -rf ${DOWNLOAD_DIR}/.htaccess
-					fi
 				fi
 			fi
 		}
@@ -1360,7 +1374,7 @@
 			then
 				APACHE_ENABLED=$(service apache2 status | grep 'running' | wc -l)
 			else
-				APACHE_ENABLED=$(service httpd status | grep 'active' | wc -l)
+				APACHE_ENABLED=$(service httpd status | grep 'running' | wc -l)
 			fi
 			echo -e "A newer version ${RESTYABOARD_VERSION} of Restyaboard is available.\n\nImportant: Please note that upgrading will remove any commercial apps that were free in previous version.\nFor more details about commercial apps, please visit https://restya.com/board/pricing\n\nDo you want to get it now y/n?"
 			read -r answer
@@ -1620,6 +1634,8 @@
 			
 			echo "Setting up cron for every 5 minutes.."
 			echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
+
+			php_fpm_reset
 
 			set +x
 			echo "Do you want to install Restyaboard apps (y/n)?"
