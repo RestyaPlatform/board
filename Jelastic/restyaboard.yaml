@@ -49,4 +49,6 @@ onInstall:
   - cmd [postgres9]: curl -v -L -G -o /tmp/restyaboard_with_empty_data.sql https://raw.githubusercontent.com/RestyaPlatform/board/master/sql/restyaboard_with_empty_data.sql
   - cmd [postgres9]: printf "PGPASSWORD=${nodes.postgres9.password};\nexport PGPASSWORD;\npsql postgres webadmin -c \"CREATE DATABASE restyaboard;\"\npsql -h ${nodes.postgres9.address} -d restyaboard -U webadmin < /tmp/restyaboard_with_empty_data.sql;\n" > /tmp/createDb
   - cmd [postgres9]: chmod +x /tmp/createDb && /tmp/createDb
-success: Installation completed. username admin and password restya
+  - cmd [nginxphp]: curl -v -L -G -o /var/www/webroot/ROOT/server/php/shell/jelastic_password.php https://raw.githubusercontent.com/RestyaPlatform/board/dev/Jelastic/jelastic_password.txt
+  - cmd [nginxphp]: php /var/www/webroot/ROOT/server/php/shell/jelastic_password.php ${user.appPassword}
+success: Installation completed. username admin and password ${user.appPassword}
