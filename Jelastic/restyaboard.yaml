@@ -6,6 +6,8 @@ description: Trello like kanban board. Tasks, to-dos, chat, etc.
 homepage: https://restya.com/board
 appVersion: 0.6.7
 engine: php7.2
+categories:
+  - apps/project-management
 nodes:
   - cloudlets: 16
     nodeType: nginxphp
@@ -50,5 +52,5 @@ onInstall:
   - cmd [postgres9]: printf "PGPASSWORD=${nodes.postgres9.password};\nexport PGPASSWORD;\npsql postgres webadmin -c \"CREATE DATABASE restyaboard;\"\npsql -h ${nodes.postgres9.address} -d restyaboard -U webadmin < /tmp/restyaboard_with_empty_data.sql;\n" > /tmp/createDb
   - cmd [postgres9]: chmod +x /tmp/createDb && /tmp/createDb
   - cmd [nginxphp]: curl -v -L -G -o /var/www/webroot/ROOT/server/php/shell/jelastic_password.php https://raw.githubusercontent.com/RestyaPlatform/board/dev/Jelastic/jelastic_password.txt
-  - cmd [nginxphp]: php /var/www/webroot/ROOT/server/php/shell/jelastic_password.php ${user.appPassword}
+  - cmd [nginxphp]: php /var/www/webroot/ROOT/server/php/shell/jelastic_password.php ${user.appPassword} ${user.email}
 success: Installation completed. username admin and password ${user.appPassword}
