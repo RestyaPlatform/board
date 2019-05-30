@@ -1514,6 +1514,12 @@ App.FooterView = Backbone.View.extend({
                                                     App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.list_id)).set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
                                                 }
                                                 // Reducing the card count of the old list
+                                                if (!_.isEmpty(card_old_list) && !_.isUndefined(card_old_list) && card_old_list !== null) {
+                                                    var card_old_list_card_count = isNaN(card_old_list.attributes.card_count) ? 0 : card_old_list.attributes.card_count;
+                                                    if (!isNaN(card_old_list_card_count) && parseInt(card_old_list_card_count) !== 0 && card_old_list_card_count !== null) {
+                                                        card_old_list.set('card_count', parseInt(card_old_list_card_count) - 1);
+                                                    }
+                                                }
                                                 if (parseInt(card_old_list.attributes.card_count) === 0) {
                                                     // Adding the &nbsp; for the list with no card
                                                     $('#js-card-listing-' + card_old_list.id).find('.js-list-placeholder-' + card_old_list.id).remove();

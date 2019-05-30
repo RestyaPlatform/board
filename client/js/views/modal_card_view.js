@@ -4031,6 +4031,8 @@ App.ModalCardView = Backbone.View.extend({
         var self = this;
         var data = $(e.currentTarget).serializeObject();
         data.uuid = new Date().getTime();
+        var current_list_id = self.model.attributes.list_id;
+        var current_board_id = self.model.attributes.board_id;
         var card = new App.Card();
         card.set('is_offline', true);
         card.set('name', data.name);
@@ -4085,9 +4087,11 @@ App.ModalCardView = Backbone.View.extend({
                     card.set('board_id', parseInt(response.cards.board_id));
                     card.set('id', parseInt(response.id));
                     card.board_users = self.model.list.board_users;
-                    var new_list = App.boards.get(parseInt(response.cards.board_id)).lists.get(parseInt(response.cards.list_id));
-                    if (!_.isEmpty(new_list) && !_.isUndefined(new_list)) {
-                        card.list = new_list;
+                    if (card.attributes.list_id !== parseInt(current_list_id) && card.attributes.board_id !== parseInt(current_board_id)) {
+                        var new_list = App.boards.get(parseInt(response.cards.board_id)).lists.get(parseInt(response.cards.list_id));
+                        if (!_.isEmpty(new_list) && !_.isUndefined(new_list)) {
+                            card.list = new_list;
+                        }
                     } else {
                         card.list = self.model.list;
                     }
