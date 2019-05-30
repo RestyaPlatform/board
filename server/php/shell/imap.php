@@ -32,7 +32,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
     if (!extension_loaded('imap')) {
         echo 'IMAP PHP extension not available on this server. Bounced email functions will not work.';
     } else {
-        if(!empty(IMAP_HOST) && !empty(IMAP_EMAIL) && !empty(IMAP_EMAIL_PASSWORD)){
+        if (!empty(IMAP_HOST) && !empty(IMAP_EMAIL) && !empty(IMAP_EMAIL_PASSWORD)) {
             $imap_email_password = IMAP_EMAIL_PASSWORD;
             $imap_email_password_decode = base64_decode($imap_email_password);
             $imap_email_password = str_rot13($imap_email_password_decode);
