@@ -1980,6 +1980,7 @@ App.FooterView = Backbone.View.extend({
                                     id: 'js-my-board-' + activity.attributes.board_id,
                                     className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + activity.attributes.board_id
                                 }).el);
+                                App.boards.add(_new_board);
                             }
                             Auth = JSON.parse($.cookie('auth'));
                             if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id) || _.isUndefined(Auth.user.unread_activity_id))) {
