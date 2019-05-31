@@ -1938,9 +1938,14 @@ App.FooterView = Backbone.View.extend({
                                 var _new_board = new App.Board();
                                 _new_board.set('id', parseInt(activity.attributes.board_id));
                                 _new_board.set('name', filterXSS(activity.attributes.board_name));
+                                _new_board.set('is_closed', 0);
                                 if (!_.isUndefined(activity.attributes.board) && !_.isEmpty(activity.attributes.board) && activity.attributes.board !== null) {
                                     var tmp_new_board = activity.attributes.board;
+                                    _new_board.set('organization_id', parseInt(tmp_new_board.organization_id));
                                     _new_board.set('board_visibility', parseInt(tmp_new_board.board_visibility));
+                                    if (!_.isUndefined(tmp_new_board.organization_name) && !_.isEmpty(tmp_new_board.organization_name) && tmp_new_board.organization_name !== null) {
+                                        _new_board.set('organization_name', tmp_new_board.organization_name);
+                                    }
                                     if (!_.isUndefined(tmp_new_board.background_pattern_url) && !_.isEmpty(tmp_new_board.background_pattern_url) && tmp_new_board.background_pattern_url !== null) {
                                         _new_board.set('background_pattern_url', tmp_new_board.background_pattern_url);
                                     }
@@ -1975,7 +1980,6 @@ App.FooterView = Backbone.View.extend({
                                     id: 'js-my-board-' + activity.attributes.board_id,
                                     className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + activity.attributes.board_id
                                 }).el);
-                                App.boards.add(_new_board);
                             }
                             Auth = JSON.parse($.cookie('auth'));
                             if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id) || _.isUndefined(Auth.user.unread_activity_id))) {
