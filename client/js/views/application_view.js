@@ -119,6 +119,7 @@ App.ApplicationView = Backbone.View.extend({
                                     APPS = settings_response.apps;
                                     IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                     DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
+                                    CALENDAR_VIEW_CARD_COLOR = settings_response.CALENDAR_VIEW_CARD_COLOR;
                                     var current_language;
                                     if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
                                         current_language = authuser.user.language;
@@ -231,6 +232,7 @@ App.ApplicationView = Backbone.View.extend({
                                 }
                                 IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                 DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
+                                CALENDAR_VIEW_CARD_COLOR = settings_response.CALENDAR_VIEW_CARD_COLOR;
                                 var current_language;
                                 if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
                                     current_language = authuser.user.language;

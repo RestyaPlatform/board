@@ -1,0 +1,2 @@
+INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
+VALUES ('17', '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 'Card Color,Label Color,Default Color', 'Calendar View Card Color ', '4')
