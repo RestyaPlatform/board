@@ -1080,7 +1080,7 @@ App.BoardHeaderView = Backbone.View.extend({
                     element.find('.fc-event-skin').addClass('card-archived');
                 }
                 if (card.get('due_date') !== null && parseInt(card.get('is_archived')) === 0) {
-                    element.addClass('js-show-modal-card-view');
+                    element.addClass('js-show-modal-card-view cur');
                     element.attr('id', 'js-card-' + event.id);
                     var today = new Date();
                     card_due_date = card.get('due_date').split('T');
@@ -1185,6 +1185,23 @@ App.BoardHeaderView = Backbone.View.extend({
                             }
                         }
                     });
+                }
+            },
+            eventClick: function(info) {
+                if (info.id) {
+                    trigger_dockmodal = true;
+                    var card = self.model.cards.findWhere({
+                        id: parseInt(info.id)
+                    });
+                    if (!_.isUndefined(card)) {
+                        card.list = self.model.lists.findWhere({
+                            id: card.attributes.list_id
+                        });
+                        new App.CardView({
+                            model: card
+                        }).showCardModal();
+                    }
+                    trigger_dockmodal = false;
                 }
             }
         });
