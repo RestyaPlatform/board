@@ -1088,15 +1088,36 @@ App.BoardHeaderView = Backbone.View.extend({
                     var diff = Math.floor(due_date.getTime() - today.getTime());
                     var day = 1000 * 60 * 60 * 24;
                     var days = Math.floor(diff / day);
-                    if (days < -1) {
-                        element.addClass('label-danger');
-                        element.find('.fc-event-skin').addClass('label-danger');
-                    } else if (days == -1) {
-                        element.addClass('label-present');
-                        element.find('.fc-event-skin').addClass('label-present');
-                    } else if (days > -1) {
-                        element.addClass('label-future');
-                        element.find('.fc-event-skin').addClass('label-future');
+                    if (CALENDAR_VIEW_CARD_COLOR === 'Default Color') {
+                        if (days < -1) {
+                            element.addClass('label-danger');
+                            element.find('.fc-event-skin').addClass('label-danger');
+                        } else if (days == -1) {
+                            element.addClass('label-present');
+                            element.find('.fc-event-skin').addClass('label-present');
+                        } else if (days > -1) {
+                            element.addClass('label-future');
+                            element.find('.fc-event-skin').addClass('label-future');
+                        }
+                    } else if (CALENDAR_VIEW_CARD_COLOR === 'Card Color') {
+                        element.css({
+                            "background-color": card.attributes.color,
+                            "color": "#fff",
+                            "border-color": "transparent"
+                        });
+                        element.find('.fc-event-skin').attr('style', 'background-color: ' + card.attributes.color + ' !important;color: #fff;border-color:transparent !important');
+                    } else if (CALENDAR_VIEW_CARD_COLOR === 'Label Color') {
+                        if (card.labels.length > 0) {
+                            var label_color = new App.CardView({
+                                model: card
+                            }).getLabelcolor(card.labels.models[0].attributes.name);
+                            element.css({
+                                "background-color": '#' + label_color,
+                                "color": "#fff",
+                                "border-color": "transparent"
+                            });
+                            element.find('.fc-event-skin').attr('style', 'background-color: #' + label_color + ' !important;color: #fff;border-color:transparent !important');
+                        }
                     }
                     content += '<ul class="unstyled hide js-card-labels">';
                     var filtered_labels = card.labels.where({
