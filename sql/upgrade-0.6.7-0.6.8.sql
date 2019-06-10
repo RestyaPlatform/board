@@ -113,3 +113,16 @@ CREATE OR REPLACE VIEW "users_listing" AS
      LEFT JOIN states lst ON ((lst.id = li.state_id)))
      LEFT JOIN countries lco ON ((lco.id = li.country_id)))
      LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
+
+UPDATE "settings" SET
+"id" = '63',
+"setting_category_id" = '14',
+"setting_category_parent_id" = '0',
+"name" = 'DEFAULT_EMAIL_NOTIFICATION',
+"value" = 'Instantly',
+"description" = '',
+"type" = 'select',
+"options" = 'Never,Periodically,Instantly,Daily',
+"label" = 'Default Email Notification',
+"order" = '3'
+WHERE "id" = '63';
