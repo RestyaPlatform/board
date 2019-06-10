@@ -2269,6 +2269,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $default_email_notification = 1;
             } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
                 $default_email_notification = 2;
+            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Daily') {
+                $default_email_notification = 3;
             }
             $r_post['is_send_newsletter'] = $default_email_notification;
             $r_post['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
@@ -2353,6 +2355,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $default_email_notification = 1;
             } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
                 $default_email_notification = 2;
+            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Daily') {
+                $default_email_notification = 3;
             }
             $r_post['is_send_newsletter'] = $default_email_notification;
             $r_post['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
@@ -2409,6 +2413,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $default_email_notification = 1;
             } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
                 $default_email_notification = 2;
+            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Daily') {
+                $default_email_notification = 3;
             }
             $r_post['is_send_newsletter'] = $default_email_notification;
             $r_post['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
