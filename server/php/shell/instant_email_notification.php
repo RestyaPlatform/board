@@ -23,4 +23,4 @@ global $_server_domain_url;
 if (file_exists(SITE_URL_FOR_SHELL)) {
     include_once SITE_URL_FOR_SHELL;
 }
-sendMailNotification(1);
+sendMailNotification(2);

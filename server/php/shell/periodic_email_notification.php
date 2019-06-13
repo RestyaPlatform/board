@@ -34,7 +34,7 @@ if (file_exists(PERIODIC_TEMP_FILE)) {
 }
 if (round((strtotime('now') - $_periodic_email_notification_time_trace) / 60) >= 60) {
     file_put_contents(PERIODIC_TEMP_FILE, '<?php' . "\n" . '$_periodic_email_notification_time_trace = \'' . strtotime('now') . '\';');
-    sendMailNotification(2);
+    sendMailNotification(1);
     $conditions = array(
         'now()',
         '7742632501382313'
