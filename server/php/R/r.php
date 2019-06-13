@@ -5388,13 +5388,68 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 if (isset($is_keep_custom_fields)) {
                     if (is_plugin_enabled('r_custom_fields')) {
-                        $qry_val_arr = array(
-                            $response['id'],
-                            $r_post['board_id'],
-                            $r_post['list_id'],
-                            $copied_card_id
-                        );
-                        pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value,is_active,board_id,list_id) SELECT created, modified, $1, custom_field_id,value,is_active, $2, $3 FROM cards_custom_fields WHERE card_id = $4 ORDER BY id', $qry_val_arr);
+                        if ($r_post['board_id'] != $r_resource_vars['boards']) {
+                            $customFields = array();
+                            $qry_val_arr = array(
+                                $r_resource_vars['boards'],
+                            );
+                            $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields WHERE board_id IS NULL or board_id = $1', $qry_val_arr);
+                            while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                                if (!empty($custom_field['board_id'])) {
+                                    $qry_val_arr = array(
+                                        $r_post['board_id'],
+                                        $custom_field['name']
+                                    );
+                                    $customField = executeQuery('SELECT id FROM custom_fields WHERE board_id = $1 AND name = $2', $qry_val_arr);
+                                    if (empty($customField)) {
+                                        $data = array(
+                                            'user_id' => $authUser['id'],
+                                            'type' => $custom_field['type'],
+                                            'name' => $custom_field['name'],
+                                            'description' => $custom_field['description'],
+                                            'options' => $custom_field['options'],
+                                            'label' => $custom_field['label'],
+                                            'position' => $custom_field['position'],
+                                            'visibility' => $custom_field['visibility'],
+                                            'color' => $custom_field['color'],
+                                            'board_id' => $r_post['board_id'],
+                                        );
+                                        $result = pg_execute_insert('custom_fields', $data);
+                                        $row = pg_fetch_assoc($result);
+                                        $customFields[$custom_field['id']] = (int)($row['id']);
+                                    } else {
+                                        $customFields[$custom_field['id']] = $customField['id'];
+                                    }
+                                } else {
+                                    $customFields[$custom_field['id']] = $custom_field['id'];
+                                }
+                            }
+                            if (!empty($customFields)) {
+                                $qry_val_arr = array(
+                                    $copied_card_id
+                                );
+                                $cardsCustomFields = pg_query_params($db_lnk, 'SELECT * FROM cards_custom_fields WHERE card_id = $1 ORDER BY id', $qry_val_arr);
+                                while ($cardsCustomField = pg_fetch_assoc($cardsCustomFields)) {
+                                    $data = array(
+                                        $response['id'],
+                                        $customFields[$cardsCustomField['custom_field_id']],
+                                        $cardsCustomField['value'],
+                                        $cardsCustomField['is_active'],
+                                        $r_post['board_id'],
+                                        $r_post['list_id']
+                                    );
+                                    pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value,is_active, board_id, list_id) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $data);
+                                }
+                            }
+                        } else {
+                            $qry_val_arr = array(
+                                $response['id'],
+                                $r_post['board_id'],
+                                $r_post['list_id'],
+                                $copied_card_id
+                            );
+                            pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value,is_active,board_id,list_id) SELECT created, modified, $1, custom_field_id,value,is_active, $2, $3 FROM cards_custom_fields WHERE card_id = $4 ORDER BY id', $qry_val_arr);
+                        }
                     }
                 }
                 if ($is_keep_activity) {
@@ -6464,6 +6519,58 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
         }
         if (isset($previous_value['board_id']) && isset($r_put['board_id']) && $r_put['board_id'] != $previous_value['board_id']) {
+            if (is_plugin_enabled('r_custom_fields')) {
+                $customFields = array();
+                $qry_val_arr = array(
+                    $previous_value['board_id'],
+                );
+                $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields WHERE board_id IS NULL or board_id = $1', $qry_val_arr);
+                while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                    if (!empty($custom_field['board_id'])) {
+                        $qry_val_arr = array(
+                            $r_put['board_id'],
+                            $custom_field['name']
+                        );
+                        $customField = executeQuery('SELECT id FROM custom_fields WHERE board_id = $1 AND name = $2', $qry_val_arr);
+                        if (empty($customField)) {
+                            $data = array(
+                                'user_id' => $authUser['id'],
+                                'type' => $custom_field['type'],
+                                'name' => $custom_field['name'],
+                                'description' => $custom_field['description'],
+                                'options' => $custom_field['options'],
+                                'label' => $custom_field['label'],
+                                'position' => $custom_field['position'],
+                                'visibility' => $custom_field['visibility'],
+                                'color' => $custom_field['color'],
+                                'board_id' => $r_put['board_id'],
+                            );
+                            $result = pg_execute_insert('custom_fields', $data);
+                            $row = pg_fetch_assoc($result);
+                            $customFields[$custom_field['id']] = (int)($row['id']);
+                        } else {
+                            $customFields[$custom_field['id']] = $customField['id'];
+                        }
+                    } else {
+                        $customFields[$custom_field['id']] = $custom_field['id'];
+                    }
+                }
+                if (!empty($customFields)) {
+                    $qry_val_arr = array(
+                        $id
+                    );
+                    $cardsCustomFields = pg_query_params($db_lnk, 'SELECT * FROM cards_custom_fields WHERE card_id = $1 ORDER BY id', $qry_val_arr);
+                    while ($cardsCustomField = pg_fetch_assoc($cardsCustomFields)) {
+                        $data = array(
+                            $customFields[$cardsCustomField['custom_field_id']],
+                            $r_put['board_id'],
+                            $r_put['list_id'],
+                            $cardsCustomField['id']
+                        );
+                        pg_query_params($db_lnk, 'UPDATE cards_custom_fields SET custom_field_id = $1, board_id = $2, list_id = $3 WHERE id = $4', $data);
+                    }
+                }
+            }
             $comment = '##USER_NAME## moved the card ##CARD_LINK## to different board.';
         }
         if (isset($previous_value['name']) && isset($r_put['name']) && $r_put['name'] != $previous_value['name']) {
