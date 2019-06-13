@@ -85,11 +85,13 @@
 								<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
 								<% if(activity.attributes.type == 'add_card_desc'){ %>
 									<div class="thumbnail list-group-item-text">
-											<% if(activity.attributes.description){ %>
-												<%= makeLink(converter.makeHtml(activity.attributes.description), activity.attributes.board_id) %>
-											<% } else {%>	
-												<%= makeLink(converter.makeHtml(activity.attributes.card_description), activity.attributes.board_id) %>
-											<% } %>				
+										<% if(activity.attributes.revisions != null && activity.attributes.revisions != "" && !_.isUndefined(activity.attributes.revisions.old_value) && !_.isUndefined(activity.attributes.revisions.new_value) && !_.isUndefined(activity.attributes.revisions.new_value.description) &&  activity.attributes.revisions.old_value.description == null) { %>
+											<%= makeLink(converter.makeHtml(activity.attributes.revisions.new_value.description), activity.attributes.board_id) %>
+										<% } else if(activity.attributes.description){ %>
+											<%= makeLink(converter.makeHtml(activity.attributes.description), activity.attributes.board_id) %>
+										<% } else { %>	
+											<%= makeLink(converter.makeHtml(activity.attributes.card_description), activity.attributes.board_id) %>
+										<% } %>				
 									</div>
 								<% } %>
 								<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'edit_list_color', 'edit_card_color', 'delete_card_color', 'edit_card_desc'], activity.attributes.type)) { %>
