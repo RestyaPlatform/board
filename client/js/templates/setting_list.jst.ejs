@@ -39,7 +39,7 @@
 					<% } else { %>
 					<form class="form-horizontal clearfix <% if(settingCategory.get('id') == 2){ %>col-lg-8<% } else { %>col-lg-6<% } %> col-md-8 col-sm-12 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
 					<% } %>
-					<input type="hidden" id="input_setting_category_id" value ="<%- settingCategory.get('id') %>" />
+					<input type="hidden" id="input_setting_category_name" value ="<%- settingCategory.get('name') %>" />
 					<% if(settingCategory.get('id') == 14) { %>
 						<fieldset>
 							<legend>
