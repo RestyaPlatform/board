@@ -5400,7 +5400,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                         $r_post['board_id'],
                                         $custom_field['name']
                                     );
-                                    $customField = executeQuery('SELECT id FROM custom_fields WHERE board_id = $1 AND name = $2', $qry_val_arr);
+                                    $customField = executeQuery('SELECT * FROM custom_fields WHERE board_id = $1 AND name = $2', $qry_val_arr);
                                     if (empty($customField)) {
                                         $data = array(
                                             'user_id' => $authUser['id'],
@@ -5418,6 +5418,23 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                         $row = pg_fetch_assoc($result);
                                         $customFields[$custom_field['id']] = (int)($row['id']);
                                     } else {
+                                        $qry_val_arr = array(
+                                            $r_resource_vars['boards'],
+                                            $custom_field['name']
+                                        );
+                                        $previous_customField = executeQuery('SELECT * FROM custom_fields WHERE board_id = $1 AND name = $2', $qry_val_arr);
+                                        if (!empty($previous_customField) && !empty($customField)) {
+                                            if ($previous_customField['type'] === 'dropdown') {
+                                                $new_customfield_options = explode(',', $customField['options']);
+                                                $previous_customfield_options = explode(',', $previous_customField['options']);
+                                                $new_unique_option = array_unique(array_merge($new_customfield_options, $previous_customfield_options));
+                                                $data = array(
+                                                    $customField['id'],
+                                                    implode(',', $new_unique_option)
+                                                );
+                                                pg_query_params($db_lnk, 'UPDATE custom_fields SET options = $2 WHERE id = $1', $data);
+                                            }
+                                        }
                                         $customFields[$custom_field['id']] = $customField['id'];
                                     }
                                 } else {
