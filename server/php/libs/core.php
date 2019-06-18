@@ -371,10 +371,9 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
         $materialized_path,
         $path,
         $depth,
-        $freshness_ts,
         $row['id']
     );
-    $result = pg_query_params($db_lnk, 'UPDATE activities SET materialized_path = $1, path = $2, depth = $3, freshness_ts = $4 WHERE id = $5 RETURNING *', $qry_val_arr);
+    $result = pg_query_params($db_lnk, 'UPDATE activities SET materialized_path = $1, path = $2, depth = $3, freshness_ts = now() WHERE id = $4 RETURNING *', $qry_val_arr);
     $row = pg_fetch_assoc($result);
     $qry_val_arr = array(
         $row['id']
