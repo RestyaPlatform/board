@@ -3109,6 +3109,39 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             } else {
                 $response['error'] = 'Unable to import. please try again.';
             }
+        } elseif (!empty($_FILES['board_import_pipefy'])) {
+            if ($_FILES['board_import_pipefy']['error'] == 0) {
+                if ($_FILES['board_import_pipefy']['type'] === 'text/csv') {
+                    $all_rows = array();
+                    $imported_board = array();
+                    if (($handle = fopen($_FILES['board_import_pipefy']['tmp_name'], "r")) !== false) {
+                        $row = 1;
+                        while (($data = fgetcsv($handle, 40000, ",")) !== false) {
+                            if ($row > 1) {
+                                $arrResult = array();
+                                foreach ($data as $key => $value) {
+                                    $arrResult[$all_rows[0][$key]] = $value;
+                                };
+                                $imported_board[] = $arrResult;
+                            } else {
+                                $all_rows[] = $data;
+                            }
+                            $row++;
+                        }
+                        if (!empty($imported_board)) {
+                            $board = importpipefyBoard($imported_board);
+                            $response['id'] = $board['id'];
+                        } else {
+                            $response['error'] = 'Invalid file format. Upload CSV file';
+                        }
+                    }
+                    fclose($handle);
+                } else {
+                    $response['error'] = 'Invalid file format. Upload CSV file';
+                }
+            } else {
+                $response['error'] = 'Unable to import. please try again.';
+            }
         } else {
             $table_name = 'boards';
             $qry_val_arr = array(
