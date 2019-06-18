@@ -26,6 +26,19 @@
 		<input type="file" name="board_import_kantree" class="js-board-import-kantree-file"/>
 	</form>
 </li>
+<li class="col-xs-12 navbar-btn divider js-import-boards-back"></li>
+<li class="col-xs-12 btn-block js-import-boards-back">
+	<a href="#" class="js-show-board-import-pipefy-form col-xs-12 navbar-btn h6">
+		<span class="show clearfix text-primary navbar-btn h5">
+			<span class="pull-left"><%- i18next.t('Import Board from Pipefy') %></span> <span class="cssloader pull-right hide" id="js-board-import-pipefy-loader"></span>
+		</span>
+		<span class="show"><%- i18next.t('Upload CSV file exported from Pipefy.') %></span>
+	</a>
+	<form class="hide" id="js-board-import-pipefy" enctype="multipart/form-data">
+		<input type="file" name="board_import_pipefy" class="js-board-import-pipefy-file"/>
+	</form>
+</li>
+<li class="col-xs-12 navbar-btn divider js-import-boards-back"></li>
 <li class="col-xs-12 btn-block js-import-boards-back">
 	<a href="#" class="js-show-board-import-taiga-form col-xs-12 navbar-btn h6">
 		<span class="show clearfix text-primary navbar-btn h5">
