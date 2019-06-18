@@ -4560,10 +4560,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 );
                 pg_query_params($db_lnk, 'UPDATE activities SET materialized_path = $1, path = $2, depth = $3, root = $4 WHERE id = $5', $qry_val_arr);
                 $qry_val_arr = array(
-                    $r_post['freshness_ts'],
                     $root
                 );
-                pg_query_params($db_lnk, 'UPDATE activities SET freshness_ts = $1 WHERE root = $2', $qry_val_arr);
+                pg_query_params($db_lnk, 'UPDATE activities SET freshness_ts =  now() WHERE root = $1', $qry_val_arr);
                 $qry_val_arr = array(
                     $root
                 );
