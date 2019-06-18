@@ -663,7 +663,7 @@ App.ModalCardView = Backbone.View.extend({
                             model: new_label,
                             background: self.getLabelcolor('' + new_label.attributes.name).substring(0, 6)
                         });
-                        view_label.prepend(view.render().el);
+                        view_label.append(view.render().el);
                         $('#js-card-' + self.model.id).addClass('active');
                         $('.js-label-dropdown').removeClass('open');
                     });
@@ -2674,7 +2674,7 @@ App.ModalCardView = Backbone.View.extend({
                     model: slabel,
                     background: self.getLabelcolor('' + slabel.attributes.name).substring(0, 6)
                 });
-                view_label.prepend(view.render().el);
+                view_label.append(view.render().el);
             }
         });
         _(function() {
