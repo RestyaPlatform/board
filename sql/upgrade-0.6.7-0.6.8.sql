@@ -1,16 +1,27 @@
+DROP VIEW "users_listing";
+DROP VIEW "admin_users_listing";
+
+
+DO $$ 
+   BEGIN
+        BEGIN
+            ALTER TABLE "users" ADD COLUMN "persist_card_divider_position" character varying(255) NULL;
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column persist_card_divider_position already exists in users';
+        END;  
+  END;
+$$;
+
 ALTER TABLE "users"
 ALTER "is_productivity_beats" TYPE boolean,
 ALTER "is_productivity_beats" SET DEFAULT 'true',
 ALTER "is_productivity_beats" SET NOT NULL;
 UPDATE "users" SET "is_productivity_beats" = '1';
+
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
-VALUES ('17', '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 'Card Color,Label Color,Default Color', 'Calendar View Card Color ', '4')
+VALUES ('17', '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 'Card Color,Label Color,Default Color', 'Calendar View Card Color ', '4');
 
-ALTER TABLE "users"
-ADD "persist_card_divider_position" character varying(255) NULL;
-COMMENT ON TABLE "users" IS '';
-
-CREATE OR REPLACE VIEW "users_listing" AS
+ CREATE OR REPLACE VIEW users_listing AS
  SELECT users.id,
     users.role_id,
     users.username,
@@ -103,6 +114,69 @@ CREATE OR REPLACE VIEW "users_listing" AS
     users.is_invite_from_board,
     users.is_two_factor_authentication_enabled,
     users.persist_card_divider_position
+   FROM (((((((((users users
+     LEFT JOIN ips i ON ((i.id = users.ip_id)))
+     LEFT JOIN cities rci ON ((rci.id = i.city_id)))
+     LEFT JOIN states rst ON ((rst.id = i.state_id)))
+     LEFT JOIN countries rco ON ((rco.id = i.country_id)))
+     LEFT JOIN ips li ON ((li.id = users.last_login_ip_id)))
+     LEFT JOIN cities lci ON ((lci.id = li.city_id)))
+     LEFT JOIN states lst ON ((lst.id = li.state_id)))
+     LEFT JOIN countries lco ON ((lco.id = li.country_id)))
+     LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
+     
+     
+ CREATE OR REPLACE VIEW admin_users_listing AS
+ SELECT users.id,
+    users.role_id,
+    users.username,
+    users.password,
+    users.email,
+    users.full_name,
+    users.initials,
+    users.about_me,
+    users.profile_picture_path,
+    users.notification_frequency,
+    (users.is_allow_desktop_notification)::integer AS is_allow_desktop_notification,
+    (users.is_active)::integer AS is_active,
+    (users.is_email_confirmed)::integer AS is_email_confirmed,
+    users.created_organization_count,
+    users.created_board_count,
+    users.joined_organization_count,
+    users.list_count,
+    users.joined_card_count,
+    users.created_card_count,
+    users.joined_board_count,
+    users.checklist_count,
+    users.checklist_item_completed_count,
+    users.checklist_item_count,
+    users.activity_count,
+    users.card_voter_count,
+    (users.is_productivity_beats)::integer AS is_productivity_beats,
+    users.last_activity_id,
+    users.last_login_date,
+    li.ip AS last_login_ip,
+    lci.name AS login_city_name,
+    lst.name AS login_state_name,
+    lco.name AS login_country_name,
+    lower((lco.iso_alpha2)::text) AS login_country_iso2,
+    i.ip AS registered_ip,
+    rci.name AS register_city_name,
+    rst.name AS register_state_name,
+    rco.name AS register_country_name,
+    lower((rco.iso_alpha2)::text) AS register_country_iso2,
+    lt.name AS login_type,
+    to_char(users.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    users.user_login_count,
+    users.is_send_newsletter,
+    users.last_email_notified_activity_id,
+    users.owner_board_count,
+    users.member_board_count,
+    users.owner_organization_count,
+    users.member_organization_count,
+    users.language,
+    (users.is_ldap)::integer AS is_ldap,
+    users.timezone
    FROM (((((((((users users
      LEFT JOIN ips i ON ((i.id = users.ip_id)))
      LEFT JOIN cities rci ON ((rci.id = i.city_id)))
