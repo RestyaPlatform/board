@@ -130,11 +130,13 @@ $dc.ready(function() {
 })
 (jQuery);
 
-function changeTitle(title) {
+function changeTitle(title, Iscardview) {
+    var title_format = (Iscardview === true) ? "%s | %s's Restyaboard" : "%s's Restyaboard | %s";
+    var title_content = (Iscardview === true) ? [title, SITE_NAME] : [SITE_NAME, title];
     if (title !== undefined) {
-        document.title = i18next.t("%s's Restyaboard | %s", {
+        document.title = i18next.t(title_format, {
             postProcess: 'sprintf',
-            sprintf: [SITE_NAME, title]
+            sprintf: title_content
         });
     }
 }
