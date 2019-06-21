@@ -1335,6 +1335,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             if (isset($r_resource_filters['page'])) {
                 $offset_val = ($r_resource_filters['page'] - 1) * PAGING_COUNT;
+                if ($offset_val < 0) {
+                    $offset_val = 0;
+                }
                 $construct_offset = ' offset ' . $offset_val;
             }
             $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1' . $condition . ' ' . $order . ' LIMIT ' . $limit . ' ' . $construct_offset . ') as d ';
