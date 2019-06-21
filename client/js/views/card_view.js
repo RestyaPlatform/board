@@ -697,10 +697,10 @@ App.CardView = Backbone.View.extend({
             return false;
         }
         if (!_.isEmpty(this.model.attributes.name)) {
-            changeTitle(i18next.t('Card - %s on %s', {
+            changeTitle(i18next.t('%s on %s', {
                 postProcess: 'sprintf',
                 sprintf: [_.escape(this.model.attributes.name), _.escape(this.model.list.collection.board.attributes.name)]
-            }));
+            }), true);
         }
         var current_param = Backbone.history.fragment;
         current_param = current_param.split('?');
