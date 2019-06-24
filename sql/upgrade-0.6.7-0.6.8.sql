@@ -189,3 +189,11 @@ VALUES ('17', '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 
      LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
 
 UPDATE "settings" SET "options" = 'Never,Periodically,Instantly,Daily' WHERE "name" = 'DEFAULT_EMAIL_NOTIFICATION';
+
+ALTER TABLE "oauth_clients"
+ADD "is_expirable_token" bigint NULL DEFAULT '1';
+COMMENT ON TABLE "oauth_clients" IS '';
+
+UPDATE "oauth_clients" SET
+"is_expirable_token" = '0'
+WHERE (("client_id" = '7857596005287233') OR ("client_id" = '1193674816623028') OR ("client_id" = '6728003996146168') OR ("client_id" = '7742632501382313') OR ("client_id" = '6664115227792148'));
