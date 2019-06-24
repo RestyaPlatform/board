@@ -5165,9 +5165,6 @@ COPY public.oauth_authorization_codes (authorization_code, client_id, user_id, r
 COPY public.oauth_clients (client_id, client_secret, redirect_uri, grant_types, scope, user_id, client_name, client_url, logo_url, tos_url, policy_url, modified, created, id) FROM stdin;
 7742632501382313	4g7C4l1Y2b0S6a7L8c1E7B3K0e		client_credentials password refresh_token authorization_code		2	Web App	\N	\N	\N	\N	\N	\N	2
 6664115227792148	hw3wpe2cfsxxygogwue47cwnf7	\N	client_credentials refresh_token authorization_code	\N	\N	Mobile App	\N	\N	\N	\N	2016-02-22 17:39:17.208	2016-02-22 17:39:17.208	3
-7857596005287233	n0l2wlujcpkj0bd7gk8918gm6b	\N	client_credentials refresh_token authorization_code	\N	\N	Zapier	\N	\N	\N	\N	2016-02-22 17:39:17.208	2016-02-22 17:39:17.208	4
-1193674816623028	zhxzlbts63ecvs2ybwb2m26vew		client_credentials refresh_token authorization_code	\N	\N	Amazon Echo App	http://amazon.com	\N	\N	\N	2016-03-09 07:14:29.165491	2016-03-09 07:13:57.717503	5
-6728003996146168	1xqu3wl3bhwffs7j9polccgce2		client_credentials refresh_token authorization_code	\N	\N	Gmail Add-on		\N	\N	\N	2018-01-18 12:18:03	2018-01-18 12:18:03	6
 \.
 
 
