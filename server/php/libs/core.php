@@ -950,6 +950,20 @@ function getbindValues($table, $data)
     }
     return $bindValues;
 }
+
+function boardImportMailSend($import_type){
+    global $r_debug, $db_lnk, $authUser, $_server_domain_url;
+    $val_arr = array(
+        $authUser['id'],
+    );
+    $user = executeQuery('SELECT * FROM users WHERE id = $1 AND is_active = true', $val_arr);
+    $emailFindReplace = array(
+    '##NAME##' => $user['full_name'],
+    '##BOARD_IMPORT_OPTION##' => $import_type,
+);
+sendMail('board_import_user_notification', $emailFindReplace, $user['email']);
+}
+
 /**
  * Create Trello member
  *
@@ -1598,6 +1612,7 @@ function importTrelloBoard($board = array())
                 pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
             }
         }
+        boardImportMailSend('Trello');
         return $new_board;
     }
 }
@@ -1963,6 +1978,7 @@ function importKantreeBoard($jsonArr = array())
                     pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
                 }
             }
+            boardImportMailSend('Kantree');
             return $new_board;
         }
     }
@@ -2235,6 +2251,7 @@ function importTaigaBoard($board = array())
                 pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
             }
         }
+        boardImportMailSend('Taiga');
         return $new_board;
     }
 }
@@ -2609,6 +2626,7 @@ function importWekanBoard($board = array())
                 }
             }
         }
+        boardImportMailSend('Wekan');
         return $new_board;
     }
 }
@@ -2864,6 +2882,7 @@ function importAsanaBoard($jsonArr = array())
                     }
                 }
             }
+            boardImportMailSend('Asana');
             return $new_board;
         }
     }
@@ -2928,6 +2947,7 @@ function importTaskWarriorBoard($jsonArr = array())
             );
             $new_board = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards (created, modified, name, user_id, board_visibility) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
             $server = strtolower($_SERVER['SERVER_SOFTWARE']);
+            boardImportMailSend('Taskwarrior');
             if (strpos($server, 'apache') !== false) {
                 ob_end_clean();
                 header("Connection: close\r\n");
@@ -3220,6 +3240,7 @@ function importpipefyBoard($board = array())
                 }
             }
         }
+        boardImportMailSend('Pipefy');
         return $new_board;
     }
 }
