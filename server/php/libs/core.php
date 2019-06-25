@@ -950,20 +950,24 @@ function getbindValues($table, $data)
     }
     return $bindValues;
 }
-
-function boardImportMailSend($import_type){
+function boardImportMailSend($import_type, $new_board)
+{
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
     $val_arr = array(
         $authUser['id'],
     );
     $user = executeQuery('SELECT * FROM users WHERE id = $1 AND is_active = true', $val_arr);
+    $board = executeQuery('SELECT * FROM boards WHERE id = $1', array(
+        $new_board['id'],
+    ));
     $emailFindReplace = array(
-    '##NAME##' => $user['full_name'],
-    '##BOARD_IMPORT_OPTION##' => $import_type,
-);
-sendMail('board_import_user_notification', $emailFindReplace, $user['email']);
+        '##NAME##' => $user['full_name'],
+        '##BOARD_IMPORT_OPTION##' => $import_type,
+        '##BOARD_NAME##' => $board['name'],
+        '##BOARD_URL##' => $_server_domain_url . '/#/board/' . $board['id'],
+    );
+    sendMail('board_import_user_notification', $emailFindReplace, $user['email']);
 }
-
 /**
  * Create Trello member
  *
@@ -1612,7 +1616,7 @@ function importTrelloBoard($board = array())
                 pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
             }
         }
-        boardImportMailSend('Trello');
+        boardImportMailSend('Trello', $new_board);
         return $new_board;
     }
 }
@@ -1978,7 +1982,7 @@ function importKantreeBoard($jsonArr = array())
                     pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
                 }
             }
-            boardImportMailSend('Kantree');
+            boardImportMailSend('Kantree', $new_board);
             return $new_board;
         }
     }
@@ -2251,7 +2255,7 @@ function importTaigaBoard($board = array())
                 pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
             }
         }
-        boardImportMailSend('Taiga');
+        boardImportMailSend('Taiga', $new_board);
         return $new_board;
     }
 }
@@ -2626,7 +2630,7 @@ function importWekanBoard($board = array())
                 }
             }
         }
-        boardImportMailSend('Wekan');
+        boardImportMailSend('Wekan', $new_board);
         return $new_board;
     }
 }
@@ -2882,7 +2886,7 @@ function importAsanaBoard($jsonArr = array())
                     }
                 }
             }
-            boardImportMailSend('Asana');
+            boardImportMailSend('Asana', $new_board);
             return $new_board;
         }
     }
@@ -2947,7 +2951,6 @@ function importTaskWarriorBoard($jsonArr = array())
             );
             $new_board = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards (created, modified, name, user_id, board_visibility) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
             $server = strtolower($_SERVER['SERVER_SOFTWARE']);
-            boardImportMailSend('Taskwarrior');
             if (strpos($server, 'apache') !== false) {
                 ob_end_clean();
                 header("Connection: close\r\n");
@@ -3046,6 +3049,7 @@ function importTaskWarriorBoard($jsonArr = array())
                     }
                 }
             }
+            boardImportMailSend('Taskwarrior', $new_board);
             return $new_board;
         }
     }
@@ -3090,6 +3094,23 @@ function importpipefyBoard($board = array())
             $user_id
         );
         $new_board = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards (created, modified, name, board_visibility, user_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
+        $server = strtolower($_SERVER['SERVER_SOFTWARE']);
+        if (strpos($server, 'apache') !== false) {
+            ob_end_clean();
+            header("Connection: close\r\n");
+            header("Content-Encoding: none\r\n");
+            ignore_user_abort(true); // optional
+            ob_start();
+            echo json_encode($new_board);
+            $size = ob_get_length();
+            header("Content-Length: $size");
+            ob_end_flush(); // Strange behaviour, will not work
+            flush(); // Unless both are called !
+            ob_end_clean();
+        } else {
+            echo json_encode($new_board);
+            fastcgi_finish_request();
+        }
         // insert current user as board member
         $qry_val_arr = array(
             $authUser['id'],
@@ -3240,7 +3261,7 @@ function importpipefyBoard($board = array())
                 }
             }
         }
-        boardImportMailSend('Pipefy');
+        boardImportMailSend('Pipefy', $new_board);
         return $new_board;
     }
 }
