@@ -197,3 +197,30 @@ COMMENT ON TABLE "oauth_clients" IS '';
 UPDATE "oauth_clients" SET
 "is_expirable_token" = '0'
 WHERE (("client_id" = '7857596005287233') OR ("client_id" = '1193674816623028') OR ("client_id" = '6728003996146168') OR ("client_id" = '7742632501382313') OR ("client_id" = '6664115227792148'));
+
+
+INSERT INTO "email_templates" ("created", "modified", "from_email", "reply_to_email", "name", "description", "subject", "email_text_content", "email_variables", "display_name")
+VALUES (now(), now(), '##SITE_NAME## Restyaboard <##FROM_EMAIL##>', '##REPLY_TO_EMAIL##', 'board_import_user_notification', 'We will send this mail to user, when user import the boards ', 'Restyaboard / Import Board', '<html>
+<head></head>
+<body style="margin:0">
+<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">
+<div style="border: 1px solid #EEEEEE;">
+<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>
+</div>
+</header>
+<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">
+<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
+<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
+<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;"> ##BOARD_IMPORT_OPTION## "##BOARD_NAME##" imported successfully. Please check here ##BOARD_URL##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>
+Restyaboard<br>
+##SITE_URL##</p>
+</pre>
+</div>
+</div>
+</main>
+<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">
+<h6 style="text-align:center;margin:5px 15px;"> 
+<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>
+</footer>
+</body>
+</html>', 'SITE_NAME, SITE_URL, BOARD_IMPORT_OPTION, NAME, BOARD_URL, BOARD_NAME', 'Board Import User Notification');
