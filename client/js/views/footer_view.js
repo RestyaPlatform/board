@@ -460,6 +460,7 @@ App.FooterView = Backbone.View.extend({
         var target = $(e.target);
         target.parents('li.dropdown').addClass('open');
         this.$el.find('li.js-import-boards-back').remove();
+        this.$el.find('.js-board-import-info').remove();
         this.$el.find('.js-back').removeClass('hide');
         return false;
     },
@@ -526,6 +527,7 @@ App.FooterView = Backbone.View.extend({
         $(new App.BoardImportFormView({}).el).insertAfter(insert);
         $('footer').trigger('footerActionRendered');
         $('.js-show-boards-list-response').html('');
+        this.showTooltip();
         return false;
     },
     /**
@@ -590,6 +592,7 @@ App.FooterView = Backbone.View.extend({
         $('.js-qsearch-container').removeClass('hide');
         $('.js-show-boards-list-response').addClass('hide');
         this.$el.find('li.js-back').remove();
+        this.$el.find('.js-board-import-info').remove();
         this.$el.find('li.js-import-boards-back').remove();
         var recent_boards = '';
         var my_boards = '';
