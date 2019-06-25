@@ -2385,7 +2385,7 @@ App.FooterView = Backbone.View.extend({
      */
     importWekanBoard: function(e) {
         e.preventDefault();
-        $('#js-board-import-loader').removeClass('hide');
+        $('#js-board-import-wekan-loader').removeClass('hide');
         var self = this;
         var form = $('form#js-board-import-wekan');
         var fileData = new FormData(form[0]);
@@ -2398,10 +2398,10 @@ App.FooterView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                $('#js-board-import-loader', '.js-show-board-import-wekan-form').parent('.js-show-board-import-wekan-form').addClass('hide');
+                $('#js-board-import-wekan-loader', '.js-show-board-import-wekan-form').parent('.js-show-board-import-wekan-form').addClass('hide');
             },
             success: function(model, response) {
-                $('#js-board-import-loader', '.js-show-board-import-wekan-form').addClass('hide');
+                $('#js-board-import-wekan-loader', '.js-show-board-import-wekan-form').addClass('hide');
                 if (!_.isUndefined(response.id)) {
                     app.navigate('#/board/' + response.id, {
                         trigger: true,
@@ -2514,7 +2514,7 @@ App.FooterView = Backbone.View.extend({
      */
     importKantreeBoard: function(e) {
         e.preventDefault();
-        $('#js-board-import-loader').removeClass('hide');
+        $('#js-board-import-kantree-loader').removeClass('hide');
         var self = this;
         var form = $('form#js-board-import-kantree');
         var fileData = new FormData(form[0]);
@@ -2527,10 +2527,10 @@ App.FooterView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                $('#js-board-import-loader', '.js-show-board-import-kantree-form').parent('.js-show-board-import-kantree-form').addClass('hide');
+                $('#js-board-import-kantree-loader', '.js-show-board-import-kantree-form').parent('.js-show-board-import-kantree-form').addClass('hide');
             },
             success: function(model, response) {
-                $('#js-board-import-loader', '.js-show-board-import-kantree-form').addClass('hide');
+                $('#js-board-import-kantree-loader', '.js-show-board-import-kantree-form').addClass('hide');
                 if (!_.isUndefined(response.id)) {
                     app.navigate('#/board/' + response.id, {
                         trigger: true,
@@ -2557,7 +2557,7 @@ App.FooterView = Backbone.View.extend({
      */
     importTaigaBoard: function(e) {
         e.preventDefault();
-        $('#js-board-import-loader').removeClass('hide');
+        $('#js-board-import-taiga-loader').removeClass('hide');
         var self = this;
         var form = $('form#js-board-import-taiga');
         var fileData = new FormData(form[0]);
@@ -2570,10 +2570,10 @@ App.FooterView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                $('#js-board-import-loader', '.js-show-board-import-taiga-form').parent('.js-show-board-import-taiga-form').addClass('hide');
+                $('#js-board-import-taiga-loader', '.js-show-board-import-taiga-form').parent('.js-show-board-import-taiga-form').addClass('hide');
             },
             success: function(model, response) {
-                $('#js-board-import-loader', '.js-show-board-import-taiga-form').addClass('hide');
+                $('#js-board-import-taiga-loader', '.js-show-board-import-taiga-form').addClass('hide');
                 if (!_.isUndefined(response.id)) {
                     app.navigate('#/board/' + response.id, {
                         trigger: true,
