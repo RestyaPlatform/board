@@ -110,7 +110,7 @@ if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['author
         $loginPlaceholder = 'Email or Username';
     } ?>
 	<section class="clearfix">
-	  <div class="col-md-5 col-md-offset-4">
+	  <div class="col-md-4 col-md-offset-4">
 		<div class="text-center navbar-btn"><a title="Restya" href="#/"><img title="<?php
     echo SITE_NAME; ?>" alt="[Image: <?php
     echo SITE_NAME; ?>]" src="<?php
@@ -154,7 +154,7 @@ if (!empty($error_msg) && (empty($_POST['authorized']) || (!empty($_POST['author
     if (empty($_POST['authorized'])) {
 ?>
             <section class="clearfix">
-			  <div class="col-md-5 col-md-offset-4">
+			  <div class="col-md-4 col-md-offset-4">
 				<div class="text-center navbar-btn"><a title="Restya" href="#/"><img title="<?php
         echo SITE_NAME; ?>" alt="[Image: <?php
         echo SITE_NAME; ?>]" src="<?php
