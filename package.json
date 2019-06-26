@@ -9,7 +9,7 @@
   },
   "author": "Restya",
   "devDependencies": {
-    "eslint": "^3.13.1",
+    "eslint": ">=4.18.2",
     "eslint-plugin-backbone": "^2.0.2",
     "grunt": "^0.4.4",
     "grunt-closure-tools": "~0.9.7",
