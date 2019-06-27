@@ -857,23 +857,21 @@
 					mkdir -p "$dir"
 					echo "Changing root directory in apache configuration..."
 					cp ${DOWNLOAD_DIR}/.htaccess $dir
-					APACHE_ROOT_DIRECTORY=/var/www/html/
-					delimiter=${APACHE_ROOT_DIRECTORY}
-					s=$dir$delimiter
-					array=();
-					if ([ "$dir" != "$delimiter" ])
-					then
-						while [[ $s ]]; do
-						array+=( "${s%%"$delimiter"*}" );
-						s=${s#*"$delimiter"};
-						done;
-						Restyaboardpath=${array[1]}
-						webdir=$webdir'/'$Restyaboardpath
-						sed -i "s|RewriteBase /.*$|RewriteBase /$Restyaboardpath|" $dir/.htaccess
-						sed -i "s/AllowOverride.*$/AllowOverride All/" /etc/apache2/apache2.conf
-						sed -i "s/Require all denied.*$/Require all granted/" /etc/apache2/apache2.conf
-						rm -rf ${DOWNLOAD_DIR}/.htaccess
-					fi
+					set -x
+					echo "<VirtualHost *:80>
+						ServerName $webdir
+						ServerAlias $webdir
+						DocumentRoot $dir
+					</VirtualHost> 
+
+					<Directory $dir>
+						Options Indexes FollowSymLinks
+						AllowOverride All
+						Require all granted
+					</Directory>" >> /etc/apache2/sites-available/restyaboard.conf
+					set -x
+					echo "127.0.0.1  $webdir" >> /etc/hosts
+					rm -rf ${DOWNLOAD_DIR}/.htaccess
 				else
 				    echo "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
 					read -r webdir
@@ -926,23 +924,21 @@
 					mkdir -p "$dir"
 					echo "Changing root directory in apache configuration..."
 					cp ${DOWNLOAD_DIR}/.htaccess $dir
-					APACHE_ROOT_DIRECTORY=/var/www/html/
-					delimiter=${APACHE_ROOT_DIRECTORY}
-					s=$dir$delimiter
-					array=();
-					if ([ "$dir" != "$delimiter" ])
-					then
-						while [[ $s ]]; do
-						array+=( "${s%%"$delimiter"*}" );
-						s=${s#*"$delimiter"};
-						done;
-						Restyaboardpath=${array[1]}
-						webdir=$webdir'/'$Restyaboardpath
-						sed -i "s|RewriteBase /.*$|RewriteBase /$Restyaboardpath|" $dir/.htaccess
-						sed -i "s/AllowOverride.*$/AllowOverride All/" /etc/httpd/conf/httpd.conf
-    					sed -i "s/Require all denied.*$/Require all granted/" /etc/httpd/conf/httpd.conf
-						rm -rf ${DOWNLOAD_DIR}/.htaccess
-					fi
+					set -x
+					echo "<VirtualHost *:80>
+						ServerName $webdir
+						ServerAlias $webdir
+						DocumentRoot $dir
+					</VirtualHost> 
+
+					<Directory $dir>
+						Options Indexes FollowSymLinks
+						AllowOverride All
+						Require all granted
+					</Directory>" >> /etc/httpd/sites-available/restyaboard.conf
+					set -x
+					echo "127.0.0.1  $webdir" >> /etc/hosts
+					rm -rf ${DOWNLOAD_DIR}/.htaccess
 				else
 					set +x
 					echo "To configure nginx, enter your domain name (e.g., www.example.com, 192.xxx.xxx.xxx, etc.,):"
@@ -1136,6 +1132,8 @@
 				service php7.2-fpm restart
 				if [ ${APACHE_ENABLED} -eq 1 ] 
 				then
+					a2ensite restyaboard.conf
+					a2enmod rewrite
 				    service apache2 restart
 				else
 					service nginx restart
@@ -1148,6 +1146,8 @@
 					echo "Starting services with systemd..."
 					if [ ${APACHE_ENABLED} -eq 1 ] 
 					then
+						a2ensite restyaboard.conf
+						a2enmod rewrite
 						systemctl restart httpd.service
 					else
 						systemctl restart nginx
