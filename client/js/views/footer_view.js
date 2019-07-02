@@ -1939,7 +1939,7 @@ App.FooterView = Backbone.View.extend({
                                         board.board_users.add(activity.attributes.board_user);
                                     }
                                 }
-                            } else if (activity.attributes.type === 'add_board' && !_.isUndefined(App.boards) && !_.isEmpty(App.boards) && App.boards !== null) {
+                            } else if (activity.attributes.type === 'add_board' && !_.isUndefined(App.boards) && !_.isEmpty(App.boards) && App.boards !== null && mode == 1) {
                                 var _new_board = new App.Board();
                                 _new_board.set('id', parseInt(activity.attributes.board_id));
                                 _new_board.set('name', filterXSS(activity.attributes.board_name));
