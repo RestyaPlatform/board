@@ -1865,7 +1865,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $folder = explode('/', $file);
                 $content = file_get_contents($file);
                 $data = json_decode($content, true);
-                $data['folder'] = $folder[count($folder) - 2];
+                $data['folder'] = $data['id'];
                 $response[] = $data;
             }
         }
