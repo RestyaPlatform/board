@@ -422,19 +422,21 @@
                 if ($dockModal.hasClass("popped-out") && !$dockModal.hasClass("minimized")) {
                     return;
                 }
-                right += $this.options.gutter;
-                $dockModal.css({ "right": right + "px" });
-                if ($dockModal.hasClass("minimized")) {
-                    right += $this.options.minimizedWidth;
-                } else {
-                    right += $this.options.width;
-                }
-                if (right > windowWidth) {
-                    $dockModal.hide();
-                } else {
-                    setTimeout(function () {
-                        $dockModal.show();
-                    }, $this.options.animationSpeed);
+                if($this.options !== undefined){
+                    right += $this.options.gutter;
+                    $dockModal.css({ "right": right + "px" });
+                    if ($dockModal.hasClass("minimized")) {
+                        right += $this.options.minimizedWidth;
+                    } else {
+                        right += $this.options.width;
+                    }
+                    if (right > windowWidth) {
+                        $dockModal.hide();
+                    } else {
+                        setTimeout(function () {
+                            $dockModal.show();
+                        }, $this.options.animationSpeed);
+                    }
                 }
             });
         }
