@@ -29,25 +29,44 @@
 				var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
 				var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
 				if(activity.attributes.type != 'add_comment' || activity.attributes.type != 'edit_comment') {
-					if(activity.attributes.type !== 'add_card_desc') {
-						if(!_.isEmpty(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
-							activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.difference['0']));
-						}else{
-								activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
+					if (activity.attributes.comment.indexOf('##DESCRIPTION##') != -1){
+						if(activity.attributes.type !== 'add_card_desc') {
+							if(!_.isEmpty(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
+								activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.difference['0']));
+							}else{
+									activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
+							}
+						} else {
+							activity.attributes.comment = activity.attributes.comment.replace(' - ##DESCRIPTION##', "");
 						}
-					} else {
-						activity.attributes.comment = activity.attributes.comment.replace(' - ##DESCRIPTION##', "");
 					}
-					activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
-					activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
-					activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', (activity.attributes.label_name));
-					activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', (activity.attributes.card_name));
-					activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
-					activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', (activity.attributes.board_name));
-					activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');
-					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
-					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
-					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
+					if(activity.attributes.comment.indexOf('##ORGANIZATION_LINK##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
+					}
+					if(activity.attributes.comment.indexOf('##LABEL_NAME##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', (activity.attributes.label_name));
+					}
+					if(activity.attributes.comment.indexOf('##CARD_NAME##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', (activity.attributes.card_name));
+					}
+					if(activity.attributes.comment.indexOf('##LIST_NAME##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
+					}
+					if(activity.attributes.comment.indexOf('##BOARD_NAME##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', (activity.attributes.board_name));
+					}
+					if(activity.attributes.comment.indexOf('##USER_NAME##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');					
+					}
+					if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_NAME##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
+					}
+					if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_PARENT_NAME##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
+					}
+					if(activity.attributes.comment.indexOf('##CHECKLIST_NAME##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
+					}
 				} else {
 					if(!_.isUndefined(activity.from_footer)) {
 						var comment = '<span class="h5">' + filterXSS(activity.attributes.full_name) + '</span> commented in card ' + cardLink;
