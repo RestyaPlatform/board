@@ -140,23 +140,24 @@
 	 <a href="#" class="js-modal-fliker-trigger" data-type="texture" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Choose...") %></a>
   <% } %>  
  
-  
-<% if(authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "add_custom_background", board_user_role_id: parseInt(board.board_user_role_id)}))){ %> 
-  <h4><%- i18next.t("Custom") %><span class="clearfix navbar-btn col-xs-7 pull-right"><span id="custom-dropzone-cssloader"></span></span></h4>
-  <ul class="js-board-background-custom-lists list-inline">
-    <% board.custom_attachments.each(function(custom_attachment) { %>
-    <li class="js-change-custom-background board-background-select navbar-btn cur" data-background="<%= custom_attachment.get('path') %>"><span class="background-box show well-lg" style="background-image:url(<%= custom_attachment.get('path') %>"></span></li>
-    <% }); %>
-  </ul>
+<% if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user)) { %>
+	<% if(authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "add_custom_background", board_user_role_id: parseInt(board.board_user_role_id)}))){ %> 
+		<h4><%- i18next.t("Custom") %><span class="clearfix navbar-btn col-xs-7 pull-right"><span id="custom-dropzone-cssloader"></span></span></h4>
+		<ul class="js-board-background-custom-lists list-inline">
+			<% board.custom_attachments.each(function(custom_attachment) { %>
+			<li class="js-change-custom-background board-background-select navbar-btn cur" data-background="<%= custom_attachment.get('path') %>"><span class="background-box show well-lg" style="background-image:url(<%= custom_attachment.get('path') %>"></span></li>
+			<% }); %>
+		</ul>
 
 
-<div class="clearfix col-xs-12" id="custom-background-dropzone">
-	<form id="js-board-custom-background-form" class="form-horizontal clearfix  js-cusotm-background-add" role="form" enctype="multipart/form-data">
-		<div id="manager-area" class="js-cusotm-background-dropzone empty-block js-computer-open-board-background">
-			<%- i18next.t("Drop files to upload") %>
-		</div>
-	</form>
-</div>
+	<div class="clearfix col-xs-12" id="custom-background-dropzone">
+		<form id="js-board-custom-background-form" class="form-horizontal clearfix  js-cusotm-background-add" role="form" enctype="multipart/form-data">
+			<div id="manager-area" class="js-cusotm-background-dropzone empty-block js-computer-open-board-background">
+				<%- i18next.t("Drop files to upload") %>
+			</div>
+		</form>
+	</div>
+	<% } %>
 <% } %>
 <div class="col-xs-12 member-modal clearfix btn-block">
 <h4><%- i18next.t("Productivity Beats") %></h4>
