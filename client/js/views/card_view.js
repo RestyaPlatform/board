@@ -213,6 +213,7 @@ App.CardView = Backbone.View.extend({
             silent: true,
             success: function(model, response) {
                 self.model.set('list_moved_date', response.activity.created);
+                var list_moved_date_date_time;
                 if (response.activity.created.indexOf('T') != -1) {
                     list_moved_date_date_time = response.activity.created.split('T');
                 } else {
