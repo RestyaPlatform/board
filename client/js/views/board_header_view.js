@@ -2137,9 +2137,11 @@ App.BoardHeaderView = Backbone.View.extend({
             });
             var unfilteredIds = [];
             for (var i = 0; i < result.length; i++) {
-                var card_id = result[i].substring(8, result[i].length);
-                if ($.inArray(card_id, unfilteredIds) === -1) {
-                    unfilteredIds.push(parseInt(card_id));
+                if (!_.isUndefined(result[i])) {
+                    var card_id = result[i].substring(8, result[i].length);
+                    if ($.inArray(card_id, unfilteredIds) === -1) {
+                        unfilteredIds.push(parseInt(card_id));
+                    }
                 }
             }
             this.model.cards.each(function(card) {
