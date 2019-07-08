@@ -1124,14 +1124,16 @@ App.ModalCardView = Backbone.View.extend({
     },
     Modalheaderreset: function() {
         var doc = $('#js-card-modal-' + this.model.id);
+        var subscribed = '';
         if (doc.length !== 0) {
-            var cards_subscribers = this.model.cards_subscribers.where({
-                is_subscribed: 1,
-                user_id: parseInt(authuser.user.id)
-            });
-            var subscribed = '';
-            if (!_.isEmpty(cards_subscribers)) {
-                subscribed = ' <span class="icon-eye-open"></span>';
+            if (!_.isUndefined(authuser.user)) {
+                var cards_subscribers = this.model.cards_subscribers.where({
+                    is_subscribed: 1,
+                    user_id: parseInt(authuser.user.id)
+                });
+                if (!_.isEmpty(cards_subscribers)) {
+                    subscribed = ' <span class="icon-eye-open"></span>';
+                }
             }
             var class_name = '';
             var text = i18next.t('%s in list %s %s', {
