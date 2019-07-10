@@ -2150,13 +2150,14 @@ App.FooterView = Backbone.View.extend({
      */
     notificationMenu: function(e) {
         e.preventDefault();
-        if (!_.isUndefined(authuser) && !_.isEmpty(authuser) && authuser.board_id !== 0) {
-
-            $('.js-notification-response-container').html(new App.NotificationMenuView({
-                user: authuser
-            }).el);
-        } else {
-            this.userActivities();
+        if (!_.isUndefined(authuser) && !_.isEmpty(authuser)) {
+            if (authuser.board_id !== 0) {
+                $('.js-notification-response-container').html(new App.NotificationMenuView({
+                    user: authuser
+                }).el);
+            } else {
+                this.userActivities();
+            }
         }
     },
     showNotification: function(e) {
