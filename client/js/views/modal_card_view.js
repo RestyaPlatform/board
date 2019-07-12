@@ -2696,47 +2696,49 @@ App.ModalCardView = Backbone.View.extend({
      */
     renderActivitiesCollection: function() {
         var self = this;
-        if ((!_.isUndefined(self.model.list) && self.model.list.collection.board.attributes.board_visibility === 2) || (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(self.model.list.collection.board.acl_links.where({
-                slug: "view_card_activities",
-                board_user_role_id: parseInt(this.model.board_user_role_id)
-            }))))) {
-            var filter = $.cookie('filter');
-            if (!_.isUndefined(filter) && filter === 'activity' && !self.$el.find('#modal-activities').hasClass('active')) {
-                self.$el.find('#modal-activities').addClass('active');
-            } else if (!_.isUndefined(filter) && filter === 'comment' && !self.$el.find('#modal-comments').hasClass('active')) {
-                self.$el.find('#modal-comments').addClass('active');
-            } else if (!self.$el.find('#modal-activities').hasClass('active') && !self.$el.find('#modal-comments').hasClass('active')) {
-                self.$el.find('#modal-activities').addClass('active');
-                self.$el.find('#modal-comments').addClass('active');
-            }
-            var view_activity = this.$('#js-card-activities-' + self.model.id);
-            //view_activity.html('');
-            $('#js-card-modal-' + self.model.id).find('#js-loader-img').addClass('hide');
-            if (!_.isEmpty(this.model.activities)) {
-                var i = 1;
-                this.model.activities.each(function(activity) {
-                    if (!_.isEmpty(self.model.collection)) {
-                        activity.cards.add(self.model.collection.models);
-                    }
-                    activity.board_users = self.model.board_users;
-                    activity.board_user_role_id = self.model.board_user_role_id;
-                    var view = new App.ActivityView({
-                        model: activity,
-                        board: self.model.list.collection.board,
-                        flag: '1'
-                    });
-                    view_activity.append(view.render().el);
-                    i++;
-                });
-                var page_count = $('.js-load-more-block').length + 1;
-                if (this.model.attributes.activity_count != PAGING_COUNT && this.model.activities.length >= PAGING_COUNT && this.model.attributes.activity_page_count >= page_count) {
-                    $('#js-card-activities-' + self.model.id).after('<div class="text-center js-load-more-block"><div class="btn btn-primary js-card-activites-load-more js-remove-card-activity" title="' + i18next.t('Load More') + '" data-attr="' + page_count + '" >' + i18next.t('Load next %s of %s', {
-                        postProcess: 'sprintf',
-                        sprintf: [PAGING_COUNT, this.model.attributes.activity_count]
-                    }) + '</div></div>');
+        if (!_.isUndefined(self.model.list) && !_.isUndefined(self.model.collection)) {
+            if ((!_.isUndefined(self.model.list) && self.model.list.collection.board.attributes.board_visibility === 2) || (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(self.model.list.collection.board.acl_links.where({
+                    slug: "view_card_activities",
+                    board_user_role_id: parseInt(this.model.board_user_role_id)
+                }))))) {
+                var filter = $.cookie('filter');
+                if (!_.isUndefined(filter) && filter === 'activity' && !self.$el.find('#modal-activities').hasClass('active')) {
+                    self.$el.find('#modal-activities').addClass('active');
+                } else if (!_.isUndefined(filter) && filter === 'comment' && !self.$el.find('#modal-comments').hasClass('active')) {
+                    self.$el.find('#modal-comments').addClass('active');
+                } else if (!self.$el.find('#modal-activities').hasClass('active') && !self.$el.find('#modal-comments').hasClass('active')) {
+                    self.$el.find('#modal-activities').addClass('active');
+                    self.$el.find('#modal-comments').addClass('active');
                 }
+                var view_activity = this.$('#js-card-activities-' + self.model.id);
+                //view_activity.html('');
+                $('#js-card-modal-' + self.model.id).find('#js-loader-img').addClass('hide');
+                if (!_.isEmpty(this.model.activities)) {
+                    var i = 1;
+                    this.model.activities.each(function(activity) {
+                        if (!_.isEmpty(self.model.collection)) {
+                            activity.cards.add(self.model.collection.models);
+                        }
+                        activity.board_users = self.model.board_users;
+                        activity.board_user_role_id = self.model.board_user_role_id;
+                        var view = new App.ActivityView({
+                            model: activity,
+                            board: self.model.list.collection.board,
+                            flag: '1'
+                        });
+                        view_activity.append(view.render().el);
+                        i++;
+                    });
+                    var page_count = $('.js-load-more-block').length + 1;
+                    if (this.model.attributes.activity_count != PAGING_COUNT && this.model.activities.length >= PAGING_COUNT && this.model.attributes.activity_page_count >= page_count) {
+                        $('#js-card-activities-' + self.model.id).after('<div class="text-center js-load-more-block"><div class="btn btn-primary js-card-activites-load-more js-remove-card-activity" title="' + i18next.t('Load More') + '" data-attr="' + page_count + '" >' + i18next.t('Load next %s of %s', {
+                            postProcess: 'sprintf',
+                            sprintf: [PAGING_COUNT, this.model.attributes.activity_count]
+                        }) + '</div></div>');
+                    }
+                }
+                emojify.run();
             }
-            emojify.run();
         }
     },
     /**
