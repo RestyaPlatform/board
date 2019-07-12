@@ -2122,12 +2122,14 @@ App.BoardHeaderView = Backbone.View.extend({
             var filter_query = dictFilter.filter_query;
             if (_.isEmpty(arrays) && _.isEmpty(filter_query)) {
                 _.each(this.model.lists.models, function(list) {
-                    var cards = self.model.cards.filter(function(card) {
-                        return card.get('is_archived') !== 1 && card.get('list_id') === parseInt(list.id);
-                    });
-                    _.each(cards, function(card, key) {
-                        card.set('is_filtered', false);
-                    });
+                    if (!_.isUndefined(self.model.cards) && !_.isEmpty(self.model.cards)) {
+                        var cards = self.model.cards.filter(function(card) {
+                            return card.get('is_archived') !== 1 && card.get('list_id') === parseInt(list.id);
+                        });
+                        _.each(cards, function(card, key) {
+                            card.set('is_filtered', false);
+                        });
+                    }
                 });
             }
             if (!_.isEmpty(arrays) && !_.isEmpty(filter_query)) {
