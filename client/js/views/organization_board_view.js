@@ -54,39 +54,41 @@ App.OrganizationBoardView = Backbone.View.extend({
      *
      */
     render: function() {
-        this.$el.html(this.template({
-            board: this.model,
-            stared: this.stared
-        }));
-        if (this.model !== null) {
-            var data = [];
-            var color_codes = ['#DB7093', '#F47564', '#EDA287', '#FAC1AD', '#FFE4E1', '#D3ABF0', '#DC9CDC', '#69BFBA', '#66CDAA', '#8FBC8F', '#CBFDCA', '#EEE8AA', '#BC8F8F', '#CD853F', '#D2B48C', '#F5DEB3', '#64BCF2', '#87CEFA', '#B0C4DE', '#D6E2F7'];
-            var i = 0;
-            _.each(this.model.attributes.lists, function(list) {
-                if (!list.is_archived) {
-                    var _data = {};
-                    _data.title = list.name;
-                    _data.value = list.card_count;
-                    if (!_.isEmpty(list.color) && !_.isUndefined(list.color) && list.color !== null && list.color !== 'null' && list.color !== 'NULL') {
-                        _data.color = list.color;
-                    } else {
-                        _data.color = color_codes[i];
+        if (!_.isEmpty(this.$el) && !_.isUndefined(this.$el)) {
+            this.$el.html(this.template({
+                board: this.model,
+                stared: this.stared
+            }));
+            if (this.model !== null) {
+                var data = [];
+                var color_codes = ['#DB7093', '#F47564', '#EDA287', '#FAC1AD', '#FFE4E1', '#D3ABF0', '#DC9CDC', '#69BFBA', '#66CDAA', '#8FBC8F', '#CBFDCA', '#EEE8AA', '#BC8F8F', '#CD853F', '#D2B48C', '#F5DEB3', '#64BCF2', '#87CEFA', '#B0C4DE', '#D6E2F7'];
+                var i = 0;
+                _.each(this.model.attributes.lists, function(list) {
+                    if (!list.is_archived) {
+                        var _data = {};
+                        _data.title = list.name;
+                        _data.value = list.card_count;
+                        if (!_.isEmpty(list.color) && !_.isUndefined(list.color) && list.color !== null && list.color !== 'null' && list.color !== 'NULL') {
+                            _data.color = list.color;
+                        } else {
+                            _data.color = color_codes[i];
+                        }
+                        i++;
+                        if (i > 20) {
+                            i = 0;
+                        }
+                        if (list.card_count > 0) {
+                            data.push(_data);
+                        }
                     }
-                    i++;
-                    if (i > 20) {
-                        i = 0;
-                    }
-                    if (list.card_count > 0) {
-                        data.push(_data);
-                    }
-                }
-            });
-            var _this = this;
-            _(function() {
-                _this.$el.find('.js-chart').drawDoughnutChart(data);
-            }).defer();
+                });
+                var _this = this;
+                _(function() {
+                    _this.$el.find('.js-chart').drawDoughnutChart(data);
+                }).defer();
+            }
+            this.showTooltip();
         }
-        this.showTooltip();
         return this;
     },
     /**
