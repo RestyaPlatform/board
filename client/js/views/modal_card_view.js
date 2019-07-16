@@ -1093,10 +1093,10 @@ App.ModalCardView = Backbone.View.extend({
         var self = this;
         self.model.activities = new App.ActivityCollection();
         var filter = $.cookie('filter');
-        if (filter === undefined || filter === 'all') {
-            filter = 'all';
-        } else if (filter === 'comment') {
+        if (filter === undefined || filter === 'comment') {
             filter = 'comment';
+        } else if (filter === 'all') {
+            filter = 'all';
         } else if (filter === 'activity') {
             filter = 'activity';
         }
