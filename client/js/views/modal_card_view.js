@@ -2706,8 +2706,7 @@ App.ModalCardView = Backbone.View.extend({
                     self.$el.find('#modal-activities').addClass('active');
                 } else if (!_.isUndefined(filter) && filter === 'comment' && !self.$el.find('#modal-comments').hasClass('active')) {
                     self.$el.find('#modal-comments').addClass('active');
-                } else if (!self.$el.find('#modal-activities').hasClass('active') && !self.$el.find('#modal-comments').hasClass('active')) {
-                    self.$el.find('#modal-activities').addClass('active');
+                } else if (_.isUndefined(filter) && !self.$el.find('#modal-activities').hasClass('active') && !self.$el.find('#modal-comments').hasClass('active')) {
                     self.$el.find('#modal-comments').addClass('active');
                 }
                 var view_activity = this.$('#js-card-activities-' + self.model.id);
