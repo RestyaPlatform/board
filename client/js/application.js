@@ -474,6 +474,7 @@ var AppRouter = Backbone.Router.extend({
                 custom_fields = {};
                 $.removeCookie('chat_initialize');
                 $.removeCookie('filter');
+                $.removeCookie('activities_filter');
                 localforage.clear();
                 api_token = '';
                 authuser = new App.User();

@@ -885,13 +885,21 @@ App.FooterView = Backbone.View.extend({
             }
             favCount = parseInt(Auth.user.notify_count);
         }
-        var filter = $.cookie('filter');
+        var filter = $.cookie('activities_filter');
         if (filter === undefined || filter === 'all') {
             filter = 'all';
         } else if (filter === 'comment') {
             filter = 'comment';
         } else if (filter === 'activity') {
             filter = 'activity';
+        }
+        if (!_.isUndefined(filter) && filter === 'activity' && !self.$el.find('#modal-activities').hasClass('active')) {
+            self.$el.find('#modal-activities').addClass('active');
+        } else if (!_.isUndefined(filter) && filter === 'comment' && !self.$el.find('#modal-comments').hasClass('active')) {
+            self.$el.find('#modal-comments').addClass('active');
+        } else if (_.isUndefined(filter) && !self.$el.find('#modal-activities').hasClass('active') && !self.$el.find('#modal-comments').hasClass('active')) {
+            self.$el.find('#modal-activities').addClass('active');
+            self.$el.find('#modal-comments').addClass('active');
         }
         if (mode == 1) {
             query_string = '&last_activity_id=' + authuser.user.last_activity_id + '&direction=ASC';
@@ -2058,13 +2066,21 @@ App.FooterView = Backbone.View.extend({
         var Auth = JSON.parse($.cookie('auth'));
         var clicked_notification_count = 0,
             clicked_all_notification_count = 0;
-        var filter = $.cookie('filter');
+        var filter = $.cookie('activities_filter');
         if (filter === undefined || filter === 'all') {
             filter = 'all';
         } else if (filter === 'comment') {
             filter = 'comment';
         } else if (filter === 'activity') {
             filter = 'activity';
+        }
+        if (!_.isUndefined(filter) && filter === 'activity' && !self.$el.find('#modal-activities').hasClass('active')) {
+            self.$el.find('#modal-activities').addClass('active');
+        } else if (!_.isUndefined(filter) && filter === 'comment' && !self.$el.find('#modal-comments').hasClass('active')) {
+            self.$el.find('#modal-comments').addClass('active');
+        } else if (_.isUndefined(filter) && !self.$el.find('#modal-activities').hasClass('active') && !self.$el.find('#modal-comments').hasClass('active')) {
+            self.$el.find('#modal-activities').addClass('active');
+            self.$el.find('#modal-comments').addClass('active');
         }
         var activities = new App.ActivityCollection();
         activities.url = api_url + 'boards/' + authuser.board_id + '/activities.json?mode=' + filter;
@@ -2199,7 +2215,7 @@ App.FooterView = Backbone.View.extend({
         var view_activity, query_string = '';
         var self = this;
         var activities = new App.ActivityCollection();
-        var filter = $.cookie('filter');
+        var filter = $.cookie('activities_filter');
         if (filter === undefined || filter === 'all') {
             filter = 'all';
         } else if (filter === 'comment') {
@@ -2694,18 +2710,18 @@ App.FooterView = Backbone.View.extend({
             $('#all_activities').find('#modal-activities').toggleClass('active');
             if ($('#all_activities').find('#modal-activities').hasClass('active')) {
                 if ($('#all_activities').find('#modal-comments').hasClass('active')) {
-                    $.cookie('filter', 'all');
+                    $.cookie('activities_filter', 'all');
                     mode = 'all';
                 } else {
                     mode = 'activity';
-                    $.cookie('filter', 'activity');
+                    $.cookie('activities_filter', 'activity');
                 }
             } else {
                 if ($('#all_activities').find('#modal-comments').hasClass('active')) {
-                    $.cookie('filter', 'comment');
+                    $.cookie('activities_filter', 'comment');
                     mode = 'comment';
                 } else {
-                    $.cookie('filter', 'all');
+                    $.cookie('activities_filter', 'all');
                     mode = 'all';
                 }
             }
@@ -2715,18 +2731,18 @@ App.FooterView = Backbone.View.extend({
             $('#all_activities').find('#modal-comments').toggleClass('active');
             if ($('#all_activities').find('#modal-comments').hasClass('active')) {
                 if ($('#all_activities').find('#modal-activities').hasClass('active')) {
-                    $.cookie('filter', 'all');
+                    $.cookie('activities_filter', 'all');
                     mode = 'all';
                 } else {
-                    $.cookie('filter', 'comment');
+                    $.cookie('activities_filter', 'comment');
                     mode = 'comment';
                 }
             } else {
                 if ($('#all_activities').find('#modal-activities').hasClass('active')) {
-                    $.cookie('filter', 'activity');
+                    $.cookie('activities_filter', 'activity');
                     mode = 'activity';
                 } else {
-                    $.cookie('filter', 'all');
+                    $.cookie('activities_filter', 'all');
                     mode = 'all';
                 }
             }
