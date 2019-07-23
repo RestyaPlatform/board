@@ -32,7 +32,7 @@ if (!file_exists(DAILY_TEMP_FILE)) {
 if (file_exists(DAILY_TEMP_FILE)) {
     include_once DAILY_TEMP_FILE;
 }
-if (round((strtotime('now') - strtotime('2019-06-10 11:00:00')) / (60 * 60 * 24)) > 0) {
+if (round((strtotime('now') - $_daily_email_notification_time_trace) / (60 * 60 * 24)) > 0) {
     file_put_contents(DAILY_TEMP_FILE, '<?php' . "\n" . '$_daily_email_notification_time_trace = \'' . strtotime('now') . '\';');
     sendMailNotification(3);
 }
