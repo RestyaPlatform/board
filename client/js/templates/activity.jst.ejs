@@ -40,7 +40,7 @@
 							activity.attributes.comment = activity.attributes.comment.replace(' - ##DESCRIPTION##', "");
 						}
 					}
-					if(activity.attributes.comment.indexOf('##ORGANIZATION_LINK##') != -1){
+					if(activity.attributes.comment.indexOf('##CARD_LINK##') != -1){
 						activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
 					}
 					if(activity.attributes.comment.indexOf('##LABEL_NAME##') != -1){
