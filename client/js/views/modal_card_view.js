@@ -2812,7 +2812,7 @@ App.ModalCardView = Backbone.View.extend({
             view_archived.html('');
             if (!_.isUndefined(this.model) && !_.isEmpty(this.model)) {
                 if (parseInt(this.model.attributes.is_archived) === 0) {
-                    view_archived.append('<a class="btn btn-default  js-archive-card even-action htruncate" title="' + i18next.t('Archive') + '" href=""><i class="icon-cloud-download"></i> ' + i18next.t('Archive') + '</a>');
+                    view_archived.append('<a class="btn btn-default  js-archive-card even-action htruncate" title="' + i18next.t('Archive') + '" href="javascript:void(0);"><i class="icon-cloud-download"></i> ' + i18next.t('Archive') + '</a>');
                     if (view_arhieve_delete.length == 1) {
                         view_arhieve_delete.html('');
                     }
@@ -2820,7 +2820,7 @@ App.ModalCardView = Backbone.View.extend({
                         slug: 'send_back_to_archived_card',
                         board_user_role_id: parseInt(this.model.list.board_user_role_id)
                     })))) {
-                    view_archived.append('<a class="btn btn-default  js-card-send-to-board even-action htruncate" title="' + i18next.t('Send to board') + '" href=""><i class="icon-cloud-download"></i> ' + i18next.t('Send to board') + '</a>');
+                    view_archived.append('<a class="btn btn-default  js-card-send-to-board even-action htruncate" title="' + i18next.t('Send to board') + '" href="javascript:void(0);"><i class="icon-cloud-download"></i> ' + i18next.t('Send to board') + '</a>');
                 }
             }
         }
@@ -2836,7 +2836,7 @@ App.ModalCardView = Backbone.View.extend({
                         slug: 'send_back_to_archived_card',
                         board_user_role_id: parseInt(this.model.list.board_user_role_id)
                     })))) {
-                    modal_action_view_archived.append('<a class=class="panel-heading show  js-card-send-to-board" title="' + i18next.t('Send to board') + '" href="">' + i18next.t('Send to board') + '</a>');
+                    modal_action_view_archived.append('<a class="panel-heading show  js-card-send-to-board" title="' + i18next.t('Send to board') + '" href="javascript:void(0);">' + i18next.t('Send to board') + '</a>');
                 }
             }
         }
@@ -2898,19 +2898,19 @@ App.ModalCardView = Backbone.View.extend({
         }
         if (!_.isEmpty(cards_subscribers)) {
             if (view_subscribe.length == 1) {
-                view_subscribe.append('	<a class="btn btn-default ' + subscribe_disabled + ' ' + subscribe_class + ' even-action htruncate" title=" ' + i18next.t(subscribe_title) + '" href=""><i class="icon-eye-close"></i> ' + i18next.t('Unsubsribe') + '</a>');
+                view_subscribe.append('	<a class="btn btn-default ' + subscribe_disabled + ' ' + subscribe_class + ' even-action htruncate" title=" ' + i18next.t(subscribe_title) + '" href="javascript:void(0);"><i class="icon-eye-close"></i> ' + i18next.t('Unsubsribe') + '</a>');
             }
             if (view_headdropsubscribe.length == 1) {
-                view_headdropsubscribe.append(' <a class="' + subscribe_class + '" title="' + subscribe_title + '" href=""> ' + i18next.t('Unsubsribe') + ' <i class="icon-ok"></i></a>');
+                view_headdropsubscribe.append(' <a class="' + subscribe_class + '" title="' + subscribe_title + '" href="javascript:void(0);"> ' + i18next.t('Unsubsribe') + ' <i class="icon-ok"></i></a>');
                 view_headdropsubscribe.addClass(subscribe_disabled);
 
             }
         } else {
             if (view_subscribe.length == 1) {
-                view_subscribe.append('	<a class="btn btn-default ' + subscribe_disabled + ' ' + subscribe_class + ' even-action htruncate" title=" ' + i18next.t(subscribe_title) + '" href=""><i class="icon-eye-close"></i> ' + i18next.t('Subscribe') + '</a>');
+                view_subscribe.append('	<a class="btn btn-default ' + subscribe_disabled + ' ' + subscribe_class + ' even-action htruncate" title=" ' + i18next.t(subscribe_title) + '" href="javascript:void(0);"><i class="icon-eye-close"></i> ' + i18next.t('Subscribe') + '</a>');
             }
             if (view_headdropsubscribe.length == 1) {
-                view_headdropsubscribe.append(' <a class="' + subscribe_class + '" title="' + subscribe_title + '" href=""> ' + i18next.t('Subscribe') + '</a>');
+                view_headdropsubscribe.append(' <a class="' + subscribe_class + '" title="' + subscribe_title + '" href="javascript:void(0);"> ' + i18next.t('Subscribe') + '</a>');
                 view_headdropsubscribe.addClass(subscribe_disabled);
             }
         }
