@@ -76,7 +76,7 @@
 								<div class="form-group required">
 									<label for="inputusername" class="col-sm-2 control-label"><%- i18next.t("Username") %></label>
 									<div class="col-sm-8">
-										<input type="text" id="inputusername" class="form-control" name="username" value="<%- user.attributes.username %>" pattern="^[a-zA-Z0-9]{2,90}$" title="<%- i18next.t('Username. Minimum 3 characters and Maximum 90 characters and spaces not allowed') %>" required>
+										<input type="text" id="inputusername" class="form-control" name="username" value="<%- user.attributes.username %>" pattern="^[a-zA-Z0-9_]{2,90}$" title="<%- i18next.t('Username. Minimum 3 characters and Maximum 90 characters and spaces not allowed') %>" required>
 									</div>
 								</div>
 							<% } %>
