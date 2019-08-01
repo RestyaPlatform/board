@@ -7,7 +7,7 @@
 	</div>
 </td>
 <td>
-	<div class="user-table-width">
+	<div class="admin-user-table-width">
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="clearfix">
@@ -21,9 +21,9 @@
 							<%- user.attributes.initials%></i>
 						<%  } %>
 					</a>
-					<a class="col-xs-10 htruncate left-mar-sm js-board-name-truncate js-user-view" data-user_id="<%- user.attributes.id%>"
+					<a class="col-xs-10 htruncate left-mar-sm js-board-name-truncate js-user-view" title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)" data-user_id="<%- user.attributes.id%>"
 					 href="#/user/<%- user.attributes.id%>"">
-						<%- user.attributes.full_name%></a><a>
+						<%- user.attributes.full_name%> (<%- user.attributes.username%>)</a><a>
 						<% if(!user.attributes.is_email_confirmed){ %>
 						<span class="label label-warning navbar-right">
 							<%- i18next.t('Unconfirmed') %></span>
