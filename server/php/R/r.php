@@ -2611,9 +2611,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 );
             }
         } else {
+            $last_login_ip_id = saveIp();
+            $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
             if (!empty($log_user)) {
-                $last_login_ip_id = saveIp();
-                $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
                 $val_arr = array(
                     $log_user['id'],
                     $last_login_ip_id,
@@ -2622,6 +2622,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 );
                 pg_query_params($db_lnk, 'INSERT INTO user_logins (created, modified, user_id, ip_id, user_agent, is_login_failed) VALUES (now(), now(), $1, $2, $3, $4)', $val_arr);
             }
+            // login failed error logged
+            $login_fail_string = date('Y-m-d H:i:s') . '|' . $last_login_ip_id . '|' . $r_post['email'] . '|' . $user_agent;
+            error_log($login_fail_string . PHP_EOL, 3, CACHE_PATH . DS . 'user_logins_failed.log');
             if (!empty($ldap_error)) {
                 $response = array(
                     'code' => 'LDAP',
