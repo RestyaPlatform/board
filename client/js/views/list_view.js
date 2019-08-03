@@ -1380,16 +1380,16 @@ App.ListView = Backbone.View.extend({
                 }
                 cards.each(function(card) {
                     var card_id = card.id;
+                    var filter_labels = self.model.labels.filter(function(model) {
+                        return parseInt(model.get('card_id')) === parseInt(card_id);
+                    });
+                    var labels = new App.CardLabelCollection();
+                    labels.add(filter_labels, {
+                        silent: true
+                    });
+                    card.labels = labels;
                     if (parseInt(card.get('is_archived')) === 0) {
                         card.board_users = self.model.board_users;
-                        var filter_labels = self.model.labels.filter(function(model) {
-                            return parseInt(model.get('card_id')) === parseInt(card_id);
-                        });
-                        var labels = new App.CardLabelCollection();
-                        labels.add(filter_labels, {
-                            silent: true
-                        });
-                        card.labels = labels;
                         card.card_voters.add(card.get('card_voters'), {
                             silent: true
                         });
