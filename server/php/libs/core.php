@@ -3703,6 +3703,45 @@ function sendMailNotification($notification_type)
     $qry_val_arr = array(
         $notification_type
     );
+    $card_activity_types = array(
+        'edit_card_desc',
+        'delete_card_users',
+        'add_card_user',
+        'delete_card_duedate',
+        'add_card_duedate',
+        'delete_card_attachment',
+        'add_card_attachment',
+        "edit_card",
+        "archived_card",
+        'delete_card_label',
+        'add_card_label',
+        'delete_card_comment',
+        'unarchived_card',
+        'edit_card_duedate',
+        'edit_card_startdate',
+        'add_card_startdate',
+        'delete_card_startdate',
+        'edit_card_estimatedtime',
+        'add_card_estimatedtime',
+        "delete_card_estimatedtime",
+        "edit_card_spenttime",
+        'add_card_spenttime',
+        "delete_card_spenttime",
+        "add_card_desc",
+        'add_card_color',
+        "delete_card_color",
+        "edit_card_color",
+        "update_card_checklist_item",
+        "moved_card_checklist_item",
+        "update_card_checklist",
+        "edit_comment",
+        'add_card_custom_field',
+        "update_card_custom_field",
+        'delete_card_custom_field',
+        "add_checklist_item",
+        'add_card_voter',
+        'add_comment'
+    );
     $users_result = pg_query_params($db_lnk, 'SELECT users.id, users.username, users.email, users.full_name, users.last_email_notified_activity_id, users.timezone, users.language, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT bs.board_id FROM board_subscribers bs WHERE bs.user_id = users.id AND bs.is_subscribed = \'t\') d) AS board_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ls.list_id, l.board_id FROM list_subscribers ls, lists l WHERE ls.user_id = users.id AND l.id = ls.list_id AND ls.is_subscribed = \'t\') d) AS list_ids,(SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT cs.card_id, c.list_id, c.board_id FROM card_subscribers cs, cards c WHERE cs.user_id = users.id AND c.id = cs.card_id AND cs.is_subscribed = \'t\') d) AS card_ids FROM users WHERE is_send_newsletter = $1', $qry_val_arr);
     while ($user = pg_fetch_assoc($users_result)) {
         $board_ids = $list_ids = $card_ids = array();
@@ -3773,6 +3812,19 @@ function sendMailNotification($notification_type)
                     } else {
                         $activity['comment'].= __l(' on ##BOARD_NAME##');
                         $br = '<div style="line-height:40px;">&nbsp;</div>';
+                    }
+                }
+                if (!empty($activity['list_name']) && in_array($activity['type'], $card_activity_types)) {
+                    $replaceContent = array(
+                        'on ##BOARD_NAME##' => 'on list ##LIST_NAME##  of the ##BOARD_NAME##'
+                    );
+                    if ($is_mention_activity) {
+                        if (strpos($mentioned_activity['comment'], '##LIST_NAME##') === false) {
+                            $mentioned_activity['comment'] = strtr($mentioned_activity['comment'], $replaceContent);
+                        }
+                    }
+                    if (strpos($activity['comment'], '##LIST_NAME##') === false) {
+                        $activity['comment'] = strtr($activity['comment'], $replaceContent);
                     }
                 }
                 if (!empty($activity['card_id']) && IMAP_EMAIL) {
@@ -3890,6 +3942,19 @@ function sendMailNotification($notification_type)
                         $br = '<div style="line-height:40px;">&nbsp;</div>';
                     }
                 }
+                if (!empty($activity['list_name']) && in_array($activity['type'], $card_activity_types)) {
+                    $replaceContent = array(
+                        'on ##BOARD_NAME##' => 'on list ##LIST_NAME##  of the ##BOARD_NAME##'
+                    );
+                    if ($is_mention_activity) {
+                        if (strpos($mentioned_activity['comment'], '##LIST_NAME##') === false) {
+                            $mentioned_activity['comment'] = strtr($mentioned_activity['comment'], $replaceContent);
+                        }
+                    }
+                    if (strpos($activity['comment'], '##LIST_NAME##') === false) {
+                        $activity['comment'] = strtr($activity['comment'], $replaceContent);
+                    }
+                }
                 if (!empty($activity['card_id']) && IMAP_EMAIL) {
                     $imap_email = explode("@", IMAP_EMAIL);
                     $board_email = $imap_email[0] . '+' . $activity['board_id'] . '+' . $activity['card_id'] . '+' . md5(SECURITYSALT . $activity['board_id'] . $activity['card_id']) . '@' . $imap_email[1];
@@ -4003,6 +4068,19 @@ function sendMailNotification($notification_type)
                     } else {
                         $activity['comment'].= __l(' on ##BOARD_NAME##');
                         $br = '<div style="line-height:40px;">&nbsp;</div>';
+                    }
+                }
+                if (!empty($activity['list_name']) && in_array($activity['type'], $card_activity_types)) {
+                    $replaceContent = array(
+                        'on ##BOARD_NAME##' => 'on list ##LIST_NAME##  of the ##BOARD_NAME##'
+                    );
+                    if ($is_mention_activity) {
+                        if (strpos($mentioned_activity['comment'], '##LIST_NAME##') === false) {
+                            $mentioned_activity['comment'] = strtr($mentioned_activity['comment'], $replaceContent);
+                        }
+                    }
+                    if (strpos($activity['comment'], '##LIST_NAME##') === false) {
+                        $activity['comment'] = strtr($activity['comment'], $replaceContent);
                     }
                 }
                 if (!empty($activity['card_id']) && IMAP_EMAIL) {
