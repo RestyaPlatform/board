@@ -182,6 +182,7 @@ App.ListView = Backbone.View.extend({
                         }
                     });
                 }
+                self.model.collection.sortByColumn('position');
             }
         });
     },
