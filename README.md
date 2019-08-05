@@ -78,6 +78,7 @@ To give you some idea about of our plans:
 * Sandstorm support for Installation
 * Import from Asana
 * Import Taskwarrior Tasks
+* Import Pipefy Tasks
 * SparkPost Plugin for easy email sending
 * In notification emails, Gmail Action Button "View on Restyaboard"
 * GitHub issues & enhancements etc.,
