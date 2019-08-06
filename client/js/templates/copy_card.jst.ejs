@@ -1,4 +1,4 @@
-<%        if (card.attachments.length > 0 || card.activities.length > 0 || card.labels.length > 0 || card.checklists.length > 0 || card.users.length > 0) { %>
+<% if (card.attachments.length > 0 || card.activities.length > 0 || card.labels.length > 0 || card.checklists.length > 0 || card.users.length > 0 || (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps) !== -1)) { %>
 		<div class="form-group">
 			<h4> <%- i18next.t('Keep...') %></h4>
 			<% if (card.attachments.length > 0) {%>
