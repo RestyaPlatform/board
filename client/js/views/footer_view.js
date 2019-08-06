@@ -901,7 +901,7 @@ App.FooterView = Backbone.View.extend({
             self.$el.find('#modal-activities').addClass('active');
             self.$el.find('#modal-comments').addClass('active');
         }
-        if (mode == 1) {
+        if (mode == 1 && !_.isUndefined(authuser) && !_.isUndefined(authuser.user)) {
             query_string = '&last_activity_id=' + authuser.user.last_activity_id + '&direction=ASC';
             activities.url = api_url + 'users/' + authuser.user.id + '/activities.json?type=all' + query_string;
         } else {
@@ -937,7 +937,7 @@ App.FooterView = Backbone.View.extend({
                         var update_last_activity = _.max(activities.models, function(activity) {
                             return activity.id;
                         });
-                        if (mode == 1) {
+                        if (mode == 1 && !_.isUndefined(authuser) && !_.isUndefined(authuser.user)) {
                             favCount += parseInt(count);
                             favicon.badge(favCount);
                             if (parseInt(favCount) > 0) {
@@ -952,7 +952,7 @@ App.FooterView = Backbone.View.extend({
                                 $.cookie('auth', JSON.stringify(Auth));
                             }
                             authuser.user.last_activity_id = (parseInt(Auth.user.last_activity_id) < parseInt(update_last_activity.id)) ? update_last_activity.id : Auth.user.last_activity_id;
-                        } else if (mode == 2) {
+                        } else if (mode == 2 && !_.isUndefined(authuser) && !_.isUndefined(authuser.user)) {
                             if (favCount > 0) {
                                 if ($.cookie('auth')) {
                                     Auth = JSON.parse($.cookie('auth'));
@@ -1029,7 +1029,7 @@ App.FooterView = Backbone.View.extend({
                                             activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned you in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
                                         }
                                     }
-                                    if (authuser.user.default_desktop_notification === true || authuser.user.default_desktop_notification === 'true' || authuser.user.default_desktop_notification === 't') {
+                                    if (!_.isUndefined(authuser) && !_.isUndefined(authuser.user) && authuser.user.default_desktop_notification === true || authuser.user.default_desktop_notification === 'true' || authuser.user.default_desktop_notification === 't') {
                                         var patt_match = activity.attributes.comment.match(/@\w+/g);
                                         if ((authuser.user.is_list_notifications_enabled === true || authuser.user.is_list_notifications_enabled === 'true' || authuser.user.is_list_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, list_notifications_array) !== -1)) {
                                             new Notification(activity.attributes.comment, {
@@ -1876,7 +1876,7 @@ App.FooterView = Backbone.View.extend({
                                         board.set('background_picture_url', activity.attributes.revisions.new_value.background_picture_url);
                                         board.set('background_pattern_url', activity.attributes.revisions.new_value.background_pattern_url);
                                     } else if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card') {
-                                        if (parseInt(activity.attributes.user_id) === parseInt(authuser.user.id) && activity.attributes.type === 'add_card') {
+                                        if (!_.isUndefined(authuser) && !_.isUndefined(authuser.user) && parseInt(activity.attributes.user_id) === parseInt(authuser.user.id) && activity.attributes.type === 'add_card') {
                                             // While using instant add card, count duplicates for logged in user. So skipped the card count update while fetch activities.
                                         } else {
                                             card_count = board.attributes.card_count + 1;
@@ -2020,7 +2020,7 @@ App.FooterView = Backbone.View.extend({
                                 return activity.id;
                             });
 
-                            if ($.cookie('auth')) {
+                            if ($.cookie('auth') && !_.isUndefined(authuser) && !_.isUndefined(authuser.user)) {
                                 Auth = JSON.parse($.cookie('auth'));
                                 if (!_.isUndefined(Auth.user.unread_activity_id)) {
                                     Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
@@ -2033,7 +2033,7 @@ App.FooterView = Backbone.View.extend({
                             }
                         }
                     } else {
-                        if (parseInt(authuser.user.last_activity_id) === 0 || authuser.user.last_activity_id === null) {
+                        if (!_.isUndefined(authuser) && !_.isUndefined(authuser.user) && parseInt(authuser.user.last_activity_id) === 0 || authuser.user.last_activity_id === null) {
                             $('#js-all-activities').parent('div').addClass('notification-empty');
                             $('#js-all-activities').html('<li><div>No activities available.</div></li>');
                             $('#js-notification-load-more-all').hide();
@@ -2112,7 +2112,7 @@ App.FooterView = Backbone.View.extend({
                     var unread_activity_id = _.max(activities.models, function(activity) {
                         return activity.id;
                     });
-                    if ($.cookie('auth')) {
+                    if ($.cookie('auth') && !_.isUndefined(authuser) && !_.isUndefined(authuser.user)) {
                         Auth = JSON.parse($.cookie('auth'));
                         if (!_.isUndefined(Auth.user.unread_activity_id)) {
                             Auth.user.unread_activity_id = (parseInt(unread_activity_id.id) > parseInt(Auth.user.unread_activity_id) && parseInt(unread_activity_id.id) >= parseInt(Auth.user.last_activity_id)) ? unread_activity_id.id : Auth.user.unread_activity_id;
@@ -2127,7 +2127,7 @@ App.FooterView = Backbone.View.extend({
                         return activity.id;
                     });
                     load_more_last_board_activity_id = last_board_activity.id;
-                    if ($('.js-notification-count').html() > 0) {
+                    if ($('.js-notification-count').html() > 0 && !_.isUndefined(authuser) && !_.isUndefined(authuser.user)) {
                         var max_last_user_activity = _.max(activities.models, function(activity) {
                             return activity.id;
                         });
