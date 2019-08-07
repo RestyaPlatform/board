@@ -86,6 +86,7 @@
 		var diff = Math.floor(due_date.getTime() - today.getTime());
 		var day = 1000 * 60 * 60 * 24;
 		var days = Math.floor(diff / day);
+		var label;
 		if (days < -1) {
 			label = 'label-danger';
 		} else if (days == -1) {
@@ -94,8 +95,10 @@
 			label = 'label-future';
 		}
 	%>
+	<% if(!_.isUndefined(label) && !_.isEmpty(label) && label != null) { %>
 	<li class="card-listing-truncate"><small title=" <%- i18next.t('Due Date') %>"><span class="label <%- label %>"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
-	<% } %>
+	<% }
+		} %>
 	<% if(!_.isEmpty(card.attributes.created) && card.attributes.created != 'NULL'){
 			var created_date_time = card.attributes.created.split('T');
 			created_date_time = created_date_time[0].split(' ');
