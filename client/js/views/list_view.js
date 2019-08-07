@@ -1680,9 +1680,11 @@ App.ListView = Backbone.View.extend({
             $('#js-card-listing-' + this.model.id).scrollTop($('#js-card-listing-' + this.model.id)[0].scrollHeight);
             card.save(data, {
                 success: function(model, response, options) {
-                    card.set('created', response.activity.created);
-                    card.set('card_created_user', response.activity.full_name);
-                    card.set('description', response.activity.card_description);
+                    if (!_.isUndefined(response) && !_.isEmpty(response) && response !== null && !_.isUndefined(response.activity) && !_.isEmpty(response.activity) && response.activity !== null) {
+                        card.set('created', response.activity.created);
+                        card.set('card_created_user', response.activity.full_name);
+                        card.set('description', response.activity.card_description);
+                    }
                     if (!_.isUndefined(response.cards_custom_fields) && !_.isEmpty(response.cards_custom_fields)) {
                         card.set('cards_custom_fields', response.cards_custom_fields);
                     }
