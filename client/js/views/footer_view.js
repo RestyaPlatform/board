@@ -2295,17 +2295,19 @@ App.FooterView = Backbone.View.extend({
     enabledesktopNotification: function(e) {
         e.preventDefault();
         var self = this;
-        Notification.requestPermission(function(permission) {
-            // Whatever the user answers, we make sure we store the information
-            if (!('permission' in Notification)) {
-                Notification.permission = permission;
-            }
-            // If the user is okay, let's create a notification
-            if (permission === 'granted') {
-                var notification = new Notification('Desktop notification enabled.');
-                location.reload();
-            }
-        });
+        if (!_.isUndefined(Notification)) {
+            Notification.requestPermission(function(permission) {
+                // Whatever the user answers, we make sure we store the information
+                if (!('permission' in Notification)) {
+                    Notification.permission = permission;
+                }
+                // If the user is okay, let's create a notification
+                if (permission === 'granted') {
+                    var notification = new Notification('Desktop notification enabled.');
+                    location.reload();
+                }
+            });
+        }
     },
     /**
      * showBoardImportForm()
