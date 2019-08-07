@@ -2347,12 +2347,14 @@ App.BoardHeaderView = Backbone.View.extend({
             filter = '/' + filter;
         }
         _.each(this.model.lists.models, function(list) {
-            var cards = self.model.cards.filter(function(card) {
-                return card.get('is_archived') !== 1 && card.get('list_id') === parseInt(list.id);
-            });
-            _.each(cards, function(card, key) {
-                card.set('is_filtered', false);
-            });
+            if (!_.isUndefined(self.model.cards) && !_.isEmpty(self.model.cards) && self.model.cards !== null) {
+                var cards = self.model.cards.filter(function(card) {
+                    return card.get('is_archived') !== 1 && card.get('list_id') === parseInt(list.id);
+                });
+                _.each(cards, function(card, key) {
+                    card.set('is_filtered', false);
+                });
+            }
             if (list.attributes.card_count !== 0 && $('#js-card-listing-' + list.id).find('.js-list-placeholder-' + list.id).length > 0) {
                 $('#js-card-listing-' + list.id).find('.js-list-placeholder-' + list.id).remove();
             }
