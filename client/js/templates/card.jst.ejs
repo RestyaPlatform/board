@@ -5,7 +5,7 @@
   <%
   	card.labels.each(function(label) {
             if (!_.isUndefined(label) && label.attributes.name !== "") { %>
-			<span class="cur"><i style="color:<%- (label.attributes.color) ? label.attributes.color : '#'+converter.colorCode(''+label.attributes.name).substring(0, 6) %>;" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- label.attributes.name %>" title="<%- label.attributes.name %>" class="<%= LABEL_ICON %> cur"></i></span>
+			<span class="cur"><i style="color:'<%- (label.attributes.color) ? label.attributes.color : '+'#'+'+converter.colorCode(''+label.attributes.name).substring(0, 6) %>'" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- label.attributes.name %>" title="<%- label.attributes.name %>" class="<%= LABEL_ICON %> cur"></i></span>
                
    <%         }
         });%> 
@@ -15,7 +15,7 @@
  <%  } %> 
  <div class="clearfix">
   <% if(!_.isEmpty(card.attachments) && card.attachments.length > 0 && !_.isEmpty(card.attachments.at(0).attributes.name) && _.isEmpty(card.attachments.at(0).attributes.link) && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ %>
-	  <div class="clearfix js-card-attachment-image navbar-btn <% if(!_.isEmpty(card.collection) && !card.list.collection.board.attributes.is_show_image_front_of_card){ %> hide <% } %>">
+	  <div class="clearfix js-card-attachment-image navbar-btn <% if(!_.isEmpty(card.collection) && !_.isEmpty(card.list.collection.board.attributes.is_show_image_front_of_card)){ %> hide <% } %>">
 		<%
 			var img_src = card.showImage('CardAttachment',  card.attachments.at(0).attributes.id, 'large_thumb' );
 		%>
