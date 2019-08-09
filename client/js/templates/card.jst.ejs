@@ -146,7 +146,7 @@
 		%>
 					<li class="pull-left js-tooltip navbar-btn" data-container="body" data-placement="bottom" title="<%-card_user.attributes.full_name %> (<%-card_user.attributes.username %>)" data-toggle="tooltip">
 						<% if(!_.isEmpty(card_user.attributes.profile_picture_path)) { 
-							var profile_picture_path = card.showImage('User', card_user.attributes.user_id, 'small_thumb' );
+							var profile_picture_path = card.showImage('User', card_user.attributes.user_id, 'small_thumb');
 						%>
 							<img src="<%=profile_picture_path %>" alt="[Image: <%-card_user.attributes.username %>]" title="<%-card_user.attributes.full_name %> (<%-card_user.attributes.username %>)" class="img-rounded img-responsive avatar">
 						<% } else {%>
@@ -156,6 +156,7 @@
 		<%		
 				}
 			});
+		}
 		%>
 		</ul>
 	</div>
