@@ -3149,31 +3149,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 } else {
                     $response['error'] = 'Invalid file format. Upload CSV file';
                 }
-            } elseif (!empty($_FILES['board_import_csv'])) {
-                $all_rows = array();
-                $imported_board = array();
-                if (($handle = fopen($_FILES['board_import_csv']['tmp_name'], "r")) !== false) {
-                    $row = 1;
-                    while (($data = fgetcsv($handle, 40000, ",")) !== false) {
-                        if ($row > 1) {
-                            $arrResult = array();
-                            foreach ($data as $key => $value) {
-                                $arrResult[$all_rows[0][$key]] = $value;
-                            };
-                            $imported_board[] = $arrResult;
-                        } else {
-                            $all_rows[] = $data;
-                        }
-                        $row++;
-                    }
-                    if (!empty($imported_board)) {
-                        $board = importCSVBoard($imported_board);
-                        $response['id'] = $board['id'];
-                    } else {
-                        $response['error'] = 'Invalid file format. Upload CSV file';
-                    }
-                }
-                fclose($handle);
             } else {
                 $response['error'] = 'Unable to import. please try again.';
             }
