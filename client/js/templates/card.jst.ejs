@@ -4,12 +4,11 @@
   <div class="clearfix js-card-label-section-<%- card.attributes.id %>">
 <%if(CheckFieldExists(card.board, 'labels' , null , 'boolean', 'r_gridview_configure')){
   	card.labels.each(function(label) {
-            if (!_.isUndefined(label) && label.attributes.name !== "") { %>
-			<span class="cur"><i style="color:<%- (label.attributes.color) ? label.attributes.color : '#'+converter.colorCode(''+label.attributes.name).substring(0, 6) %>;" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- label.attributes.name %>" title="<%- label.attributes.name %>" class="<%= LABEL_ICON %> cur"></i></span>
-               
+		  if (!_.isUndefined(label) && label.attributes.name !== "") { %>
+			<span class="cur"><i style="color:<%- (label.attributes.color) ? label.attributes.color : '#'+converter.colorCode(''+label.attributes.name).substring(0, 6) %>;" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- label.attributes.name %>" title="<%- label.attributes.name %>" class="<%= LABEL_ICON %> cur"></i></span>   
    <%         }
-		});
-	}%> 
+	});
+ } %> 
   
   
   </div>
@@ -116,20 +115,24 @@
 			label = 'label-future';
 		}
 	%>
-	<% if(!_.isUndefined(label) && !_.isEmpty(label) && label != null) { %>
-	<li class="card-listing-truncate"><small title=" <%- i18next.t('Due Date') %>"><span class="label <%- label %>"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
+	<% if(!_.isUndefined(label) && !_.isEmpty(label) && label != null && CheckFieldExists(card.board, 'due_date' , null , 'boolean', 'r_gridview_configure')) { %>
+		<li class="card-listing-truncate"><small title=" <%- i18next.t('Due Date') %>"><span class="label <%- label %>"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
 	<% }
-		} %>
+	} %>
 	<% if(!_.isEmpty(card.attributes.created) && card.attributes.created != 'NULL'){
 			var created_date_time = card.attributes.created.split('T');
 			created_date_time = created_date_time[0].split(' ');
 	%>
-	<li class="card-listing-truncate card-created-date" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><small title=" <%- i18next.t('Created Date') %>"><span class="label label-default"><%= dateFormat(created_date_time[0], 'mediumDate')  %></span></small></li>
-	<li class="card-listing-truncate card-created-user" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><small title=" <%- i18next.t('Created User') %>"><span class="label label-default"><%= card.attributes.card_created_user %></span></small></li>
+	<% if(CheckFieldExists(card.board, 'created' , null , 'boolean', 'r_gridview_configure')){ %>
+		<li class="card-listing-truncate card-created-date" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><small title=" <%- i18next.t('Created Date') %>"><span class="label label-default"><%= dateFormat(created_date_time[0], 'mediumDate')  %></span></small></li>
+	<% }
+	 } %>
+	 <% if(CheckFieldExists(card.board, 'card_created_user' , null , 'boolean', 'r_gridview_configure')){ %>
+		<li class="card-listing-truncate card-created-user" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><small title=" <%- i18next.t('Created User') %>"><span class="label label-default"><%= card.attributes.card_created_user %></span></small></li>
 	<% } %>
-	<% if(!_.isEmpty(card.attributes.list_moved_date) && card.attributes.list_moved_date != 'NULL'){ 
-			var list_moved_date_date_time = card.attributes.list_moved_date.split('T');
-			list_moved_date_date_time = list_moved_date_date_time[0].split(' ');
+	<% if(CheckFieldExists(card.board, 'list_moved_date' , null , 'boolean', 'r_gridview_configure') && !_.isEmpty(card.attributes.list_moved_date) && card.attributes.list_moved_date != 'NULL'){ 
+		var list_moved_date_date_time = card.attributes.list_moved_date.split('T');
+		list_moved_date_date_time = list_moved_date_date_time[0].split(' ');
 	%>
 		<li class="card-listing-truncate list-moved-date" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><small title=" <%- i18next.t('List Moved Date') %>"><span class="label label-default"><%= dateFormat(list_moved_date_date_time[0], 'mediumDate')  %></span></small></li>
 	<% } %>
@@ -137,7 +140,7 @@
 	</div>
 	<div class="clearfix pull-right">
 		<ul class="list-unstyled list-inline text-muted clearfix">
-		<%
+		<% if(CheckFieldExists(card.board, 'cards_users' , null , 'boolean', 'r_gridview_configure')){
 			card.users.each(function(card_user) {
 				if (!_.isUndefined(card_user)) {
 		%>
