@@ -2514,7 +2514,7 @@ App.ModalCardView = Backbone.View.extend({
             linkType: 'preview',
             multiselect: true
         };
-        if (!_.isUndefined(Dropbox)){
+        if (!_.isUndefined(Dropbox)) {
             Dropbox.init({
                 appKey: DROPBOX_APPKEY
             });
